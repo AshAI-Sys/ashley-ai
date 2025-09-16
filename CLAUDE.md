@@ -1,5 +1,9 @@
 # Ashley AI - Development Guide
 
+**Last Updated**: 2025-09-16
+**Current Status**: 8 of 14 Manufacturing Stages Implemented
+**Latest Update**: Stage 8 - Delivery Operations completed
+
 ## Quick Start Commands
 
 ### Start Development Servers
@@ -7,7 +11,7 @@
 # Start Admin Interface (localhost:3001)
 pnpm --filter admin dev
 
-# Start Client Portal (localhost:3003)  
+# Start Client Portal (localhost:3003)
 pnpm --filter portal dev
 
 # Generate Database
@@ -18,6 +22,14 @@ cd packages/database && npx prisma generate
 - **Admin Interface**: http://localhost:3001
 - **Client Portal**: http://localhost:3003
 - **Login**: Use any email/password (e.g., admin@ashleyai.com / password123)
+
+## Current System Status
+
+### ✅ **COMPLETED STAGES (8/14)**
+**Stages 1-8** are fully implemented and functional
+
+### 🔄 **NEXT TO IMPLEMENT**
+**Stage 9 - Finance Operations** (Invoicing, Payments, Billing)
 
 ## Project Structure
 ```
@@ -76,7 +88,7 @@ Ashley AI/
 - Volume utilization and dimensional weight calculations
 - Shipment preparation workflow
 
-### ✅ Stage 8 - Delivery Operations
+### ✅ Stage 8 - Delivery Operations *(Latest - Sept 16, 2025)*
 - Shipment creation and management with carton linking
 - Multi-method delivery support (Driver, 3PL providers)
 - Real-time delivery tracking with status updates
@@ -85,6 +97,44 @@ Ashley AI/
 - 3PL integration with automated quotes and booking
 - Dispatch board for logistics coordination
 - Live tracking interface for monitoring deliveries
+
+### 🚧 **REMAINING STAGES TO IMPLEMENT**
+
+#### Stage 9 - Finance Operations
+- Invoice generation and management
+- Payment processing and tracking
+- Financial reporting and analytics
+- Cost accounting and profitability analysis
+
+#### Stage 10 - HR & Payroll
+- Employee management and attendance
+- Payroll calculation and processing
+- Performance tracking and piece-rate calculations
+- Compliance and reporting
+
+#### Stage 11 - Maintenance Management
+- Equipment maintenance scheduling
+- Asset tracking and lifecycle management
+- Work order management
+- Preventive maintenance programs
+
+#### Stage 12 - Client Portal
+- Order tracking for clients
+- Design approvals and feedback
+- Payment and invoice management
+- Communication and collaboration tools
+
+#### Stage 13 - Merchandising AI
+- Demand forecasting and analytics
+- Product recommendation engine
+- Trend analysis and insights
+- Inventory optimization
+
+#### Stage 14 - Automation & Reminders
+- Workflow automation rules
+- Notification systems
+- Alert management
+- Integration orchestration
 
 ## Key Features
 - **QR Code System**: Track bundles throughout production
@@ -95,10 +145,29 @@ Ashley AI/
 
 ## Database Schema
 Located in `packages/database/prisma/schema.prisma` with models for:
-- Clients, Orders, DesignAssets
-- Lays, Bundles, CuttingRuns
-- PrintRuns, SewingRuns
-- QualityControlChecks
+- **Core**: Clients, Orders, DesignAssets
+- **Production**: Lays, Bundles, CuttingRuns, PrintRuns, SewingRuns
+- **Quality**: QualityControlChecks, Inspections, DefectCodes, CAPA
+- **Finishing**: FinishingRuns, FinishedUnits, Cartons
+- **Delivery**: Shipments, Deliveries, TrackingEvents, ShipmentCartons
+
+## Recent Updates Log
+
+### 2025-09-16 - Stage 8 Delivery Operations
+- ✅ Added 7 new API endpoints for delivery management
+- ✅ Implemented dispatch board with real-time shipment tracking
+- ✅ Built 3PL integration with quote comparison
+- ✅ Added warehouse scan-out operations
+- ✅ Created proof of delivery system with photo capture
+- ✅ Updated delivery page with tabs interface
+- ✅ Committed 1,779 lines of new code
+
+### Auto-Update System
+This CLAUDE.md file will be automatically updated whenever:
+- New stages are implemented
+- Major features are added
+- Database schema changes
+- System architecture updates
 
 ## Troubleshooting
 
