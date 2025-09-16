@@ -1,140 +1,172 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = GET;
-exports.POST = POST;
-const server_1 = require("next/server");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
-async function GET(request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const client_id = searchParams.get('client_id');
-        const source = searchParams.get('source');
-        const date_from = searchParams.get('date_from');
-        const date_to = searchParams.get('date_to');
-        const where = {};
-        if (client_id)
-            where.client_id = client_id;
-        if (source && source !== 'all')
-            where.source = source;
-        if (date_from || date_to) {
-            where.received_at = {};
-            if (date_from)
-                where.received_at.gte = new Date(date_from);
-            if (date_to)
-                where.received_at.lte = new Date(date_to);
-        }
-        const payments = await prisma.payment.findMany({
-            where,
-            include: {
-                client: { select: { name: true } },
-                payment_allocations: {
-                    include: {
-                        invoice: {
-                            select: {
-                                invoice_no: true,
-                                total: true,
-                                brand: { select: { name: true } }
-                            }
-                        }
-                    }
-                }
-            },
-            orderBy: { received_at: 'desc' }
-        });
-        return server_1.NextResponse.json({
-            success: true,
-            data: payments
-        });
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const invoiceId = searchParams.get('invoiceId');
+    const paymentMethod = searchParams.get('paymentMethod');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
+
+    const where = {};
+    if (status && status !== 'all') {
+      where.status = status;
     }
-    catch (error) {
-        console.error('Error fetching payments:', error);
-        return server_1.NextResponse.json({ success: false, error: 'Failed to fetch payments' }, { status: 500 });
+    if (invoiceId) {
+      where.invoice_id = invoiceId;
     }
+    if (paymentMethod) {
+      where.payment_method = paymentMethod;
+    }
+
+    const [payments, total] = await Promise.all([
+      prisma.payment.findMany({
+        where,
+        include: {
+          invoice: {
+            select: {
+              id: true,
+              invoice_number: true,
+              total_amount: true,
+              client: {
+                select: { name: true }
+              }
+            }
+          },
+          bank_account: {
+            select: { account_name: true, bank_name: true }
+          }
+        },
+        orderBy: { created_at: 'desc' },
+        take: limit,
+        skip: offset
+      }),
+      prisma.payment.count({ where })
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: payments,
+      pagination: {
+        total,
+        limit,
+        offset,
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch payments' },
+      { status: 500 }
+    );
+  }
 }
-async function POST(request) {
-    try {
-        const data = await request.json();
-        const { client_id, source, amount, ref_no, received_at, invoice_allocations = [] } = data;
-        // Validate total allocation doesn't exceed payment amount
-        const totalAllocated = invoice_allocations.reduce((sum, allocation) => sum + allocation.amount, 0);
-        if (totalAllocated > amount) {
-            return server_1.NextResponse.json({ success: false, error: 'Total allocation exceeds payment amount' }, { status: 400 });
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const {
+      invoice_id,
+      amount,
+      payment_method,
+      reference,
+      bank_account_id,
+      payment_date,
+      notes
+    } = body;
+
+    // Generate payment number
+    const lastPayment = await prisma.payment.findFirst({
+      orderBy: { created_at: 'desc' },
+      select: { payment_number: true }
+    });
+
+    const nextNumber = lastPayment
+      ? parseInt(lastPayment.payment_number.split('-')[1]) + 1
+      : 1;
+
+    const payment_number = `PMT-${nextNumber.toString().padStart(6, '0')}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        payment_number,
+        invoice_id,
+        amount,
+        payment_method,
+        reference,
+        bank_account_id,
+        payment_date: payment_date ? new Date(payment_date) : new Date(),
+        status: 'completed', // Default to completed for manual entries
+        notes
+      },
+      include: {
+        invoice: {
+          select: {
+            id: true,
+            invoice_number: true,
+            total_amount: true,
+            client: {
+              select: { name: true }
+            }
+          }
+        },
+        bank_account: {
+          select: { account_name: true }
         }
-        // Start transaction
-        const result = await prisma.$transaction(async (tx) => {
-            // Create payment record
-            const payment = await tx.payment.create({
-                data: {
-                    workspace_id: 'default',
-                    payer_type: 'CLIENT',
-                    client_id,
-                    source,
-                    amount,
-                    ref_no,
-                    received_at: new Date(received_at || Date.now())
-                }
-            });
-            // Create payment allocations and update invoice balances
-            for (const allocation of invoice_allocations) {
-                await tx.paymentAllocation.create({
-                    data: {
-                        payment_id: payment.id,
-                        invoice_id: allocation.invoice_id,
-                        amount: allocation.amount
-                    }
-                });
-                // Update invoice balance
-                const invoice = await tx.invoice.findUnique({
-                    where: { id: allocation.invoice_id },
-                    select: { balance: true, total: true }
-                });
-                if (!invoice) {
-                    throw new Error(`Invoice ${allocation.invoice_id} not found`);
-                }
-                const newBalance = invoice.balance - allocation.amount;
-                let newStatus = 'OPEN';
-                if (newBalance <= 0) {
-                    newStatus = 'PAID';
-                }
-                else if (newBalance < invoice.total) {
-                    newStatus = 'PARTIAL';
-                }
-                await tx.invoice.update({
-                    where: { id: allocation.invoice_id },
-                    data: {
-                        balance: Math.max(0, newBalance),
-                        status: newStatus
-                    }
-                });
+      }
+    });
+
+    // Update invoice status if fully paid
+    if (invoice_id) {
+      const invoice = await prisma.invoice.findUnique({
+        where: { id: invoice_id },
+        include: {
+          payments: {
+            where: { status: 'completed' }
+          }
+        }
+      });
+
+      if (invoice) {
+        const totalPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0);
+        const balance = invoice.total_amount - totalPaid;
+
+        let newStatus = invoice.status;
+        if (balance <= 0.01) { // Account for floating point precision
+          newStatus = 'paid';
+        } else if (totalPaid > 0) {
+          newStatus = 'pending'; // Partially paid
+        }
+
+        if (newStatus !== invoice.status) {
+          await prisma.invoice.update({
+            where: { id: invoice_id },
+            data: {
+              status: newStatus,
+              paid_at: newStatus === 'paid' ? new Date() : null
             }
-            return payment;
-        });
-        // Fetch the complete payment record with relationships
-        const paymentWithDetails = await prisma.payment.findUnique({
-            where: { id: result.id },
-            include: {
-                client: { select: { name: true } },
-                payment_allocations: {
-                    include: {
-                        invoice: {
-                            select: {
-                                invoice_no: true,
-                                total: true,
-                                brand: { select: { name: true } }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        return server_1.NextResponse.json({
-            success: true,
-            data: paymentWithDetails
-        }, { status: 201 });
+          });
+        }
+      }
     }
-    catch (error) {
-        console.error('Error processing payment:', error);
-        return server_1.NextResponse.json({ success: false, error: 'Failed to process payment' }, { status: 500 });
-    }
+
+    return NextResponse.json({
+      success: true,
+      data: payment,
+      message: 'Payment recorded successfully'
+    });
+
+  } catch (error) {
+    console.error('Error creating payment:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to record payment' },
+      { status: 500 }
+    );
+  }
 }

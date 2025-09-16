@@ -1,171 +1,219 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = GET;
-const server_1 = require("next/server");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
-async function GET(request) {
-    try {
-        const today = new Date();
-        const yearStart = new Date(today.getFullYear(), 0, 1);
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        // Run all queries in parallel for better performance
-        const [totalRevenueResult, outstandingInvoicesResult, overdueInvoicesResult, pendingBillsResult, ytdRevenueResult, totalCogsResult, lastMonthRevenueResult] = await Promise.all([
-            // Total revenue (current month)
-            prisma.invoice.aggregate({
-                where: {
-                    status: 'PAID',
-                    date_issued: {
-                        gte: monthStart,
-                        lt: new Date(today.getFullYear(), today.getMonth() + 1, 1)
-                    }
-                },
-                _sum: { total: true }
-            }),
-            // Outstanding invoices
-            prisma.invoice.aggregate({
-                where: {
-                    status: { in: ['OPEN', 'PARTIAL'] }
-                },
-                _sum: { balance: true }
-            }),
-            // Overdue invoices
-            prisma.invoice.aggregate({
-                where: {
-                    status: { in: ['OPEN', 'PARTIAL'] },
-                    due_date: { lt: today }
-                },
-                _sum: { balance: true }
-            }),
-            // Pending bills
-            prisma.bill.aggregate({
-                where: {
-                    status: { in: ['OPEN', 'PARTIAL'] }
-                },
-                _sum: { total: true }
-            }),
-            // YTD Revenue
-            prisma.invoice.aggregate({
-                where: {
-                    status: 'PAID',
-                    date_issued: {
-                        gte: yearStart,
-                        lt: new Date(today.getFullYear() + 1, 0, 1)
-                    }
-                },
-                _sum: { total: true }
-            }),
-            // Total COGS (approximation from order costs)
-            prisma.poCost.aggregate({
-                _sum: { cogs: true }
-            }),
-            // Last month revenue for growth calculation
-            prisma.invoice.aggregate({
-                where: {
-                    status: 'PAID',
-                    date_issued: {
-                        gte: new Date(today.getFullYear(), today.getMonth() - 1, 1),
-                        lt: monthStart
-                    }
-                },
-                _sum: { total: true }
-            })
-        ]);
-        const currentRevenue = totalRevenueResult._sum.total || 0;
-        const ytdRevenue = ytdRevenueResult._sum.total || 0;
-        const totalCogs = totalCogsResult._sum.cogs || 0;
-        const lastMonthRevenue = lastMonthRevenueResult._sum.total || 1; // Avoid division by zero
-        // Calculate gross margin
-        const grossMargin = ytdRevenue > 0 ? ((ytdRevenue - totalCogs) / ytdRevenue) * 100 : 0;
-        // Calculate revenue growth
-        const revenueGrowth = ((currentRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
-        // Get payment methods distribution
-        const paymentDistribution = await prisma.payment.groupBy({
-            by: ['source'],
-            where: {
-                received_at: {
-                    gte: monthStart
-                }
-            },
-            _sum: {
-                amount: true
-            }
-        });
-        // Get top clients by revenue
-        const topClients = await prisma.invoice.groupBy({
-            by: ['client_id'],
-            where: {
-                status: 'PAID',
-                date_issued: {
-                    gte: yearStart
-                }
-            },
-            _sum: {
-                total: true
-            },
-            orderBy: {
-                _sum: {
-                    total: 'desc'
-                }
-            },
-            take: 5
-        });
-        // Get client names for top clients
-        const clientIds = topClients.map(client => client.client_id);
-        const clients = await prisma.client.findMany({
-            where: { id: { in: clientIds } },
-            select: { id: true, name: true }
-        });
-        const topClientsWithNames = topClients.map(client => {
-            const clientInfo = clients.find(c => c.id === client.client_id);
-            return {
-                client_name: clientInfo?.name || 'Unknown',
-                revenue: client._sum.total || 0
-            };
-        });
-        // Calculate cash flow (simplified: incoming payments - outgoing bills)
-        const [incomingPayments, outgoingBills] = await Promise.all([
-            prisma.payment.aggregate({
-                where: {
-                    received_at: {
-                        gte: monthStart
-                    }
-                },
-                _sum: { amount: true }
-            }),
-            prisma.bill.aggregate({
-                where: {
-                    status: 'PAID',
-                    updated_at: {
-                        gte: monthStart
-                    }
-                },
-                _sum: { total: true }
-            })
-        ]);
-        const cashFlow = (incomingPayments._sum.amount || 0) - (outgoingBills._sum.total || 0);
-        return server_1.NextResponse.json({
-            success: true,
-            data: {
-                total_revenue: currentRevenue,
-                outstanding_invoices: outstandingInvoicesResult._sum.balance || 0,
-                overdue_invoices: overdueInvoicesResult._sum.balance || 0,
-                pending_bills: pendingBillsResult._sum.total || 0,
-                ytd_revenue: ytdRevenue,
-                total_cogs: totalCogs,
-                gross_margin: Math.round(grossMargin * 10) / 10,
-                cash_flow: cashFlow,
-                revenue_growth: Math.round(revenueGrowth * 10) / 10,
-                payment_distribution: paymentDistribution.map(p => ({
-                    source: p.source,
-                    amount: p._sum.amount || 0
-                })),
-                top_clients: topClientsWithNames
-            }
-        });
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const period = searchParams.get('period') || 'month'; // month, quarter, year
+    const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString());
+    const month = searchParams.get('month') ? parseInt(searchParams.get('month')) : null;
+
+    // Calculate date ranges
+    let startDate, endDate;
+    const today = new Date();
+
+    if (period === 'month') {
+      const targetMonth = month || today.getMonth() + 1;
+      startDate = new Date(year, targetMonth - 1, 1);
+      endDate = new Date(year, targetMonth, 0, 23, 59, 59);
+    } else if (period === 'quarter') {
+      const quarter = Math.ceil((month || today.getMonth() + 1) / 3);
+      startDate = new Date(year, (quarter - 1) * 3, 1);
+      endDate = new Date(year, quarter * 3, 0, 23, 59, 59);
+    } else if (period === 'year') {
+      startDate = new Date(year, 0, 1);
+      endDate = new Date(year, 11, 31, 23, 59, 59);
     }
-    catch (error) {
-        console.error('Error calculating finance stats:', error);
-        return server_1.NextResponse.json({ success: false, error: 'Failed to calculate finance statistics' }, { status: 500 });
-    }
+
+    // Parallel queries for better performance
+    const [
+      invoiceStats,
+      paymentStats,
+      expenseStats,
+      recentInvoices,
+      overdueInvoices,
+      topClients,
+      monthlyRevenue
+    ] = await Promise.all([
+      // Invoice statistics
+      prisma.invoice.aggregate({
+        where: {
+          created_at: { gte: startDate, lte: endDate }
+        },
+        _count: { id: true },
+        _sum: { total_amount: true }
+      }),
+
+      // Payment statistics
+      prisma.payment.aggregate({
+        where: {
+          payment_date: { gte: startDate, lte: endDate },
+          status: 'completed'
+        },
+        _count: { id: true },
+        _sum: { amount: true }
+      }),
+
+      // Expense statistics
+      prisma.expense.aggregate({
+        where: {
+          expense_date: { gte: startDate, lte: endDate },
+          approved: true
+        },
+        _count: { id: true },
+        _sum: { amount: true }
+      }),
+
+      // Recent invoices
+      prisma.invoice.findMany({
+        take: 5,
+        orderBy: { created_at: 'desc' },
+        include: {
+          client: { select: { name: true } }
+        }
+      }),
+
+      // Overdue invoices
+      prisma.invoice.count({
+        where: {
+          due_date: { lt: today },
+          status: { notIn: ['paid', 'cancelled'] }
+        }
+      }),
+
+      // Top clients by revenue
+      prisma.invoice.groupBy({
+        by: ['client_id'],
+        where: {
+          created_at: { gte: startDate, lte: endDate },
+          status: 'paid'
+        },
+        _sum: { total_amount: true },
+        orderBy: { _sum: { total_amount: 'desc' } },
+        take: 5
+      }),
+
+      // Monthly revenue trend (last 12 months)
+      getMonthlyRevenueTrend(year)
+    ]);
+
+    // Get client names for top clients
+    const clientIds = topClients.map(tc => tc.client_id);
+    const clients = await prisma.client.findMany({
+      where: { id: { in: clientIds } },
+      select: { id: true, name: true }
+    });
+
+    const topClientsWithNames = topClients.map(tc => ({
+      ...tc,
+      client_name: clients.find(c => c.id === tc.client_id)?.name || 'Unknown'
+    }));
+
+    // Calculate key metrics
+    const totalRevenue = invoiceStats._sum.total_amount || 0;
+    const totalPayments = paymentStats._sum.amount || 0;
+    const totalExpenses = expenseStats._sum.amount || 0;
+    const grossProfit = totalRevenue - totalExpenses;
+    const grossMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+
+    // Calculate outstanding receivables (simplified for SQLite)
+    const outstandingInvoices = await prisma.invoice.findMany({
+      where: {
+        status: { notIn: ['paid', 'cancelled'] }
+      },
+      include: {
+        payments: {
+          where: { status: 'completed' }
+        }
+      }
+    });
+
+    const outstandingReceivables = outstandingInvoices.reduce((sum, invoice) => {
+      const totalPaid = invoice.payments.reduce((paidSum, payment) => paidSum + payment.amount, 0);
+      return sum + (invoice.total_amount - totalPaid);
+    }, 0);
+
+    const stats = {
+      // Overview metrics
+      overview: {
+        total_revenue: totalRevenue,
+        total_payments: totalPayments,
+        total_expenses: totalExpenses,
+        gross_profit: grossProfit,
+        gross_margin: grossMargin,
+        outstanding_receivables: outstandingReceivables
+      },
+
+      // Counts
+      counts: {
+        invoices: invoiceStats._count.id || 0,
+        payments: paymentStats._count.id || 0,
+        expenses: expenseStats._count.id || 0,
+        overdue_invoices: overdueInvoices
+      },
+
+      // Recent data
+      recent_invoices: recentInvoices,
+      top_clients: topClientsWithNames,
+      monthly_revenue: monthlyRevenue,
+
+      // Period info
+      period: {
+        type: period,
+        start_date: startDate,
+        end_date: endDate,
+        year,
+        month
+      }
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: stats
+    });
+
+  } catch (error) {
+    console.error('Error fetching finance stats:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch finance statistics' },
+      { status: 500 }
+    );
+  }
+}
+
+async function getMonthlyRevenueTrend(year) {
+  try {
+    const monthlyData = await prisma.invoice.groupBy({
+      by: ['issue_date'],
+      where: {
+        issue_date: {
+          gte: new Date(year - 1, 0, 1),
+          lte: new Date(year, 11, 31)
+        },
+        status: 'paid'
+      },
+      _sum: { total_amount: true }
+    });
+
+    // Format data by month
+    const monthlyRevenue = Array.from({ length: 12 }, (_, i) => ({
+      month: i + 1,
+      year: year,
+      revenue: 0
+    }));
+
+    monthlyData.forEach(data => {
+      const month = new Date(data.issue_date).getMonth();
+      if (monthlyRevenue[month]) {
+        monthlyRevenue[month].revenue += data._sum.total_amount || 0;
+      }
+    });
+
+    return monthlyRevenue;
+  } catch (error) {
+    console.error('Error getting monthly revenue trend:', error);
+    return [];
+  }
 }

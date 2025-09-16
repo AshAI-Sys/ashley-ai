@@ -23,76 +23,50 @@ function FinancePage() {
     const fetchFinanceData = async () => {
         try {
             setLoading(true);
-            // Mock data for now - would be real API calls
-            setTimeout(() => {
+
+            // Fetch real data from our new API endpoints
+            const [statsRes, invoicesRes, expensesRes] = await Promise.all([
+                fetch('/api/finance/stats'),
+                fetch('/api/finance/invoices?limit=10'),
+                fetch('/api/finance/expenses?limit=10')
+            ]);
+
+            const [statsData, invoicesData, expensesData] = await Promise.all([
+                statsRes.json(),
+                invoicesRes.json(),
+                expensesRes.json()
+            ]);
+
+            if (statsData.success) {
                 setMetrics({
-                    total_revenue: 2450000,
-                    outstanding_invoices: 185000,
-                    overdue_invoices: 45000,
-                    total_cogs: 1680000,
-                    gross_margin: 31.4,
-                    pending_bills: 98000,
-                    cash_flow: 67000,
-                    ytd_revenue: 28500000
+                    total_revenue: statsData.data.overview?.total_revenue || 0,
+                    outstanding_invoices: statsData.data.overview?.outstanding_receivables || 0,
+                    overdue_invoices: statsData.data.counts?.overdue_invoices || 0,
+                    total_cogs: statsData.data.overview?.total_expenses || 0,
+                    gross_margin: statsData.data.overview?.gross_margin || 0,
+                    pending_bills: 0, // No bills model yet
+                    cash_flow: statsData.data.overview?.gross_profit || 0,
+                    ytd_revenue: statsData.data.overview?.total_revenue || 0
                 });
-                setInvoices([
-                    {
-                        id: '1',
-                        invoice_no: 'BRAND-2025-001',
-                        client: { name: 'Nike Inc' },
-                        brand: { name: 'Nike Performance' },
-                        total: 125000,
-                        balance: 125000,
-                        status: 'OVERDUE',
-                        date_issued: '2024-12-01',
-                        due_date: '2024-12-31',
-                        days_overdue: 15
-                    },
-                    {
-                        id: '2',
-                        invoice_no: 'BRAND-2025-002',
-                        client: { name: 'Adidas Corp' },
-                        brand: { name: 'Adidas Originals' },
-                        total: 89500,
-                        balance: 45000,
-                        status: 'PARTIAL',
-                        date_issued: '2025-01-05',
-                        due_date: '2025-02-05',
-                    },
-                    {
-                        id: '3',
-                        invoice_no: 'BRAND-2025-003',
-                        client: { name: 'Under Armour' },
-                        brand: { name: 'UA Sports' },
-                        total: 156000,
-                        balance: 156000,
-                        status: 'OPEN',
-                        date_issued: '2025-01-10',
-                        due_date: '2025-02-10',
-                    }
-                ]);
-                setBills([
-                    {
-                        id: '1',
-                        bill_no: 'SUPP-001-2025',
-                        supplier: { name: 'Textile Corp Ltd' },
-                        total: 45000,
-                        status: 'OPEN',
-                        due_date: '2025-01-25',
-                        days_until_due: 10
-                    },
-                    {
-                        id: '2',
-                        bill_no: 'SUPP-002-2025',
-                        supplier: { name: 'Pacific Inks Inc' },
-                        total: 28500,
-                        status: 'OPEN',
-                        due_date: '2025-01-30',
-                        days_until_due: 15
-                    }
-                ]);
-                setLoading(false);
-            }, 1000);
+            }
+
+            if (invoicesData.success) {
+                setInvoices(invoicesData.data);
+            }
+
+            if (expensesData.success) {
+                setBills(expensesData.data.map(expense => ({
+                    id: expense.id,
+                    bill_no: expense.expense_number,
+                    supplier: { name: expense.supplier || 'Unknown' },
+                    total: expense.amount,
+                    status: expense.approved ? 'PAID' : 'OPEN',
+                    due_date: expense.expense_date,
+                    days_until_due: null
+                })));
+            }
+
+            setLoading(false);
         }
         catch (error) {
             console.error('Error fetching finance data:', error);
@@ -100,17 +74,25 @@ function FinancePage() {
         }
     };
     const getStatusBadge = (status) => {
-        switch (status) {
+        switch (status?.toUpperCase()) {
             case 'OVERDUE':
                 return <badge_1.Badge className="bg-red-100 text-red-800">Overdue</badge_1.Badge>;
+            case 'PAID':
+                return <badge_1.Badge className="bg-green-100 text-green-800">Paid</badge_1.Badge>;
+            case 'PENDING':
+                return <badge_1.Badge className="bg-yellow-100 text-yellow-800">Pending</badge_1.Badge>;
+            case 'DRAFT':
+                return <badge_1.Badge className="bg-gray-100 text-gray-800">Draft</badge_1.Badge>;
+            case 'SENT':
+                return <badge_1.Badge className="bg-blue-100 text-blue-800">Sent</badge_1.Badge>;
+            case 'CANCELLED':
+                return <badge_1.Badge className="bg-red-100 text-red-800">Cancelled</badge_1.Badge>;
             case 'OPEN':
                 return <badge_1.Badge className="bg-blue-100 text-blue-800">Open</badge_1.Badge>;
             case 'PARTIAL':
                 return <badge_1.Badge className="bg-yellow-100 text-yellow-800">Partial</badge_1.Badge>;
-            case 'PAID':
-                return <badge_1.Badge className="bg-green-100 text-green-800">Paid</badge_1.Badge>;
             default:
-                return <badge_1.Badge className="bg-gray-100 text-gray-800">{status}</badge_1.Badge>;
+                return <badge_1.Badge className="bg-gray-100 text-gray-800">{status || 'Unknown'}</badge_1.Badge>;
         }
     };
     const formatCurrency = (amount) => {
@@ -259,32 +241,32 @@ function FinancePage() {
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">{invoice.invoice_no}</h3>
-                            {getStatusBadge(invoice.status)}
-                            {invoice.days_overdue && (<badge_1.Badge className="bg-red-100 text-red-800">
+                            <h3 className="font-semibold">{invoice.invoice_number}</h3>
+                            {getStatusBadge(invoice.status.toUpperCase())}
+                            {invoice.days_overdue > 0 && (<badge_1.Badge className="bg-red-100 text-red-800">
                                 {invoice.days_overdue} days overdue
                               </badge_1.Badge>)}
                           </div>
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             <div>
                               <span className="text-gray-600">Client:</span><br />
-                              <span className="font-medium">{invoice.client.name}</span>
+                              <span className="font-medium">{invoice.client?.name || 'Unknown'}</span>
                             </div>
                             <div>
-                              <span className="text-gray-600">Brand:</span><br />
-                              <span className="font-medium">{invoice.brand.name}</span>
+                              <span className="text-gray-600">Order:</span><br />
+                              <span className="font-medium">{invoice.order?.order_number || 'N/A'}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Amount:</span><br />
-                              <span className="font-medium">{formatCurrency(invoice.total)}</span>
+                              <span className="font-medium">{formatCurrency(invoice.total_amount)}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Balance:</span><br />
-                              <span className="font-medium text-red-600">{formatCurrency(invoice.balance)}</span>
+                              <span className="font-medium text-red-600">{formatCurrency(invoice.balance || invoice.total_amount)}</span>
                             </div>
                           </div>
                           <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                            <span>Issued: {formatDate(invoice.date_issued)}</span>
+                            <span>Issued: {formatDate(invoice.created_at)}</span>
                             <span>Due: {formatDate(invoice.due_date)}</span>
                           </div>
                         </div>

@@ -227,7 +227,11 @@ model Order {
   
   // Stage 8: Delivery Relations
   deliveries      Delivery[]
-  
+
+  // Stage 9: Finance Relations
+  expenses        Expense[]
+  cost_allocations CostAllocation[]
+
   @@unique([workspace_id, order_number])
   @@map("orders")
 }
@@ -532,7 +536,7 @@ model AttendanceLog {
   @@map("attendance_logs")
 }
 
-// ===== FINANCE =====
+// ===== STAGE 9: FINANCE OPERATIONS =====
 
 model Invoice {
   id              String        @id @default(cuid())
@@ -540,44 +544,337 @@ model Invoice {
   client_id       String
   order_id        String?
   invoice_number  String
-  status          String        @default("pending") // PaymentStatus as string
+  status          String        @default("draft") // draft/pending/sent/paid/overdue/cancelled
   subtotal        Float
-  tax_amount      Float?
+  discount_amount Float?        @default(0)
+  tax_amount      Float?        @default(0)
   total_amount    Float
-  currency        String        @default("PHP") // Currency as string
+  currency        String        @default("PHP")
+  issue_date      DateTime      @default(now())
   due_date        DateTime?
+  sent_at         DateTime?
   paid_at         DateTime?
+  payment_terms   Int?          // days
+  notes           String?
+  terms_conditions String?
   metadata        String?       // JSON as string
+  created_by      String?
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
 
   // Relations
-  client          Client  @relation(fields: [client_id], references: [id])
-  order           Order?  @relation(fields: [order_id], references: [id])
+  client          Client        @relation(fields: [client_id], references: [id])
+  order           Order?        @relation(fields: [order_id], references: [id])
   payments        Payment[]
-  
+  invoice_items   InvoiceItem[]
+  credit_notes    CreditNote[]
+
   @@unique([workspace_id, invoice_number])
   @@map("invoices")
+}
+
+model InvoiceItem {
+  id              String   @id @default(cuid())
+  invoice_id      String
+  description     String
+  quantity        Float
+  unit_price      Float
+  discount_percent Float?  @default(0)
+  tax_percent     Float?   @default(0)
+  line_total      Float
+  order_line_item_id String? // link to order line item
+  created_at      DateTime @default(now())
+
+  // Relations
+  invoice         Invoice  @relation(fields: [invoice_id], references: [id])
+
+  @@map("invoice_items")
 }
 
 model Payment {
   id              String        @id @default(cuid())
   workspace_id    String
-  invoice_id      String
+  invoice_id      String?       // can be standalone payment
+  payment_number  String
   amount          Float
-  currency        String        @default("PHP") // Currency as string
-  payment_method  String        // PaymentMethod as string
-  reference       String?
-  status          String        @default("pending") // PaymentStatus as string
+  currency        String        @default("PHP")
+  payment_method  String        // CASH/BANK_TRANSFER/CARD/CHECK/GCASH/PAYMAYA
+  reference       String?       // bank ref, check no, etc
+  status          String        @default("pending") // pending/completed/failed/cancelled
+  payment_date    DateTime      @default(now())
   processed_at    DateTime?
+  bank_account_id String?       // which bank account received payment
+  reconciled      Boolean       @default(false)
+  reconciled_at   DateTime?
+  notes           String?
   metadata        String?       // JSON as string
+  created_by      String?
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
 
   // Relations
-  invoice         Invoice @relation(fields: [invoice_id], references: [id])
-  
+  invoice         Invoice?      @relation(fields: [invoice_id], references: [id])
+  bank_account    BankAccount?  @relation(fields: [bank_account_id], references: [id])
+
+  @@unique([workspace_id, payment_number])
   @@map("payments")
+}
+
+// Credit notes for returns, adjustments
+model CreditNote {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  invoice_id      String
+  credit_number   String
+  amount          Float
+  reason          String   // RETURN/DISCOUNT/ADJUSTMENT/ERROR
+  description     String?
+  status          String   @default("draft") // draft/issued/applied/void
+  issue_date      DateTime @default(now())
+  applied_at      DateTime?
+  created_by      String?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  invoice         Invoice  @relation(fields: [invoice_id], references: [id])
+
+  @@unique([workspace_id, credit_number])
+  @@map("credit_notes")
+}
+
+// Bank accounts for cash management
+model BankAccount {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  account_name    String
+  account_number  String
+  bank_name       String
+  account_type    String     // CHECKING/SAVINGS/CREDIT/GCASH/PAYMAYA
+  currency        String     @default("PHP")
+  current_balance Float      @default(0)
+  is_active       Boolean    @default(true)
+  description     String?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  payments        Payment[]
+  transactions    BankTransaction[]
+
+  @@unique([workspace_id, account_number])
+  @@map("bank_accounts")
+}
+
+// Bank transactions for cash flow tracking
+model BankTransaction {
+  id              String      @id @default(cuid())
+  workspace_id    String
+  bank_account_id String
+  transaction_ref String?     // bank reference
+  type            String      // CREDIT/DEBIT
+  amount          Float
+  description     String
+  category        String?     // SALES/EXPENSE/TRANSFER/FEE
+  transaction_date DateTime
+  balance_after   Float?
+  reconciled      Boolean     @default(false)
+  reconciled_at   DateTime?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  // Relations
+  bank_account    BankAccount @relation(fields: [bank_account_id], references: [id])
+
+  @@map("bank_transactions")
+}
+
+// Expense tracking
+model Expense {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  expense_number  String
+  category        String     // MATERIALS/LABOR/UTILITIES/RENT/OFFICE/MARKETING
+  subcategory     String?    // detailed category
+  description     String
+  amount          Float
+  currency        String     @default("PHP")
+  expense_date    DateTime
+  payment_method  String?    // how it was paid
+  payment_ref     String?    // payment reference
+  supplier        String?    // vendor/supplier name
+  tax_amount      Float?     @default(0)
+  receipt_url     String?    // receipt photo/document
+  approved        Boolean    @default(false)
+  approved_by     String?
+  approved_at     DateTime?
+  order_id        String?    // if expense is order-related
+  notes           String?
+  created_by      String?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  order           Order?     @relation(fields: [order_id], references: [id])
+
+  @@unique([workspace_id, expense_number])
+  @@map("expenses")
+}
+
+// Cost centers for cost allocation
+model CostCenter {
+  id              String        @id @default(cuid())
+  workspace_id    String
+  code            String        // CC001, CC002
+  name            String        // Production, Admin, Sales
+  description     String?
+  type            String        // PRODUCTION/ADMIN/SALES/OVERHEAD
+  budget_amount   Float?        // annual budget
+  actual_spend    Float         @default(0)
+  is_active       Boolean       @default(true)
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  // Relations
+  cost_allocations CostAllocation[]
+  budgets         Budget[]
+
+  @@unique([workspace_id, code])
+  @@map("cost_centers")
+}
+
+// Cost allocation for orders and projects
+model CostAllocation {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  cost_center_id  String
+  order_id        String?    // if order-specific
+  allocation_type String     // DIRECT_LABOR/MATERIALS/OVERHEAD
+  cost_type       String     // FIXED/VARIABLE
+  amount          Float
+  allocation_date DateTime
+  description     String?
+  reference_type  String?    // PAYROLL/EXPENSE/INVOICE
+  reference_id    String?
+  created_at      DateTime   @default(now())
+
+  // Relations
+  cost_center     CostCenter @relation(fields: [cost_center_id], references: [id])
+  order           Order?     @relation(fields: [order_id], references: [id])
+
+  @@map("cost_allocations")
+}
+
+// Budget management
+model Budget {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  cost_center_id  String
+  budget_period   String     // 2024-Q1, 2024-01, 2024
+  period_start    DateTime
+  period_end      DateTime
+  budgeted_amount Float
+  spent_amount    Float      @default(0)
+  committed_amount Float     @default(0) // purchase orders, etc
+  variance        Float      @default(0) // actual vs budget
+  variance_percent Float     @default(0)
+  status          String     @default("active") // active/closed/revised
+  notes           String?
+  created_by      String?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  cost_center     CostCenter @relation(fields: [cost_center_id], references: [id])
+
+  @@unique([workspace_id, cost_center_id, budget_period])
+  @@map("budgets")
+}
+
+// Financial reports configuration
+model FinancialReport {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  report_type     String     // P&L/BALANCE_SHEET/CASH_FLOW/PROFITABILITY
+  report_name     String
+  parameters      String     // JSON report parameters
+  period_type     String     // MONTHLY/QUARTERLY/YEARLY/CUSTOM
+  auto_generate   Boolean    @default(false)
+  schedule        String?    // cron expression for auto-generation
+  recipients      String?    // JSON array of email recipients
+  is_active       Boolean    @default(true)
+  created_by      String?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  report_runs     ReportRun[]
+
+  @@map("financial_reports")
+}
+
+// Financial report execution history
+model ReportRun {
+  id              String         @id @default(cuid())
+  workspace_id    String
+  report_id       String
+  run_date        DateTime       @default(now())
+  period_start    DateTime
+  period_end      DateTime
+  status          String         @default("running") // running/completed/failed
+  file_url        String?        // generated report file
+  file_format     String?        // PDF/XLSX/CSV
+  run_time_seconds Float?
+  error_message   String?
+  generated_by    String?
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+
+  // Relations
+  report          FinancialReport @relation(fields: [report_id], references: [id])
+
+  @@map("report_runs")
+}
+
+// Financial KPIs and metrics
+model FinancialMetric {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  metric_name     String     // Revenue, Gross Margin, Net Profit
+  metric_type     String     // REVENUE/COST/MARGIN/RATIO
+  value           Float
+  previous_value  Float?     // for comparison
+  target_value    Float?     // budget/target
+  variance        Float?     // vs target
+  unit            String?    // PHP, %, ratio
+  period          String     // 2024-01, 2024-Q1
+  period_start    DateTime
+  period_end      DateTime
+  calculation_method String? // how metric is calculated
+  data_source     String?    // source of data
+  calculated_at   DateTime   @default(now())
+  created_at      DateTime   @default(now())
+
+  @@map("financial_metrics")
+}
+
+// Tax management
+model TaxSetting {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  tax_name        String   // VAT, Withholding Tax
+  tax_type        String   // OUTPUT_VAT/INPUT_VAT/WITHHOLDING
+  rate_percent    Float    // 12% for VAT
+  is_default      Boolean  @default(false)
+  applicable_to   String   // SALES/PURCHASES/ALL
+  effective_date  DateTime
+  end_date        DateTime?
+  description     String?
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@map("tax_settings")
 }
 
 // ===== MAINTENANCE & ASSETS =====

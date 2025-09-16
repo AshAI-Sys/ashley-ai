@@ -1,143 +1,174 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = GET;
-exports.POST = POST;
-const server_1 = require("next/server");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
-async function GET(request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const status = searchParams.get('status');
-        const client_id = searchParams.get('client_id');
-        const brand_id = searchParams.get('brand_id');
-        const overdue_only = searchParams.get('overdue_only');
-        const where = {};
-        if (status && status !== 'all')
-            where.status = status;
-        if (client_id)
-            where.client_id = client_id;
-        if (brand_id)
-            where.brand_id = brand_id;
-        // For overdue invoices
-        if (overdue_only === 'true') {
-            where.due_date = { lt: new Date() };
-            where.status = { in: ['OPEN', 'PARTIAL'] };
-        }
-        const invoices = await prisma.invoice.findMany({
-            where,
-            include: {
-                client: { select: { name: true } },
-                brand: { select: { name: true } },
-                order: { select: { order_number: true } },
-                invoice_lines: true,
-                payment_allocations: {
-                    include: {
-                        payment: { select: { amount: true, source: true, received_at: true } }
-                    }
-                }
-            },
-            orderBy: { date_issued: 'desc' }
-        });
-        // Calculate days overdue and other metrics
-        const processedInvoices = invoices.map(invoice => {
-            const today = new Date();
-            const dueDate = new Date(invoice.due_date);
-            const daysOverdue = invoice.status !== 'PAID' && dueDate < today
-                ? Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))
-                : null;
-            return {
-                ...invoice,
-                days_overdue: daysOverdue,
-                payment_history: invoice.payment_allocations.map(allocation => ({
-                    amount: allocation.amount,
-                    source: allocation.payment.source,
-                    date: allocation.payment.received_at
-                }))
-            };
-        });
-        return server_1.NextResponse.json({
-            success: true,
-            data: processedInvoices
-        });
+import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+    const clientId = searchParams.get('clientId');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
+
+    const where = {};
+    if (status && status !== 'all') {
+      where.status = status;
     }
-    catch (error) {
-        console.error('Error fetching invoices:', error);
-        return server_1.NextResponse.json({ success: false, error: 'Failed to fetch invoices' }, { status: 500 });
+    if (clientId) {
+      where.client_id = clientId;
     }
+
+    const [invoices, total] = await Promise.all([
+      prisma.invoice.findMany({
+        where,
+        include: {
+          client: {
+            select: { id: true, name: true, email: true }
+          },
+          order: {
+            select: { id: true, order_number: true }
+          },
+          invoice_items: true,
+          payments: {
+            select: { id: true, amount: true, status: true, payment_date: true }
+          },
+          _count: {
+            select: { payments: true }
+          }
+        },
+        orderBy: { created_at: 'desc' },
+        take: limit,
+        skip: offset
+      }),
+      prisma.invoice.count({ where })
+    ]);
+
+    // Calculate totals and status
+    const enrichedInvoices = invoices.map(invoice => {
+      const totalPaid = invoice.payments
+        .filter(p => p.status === 'completed')
+        .reduce((sum, p) => sum + p.amount, 0);
+
+      const balance = invoice.total_amount - totalPaid;
+      const isOverdue = invoice.due_date && new Date(invoice.due_date) < new Date() && balance > 0;
+
+      return {
+        ...invoice,
+        total_paid: totalPaid,
+        balance,
+        is_overdue: isOverdue,
+        days_overdue: isOverdue ? Math.floor((new Date() - new Date(invoice.due_date)) / (1000 * 60 * 60 * 24)) : 0
+      };
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: enrichedInvoices,
+      pagination: {
+        total,
+        limit,
+        offset,
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching invoices:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch invoices' },
+      { status: 500 }
+    );
+  }
 }
-async function POST(request) {
-    try {
-        const data = await request.json();
-        const { brand_id, client_id, order_id, lines, discount = 0, tax_mode = 'VAT_INCLUSIVE', due_date } = data;
-        // Generate invoice number
-        const brand = await prisma.brand.findUnique({ where: { id: brand_id } });
-        const year = new Date().getFullYear();
-        const invoiceCount = await prisma.invoice.count({
-            where: {
-                brand_id,
-                date_issued: {
-                    gte: new Date(year, 0, 1),
-                    lt: new Date(year + 1, 0, 1)
-                }
-            }
-        });
-        const invoiceNo = `${brand?.name.toUpperCase()}-${year}-${String(invoiceCount + 1).padStart(5, '0')}`;
-        // Calculate totals
-        let subtotal = 0;
-        const processedLines = lines.map((line) => {
-            const lineTotal = line.qty * line.unit_price;
-            subtotal += lineTotal;
-            return {
-                ...line,
-                line_total: lineTotal
-            };
-        });
-        const discountAmount = (subtotal * discount) / 100;
-        const netAmount = subtotal - discountAmount;
-        let vatAmount = 0;
-        let total = netAmount;
-        if (tax_mode === 'VAT_INCLUSIVE') {
-            vatAmount = netAmount * 0.12 / 1.12;
-            total = netAmount;
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const {
+      client_id,
+      order_id,
+      items,
+      discount_amount = 0,
+      tax_percent = 12, // Philippines VAT
+      payment_terms = 30,
+      notes,
+      terms_conditions,
+      due_date
+    } = body;
+
+    // Calculate totals
+    const subtotal = items.reduce((sum, item) => {
+      const itemTotal = item.quantity * item.unit_price;
+      const itemDiscount = itemTotal * (item.discount_percent || 0) / 100;
+      return sum + (itemTotal - itemDiscount);
+    }, 0);
+
+    const discountedSubtotal = subtotal - (discount_amount || 0);
+    const tax_amount = discountedSubtotal * (tax_percent / 100);
+    const total_amount = discountedSubtotal + tax_amount;
+
+    // Generate invoice number
+    const lastInvoice = await prisma.invoice.findFirst({
+      orderBy: { created_at: 'desc' },
+      select: { invoice_number: true }
+    });
+
+    const nextNumber = lastInvoice
+      ? parseInt(lastInvoice.invoice_number.split('-')[1]) + 1
+      : 1;
+
+    const invoice_number = `INV-${nextNumber.toString().padStart(6, '0')}`;
+
+    // Calculate due date if not provided
+    const calculatedDueDate = due_date
+      ? new Date(due_date)
+      : new Date(Date.now() + (payment_terms * 24 * 60 * 60 * 1000));
+
+    const invoice = await prisma.invoice.create({
+      data: {
+        client_id,
+        order_id,
+        invoice_number,
+        subtotal,
+        discount_amount: discount_amount || 0,
+        tax_amount,
+        total_amount,
+        due_date: calculatedDueDate,
+        payment_terms,
+        notes,
+        terms_conditions,
+        status: 'draft',
+        invoice_items: {
+          create: items.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            discount_percent: item.discount_percent || 0,
+            tax_percent: tax_percent,
+            line_total: item.quantity * item.unit_price * (1 - (item.discount_percent || 0) / 100),
+            order_line_item_id: item.order_line_item_id
+          }))
         }
-        else if (tax_mode === 'VAT_EXCLUSIVE') {
-            vatAmount = netAmount * 0.12;
-            total = netAmount + vatAmount;
-        }
-        // Create invoice with transaction
-        const invoice = await prisma.invoice.create({
-            data: {
-                workspace_id: 'default',
-                brand_id,
-                client_id,
-                order_id,
-                invoice_no: invoiceNo,
-                date_issued: new Date(),
-                due_date: due_date ? new Date(due_date) : null,
-                tax_mode,
-                subtotal,
-                discount: discountAmount,
-                vat_amount: vatAmount,
-                total,
-                balance: total,
-                invoice_lines: {
-                    create: processedLines
-                }
-            },
-            include: {
-                client: { select: { name: true } },
-                brand: { select: { name: true } },
-                invoice_lines: true
-            }
-        });
-        return server_1.NextResponse.json({
-            success: true,
-            data: invoice
-        }, { status: 201 });
-    }
-    catch (error) {
-        console.error('Error creating invoice:', error);
-        return server_1.NextResponse.json({ success: false, error: 'Failed to create invoice' }, { status: 500 });
-    }
+      },
+      include: {
+        client: true,
+        order: true,
+        invoice_items: true
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: invoice,
+      message: 'Invoice created successfully'
+    });
+
+  } catch (error) {
+    console.error('Error creating invoice:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create invoice' },
+      { status: 500 }
+    );
+  }
 }
