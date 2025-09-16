@@ -76,6 +76,16 @@ Ashley AI/
 - Volume utilization and dimensional weight calculations
 - Shipment preparation workflow
 
+### ✅ Stage 8 - Delivery Operations
+- Shipment creation and management with carton linking
+- Multi-method delivery support (Driver, 3PL providers)
+- Real-time delivery tracking with status updates
+- Warehouse scan-out operations with QR codes
+- Proof of delivery capture with photos and signatures
+- 3PL integration with automated quotes and booking
+- Dispatch board for logistics coordination
+- Live tracking interface for monitoring deliveries
+
 ## Key Features
 - **QR Code System**: Track bundles throughout production
 - **Ashley AI Integration**: Efficiency calculations and recommendations
