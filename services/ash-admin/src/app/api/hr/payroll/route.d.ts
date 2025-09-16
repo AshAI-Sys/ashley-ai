@@ -8,14 +8,31 @@ export declare function GET(request: NextRequest): Promise<NextResponse<{
 }>>;
 export declare function POST(request: NextRequest): Promise<NextResponse<{
     success: boolean;
-    data: any;
+    data: {
+        id: any;
+        period_start: any;
+        period_end: any;
+        status: any;
+        total_amount: any;
+        employee_count: any;
+        created_at: any;
+    };
 }> | NextResponse<{
     success: boolean;
     error: string;
 }>>;
 export declare function PUT(request: NextRequest): Promise<NextResponse<{
     success: boolean;
-    data: any;
+    data: {
+        id: any;
+        period_start: any;
+        period_end: any;
+        status: any;
+        total_amount: any;
+        employee_count: any;
+        created_at: any;
+        processed_at: any;
+    };
 }> | NextResponse<{
     success: boolean;
     error: string;

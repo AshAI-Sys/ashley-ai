@@ -24,108 +24,48 @@ function HRPayrollPage() {
     const fetchHRData = async () => {
         try {
             setLoading(true);
-            // Mock data for now - would be real API calls
-            setTimeout(() => {
-                setMetrics({
-                    total_employees: 156,
-                    active_employees: 148,
-                    present_today: 142,
-                    absent_today: 6,
-                    overtime_requests: 12,
-                    pending_leaves: 8,
-                    upcoming_payroll: '2025-01-31',
-                    total_payroll_cost: 2340000
-                });
-                setEmployees([
-                    {
-                        id: '1',
-                        name: 'Maria Santos',
-                        role: 'Sewing Operator',
-                        department: 'Production',
-                        status: 'ACTIVE',
-                        hire_date: '2023-03-15',
-                        pay_type: 'PIECE',
-                        base_rate: 850,
-                        attendance_status: 'PRESENT',
-                        last_checkin: '2025-01-15T08:15:00'
-                    },
-                    {
-                        id: '2',
-                        name: 'Juan Dela Cruz',
-                        role: 'Quality Inspector',
-                        department: 'Quality Control',
-                        status: 'ACTIVE',
-                        hire_date: '2022-11-20',
-                        pay_type: 'DAILY',
-                        base_rate: 650,
-                        attendance_status: 'PRESENT',
-                        last_checkin: '2025-01-15T07:45:00'
-                    },
-                    {
-                        id: '3',
-                        name: 'Ana Rodriguez',
-                        role: 'Print Operator',
-                        department: 'Printing',
-                        status: 'ACTIVE',
-                        hire_date: '2024-01-10',
-                        pay_type: 'HOURLY',
-                        base_rate: 85,
-                        attendance_status: 'ABSENT',
-                        last_checkin: null
-                    }
-                ]);
-                setAttendanceLogs([
-                    {
-                        id: '1',
-                        employee: { name: 'Maria Santos', role: 'Sewing Operator' },
-                        type: 'IN',
-                        timestamp: '2025-01-15T08:15:00',
-                        source: 'KIOSK',
-                        status: 'APPROVED'
-                    },
-                    {
-                        id: '2',
-                        employee: { name: 'Juan Dela Cruz', role: 'Quality Inspector' },
-                        type: 'IN',
-                        timestamp: '2025-01-15T07:45:00',
-                        source: 'MOBILE',
-                        status: 'APPROVED'
-                    },
-                    {
-                        id: '3',
-                        employee: { name: 'Pedro Garcia', role: 'Cutting Operator' },
-                        type: 'OUT',
-                        timestamp: '2025-01-15T17:30:00',
-                        source: 'KIOSK',
-                        status: 'PENDING'
-                    }
-                ]);
-                setPayrollRuns([
-                    {
-                        id: '1',
-                        period_start: '2025-01-01',
-                        period_end: '2025-01-15',
-                        status: 'COMPLETED',
-                        total_amount: 1850000,
-                        employee_count: 148,
-                        created_at: '2025-01-16'
-                    },
-                    {
-                        id: '2',
-                        period_start: '2024-12-16',
-                        period_end: '2024-12-31',
-                        status: 'COMPLETED',
-                        total_amount: 2120000,
-                        employee_count: 151,
-                        created_at: '2025-01-02'
-                    }
-                ]);
-                setLoading(false);
-            }, 1000);
+            // Fetch real data from APIs
+            const [metricsRes, employeesRes, attendanceRes, payrollRes] = await Promise.all([
+                fetch('/api/hr/stats'),
+                fetch('/api/hr/employees'),
+                fetch('/api/hr/attendance'),
+                fetch('/api/hr/payroll')
+            ]);
+            const metricsData = await metricsRes.json();
+            const employeesData = await employeesRes.json();
+            const attendanceData = await attendanceRes.json();
+            const payrollData = await payrollRes.json();
+            if (metricsData.success) {
+                setMetrics(metricsData.data);
+            }
+            if (employeesData.success) {
+                setEmployees(employeesData.data);
+            }
+            if (attendanceData.success) {
+                setAttendanceLogs(attendanceData.data);
+            }
+            if (payrollData.success) {
+                setPayrollRuns(payrollData.data);
+            }
+            setLoading(false);
         }
         catch (error) {
             console.error('Error fetching HR data:', error);
             setLoading(false);
+            // Fallback to mock data if API fails
+            setMetrics({
+                total_employees: 0,
+                active_employees: 0,
+                present_today: 0,
+                absent_today: 0,
+                overtime_requests: 0,
+                pending_leaves: 0,
+                upcoming_payroll: new Date().toISOString().split('T')[0],
+                total_payroll_cost: 0
+            });
+            setEmployees([]);
+            setAttendanceLogs([]);
+            setPayrollRuns([]);
         }
     };
     const getStatusBadge = (status) => {
@@ -304,20 +244,20 @@ function HRPayrollPage() {
                           </div>
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             <div>
-                              <span className="text-gray-600">Role:</span><br />
-                              <span className="font-medium">{employee.role}</span>
+                              <span className="text-gray-600">Position:</span><br />
+                              <span className="font-medium">{employee.position}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Department:</span><br />
                               <span className="font-medium">{employee.department}</span>
                             </div>
                             <div>
-                              <span className="text-gray-600">Pay Type:</span><br />
-                              <span className="font-medium">{employee.pay_type}</span>
+                              <span className="text-gray-600">Salary Type:</span><br />
+                              <span className="font-medium">{employee.salary_type}</span>
                             </div>
                             <div>
-                              <span className="text-gray-600">Base Rate:</span><br />
-                              <span className="font-medium">{formatCurrency(employee.base_rate)}</span>
+                              <span className="text-gray-600">Base Salary:</span><br />
+                              <span className="font-medium">{formatCurrency(employee.base_salary || 0)}</span>
                             </div>
                           </div>
                           <div className="flex gap-4 mt-2 text-xs text-gray-500">
@@ -370,8 +310,8 @@ function HRPayrollPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="font-semibold">{log.employee.name}</h3>
-                            <badge_1.Badge className={log.type === 'IN' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
-                              {log.type === 'IN' ? 'Clock In' : 'Clock Out'}
+                            <badge_1.Badge className={log.time_in && !log.time_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                              {log.time_in && !log.time_out ? 'Present' : log.time_out ? 'Completed' : 'Clock In'}
                             </badge_1.Badge>
                             {getStatusBadge(log.status)}
                           </div>
@@ -381,12 +321,16 @@ function HRPayrollPage() {
                               <span className="font-medium">{log.employee.role}</span>
                             </div>
                             <div>
-                              <span className="text-gray-600">Time:</span><br />
-                              <span className="font-medium">{formatDateTime(log.timestamp)}</span>
+                              <span className="text-gray-600">Date:</span><br />
+                              <span className="font-medium">{formatDate(log.date)}</span>
                             </div>
                             <div>
-                              <span className="text-gray-600">Source:</span><br />
-                              <span className="font-medium">{log.source}</span>
+                              <span className="text-gray-600">Time In:</span><br />
+                              <span className="font-medium">{log.time_in ? formatDateTime(log.time_in) : 'Not clocked in'}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Time Out:</span><br />
+                              <span className="font-medium">{log.time_out ? formatDateTime(log.time_out) : 'Not clocked out'}</span>
                             </div>
                           </div>
                         </div>

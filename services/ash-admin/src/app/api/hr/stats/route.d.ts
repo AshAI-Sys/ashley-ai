@@ -16,8 +16,8 @@ export declare function GET(request: NextRequest): Promise<NextResponse<{
         avg_printing_efficiency: any;
         avg_pieces_per_hour: number;
         department_distribution: any;
-        role_distribution: any;
-        pay_type_distribution: any;
+        position_distribution: any;
+        salary_type_distribution: any;
         last_payroll: {
             period: string;
             employee_count: any;

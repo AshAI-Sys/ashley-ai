@@ -13,33 +13,43 @@ async function GET(request) {
         // Run all queries in parallel
         const [totalEmployees, activeEmployees, todayAttendance, pendingOvertimeRequests, pendingLeaveRequests, currentMonthPayroll, todayAbsences, lastPayrollRun] = await Promise.all([
             // Total employees
-            prisma.employee.count(),
+            prisma.employee.count({
+                where: { workspace_id: 'default' }
+            }),
             // Active employees
             prisma.employee.count({
-                where: { status: 'ACTIVE' }
+                where: {
+                    workspace_id: 'default',
+                    is_active: true
+                }
             }),
             // Today's attendance - employees who checked in
-            prisma.attendanceLog.findMany({
+            prisma.attendanceLog.count({
                 where: {
-                    ts: {
+                    workspace_id: 'default',
+                    date: {
                         gte: startOfToday,
                         lte: endOfToday
                     },
-                    type: 'IN',
-                    approved: true
-                },
-                distinct: ['employee_id']
+                    time_in: { not: null },
+                    status: 'APPROVED'
+                }
             }),
-            // Pending overtime requests
-            prisma.overtimeRequest.count({
-                where: { status: 'PENDING' }
+            // Pending overtime requests - using attendance with overtime
+            prisma.attendanceLog.count({
+                where: {
+                    workspace_id: 'default',
+                    overtime_minutes: { gt: 0 },
+                    status: 'PENDING'
+                }
             }),
             // Pending leave requests (this would be a separate table in full implementation)
             0, // Mock for now
             // Current month's payroll cost estimate
-            prisma.payrollItem.aggregate({
+            prisma.payrollEarning.aggregate({
                 where: {
-                    payroll_run: {
+                    workspace_id: 'default',
+                    payroll_period: {
                         period_start: {
                             gte: thisMonth
                         }
@@ -52,53 +62,64 @@ async function GET(request) {
             // Today's absences (active employees who didn't check in)
             prisma.employee.count({
                 where: {
-                    status: 'ACTIVE',
-                    attendance_logs: {
+                    workspace_id: 'default',
+                    is_active: true,
+                    attendance: {
                         none: {
-                            ts: {
+                            date: {
                                 gte: startOfToday,
                                 lte: endOfToday
                             },
-                            type: 'IN',
-                            approved: true
+                            time_in: { not: null },
+                            status: 'APPROVED'
                         }
                     }
                 }
             }),
-            // Last payroll run
-            prisma.payrollRun.findFirst({
+            // Last payroll period
+            prisma.payrollPeriod.findFirst({
+                where: { workspace_id: 'default' },
                 orderBy: { created_at: 'desc' },
                 include: {
                     _count: {
                         select: {
-                            payroll_items: true
+                            earnings: true
                         }
                     }
                 }
             })
         ]);
-        const presentToday = todayAttendance.length;
+        const presentToday = todayAttendance;
         const absentToday = todayAbsences;
         // Calculate department distribution
         const departmentStats = await prisma.employee.groupBy({
             by: ['department'],
-            where: { status: 'ACTIVE' },
+            where: {
+                workspace_id: 'default',
+                is_active: true
+            },
             _count: {
                 id: true
             }
         });
-        // Calculate role distribution
-        const roleStats = await prisma.employee.groupBy({
-            by: ['role'],
-            where: { status: 'ACTIVE' },
+        // Calculate position distribution
+        const positionStats = await prisma.employee.groupBy({
+            by: ['position'],
+            where: {
+                workspace_id: 'default',
+                is_active: true
+            },
             _count: {
                 id: true
             }
         });
-        // Calculate pay type distribution
-        const payTypeStats = await prisma.employee.groupBy({
-            by: ['pay_type'],
-            where: { status: 'ACTIVE' },
+        // Calculate salary type distribution
+        const salaryTypeStats = await prisma.employee.groupBy({
+            by: ['salary_type'],
+            where: {
+                workspace_id: 'default',
+                is_active: true
+            },
             _count: {
                 id: true
             }
@@ -106,7 +127,8 @@ async function GET(request) {
         // Calculate average tenure
         const employeesWithTenure = await prisma.employee.findMany({
             where: {
-                status: 'ACTIVE',
+                workspace_id: 'default',
+                is_active: true,
                 hire_date: { not: null }
             },
             select: {
@@ -190,18 +212,18 @@ async function GET(request) {
                     department: dept.department,
                     count: dept._count.id
                 })),
-                role_distribution: roleStats.map(role => ({
-                    role: role.role,
-                    count: role._count.id
+                position_distribution: positionStats.map(position => ({
+                    position: position.position,
+                    count: position._count.id
                 })),
-                pay_type_distribution: payTypeStats.map(payType => ({
-                    pay_type: payType.pay_type,
-                    count: payType._count.id
+                salary_type_distribution: salaryTypeStats.map(salaryType => ({
+                    salary_type: salaryType.salary_type,
+                    count: salaryType._count.id
                 })),
                 // Last payroll info
                 last_payroll: lastPayrollRun ? {
                     period: `${lastPayrollRun.period_start.toISOString().split('T')[0]} - ${lastPayrollRun.period_end.toISOString().split('T')[0]}`,
-                    employee_count: lastPayrollRun._count.payroll_items,
+                    employee_count: lastPayrollRun._count.earnings,
                     status: lastPayrollRun.status
                 } : null
             }

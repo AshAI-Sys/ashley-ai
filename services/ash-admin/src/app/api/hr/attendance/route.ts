@@ -12,20 +12,23 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const type = searchParams.get('type')
 
-    const where: any = {}
+    const where: any = { workspace_id: 'default' }
     if (employee_id) where.employee_id = employee_id
-    if (status && status !== 'all') where.approved = status === 'approved'
-    if (type && type !== 'all') where.type = type
+    if (status && status !== 'all') {
+      // Map status to our schema fields
+      if (status === 'APPROVED') where.status = 'APPROVED'
+      else if (status === 'PENDING') where.status = 'PENDING'
+    }
 
     // Date filtering
     if (date_from || date_to) {
-      where.ts = {}
-      if (date_from) where.ts.gte = new Date(date_from)
-      if (date_to) where.ts.lte = new Date(date_to)
+      where.date = {}
+      if (date_from) where.date.gte = new Date(date_from)
+      if (date_to) where.date.lte = new Date(date_to)
     } else {
       // Default to today if no date range specified
       const today = new Date()
-      where.ts = {
+      where.date = {
         gte: new Date(today.setHours(0, 0, 0, 0)),
         lt: new Date(today.setHours(23, 59, 59, 999))
       }
@@ -36,18 +39,35 @@ export async function GET(request: NextRequest) {
       include: {
         employee: {
           select: {
-            name: true,
-            role: true,
+            first_name: true,
+            last_name: true,
+            position: true,
             department: true
           }
         }
       },
-      orderBy: { ts: 'desc' }
+      orderBy: { created_at: 'desc' }
     })
+
+    const processedLogs = attendanceLogs.map(log => ({
+      id: log.id,
+      employee: {
+        name: `${log.employee.first_name} ${log.employee.last_name}`,
+        role: log.employee.position
+      },
+      date: log.date.toISOString(),
+      time_in: log.time_in?.toISOString() || null,
+      time_out: log.time_out?.toISOString() || null,
+      break_minutes: log.break_minutes,
+      overtime_minutes: log.overtime_minutes,
+      status: log.status,
+      notes: log.notes,
+      created_at: log.created_at.toISOString()
+    }))
 
     return NextResponse.json({
       success: true,
-      data: attendanceLogs
+      data: processedLogs
     })
   } catch (error) {
     console.error('Error fetching attendance logs:', error)
@@ -74,7 +94,7 @@ export async function POST(request: NextRequest) {
     // Validate employee exists
     const employee = await prisma.employee.findUnique({
       where: { id: employee_id },
-      select: { id: true, name: true, status: true }
+      select: { id: true, first_name: true, last_name: true, is_active: true }
     })
 
     if (!employee) {
@@ -84,38 +104,98 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (employee.status !== 'ACTIVE') {
+    if (!employee.is_active) {
       return NextResponse.json(
         { success: false, error: 'Employee is not active' },
         { status: 400 }
       )
     }
 
-    const attendanceLog = await prisma.attendanceLog.create({
-      data: {
-        employee_id,
-        ts: timestamp ? new Date(timestamp) : new Date(),
-        type,
-        source,
-        geo: geo || {},
-        selfie_url,
-        device_id,
-        approved: source === 'MANUAL' ? false : true // Manual entries need approval
-      },
-      include: {
-        employee: {
-          select: {
-            name: true,
-            role: true,
-            department: true
-          }
+    const today = new Date()
+    const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+    // Check if attendance record already exists for today
+    const existingAttendance = await prisma.attendanceLog.findUnique({
+      where: {
+        employee_id_date: {
+          employee_id,
+          date: dateOnly
         }
       }
     })
 
+    let attendanceLog
+    if (existingAttendance) {
+      // Update existing record based on type
+      const updateData: any = {}
+      if (type === 'IN' && !existingAttendance.time_in) {
+        updateData.time_in = timestamp ? new Date(timestamp) : new Date()
+        updateData.status = source === 'MANUAL' ? 'PENDING' : 'APPROVED'
+      } else if (type === 'OUT' && existingAttendance.time_in && !existingAttendance.time_out) {
+        updateData.time_out = timestamp ? new Date(timestamp) : new Date()
+      }
+
+      if (Object.keys(updateData).length > 0) {
+        attendanceLog = await prisma.attendanceLog.update({
+          where: { id: existingAttendance.id },
+          data: updateData,
+          include: {
+            employee: {
+              select: {
+                first_name: true,
+                last_name: true,
+                position: true,
+                department: true
+              }
+            }
+          }
+        })
+      } else {
+        return NextResponse.json(
+          { success: false, error: 'Invalid attendance action' },
+          { status: 400 }
+        )
+      }
+    } else {
+      // Create new attendance record
+      attendanceLog = await prisma.attendanceLog.create({
+        data: {
+          workspace_id: 'default',
+          employee_id,
+          date: dateOnly,
+          time_in: type === 'IN' ? (timestamp ? new Date(timestamp) : new Date()) : null,
+          time_out: type === 'OUT' ? (timestamp ? new Date(timestamp) : new Date()) : null,
+          status: source === 'MANUAL' ? 'PENDING' : 'APPROVED',
+          metadata: JSON.stringify({ source, geo: geo || {}, device_id })
+        },
+        include: {
+          employee: {
+            select: {
+              first_name: true,
+              last_name: true,
+              position: true,
+              department: true
+            }
+          }
+        }
+      })
+    }
+
     return NextResponse.json({
       success: true,
-      data: attendanceLog
+      data: {
+        id: attendanceLog.id,
+        employee: {
+          name: `${attendanceLog.employee.first_name} ${attendanceLog.employee.last_name}`,
+          role: attendanceLog.employee.position
+        },
+        date: attendanceLog.date.toISOString(),
+        time_in: attendanceLog.time_in?.toISOString() || null,
+        time_out: attendanceLog.time_out?.toISOString() || null,
+        status: attendanceLog.status,
+        type: type,
+        timestamp: (attendanceLog.time_in || attendanceLog.time_out)?.toISOString()
+      }
     }, { status: 201 })
 
   } catch (error) {
@@ -135,14 +215,15 @@ export async function PUT(request: NextRequest) {
     const attendanceLog = await prisma.attendanceLog.update({
       where: { id },
       data: {
-        approved,
-        meta: approver_notes ? { approver_notes } : undefined
+        status: approved ? 'APPROVED' : 'REJECTED',
+        notes: approver_notes
       },
       include: {
         employee: {
           select: {
-            name: true,
-            role: true,
+            first_name: true,
+            last_name: true,
+            position: true,
             department: true
           }
         }

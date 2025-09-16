@@ -24,15 +24,16 @@ async function GET(request) {
                 where.period_start.lte = endYear;
             }
         }
-        const payrollRuns = await prisma.payrollRun.findMany({
+        const payrollPeriods = await prisma.payrollPeriod.findMany({
             where,
             include: {
-                payroll_items: {
+                earnings: {
                     include: {
                         employee: {
                             select: {
-                                name: true,
-                                role: true,
+                                first_name: true,
+                                last_name: true,
+                                position: true,
                                 department: true
                             }
                         }
@@ -40,20 +41,25 @@ async function GET(request) {
                 },
                 _count: {
                     select: {
-                        payroll_items: true
+                        earnings: true
                     }
                 }
             },
             orderBy: { period_start: 'desc' }
         });
-        // Calculate summary for each payroll run
-        const processedRuns = payrollRuns.map(run => {
-            const totalAmount = run.payroll_items.reduce((sum, item) => sum + (item.net_pay || 0), 0);
-            const employeeCount = run._count.payroll_items;
+        // Calculate summary for each payroll period
+        const processedRuns = payrollPeriods.map(period => {
+            const totalAmount = period.earnings.reduce((sum, earning) => sum + (earning.net_pay || 0), 0);
+            const employeeCount = period._count.earnings;
             return {
-                ...run,
-                total_amount: totalAmount,
-                employee_count: employeeCount
+                id: period.id,
+                period_start: period.period_start.toISOString(),
+                period_end: period.period_end.toISOString(),
+                status: period.status,
+                total_amount: totalAmount || period.total_amount,
+                employee_count: employeeCount,
+                created_at: period.created_at.toISOString(),
+                processed_at: period.processed_at?.toISOString() || null
             };
         });
         return server_1.NextResponse.json({
@@ -75,19 +81,21 @@ async function POST(request) {
         const periodEnd = new Date(period_end);
         // Start transaction
         const result = await prisma.$transaction(async (tx) => {
-            // Create payroll run
-            const payrollRun = await tx.payrollRun.create({
+            // Create payroll period
+            const payrollPeriod = await tx.payrollPeriod.create({
                 data: {
                     workspace_id: 'default',
                     period_start: periodStart,
                     period_end: periodEnd,
-                    cutoff_type,
-                    status: 'DRAFT'
+                    status: 'draft'
                 }
             });
             // Get all active employees
             const employees = await tx.employee.findMany({
-                where: { status: 'ACTIVE' }
+                where: {
+                    workspace_id: 'default',
+                    is_active: true
+                }
             });
             // Calculate payroll for each employee
             const payrollItems = [];
@@ -96,39 +104,25 @@ async function POST(request) {
                 const attendanceLogs = await tx.attendanceLog.findMany({
                     where: {
                         employee_id: employee.id,
-                        ts: {
+                        date: {
                             gte: periodStart,
                             lte: periodEnd
                         },
-                        approved: true
+                        status: 'APPROVED'
                     },
-                    orderBy: { ts: 'asc' }
+                    orderBy: { date: 'asc' }
                 });
-                // Calculate working hours (simplified)
+                // Calculate working hours from attendance logs
                 let totalHours = 0;
                 let overtimeHours = 0;
-                const dailyHours = {};
-                // Group logs by day and calculate daily hours
                 attendanceLogs.forEach(log => {
-                    const date = log.ts.toISOString().split('T')[0];
-                    if (!dailyHours[date])
-                        dailyHours[date] = 0;
-                    if (log.type === 'IN') {
-                        // Find corresponding OUT log
-                        const outLog = attendanceLogs.find(outLog => outLog.type === 'OUT' &&
-                            outLog.ts > log.ts &&
-                            outLog.ts.toISOString().split('T')[0] === date);
-                        if (outLog) {
-                            const hours = (outLog.ts.getTime() - log.ts.getTime()) / (1000 * 60 * 60);
-                            dailyHours[date] += hours;
+                    if (log.time_in && log.time_out) {
+                        const hours = (log.time_out.getTime() - log.time_in.getTime()) / (1000 * 60 * 60);
+                        totalHours += hours;
+                        // Calculate overtime (over 8 hours per day)
+                        if (hours > 8) {
+                            overtimeHours += hours - 8;
                         }
-                    }
-                });
-                // Calculate total hours and overtime
-                Object.values(dailyHours).forEach(hours => {
-                    totalHours += hours;
-                    if (hours > 8) {
-                        overtimeHours += hours - 8;
                     }
                 });
                 // Get piece-rate earnings from production runs
@@ -162,72 +156,73 @@ async function POST(request) {
                         pieces_completed: true
                     }
                 });
-                // Calculate earnings based on pay type
-                let basicPay = 0;
-                let piecePay = 0;
-                switch (employee.pay_type) {
+                // Calculate earnings based on salary type
+                let regularHours = Math.min(totalHours, attendanceLogs.length * 8); // Max 8 hours per day
+                let overtimeCalculatedHours = Math.max(0, totalHours - regularHours);
+                let pieceCount = (sewingEarnings._sum.pieces_completed || 0) + (printingEarnings._sum.pieces_completed || 0);
+                let grossPay = 0;
+                switch (employee.salary_type) {
                     case 'HOURLY':
-                        basicPay = totalHours * (employee.base_rate || 0);
+                        grossPay = (regularHours * (employee.base_salary || 0)) +
+                            (overtimeCalculatedHours * (employee.base_salary || 0) * 1.25);
                         break;
                     case 'DAILY':
-                        const workDays = Object.keys(dailyHours).length;
-                        basicPay = workDays * (employee.base_rate || 0);
+                        grossPay = attendanceLogs.length * (employee.base_salary || 0);
                         break;
                     case 'PIECE':
-                        const totalPieces = (sewingEarnings._sum.pieces_completed || 0) +
-                            (printingEarnings._sum.pieces_completed || 0);
-                        piecePay = totalPieces * (employee.base_rate || 0);
+                        grossPay = pieceCount * (employee.piece_rate || 0);
                         break;
-                    case 'MIXED':
-                        // Base hourly + piece rate bonus
-                        basicPay = totalHours * (employee.base_rate || 0) * 0.7; // 70% hourly
-                        const mixedPieces = (sewingEarnings._sum.pieces_completed || 0) +
-                            (printingEarnings._sum.pieces_completed || 0);
-                        piecePay = mixedPieces * (employee.base_rate || 0) * 0.3; // 30% piece rate
+                    case 'MONTHLY':
+                        // For monthly, calculate proportional amount based on work days
+                        const workDays = attendanceLogs.length;
+                        const monthlyRate = employee.base_salary || 0;
+                        grossPay = (monthlyRate / 22) * workDays; // Assuming 22 working days per month
                         break;
                 }
-                const overtimePay = include_overtime ? overtimeHours * (employee.base_rate || 0) * 1.25 : 0;
-                const grossPay = basicPay + piecePay + overtimePay;
-                // Calculate deductions (simplified Philippine tax/SSS/PhilHealth/Pag-IBIG)
-                const sssContribution = Math.min(grossPay * 0.045, 1800); // Simplified SSS
-                const philHealthContribution = Math.min(grossPay * 0.0275, 1800); // Simplified PhilHealth
-                const pagibigContribution = Math.min(grossPay * 0.02, 100); // Simplified Pag-IBIG
-                const withholdingTax = grossPay > 20833 ? (grossPay - 20833) * 0.20 : 0; // Simplified tax
-                const totalDeductions = sssContribution + philHealthContribution + pagibigContribution + withholdingTax;
-                const netPay = grossPay - totalDeductions;
+                // Calculate deductions (10% as simplified deductions)
+                const deductions = grossPay * 0.1;
+                const netPay = grossPay - deductions;
                 payrollItems.push({
-                    payroll_run_id: payrollRun.id,
+                    workspace_id: 'default',
+                    payroll_period_id: payrollPeriod.id,
                     employee_id: employee.id,
-                    basic_pay: basicPay,
-                    piece_pay: piecePay,
-                    overtime_pay: overtimePay,
+                    regular_hours: regularHours,
+                    overtime_hours: overtimeCalculatedHours,
+                    piece_count: pieceCount,
+                    piece_rate: employee.piece_rate,
                     gross_pay: grossPay,
-                    sss_contribution: sssContribution,
-                    philhealth_contribution: philHealthContribution,
-                    pagibig_contribution: pagibigContribution,
-                    withholding_tax: withholdingTax,
-                    total_deductions: totalDeductions,
+                    deductions: deductions,
                     net_pay: netPay,
-                    hours_worked: totalHours,
-                    pieces_completed: (sewingEarnings._sum.pieces_completed || 0) + (printingEarnings._sum.pieces_completed || 0)
+                    metadata: JSON.stringify({
+                        attendance_days: attendanceLogs.length,
+                        total_hours: totalHours,
+                        salary_type: employee.salary_type
+                    })
                 });
             }
-            // Create payroll items
-            await tx.payrollItem.createMany({
+            // Create payroll earnings
+            await tx.payrollEarning.createMany({
                 data: payrollItems
             });
-            return payrollRun;
+            // Update total amount in payroll period
+            const totalAmount = payrollItems.reduce((sum, item) => sum + item.net_pay, 0);
+            await tx.payrollPeriod.update({
+                where: { id: payrollPeriod.id },
+                data: { total_amount: totalAmount }
+            });
+            return payrollPeriod;
         });
-        // Return the complete payroll run with items
-        const completeRun = await prisma.payrollRun.findUnique({
+        // Return the complete payroll period with earnings
+        const completePeriod = await prisma.payrollPeriod.findUnique({
             where: { id: result.id },
             include: {
-                payroll_items: {
+                earnings: {
                     include: {
                         employee: {
                             select: {
-                                name: true,
-                                role: true,
+                                first_name: true,
+                                last_name: true,
+                                position: true,
                                 department: true
                             }
                         }
@@ -237,7 +232,15 @@ async function POST(request) {
         });
         return server_1.NextResponse.json({
             success: true,
-            data: completeRun
+            data: {
+                id: completePeriod.id,
+                period_start: completePeriod.period_start.toISOString(),
+                period_end: completePeriod.period_end.toISOString(),
+                status: completePeriod.status,
+                total_amount: completePeriod.total_amount,
+                employee_count: completePeriod.earnings.length,
+                created_at: completePeriod.created_at.toISOString()
+            }
         }, { status: 201 });
     }
     catch (error) {
@@ -249,19 +252,20 @@ async function PUT(request) {
     try {
         const data = await request.json();
         const { id, status, approval_notes } = data;
-        const payrollRun = await prisma.payrollRun.update({
+        const payrollPeriod = await prisma.payrollPeriod.update({
             where: { id },
             data: {
                 status,
-                meta: approval_notes ? { approval_notes } : undefined
+                processed_at: status === 'completed' ? new Date() : null
             },
             include: {
-                payroll_items: {
+                earnings: {
                     include: {
                         employee: {
                             select: {
-                                name: true,
-                                role: true,
+                                first_name: true,
+                                last_name: true,
+                                position: true,
                                 department: true
                             }
                         }
@@ -271,7 +275,16 @@ async function PUT(request) {
         });
         return server_1.NextResponse.json({
             success: true,
-            data: payrollRun
+            data: {
+                id: payrollPeriod.id,
+                period_start: payrollPeriod.period_start.toISOString(),
+                period_end: payrollPeriod.period_end.toISOString(),
+                status: payrollPeriod.status,
+                total_amount: payrollPeriod.total_amount,
+                employee_count: payrollPeriod.earnings.length,
+                created_at: payrollPeriod.created_at.toISOString(),
+                processed_at: payrollPeriod.processed_at?.toISOString() || null
+            }
         });
     }
     catch (error) {
