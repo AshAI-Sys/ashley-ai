@@ -185,7 +185,7 @@ export default function EfficiencyCalculator({
             <Calculator className="w-5 h-5" />
             Efficiency Calculator
           </CardTitle>
-        </CardContent>
+        </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-8">
             Enter cutting data to see efficiency calculations

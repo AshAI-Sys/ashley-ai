@@ -301,7 +301,7 @@ export default function CuttingPage() {
                     <AlertCircle className="w-5 h-5 text-orange-600" />
                     <div className="flex-1">
                       <p className="font-medium">Low fabric efficiency detected</p>
-                      <p className="text-sm text-muted-foreground">Lay #12 efficiency: 72% (< 78% threshold)</p>
+                      <p className="text-sm text-muted-foreground">Lay #12 efficiency: 72% (below 78% threshold)</p>
                     </div>
                     <span className="text-sm text-muted-foreground">6 hours ago</span>
                   </div>

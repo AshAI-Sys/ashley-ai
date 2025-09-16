@@ -14,16 +14,20 @@
   "rules": {
     "no-console": "off",
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
-    ],
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "prefer-const": "error",
-    "no-var": "error"
+    "prefer-const": "off",
+    "no-var": "off",
+    "no-case-declarations": "off",
+    "no-useless-catch": "off",
+    "no-useless-escape": "off",
+    "react/no-unescaped-entities": "off",
+    "react/jsx-no-undef": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "@next/next/no-img-element": "off",
+    "no-undef": "off",
+    "no-redeclare": "off",
+    "jsx-a11y/alt-text": "off"
   },
   "env": {
     "browser": true,

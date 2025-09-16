@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@ash.com')
+  const [email, setEmail] = useState('admin@ashleyai.com')
   const [password, setPassword] = useState('demo123')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -116,7 +116,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@ash.com"
+              placeholder="admin@ashleyai.com"
               required
               style={{
                 width: '100%',
