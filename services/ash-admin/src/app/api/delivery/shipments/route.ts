@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // TODO: Fix Prisma client model name issue for Shipment
 // Temporarily disabled all shipment operations
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   return NextResponse.json({
     success: true,
     data: [],
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   })
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   return NextResponse.json({
     success: false,
     message: 'Shipment creation temporarily disabled - Prisma model issue'

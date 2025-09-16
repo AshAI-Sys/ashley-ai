@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 // Temporarily disabled all comment operations
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params: _params }: { params: { id: string } }
 ) {
   return NextResponse.json({
     success: false,
@@ -14,8 +14,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params: _params }: { params: { id: string } }
 ) {
   return NextResponse.json({
     success: false,

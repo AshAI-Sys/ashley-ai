@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ recommendations })
 
   } catch (error) {
-    console.error('Recommendations fetch error:', error)
+    // console.error('Recommendations fetch error:', error)
     return NextResponse.json({
       error: 'Failed to fetch recommendations'
     }, { status: 500 })
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Recommendation generation error:', error)
+    // console.error('Recommendation generation error:', error)
     return NextResponse.json({
       error: 'Failed to generate recommendations'
     }, { status: 500 })

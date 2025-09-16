@@ -51,7 +51,7 @@ async function GET(request) {
         return server_1.NextResponse.json({ trends, stats: trendStats });
     }
     catch (error) {
-        console.error('Market trends fetch error:', error);
+        // console.error('Market trends fetch error:', error)
         return server_1.NextResponse.json({
             error: 'Failed to fetch market trends'
         }, { status: 500 });
@@ -81,7 +81,7 @@ async function POST(request) {
         }
     }
     catch (error) {
-        console.error('Market trend creation error:', error);
+        // console.error('Market trend creation error:', error)
         return server_1.NextResponse.json({
             error: 'Failed to create market trend'
         }, { status: 500 });
@@ -117,7 +117,7 @@ async function generateMarketTrends(workspaceId) {
             savedTrends.push(savedTrend);
         }
         catch (error) {
-            console.error('Error saving trend:', error);
+            // console.error('Error saving trend:', error)
         }
     }
     return savedTrends;

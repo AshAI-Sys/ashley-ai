@@ -24,7 +24,7 @@ function QualityControlPage() {
         try {
             // Calculate date range
             const now = new Date();
-            let fromDate = new Date();
+            const fromDate = new Date();
             switch (selectedPeriod) {
                 case 'today':
                     fromDate.setHours(0, 0, 0, 0);

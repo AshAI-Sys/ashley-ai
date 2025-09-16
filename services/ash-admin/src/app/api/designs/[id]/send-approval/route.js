@@ -4,11 +4,13 @@ exports.POST = POST;
 const server_1 = require("next/server");
 const client_1 = require("@prisma/client");
 const tokenService_1 = require("@/lib/tokenService");
+// import { emailService } from '@/lib/emailService'
+// import { notificationService } from '@/lib/notificationService'
 const prisma = new client_1.PrismaClient();
 async function POST(request, { params }) {
     try {
         const body = await request.json();
-        const { version, email_subject, message, expiry_days = 7, template_id } = body;
+        const { version, email_subject, message, expiry_days = 7, _template_id } = body;
         // Validate input
         if (!version || !email_subject || !message) {
             return server_1.NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });

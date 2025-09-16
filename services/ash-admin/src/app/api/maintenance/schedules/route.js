@@ -136,7 +136,7 @@ async function POST(request) {
             return server_1.NextResponse.json({ success: false, error: 'Missing required fields: asset_id, schedule_name, maintenance_type, frequency_type, frequency_value' }, { status: 400 });
         }
         // Calculate next due date if not provided
-        let calculatedNextDueDate = next_due_date ? new Date(next_due_date) : new Date();
+        const calculatedNextDueDate = next_due_date ? new Date(next_due_date) : new Date();
         if (!next_due_date) {
             const now = new Date();
             switch (frequency_type) {

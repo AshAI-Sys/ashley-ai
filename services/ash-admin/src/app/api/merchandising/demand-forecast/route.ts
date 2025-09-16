@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ forecasts })
 
   } catch (error) {
-    console.error('Demand forecast fetch error:', error)
+    // console.error('Demand forecast fetch error:', error)
     return NextResponse.json({
       error: 'Failed to fetch demand forecasts'
     }, { status: 500 })
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ forecast })
 
   } catch (error) {
-    console.error('Demand forecast creation error:', error)
+    // console.error('Demand forecast creation error:', error)
     return NextResponse.json({
       error: 'Failed to create demand forecast'
     }, { status: 500 })

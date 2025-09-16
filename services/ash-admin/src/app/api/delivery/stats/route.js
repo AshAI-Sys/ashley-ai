@@ -4,7 +4,7 @@ exports.GET = GET;
 const server_1 = require("next/server");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-async function GET(request) {
+async function GET(_request) {
     try {
         const today = new Date();
         today.setHours(0, 0, 0, 0);

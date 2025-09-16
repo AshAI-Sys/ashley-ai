@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-export declare function GET(request: NextRequest): Promise<NextResponse<{
+export declare function GET(_request: NextRequest): Promise<NextResponse<{
     ready_for_pickup: any;
     in_transit: any;
     delivered_today: any;

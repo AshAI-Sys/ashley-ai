@@ -40,7 +40,7 @@ async function GET(request) {
         return server_1.NextResponse.json({ recommendations });
     }
     catch (error) {
-        console.error('Recommendations fetch error:', error);
+        // console.error('Recommendations fetch error:', error)
         return server_1.NextResponse.json({
             error: 'Failed to fetch recommendations'
         }, { status: 500 });
@@ -79,7 +79,7 @@ async function POST(request) {
         });
     }
     catch (error) {
-        console.error('Recommendation generation error:', error);
+        // console.error('Recommendation generation error:', error)
         return server_1.NextResponse.json({
             error: 'Failed to generate recommendations'
         }, { status: 500 });

@@ -243,7 +243,7 @@ function QRBundleScanner({ onBundleScanned, disabled = false, className = '' }) 
             <lucide_react_1.QrCode className="h-4 w-4"/>
             <alert_1.AlertDescription>
               <strong>Tip:</strong> Make sure the bundle QR code is clearly visible and not damaged. 
-              The QR code should be in format: ash://bundle/{id}
+              The QR code should be in format: ash://bundle/&#123;id&#125;
             </alert_1.AlertDescription>
           </alert_1.Alert>
         </card_1.CardContent>

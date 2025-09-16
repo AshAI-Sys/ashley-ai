@@ -65,7 +65,7 @@ export default function QualityControlPage() {
     try {
       // Calculate date range
       const now = new Date()
-      let fromDate = new Date()
+      const fromDate = new Date()
       
       switch (selectedPeriod) {
         case 'today':

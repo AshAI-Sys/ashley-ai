@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-export declare function PUT(request: NextRequest, { params }: {
+export declare function PUT(_request: NextRequest, { params: _params }: {
     params: {
         id: string;
     };
@@ -7,7 +7,7 @@ export declare function PUT(request: NextRequest, { params }: {
     success: boolean;
     message: string;
 }>>;
-export declare function DELETE(request: NextRequest, { params }: {
+export declare function DELETE(_request: NextRequest, { params: _params }: {
     params: {
         id: string;
     };

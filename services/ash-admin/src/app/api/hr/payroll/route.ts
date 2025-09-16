@@ -178,9 +178,9 @@ export async function POST(request: NextRequest) {
         })
 
         // Calculate earnings based on salary type
-        let regularHours = Math.min(totalHours, attendanceLogs.length * 8) // Max 8 hours per day
-        let overtimeCalculatedHours = Math.max(0, totalHours - regularHours)
-        let pieceCount = (sewingEarnings._sum.pieces_completed || 0) + (printingEarnings._sum.pieces_completed || 0)
+        const regularHours = Math.min(totalHours, attendanceLogs.length * 8) // Max 8 hours per day
+        const overtimeCalculatedHours = Math.max(0, totalHours - regularHours)
+        const pieceCount = (sewingEarnings._sum.pieces_completed || 0) + (printingEarnings._sum.pieces_completed || 0)
 
         let grossPay = 0
 

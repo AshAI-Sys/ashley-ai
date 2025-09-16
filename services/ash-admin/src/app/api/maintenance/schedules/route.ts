@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate next due date if not provided
-    let calculatedNextDueDate = next_due_date ? new Date(next_due_date) : new Date()
+    const calculatedNextDueDate = next_due_date ? new Date(next_due_date) : new Date()
 
     if (!next_due_date) {
       const now = new Date()

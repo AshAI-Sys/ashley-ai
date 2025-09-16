@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { tokenService } from '@/lib/tokenService'
-import { emailService } from '@/lib/emailService'
-import { notificationService } from '@/lib/notificationService'
+// import { emailService } from '@/lib/emailService'
+// import { notificationService } from '@/lib/notificationService'
 
 const prisma = new PrismaClient()
 
@@ -17,7 +17,7 @@ export async function POST(
       email_subject, 
       message, 
       expiry_days = 7, 
-      template_id 
+      _template_id 
     } = body
 
     // Validate input

@@ -133,7 +133,7 @@ export default function MobileProductionInterface({
     if (!currentRun) return
 
     setLastAction(action)
-    let updatedRun = { ...currentRun }
+    const updatedRun = { ...currentRun }
 
     switch (action) {
       case 'complete_1':

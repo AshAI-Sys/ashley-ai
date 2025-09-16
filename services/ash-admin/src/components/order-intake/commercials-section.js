@@ -120,7 +120,7 @@ function CommercialsSection({ totalQuantity, printingMethod, garmentType, addOns
     };
     const calculatePricing = () => {
         const pricingBreak = getPricingBreak();
-        let unitPrice = commercials.unitPrice || (pricingBreak?.basePrice || 200);
+        const unitPrice = commercials.unitPrice || (pricingBreak?.basePrice || 200);
         const subtotal = unitPrice * totalQuantity;
         const rushSurchargeAmount = (subtotal * rushSurchargePercent) / 100;
         const totalBeforeDiscount = subtotal + addOnsCost + colorVariantsCost + rushSurchargeAmount;

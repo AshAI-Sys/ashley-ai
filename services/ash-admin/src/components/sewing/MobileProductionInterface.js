@@ -114,7 +114,7 @@ function MobileProductionInterface({ runId, operatorView = true, fullScreen = fa
         if (!currentRun)
             return;
         setLastAction(action);
-        let updatedRun = { ...currentRun };
+        const updatedRun = { ...currentRun };
         switch (action) {
             case 'complete_1':
                 updatedRun.completed = Math.min(updatedRun.completed + 1, updatedRun.bundle_qty);
