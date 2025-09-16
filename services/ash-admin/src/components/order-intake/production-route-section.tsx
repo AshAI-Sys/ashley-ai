@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
-import { Route, Sparkles, Clock, Users, TrendingUp, AlertCircle, CheckCircle, Zap } from 'lucide-react'
+import { MapPin, Sparkles, Clock, Users, TrendingUp, AlertCircle, CheckCircle, Zap } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface ProductionStep {
@@ -400,7 +400,7 @@ export function ProductionRouteSection({
                     {route.steps.length} steps
                   </div>
                   <div className="flex items-center gap-1">
-                    <Route className="w-4 h-4" />
+                    <MapPin className="w-4 h-4" />
                     {[...new Set(route.steps.map(s => s.department))].length} departments
                   </div>
                 </div>
