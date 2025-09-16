@@ -100,6 +100,14 @@ model Workspace {
   client_messages    ClientMessage[]
   client_portal_settings ClientPortalSettings[]
 
+  // Stage 13: Merchandising AI Relations
+  demand_forecasts   DemandForecast[]
+  product_recommendations ProductRecommendation[]
+  market_trends      MarketTrend[]
+  inventory_insights InventoryInsight[]
+  ai_model_metrics   AIModelMetrics[]
+  customer_segments  CustomerSegment[]
+
   @@map("workspaces")
 }
 
@@ -172,6 +180,10 @@ model Client {
   client_messages ClientMessage[]
   client_portal_settings ClientPortalSettings[] @relation("ClientPortalSettings")
 
+  // Stage 13: Merchandising AI Relations
+  demand_forecasts DemandForecast[]
+  product_recommendations ProductRecommendation[]
+
   @@map("clients")
 }
 
@@ -195,7 +207,10 @@ model Brand {
   design_assets  DesignAsset[]
   fabric_batches FabricBatch[]
   piece_rates    PieceRate[]
-  
+
+  // Stage 13: Merchandising AI Relations
+  demand_forecasts DemandForecast[]
+
   @@map("brands")
 }
 
@@ -2541,6 +2556,194 @@ model MaintenanceSchedule {
 
 // Enhanced WorkOrder model relations (extending existing model)
 // Note: The WorkOrder model already exists, we just need to add the relation
+
+// ===== STAGE 13: MERCHANDISING AI =====
+
+// Demand forecasting and predictive analytics
+model DemandForecast {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  client_id             String?
+  brand_id              String?
+  product_category      String?   // APPAREL/ACCESSORIES/etc
+  product_type          String?   // T_SHIRT/HOODIE/PANTS/etc
+  forecast_period       String    // DAILY/WEEKLY/MONTHLY/QUARTERLY/YEARLY
+  forecast_date         DateTime  // Date this forecast applies to
+  predicted_quantity    Int       // Forecasted demand quantity
+  predicted_revenue     Float     // Forecasted revenue
+  confidence_score      Float     // AI confidence level (0-1)
+  seasonal_factor       Float?    // Seasonal adjustment multiplier
+  trend_factor          Float?    // Trend adjustment multiplier
+  external_factors      String?   // JSON: weather, events, holidays, etc.
+  model_version         String    // AI model version used
+  accuracy_score        Float?    // Actual vs predicted accuracy (post-analysis)
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+  client        Client?   @relation(fields: [client_id], references: [id])
+  brand         Brand?    @relation(fields: [brand_id], references: [id])
+
+  @@map("demand_forecasts")
+}
+
+// Product recommendations and cross-selling insights
+model ProductRecommendation {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  client_id             String
+  recommendation_type   String    // CROSS_SELL/UP_SELL/REORDER/SEASONAL/TRENDING
+  source_product_type   String?   // What triggered this recommendation
+  recommended_product_type String // What we're recommending
+  recommended_category  String?   // Category of recommendation
+  confidence_score      Float     // AI confidence level (0-1)
+  expected_quantity     Int?      // Suggested order quantity
+  expected_revenue      Float?    // Projected revenue impact
+  reasoning             String?   // Human-readable explanation
+  seasonal_relevance    Float?    // Seasonal appropriateness score
+  trend_alignment       Float?    // How well it aligns with current trends
+  historical_success    Float?    // Success rate of similar recommendations
+  expires_at           DateTime? // When this recommendation expires
+  is_accepted          Boolean   @default(false)
+  accepted_at          DateTime?
+  actual_quantity      Int?      // If accepted, actual quantity ordered
+  actual_revenue       Float?    // If accepted, actual revenue generated
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+  client        Client    @relation(fields: [client_id], references: [id])
+
+  @@map("product_recommendations")
+}
+
+// Market trends and competitive intelligence
+model MarketTrend {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  trend_name            String    // Name/description of the trend
+  trend_category        String    // FASHION/COLOR/STYLE/MATERIAL/SEASONAL
+  trend_type            String    // EMERGING/PEAK/DECLINING/SEASONAL
+  product_categories    String    // JSON array of affected categories
+  geographic_scope      String    // LOCAL/REGIONAL/NATIONAL/GLOBAL
+  confidence_score      Float     // AI confidence in this trend (0-1)
+  impact_score          Float     // Potential business impact (0-1)
+  adoption_rate         Float?    // How quickly it's being adopted
+  peak_period_start     DateTime? // When trend is expected to peak
+  peak_period_end       DateTime? // When trend is expected to decline
+  data_sources          String    // JSON: social media, sales data, external APIs
+  keywords              String?   // JSON array of related keywords
+  color_palette         String?   // JSON array of trending colors
+  style_attributes      String?   // JSON object of style characteristics
+  target_demographics   String?   // JSON object of target customer segments
+  competitive_analysis  String?   // JSON: competitor adoption, pricing
+  opportunity_score     Float?    // Business opportunity rating
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@map("market_trends")
+}
+
+// Inventory optimization and reorder recommendations
+model InventoryInsight {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  material_id           String?   // If specific to a material
+  product_category      String?   // Product category this applies to
+  insight_type          String    // REORDER_POINT/OVERSTOCK/UNDERSTOCK/OBSOLETE/SEASONAL_PREP
+  current_stock_level   Float?    // Current inventory level
+  optimal_stock_level   Float     // AI-recommended stock level
+  reorder_point         Float?    // When to reorder
+  reorder_quantity      Float?    // How much to reorder
+  lead_time_days        Int?      // Expected lead time for restock
+  carrying_cost         Float?    // Cost of holding inventory
+  stockout_risk         Float     // Risk of running out (0-1)
+  demand_variability    Float?    // How variable demand is
+  seasonal_adjustment   Float?    // Seasonal factor to consider
+  supplier_reliability  Float?    // Supplier performance score
+  cost_impact           Float?    // Financial impact of following recommendation
+  priority_score        Float     // How urgent this insight is (0-1)
+  reasoning             String?   // Human-readable explanation
+  expires_at           DateTime? // When this insight becomes stale
+  is_acknowledged      Boolean   @default(false)
+  acknowledged_at      DateTime?
+  action_taken         String?   // What action was taken
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@map("inventory_insights")
+}
+
+// AI model performance tracking and versioning
+model AIModelMetrics {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  model_name            String    // DEMAND_FORECAST/RECOMMENDATION/TREND_ANALYSIS/INVENTORY_OPT
+  model_version         String    // Version identifier
+  model_type            String    // REGRESSION/CLASSIFICATION/CLUSTERING/TIME_SERIES
+  training_data_period  String?   // Period of data used for training
+  training_date         DateTime  // When model was trained
+  validation_score      Float?    // Validation accuracy/performance
+  production_metrics    String    // JSON: precision, recall, F1, MAE, etc.
+  feature_importance    String?   // JSON: which features matter most
+  hyperparameters       String?   // JSON: model configuration
+  data_quality_score    Float?    // Quality of training data (0-1)
+  prediction_count      Int       @default(0) // Number of predictions made
+  correct_predictions   Int       @default(0) // Number of accurate predictions
+  accuracy_trend        String?   // JSON: accuracy over time
+  last_retrain_date     DateTime? // When model was last retrained
+  next_retrain_date     DateTime? // When model should be retrained
+  is_active            Boolean   @default(true)
+  performance_threshold Float?    // Minimum acceptable performance
+  alert_threshold       Float?    // When to alert about poor performance
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@map("ai_model_metrics")
+}
+
+// Customer behavior analytics and segmentation
+model CustomerSegment {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  segment_name          String    // HIGH_VALUE/SEASONAL/BULK_BUYER/etc
+  segment_description   String?   // Human-readable description
+  segmentation_criteria String    // JSON: rules that define this segment
+  customer_count        Int       // Number of customers in segment
+  avg_order_value       Float?    // Average order value for segment
+  avg_order_frequency   Float?    // Orders per time period
+  total_revenue         Float?    // Total revenue from segment
+  profit_margin         Float?    // Average profit margin
+  retention_rate        Float?    // Customer retention rate
+  churn_risk            Float?    // Risk of customers leaving (0-1)
+  preferred_products    String?   // JSON: most popular products
+  preferred_seasons     String?   // JSON: peak ordering seasons
+  price_sensitivity     Float?    // How price-sensitive segment is
+  lead_time_tolerance   Float?    // How tolerant of delays
+  communication_prefs   String?   // JSON: preferred contact methods
+  growth_potential      Float?    // Potential for segment growth (0-1)
+  marketing_strategy    String?   // Recommended marketing approach
+  last_updated         DateTime  // When segment was last calculated
+  is_active            Boolean   @default(true)
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@map("customer_segments")
+}
 
 // ===== STAGE 12: CLIENT PORTAL =====
 
