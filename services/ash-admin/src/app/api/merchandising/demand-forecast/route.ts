@@ -1,20 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { requireAuth, validateWorkspaceAccess } from '@/lib/auth-middleware'
+import { validateRequired, validateNumber, validateEnum, createValidationErrorResponse } from '@/lib/validation'
 
 const prisma = new PrismaClient()
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url)
     const workspaceId = searchParams.get('workspaceId')
     const clientId = searchParams.get('clientId')
     const brandId = searchParams.get('brandId')
     const period = searchParams.get('period') || 'MONTHLY'
-    const limit = parseInt(searchParams.get('limit') || '50')
+    const limitParam = searchParams.get('limit') || '50'
 
-    if (!workspaceId) {
-      return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
+    // Validate required parameters
+    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    if (workspaceError) {
+      return createValidationErrorResponse([workspaceError])
     }
+
+    // Validate workspace access
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
+      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
+    }
+
+    // Validate period parameter
+    const validPeriods = ['DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY']
+    const periodError = validateEnum(period, validPeriods, 'period')
+    if (periodError) {
+      return createValidationErrorResponse([periodError])
+    }
+
+    // Validate limit parameter
+    const limitError = validateNumber(limitParam, 'limit', 1, 200)
+    if (limitError) {
+      return createValidationErrorResponse([limitError])
+    }
+    const limit = parseInt(limitParam)
 
     const where: any = {
       workspace_id: workspaceId,
@@ -37,15 +60,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ forecasts })
 
   } catch (error) {
-    // console.error('Demand forecast fetch error:', error)
+    console.error('Demand forecast fetch error:', error)
     return NextResponse.json({
       error: 'Failed to fetch demand forecasts'
     }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
+    const body = await request.json()
     const {
       workspaceId,
       clientId,
@@ -61,10 +85,20 @@ export async function POST(request: NextRequest) {
       trendFactor,
       externalFactors,
       modelVersion
-    } = await request.json()
+    } = body
 
-    if (!workspaceId) {
-      return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
+    // Validate required parameters
+    const errors: string[] = []
+    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    if (workspaceError) errors.push(workspaceError)
+
+    if (errors.length > 0) {
+      return createValidationErrorResponse(errors)
+    }
+
+    // Validate workspace access
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId)) {
+      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
     }
 
     // In a real implementation, this would call actual ML models
@@ -89,12 +123,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ forecast })
 
   } catch (error) {
-    // console.error('Demand forecast creation error:', error)
+    console.error('Demand forecast creation error:', error)
     return NextResponse.json({
       error: 'Failed to create demand forecast'
     }, { status: 500 })
   }
-}
+})
 
 async function generateDemandForecast(params: any) {
   // Get historical data for this client/brand/product combination

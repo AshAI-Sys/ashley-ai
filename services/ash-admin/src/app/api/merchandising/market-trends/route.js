@@ -1,21 +1,34 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = GET;
-exports.POST = POST;
+exports.POST = exports.GET = void 0;
 const server_1 = require("next/server");
 const client_1 = require("@prisma/client");
+const auth_middleware_1 = require("@/lib/auth-middleware");
+const validation_1 = require("@/lib/validation");
 const prisma = new client_1.PrismaClient();
-async function GET(request) {
+exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
         const { searchParams } = new URL(request.url);
         const workspaceId = searchParams.get('workspaceId');
         const category = searchParams.get('category');
         const type = searchParams.get('type');
         const scope = searchParams.get('scope');
-        const limit = parseInt(searchParams.get('limit') || '20');
-        if (!workspaceId) {
-            return server_1.NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 });
+        const limitParam = searchParams.get('limit') || '20';
+        // Validate required parameters
+        const workspaceError = (0, validation_1.validateRequired)(workspaceId, 'workspaceId');
+        if (workspaceError) {
+            return (0, validation_1.createValidationErrorResponse)([workspaceError]);
         }
+        // Validate workspace access
+        if (!(0, auth_middleware_1.validateWorkspaceAccess)(user.workspaceId, workspaceId)) {
+            return server_1.NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 });
+        }
+        // Validate limit parameter
+        const limitError = (0, validation_1.validateNumber)(limitParam, 'limit', 1, 100);
+        if (limitError) {
+            return (0, validation_1.createValidationErrorResponse)([limitError]);
+        }
+        const limit = parseInt(limitParam);
         const where = {
             workspace_id: workspaceId,
         };
@@ -51,17 +64,24 @@ async function GET(request) {
         return server_1.NextResponse.json({ trends, stats: trendStats });
     }
     catch (error) {
-        // console.error('Market trends fetch error:', error)
+        console.error('Market trends fetch error:', error);
         return server_1.NextResponse.json({
             error: 'Failed to fetch market trends'
         }, { status: 500 });
     }
-}
-async function POST(request) {
+});
+exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
-        const { workspaceId, generateTrends } = await request.json();
-        if (!workspaceId) {
-            return server_1.NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 });
+        const body = await request.json();
+        const { workspaceId, generateTrends } = body;
+        // Validate required parameters
+        const workspaceError = (0, validation_1.validateRequired)(workspaceId, 'workspaceId');
+        if (workspaceError) {
+            return (0, validation_1.createValidationErrorResponse)([workspaceError]);
+        }
+        // Validate workspace access
+        if (!(0, auth_middleware_1.validateWorkspaceAccess)(user.workspaceId, workspaceId)) {
+            return server_1.NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 });
         }
         if (generateTrends) {
             // Generate AI-powered market trends based on current data and external factors
@@ -69,24 +89,27 @@ async function POST(request) {
             return server_1.NextResponse.json({ trends, count: trends.length });
         }
         else {
-            // Create a single custom trend
-            const trendData = await request.json();
+            // Create a single custom trend with validation
+            const validation = (0, validation_1.validateAndSanitizeMarketTrendData)(body);
+            if (!validation.isValid) {
+                return (0, validation_1.createValidationErrorResponse)(validation.errors);
+            }
             const trend = await prisma.marketTrend.create({
                 data: {
                     workspace_id: workspaceId,
-                    ...trendData
+                    ...validation.sanitizedData
                 }
             });
             return server_1.NextResponse.json({ trend });
         }
     }
     catch (error) {
-        // console.error('Market trend creation error:', error)
+        console.error('Market trend creation error:', error);
         return server_1.NextResponse.json({
             error: 'Failed to create market trend'
         }, { status: 500 });
     }
-}
+});
 async function generateMarketTrends(workspaceId) {
     const trends = [];
     const currentDate = new Date();

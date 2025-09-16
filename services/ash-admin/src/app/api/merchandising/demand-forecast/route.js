@@ -1,21 +1,40 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = GET;
-exports.POST = POST;
+exports.POST = exports.GET = void 0;
 const server_1 = require("next/server");
 const client_1 = require("@prisma/client");
+const auth_middleware_1 = require("@/lib/auth-middleware");
+const validation_1 = require("@/lib/validation");
 const prisma = new client_1.PrismaClient();
-async function GET(request) {
+exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
         const { searchParams } = new URL(request.url);
         const workspaceId = searchParams.get('workspaceId');
         const clientId = searchParams.get('clientId');
         const brandId = searchParams.get('brandId');
         const period = searchParams.get('period') || 'MONTHLY';
-        const limit = parseInt(searchParams.get('limit') || '50');
-        if (!workspaceId) {
-            return server_1.NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 });
+        const limitParam = searchParams.get('limit') || '50';
+        // Validate required parameters
+        const workspaceError = (0, validation_1.validateRequired)(workspaceId, 'workspaceId');
+        if (workspaceError) {
+            return (0, validation_1.createValidationErrorResponse)([workspaceError]);
         }
+        // Validate workspace access
+        if (!(0, auth_middleware_1.validateWorkspaceAccess)(user.workspaceId, workspaceId)) {
+            return server_1.NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 });
+        }
+        // Validate period parameter
+        const validPeriods = ['DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY'];
+        const periodError = (0, validation_1.validateEnum)(period, validPeriods, 'period');
+        if (periodError) {
+            return (0, validation_1.createValidationErrorResponse)([periodError]);
+        }
+        // Validate limit parameter
+        const limitError = (0, validation_1.validateNumber)(limitParam, 'limit', 1, 200);
+        if (limitError) {
+            return (0, validation_1.createValidationErrorResponse)([limitError]);
+        }
+        const limit = parseInt(limitParam);
         const where = {
             workspace_id: workspaceId,
             forecast_period: period,
@@ -36,17 +55,27 @@ async function GET(request) {
         return server_1.NextResponse.json({ forecasts });
     }
     catch (error) {
-        // console.error('Demand forecast fetch error:', error)
+        console.error('Demand forecast fetch error:', error);
         return server_1.NextResponse.json({
             error: 'Failed to fetch demand forecasts'
         }, { status: 500 });
     }
-}
-async function POST(request) {
+});
+exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
-        const { workspaceId, clientId, brandId, productCategory, productType, forecastPeriod, forecastDate, predictedQuantity, predictedRevenue, confidenceScore, seasonalFactor, trendFactor, externalFactors, modelVersion } = await request.json();
-        if (!workspaceId) {
-            return server_1.NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 });
+        const body = await request.json();
+        const { workspaceId, clientId, brandId, productCategory, productType, forecastPeriod, forecastDate, predictedQuantity, predictedRevenue, confidenceScore, seasonalFactor, trendFactor, externalFactors, modelVersion } = body;
+        // Validate required parameters
+        const errors = [];
+        const workspaceError = (0, validation_1.validateRequired)(workspaceId, 'workspaceId');
+        if (workspaceError)
+            errors.push(workspaceError);
+        if (errors.length > 0) {
+            return (0, validation_1.createValidationErrorResponse)(errors);
+        }
+        // Validate workspace access
+        if (!(0, auth_middleware_1.validateWorkspaceAccess)(user.workspaceId, workspaceId)) {
+            return server_1.NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 });
         }
         // In a real implementation, this would call actual ML models
         // For now, we'll create realistic sample forecasts based on historical data
@@ -69,12 +98,12 @@ async function POST(request) {
         return server_1.NextResponse.json({ forecast });
     }
     catch (error) {
-        // console.error('Demand forecast creation error:', error)
+        console.error('Demand forecast creation error:', error);
         return server_1.NextResponse.json({
             error: 'Failed to create demand forecast'
         }, { status: 500 });
     }
-}
+});
 async function generateDemandForecast(params) {
     // Get historical data for this client/brand/product combination
     const historicalOrders = await prisma.order.findMany({

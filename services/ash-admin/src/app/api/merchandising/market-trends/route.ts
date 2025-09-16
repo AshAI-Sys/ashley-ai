@@ -1,20 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { requireAuth, validateWorkspaceAccess } from '@/lib/auth-middleware'
+import { validateRequired, validateNumber, validateEnum, createValidationErrorResponse, validateAndSanitizeMarketTrendData } from '@/lib/validation'
 
 const prisma = new PrismaClient()
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url)
     const workspaceId = searchParams.get('workspaceId')
     const category = searchParams.get('category')
     const type = searchParams.get('type')
     const scope = searchParams.get('scope')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const limitParam = searchParams.get('limit') || '20'
 
-    if (!workspaceId) {
-      return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
+    // Validate required parameters
+    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    if (workspaceError) {
+      return createValidationErrorResponse([workspaceError])
     }
+
+    // Validate workspace access
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
+      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
+    }
+
+    // Validate limit parameter
+    const limitError = validateNumber(limitParam, 'limit', 1, 100)
+    if (limitError) {
+      return createValidationErrorResponse([limitError])
+    }
+    const limit = parseInt(limitParam)
 
     const where: any = {
       workspace_id: workspaceId,
@@ -52,19 +68,27 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ trends, stats: trendStats })
 
   } catch (error) {
-    // console.error('Market trends fetch error:', error)
+    console.error('Market trends fetch error:', error)
     return NextResponse.json({
       error: 'Failed to fetch market trends'
     }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const { workspaceId, generateTrends } = await request.json()
+    const body = await request.json()
+    const { workspaceId, generateTrends } = body
 
-    if (!workspaceId) {
-      return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
+    // Validate required parameters
+    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    if (workspaceError) {
+      return createValidationErrorResponse([workspaceError])
+    }
+
+    // Validate workspace access
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId)) {
+      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
     }
 
     if (generateTrends) {
@@ -72,24 +96,28 @@ export async function POST(request: NextRequest) {
       const trends = await generateMarketTrends(workspaceId)
       return NextResponse.json({ trends, count: trends.length })
     } else {
-      // Create a single custom trend
-      const trendData = await request.json()
+      // Create a single custom trend with validation
+      const validation = validateAndSanitizeMarketTrendData(body)
+      if (!validation.isValid) {
+        return createValidationErrorResponse(validation.errors)
+      }
+
       const trend = await prisma.marketTrend.create({
         data: {
           workspace_id: workspaceId,
-          ...trendData
+          ...validation.sanitizedData
         }
       })
       return NextResponse.json({ trend })
     }
 
   } catch (error) {
-    // console.error('Market trend creation error:', error)
+    console.error('Market trend creation error:', error)
     return NextResponse.json({
       error: 'Failed to create market trend'
     }, { status: 500 })
   }
-}
+})
 
 async function generateMarketTrends(workspaceId: string) {
   const trends = []

@@ -1,18 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { requireAuth, validateWorkspaceAccess } from '@/lib/auth-middleware'
+import { validateRequired, validateNumber, validateEnum, createValidationErrorResponse } from '@/lib/validation'
 
 const prisma = new PrismaClient()
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url)
     const workspaceId = searchParams.get('workspaceId')
     const clientId = searchParams.get('clientId')
     const recommendationType = searchParams.get('type')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const limitParam = searchParams.get('limit') || '10'
 
-    if (!workspaceId) {
-      return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
+    // Validate required parameters
+    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    if (workspaceError) {
+      return createValidationErrorResponse([workspaceError])
+    }
+
+    // Validate workspace access
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
+      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
+    }
+
+    // Validate limit parameter
+    const limitError = validateNumber(limitParam, 'limit', 1, 100)
+    if (limitError) {
+      return createValidationErrorResponse([limitError])
+    }
+    const limit = parseInt(limitParam)
+
+    // Validate recommendation type if provided
+    if (recommendationType) {
+      const validTypes = ['REORDER', 'CROSS_SELL', 'SEASONAL', 'TRENDING']
+      const typeError = validateEnum(recommendationType, validTypes, 'type')
+      if (typeError) {
+        return createValidationErrorResponse([typeError])
+      }
     }
 
     const where: any = {
@@ -41,19 +66,26 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ recommendations })
 
   } catch (error) {
-    // console.error('Recommendations fetch error:', error)
+    console.error('Recommendations fetch error:', error)
     return NextResponse.json({
       error: 'Failed to fetch recommendations'
     }, { status: 500 })
   }
-}
+})
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const { workspaceId, clientId, generateAll } = await request.json()
 
-    if (!workspaceId) {
-      return NextResponse.json({ error: 'Workspace ID is required' }, { status: 400 })
+    // Validate required parameters
+    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    if (workspaceError) {
+      return createValidationErrorResponse([workspaceError])
+    }
+
+    // Validate workspace access
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId)) {
+      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
     }
 
     let recommendations = []
@@ -84,12 +116,12 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    // console.error('Recommendation generation error:', error)
+    console.error('Recommendation generation error:', error)
     return NextResponse.json({
       error: 'Failed to generate recommendations'
     }, { status: 500 })
   }
-}
+})
 
 async function generateRecommendationsForClient(workspaceId: string, clientId: string) {
   // Get client's order history
