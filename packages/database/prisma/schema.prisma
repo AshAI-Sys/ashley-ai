@@ -93,6 +93,13 @@ model Workspace {
   work_orders        WorkOrder[]
   maintenance_schedules MaintenanceSchedule[]
 
+  // Stage 12: Client Portal Relations
+  client_sessions    ClientSession[]
+  client_notifications ClientNotification[]
+  client_activities  ClientActivity[]
+  client_messages    ClientMessage[]
+  client_portal_settings ClientPortalSettings[]
+
   @@map("workspaces")
 }
 
@@ -157,7 +164,14 @@ model Client {
   orders          Order[]
   invoices        Invoice[]
   design_approvals DesignApproval[]
-  
+
+  // Stage 12: Client Portal Relations
+  client_sessions ClientSession[]
+  client_notifications ClientNotification[]
+  client_activities ClientActivity[]
+  client_messages ClientMessage[]
+  client_portal_settings ClientPortalSettings[] @relation("ClientPortalSettings")
+
   @@map("clients")
 }
 
@@ -239,6 +253,9 @@ model Order {
   // Stage 9: Finance Relations
   expenses        Expense[]
   cost_allocations CostAllocation[]
+
+  // Stage 12: Client Portal Relations
+  client_messages ClientMessage[]
 
   @@unique([workspace_id, order_number])
   @@map("orders")
@@ -2524,4 +2541,122 @@ model MaintenanceSchedule {
 
 // Enhanced WorkOrder model relations (extending existing model)
 // Note: The WorkOrder model already exists, we just need to add the relation
+
+// ===== STAGE 12: CLIENT PORTAL =====
+
+// Client portal authentication and sessions
+model ClientSession {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  client_id       String
+  email           String
+  magic_token     String    @unique
+  is_used         Boolean   @default(false)
+  expires_at      DateTime
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  client          Client    @relation(fields: [client_id], references: [id])
+
+  @@unique([workspace_id, magic_token])
+  @@map("client_sessions")
+}
+
+// Client portal notifications
+model ClientNotification {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  client_id       String
+  type            String    // ORDER_UPDATE/DESIGN_APPROVAL/PAYMENT_DUE/DELIVERY_UPDATE
+  title           String
+  message         String
+  action_url      String?   // Deep link to specific portal page
+  is_read         Boolean   @default(false)
+  is_email_sent   Boolean   @default(false)
+  priority        String    @default("MEDIUM") // LOW/MEDIUM/HIGH/URGENT
+  metadata        String?   // JSON data for notification context
+  created_at      DateTime  @default(now())
+  read_at         DateTime?
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  client          Client    @relation(fields: [client_id], references: [id])
+
+  @@map("client_notifications")
+}
+
+// Client portal activity tracking
+model ClientActivity {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  client_id       String
+  session_id      String?
+  activity_type   String    // LOGIN/LOGOUT/VIEW_ORDER/APPROVE_DESIGN/PAY_INVOICE/DOWNLOAD_FILE
+  resource_type   String?   // ORDER/DESIGN/INVOICE/SHIPMENT
+  resource_id     String?   // ID of the resource being accessed
+  description     String?   // Human-readable activity description
+  ip_address      String?
+  user_agent      String?
+  metadata        String?   // JSON data for additional context
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  client          Client    @relation(fields: [client_id], references: [id])
+
+  @@map("client_activities")
+}
+
+// Client communication threads
+model ClientMessage {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  client_id       String
+  order_id        String?   // Optional - message can be order-specific
+  thread_id       String?   // For grouping related messages
+  sender_type     String    // CLIENT/ADMIN/SYSTEM
+  sender_name     String
+  sender_email    String?
+  subject         String?
+  message         String
+  attachments     String?   // JSON array of attachment URLs
+  is_read         Boolean   @default(false)
+  is_internal     Boolean   @default(false) // Internal admin notes
+  priority        String    @default("NORMAL") // LOW/NORMAL/HIGH/URGENT
+  status          String    @default("OPEN") // OPEN/IN_PROGRESS/RESOLVED/CLOSED
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  client          Client    @relation(fields: [client_id], references: [id])
+  order           Order?    @relation(fields: [order_id], references: [id])
+
+  @@map("client_messages")
+}
+
+// Client portal preferences and settings
+model ClientPortalSettings {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  client_id             String
+  email_notifications   Boolean   @default(true)
+  sms_notifications     Boolean   @default(false)
+  push_notifications    Boolean   @default(true)
+  notification_frequency String   @default("REAL_TIME") // REAL_TIME/HOURLY/DAILY/WEEKLY
+  preferred_language    String    @default("en")
+  timezone              String    @default("UTC")
+  theme                 String    @default("LIGHT") // LIGHT/DARK/AUTO
+  dashboard_layout      String?   // JSON layout preferences
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  client          Client    @relation("ClientPortalSettings", fields: [client_id], references: [id])
+
+  @@unique([workspace_id, client_id])
+  @@map("client_portal_settings")
+}
 

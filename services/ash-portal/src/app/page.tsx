@@ -19,16 +19,60 @@ export default function HomePage() {
     setIsLoading(true)
 
     try {
-      // TODO: Implement magic link API call
-      toast.success('Magic link sent to your email!')
-      // Simulate redirect after successful magic link
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
+      const response = await fetch('/api/portal/auth/magic-link', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send magic link')
+      }
+
+      toast.success(data.message)
+
+      // In development, auto-redirect if magic link is provided
+      if (data.magicLink && process.env.NODE_ENV === 'development') {
+        toast.success('Development: Auto-redirecting in 2 seconds...')
+        setTimeout(() => {
+          // Extract token from magic link and verify it
+          const token = data.magicLink.split('token=')[1]
+          verifyToken(token)
+        }, 2000)
+      }
+
     } catch (error) {
-      toast.error('Failed to send magic link')
+      toast.error(error instanceof Error ? error.message : 'Failed to send magic link')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const verifyToken = async (token: string) => {
+    try {
+      const response = await fetch('/api/portal/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid token')
+      }
+
+      toast.success(`Welcome ${data.client.name}!`)
+      router.push('/dashboard')
+
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to verify token')
     }
   }
 

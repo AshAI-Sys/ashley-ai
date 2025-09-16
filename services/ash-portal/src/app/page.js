@@ -21,18 +21,53 @@ function HomePage() {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // TODO: Implement magic link API call
-            react_hot_toast_1.default.success('Magic link sent to your email!');
-            // Simulate redirect after successful magic link
-            setTimeout(() => {
-                router.push('/dashboard');
-            }, 2000);
+            const response = await fetch('/api/portal/auth/magic-link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to send magic link');
+            }
+            react_hot_toast_1.default.success(data.message);
+            // In development, auto-redirect if magic link is provided
+            if (data.magicLink && process.env.NODE_ENV === 'development') {
+                react_hot_toast_1.default.success('Development: Auto-redirecting in 2 seconds...');
+                setTimeout(() => {
+                    // Extract token from magic link and verify it
+                    const token = data.magicLink.split('token=')[1];
+                    verifyToken(token);
+                }, 2000);
+            }
         }
         catch (error) {
-            react_hot_toast_1.default.error('Failed to send magic link');
+            react_hot_toast_1.default.error(error instanceof Error ? error.message : 'Failed to send magic link');
         }
         finally {
             setIsLoading(false);
+        }
+    };
+    const verifyToken = async (token) => {
+        try {
+            const response = await fetch('/api/portal/auth/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token }),
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Invalid token');
+            }
+            react_hot_toast_1.default.success(`Welcome ${data.client.name}!`);
+            router.push('/dashboard');
+        }
+        catch (error) {
+            react_hot_toast_1.default.error(error instanceof Error ? error.message : 'Failed to verify token');
         }
     };
     return (<div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">

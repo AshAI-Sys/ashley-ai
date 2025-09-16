@@ -16,6 +16,13 @@ pnpm --filter portal dev
 
 # Generate Database
 cd packages/database && npx prisma generate
+
+# Auto-fix pending changes (after implementing new features)
+# Windows PowerShell (Recommended):
+./fix-changes.ps1
+
+# Windows Command Prompt:
+fix-changes.bat
 ```
 
 ### Access URLs
