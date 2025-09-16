@@ -1,8 +1,8 @@
 # Ashley AI - Development Guide
 
 **Last Updated**: 2025-09-16
-**Current Status**: 9 of 14 Manufacturing Stages Implemented
-**Latest Update**: Stage 9 - Finance Operations completed
+**Current Status**: 10 of 14 Manufacturing Stages Implemented
+**Latest Update**: Stage 10 - HR & Payroll completed
 
 ## Quick Start Commands
 
@@ -22,15 +22,16 @@ cd packages/database && npx prisma generate
 - **Admin Interface**: http://localhost:3001
 - **Client Portal**: http://localhost:3003
 - **Finance Operations**: http://localhost:3001/finance
+- **HR & Payroll**: http://localhost:3001/hr-payroll
 - **Login**: Use any email/password (e.g., admin@ashleyai.com / password123)
 
 ## Current System Status
 
-### ✅ **COMPLETED STAGES (9/14)**
-**Stages 1-9** are fully implemented and functional
+### ✅ **COMPLETED STAGES (10/14)**
+**Stages 1-10** are fully implemented and functional
 
 ### 🔄 **NEXT TO IMPLEMENT**
-**Stage 10 - HR & Payroll** (Employee Management, Attendance, Payroll)
+**Stage 11 - Maintenance Management** (Equipment Maintenance, Asset Tracking, Work Orders)
 
 ## Project Structure
 ```
@@ -99,7 +100,7 @@ Ashley AI/
 - Dispatch board for logistics coordination
 - Live tracking interface for monitoring deliveries
 
-### ✅ Stage 9 - Finance Operations *(Latest - Sept 16, 2025)*
+### ✅ Stage 9 - Finance Operations
 - Invoice generation and management with line items
 - Payment processing and tracking with multiple methods
 - Credit notes for returns and adjustments
@@ -111,13 +112,17 @@ Ashley AI/
 - Tax settings and compliance features
 - Real-time financial KPIs and metrics
 
-### 🚧 **REMAINING STAGES TO IMPLEMENT**
+### ✅ Stage 10 - HR & Payroll *(Latest - Sept 16, 2025)*
+- Employee management with comprehensive profiles and contact information
+- Attendance tracking with time_in/time_out, breaks, and overtime
+- Payroll calculation and processing for multiple salary types (DAILY, HOURLY, PIECE, MONTHLY)
+- Performance tracking with piece-rate calculations for production workers
+- HR analytics with productivity metrics and attendance rates
+- Employee filtering by status, position, and department
+- Integration with production runs for efficiency tracking
+- Compliance and reporting capabilities
 
-#### Stage 10 - HR & Payroll
-- Employee management and attendance
-- Payroll calculation and processing
-- Performance tracking and piece-rate calculations
-- Compliance and reporting
+### 🚧 **REMAINING STAGES TO IMPLEMENT**
 
 #### Stage 11 - Maintenance Management
 - Equipment maintenance scheduling
@@ -158,8 +163,21 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - **Finishing**: FinishingRuns, FinishedUnits, Cartons
 - **Delivery**: Shipments, Deliveries, TrackingEvents, ShipmentCartons
 - **Finance**: Invoices, InvoiceItems, Payments, CreditNotes, BankAccounts, Expenses, CostCenters, Budgets, FinancialReports
+- **HR**: Employees, AttendanceLogs, PayrollPeriods, PayrollEarnings
 
 ## Recent Updates Log
+
+### 2025-09-16 - Stage 10 HR & Payroll
+- ✅ Added comprehensive employee management with salary types (DAILY, HOURLY, PIECE, MONTHLY)
+- ✅ Implemented attendance tracking with time_in/time_out, breaks, and overtime
+- ✅ Created payroll period and earnings management system
+- ✅ Updated all HR API endpoints to match Prisma schema fields
+- ✅ Connected HR page to real API data instead of mock data
+- ✅ Added employee filtering by status, position, department
+- ✅ Implemented HR analytics with productivity metrics and attendance rates
+- ✅ Added workspace auto-creation in employee API
+- ✅ Created database seeding scripts for HR data
+- ✅ Fixed database connection paths and environment configuration
 
 ### 2025-09-16 - Stage 9 Finance Operations
 - ✅ Added comprehensive finance database models (14 new tables)
