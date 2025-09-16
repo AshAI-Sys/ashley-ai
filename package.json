@@ -1,0 +1,70 @@
+{
+  "name": "ash-ai",
+  "version": "1.0.0",
+  "description": "ASH AI - Apparel Smart Hub with Artificial Intelligence (Optimized)",
+  "private": true,
+  "author": "ASH AI Team",
+  "license": "PROPRIETARY",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel --no-cache",
+    "dev:fast": "turbo run dev --parallel --no-cache --filter=apps/admin --filter=apps/portal",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf node_modules/.cache",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:generate": "turbo run db:generate",
+    "db:push": "turbo run db:push",
+    "db:migrate": "turbo run db:migrate",
+    "db:seed": "turbo run db:seed",
+    "db:studio": "turbo run db:studio",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build --no-cache",
+    "docker:logs": "docker-compose logs -f",
+    "setup": "pnpm install && pnpm db:generate && pnpm db:push",
+    "setup:fast": "pnpm install --frozen-lockfile && pnpm db:generate",
+    "reset": "pnpm clean && pnpm setup",
+    "start:fast": "concurrently \"pnpm --filter apps/admin dev\" \"pnpm --filter apps/portal dev\""
+  },
+  "devDependencies": {
+    "@turbo/gen": "^2.0.0",
+    "@types/node": "^20.12.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^8.2.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-turbo": "^2.0.0",
+    "prettier": "^3.2.0",
+    "turbo": "^2.5.6",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "erp",
+    "manufacturing",
+    "apparel",
+    "ai",
+    "typescript",
+    "next.js",
+    "prisma",
+    "microservices",
+    "optimized"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ash-ai/ash-ai.git"
+  }
+}

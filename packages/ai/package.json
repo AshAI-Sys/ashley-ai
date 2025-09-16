@@ -1,0 +1,44 @@
+{
+  "name": "@ash-ai/ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ashley AI integration and validation system for manufacturing insights",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ash-ai/database": "workspace:*",
+    "openai": "^4.24.1",
+    "zod": "^3.22.4",
+    "@anthropic-ai/sdk": "^0.9.1",
+    "date-fns": "^3.0.6",
+    "nanoid": "^5.0.4"
+  },
+  "devDependencies": {
+    "@ash-ai/typescript-config": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./validation": {
+      "import": "./dist/validation.js",
+      "require": "./dist/validation.cjs"
+    }
+  },
+  "files": [
+    "dist/**"
+  ]
+}

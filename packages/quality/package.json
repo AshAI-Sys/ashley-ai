@@ -1,0 +1,54 @@
+{
+  "name": "@ash-ai/quality",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Advanced Quality Control & Ashley AI Optimization system",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ash-ai/database": "workspace:*",
+    "@ash-ai/ai": "workspace:*",
+    "zod": "^3.22.4",
+    "date-fns": "^3.0.6",
+    "nanoid": "^5.0.4",
+    "eventemitter3": "^5.0.1",
+    "sharp": "^0.33.1"
+  },
+  "devDependencies": {
+    "@ash-ai/typescript-config": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "@types/sharp": "^0.32.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./inspection": {
+      "import": "./dist/inspection.js",
+      "require": "./dist/inspection.cjs"
+    },
+    "./capa": {
+      "import": "./dist/capa.js",
+      "require": "./dist/capa.cjs"
+    },
+    "./metrics": {
+      "import": "./dist/metrics.js",
+      "require": "./dist/metrics.cjs"
+    },
+    "./ai-quality": {
+      "import": "./dist/ai-quality.js",
+      "require": "./dist/ai-quality.cjs"
+    }
+  },
+  "files": [
+    "dist/**"
+  ]
+}

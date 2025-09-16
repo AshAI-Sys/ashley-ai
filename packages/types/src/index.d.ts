@@ -1,0 +1,43 @@
+export interface User {
+    id: string;
+    workspace_id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+    is_active: boolean;
+}
+export interface Workspace {
+    id: string;
+    name: string;
+    slug: string;
+    is_active: boolean;
+}
+export interface Client {
+    id: string;
+    workspace_id: string;
+    name: string;
+    email?: string;
+    is_active: boolean;
+}
+export interface Order {
+    id: string;
+    workspace_id: string;
+    client_id: string;
+    order_number: string;
+    status: string;
+    total_amount: number;
+}
+export interface ApiResponse<T = any> {
+    success: boolean;
+    data?: T;
+    error?: string;
+    message?: string;
+}
+export interface ApiError {
+    code: string;
+    message: string;
+    details?: any;
+}
+export type Role = 'Admin' | 'Manager' | 'CSR' | 'Worker' | 'Client';
+export type OrderStatus = 'draft' | 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled';

@@ -1,0 +1,24 @@
+{
+  "name": "@ash-ai/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "ESLint configurations for ASH AI monorepo",
+  "main": "index.js",
+  "files": [
+    "base.js",
+    "react.js",
+    "next.js"
+  ],
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-turbo": "^2.0.0",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.0"
+  }
+}

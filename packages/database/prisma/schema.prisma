@@ -1,0 +1,2172 @@
+// ASH AI - Production Database Schema
+// Comprehensive ERP system for apparel manufacturing
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../node_modules/.prisma/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+// generator erd {
+//   provider                  = "prisma-erd-generator"
+//   output                    = "../docs/database-schema.svg"
+//   includeRelationFromFields = true
+// }
+
+// generator docs {
+//   provider = "prisma-docs-generator"
+//   output   = "../docs/database"
+// }
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ===== WORKSPACE & TENANCY =====
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  settings    String?  // JSON as string for SQLite
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  // Relations
+  users            User[]
+  clients          Client[]
+  brands           Brand[]
+  orders           Order[]
+  employees        Employee[]
+  assets           Asset[]
+  design_assets    DesignAsset[]
+  machines         Machine[]
+  sewing_operations SewingOperation[]
+  piece_rates      PieceRate[]
+  production_lines ProductionLine[]
+  work_stations    WorkStation[]
+  production_schedules ProductionSchedule[]
+  material_inventory MaterialInventory[]
+  ai_analysis      AIAnalysis[]
+  
+  // Stage 3: Quality Control Relations
+  qc_inspection_points QCInspectionPoint[]
+  qc_inspections   QCInspection[] @relation("WorkspaceQCInspections")
+  qc_defect_types  QCDefectType[]
+  qc_defects       QCDefect[] @relation("WorkspaceQCDefects")
+  capa_tasks       CAPATask[] @relation("WorkspaceCAPATasks")
+  quality_metrics  QualityMetric[]
+  quality_data_points QualityDataPoint[]
+  quality_predictions QualityPrediction[]
+  
+  // Stage 4: Design Management Relations
+  design_collaborations DesignCollaboration[]
+  design_comments  DesignComment[]
+  design_workflows DesignApprovalWorkflow[]
+  design_approvals DesignApproval[] @relation("WorkspaceDesignApprovals")
+  design_validations DesignFileValidation[]
+  design_templates DesignTemplate[]
+  design_mockups   DesignMockup[]
+  design_estimates DesignCostEstimate[]
+  design_specs     DesignProductionSpec[]
+  design_analytics DesignAnalytics[]
+  
+  // Stage 7: Finishing & Packing Relations
+  finishing_runs   FinishingRun[]
+  finished_units   FinishedUnit[]
+  cartons          Carton[]
+  shipments        Shipment[]
+  
+  // Stage 8: Delivery Relations
+  deliveries       Delivery[]
+  
+  // Stage 2: Production Planning Relations
+  worker_assignments WorkerAssignment[] @relation("WorkspaceWorkerAssignments")
+  worker_allocations WorkerAllocation[] @relation("WorkspaceWorkerAllocations")
+  material_requirements MaterialRequirement[] @relation("WorkspaceMaterialRequirements")
+  material_transactions MaterialTransaction[] @relation("WorkspaceMaterialTransactions")
+  production_progress_logs ProductionProgressLog[] @relation("WorkspaceProductionProgressLogs")
+  
+  @@map("workspaces")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  email           String
+  username        String?
+  password_hash   String?
+  first_name      String
+  last_name       String
+  role            String    // Role as string instead of enum
+  permissions     String?   // JSON array as string
+  is_active       Boolean   @default(true)
+  requires_2fa    Boolean   @default(false)
+  phone_number    String?
+  avatar_url      String?
+  last_login_at   DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+  deleted_at      DateTime?
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  
+  // Stage 2: Production Planning Relations
+  created_schedules  ProductionSchedule[]
+  progress_logs      ProductionProgressLog[]
+  material_transactions MaterialTransaction[]
+  ai_analysis        AIAnalysis[]
+  
+  @@unique([workspace_id, email])
+  @@map("users")
+}
+
+// ===== CLIENTS & BRANDS =====
+
+model Client {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  name            String
+  contact_person  String?
+  email           String?
+  phone           String?
+  address         String?  // JSON as string
+  tax_id          String?
+  payment_terms   Int?     // days
+  credit_limit    Float?
+  is_active       Boolean  @default(true)
+  portal_settings String?  // JSON as string
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime?
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  brands          Brand[]
+  orders          Order[]
+  invoices        Invoice[]
+  design_approvals DesignApproval[]
+  
+  @@map("clients")
+}
+
+model Brand {
+  id           String   @id @default(cuid())
+  workspace_id String
+  client_id    String
+  name         String
+  code         String?  // Brand code for order numbering (e.g., REEF, URBN)
+  logo_url     String?
+  settings     String?  // JSON as string
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  deleted_at   DateTime?
+
+  // Relations
+  workspace      Workspace     @relation(fields: [workspace_id], references: [id])
+  client         Client        @relation(fields: [client_id], references: [id])
+  orders         Order[]
+  design_assets  DesignAsset[]
+  fabric_batches FabricBatch[]
+  piece_rates    PieceRate[]
+  
+  @@map("brands")
+}
+
+// ===== ORDERS & PRODUCTION =====
+
+model Order {
+  id              String      @id @default(cuid())
+  workspace_id    String
+  client_id       String
+  brand_id        String?
+  order_number    String
+  status          String      @default("draft") // OrderStatus as string
+  total_amount    Float
+  currency        String      @default("PHP")   // Currency as string
+  delivery_date   DateTime?
+  notes           String?
+  metadata        String?     // JSON as string
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  deleted_at      DateTime?
+
+  // Relations
+  workspace       Workspace     @relation(fields: [workspace_id], references: [id])
+  client          Client        @relation(fields: [client_id], references: [id])
+  brand           Brand?        @relation(fields: [brand_id], references: [id])
+  line_items      OrderLineItem[]
+  
+  // Stage 2: Production Planning Relations
+  production_schedules ProductionSchedule[]
+  material_requirements MaterialRequirement[]
+  design_assets   DesignAsset[]
+  routing_steps   RoutingStep[]
+  bundles         Bundle[]
+  invoices        Invoice[]
+  
+  // Stage 3: Quality Control Relations
+  qc_inspections  QCInspection[]
+  capa_tasks      CAPATask[] @relation("OrderCAPATasks")
+  quality_data_points QualityDataPoint[]
+  quality_predictions QualityPrediction[]
+  cut_issues      CutIssue[]
+  cut_lays        CutLay[]
+  print_runs      PrintRun[]
+  sewing_runs     SewingRun[]
+  
+  // Stage 7: Finishing & Packing Relations
+  finishing_runs  FinishingRun[]
+  finished_units  FinishedUnit[]
+  cartons         Carton[]
+  shipments       Shipment[]
+  
+  // Stage 8: Delivery Relations
+  deliveries      Delivery[]
+  
+  @@unique([workspace_id, order_number])
+  @@map("orders")
+}
+
+model OrderLineItem {
+  id           String  @id @default(cuid())
+  workspace_id String
+  order_id     String
+  sku          String?
+  description  String
+  quantity     Int
+  unit_price   Float
+  total_price  Float
+  printing_method String?  // PrintingMethod as string
+  garment_type String?
+  size_breakdown String?  // JSON as string
+  metadata     String?     // JSON as string
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  order        Order   @relation(fields: [order_id], references: [id])
+  
+  @@map("order_line_items")
+}
+
+// ===== DESIGN & ASSETS (Stage 2) =====
+
+// Master asset (logical design)
+model DesignAsset {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  brand_id        String
+  order_id        String
+  name            String
+  method          String   // SILKSCREEN/SUBLIMATION/DTF/EMBROIDERY
+  status          String   @default("DRAFT") // DRAFT/PENDING_APPROVAL/APPROVED/REJECTED/LOCKED
+  current_version Int      @default(1)
+  is_best_seller  Boolean  @default(false) // set by Ashley
+  tags            String?  // JSON array as string for SQLite
+  created_by      String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  brand           Brand     @relation(fields: [brand_id], references: [id])
+  order           Order     @relation(fields: [order_id], references: [id])
+  versions        DesignVersion[]
+  approvals       DesignApproval[]
+  checks          DesignCheck[]
+  
+  // Stage 4: Design Management Relations
+  collaborations  DesignCollaboration[]
+  comments        DesignComment[]
+  analytics       DesignAnalytics[]
+  
+  @@map("design_assets")
+}
+
+// Immutable file versions
+model DesignVersion {
+  id              String   @id @default(cuid())
+  asset_id        String
+  version         Int
+  files           String   // JSON: {mockup_url, prod_url, separations:[], dst_url}
+  placements      String   // JSON: [{area, width_cm, height_cm, offset_x, offset_y}]
+  palette         String?  // JSON: ["#000000","#19e5a5",...]
+  meta            String?  // JSON: {dpi, color_profile, notes}
+  created_by      String
+  created_at      DateTime @default(now())
+
+  // Relations
+  design_asset    DesignAsset    @relation(fields: [asset_id], references: [id])
+  embroidery_runs EmbroideryRun[]
+  
+  // Stage 4: Design Management Relations
+  collaborations  DesignCollaboration[]
+  comments        DesignComment[]
+  file_validations DesignFileValidation[]
+  mockups         DesignMockup[]
+  cost_estimates  DesignCostEstimate[]
+  production_specs DesignProductionSpec[]
+  
+  @@unique([asset_id, version])
+  @@map("design_versions")
+}
+
+// Client approval lifecycle
+model DesignApproval {
+  id                   String    @id @default(cuid())
+  workspace_id         String
+  asset_id             String
+  version              Int
+  status               String    @default("SENT") // SENT/APPROVED/CHANGES_REQUESTED/EXPIRED
+  client_id            String
+  employee_id          String?   // employee approver if internal
+  workflow_id          String?   // approval workflow
+  approver_name        String?
+  approver_email       String?
+  approver_signed_at   DateTime?
+  comments             String?
+  esign_envelope_id    String?
+  portal_token         String?   // Unique token for portal access
+  expires_at           DateTime?
+  created_at           DateTime  @default(now())
+
+  // Relations
+  workspace            Workspace   @relation("WorkspaceDesignApprovals", fields: [workspace_id], references: [id])
+  design_asset         DesignAsset @relation(fields: [asset_id], references: [id])
+  client               Client      @relation(fields: [client_id], references: [id])
+  employee             Employee?   @relation("EmployeeDesignApprovals", fields: [employee_id], references: [id])
+  workflow             DesignApprovalWorkflow? @relation("DesignApprovalWorkflowApprovals", fields: [workflow_id], references: [id])
+  
+  @@map("design_approvals")
+}
+
+// Ashley's printability analysis per version
+model DesignCheck {
+  id              String   @id @default(cuid())
+  asset_id        String
+  version         Int
+  method          String   // SILKSCREEN/SUBLIMATION/DTF/EMBROIDERY
+  result          String   // PASS/WARN/FAIL
+  issues          String?  // JSON: [{code,message,placement_ref}]
+  metrics         String?  // JSON: {min_dpi, expected_ink_g, stitch_count, aop_area_cm2, ...}
+  created_at      DateTime @default(now())
+
+  // Relations
+  design_asset    DesignAsset @relation(fields: [asset_id], references: [id])
+  
+  @@map("design_checks")
+}
+
+// ===== PRODUCTION ROUTING =====
+
+model RoutingTemplate {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  name            String
+  description     String?
+  printing_method String   // PrintingMethod as string
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  steps           RoutingTemplateStep[]
+  
+  @@map("routing_templates")
+}
+
+model RoutingTemplateStep {
+  id                    String   @id @default(cuid())
+  workspace_id          String
+  routing_template_id   String
+  step_name             String
+  step_order            Int
+  department            String
+  estimated_hours       Float?
+  requires_qc           Boolean  @default(false)
+  dependencies          String?  // JSON array as string
+  metadata              String?  // JSON as string
+
+  // Relations
+  routing_template      RoutingTemplate @relation(fields: [routing_template_id], references: [id])
+  
+  @@map("routing_template_steps")
+}
+
+model RoutingStep {
+  id              String            @id @default(cuid())
+  workspace_id    String
+  order_id        String
+  step_name       String
+  step_order      Int
+  department      String
+  status          String            @default("pending") // ProductionStatus as string
+  started_at      DateTime?
+  completed_at    DateTime?
+  estimated_hours Float?
+  actual_hours    Float?
+  assigned_to     String?
+  notes           String?
+  metadata        String?           // JSON as string
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+
+  // Relations
+  order           Order         @relation(fields: [order_id], references: [id])
+  print_runs      PrintRun[]
+  sewing_runs     SewingRun[]
+  qc_inspections  QCInspection[]
+  finishing_runs  FinishingRun[] @relation("RoutingStepFinishingRuns")
+  
+  @@map("routing_steps")
+}
+
+// ===== PRODUCTION BUNDLES =====
+
+model Bundle {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  order_id        String
+  size_code       String
+  qty             Int
+  lay_id          String?
+  qr_code         String   @unique
+  status          String   @default("CREATED") // CREATED/IN_SEWING/DONE/REJECTED
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  order           Order              @relation(fields: [order_id], references: [id])
+  lay             CutLay?            @relation(fields: [lay_id], references: [id])
+  print_outputs   PrintRunOutput[]
+  print_rejects   PrintReject[]
+  sewing_runs     SewingRun[]
+  qc_inspections  QCInspection[]
+  
+  @@map("bundles")
+}
+
+// ===== EMPLOYEES & HR =====
+
+model Employee {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  employee_number String
+  first_name      String
+  last_name       String
+  position        String
+  department      String
+  hire_date       DateTime
+  salary_type     String   // SalaryType as string
+  base_salary     Float?
+  piece_rate      Float?
+  is_active       Boolean  @default(true)
+  contact_info    String?  // JSON as string
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime?
+
+  // Relations
+  workspace       Workspace          @relation(fields: [workspace_id], references: [id])
+  attendance      AttendanceLog[]
+  earnings        PayrollEarning[]
+  sewing_runs     SewingRun[]
+  qc_inspections  QCInspection[]
+  qc_defects      QCDefect[]
+  capa_assigned   CAPATask[]         @relation("CAPAAssignee")
+  capa_created    CAPATask[]         @relation("CAPACreator")
+  capa_verified   CAPATask[]         @relation("CAPAVerifier")
+  
+  // Stage 2: Production Planning Relations
+  worker_assignments WorkerAssignment[]
+  worker_allocations WorkerAllocation[]
+  
+  // Stage 3: Quality Control Relations  
+  capa_attachments   CAPAAttachment[]
+  capa_updates       CAPAUpdate[]
+  quality_data_points QualityDataPoint[] @relation("EmployeeQualityDataOperator")
+  quality_data_created QualityDataPoint[] @relation("EmployeeQualityDataCreator")
+  
+  // Stage 4: Design Management Relations
+  design_collaborations DesignCollaboration[]
+  design_comments    DesignComment[]
+  comment_resolutions DesignComment[]    @relation("CommentResolver")
+  design_workflows   DesignApprovalWorkflow[]
+  design_approvals   DesignApproval[] @relation("EmployeeDesignApprovals")
+  design_templates   DesignTemplate[]
+  design_mockups     DesignMockup[]
+  design_estimates   DesignCostEstimate[]
+  design_specs       DesignProductionSpec[]
+  
+  // Stage 7: Finishing & Packing Relations
+  finishing_runs     FinishingRun[]       @relation("FinishingOperator")
+  
+  @@unique([workspace_id, employee_number])
+  @@map("employees")
+}
+
+model AttendanceLog {
+  id           String     @id @default(cuid())
+  workspace_id String
+  employee_id  String
+  date         DateTime
+  time_in      DateTime?
+  time_out     DateTime?
+  break_minutes Int?
+  overtime_minutes Int?
+  status       String     // AttendanceStatus as string
+  notes        String?
+  metadata     String?    // JSON as string
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @updatedAt
+
+  // Relations
+  employee     Employee   @relation(fields: [employee_id], references: [id])
+  
+  @@unique([employee_id, date])
+  @@map("attendance_logs")
+}
+
+// ===== FINANCE =====
+
+model Invoice {
+  id              String        @id @default(cuid())
+  workspace_id    String
+  client_id       String
+  order_id        String?
+  invoice_number  String
+  status          String        @default("pending") // PaymentStatus as string
+  subtotal        Float
+  tax_amount      Float?
+  total_amount    Float
+  currency        String        @default("PHP") // Currency as string
+  due_date        DateTime?
+  paid_at         DateTime?
+  metadata        String?       // JSON as string
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  // Relations
+  client          Client  @relation(fields: [client_id], references: [id])
+  order           Order?  @relation(fields: [order_id], references: [id])
+  payments        Payment[]
+  
+  @@unique([workspace_id, invoice_number])
+  @@map("invoices")
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  workspace_id    String
+  invoice_id      String
+  amount          Float
+  currency        String        @default("PHP") // Currency as string
+  payment_method  String        // PaymentMethod as string
+  reference       String?
+  status          String        @default("pending") // PaymentStatus as string
+  processed_at    DateTime?
+  metadata        String?       // JSON as string
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  // Relations
+  invoice         Invoice @relation(fields: [invoice_id], references: [id])
+  
+  @@map("payments")
+}
+
+// ===== MAINTENANCE & ASSETS =====
+
+model Asset {
+  id              String     @id @default(cuid())
+  workspace_id    String
+  name            String
+  asset_number    String
+  type            String     // AssetType as string
+  category        String?
+  location        String?
+  purchase_date   DateTime?
+  purchase_cost   Float?
+  status          String     @default("active") // AssetStatus as string
+  metadata        String?    // JSON as string
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+  deleted_at      DateTime?
+
+  // Relations
+  workspace       Workspace    @relation(fields: [workspace_id], references: [id])
+  work_orders     WorkOrder[]
+  
+  @@unique([workspace_id, asset_number])
+  @@map("assets")
+}
+
+model WorkOrder {
+  id              String          @id @default(cuid())
+  workspace_id    String
+  asset_id        String
+  title           String
+  description     String?
+  type            String          // WorkOrderType as string
+  priority        String          // Priority as string
+  status          String          @default("open") // WorkOrderStatus as string
+  assigned_to     String?
+  scheduled_date  DateTime?
+  started_at      DateTime?
+  completed_at    DateTime?
+  cost            Float?
+  notes           String?
+  metadata        String?         // JSON as string
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+
+  // Relations
+  asset           Asset @relation(fields: [asset_id], references: [id])
+  
+  @@map("work_orders")
+}
+
+// ===== AUDIT & SYSTEM =====
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  workspace_id String
+  user_id      String?
+  action       String
+  resource     String
+  resource_id  String
+  old_values   String?  // JSON as string
+  new_values   String?  // JSON as string
+  ip_address   String?
+  user_agent   String?
+  created_at   DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+model Automation {
+  id           String          @id @default(cuid())
+  workspace_id String
+  name         String
+  description  String?
+  trigger_type String
+  conditions   String          // JSON as string
+  actions      String          // JSON as string
+  is_active    Boolean         @default(true)
+  last_run     DateTime?
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+
+  @@map("automations")
+}
+
+// ===== PRODUCTION STAGES =====
+
+// Stage 3: Cutting
+model FabricBatch {
+  id             String   @id @default(cuid())
+  workspace_id   String
+  brand_id       String
+  item_id        String?      // reference to inventory items if implemented
+  lot_no         String
+  uom            String       // KG or M
+  qty_on_hand    Float
+  gsm            Int?
+  width_cm       Int?
+  received_at    DateTime?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  // Relations
+  brand          Brand @relation(fields: [brand_id], references: [id])
+  cut_issues     CutIssue[]
+  
+  @@unique([workspace_id, lot_no])
+  @@map("fabric_batches")
+}
+
+model CutIssue {
+  id           String   @id @default(cuid())
+  workspace_id String
+  order_id     String
+  batch_id     String
+  qty_issued   Float
+  uom          String
+  issued_by    String
+  created_at   DateTime @default(now())
+
+  // Relations
+  order        Order @relation(fields: [order_id], references: [id])
+  batch        FabricBatch @relation(fields: [batch_id], references: [id])
+  
+  @@map("cut_issues")
+}
+
+model CutLay {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  order_id        String
+  marker_name     String?
+  marker_width_cm Int?
+  lay_length_m    Float
+  plies           Int
+  gross_used      Float        // kg or m (uom in batch)
+  offcuts         Float?       @default(0)
+  defects         Float?       @default(0)  
+  uom             String       // KG or M
+  created_by      String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  order           Order @relation(fields: [order_id], references: [id])
+  outputs         CutOutput[]
+  bundles         Bundle[]
+  
+  @@map("cut_lays")
+}
+
+model CutOutput {
+  id           String   @id @default(cuid())
+  workspace_id String
+  cut_lay_id   String
+  size_code    String
+  qty          Int
+  created_at   DateTime @default(now())
+
+  // Relations
+  cut_lay      CutLay @relation(fields: [cut_lay_id], references: [id])
+  
+  @@unique([cut_lay_id, size_code])
+  @@map("cut_outputs")
+}
+
+// Stage 4: Printing
+
+// Machine library (press, ovens, printers, emb machines)
+model Machine {
+  id           String   @id @default(cuid())
+  workspace_id String
+  workcenter   String   // PRINTING/HEAT_PRESS/EMB/DRYER
+  name         String
+  spec         String?  // JSON as string for bed_size, max_temp, lanes, etc.
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  workspace       Workspace        @relation(fields: [workspace_id], references: [id])
+  print_runs      PrintRun[]
+  silkscreen_curing CuringLog[]
+  sublimation_prints SublimationPrint[]
+  heat_press_logs    HeatPressLog[]
+  
+  // Stage 2: Production Planning Relations
+  work_stations   WorkStation[]
+  
+  @@map("machines")
+}
+
+// Core printing run table (linked to routing steps)
+model PrintRun {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  order_id        String
+  routing_step_id String?   // references routing_steps(id)
+  method          String    // SILKSCREEN/SUBLIMATION/DTF/EMBROIDERY
+  workcenter      String    // PRINTING/HEAT_PRESS/EMB
+  machine_id      String?
+  started_at      DateTime?
+  ended_at        DateTime?
+  status          String    @default("CREATED") // CREATED/IN_PROGRESS/PAUSED/DONE/CANCELLED
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  order              Order              @relation(fields: [order_id], references: [id])
+  machine            Machine?           @relation(fields: [machine_id], references: [id])
+  routing_step       RoutingStep?       @relation(fields: [routing_step_id], references: [id])
+  outputs            PrintRunOutput[]
+  materials          PrintRunMaterial[]
+  rejects            PrintReject[]
+  
+  // Method-specific relations
+  silkscreen_prep    SilkscreenPrep[]
+  silkscreen_specs   SilkscreenSpec[]
+  curing_logs        CuringLog[]
+  sublimation_prints SublimationPrint[]
+  heat_press_logs    HeatPressLog[]
+  dtf_prints         DtfPrint[]
+  dtf_powder_cures   DtfPowderCure[]
+  embroidery_runs    EmbroideryRun[]
+  
+  @@map("print_runs")
+}
+
+// Per-run outputs and materials
+model PrintRunOutput {
+  id         String   @id @default(cuid())
+  run_id     String
+  bundle_id  String?  // if operating on bundles
+  qty_good   Int      @default(0)
+  qty_reject Int      @default(0)
+  notes      String?
+  created_at DateTime @default(now())
+
+  // Relations
+  run    PrintRun @relation(fields: [run_id], references: [id])
+  bundle Bundle?  @relation(fields: [bundle_id], references: [id])
+  
+  @@map("print_run_outputs")
+}
+
+model PrintRunMaterial {
+  id              String   @id @default(cuid())
+  run_id          String
+  item_id         String?  // inventory item ID
+  uom             String   // g, m2, m, cone, sheet, pcs
+  qty             Float
+  source_batch_id String?  // inventory_batches
+  created_at      DateTime @default(now())
+
+  // Relations
+  run PrintRun @relation(fields: [run_id], references: [id])
+  
+  @@map("print_run_materials")
+}
+
+// Reject detail
+model PrintReject {
+  id               String   @id @default(cuid())
+  run_id           String
+  bundle_id        String?
+  reason_code      String   // MISALIGNMENT/PEEL/CRACK/GHOST/PUCKERING/...
+  qty              Int
+  photo_url        String?
+  cost_attribution String?  // SUPPLIER/STAFF/COMPANY/CLIENT
+  created_at       DateTime @default(now())
+
+  // Relations
+  run    PrintRun @relation(fields: [run_id], references: [id])
+  bundle Bundle?  @relation(fields: [bundle_id], references: [id])
+  
+  @@map("print_rejects")
+}
+
+// Silkscreen-specific tables
+model SilkscreenPrep {
+  id                 String   @id @default(cuid())
+  run_id             String
+  screen_id          String
+  mesh_count         Int
+  emulsion_batch     String?
+  exposure_seconds   Int?
+  registration_notes String?
+  created_at         DateTime @default(now())
+
+  // Relations
+  run PrintRun @relation(fields: [run_id], references: [id])
+  
+  @@map("silkscreen_prep")
+}
+
+model SilkscreenSpec {
+  id                  String   @id @default(cuid())
+  run_id              String
+  ink_type            String   // PLASTISOL/WATER/PUFF/ANTI_MIGRATION
+  coats               Int
+  squeegee_durometer  Int?     // 60/70/80
+  floodbar            String?
+  expected_ink_g      Float?   // AI estimation
+  created_at          DateTime @default(now())
+
+  // Relations
+  run PrintRun @relation(fields: [run_id], references: [id])
+  
+  @@map("silkscreen_specs")
+}
+
+model CuringLog {
+  id         String   @id @default(cuid())
+  run_id     String
+  dryer_id   String?
+  temp_c     Int
+  seconds    Int
+  belt_speed String?
+  created_at DateTime @default(now())
+
+  // Relations
+  run   PrintRun @relation(fields: [run_id], references: [id])
+  dryer Machine? @relation(fields: [dryer_id], references: [id])
+  
+  @@map("curing_logs")
+}
+
+// Sublimation-specific tables
+model SublimationPrint {
+  id         String   @id @default(cuid())
+  run_id     String
+  printer_id String?
+  paper_m2   Float
+  ink_g      Float?
+  created_at DateTime @default(now())
+
+  // Relations
+  run     PrintRun @relation(fields: [run_id], references: [id])
+  printer Machine? @relation(fields: [printer_id], references: [id])
+  
+  @@map("sublimation_prints")
+}
+
+model HeatPressLog {
+  id         String   @id @default(cuid())
+  run_id     String
+  press_id   String?
+  temp_c     Int
+  seconds    Int
+  pressure   String?  // light/medium/firm
+  cycles     Int      @default(1)
+  created_at DateTime @default(now())
+
+  // Relations
+  run   PrintRun @relation(fields: [run_id], references: [id])
+  press Machine? @relation(fields: [press_id], references: [id])
+  
+  @@map("heat_press_logs")
+}
+
+// DTF-specific tables
+model DtfPrint {
+  id         String   @id @default(cuid())
+  run_id     String
+  film_m2    Float
+  ink_g      Float?
+  created_at DateTime @default(now())
+
+  // Relations
+  run PrintRun @relation(fields: [run_id], references: [id])
+  
+  @@map("dtf_prints")
+}
+
+model DtfPowderCure {
+  id         String   @id @default(cuid())
+  run_id     String
+  powder_g   Float
+  temp_c     Int
+  seconds    Int
+  created_at DateTime @default(now())
+
+  // Relations
+  run PrintRun @relation(fields: [run_id], references: [id])
+  
+  @@map("dtf_powder_cures")
+}
+
+// Embroidery-specific tables
+model EmbroideryRun {
+  id                  String   @id @default(cuid())
+  run_id              String
+  design_version_id   String?  // link to design_versions
+  stitch_count        Int
+  machine_spm         Int?     // stitches per minute
+  stabilizer_type     String?
+  thread_colors       String?  // JSON array
+  thread_breaks       Int      @default(0)
+  runtime_minutes     Float?
+  created_at          DateTime @default(now())
+
+  // Relations
+  run     PrintRun      @relation(fields: [run_id], references: [id])
+  design  DesignVersion? @relation(fields: [design_version_id], references: [id])
+  
+  @@map("embroidery_runs")
+}
+
+// Stage 5: Sewing
+
+// ================================
+// Stage 6: Quality Control Operations
+// ================================
+
+// Defect codes library for standardized defect tracking
+model QCDefectCode {
+  id           String   @id @default(cuid())
+  workspace_id String
+  code         String   // "STAIN_01", "HOLE_02", etc.
+  name         String   // "Oil stain", "Pinhole", etc.
+  category     String   // "FABRIC", "SEWING", "PRINTING", "FINISHING"
+  severity     String   // "CRITICAL", "MAJOR", "MINOR"
+  description  String?
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  defects      QCDefect[]
+
+  @@unique([workspace_id, code])
+  @@map("qc_defect_codes")
+}
+
+// Quality control checklists for different inspection types
+model QCChecklist {
+  id           String   @id @default(cuid())
+  workspace_id String
+  name         String   // "Final QC Checklist", "Inline Sewing QC", etc.
+  type         String   // "INLINE_PRINTING", "INLINE_SEWING", "FINAL"
+  category     String   // "VISUAL", "MEASUREMENTS", "FUNCTIONAL"
+  items        String   // JSON array of checklist items
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  inspections  QCInspection[]
+
+  @@map("qc_checklists")
+}
+
+// Main QC inspection record with AQL sampling
+model QCInspection {
+  id                String    @id @default(cuid())
+  workspace_id      String
+  order_id          String
+  routing_step_id   String?   // for inline QC
+  bundle_id         String?   // for bundle-specific QC
+  inspection_point_id String?  // for QC inspection point
+  checklist_id      String?
+  inspector_id      String
+  stage             String    // PRINTING/SEWING/FINAL
+  inspection_level  String    @default("GII") // ANSI/ASQ Z1.4 inspection levels
+  aql               Float     @default(2.5)   // AQL level
+  lot_size          Int       // total quantity being inspected
+  sample_size       Int       // calculated sample size based on AQL
+  acceptance        Int       // acceptance number (Ac)
+  rejection         Int       // rejection number (Re)
+  critical_found    Int       @default(0)
+  major_found       Int       @default(0)
+  minor_found       Int       @default(0)
+  status            String    @default("OPEN") // OPEN/PASSED/FAILED/CLOSED
+  result            String?   // "PASSED", "FAILED"
+  disposition       String?   // "REWORK", "SCRAP", "USE_AS_IS", "RETURN_TO_VENDOR"
+  hold_shipment     Boolean   @default(false) // blocks Stage 7 until cleared
+  inspection_date   DateTime
+  started_at        DateTime?
+  completed_at      DateTime?
+  closed_at         DateTime?
+  notes             String?
+  ashley_analysis   String?   // JSON: Ashley AI analysis results
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  // Relations
+  workspace         Workspace     @relation("WorkspaceQCInspections", fields: [workspace_id], references: [id])
+  order             Order         @relation(fields: [order_id], references: [id])
+  routing_step      RoutingStep?  @relation(fields: [routing_step_id], references: [id])
+  bundle            Bundle?       @relation(fields: [bundle_id], references: [id])
+  checklist         QCChecklist?  @relation(fields: [checklist_id], references: [id])
+  inspector         Employee      @relation(fields: [inspector_id], references: [id])
+  inspection_point  QCInspectionPoint? @relation("QCInspectionPointInspections", fields: [inspection_point_id], references: [id])
+  samples           QCSample[]
+  defects           QCDefect[]
+  capa_tasks        CAPATask[]
+
+  @@map("qc_inspections")
+}
+
+// QC sampling records for statistical tracking
+model QCSample {
+  id            String   @id @default(cuid())
+  workspace_id  String
+  inspection_id String
+  sample_no     Int      // 1, 2, 3... within the inspection
+  sampled_from  String?  // bundle_id/carton_id/line reference
+  unit_ref      String?  // optional unique unit reference
+  qty_sampled   Int      // quantity in this sample
+  defects_found Int      @default(0)
+  result        String   @default("OK") // OK/DEFECT
+  sample_data   String?  // JSON: measurement data, photos, etc.
+  sampled_at    DateTime @default(now())
+
+  // Relations
+  inspection    QCInspection @relation(fields: [inspection_id], references: [id])
+  defects       QCDefect[]
+
+  @@unique([inspection_id, sample_no])
+  @@map("qc_samples")
+}
+
+// Individual defect records linked to defect codes
+model QCDefect {
+  id             String      @id @default(cuid())
+  workspace_id   String
+  inspection_id  String
+  sample_id      String?     // if defect found in specific sample
+  defect_code_id String
+  defect_type_id String?     // QC defect type
+  quantity       Int         @default(1)
+  severity       String      // "CRITICAL", "MAJOR", "MINOR"
+  location       String?     // where on garment: "LEFT_CHEST", "BACK", etc.
+  description    String?     // specific details about this defect
+  photo_url      String?     // evidence photo
+  operator_id    String?     // who was responsible (if known)
+  root_cause     String?     // preliminary root cause analysis
+  created_at     DateTime    @default(now())
+
+  // Relations
+  workspace      Workspace    @relation("WorkspaceQCDefects", fields: [workspace_id], references: [id])
+  inspection     QCInspection @relation(fields: [inspection_id], references: [id])
+  sample         QCSample?    @relation(fields: [sample_id], references: [id])
+  defect_code    QCDefectCode @relation(fields: [defect_code_id], references: [id])
+  defect_type    QCDefectType? @relation("QCDefectTypeDefects", fields: [defect_type_id], references: [id])
+  operator       Employee?    @relation(fields: [operator_id], references: [id])
+  capa_tasks     CAPATask[]
+
+  @@map("qc_defects")
+}
+
+// CAPA (Corrective and Preventive Action) management
+model CAPATask {
+  id              String        @id @default(cuid())
+  workspace_id    String
+  order_id        String?       // related order if applicable
+  capa_number     String        // auto-generated CAPA reference
+  title           String
+  type            String        // "CORRECTIVE", "PREVENTIVE"
+  priority        String        // "LOW", "MEDIUM", "HIGH", "CRITICAL"
+  status          String        @default("OPEN") // "OPEN", "IN_PROGRESS", "PENDING_VERIFICATION", "CLOSED"
+  source_type     String        // "QC_INSPECTION", "CUSTOMER_COMPLAINT", "INTERNAL_AUDIT"
+  source_id       String?       // ID of the source record
+  inspection_id   String?       // if triggered by QC inspection
+  defect_id       String?       // if triggered by specific defect
+  root_cause      String?       // detailed root cause analysis
+  corrective_action String?     // immediate corrective actions taken
+  preventive_action String?     // long-term preventive measures
+  assigned_to     String?       // employee responsible
+  due_date        DateTime?
+  completed_at    DateTime?
+  verified_by     String?       // who verified the effectiveness
+  verified_at     DateTime?
+  effectiveness   String?       // "EFFECTIVE", "PARTIALLY_EFFECTIVE", "INEFFECTIVE"
+  notes           String?
+  created_by      String
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  // Relations
+  workspace       Workspace     @relation("WorkspaceCAPATasks", fields: [workspace_id], references: [id])
+  order           Order?        @relation("OrderCAPATasks", fields: [order_id], references: [id])
+  inspection      QCInspection? @relation(fields: [inspection_id], references: [id])
+  defect          QCDefect?     @relation(fields: [defect_id], references: [id])
+  assignee        Employee?     @relation("CAPAAssignee", fields: [assigned_to], references: [id])
+  creator         Employee      @relation("CAPACreator", fields: [created_by], references: [id])
+  verifier        Employee?     @relation("CAPAVerifier", fields: [verified_by], references: [id])
+  attachments     CAPAAttachment[] @relation("CAPATaskAttachments")
+  updates         CAPAUpdate[]  @relation("CAPATaskUpdates")
+
+  @@unique([workspace_id, capa_number])
+  @@map("capa_tasks")
+}
+
+// Stage 10: Payroll
+model PayrollPeriod {
+  id           String   @id @default(cuid())
+  workspace_id String
+  period_start DateTime
+  period_end   DateTime
+  status       String   @default("draft") // PayrollStatus as string
+  total_amount Float?
+  processed_at DateTime?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  earnings     PayrollEarning[]
+  
+  @@map("payroll_periods")
+}
+
+model PayrollEarning {
+  id               String   @id @default(cuid())
+  workspace_id     String
+  payroll_period_id String
+  employee_id      String
+  regular_hours    Float?
+  overtime_hours   Float?
+  piece_count      Int?
+  piece_rate       Float?
+  gross_pay        Float
+  deductions       Float?
+  net_pay          Float
+  metadata         String?  // JSON as string
+  created_at       DateTime @default(now())
+
+  // Relations
+  payroll_period   PayrollPeriod @relation(fields: [payroll_period_id], references: [id])
+  employee         Employee      @relation(fields: [employee_id], references: [id])
+  
+  @@unique([payroll_period_id, employee_id])
+  @@map("payroll_earnings")
+}
+
+// ================================
+// Stage 5: Sewing Operations
+// ================================
+
+// Operation library (per product type)
+model SewingOperation {
+  id               String   @id @default(cuid())
+  workspace_id     String
+  product_type     String   // Tee/Hoodie/Jersey/...
+  name             String   // "Join shoulders","Attach collar",...
+  standard_minutes Float    // SMV
+  piece_rate       Float?   // pay per piece for this op (optional; else from rates table)
+  depends_on       String?  // JSON array as string for SQLite
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  workspace        Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@map("sewing_operations")
+}
+
+// Rates by brand/role (fallback)
+model PieceRate {
+  id             String    @id @default(cuid())
+  workspace_id   String
+  brand_id       String?
+  operation_name String
+  rate           Float     // PHP per piece
+  effective_from DateTime?
+  effective_to   DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  // Relations
+  workspace      Workspace @relation(fields: [workspace_id], references: [id])
+  brand          Brand?    @relation(fields: [brand_id], references: [id])
+
+  @@map("piece_rates")
+}
+
+// Sewing runs (per bundle per operation)
+model SewingRun {
+  id                String    @id @default(cuid())
+  order_id          String
+  routing_step_id   String
+  operation_name    String
+  operator_id       String
+  bundle_id         String
+  started_at        DateTime?
+  ended_at          DateTime?
+  qty_good          Int       @default(0)
+  qty_reject        Int       @default(0)
+  reject_reason     String?
+  reject_photo_url  String?
+  earned_minutes    Float?    // qty_good × SMV
+  piece_rate_pay    Float?    // calculated pay
+  actual_minutes    Float?    // ended_at - started_at in minutes
+  efficiency_pct    Float?    // (earned_minutes / actual_minutes) * 100
+  status            String    @default("CREATED") // CREATED/IN_PROGRESS/DONE
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  // Relations
+  order             Order         @relation(fields: [order_id], references: [id])
+  routing_step      RoutingStep   @relation(fields: [routing_step_id], references: [id])
+  operator          Employee      @relation(fields: [operator_id], references: [id])
+  bundle            Bundle        @relation(fields: [bundle_id], references: [id])
+
+  @@map("sewing_runs")
+}
+
+// ===== STAGE 2: PRODUCTION PLANNING & WORKFLOW MANAGEMENT =====
+
+// Production Lines (organized workstations)
+model ProductionLine {
+  id           String   @id @default(cuid())
+  workspace_id String
+  name         String   // "Line A", "Cut Line 1", "Print Station"
+  type         String   // CUT/PRINT/SEW/PACK/QC
+  capacity     Int      // max pieces per day
+  efficiency   Float    @default(85) // percentage
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  workspace      Workspace      @relation(fields: [workspace_id], references: [id])
+  work_stations  WorkStation[]
+  schedules      ProductionSchedule[]
+  allocations    WorkerAllocation[]
+  
+  // Stage 3: Quality Control Relations
+  quality_data_points QualityDataPoint[]
+
+  @@map("production_lines")
+}
+
+// Individual work stations within lines
+model WorkStation {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  production_line_id String
+  name              String   // "Cutting Table 1", "Sewing Machine 15"
+  station_type      String   // CUTTING/OVERLOCK/FLATBED/BUTTONHOLE/PRESS
+  hourly_capacity   Int      // pieces per hour
+  skill_required    String?  // BEGINNER/INTERMEDIATE/ADVANCED
+  machine_id        String?  // optional link to machine
+  is_active         Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace        Workspace      @relation(fields: [workspace_id], references: [id])
+  production_line  ProductionLine @relation(fields: [production_line_id], references: [id])
+  machine          Machine?       @relation(fields: [machine_id], references: [id])
+  assignments      WorkerAssignment[]
+  
+  @@map("work_stations")
+}
+
+// Production scheduling and planning
+model ProductionSchedule {
+  id                String    @id @default(cuid())
+  workspace_id      String
+  order_id          String
+  production_line_id String
+  stage             String    // CUT/PRINT/SEW/QC/PACK
+  planned_start     DateTime
+  planned_end       DateTime
+  actual_start      DateTime?
+  actual_end        DateTime?
+  planned_quantity  Int
+  completed_quantity Int      @default(0)
+  status            String    @default("PLANNED") // PLANNED/IN_PROGRESS/COMPLETED/DELAYED/CANCELLED
+  priority          Int       @default(5) // 1=highest, 10=lowest
+  dependencies      String?   // JSON array of dependent schedule IDs
+  notes             String?
+  created_by        String
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  // Relations
+  workspace        Workspace      @relation(fields: [workspace_id], references: [id])
+  order            Order          @relation(fields: [order_id], references: [id])
+  production_line  ProductionLine @relation(fields: [production_line_id], references: [id])
+  created_by_user  User           @relation(fields: [created_by], references: [id])
+  worker_assignments WorkerAssignment[]
+  progress_logs    ProductionProgressLog[]
+  
+  @@map("production_schedules")
+}
+
+// Worker assignments to production tasks
+model WorkerAssignment {
+  id                  String    @id @default(cuid())
+  workspace_id        String
+  production_schedule_id String
+  worker_id           String
+  work_station_id     String?
+  assigned_date       DateTime
+  assigned_hours      Float     // planned hours
+  actual_hours        Float?    // actual logged hours
+  efficiency_rating   Float?    // calculated efficiency
+  status              String    @default("ASSIGNED") // ASSIGNED/ACTIVE/COMPLETED/ABSENT
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  // Relations
+  workspace           Workspace         @relation("WorkspaceWorkerAssignments", fields: [workspace_id], references: [id])
+  production_schedule ProductionSchedule @relation(fields: [production_schedule_id], references: [id])
+  worker              Employee          @relation(fields: [worker_id], references: [id])
+  work_station        WorkStation?      @relation(fields: [work_station_id], references: [id])
+  
+  @@unique([production_schedule_id, worker_id, assigned_date])
+  @@map("worker_assignments")
+}
+
+// Worker allocation to production lines (capacity planning)
+model WorkerAllocation {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  production_line_id String
+  worker_id         String
+  allocation_date   DateTime
+  shift             String   // MORNING/AFTERNOON/NIGHT
+  hours_allocated   Float
+  skill_level       String   // BEGINNER/INTERMEDIATE/ADVANCED
+  hourly_rate       Float?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace        Workspace      @relation("WorkspaceWorkerAllocations", fields: [workspace_id], references: [id])
+  production_line  ProductionLine @relation(fields: [production_line_id], references: [id])
+  worker           Employee       @relation(fields: [worker_id], references: [id])
+  
+  @@unique([production_line_id, worker_id, allocation_date, shift])
+  @@map("worker_allocations")
+}
+
+// Material inventory and requirement planning
+model MaterialInventory {
+  id               String    @id @default(cuid())
+  workspace_id     String
+  material_type    String    // FABRIC/THREAD/BUTTON/ZIPPER/LABEL
+  material_name    String
+  supplier         String?
+  color            String?
+  unit             String    // YARDS/METERS/PIECES/KG
+  current_stock    Float
+  reserved_stock   Float     @default(0) // allocated to orders
+  available_stock  Float     // current - reserved
+  minimum_stock    Float     @default(0)
+  reorder_point    Float     @default(0)
+  cost_per_unit    Float?
+  last_updated     DateTime  @default(now())
+  location         String?   // warehouse location
+  batch_number     String?
+  expiry_date      DateTime?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  // Relations
+  workspace         Workspace            @relation(fields: [workspace_id], references: [id])
+  requirements      MaterialRequirement[]
+  transactions      MaterialTransaction[]
+  
+  @@unique([workspace_id, material_name, color, batch_number])
+  @@map("material_inventory")
+}
+
+// Material requirements per order
+model MaterialRequirement {
+  id                  String   @id @default(cuid())
+  workspace_id        String
+  order_id            String
+  material_inventory_id String
+  required_quantity   Float
+  allocated_quantity  Float    @default(0)
+  consumed_quantity   Float    @default(0)
+  waste_percentage    Float    @default(5) // estimated waste
+  status              String   @default("PLANNED") // PLANNED/ALLOCATED/PARTIALLY_CONSUMED/CONSUMED
+  cost_estimate       Float?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  // Relations
+  workspace         Workspace         @relation("WorkspaceMaterialRequirements", fields: [workspace_id], references: [id])
+  order             Order             @relation(fields: [order_id], references: [id])
+  material_inventory MaterialInventory @relation(fields: [material_inventory_id], references: [id])
+  
+  @@unique([order_id, material_inventory_id])
+  @@map("material_requirements")
+}
+
+// Material transactions (in/out/waste)
+model MaterialTransaction {
+  id                  String   @id @default(cuid())
+  workspace_id        String
+  material_inventory_id String
+  transaction_type    String   // IN/OUT/WASTE/ADJUSTMENT
+  quantity            Float
+  unit_cost           Float?
+  reference_type      String?  // ORDER/PURCHASE/ADJUSTMENT
+  reference_id        String?  // order_id, po_id, etc.
+  notes               String?
+  created_by          String
+  created_at          DateTime @default(now())
+
+  // Relations
+  workspace         Workspace         @relation("WorkspaceMaterialTransactions", fields: [workspace_id], references: [id])
+  material_inventory MaterialInventory @relation(fields: [material_inventory_id], references: [id])
+  created_by_user   User              @relation(fields: [created_by], references: [id])
+  
+  @@map("material_transactions")
+}
+
+// Production progress tracking
+model ProductionProgressLog {
+  id                  String   @id @default(cuid())
+  workspace_id        String
+  production_schedule_id String
+  stage               String   // specific stage/operation
+  quantity_completed  Int
+  quantity_rejected   Int      @default(0)
+  quality_score       Float?   // 0-100
+  notes               String?
+  logged_by           String
+  logged_at           DateTime @default(now())
+
+  // Relations
+  workspace           Workspace         @relation("WorkspaceProductionProgressLogs", fields: [workspace_id], references: [id])
+  production_schedule ProductionSchedule @relation(fields: [production_schedule_id], references: [id])
+  logged_by_user      User              @relation(fields: [logged_by], references: [id])
+  
+  @@map("production_progress_logs")
+}
+
+// Ashley AI analysis and recommendations
+model AIAnalysis {
+  id           String   @id @default(cuid())
+  workspace_id String
+  entity       String   // ORDER/CLIENT/PRODUCTION/MATERIAL
+  entity_id    String
+  stage        String   // ORDER_INTAKE/PRODUCTION_PLANNING/QC
+  analysis_type String   // FEASIBILITY/RISK_ASSESSMENT/OPTIMIZATION
+  risk         String   // GREEN/AMBER/RED
+  confidence   Float    // 0-1
+  issues       String?  // JSON array of issues
+  recommendations String? // JSON array of recommendations
+  metadata     String?  // JSON additional data
+  cache_key    String?  // for caching results
+  result       String?  // full JSON result
+  created_by   String
+  created_at   DateTime @default(now())
+
+  // Relations
+  workspace    Workspace @relation(fields: [workspace_id], references: [id])
+  created_by_user User   @relation(fields: [created_by], references: [id])
+  
+  @@index([workspace_id, entity, entity_id])
+  @@index([cache_key])
+  @@map("ai_analysis")
+}
+
+// ===== STAGE 3: QUALITY CONTROL & ASHLEY AI OPTIMIZATION =====
+
+// Quality Control Inspection Points
+model QCInspectionPoint {
+  id           String   @id @default(cuid())
+  workspace_id String
+  name         String   // "Cutting Inspection", "Print Quality Check", "Final Inspection"
+  stage        String   // CUT/PRINT/SEW/PACK/FINAL
+  sequence     Int      // Order of inspection
+  is_mandatory Boolean  @default(true)
+  criteria     String   // JSON array of inspection criteria
+  standards    String?  // JSON quality standards and tolerances
+  photo_required Boolean @default(true)
+  ai_enabled   Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  workspace    Workspace @relation(fields: [workspace_id], references: [id])
+  inspections  QCInspection[] @relation("QCInspectionPointInspections")
+  defect_types QCDefectType[]
+  
+  @@map("qc_inspection_points")
+}
+
+// Quality Control Defect Types
+model QCDefectType {
+  id                    String   @id @default(cuid())
+  workspace_id          String
+  inspection_point_id   String
+  name                  String   // "Color Bleeding", "Uneven Stitching", "Misaligned Print"
+  category              String   // CRITICAL/MAJOR/MINOR
+  severity              Int      @default(5) // 1-10 severity scale
+  description           String
+  root_causes           String?  // JSON array of possible causes
+  preventive_actions    String?  // JSON array of prevention methods
+  detection_pattern     String?  // AI pattern for automatic detection
+  cost_impact           Float?   // PHP cost per defect
+  customer_impact       String?  // HIGH/MEDIUM/LOW
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  // Relations
+  workspace         Workspace         @relation(fields: [workspace_id], references: [id])
+  inspection_point  QCInspectionPoint @relation(fields: [inspection_point_id], references: [id])
+  defects           QCDefect[] @relation("QCDefectTypeDefects")
+  
+  @@map("qc_defect_types")
+}
+
+// CAPA attachments (photos, documents)
+model CAPAAttachment {
+  id          String   @id @default(cuid())
+  capa_id     String
+  filename    String
+  file_url    String
+  file_type   String   // image/pdf/document
+  file_size   Int?     // bytes
+  description String?
+  uploaded_by String
+  uploaded_at DateTime @default(now())
+
+  // Relations
+  capa        CAPATask @relation("CAPATaskAttachments", fields: [capa_id], references: [id])
+  uploader    Employee @relation(fields: [uploaded_by], references: [id])
+  
+  @@map("capa_attachments")
+}
+
+// CAPA progress updates
+model CAPAUpdate {
+  id          String   @id @default(cuid())
+  capa_id     String
+  update_text String
+  status      String?  // New status if changed
+  updated_by  String
+  updated_at  DateTime @default(now())
+
+  // Relations
+  capa     CAPATask @relation("CAPATaskUpdates", fields: [capa_id], references: [id])
+  updater  Employee @relation(fields: [updated_by], references: [id])
+  
+  @@map("capa_updates")
+}
+
+// Quality metrics and SPC (Statistical Process Control)
+model QualityMetric {
+  id               String   @id @default(cuid())
+  workspace_id     String
+  metric_name      String   // "First Pass Yield", "Defect Rate", "Customer Complaints"
+  metric_type      String   // PERCENTAGE/COUNT/MEASUREMENT
+  category         String   // PROCESS/PRODUCT/CUSTOMER
+  target_value     Float
+  warning_limit    Float?   // Upper warning limit
+  control_limit    Float?   // Upper control limit
+  lower_warning    Float?   // Lower warning limit
+  lower_control    Float?   // Lower control limit
+  unit             String?  // %, pieces, cm, etc.
+  calculation_method String? // How the metric is calculated
+  frequency        String   @default("DAILY") // HOURLY/DAILY/WEEKLY/MONTHLY
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  workspace     Workspace @relation(fields: [workspace_id], references: [id])
+  data_points   QualityDataPoint[]
+  
+  @@map("quality_metrics")
+}
+
+// Quality metric data points for SPC charts
+model QualityDataPoint {
+  id            String   @id @default(cuid())
+  workspace_id  String
+  metric_id     String
+  measured_value Float
+  sample_size   Int?
+  measurement_date DateTime
+  shift         String?  // MORNING/AFTERNOON/NIGHT
+  production_line_id String?
+  order_id      String?
+  operator_id   String?
+  notes         String?
+  is_outlier    Boolean  @default(false)
+  created_by    String
+  created_at    DateTime @default(now())
+
+  // Relations
+  workspace       Workspace       @relation(fields: [workspace_id], references: [id])
+  metric          QualityMetric   @relation(fields: [metric_id], references: [id])
+  production_line ProductionLine? @relation(fields: [production_line_id], references: [id])
+  order           Order?          @relation(fields: [order_id], references: [id])
+  operator        Employee?       @relation("EmployeeQualityDataOperator", fields: [operator_id], references: [id])
+  creator         Employee        @relation("EmployeeQualityDataCreator", fields: [created_by], references: [id])
+  
+  @@map("quality_data_points")
+}
+
+// Ashley AI Quality Predictions
+model QualityPrediction {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  order_id          String
+  prediction_type   String   // DEFECT_RISK/QUALITY_SCORE/COMPLETION_TIME
+  predicted_value   Float    // Predicted quality score or defect probability
+  confidence_level  Float    // 0-1 confidence
+  risk_factors      String   // JSON array of risk factors identified
+  recommendations   String   // JSON array of preventive actions
+  prediction_date   DateTime @default(now())
+  actual_outcome    Float?   // Actual result for learning
+  accuracy_score    Float?   // How accurate was the prediction
+  model_version     String?  // AI model version used
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace Workspace @relation(fields: [workspace_id], references: [id])
+  order     Order     @relation(fields: [order_id], references: [id])
+  
+  @@map("quality_predictions")
+}
+
+// ===== STAGE 4: DESIGN MANAGEMENT & CLIENT APPROVAL WORKFLOW =====
+
+// Enhanced design collaboration and feedback
+model DesignCollaboration {
+  id               String   @id @default(cuid())
+  workspace_id     String
+  design_asset_id  String
+  version_id       String
+  collaborator_id  String   // Employee or Client user ID
+  collaborator_type String  // INTERNAL/CLIENT/EXTERNAL
+  permission_level String   // VIEW/COMMENT/EDIT/APPROVE
+  invited_by       String
+  invited_at       DateTime @default(now())
+  accepted_at      DateTime?
+  last_accessed    DateTime?
+  is_active        Boolean  @default(true)
+
+  // Relations
+  workspace      Workspace     @relation(fields: [workspace_id], references: [id])
+  design_asset   DesignAsset   @relation(fields: [design_asset_id], references: [id])
+  design_version DesignVersion @relation(fields: [version_id], references: [id])
+  inviter        Employee      @relation(fields: [invited_by], references: [id])
+  comments       DesignComment[]
+  
+  @@map("design_collaborations")
+}
+
+// Design comments and feedback system
+model DesignComment {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  design_asset_id       String
+  version_id            String
+  collaboration_id      String?
+  comment_text          String
+  comment_type          String    @default("GENERAL") // GENERAL/REVISION_REQUEST/APPROVAL/REJECTION
+  position_x            Float?    // X coordinate for annotation
+  position_y            Float?    // Y coordinate for annotation
+  annotation_area       String?   // JSON for annotation area
+  priority              String    @default("NORMAL") // LOW/NORMAL/HIGH/CRITICAL
+  status                String    @default("OPEN") // OPEN/ADDRESSED/RESOLVED/DISMISSED
+  parent_comment_id     String?   // For threaded comments
+  attachments           String?   // JSON array of attachment URLs
+  mentioned_users       String?   // JSON array of mentioned user IDs
+  ashley_analysis       String?   // AI analysis of comment sentiment/priority
+  created_by            String
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+  resolved_by           String?
+  resolved_at           DateTime?
+
+  // Relations
+  workspace        Workspace           @relation(fields: [workspace_id], references: [id])
+  design_asset     DesignAsset         @relation(fields: [design_asset_id], references: [id])
+  design_version   DesignVersion       @relation(fields: [version_id], references: [id])
+  collaboration    DesignCollaboration? @relation(fields: [collaboration_id], references: [id])
+  parent_comment   DesignComment?      @relation("CommentThread", fields: [parent_comment_id], references: [id])
+  replies          DesignComment[]     @relation("CommentThread")
+  creator          Employee            @relation(fields: [created_by], references: [id])
+  resolver         Employee?           @relation("CommentResolver", fields: [resolved_by], references: [id])
+  
+  @@map("design_comments")
+}
+
+// Design approval workflow automation
+model DesignApprovalWorkflow {
+  id                 String   @id @default(cuid())
+  workspace_id       String
+  workflow_name      String   // "Standard Client Approval", "Internal Review Only"
+  description        String?
+  is_default         Boolean  @default(false)
+  client_types       String?  // JSON array of client types this applies to
+  garment_types      String?  // JSON array of garment types
+  approval_stages    String   // JSON array of approval stages
+  auto_advance       Boolean  @default(true) // Auto-advance on approval
+  notification_rules String   // JSON notification configuration
+  sla_hours          Int?     // Service Level Agreement in hours
+  escalation_rules   String?  // JSON escalation configuration
+  is_active          Boolean  @default(true)
+  created_by         String
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  // Relations
+  workspace    Workspace        @relation(fields: [workspace_id], references: [id])
+  creator      Employee         @relation(fields: [created_by], references: [id])
+  approvals    DesignApproval[] @relation("DesignApprovalWorkflowApprovals")
+  
+  @@map("design_approval_workflows")
+}
+
+// Enhanced design approvals with workflow integration
+// Note: This extends the existing DesignApproval model concept
+
+// Design file processing and validation
+model DesignFileValidation {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  design_version_id String
+  file_url          String
+  file_type         String   // AI/PSD/PDF/PNG/JPG/SVG
+  file_size         Int      // bytes
+  validation_status String   @default("PENDING") // PENDING/PROCESSING/VALID/INVALID/ERROR
+  validation_results String? // JSON validation results
+  issues_found      String?  // JSON array of issues
+  auto_corrections  String?  // JSON array of auto-corrections applied
+  color_profile     String?  // Color profile information
+  resolution_dpi    Int?
+  dimensions        String?  // JSON {width, height, unit}
+  color_count       Int?     // Number of colors detected
+  print_ready       Boolean  @default(false)
+  estimated_cost    Float?   // PHP estimated printing cost
+  ashley_analysis   String?  // AI analysis of design feasibility
+  processed_at      DateTime?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace      Workspace     @relation(fields: [workspace_id], references: [id])
+  design_version DesignVersion @relation(fields: [design_version_id], references: [id])
+  
+  @@map("design_file_validations")
+}
+
+// Design templates and library management
+model DesignTemplate {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  template_name   String
+  category        String   // T_SHIRT/POLO/HOODIE/CORPORATE/SPORTS
+  subcategory     String?  // BASIC/PREMIUM/VINTAGE/MODERN
+  description     String?
+  preview_url     String   // Template preview image
+  file_urls       String   // JSON array of template files
+  print_methods   String   // JSON array of compatible print methods
+  garment_types   String   // JSON array of compatible garments
+  color_variations String  // JSON array of color options
+  size_variations String   // JSON array of size compatibility
+  tags           String?   // JSON array of tags
+  usage_count    Int       @default(0)
+  rating         Float?    // Average user rating
+  is_premium     Boolean   @default(false)
+  is_active      Boolean   @default(true)
+  created_by     String
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  // Relations
+  workspace Workspace @relation(fields: [workspace_id], references: [id])
+  creator   Employee  @relation(fields: [created_by], references: [id])
+  
+  @@map("design_templates")
+}
+
+// Automated mockup generation system
+model DesignMockup {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  design_version_id String
+  mockup_type       String   // FLAT_LAY/HANGING/MODEL_WEARING/3D_RENDER
+  garment_style     String   // T_SHIRT/POLO/HOODIE/etc
+  garment_color     String   // HEX color code
+  mockup_url        String   // Generated mockup URL
+  generation_status String   @default("PENDING") // PENDING/PROCESSING/COMPLETED/FAILED
+  generation_params String?  // JSON generation parameters
+  processing_time   Float?   // Processing time in seconds
+  file_size         Int?     // Generated file size in bytes
+  is_client_facing  Boolean  @default(true)
+  watermarked       Boolean  @default(true)
+  high_res_url      String?  // High resolution version
+  created_by        String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace      Workspace     @relation(fields: [workspace_id], references: [id])
+  design_version DesignVersion @relation(fields: [design_version_id], references: [id])
+  creator        Employee?     @relation(fields: [created_by], references: [id])
+  
+  @@map("design_mockups")
+}
+
+// Design cost estimation and pricing
+model DesignCostEstimate {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  design_version_id String
+  estimation_type   String   // PRELIMINARY/DETAILED/FINAL
+  print_method      String   // SILKSCREEN/DTG/SUBLIMATION/EMBROIDERY
+  color_count       Int
+  complexity_score  Float    // 0-100 complexity rating
+  setup_cost        Float    // One-time setup cost
+  unit_cost         Float    // Cost per piece
+  minimum_quantity  Int      // Minimum order quantity
+  price_breaks      String   // JSON array of quantity price breaks
+  material_costs    String   // JSON breakdown of material costs
+  labor_costs       String   // JSON breakdown of labor costs
+  overhead_costs    Float    // Overhead allocation
+  margin_percentage Float    // Profit margin %
+  estimated_time    Float    // Production time estimate in hours
+  rush_surcharge    Float?   // Additional cost for rush orders
+  ashley_insights   String?  // AI cost optimization suggestions
+  valid_until       DateTime // Estimate validity date
+  created_by        String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace      Workspace     @relation(fields: [workspace_id], references: [id])
+  design_version DesignVersion @relation(fields: [design_version_id], references: [id])
+  creator        Employee      @relation(fields: [created_by], references: [id])
+  
+  @@map("design_cost_estimates")
+}
+
+// Design production specifications
+model DesignProductionSpec {
+  id                String   @id @default(cuid())
+  workspace_id      String
+  design_version_id String
+  print_method      String
+  ink_colors        String   // JSON array of ink specifications
+  print_positions   String   // JSON array of print positions and sizes
+  curing_temperature Float?  // For screen printing
+  curing_time       Float?   // In seconds
+  mesh_count        String?  // Screen mesh specifications
+  press_pressure    Float?   // Heat press pressure
+  press_time        Float?   // Heat press time
+  special_inks      String?  // JSON array of special ink requirements
+  pre_treatment     String?  // Pre-treatment requirements
+  post_processing   String?  // Post-processing steps
+  quality_checkpoints String // JSON array of quality check requirements
+  production_notes  String?  // Special production instructions
+  environmental_conditions String? // Temperature, humidity requirements
+  safety_requirements String? // Safety precautions
+  created_by        String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  workspace      Workspace     @relation(fields: [workspace_id], references: [id])
+  design_version DesignVersion @relation(fields: [design_version_id], references: [id])
+  creator        Employee      @relation(fields: [created_by], references: [id])
+  
+  @@map("design_production_specs")
+}
+
+// Design performance analytics
+model DesignAnalytics {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  design_asset_id String
+  metric_date     DateTime @default(now())
+  views_count     Int      @default(0)
+  downloads_count Int      @default(0)
+  approval_time   Float?   // Hours to approval
+  revision_count  Int      @default(0)
+  client_rating   Float?   // Client satisfaction rating
+  production_efficiency Float? // Production performance score
+  defect_rate     Float?   // Quality defect rate
+  reorder_rate    Float?   // Client reorder frequency
+  profit_margin   Float?   // Actual profit margin achieved
+  ashley_score    Float?   // AI overall design score
+  popularity_rank Int?     // Ranking among similar designs
+  seasonality_score Float? // Seasonal relevance score
+  created_at      DateTime @default(now())
+
+  // Relations
+  workspace    Workspace   @relation(fields: [workspace_id], references: [id])
+  design_asset DesignAsset @relation(fields: [design_asset_id], references: [id])
+  
+  @@map("design_analytics")
+}
+
+// ===== STAGE 7: FINISHING & PACKING =====
+
+// Finishing runs
+model FinishingRun {
+  id               String    @id @default(cuid())
+  workspace_id     String
+  order_id         String
+  routing_step_id  String
+  operator_id      String
+  status           String    @default("PENDING") // PENDING/IN_PROGRESS/COMPLETED/PACKED
+  started_at       DateTime?
+  ended_at         DateTime?
+  materials        String?   // JSON array: [{item_id,uom,qty,batch_id?}]
+  notes            String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  // Relations
+  workspace     Workspace    @relation(fields: [workspace_id], references: [id])
+  order         Order        @relation(fields: [order_id], references: [id])
+  routing_step  RoutingStep  @relation("RoutingStepFinishingRuns", fields: [routing_step_id], references: [id])
+  operator      Employee     @relation("FinishingOperator", fields: [operator_id], references: [id])
+  
+  @@map("finishing_runs")
+}
+
+// Finished goods units
+model FinishedUnit {
+  id         String    @id @default(cuid())
+  workspace_id String
+  order_id   String
+  sku        String    // derived from product+color+size
+  size_code  String
+  color      String?
+  serial     String?   // optional per-unit serial/barcode
+  packed     Boolean   @default(false)
+  created_at DateTime  @default(now())
+
+  // Relations
+  workspace      Workspace       @relation(fields: [workspace_id], references: [id])
+  order          Order           @relation(fields: [order_id], references: [id])
+  carton_contents CartonContent[]
+  
+  @@map("finished_units")
+}
+
+// Cartons
+model Carton {
+  id                String    @id @default(cuid())
+  workspace_id      String
+  order_id          String
+  carton_no         Int       // 1..N
+  length_cm         Int?
+  width_cm          Int?
+  height_cm         Int?
+  tare_weight_kg    Float     @default(0)
+  actual_weight_kg  Float     @default(0)
+  dim_weight_kg     Float     @default(0)
+  fill_percent      Float     @default(0)
+  status            String    @default("OPEN") // OPEN/CLOSED
+  qr_code           String?   @unique
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  // Relations
+  workspace         Workspace       @relation(fields: [workspace_id], references: [id])
+  order             Order           @relation(fields: [order_id], references: [id])
+  contents          CartonContent[]
+  shipment_cartons  ShipmentCarton[]
+  
+  @@map("cartons")
+}
+
+// Carton contents
+model CartonContent {
+  id                String      @id @default(cuid())
+  carton_id         String
+  finished_unit_id  String
+  qty               Int         @default(1)
+  created_at        DateTime    @default(now())
+
+  // Relations
+  carton        Carton       @relation(fields: [carton_id], references: [id])
+  finished_unit FinishedUnit @relation(fields: [finished_unit_id], references: [id])
+  
+  @@map("carton_contents")
+}
+
+// Shipments
+model Shipment {
+  id                 String    @id @default(cuid())
+  workspace_id       String
+  order_id           String
+  consignee_name     String
+  consignee_address  String    // JSON object
+  contact_phone      String?
+  method             String    // DRIVER/LALAMOVE/GRAB/TPL...
+  carrier_ref        String?   // 3PL waybill or booking id
+  cod_amount         Float?
+  status             String    @default("READY_FOR_PICKUP") // READY_FOR_PICKUP/IN_TRANSIT/DELIVERED/FAILED
+  eta                DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  // Relations
+  workspace        Workspace         @relation(fields: [workspace_id], references: [id])
+  order            Order             @relation(fields: [order_id], references: [id])
+  cartons          ShipmentCarton[]
+  deliveries       ShipmentDelivery[]
+  
+  @@map("shipments")
+}
+
+// Shipment cartons junction table
+model ShipmentCarton {
+  id          String    @id @default(cuid())
+  shipment_id String
+  carton_id   String
+  created_at  DateTime  @default(now())
+
+  // Relations
+  shipment Shipment @relation(fields: [shipment_id], references: [id])
+  carton   Carton   @relation(fields: [carton_id], references: [id])
+  
+  @@map("shipment_cartons")
+}
+
+// ================================
+// Stage 8: Delivery Tracking System
+// ================================
+
+// Main delivery record
+model Delivery {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  order_id              String
+  delivery_reference    String    @unique // DEL-timestamp
+  carrier_name          String
+  tracking_number       String?
+  status                String    @default("PENDING") // PENDING/PICKED_UP/IN_TRANSIT/OUT_FOR_DELIVERY/DELIVERED/FAILED/RETURNED
+  estimated_delivery_date DateTime?
+  actual_delivery_date  DateTime?
+  delivery_address      String    // JSON object
+  special_instructions  String?
+  current_location      String?
+  latitude              Float?
+  longitude             Float?
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+
+  // Relations
+  workspace        Workspace                @relation(fields: [workspace_id], references: [id])
+  order            Order                    @relation(fields: [order_id], references: [id])
+  shipments        ShipmentDelivery[]
+  tracking_events  DeliveryTrackingEvent[]
+  
+  @@map("deliveries")
+}
+
+// Junction table between shipments and deliveries
+model ShipmentDelivery {
+  id          String    @id @default(cuid())
+  delivery_id String
+  shipment_id String
+  created_at  DateTime  @default(now())
+
+  // Relations
+  delivery Delivery @relation(fields: [delivery_id], references: [id])
+  shipment Shipment @relation(fields: [shipment_id], references: [id])
+  
+  @@map("shipment_deliveries")
+}
+
+// Delivery tracking events for status updates and location tracking
+model DeliveryTrackingEvent {
+  id          String   @id @default(cuid())
+  delivery_id String
+  status      String   // Status at this point in time
+  location    String?  // Human readable location
+  description String?  // Event description
+  latitude    Float?
+  longitude   Float?
+  timestamp   DateTime @default(now())
+  created_at  DateTime @default(now())
+
+  // Relations
+  delivery Delivery @relation(fields: [delivery_id], references: [id])
+  
+  @@map("delivery_tracking_events")
+}
+

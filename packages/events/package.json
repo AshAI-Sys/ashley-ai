@@ -1,0 +1,27 @@
+{
+  "name": "@ash/events",
+  "version": "1.0.0",
+  "description": "Event bus and messaging for ASH AI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "echo 'Events package has no source files to lint'",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@ash/types": "workspace:*",
+    "ioredis": "^5.3.0",
+    "eventemitter3": "^4.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

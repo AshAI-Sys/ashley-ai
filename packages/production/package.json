@@ -1,0 +1,48 @@
+{
+  "name": "@ash-ai/production",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Production workflow engine and planning system for ASH AI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ash-ai/database": "workspace:*",
+    "@ash-ai/ai": "workspace:*",
+    "zod": "^3.22.4",
+    "date-fns": "^3.0.6",
+    "nanoid": "^5.0.4",
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "@ash-ai/typescript-config": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./workflow": {
+      "import": "./dist/workflow.js",
+      "require": "./dist/workflow.cjs"
+    },
+    "./scheduling": {
+      "import": "./dist/scheduling.js",
+      "require": "./dist/scheduling.cjs"
+    },
+    "./mrp": {
+      "import": "./dist/mrp.js",
+      "require": "./dist/mrp.cjs"
+    }
+  },
+  "files": [
+    "dist/**"
+  ]
+}

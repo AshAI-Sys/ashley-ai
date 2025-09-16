@@ -1,0 +1,162 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: ash-ai-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ash_ai
+      POSTGRES_PASSWORD: ash_ai_dev_password_2024
+      POSTGRES_DB: ash_ai_dev
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./packages/database/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ash_ai -d ash_ai_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - ash-ai
+
+  # Redis for caching and job queues
+  redis:
+    image: redis:7.2-alpine
+    container_name: ash-ai-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass ash_ai_redis_2024
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "ash_ai_redis_2024", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - ash-ai
+
+  # MinIO for S3-compatible object storage
+  minio:
+    image: minio/minio:latest
+    container_name: ash-ai-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ash_ai_admin
+      MINIO_ROOT_PASSWORD: ash_ai_minio_2024
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - ash-ai
+
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ash-ai-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - ash-ai
+
+  # Adminer for database management
+  adminer:
+    image: adminer:4.8.1
+    container_name: ash-ai-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+    networks:
+      - ash-ai
+
+  # Main application (Next.js)
+  app:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+      target: development
+    container_name: ash-ai-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://ash_ai:ash_ai_dev_password_2024@postgres:5432/ash_ai_dev
+      REDIS_URL: redis://:ash_ai_redis_2024@redis:6379/0
+      NEXTAUTH_SECRET: ash_ai_nextauth_secret_dev_2024
+      NEXTAUTH_URL: http://localhost:3000
+      AWS_ACCESS_KEY_ID: ash_ai_admin
+      AWS_SECRET_ACCESS_KEY: ash_ai_minio_2024
+      AWS_REGION: us-east-1
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET_NAME: ash-ai-uploads
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_USER: ""
+      SMTP_PASS: ""
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    networks:
+      - ash-ai
+
+  # Background job worker
+  worker:
+    build:
+      context: .
+      dockerfile: services/worker/Dockerfile
+      target: development
+    container_name: ash-ai-worker
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://ash_ai:ash_ai_dev_password_2024@postgres:5432/ash_ai_dev
+      REDIS_URL: redis://:ash_ai_redis_2024@redis:6379/0
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ash-ai
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  ash-ai:
+    driver: bridge

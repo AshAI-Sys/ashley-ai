@@ -1,0 +1,61 @@
+{
+  "name": "@ash-ai/design",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Advanced Design Management & Client Approval Workflow System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ash-ai/database": "workspace:*",
+    "@ash-ai/ai": "workspace:*",
+    "zod": "^3.22.4",
+    "date-fns": "^3.0.6",
+    "nanoid": "^5.0.4",
+    "eventemitter3": "^5.0.1",
+    "sharp": "^0.33.1",
+    "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
+    "mime-types": "^2.1.35"
+  },
+  "devDependencies": {
+    "@ash-ai/typescript-config": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "@types/mime-types": "^2.1.4"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./workflow": {
+      "import": "./dist/workflow.js",
+      "require": "./dist/workflow.cjs"
+    },
+    "./collaboration": {
+      "import": "./dist/collaboration.js",
+      "require": "./dist/collaboration.cjs"
+    },
+    "./validation": {
+      "import": "./dist/validation.js",
+      "require": "./dist/validation.cjs"
+    },
+    "./mockup": {
+      "import": "./dist/mockup.js",
+      "require": "./dist/mockup.cjs"
+    },
+    "./estimation": {
+      "import": "./dist/estimation.js",
+      "require": "./dist/estimation.cjs"
+    }
+  },
+  "files": [
+    "dist/**"
+  ]
+}
