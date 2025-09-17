@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { Prisma } from '@prisma/client'
 
 // Standard error codes for consistent error handling
 export enum ErrorCode {
@@ -183,73 +182,85 @@ export function createSuccessResponse<T>(
 
 // Database error handler for Prisma errors
 export function handleDatabaseError(error: unknown): AppError {
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    switch (error.code) {
+  if (error && typeof error === 'object' && 'code' in error) {
+    const prismaError = error as any
+
+    // Handle known Prisma error codes
+    switch (prismaError.code) {
       case 'P2002':
         return new ConflictError(
           'A record with this value already exists',
           {
-            constraint: error.meta?.target,
-            originalError: error.message
+            constraint: prismaError.meta?.target,
+            originalError: prismaError.message
           }
         )
       case 'P2025':
         return new NotFoundError(
           'Record',
-          { originalError: error.message }
+          { originalError: prismaError.message }
         )
       case 'P2003':
         return new ValidationError(
           'Foreign key constraint failed',
           undefined,
-          { originalError: error.message }
+          { originalError: prismaError.message }
         )
       case 'P2014':
         return new ValidationError(
           'The change you are trying to make would violate the required relation',
           undefined,
-          { originalError: error.message }
+          { originalError: prismaError.message }
         )
       default:
         return new DatabaseError(
           'Database operation failed',
           {
-            code: error.code,
-            originalError: error.message
+            code: prismaError.code,
+            originalError: prismaError.message
           }
         )
     }
   }
 
-  if (error instanceof Prisma.PrismaClientUnknownRequestError) {
-    return new DatabaseError(
-      'Unknown database error occurred',
-      { originalError: error.message }
-    )
-  }
+  // Check for Prisma error types by constructor name
+  if (error && typeof error === 'object' && 'constructor' in error) {
+    const errorConstructorName = (error.constructor as any).name
 
-  if (error instanceof Prisma.PrismaClientRustPanicError) {
-    return new DatabaseError(
-      'Database engine error',
-      { originalError: error.message }
-    )
-  }
+    if (errorConstructorName.includes('PrismaClient')) {
+      const prismaError = error as any
 
-  if (error instanceof Prisma.PrismaClientInitializationError) {
-    return new AppError(
-      ErrorCode.CONFIGURATION_ERROR,
-      'Database connection failed',
-      500,
-      { originalError: error.message }
-    )
-  }
+      if (errorConstructorName.includes('UnknownRequestError')) {
+        return new DatabaseError(
+          'Unknown database error occurred',
+          { originalError: prismaError.message }
+        )
+      }
 
-  if (error instanceof Prisma.PrismaClientValidationError) {
-    return new ValidationError(
-      'Invalid data provided to database',
-      undefined,
-      { originalError: error.message }
-    )
+      if (errorConstructorName.includes('RustPanicError')) {
+        return new DatabaseError(
+          'Database engine error',
+          { originalError: prismaError.message }
+        )
+      }
+
+      if (errorConstructorName.includes('InitializationError')) {
+        return new AppError(
+          ErrorCode.CONFIGURATION_ERROR,
+          'Database connection failed',
+          500,
+          { originalError: prismaError.message }
+        )
+      }
+
+      if (errorConstructorName.includes('ValidationError')) {
+        return new ValidationError(
+          'Invalid data provided to database',
+          undefined,
+          { originalError: prismaError.message }
+        )
+      }
+    }
   }
 
   // If it's not a Prisma error, wrap it as a generic database error
@@ -420,11 +431,12 @@ function generateTraceId(): string {
 }
 
 function isPrismaError(error: unknown): boolean {
-  return error instanceof Prisma.PrismaClientKnownRequestError ||
-         error instanceof Prisma.PrismaClientUnknownRequestError ||
-         error instanceof Prisma.PrismaClientRustPanicError ||
-         error instanceof Prisma.PrismaClientInitializationError ||
-         error instanceof Prisma.PrismaClientValidationError
+  if (!error || typeof error !== 'object' || !('constructor' in error)) {
+    return false
+  }
+
+  const errorConstructorName = (error.constructor as any).name
+  return errorConstructorName.includes('PrismaClient')
 }
 
 function logError(error: AppError, traceId: string): void {
