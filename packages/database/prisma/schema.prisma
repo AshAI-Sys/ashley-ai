@@ -108,6 +108,15 @@ model Workspace {
   ai_model_metrics   AIModelMetrics[]
   customer_segments  CustomerSegment[]
 
+  // Stage 14: Automation & Reminders Relations
+  automation_rules     AutomationRule[]
+  automation_executions AutomationExecution[]
+  notification_templates NotificationTemplate[]
+  notifications        Notification[]
+  alerts               Alert[]
+  integrations         Integration[]
+  integration_sync_logs IntegrationSyncLog[]
+
   @@map("workspaces")
 }
 
@@ -142,6 +151,13 @@ model User {
   // Stage 11: Maintenance Management Relations
   created_work_orders WorkOrder[]
   created_maintenance_schedules MaintenanceSchedule[]
+
+  // Stage 14: Automation & Reminders Relations
+  created_automation_rules AutomationRule[] @relation("AutomationRuleCreator")
+  created_notification_templates NotificationTemplate[] @relation("NotificationTemplateCreator")
+  acknowledged_alerts Alert[] @relation("AlertAcknowledger")
+  resolved_alerts Alert[] @relation("AlertResolver")
+  created_integrations Integration[] @relation("IntegrationCreator")
 
   @@unique([workspace_id, email])
   @@map("users")
@@ -2861,5 +2877,191 @@ model ClientPortalSettings {
 
   @@unique([workspace_id, client_id])
   @@map("client_portal_settings")
+}
+
+// ===== STAGE 14: AUTOMATION & REMINDERS =====
+
+// Workflow automation rules engine
+model AutomationRule {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  description     String?
+  is_active       Boolean   @default(true)
+  trigger_type    String    // TIME_BASED/EVENT_BASED/CONDITION_BASED
+  trigger_config  String    // JSON configuration for trigger
+  conditions      String?   // JSON array of conditions to evaluate
+  actions         String    // JSON array of actions to execute
+  priority        Int       @default(1) // Execution priority (1=highest)
+  last_executed   DateTime?
+  execution_count Int       @default(0)
+  error_count     Int       @default(0)
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("AutomationRuleCreator", fields: [created_by], references: [id])
+  executions      AutomationExecution[]
+
+  @@map("automation_rules")
+}
+
+// Automation execution history
+model AutomationExecution {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  rule_id         String
+  trigger_data    String?   // JSON data that triggered the rule
+  execution_status String   // PENDING/RUNNING/SUCCESS/FAILED/CANCELLED
+  actions_executed String? // JSON array of executed actions with results
+  error_message   String?
+  execution_time_ms Int?    // Execution duration in milliseconds
+  started_at      DateTime  @default(now())
+  completed_at    DateTime?
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  rule            AutomationRule @relation(fields: [rule_id], references: [id])
+
+  @@map("automation_executions")
+}
+
+// Notification templates
+model NotificationTemplate {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  category        String    // ORDER/PRODUCTION/QUALITY/FINANCE/HR/MAINTENANCE
+  type            String    // EMAIL/SMS/PUSH/IN_APP/SLACK
+  subject_template String?  // Template for email/push subject
+  body_template   String   // Template with placeholders
+  variables       String?  // JSON array of available variables
+  is_active       Boolean  @default(true)
+  is_system       Boolean  @default(false) // System templates cannot be deleted
+  created_by      String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("NotificationTemplateCreator", fields: [created_by], references: [id])
+  notifications   Notification[]
+
+  @@map("notification_templates")
+}
+
+// Notification queue and delivery tracking
+model Notification {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  template_id     String?   // Optional - can be ad-hoc notification
+  recipient_type  String    // USER/CLIENT/EXTERNAL_EMAIL/PHONE
+  recipient_id    String?   // User/Client ID if applicable
+  recipient_email String?   // For external emails
+  recipient_phone String?   // For SMS
+  channel         String    // EMAIL/SMS/PUSH/IN_APP/SLACK
+  subject         String?
+  content         String
+  variables_data  String?   // JSON data for template variables
+  priority        String    @default("MEDIUM") // LOW/MEDIUM/HIGH/URGENT
+  status          String    @default("PENDING") // PENDING/SENT/DELIVERED/FAILED/CANCELLED
+  scheduled_for   DateTime? // For scheduled notifications
+  sent_at         DateTime?
+  delivered_at    DateTime?
+  error_message   String?
+  retry_count     Int       @default(0)
+  max_retries     Int       @default(3)
+  metadata        String?   // JSON for additional tracking data
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  template        NotificationTemplate? @relation(fields: [template_id], references: [id])
+
+  @@map("notifications")
+}
+
+// Alert management system
+model Alert {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  alert_type      String    // PRODUCTION_DELAY/QUALITY_ISSUE/SYSTEM_ERROR/DEADLINE_APPROACHING
+  severity        String    // LOW/MEDIUM/HIGH/CRITICAL
+  title           String
+  description     String
+  source_type     String    // ORDER/ASSET/EMPLOYEE/SYSTEM/QUALITY/FINANCE
+  source_id       String?   // ID of the source entity
+  threshold_value String?   // The threshold that was breached
+  current_value   String?   // Current value that triggered alert
+  is_acknowledged Boolean   @default(false)
+  acknowledged_by String?
+  acknowledged_at DateTime?
+  is_resolved     Boolean   @default(false)
+  resolved_by     String?
+  resolved_at     DateTime?
+  resolution_notes String?
+  escalation_level Int      @default(1) // 1=first level, increases with time
+  next_escalation_at DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  acknowledged_user User?   @relation("AlertAcknowledger", fields: [acknowledged_by], references: [id])
+  resolved_user   User?     @relation("AlertResolver", fields: [resolved_by], references: [id])
+
+  @@map("alerts")
+}
+
+// System integration configurations
+model Integration {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  type            String    // ERP/CRM/ACCOUNTING/SHIPPING/EMAIL/SMS/SLACK
+  provider        String    // QUICKBOOKS/SALESFORCE/MAILGUN/TWILIO/etc
+  config          String    // JSON configuration (API keys, endpoints, etc.)
+  is_active       Boolean   @default(true)
+  is_connected    Boolean   @default(false)
+  last_sync       DateTime?
+  sync_frequency  String?   // REAL_TIME/HOURLY/DAILY/WEEKLY/MANUAL
+  error_count     Int       @default(0)
+  last_error      String?
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("IntegrationCreator", fields: [created_by], references: [id])
+  sync_logs       IntegrationSyncLog[]
+
+  @@map("integrations")
+}
+
+// Integration synchronization logs
+model IntegrationSyncLog {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  integration_id  String
+  sync_type       String    // MANUAL/SCHEDULED/TRIGGERED
+  operation       String    // IMPORT/EXPORT/SYNC
+  entity_type     String    // ORDERS/CLIENTS/INVOICES/PRODUCTS
+  records_processed Int     @default(0)
+  records_success Int       @default(0)
+  records_failed  Int       @default(0)
+  status          String    // RUNNING/SUCCESS/FAILED/PARTIAL
+  error_details   String?   // JSON array of errors
+  started_at      DateTime  @default(now())
+  completed_at    DateTime?
+  duration_ms     Int?
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  integration     Integration @relation(fields: [integration_id], references: [id])
+
+  @@map("integration_sync_logs")
 }
 
