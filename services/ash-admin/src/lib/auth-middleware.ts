@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, apiRateLimit } from './rate-limit'
+import { verifyToken, JWTPayload } from './jwt'
 
 export interface AuthUser {
   id: string
@@ -17,15 +18,28 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
 
     const token = authHeader.substring(7)
 
-    // For demo purposes, accept the demo token
-    // In production, this should validate a real JWT
-    if (token === 'demo-jwt-token-12345') {
+    // Development mode fallback - only in development
+    if (process.env.NODE_ENV === 'development' && token === 'demo-jwt-token-12345') {
+      console.warn('Using demo authentication token - DEVELOPMENT ONLY')
       return {
         id: 'demo-user-1',
         email: 'admin@ashleyai.com',
         role: 'admin',
         workspaceId: 'demo-workspace-1'
       }
+    }
+
+    // Proper JWT validation
+    const payload = verifyToken(token)
+    if (!payload) {
+      return null
+    }
+
+    return {
+      id: payload.userId,
+      email: payload.email,
+      role: payload.role,
+      workspaceId: payload.workspaceId
     }
 
     // TODO: Implement proper JWT validation

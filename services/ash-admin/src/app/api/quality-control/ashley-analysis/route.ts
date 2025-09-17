@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../../../lib/db'
 
 // Ashley AI Quality Control Analytics
 export async function POST(request: NextRequest) {

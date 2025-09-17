@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../../lib/db'
+import {
+  createSuccessResponse,
+  handleApiError,
+  validateRequiredFields,
+  validateEnum,
+  validateNumber,
+  validateDate,
+  NotFoundError,
+  withErrorHandling,
+  ValidationError
+} from '../../../../lib/error-handling'
 
-const prisma = new PrismaClient()
-
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorHandling(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const client_id = searchParams.get('client_id')
@@ -57,108 +65,154 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
-      success: true,
-      data: processedInvoices
-    })
-  } catch (error) {
-    console.error('Error fetching invoices:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch invoices' },
-      { status: 500 }
-    )
-  }
-}
+    return createSuccessResponse(processedInvoices)
+})
 
-export async function POST(request: NextRequest) {
-  try {
-    const data = await request.json()
-    const {
+export const POST = withErrorHandling(async (request: NextRequest) => {
+  const data = await request.json()
+  const {
+    brand_id,
+    client_id,
+    order_id,
+    lines,
+    discount = 0,
+    tax_mode = 'VAT_INCLUSIVE',
+    due_date
+  } = data
+
+  // Validate required fields
+  const validationError = validateRequiredFields(data, ['brand_id', 'client_id', 'lines'])
+  if (validationError) {
+    throw validationError
+  }
+
+  // Validate tax mode enum
+  const taxModeError = validateEnum(tax_mode, ['VAT_INCLUSIVE', 'VAT_EXCLUSIVE', 'ZERO_RATED'], 'tax_mode')
+  if (taxModeError) {
+    throw taxModeError
+  }
+
+  // Validate discount percentage
+  if (discount < 0 || discount > 100) {
+    throw new ValidationError('Discount must be between 0 and 100', 'discount')
+  }
+
+  // Validate lines array
+  if (!Array.isArray(lines) || lines.length === 0) {
+    throw new ValidationError('At least one invoice line is required', 'lines')
+  }
+
+  // Validate each line item
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    const lineError = validateRequiredFields(line, ['description', 'qty', 'unit_price'])
+    if (lineError) {
+      throw new ValidationError(`Line ${i + 1}: ${lineError.message}`, `lines[${i}]`)
+    }
+
+    const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01)
+    if (qtyError) {
+      throw qtyError
+    }
+
+    const priceError = validateNumber(line.unit_price, `lines[${i}].unit_price`, 0)
+    if (priceError) {
+      throw priceError
+    }
+  }
+
+  // Validate due date if provided
+  if (due_date) {
+    const dateError = validateDate(due_date, 'due_date')
+    if (dateError) {
+      throw dateError
+    }
+  }
+
+  // Verify brand exists
+  const brand = await prisma.brand.findUnique({ where: { id: brand_id } })
+  if (!brand) {
+    throw new NotFoundError('Brand')
+  }
+
+  // Verify client exists
+  const client = await prisma.client.findUnique({ where: { id: client_id } })
+  if (!client) {
+    throw new NotFoundError('Client')
+  }
+
+  // Verify order exists if provided
+  if (order_id) {
+    const order = await prisma.order.findUnique({ where: { id: order_id } })
+    if (!order) {
+      throw new NotFoundError('Order')
+    }
+  }
+
+  // Generate invoice number
+  const year = new Date().getFullYear()
+  const invoiceCount = await prisma.invoice.count({
+    where: {
+      brand_id,
+      date_issued: {
+        gte: new Date(year, 0, 1),
+        lt: new Date(year + 1, 0, 1)
+      }
+    }
+  })
+  const invoiceNo = `${brand.name.toUpperCase()}-${year}-${String(invoiceCount + 1).padStart(5, '0')}`
+
+  // Calculate totals
+  let subtotal = 0
+  const processedLines = lines.map((line: any) => {
+    const lineTotal = line.qty * line.unit_price
+    subtotal += lineTotal
+    return {
+      ...line,
+      line_total: lineTotal
+    }
+  })
+
+  const discountAmount = (subtotal * discount) / 100
+  const netAmount = subtotal - discountAmount
+
+  let vatAmount = 0
+  let total = netAmount
+
+  if (tax_mode === 'VAT_INCLUSIVE') {
+    vatAmount = netAmount * 0.12 / 1.12
+    total = netAmount
+  } else if (tax_mode === 'VAT_EXCLUSIVE') {
+    vatAmount = netAmount * 0.12
+    total = netAmount + vatAmount
+  }
+
+  // Create invoice with transaction
+  const invoice = await prisma.invoice.create({
+    data: {
+      workspace_id: 'default',
       brand_id,
       client_id,
       order_id,
-      lines,
-      discount = 0,
-      tax_mode = 'VAT_INCLUSIVE',
-      due_date
-    } = data
-
-    // Generate invoice number
-    const brand = await prisma.brand.findUnique({ where: { id: brand_id } })
-    const year = new Date().getFullYear()
-    const invoiceCount = await prisma.invoice.count({
-      where: {
-        brand_id,
-        date_issued: {
-          gte: new Date(year, 0, 1),
-          lt: new Date(year + 1, 0, 1)
-        }
+      invoice_no: invoiceNo,
+      date_issued: new Date(),
+      due_date: due_date ? new Date(due_date) : null,
+      tax_mode,
+      subtotal,
+      discount: discountAmount,
+      vat_amount: vatAmount,
+      total,
+      balance: total,
+      invoice_lines: {
+        create: processedLines
       }
-    })
-    const invoiceNo = `${brand?.name.toUpperCase()}-${year}-${String(invoiceCount + 1).padStart(5, '0')}`
-
-    // Calculate totals
-    let subtotal = 0
-    const processedLines = lines.map((line: any) => {
-      const lineTotal = line.qty * line.unit_price
-      subtotal += lineTotal
-      return {
-        ...line,
-        line_total: lineTotal
-      }
-    })
-
-    const discountAmount = (subtotal * discount) / 100
-    const netAmount = subtotal - discountAmount
-
-    let vatAmount = 0
-    let total = netAmount
-
-    if (tax_mode === 'VAT_INCLUSIVE') {
-      vatAmount = netAmount * 0.12 / 1.12
-      total = netAmount
-    } else if (tax_mode === 'VAT_EXCLUSIVE') {
-      vatAmount = netAmount * 0.12
-      total = netAmount + vatAmount
+    },
+    include: {
+      client: { select: { name: true } },
+      brand: { select: { name: true } },
+      invoice_lines: true
     }
+  })
 
-    // Create invoice with transaction
-    const invoice = await prisma.invoice.create({
-      data: {
-        workspace_id: 'default',
-        brand_id,
-        client_id,
-        order_id,
-        invoice_no: invoiceNo,
-        date_issued: new Date(),
-        due_date: due_date ? new Date(due_date) : null,
-        tax_mode,
-        subtotal,
-        discount: discountAmount,
-        vat_amount: vatAmount,
-        total,
-        balance: total,
-        invoice_lines: {
-          create: processedLines
-        }
-      },
-      include: {
-        client: { select: { name: true } },
-        brand: { select: { name: true } },
-        invoice_lines: true
-      }
-    })
-
-    return NextResponse.json({
-      success: true,
-      data: invoice
-    }, { status: 201 })
-
-  } catch (error) {
-    console.error('Error creating invoice:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to create invoice' },
-      { status: 500 }
-    )
-  }
-}
+  return createSuccessResponse(invoice, 201)
+})

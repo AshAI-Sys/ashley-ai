@@ -1,39 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '../../../../../packages/database/node_modules/.prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../../lib/db';
+import {
+  createSuccessResponse,
+  validateRequiredFields,
+  NotFoundError,
+  ValidationError,
+  withErrorHandling
+} from '../../../../lib/error-handling';
 
 // POST /api/automation/execute - Execute automation rule
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { rule_id, trigger_data } = body;
+export const POST = withErrorHandling(async (request: NextRequest) => {
+  const body = await request.json();
+  const { rule_id, trigger_data } = body;
 
-    if (!rule_id) {
-      return NextResponse.json(
-        { success: false, error: 'Rule ID is required' },
-        { status: 400 }
-      );
-    }
+  // Validate required fields
+  const validationError = validateRequiredFields(body, ['rule_id']);
+  if (validationError) {
+    throw validationError;
+  }
 
-    // Get the automation rule
-    const rule = await prisma.automationRule.findUnique({
-      where: { id: rule_id }
+  // Get the automation rule
+  const rule = await prisma.automationRule.findUnique({
+    where: { id: rule_id }
+  });
+
+  if (!rule) {
+    throw new NotFoundError('Automation rule');
+  }
+
+  if (!rule.is_active) {
+    throw new ValidationError('Automation rule is not active', 'rule_id', {
+      rule_id,
+      status: 'inactive'
     });
-
-    if (!rule) {
-      return NextResponse.json(
-        { success: false, error: 'Automation rule not found' },
-        { status: 404 }
-      );
-    }
-
-    if (!rule.is_active) {
-      return NextResponse.json(
-        { success: false, error: 'Automation rule is not active' },
-        { status: 400 }
-      );
-    }
+  }
 
     // Create execution record
     const execution = await prisma.automationExecution.create({
@@ -67,10 +67,9 @@ export async function POST(request: NextRequest) {
           }
         });
 
-        return NextResponse.json({
-          success: true,
-          data: { execution_id: execution.id, status: 'CONDITIONS_NOT_MET' },
-          message: 'Rule conditions not met, execution skipped'
+        return createSuccessResponse({
+          execution_id: execution.id,
+          status: 'CONDITIONS_NOT_MET'
         });
       }
 
@@ -97,14 +96,10 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          execution_id: execution.id,
-          status: 'SUCCESS',
-          actions_executed: actionResults.length
-        },
-        message: 'Automation rule executed successfully'
+      return createSuccessResponse({
+        execution_id: execution.id,
+        status: 'SUCCESS',
+        actions_executed: actionResults.length
       });
 
     } catch (error) {
@@ -129,14 +124,7 @@ export async function POST(request: NextRequest) {
       throw error;
     }
 
-  } catch (error) {
-    console.error('Error executing automation rule:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to execute automation rule' },
-      { status: 500 }
-    );
-  }
-}
+})
 
 // Helper function to evaluate conditions
 async function evaluateConditions(conditions: any[], triggerData: any): Promise<boolean> {

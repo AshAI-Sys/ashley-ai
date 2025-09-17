@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '../../../../../packages/database/node_modules/.prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../../lib/db';
 
 // GET /api/automation/rules - Get all automation rules
 export async function GET(request: NextRequest) {

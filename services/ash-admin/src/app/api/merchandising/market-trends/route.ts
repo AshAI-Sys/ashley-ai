@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../../lib/db'
 import { requireAuth, validateWorkspaceAccess } from '@/lib/auth-middleware'
 import { validateRequired, validateNumber, validateEnum, createValidationErrorResponse, validateAndSanitizeMarketTrendData } from '@/lib/validation'
 
-const prisma = new PrismaClient()
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {

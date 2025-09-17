@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '../../../../../packages/database/node_modules/.prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../../lib/db';
 
 // GET /api/automation/stats - Get automation dashboard statistics
 export async function GET(request: NextRequest) {

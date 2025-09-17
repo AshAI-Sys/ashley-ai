@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../../lib/db'
+import {
+  createSuccessResponse,
+  handleApiError,
+  validateRequiredFields,
+  validateEnum,
+  validateDate,
+  NotFoundError,
+  withErrorHandling
+} from '../../../../lib/error-handling'
 
-const prisma = new PrismaClient()
-
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorHandling(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const position = searchParams.get('position')
@@ -85,121 +91,133 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
-      success: true,
-      data: processedEmployees
-    })
-  } catch (error) {
-    console.error('Error fetching employees:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch employees' },
-      { status: 500 }
-    )
-  }
-}
+    return createSuccessResponse(processedEmployees)
+})
 
-export async function POST(request: NextRequest) {
-  try {
-    const data = await request.json()
-    const {
+export const POST = withErrorHandling(async (request: NextRequest) => {
+  const data = await request.json()
+  const {
+    first_name,
+    last_name,
+    employee_number,
+    position,
+    department,
+    hire_date,
+    salary_type,
+    base_salary,
+    piece_rate,
+    contact_info = {}
+  } = data
+
+  // Validate required fields
+  const validationError = validateRequiredFields(data, ['first_name', 'last_name', 'position', 'department'])
+  if (validationError) {
+    throw validationError
+  }
+
+  // Validate salary type enum
+  if (salary_type) {
+    const salaryTypeError = validateEnum(salary_type, ['DAILY', 'HOURLY', 'PIECE', 'MONTHLY'], 'salary_type')
+    if (salaryTypeError) {
+      throw salaryTypeError
+    }
+  }
+
+  // Validate hire date if provided
+  if (hire_date) {
+    const dateError = validateDate(hire_date, 'hire_date')
+    if (dateError) {
+      throw dateError
+    }
+  }
+
+  // Ensure default workspace exists
+  await prisma.workspace.upsert({
+    where: { slug: 'default' },
+    update: {},
+    create: {
+      id: 'default',
+      name: 'Default Workspace',
+      slug: 'default',
+      is_active: true
+    }
+  })
+
+  const employee = await prisma.employee.create({
+    data: {
+      workspace_id: 'default',
+      employee_number: employee_number || `EMP${Date.now()}`,
       first_name,
       last_name,
-      employee_number,
       position,
       department,
-      hire_date,
-      salary_type,
-      base_salary,
-      piece_rate,
-      contact_info = {}
-    } = data
-
-    // Ensure default workspace exists
-    await prisma.workspace.upsert({
-      where: { slug: 'default' },
-      update: {},
-      create: {
-        id: 'default',
-        name: 'Default Workspace',
-        slug: 'default',
-        is_active: true
-      }
-    })
-
-    const employee = await prisma.employee.create({
-      data: {
-        workspace_id: 'default',
-        employee_number: employee_number || `EMP${Date.now()}`,
-        first_name,
-        last_name,
-        position,
-        department,
-        hire_date: hire_date ? new Date(hire_date) : new Date(),
-        salary_type: salary_type || 'DAILY',
-        base_salary: base_salary || null,
-        piece_rate: piece_rate || null,
-        is_active: true,
-        contact_info: JSON.stringify(contact_info)
-      }
-    })
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        id: employee.id,
-        name: `${employee.first_name} ${employee.last_name}`,
-        employee_number: employee.employee_number,
-        position: employee.position,
-        department: employee.department,
-        hire_date: employee.hire_date.toISOString(),
-        salary_type: employee.salary_type,
-        base_salary: employee.base_salary,
-        piece_rate: employee.piece_rate,
-        status: employee.is_active ? 'ACTIVE' : 'INACTIVE',
-        contact_info: employee.contact_info ? JSON.parse(employee.contact_info) : null
-      }
-    }, { status: 201 })
-
-  } catch (error) {
-    console.error('Error creating employee:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to create employee' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const data = await request.json()
-    const { id, ...updateData } = data
-
-    // Handle date conversion
-    if (updateData.hire_date) {
-      updateData.hire_date = new Date(updateData.hire_date)
+      hire_date: hire_date ? new Date(hire_date) : new Date(),
+      salary_type: salary_type || 'DAILY',
+      base_salary: base_salary || null,
+      piece_rate: piece_rate || null,
+      is_active: true,
+      contact_info: JSON.stringify(contact_info)
     }
-    if (updateData.separation_date) {
-      updateData.separation_date = new Date(updateData.separation_date)
-    }
+  })
 
-    const employee = await prisma.employee.update({
-      where: { id },
-      data: updateData,
-      include: {
-        brands: { select: { name: true } }
-      }
-    })
-
-    return NextResponse.json({
-      success: true,
-      data: employee
-    })
-
-  } catch (error) {
-    console.error('Error updating employee:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to update employee' },
-      { status: 500 }
-    )
+  const responseData = {
+    id: employee.id,
+    name: `${employee.first_name} ${employee.last_name}`,
+    employee_number: employee.employee_number,
+    position: employee.position,
+    department: employee.department,
+    hire_date: employee.hire_date.toISOString(),
+    salary_type: employee.salary_type,
+    base_salary: employee.base_salary,
+    piece_rate: employee.piece_rate,
+    status: employee.is_active ? 'ACTIVE' : 'INACTIVE',
+    contact_info: employee.contact_info ? JSON.parse(employee.contact_info) : null
   }
-}
+
+  return createSuccessResponse(responseData, 201)
+})
+
+export const PUT = withErrorHandling(async (request: NextRequest) => {
+  const data = await request.json()
+  const { id, ...updateData } = data
+
+  // Validate required ID
+  const validationError = validateRequiredFields({ id }, ['id'])
+  if (validationError) {
+    throw validationError
+  }
+
+  // Validate salary type if being updated
+  if (updateData.salary_type) {
+    const salaryTypeError = validateEnum(updateData.salary_type, ['DAILY', 'HOURLY', 'PIECE', 'MONTHLY'], 'salary_type')
+    if (salaryTypeError) {
+      throw salaryTypeError
+    }
+  }
+
+  // Handle date conversion and validation
+  if (updateData.hire_date) {
+    const dateError = validateDate(updateData.hire_date, 'hire_date')
+    if (dateError) {
+      throw dateError
+    }
+    updateData.hire_date = new Date(updateData.hire_date)
+  }
+  if (updateData.separation_date) {
+    const dateError = validateDate(updateData.separation_date, 'separation_date')
+    if (dateError) {
+      throw dateError
+    }
+    updateData.separation_date = new Date(updateData.separation_date)
+  }
+
+  const employee = await prisma.employee.update({
+    where: { id },
+    data: updateData,
+    include: {
+      brands: { select: { name: true } }
+    }
+  })
+
+  return createSuccessResponse(employee)
+})

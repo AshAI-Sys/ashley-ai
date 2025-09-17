@@ -117,6 +117,11 @@ model Workspace {
   integrations         Integration[]
   integration_sync_logs IntegrationSyncLog[]
 
+  // Performance indexes
+  @@index([is_active])
+  @@index([created_at])
+  @@index([slug, is_active])
+
   @@map("workspaces")
 }
 
@@ -160,6 +165,16 @@ model User {
   created_integrations Integration[] @relation("IntegrationCreator")
 
   @@unique([workspace_id, email])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, role])
+  @@index([workspace_id, last_login_at])
+  @@index([email])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("users")
 }
 
@@ -200,6 +215,15 @@ model Client {
   demand_forecasts DemandForecast[]
   product_recommendations ProductRecommendation[]
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, created_at])
+  @@index([name])
+  @@index([email])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("clients")
 }
 
@@ -226,6 +250,15 @@ model Brand {
 
   // Stage 13: Merchandising AI Relations
   demand_forecasts DemandForecast[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, client_id])
+  @@index([client_id])
+  @@index([code])
+  @@index([is_active])
+  @@index([created_at])
 
   @@map("brands")
 }
@@ -289,6 +322,20 @@ model Order {
   client_messages ClientMessage[]
 
   @@unique([workspace_id, order_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, created_at])
+  @@index([workspace_id, delivery_date])
+  @@index([client_id])
+  @@index([brand_id])
+  @@index([status])
+  @@index([order_number])
+  @@index([delivery_date])
+  @@index([created_at])
+
   @@map("orders")
 }
 
@@ -311,6 +358,13 @@ model OrderLineItem {
   // Relations
   order        Order   @relation(fields: [order_id], references: [id])
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([order_id])
+  @@index([sku])
+  @@index([printing_method])
+  @@index([created_at])
+
   @@map("order_line_items")
 }
 
@@ -345,6 +399,18 @@ model DesignAsset {
   comments        DesignComment[]
   analytics       DesignAnalytics[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, method])
+  @@index([workspace_id, is_best_seller])
+  @@index([brand_id])
+  @@index([order_id])
+  @@index([status])
+  @@index([method])
+  @@index([is_best_seller])
+  @@index([created_at])
+
   @@map("design_assets")
 }
 
@@ -373,6 +439,11 @@ model DesignVersion {
   production_specs DesignProductionSpec[]
   
   @@unique([asset_id, version])
+
+  // Performance indexes
+  @@index([asset_id])
+  @@index([created_at])
+
   @@map("design_versions")
 }
 
@@ -402,6 +473,18 @@ model DesignApproval {
   employee             Employee?   @relation("EmployeeDesignApprovals", fields: [employee_id], references: [id])
   workflow             DesignApprovalWorkflow? @relation("DesignApprovalWorkflowApprovals", fields: [workflow_id], references: [id])
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, client_id])
+  @@index([asset_id])
+  @@index([client_id])
+  @@index([employee_id])
+  @@index([status])
+  @@index([portal_token])
+  @@index([expires_at])
+  @@index([created_at])
+
   @@map("design_approvals")
 }
 
@@ -419,6 +502,12 @@ model DesignCheck {
   // Relations
   design_asset    DesignAsset @relation(fields: [asset_id], references: [id])
   
+  // Performance indexes
+  @@index([asset_id])
+  @@index([method])
+  @@index([result])
+  @@index([created_at])
+
   @@map("design_checks")
 }
 
@@ -437,6 +526,14 @@ model RoutingTemplate {
   // Relations
   steps           RoutingTemplateStep[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, printing_method])
+  @@index([printing_method])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("routing_templates")
 }
 
@@ -455,6 +552,12 @@ model RoutingTemplateStep {
   // Relations
   routing_template      RoutingTemplate @relation(fields: [routing_template_id], references: [id])
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([routing_template_id])
+  @@index([routing_template_id, step_order])
+  @@index([department])
+
   @@map("routing_template_steps")
 }
 
@@ -483,6 +586,16 @@ model RoutingStep {
   qc_inspections  QCInspection[]
   finishing_runs  FinishingRun[] @relation("RoutingStepFinishingRuns")
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([order_id, step_order])
+  @@index([status])
+  @@index([department])
+  @@index([assigned_to])
+  @@index([created_at])
+
   @@map("routing_steps")
 }
 
@@ -508,6 +621,15 @@ model Bundle {
   sewing_runs     SewingRun[]
   qc_inspections  QCInspection[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([lay_id])
+  @@index([status])
+  @@index([qr_code]) // already unique but good for lookups
+  @@index([created_at])
+
   @@map("bundles")
 }
 
@@ -570,6 +692,19 @@ model Employee {
   assigned_work_orders WorkOrder[]
 
   @@unique([workspace_id, employee_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, position])
+  @@index([workspace_id, department])
+  @@index([workspace_id, salary_type])
+  @@index([position])
+  @@index([department])
+  @@index([is_active])
+  @@index([hire_date])
+  @@index([created_at])
+
   @@map("employees")
 }
 
@@ -592,6 +727,15 @@ model AttendanceLog {
   employee     Employee   @relation(fields: [employee_id], references: [id])
   
   @@unique([employee_id, date])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([employee_id])
+  @@index([date])
+  @@index([status])
+  @@index([workspace_id, date])
+  @@index([workspace_id, status])
+
   @@map("attendance_logs")
 }
 
@@ -629,6 +773,20 @@ model Invoice {
   credit_notes    CreditNote[]
 
   @@unique([workspace_id, invoice_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, due_date])
+  @@index([workspace_id, issue_date])
+  @@index([client_id])
+  @@index([order_id])
+  @@index([status])
+  @@index([due_date])
+  @@index([issue_date])
+  @@index([created_at])
+
   @@map("invoices")
 }
 
@@ -646,6 +804,11 @@ model InvoiceItem {
 
   // Relations
   invoice         Invoice  @relation(fields: [invoice_id], references: [id])
+
+  // Performance indexes
+  @@index([invoice_id])
+  @@index([order_line_item_id])
+  @@index([created_at])
 
   @@map("invoice_items")
 }
@@ -676,6 +839,20 @@ model Payment {
   bank_account    BankAccount?  @relation(fields: [bank_account_id], references: [id])
 
   @@unique([workspace_id, payment_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, payment_method])
+  @@index([workspace_id, payment_date])
+  @@index([invoice_id])
+  @@index([bank_account_id])
+  @@index([status])
+  @@index([payment_method])
+  @@index([payment_date])
+  @@index([reconciled])
+  @@index([created_at])
+
   @@map("payments")
 }
 
@@ -699,6 +876,16 @@ model CreditNote {
   invoice         Invoice  @relation(fields: [invoice_id], references: [id])
 
   @@unique([workspace_id, credit_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([invoice_id])
+  @@index([status])
+  @@index([reason])
+  @@index([issue_date])
+  @@index([created_at])
+
   @@map("credit_notes")
 }
 
@@ -722,6 +909,15 @@ model BankAccount {
   transactions    BankTransaction[]
 
   @@unique([workspace_id, account_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, account_type])
+  @@index([account_type])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("bank_accounts")
 }
 
@@ -744,6 +940,17 @@ model BankTransaction {
 
   // Relations
   bank_account    BankAccount @relation(fields: [bank_account_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, transaction_date])
+  @@index([workspace_id, type])
+  @@index([bank_account_id])
+  @@index([transaction_date])
+  @@index([type])
+  @@index([category])
+  @@index([reconciled])
+  @@index([created_at])
 
   @@map("bank_transactions")
 }
@@ -777,6 +984,19 @@ model Expense {
   order           Order?     @relation(fields: [order_id], references: [id])
 
   @@unique([workspace_id, expense_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, category])
+  @@index([workspace_id, expense_date])
+  @@index([workspace_id, approved])
+  @@index([category])
+  @@index([order_id])
+  @@index([expense_date])
+  @@index([approved])
+  @@index([supplier])
+  @@index([created_at])
+
   @@map("expenses")
 }
 
@@ -799,6 +1019,15 @@ model CostCenter {
   budgets         Budget[]
 
   @@unique([workspace_id, code])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, type])
+  @@index([type])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("cost_centers")
 }
 
@@ -820,6 +1049,15 @@ model CostAllocation {
   // Relations
   cost_center     CostCenter @relation(fields: [cost_center_id], references: [id])
   order           Order?     @relation(fields: [order_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, allocation_date])
+  @@index([cost_center_id])
+  @@index([order_id])
+  @@index([allocation_type])
+  @@index([allocation_date])
+  @@index([created_at])
 
   @@map("cost_allocations")
 }
@@ -847,6 +1085,17 @@ model Budget {
   cost_center     CostCenter @relation(fields: [cost_center_id], references: [id])
 
   @@unique([workspace_id, cost_center_id, budget_period])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([cost_center_id])
+  @@index([budget_period])
+  @@index([status])
+  @@index([period_start])
+  @@index([period_end])
+  @@index([created_at])
+
   @@map("budgets")
 }
 
@@ -868,6 +1117,15 @@ model FinancialReport {
 
   // Relations
   report_runs     ReportRun[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, report_type])
+  @@index([report_type])
+  @@index([is_active])
+  @@index([auto_generate])
+  @@index([created_at])
 
   @@map("financial_reports")
 }
@@ -892,6 +1150,16 @@ model ReportRun {
   // Relations
   report          FinancialReport @relation(fields: [report_id], references: [id])
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([report_id])
+  @@index([status])
+  @@index([run_date])
+  @@index([period_start])
+  @@index([period_end])
+  @@index([created_at])
+
   @@map("report_runs")
 }
 
@@ -914,6 +1182,17 @@ model FinancialMetric {
   calculated_at   DateTime   @default(now())
   created_at      DateTime   @default(now())
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, metric_type])
+  @@index([workspace_id, period])
+  @@index([metric_name])
+  @@index([metric_type])
+  @@index([period])
+  @@index([period_start])
+  @@index([period_end])
+  @@index([calculated_at])
+
   @@map("financial_metrics")
 }
 
@@ -932,6 +1211,16 @@ model TaxSetting {
   is_active       Boolean  @default(true)
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, tax_type])
+  @@index([tax_type])
+  @@index([is_active])
+  @@index([is_default])
+  @@index([effective_date])
+  @@index([end_date])
 
   @@map("tax_settings")
 }
@@ -960,6 +1249,17 @@ model Asset {
   maintenance_schedules   MaintenanceSchedule[]
   
   @@unique([workspace_id, asset_number])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, type])
+  @@index([status])
+  @@index([type])
+  @@index([location])
+  @@index([purchase_date])
+  @@index([created_at])
+
   @@map("assets")
 }
 
@@ -993,6 +1293,20 @@ model WorkOrder {
   maintenance_schedule    MaintenanceSchedule? @relation("ScheduledMaintenance", fields: [maintenance_schedule_id], references: [id])
   assignee                Employee?           @relation(fields: [assigned_to], references: [id])
   creator                 User?               @relation(fields: [created_by], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, priority])
+  @@index([workspace_id, type])
+  @@index([asset_id])
+  @@index([maintenance_schedule_id])
+  @@index([assigned_to])
+  @@index([status])
+  @@index([priority])
+  @@index([type])
+  @@index([scheduled_date])
+  @@index([created_at])
 
   @@map("work_orders")
 }
@@ -1053,6 +1367,15 @@ model FabricBatch {
   cut_issues     CutIssue[]
   
   @@unique([workspace_id, lot_no])
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, brand_id])
+  @@index([brand_id])
+  @@index([lot_no])
+  @@index([uom])
+  @@index([received_at])
+  @@index([created_at])
+
   @@map("fabric_batches")
 }
 
@@ -1135,6 +1458,12 @@ model Machine {
   // Stage 2: Production Planning Relations
   work_stations   WorkStation[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([name])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("machines")
 }
 
@@ -1172,6 +1501,19 @@ model PrintRun {
   dtf_powder_cures   DtfPowderCure[]
   embroidery_runs    EmbroideryRun[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, method])
+  @@index([order_id])
+  @@index([routing_step_id])
+  @@index([machine_id])
+  @@index([status])
+  @@index([method])
+  @@index([started_at])
+  @@index([ended_at])
+  @@index([created_at])
+
   @@map("print_runs")
 }
 
@@ -1444,6 +1786,19 @@ model QCInspection {
   defects           QCDefect[]
   capa_tasks        CAPATask[]
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, stage])
+  @@index([order_id])
+  @@index([bundle_id])
+  @@index([routing_step_id])
+  @@index([inspector_id])
+  @@index([status])
+  @@index([stage])
+  @@index([inspection_date])
+  @@index([created_at])
+
   @@map("qc_inspections")
 }
 
@@ -1495,6 +1850,14 @@ model QCDefect {
   operator       Employee?    @relation(fields: [operator_id], references: [id])
   capa_tasks     CAPATask[]
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, severity])
+  @@index([inspection_id])
+  @@index([defect_code_id])
+  @@index([severity])
+  @@index([created_at])
+
   @@map("qc_defects")
 }
 
@@ -1538,6 +1901,21 @@ model CAPATask {
   updates         CAPAUpdate[]  @relation("CAPATaskUpdates")
 
   @@unique([workspace_id, capa_number])
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, priority])
+  @@index([workspace_id, type])
+  @@index([order_id])
+  @@index([assigned_to])
+  @@index([created_by])
+  @@index([verified_by])
+  @@index([status])
+  @@index([priority])
+  @@index([type])
+  @@index([due_date])
+  @@index([created_at])
+
   @@map("capa_tasks")
 }
 
@@ -1556,6 +1934,14 @@ model PayrollPeriod {
   // Relations
   earnings     PayrollEarning[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([status])
+  @@index([period_start])
+  @@index([period_end])
+  @@index([created_at])
+
   @@map("payroll_periods")
 }
 
@@ -1579,6 +1965,14 @@ model PayrollEarning {
   employee         Employee      @relation(fields: [employee_id], references: [id])
   
   @@unique([payroll_period_id, employee_id])
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([payroll_period_id])
+  @@index([employee_id])
+  @@index([workspace_id, employee_id])
+  @@index([workspace_id, payroll_period_id])
+  @@index([created_at])
+
   @@map("payroll_earnings")
 }
 
@@ -1650,6 +2044,17 @@ model SewingRun {
   routing_step      RoutingStep   @relation(fields: [routing_step_id], references: [id])
   operator          Employee      @relation(fields: [operator_id], references: [id])
   bundle            Bundle        @relation(fields: [bundle_id], references: [id])
+
+  // Performance indexes
+  @@index([order_id])
+  @@index([order_id, status])
+  @@index([bundle_id])
+  @@index([operator_id])
+  @@index([routing_step_id])
+  @@index([status])
+  @@index([started_at])
+  @@index([ended_at])
+  @@index([created_at])
 
   @@map("sewing_runs")
 }
@@ -1732,6 +2137,14 @@ model ProductionSchedule {
   worker_assignments WorkerAssignment[]
   progress_logs    ProductionProgressLog[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([production_line_id])
+  @@index([status])
+  @@index([created_at])
+
   @@map("production_schedules")
 }
 
@@ -1811,6 +2224,14 @@ model MaterialInventory {
   transactions      MaterialTransaction[]
   
   @@unique([workspace_id, material_name, color, batch_number])
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, material_type])
+  @@index([workspace_id, location])
+  @@index([material_type])
+  @@index([location])
+  @@index([created_at])
+
   @@map("material_inventory")
 }
 
@@ -1857,6 +2278,12 @@ model MaterialTransaction {
   material_inventory MaterialInventory @relation(fields: [material_inventory_id], references: [id])
   created_by_user   User              @relation(fields: [created_by], references: [id])
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, transaction_type])
+  @@index([transaction_type])
+  @@index([created_at])
+
   @@map("material_transactions")
 }
 
@@ -2368,6 +2795,15 @@ model FinishingRun {
   routing_step  RoutingStep  @relation("RoutingStepFinishingRuns", fields: [routing_step_id], references: [id])
   operator      Employee     @relation("FinishingOperator", fields: [operator_id], references: [id])
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([routing_step_id])
+  @@index([operator_id])
+  @@index([status])
+  @@index([created_at])
+
   @@map("finishing_runs")
 }
 
@@ -2388,6 +2824,12 @@ model FinishedUnit {
   order          Order           @relation(fields: [order_id], references: [id])
   carton_contents CartonContent[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([order_id])
+  @@index([sku])
+  @@index([created_at])
+
   @@map("finished_units")
 }
 
@@ -2415,6 +2857,13 @@ model Carton {
   contents          CartonContent[]
   shipment_cartons  ShipmentCarton[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([status])
+  @@index([created_at])
+
   @@map("cartons")
 }
 
@@ -2455,6 +2904,13 @@ model Shipment {
   cartons          ShipmentCarton[]
   deliveries       ShipmentDelivery[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([status])
+  @@index([created_at])
+
   @@map("shipments")
 }
 
@@ -2501,6 +2957,13 @@ model Delivery {
   shipments        ShipmentDelivery[]
   tracking_events  DeliveryTrackingEvent[]
   
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([order_id])
+  @@index([status])
+  @@index([created_at])
+
   @@map("deliveries")
 }
 
@@ -2567,6 +3030,16 @@ model MaintenanceSchedule {
   creator         User            @relation(fields: [created_by], references: [id])
   work_orders     WorkOrder[]     @relation("ScheduledMaintenance")
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, asset_id])
+  @@index([workspace_id, is_active])
+  @@index([asset_id])
+  @@index([frequency_type])
+  @@index([is_active])
+  @@index([next_due_date])
+  @@index([created_at])
+
   @@map("maintenance_schedules")
 }
 
@@ -2601,6 +3074,16 @@ model DemandForecast {
   client        Client?   @relation(fields: [client_id], references: [id])
   brand         Brand?    @relation(fields: [brand_id], references: [id])
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, brand_id])
+  @@index([client_id])
+  @@index([brand_id])
+  @@index([forecast_period])
+  @@index([forecast_date])
+  @@index([created_at])
+
   @@map("demand_forecasts")
 }
 
@@ -2631,6 +3114,15 @@ model ProductRecommendation {
   // Relations
   workspace     Workspace @relation(fields: [workspace_id], references: [id])
   client        Client    @relation(fields: [client_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, recommendation_type])
+  @@index([client_id])
+  @@index([recommendation_type])
+  @@index([confidence_score])
+  @@index([created_at])
 
   @@map("product_recommendations")
 }
@@ -2726,6 +3218,14 @@ model AIModelMetrics {
   // Relations
   workspace     Workspace @relation(fields: [workspace_id], references: [id])
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, model_name])
+  @@index([workspace_id, model_version])
+  @@index([model_name])
+  @@index([model_version])
+  @@index([created_at])
+
   @@map("ai_model_metrics")
 }
 
@@ -2779,6 +3279,16 @@ model ClientSession {
   client          Client    @relation(fields: [client_id], references: [id])
 
   @@unique([workspace_id, magic_token])
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, is_used])
+  @@index([client_id])
+  @@index([magic_token])
+  @@index([is_used])
+  @@index([expires_at])
+  @@index([created_at])
+
   @@map("client_sessions")
 }
 
@@ -2801,6 +3311,15 @@ model ClientNotification {
   // Relations
   workspace       Workspace @relation(fields: [workspace_id], references: [id])
   client          Client    @relation(fields: [client_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, is_read])
+  @@index([client_id])
+  @@index([type])
+  @@index([is_read])
+  @@index([created_at])
 
   @@map("client_notifications")
 }
@@ -2905,6 +3424,14 @@ model AutomationRule {
   user            User      @relation("AutomationRuleCreator", fields: [created_by], references: [id])
   executions      AutomationExecution[]
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, trigger_type])
+  @@index([trigger_type])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("automation_rules")
 }
 
@@ -2924,6 +3451,14 @@ model AutomationExecution {
   // Relations
   workspace       Workspace @relation(fields: [workspace_id], references: [id])
   rule            AutomationRule @relation(fields: [rule_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, execution_status])
+  @@index([rule_id])
+  @@index([execution_status])
+  @@index([started_at])
+  @@index([completed_at])
 
   @@map("automation_executions")
 }
@@ -2980,6 +3515,17 @@ model Notification {
   workspace       Workspace @relation(fields: [workspace_id], references: [id])
   template        NotificationTemplate? @relation(fields: [template_id], references: [id])
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, channel])
+  @@index([template_id])
+  @@index([status])
+  @@index([channel])
+  @@index([scheduled_for])
+  @@index([sent_at])
+  @@index([created_at])
+
   @@map("notifications")
 }
 
@@ -3012,6 +3558,20 @@ model Alert {
   acknowledged_user User?   @relation("AlertAcknowledger", fields: [acknowledged_by], references: [id])
   resolved_user   User?     @relation("AlertResolver", fields: [resolved_by], references: [id])
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, severity])
+  @@index([workspace_id, alert_type])
+  @@index([workspace_id, is_acknowledged])
+  @@index([workspace_id, is_resolved])
+  @@index([severity])
+  @@index([alert_type])
+  @@index([acknowledged_by])
+  @@index([resolved_by])
+  @@index([is_acknowledged])
+  @@index([is_resolved])
+  @@index([created_at])
+
   @@map("alerts")
 }
 
@@ -3038,6 +3598,14 @@ model Integration {
   user            User      @relation("IntegrationCreator", fields: [created_by], references: [id])
   sync_logs       IntegrationSyncLog[]
 
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([workspace_id, type])
+  @@index([type])
+  @@index([is_active])
+  @@index([created_at])
+
   @@map("integrations")
 }
 
@@ -3061,6 +3629,14 @@ model IntegrationSyncLog {
   // Relations
   workspace       Workspace @relation(fields: [workspace_id], references: [id])
   integration     Integration @relation(fields: [integration_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([integration_id])
+  @@index([status])
+  @@index([started_at])
+  @@index([completed_at])
 
   @@map("integration_sync_logs")
 }
