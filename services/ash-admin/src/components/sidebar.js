@@ -16,7 +16,8 @@ import {
   TrendingUp,
   BarChart3,
   ClipboardList,
-  Wrench
+  Wrench,
+  Zap
 } from 'lucide-react'
 
 const sidebarItems = [
@@ -33,6 +34,7 @@ const sidebarItems = [
   { href: '/finance', icon: DollarSign, label: 'Finance' },
   { href: '/hr-payroll', icon: Users, label: 'HR & Payroll' },
   { href: '/maintenance', icon: Wrench, label: 'Maintenance' },
+  { href: '/automation', icon: Zap, label: 'Automation' },
   { href: '/merchandising', icon: TrendingUp, label: 'Merchandising AI' },
   { href: '/analytics', icon: BarChart3, label: 'Analytics' },
 ]

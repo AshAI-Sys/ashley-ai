@@ -142,7 +142,8 @@ export async function POST(request: NextRequest) {
 async function evaluateConditions(conditions: any[], triggerData: any): Promise<boolean> {
   try {
     for (const condition of conditions) {
-      const { field, operator, value, type = 'string' } = condition;
+      const { field, operator, type = 'string' } = condition;
+      let { value } = condition;
 
       let fieldValue = getNestedValue(triggerData, field);
 
