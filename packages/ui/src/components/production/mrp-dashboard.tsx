@@ -1,9 +1,8 @@
 import * as React from "react";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../card";
 import { Badge } from "../badge";
 import { Button } from "../button";
-import { Progress } from "../progress";
 import { Alert, AlertDescription } from "../alert";
 import { 
   Table,

@@ -83,13 +83,12 @@ const statusIcons = {
 };
 
 export const GanttChart = React.forwardRef<HTMLDivElement, GanttChartProps>(
-  ({ 
-    tasks, 
-    startDate: propStartDate, 
-    endDate: propEndDate, 
-    onTaskClick, 
-    onTaskUpdate,
-    className 
+  ({
+    tasks,
+    startDate: propStartDate,
+    endDate: propEndDate,
+    onTaskClick,
+    className
   }, ref) => {
     // Calculate date range
     const allDates = tasks.flatMap(task => [

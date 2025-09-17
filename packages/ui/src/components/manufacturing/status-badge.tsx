@@ -53,12 +53,11 @@ const statusConfig: Record<string, { variant: BadgeProps["variant"]; label?: str
 const StatusBadge = React.forwardRef<
   HTMLDivElement,
   StatusBadgeProps
->(({ status, type, className, ...props }, ref) => {
+>(({ status, className, ...props }, _ref) => {
   const config = statusConfig[status] || { variant: "outline", label: status };
   
   return (
     <Badge
-      ref={ref}
       variant={config.variant}
       className={cn("font-medium", className)}
       {...props}

@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "../button";
 import { Input } from "../input";
-import { Label } from "../label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../form";

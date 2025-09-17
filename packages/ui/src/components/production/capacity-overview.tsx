@@ -111,12 +111,6 @@ export const CapacityOverview = React.forwardRef<HTMLDivElement, CapacityOvervie
       line.status === "OVERLOADED" || line.bottleneckRisk === "HIGH"
     ).length;
 
-    const getUtilizationColor = (rate: number) => {
-      if (rate > 95) return "bg-red-500";
-      if (rate > 80) return "bg-ash-orange-500";
-      if (rate > 60) return "bg-ash-blue-500";
-      return "bg-ash-green-500";
-    };
 
     const getEfficiencyTrend = (efficiency: number) => {
       if (efficiency > 85) return <TrendingUp className="h-4 w-4 text-ash-green-600" />;

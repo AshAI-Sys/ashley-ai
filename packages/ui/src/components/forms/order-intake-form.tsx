@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
@@ -7,15 +7,15 @@ import { Button } from "../button";
 import { Input } from "../input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../form";
 import { SizeCurveInput } from "../manufacturing/size-curve-input";
 import { AshleyAlert } from "../manufacturing/ashley-alert";
 import { Badge } from "../badge";
 import { Calendar } from "../calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
-import { 
-  Loader2, Package, Calendar as CalendarIcon, DollarSign, 
-  Palette, Ruler, Plus, Trash2, AlertTriangle 
+import {
+  Loader2, Package, Calendar as CalendarIcon,
+  Palette, Ruler
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -78,7 +78,7 @@ export interface OrderIntakeFormProps {
   clients: Array<{ id: string; name: string; businessType: string }>;
   onSubmit: (data: OrderIntakeFormData) => Promise<void>;
   onCancel?: () => void;
-  onValidate?: (data: Partial<OrderIntakeFormData>) => Promise<any>;
+  onValidate?: (data: Partial<OrderIntakeFormData>) => Promise<unknown>;
   isLoading?: boolean;
   ashleyAnalysis?: {
     risk: "GREEN" | "AMBER" | "RED";
@@ -108,13 +108,6 @@ const garmentTypeLabels = {
   OTHER: "Other (Custom)",
 };
 
-const materialUnits = {
-  YARDS: "Yards",
-  METERS: "Meters",
-  PIECES: "Pieces",
-  KG: "Kilograms",
-  GRAMS: "Grams",
-};
 
 const printingMethods = {
   SCREEN: "Screen Printing",
@@ -171,15 +164,7 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
       },
     });
 
-    const { fields: materialFields, append: addMaterial, remove: removeMaterial } = useFieldArray({
-      control: form.control,
-      name: "materials",
-    });
-
-    const { fields: colorwayFields, append: addColorway, remove: removeColorway } = useFieldArray({
-      control: form.control,
-      name: "colorways",
-    });
+    // Material and colorway management - arrays handled in form defaults
 
     const watchedGarmentType = form.watch("garmentType");
     const watchedQuantity = form.watch("quantity");
@@ -354,7 +339,7 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date < new Date()}
+                              disabled={(date: Date) => date < new Date()}
                               initialFocus
                             />
                           </PopoverContent>

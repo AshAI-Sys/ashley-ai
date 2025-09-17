@@ -45,7 +45,7 @@
                         <span class="text-white font-medium">🟢 All Systems Operational</span>
                     </div>
                     <div class="bg-white/20 backdrop-blur px-4 py-2 rounded-lg">
-                        <span class="text-white font-medium">9/14 Stages Complete</span>
+                        <span class="text-white font-medium">14/14 Stages Complete - SYSTEM COMPLETE! 🎉</span>
                     </div>
                 </div>
             </div>
@@ -66,14 +66,14 @@
             <!-- Progress Bar -->
             <div class="mb-12 fade-in">
                 <div class="bg-gray-200 rounded-full h-6 mb-4">
-                    <div class="progress-bar bg-gradient-to-r from-green-400 to-blue-500 h-6 rounded-full flex items-center justify-end pr-4">
-                        <span class="text-white font-bold text-sm">64% Complete</span>
+                    <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-6 rounded-full flex items-center justify-center" style="width: 100%;">
+                        <span class="text-white font-bold text-sm">🎉 100% COMPLETE! 🎉</span>
                     </div>
                 </div>
                 <div class="flex justify-between text-sm text-gray-600">
-                    <span>Stage 1: Client Intake</span>
-                    <span class="font-bold text-blue-600">Stage 9: Finance Operations</span>
-                    <span>Stage 14: Full Automation</span>
+                    <span>Stage 1: Client Intake ✅</span>
+                    <span class="font-bold text-emerald-600">ALL 14 STAGES COMPLETE</span>
+                    <span>Stage 14: Automation ✅</span>
                 </div>
             </div>
 
@@ -150,13 +150,13 @@
                 <p class="text-lg text-gray-600">Complete end-to-end manufacturing workflow management</p>
             </div>
 
-            <!-- Completed Stages (1-9) -->
+            <!-- All Completed Stages (1-14) -->
             <div class="mb-8">
-                <h3 class="text-2xl font-bold text-green-600 mb-6 flex items-center">
-                    <span class="bg-green-100 p-2 rounded-full mr-3">
-                        <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                <h3 class="text-2xl font-bold text-emerald-600 mb-6 flex items-center">
+                    <span class="bg-emerald-100 p-2 rounded-full mr-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-emerald-600"></i>
                     </span>
-                    Completed Stages (9/14)
+                    🎉 ALL STAGES COMPLETED (14/14) - SYSTEM COMPLETE! 🎉
                 </h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -306,93 +306,83 @@
                 </div>
             </div>
 
-            <!-- Remaining Stages (10-14) -->
-            <div>
-                <h3 class="text-2xl font-bold text-gray-500 mb-6 flex items-center">
-                    <span class="bg-gray-100 p-2 rounded-full mr-3">
-                        <i data-lucide="clock" class="w-6 h-6 text-gray-500"></i>
-                    </span>
-                    Upcoming Stages (5 Remaining)
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Stage 10 -->
-                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 fade-in opacity-75">
+                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 fade-in cursor-pointer" onclick="showStageDetail(10)">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="bg-gray-100 p-2 rounded-full">
-                                <i data-lucide="users-2" class="w-6 h-6 text-gray-500"></i>
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i data-lucide="users-2" class="w-6 h-6 text-green-600"></i>
                             </div>
-                            <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium">⏳ Next</span>
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">✅ Active</span>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-700 mb-2">Stage 10: HR & Payroll</h4>
-                        <p class="text-gray-500 text-sm mb-4">Employee management, attendance tracking, payroll processing, and performance management.</p>
-                        <div class="flex items-center text-sm text-gray-400">
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Stage 10: HR & Payroll</h4>
+                        <p class="text-gray-600 text-sm mb-4">Employee management, attendance tracking, payroll processing, and performance management.</p>
+                        <div class="flex items-center text-sm text-gray-500">
                             <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
-                            <span>Coming Soon</span>
+                            <span>Implemented & Active</span>
                         </div>
                     </div>
 
                     <!-- Stage 11 -->
-                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 fade-in opacity-75">
+                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 fade-in cursor-pointer" onclick="showStageDetail(11)">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="bg-gray-100 p-2 rounded-full">
-                                <i data-lucide="wrench" class="w-6 h-6 text-gray-500"></i>
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i data-lucide="wrench" class="w-6 h-6 text-green-600"></i>
                             </div>
-                            <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium">⏳ Planned</span>
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">✅ Active</span>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-700 mb-2">Stage 11: Maintenance</h4>
-                        <p class="text-gray-500 text-sm mb-4">Equipment maintenance scheduling, asset tracking, and preventive maintenance programs.</p>
-                        <div class="flex items-center text-sm text-gray-400">
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Stage 11: Maintenance Management</h4>
+                        <p class="text-gray-600 text-sm mb-4">Equipment maintenance scheduling, asset tracking, and preventive maintenance programs.</p>
+                        <div class="flex items-center text-sm text-gray-500">
                             <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
-                            <span>Coming Soon</span>
+                            <span>Implemented & Active</span>
                         </div>
                     </div>
 
                     <!-- Stage 12 -->
-                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 fade-in opacity-75">
+                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 fade-in cursor-pointer" onclick="showStageDetail(12)">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="bg-gray-100 p-2 rounded-full">
-                                <i data-lucide="monitor" class="w-6 h-6 text-gray-500"></i>
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i data-lucide="monitor" class="w-6 h-6 text-green-600"></i>
                             </div>
-                            <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium">⏳ Planned</span>
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">✅ Active</span>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-700 mb-2">Stage 12: Client Portal</h4>
-                        <p class="text-gray-500 text-sm mb-4">Client-facing portal for order tracking, approvals, payments, and communication.</p>
-                        <div class="flex items-center text-sm text-gray-400">
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Stage 12: Client Portal</h4>
+                        <p class="text-gray-600 text-sm mb-4">Client-facing portal for order tracking, approvals, payments, and communication.</p>
+                        <div class="flex items-center text-sm text-gray-500">
                             <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
-                            <span>Coming Soon</span>
+                            <span>Implemented & Active</span>
                         </div>
                     </div>
 
                     <!-- Stage 13 -->
-                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 fade-in opacity-75">
+                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 fade-in cursor-pointer" onclick="showStageDetail(13)">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="bg-gray-100 p-2 rounded-full">
-                                <i data-lucide="brain" class="w-6 h-6 text-gray-500"></i>
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <i data-lucide="brain" class="w-6 h-6 text-green-600"></i>
                             </div>
-                            <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium">⏳ Planned</span>
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">✅ Active</span>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-700 mb-2">Stage 13: Merchandising AI</h4>
-                        <p class="text-gray-500 text-sm mb-4">AI-powered demand forecasting, trend analysis, and product recommendations.</p>
-                        <div class="flex items-center text-sm text-gray-400">
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Stage 13: Merchandising AI</h4>
+                        <p class="text-gray-600 text-sm mb-4">AI-powered demand forecasting, trend analysis, and product recommendations.</p>
+                        <div class="flex items-center text-sm text-gray-500">
                             <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
-                            <span>Coming Soon</span>
+                            <span>Implemented & Active</span>
                         </div>
                     </div>
 
-                    <!-- Stage 14 -->
-                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-300 fade-in opacity-75">
+                    <!-- Stage 14 - Final -->
+                    <div class="stage-card bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 fade-in cursor-pointer pulse-glow" onclick="showStageDetail(14)">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="bg-gray-100 p-2 rounded-full">
-                                <i data-lucide="zap" class="w-6 h-6 text-gray-500"></i>
+                            <div class="bg-purple-100 p-2 rounded-full">
+                                <i data-lucide="zap" class="w-6 h-6 text-purple-600"></i>
                             </div>
-                            <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium">⏳ Final</span>
+                            <span class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-medium">🎉 FINAL</span>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-700 mb-2">Stage 14: Full Automation</h4>
-                        <p class="text-gray-500 text-sm mb-4">Complete workflow automation, smart notifications, and integration orchestration.</p>
-                        <div class="flex items-center text-sm text-gray-400">
-                            <i data-lucide="calendar" class="w-4 h-4 mr-2"></i>
-                            <span>Final Stage</span>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Stage 14: Automation & Reminders</h4>
+                        <p class="text-gray-600 text-sm mb-4">Complete workflow automation, smart notifications, and integration orchestration.</p>
+                        <div class="flex items-center text-sm text-purple-600 font-medium">
+                            <i data-lucide="star" class="w-4 h-4 mr-2"></i>
+                            <span>SYSTEM COMPLETE!</span>
                         </div>
                     </div>
                 </div>
@@ -475,6 +465,39 @@
                     </button>
                 </div>
 
+                <!-- Analytics Demo -->
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200 fade-in">
+                    <div class="text-center mb-6">
+                        <div class="bg-indigo-500 text-white p-4 rounded-full inline-block mb-4">
+                            <i data-lucide="bar-chart-3" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Analytics Dashboard</h3>
+                        <p class="text-gray-600">Business intelligence & metrics</p>
+                    </div>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-500 mr-2"></i>
+                            <span>Production Analytics</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-500 mr-2"></i>
+                            <span>Financial Metrics</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-500 mr-2"></i>
+                            <span>Quality & Performance</span>
+                        </div>
+                        <div class="flex items-center text-sm text-gray-700">
+                            <i data-lucide="check" class="w-4 h-4 text-indigo-500 mr-2"></i>
+                            <span>Real-time KPIs</span>
+                        </div>
+                    </div>
+                    <button onclick="window.open('http://localhost:3002/analytics', '_blank')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                        <i data-lucide="bar-chart-3" class="w-4 h-4 inline mr-2"></i>
+                        Launch Analytics
+                    </button>
+                </div>
+
                 <!-- Full System Demo -->
                 <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 fade-in">
                     <div class="text-center mb-6">
@@ -487,7 +510,7 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex items-center text-sm text-gray-700">
                             <i data-lucide="check" class="w-4 h-4 text-blue-500 mr-2"></i>
-                            <span>All 9 Completed Stages</span>
+                            <span>All 14 Completed Stages</span>
                         </div>
                         <div class="flex items-center text-sm text-gray-700">
                             <i data-lucide="check" class="w-4 h-4 text-blue-500 mr-2"></i>
@@ -502,9 +525,9 @@
                             <span>Full Functionality</span>
                         </div>
                     </div>
-                    <button onclick="window.open('http://localhost:3001', '_blank')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                    <button onclick="window.open('http://localhost:3002', '_blank')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
                         <i data-lucide="external-link" class="w-4 h-4 inline mr-2"></i>
-                        Open Live System
+                        Open Complete System
                     </button>
                 </div>
             </div>
@@ -567,8 +590,8 @@
                     🤖 Generated with Claude Code | Co-Authored-By: Claude &lt;noreply@anthropic.com&gt;
                 </p>
                 <div class="mt-4">
-                    <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                        9/14 Stages Complete - 64% Progress
+                    <span class="bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                        🎉 14/14 Stages Complete - 100% SYSTEM COMPLETE! 🎉
                     </span>
                 </div>
             </div>
@@ -773,12 +796,103 @@
                             <li>Cost centers and budget tracking</li>
                         </ul>
                         <h4 class="font-bold text-lg mb-3">Implementation Status:</h4>
-                        <p>🆕 <strong>Just Completed - Latest Stage!</strong></p>
+                        <p>✅ <strong>Fully Implemented and Active</strong></p>
                         <p>Complete financial management system with 14 new database models and real-time analytics.</p>
-                        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                            <p class="text-blue-800 font-medium">Try the interactive demo:</p>
-                            <button onclick="window.open('finance-demo.html', '_blank')" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                                <i data-lucide="play" class="w-4 h-4 inline mr-2"></i>Launch Finance Demo
+                    `
+                },
+                10: {
+                    title: "Stage 10: HR & Payroll",
+                    content: `
+                        <h4 class="font-bold text-lg mb-3">Key Features:</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Employee management with comprehensive profiles</li>
+                            <li>Attendance tracking with time in/out and breaks</li>
+                            <li>Payroll calculation for multiple salary types (DAILY, HOURLY, PIECE, MONTHLY)</li>
+                            <li>Performance tracking with piece-rate calculations</li>
+                            <li>HR analytics with productivity and attendance metrics</li>
+                            <li>Employee filtering by status, position, and department</li>
+                        </ul>
+                        <h4 class="font-bold text-lg mb-3">Implementation Status:</h4>
+                        <p>✅ <strong>Fully Implemented and Active</strong></p>
+                        <p>Complete HR and payroll management system with integration to production runs.</p>
+                    `
+                },
+                11: {
+                    title: "Stage 11: Maintenance Management",
+                    content: `
+                        <h4 class="font-bold text-lg mb-3">Key Features:</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Asset management with comprehensive tracking and lifecycle management</li>
+                            <li>Work order creation and management with priority-based assignment</li>
+                            <li>Preventive maintenance scheduling with frequency-based automation</li>
+                            <li>Equipment status monitoring and performance tracking</li>
+                            <li>Maintenance cost tracking and budget management</li>
+                            <li>Overdue maintenance alerts and notification system</li>
+                        </ul>
+                        <h4 class="font-bold text-lg mb-3">Implementation Status:</h4>
+                        <p>✅ <strong>Fully Implemented and Active</strong></p>
+                        <p>Complete maintenance management system with asset utilization analytics.</p>
+                    `
+                },
+                12: {
+                    title: "Stage 12: Client Portal",
+                    content: `
+                        <h4 class="font-bold text-lg mb-3">Key Features:</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Magic link authentication system for secure client access</li>
+                            <li>Comprehensive order tracking with 7-stage production progress indicators</li>
+                            <li>Real-time notifications and activity logging</li>
+                            <li>Interactive dashboard with order status and payment tracking</li>
+                            <li>Client communication system with threaded messaging</li>
+                            <li>Responsive design optimized for mobile and desktop</li>
+                        </ul>
+                        <h4 class="font-bold text-lg mb-3">Implementation Status:</h4>
+                        <p>✅ <strong>Fully Implemented and Active</strong></p>
+                        <p>Complete client portal with passwordless authentication and real-time order tracking.</p>
+                    `
+                },
+                13: {
+                    title: "Stage 13: Merchandising AI",
+                    content: `
+                        <h4 class="font-bold text-lg mb-3">Key Features:</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>AI-powered demand forecasting with seasonal and trend adjustments</li>
+                            <li>Intelligent product recommendation engine (cross-sell, up-sell, reorder, trending)</li>
+                            <li>Advanced market trend analysis with fashion and color intelligence</li>
+                            <li>Inventory optimization algorithms with risk assessment</li>
+                            <li>Customer behavior analytics and segmentation with churn prediction</li>
+                            <li>AI model performance tracking and accuracy monitoring</li>
+                        </ul>
+                        <h4 class="font-bold text-lg mb-3">Implementation Status:</h4>
+                        <p>✅ <strong>Fully Implemented and Active</strong></p>
+                        <p>Complete AI-powered merchandising system with comprehensive analytics dashboard.</p>
+                        <div class="mt-4 p-4 bg-purple-50 rounded-lg">
+                            <p class="text-purple-800 font-medium">Access the AI dashboard:</p>
+                            <button onclick="window.open('http://localhost:3002/merchandising', '_blank')" class="mt-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors">
+                                <i data-lucide="brain" class="w-4 h-4 inline mr-2"></i>Open Merchandising AI
+                            </button>
+                        </div>
+                    `
+                },
+                14: {
+                    title: "Stage 14: Automation & Reminders",
+                    content: `
+                        <h4 class="font-bold text-lg mb-3">Key Features:</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Workflow automation rules engine with condition evaluation and action execution</li>
+                            <li>Advanced notification system with template management and multi-channel delivery</li>
+                            <li>Comprehensive alert management with escalation and resolution tracking</li>
+                            <li>System integration orchestration with external service connectors</li>
+                            <li>Real-time automation dashboard with performance monitoring</li>
+                            <li>Intelligent rule execution engine with retry logic and error handling</li>
+                        </ul>
+                        <h4 class="font-bold text-lg mb-3">Implementation Status:</h4>
+                        <p>🎉 <strong>FINAL STAGE COMPLETE - SYSTEM 100% FINISHED!</strong></p>
+                        <p>Complete automation and reminders system - the final piece of the 14-stage manufacturing ERP.</p>
+                        <div class="mt-4 p-4 bg-emerald-50 rounded-lg">
+                            <p class="text-emerald-800 font-medium">🎉 Congratulations! All 14 stages are now complete!</p>
+                            <button onclick="window.open('http://localhost:3002/automation', '_blank')" class="mt-2 bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 transition-colors">
+                                <i data-lucide="zap" class="w-4 h-4 inline mr-2"></i>Open Automation Dashboard
                             </button>
                         </div>
                     `
