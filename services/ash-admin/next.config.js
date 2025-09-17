@@ -9,15 +9,10 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      // Handle auth routes locally
-      {
-        source: '/api/auth/:path*',
-        destination: '/api/auth/:path*',
-      },
-      // Proxy other API routes to external service (if available)
+      // Handle all API routes locally
       {
         source: '/api/:path*',
-        destination: `${process.env.ASH_API_URL || 'http://localhost:4000'}/api/:path*`,
+        destination: '/api/:path*',
       },
     ]
   },
