@@ -9,10 +9,10 @@
 ### Start Development Servers
 ```bash
 # Start Admin Interface (localhost:3001)
-pnpm --filter admin dev
+pnpm --filter @ash/admin dev
 
 # Start Client Portal (localhost:3003)
-pnpm --filter portal dev
+pnpm --filter @ash/portal dev
 
 # Generate Database
 cd packages/database && npx prisma generate

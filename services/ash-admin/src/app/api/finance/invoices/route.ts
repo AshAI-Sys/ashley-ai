@@ -47,7 +47,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     })
 
     // Calculate days overdue and other metrics
-    const processedInvoices = invoices.map(invoice => {
+    const processedInvoices = (invoices || []).map(invoice => {
       const today = new Date()
       const dueDate = new Date(invoice.due_date)
       const daysOverdue = invoice.status !== 'PAID' && dueDate < today
@@ -57,7 +57,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       return {
         ...invoice,
         days_overdue: daysOverdue,
-        payment_history: invoice.payment_allocations.map(allocation => ({
+        payment_history: (invoice.payment_allocations || []).map(allocation => ({
           amount: allocation.amount,
           source: allocation.payment.source,
           date: allocation.payment.received_at
