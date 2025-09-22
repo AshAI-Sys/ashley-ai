@@ -52,7 +52,7 @@ export default function OrdersPage() {
       const data = await response.json()
       
       if (data.success) {
-        setOrders(data.data)
+        setOrders(data.data?.orders || data.data || [])
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error)
@@ -132,7 +132,7 @@ export default function OrdersPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {orders.map((order) => (
+          {(orders || []).map((order) => (
             <Card key={order.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
                 <div className="flex justify-between items-start">

@@ -451,7 +451,7 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {runs.map((run) => (
+              {(finishingRuns || []).map((run) => (
                 <tr key={run.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -486,7 +486,7 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {run.materials_used.map((material, index) => (
+                      {(run.materials_used || []).map((material, index) => (
                         <div key={index} className="text-xs text-gray-600">
                           {material.item_name}: {material.quantity} {material.uom}
                         </div>
@@ -558,7 +558,7 @@ function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], g
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {cartons.map((carton) => (
+              {(cartons || []).map((carton) => (
                 <tr key={carton.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>

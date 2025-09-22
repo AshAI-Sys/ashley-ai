@@ -55,12 +55,19 @@ export default function ClientsPage() {
       const response = await api.getClients(params)
       
       if (response.success) {
-        setClients(response.data)
+        setClients(response.data || [])
         setTotalPages(response.pagination?.total_pages || 1)
         setTotalCount(response.pagination?.total_count || 0)
+      } else {
+        setClients([])
+        setTotalPages(1)
+        setTotalCount(0)
       }
     } catch (error) {
       console.error('Failed to fetch clients:', error)
+      setClients([])
+      setTotalPages(1)
+      setTotalCount(0)
     } finally {
       setLoading(false)
     }
@@ -142,7 +149,7 @@ export default function ClientsPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {clients.map((client) => (
+          {(clients || []).map((client) => (
             <Card key={client.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
                 <div className="flex justify-between items-start">

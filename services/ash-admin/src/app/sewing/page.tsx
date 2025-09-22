@@ -230,6 +230,10 @@ export default function SewingPage() {
 
     } catch (error) {
       console.error('Failed to fetch sewing data:', error)
+      setSewingRuns([])
+      setOperations([])
+      setOperators([])
+      setDashboardStats(null)
     } finally {
       setLoading(false)
     }
@@ -482,7 +486,7 @@ export default function SewingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All operations</SelectItem>
-                    {operations.map(op => (
+                    {(operations || []).map(op => (
                       <SelectItem key={op.id} value={op.name}>{op.name}</SelectItem>
                     ))}
                   </SelectContent>
@@ -494,7 +498,7 @@ export default function SewingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All operators</SelectItem>
-                    {operators.map(op => (
+                    {(operators || []).map(op => (
                       <SelectItem key={op.id} value={op.id}>
                         {op.first_name} {op.last_name}
                       </SelectItem>
@@ -507,7 +511,7 @@ export default function SewingPage() {
 
           {/* Sewing Runs List */}
           <div className="space-y-4">
-            {sewingRuns.map((run) => (
+            {(sewingRuns || []).map((run) => (
               <Card key={run.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -642,7 +646,7 @@ export default function SewingPage() {
 
         <TabsContent value="operators" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {operators.map((operator) => (
+            {(operators || []).map((operator) => (
               <Card key={operator.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -816,7 +820,7 @@ export default function SewingPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {operations.slice(0, 5).map((operation) => (
+                  {(operations || []).slice(0, 5).map((operation) => (
                     <div key={operation.id} className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{operation.name}</p>

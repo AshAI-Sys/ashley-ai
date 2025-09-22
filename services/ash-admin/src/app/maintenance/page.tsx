@@ -172,9 +172,12 @@ export default function MaintenancePage() {
       const schedulesData = await schedulesRes.json()
 
       if (statsData.success) setStats(statsData.data)
-      if (assetsData.success) setAssets(assetsData.data)
-      if (workOrdersData.success) setWorkOrders(workOrdersData.data)
-      if (schedulesData.success) setSchedules(schedulesData.data)
+      if (assetsData.success) setAssets(assetsData.data || [])
+      else setAssets([])
+      if (workOrdersData.success) setWorkOrders(workOrdersData.data || [])
+      else setWorkOrders([])
+      if (schedulesData.success) setSchedules(schedulesData.data || [])
+      else setSchedules([])
 
       setLoading(false)
     } catch (error) {
@@ -410,7 +413,7 @@ export default function MaintenancePage() {
                     <p className="text-muted-foreground">No upcoming maintenance scheduled</p>
                   ) : (
                     <div className="space-y-2">
-                      {stats?.upcoming_maintenance.slice(0, 5).map((maintenance) => (
+                      {(stats?.upcoming_maintenance || []).slice(0, 5).map((maintenance) => (
                         <div key={maintenance.id} className="flex items-center justify-between p-2 border rounded">
                           <div className="flex-1">
                             <div className="font-medium">{maintenance.schedule_name}</div>
@@ -445,7 +448,7 @@ export default function MaintenancePage() {
                     <p className="text-muted-foreground">No recent activity</p>
                   ) : (
                     <div className="space-y-2">
-                      {stats?.recent_activity.map((activity) => (
+                      {(stats?.recent_activity || []).map((activity) => (
                         <div key={activity.id} className="flex items-center justify-between p-2 border rounded">
                           <div className="flex-1">
                             <div className="font-medium">{activity.title}</div>
@@ -496,7 +499,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {assets.slice(0, 10).map((asset) => (
+                    {(assets || []).slice(0, 10).map((asset) => (
                       <tr key={asset.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -580,7 +583,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {workOrders.slice(0, 10).map((wo) => (
+                    {(workOrders || []).slice(0, 10).map((wo) => (
                       <tr key={wo.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -662,7 +665,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {schedules.slice(0, 10).map((schedule) => (
+                    {(schedules || []).slice(0, 10).map((schedule) => (
                       <tr key={schedule.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div className="font-medium">{schedule.schedule_name}</div>

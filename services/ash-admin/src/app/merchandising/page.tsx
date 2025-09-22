@@ -124,6 +124,9 @@ export default function MerchandisingAI() {
 
     } catch (error) {
       console.error('Error fetching merchandising data:', error)
+      setDemandForecasts([])
+      setRecommendations([])
+      setMarketTrends([])
     } finally {
       setLoading(false)
     }
@@ -265,7 +268,7 @@ export default function MerchandisingAI() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {recommendations.slice(0, 5).map((rec) => (
+                    {(recommendations || []).slice(0, 5).map((rec) => (
                       <div key={rec.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center gap-3">
                           {getRecommendationTypeIcon(rec.type)}
@@ -299,7 +302,7 @@ export default function MerchandisingAI() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {marketTrends
+                    {(marketTrends || [])
                       .filter(trend => trend.impact_score >= 7)
                       .slice(0, 5)
                       .map((trend) => (
@@ -338,7 +341,7 @@ export default function MerchandisingAI() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {demandForecasts.map((forecast) => (
+                  {(demandForecasts || []).map((forecast) => (
                     <div key={forecast.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex-1">
                         <h4 className="font-medium">{forecast.product_name}</h4>
@@ -383,7 +386,7 @@ export default function MerchandisingAI() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {recommendations.map((rec) => (
+                  {(recommendations || []).map((rec) => (
                     <div key={rec.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center gap-3">
                         {getRecommendationTypeIcon(rec.type)}
@@ -428,7 +431,7 @@ export default function MerchandisingAI() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {marketTrends.map((trend) => (
+                  {(marketTrends || []).map((trend) => (
                     <div key={trend.id} className="p-4 border rounded-lg">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">

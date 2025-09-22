@@ -146,6 +146,8 @@ export default function FinancePage() {
       }, 1000)
     } catch (error) {
       console.error('Error fetching finance data:', error)
+      setInvoices([])
+      setBills([])
       setLoading(false)
     }
   }
@@ -313,7 +315,7 @@ export default function FinancePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {invoices.map((invoice) => (
+                  {(invoices || []).map((invoice) => (
                     <div key={invoice.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -390,7 +392,7 @@ export default function FinancePage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {bills.map((bill) => (
+                  {(bills || []).map((bill) => (
                     <div key={bill.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">

@@ -174,6 +174,9 @@ export default function PrintingPage() {
 
     } catch (error) {
       console.error('Failed to fetch printing data:', error)
+      setPrintRuns([])
+      setMachines([])
+      setDashboard(null)
     } finally {
       setLoading(false)
     }
@@ -348,7 +351,7 @@ export default function PrintingPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All machines</SelectItem>
-                      {machines.map(machine => (
+                      {(machines || []).map(machine => (
                         <SelectItem key={machine.id} value={machine.id}>
                           {machine.name}
                         </SelectItem>
@@ -362,7 +365,7 @@ export default function PrintingPage() {
 
           {/* Print Runs List */}
           <div className="space-y-4">
-            {printRuns.map((run) => {
+            {(printRuns || []).map((run) => {
               const MethodIcon = methodIcons[run.method]
               const completed = getCompletedQty(run)
               const rejected = getRejectedQty(run)
@@ -501,7 +504,7 @@ export default function PrintingPage() {
 
         <TabsContent value="machines" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {machines.map((machine) => (
+            {(machines || []).map((machine) => (
               <Card key={machine.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -533,7 +536,7 @@ export default function PrintingPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {dashboard.method_breakdown.map((item) => {
+                    {(dashboard?.method_breakdown || []).map((item) => {
                       const MethodIcon = methodIcons[item.method as keyof typeof methodIcons]
                       return (
                         <div key={item.method} className="flex items-center justify-between">
@@ -558,7 +561,7 @@ export default function PrintingPage() {
                 <CardContent>
                   {dashboard.recent_rejects.length > 0 ? (
                     <div className="space-y-2">
-                      {dashboard.recent_rejects.map((reject) => (
+                      {(dashboard?.recent_rejects || []).map((reject) => (
                         <div key={reject.id} className="p-2 border rounded">
                           <div className="flex justify-between items-start">
                             <div>

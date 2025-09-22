@@ -97,7 +97,7 @@ export default function DeliveryPage() {
       const data = await response.json()
 
       if (data.shipments) {
-        setShipments(data.shipments)
+        setShipments(data.shipments || [])
       }
 
       const statsResponse = await fetch('/api/delivery/stats')
@@ -495,7 +495,7 @@ export default function DeliveryPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredShipments.map((shipment) => (
+                  {(filteredShipments || []).map((shipment) => (
                     <tr key={shipment.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>

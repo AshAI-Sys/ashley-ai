@@ -110,15 +110,21 @@ export default function HRPayrollPage() {
       }
 
       if (employeesData.success) {
-        setEmployees(employeesData.data)
+        setEmployees(employeesData.data || [])
+      } else {
+        setEmployees([])
       }
 
       if (attendanceData.success) {
-        setAttendanceLogs(attendanceData.data)
+        setAttendanceLogs(attendanceData.data || [])
+      } else {
+        setAttendanceLogs([])
       }
 
       if (payrollData.success) {
-        setPayrollRuns(payrollData.data)
+        setPayrollRuns(payrollData.data || [])
+      } else {
+        setPayrollRuns([])
       }
 
       setLoading(false)
@@ -320,7 +326,7 @@ export default function HRPayrollPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {employees.map((employee) => (
+                  {(employees || []).map((employee) => (
                     <div key={employee.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -395,7 +401,7 @@ export default function HRPayrollPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {attendanceLogs.map((log) => (
+                  {(attendanceLogs || []).map((log) => (
                     <div key={log.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -470,7 +476,7 @@ export default function HRPayrollPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {payrollRuns.map((payroll) => (
+                  {(payrollRuns || []).map((payroll) => (
                     <div key={payroll.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">

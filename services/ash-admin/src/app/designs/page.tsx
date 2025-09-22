@@ -72,10 +72,13 @@ export default function DesignsPage() {
       const data = await response.json()
       
       if (data.success) {
-        setDesigns(data.data)
+        setDesigns(data.data || [])
+      } else {
+        setDesigns([])
       }
     } catch (error) {
       console.error('Failed to fetch designs:', error)
+      setDesigns([])
     } finally {
       setLoading(false)
     }
@@ -195,7 +198,7 @@ export default function DesignsPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {designs.map((design) => (
+          {(designs || []).map((design) => (
             <Card key={design.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
                 <div className="flex justify-between items-start">
@@ -228,13 +231,13 @@ export default function DesignsPage() {
                       </div>
                       <div>
                         <span className="font-medium">Latest Approval:</span><br />
-                        {design.approvals.length > 0 ? (
+                        {(design.approvals || []).length > 0 ? (
                           <>
-                            <Badge className={getStatusColor(design.approvals[0].status)} variant="outline">
-                              {design.approvals[0].status}
+                            <Badge className={getStatusColor((design.approvals || [])[0]?.status)} variant="outline">
+                              {(design.approvals || [])[0]?.status}
                             </Badge>
                             <br />
-                            <span className="text-xs">by {design.approvals[0].client.name}</span>
+                            <span className="text-xs">by {(design.approvals || [])[0]?.client?.name}</span>
                           </>
                         ) : (
                           'No approvals yet'
