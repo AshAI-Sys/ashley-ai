@@ -1,215 +1,348 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { z } from 'zod';
 
-// Mock data - In production, this would use Prisma to interact with the database
-const mockCutIssues: any[] = []
+const CreateFabricIssueSchema = z.object({
+  orderId: z.string().min(1, 'Order ID is required'),
+  fabricBatchId: z.string().min(1, 'Fabric batch ID is required'),
+  qtyIssued: z.number().positive('Quantity issued must be positive'),
+  notes: z.string().optional(),
+});
+
+const UpdateFabricIssueSchema = CreateFabricIssueSchema.partial();
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const order_id = searchParams.get('order_id')
-    const batch_id = searchParams.get('batch_id')
-    const start_date = searchParams.get('start_date')
-    const end_date = searchParams.get('end_date')
-    
-    let filteredIssues = [...mockCutIssues]
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const orderId = searchParams.get('orderId') || '';
+    const fabricBatchId = searchParams.get('fabricBatchId') || '';
+    const startDate = searchParams.get('startDate') || '';
+    const endDate = searchParams.get('endDate') || '';
 
-    // Filter by order if specified
-    if (order_id) {
-      filteredIssues = filteredIssues.filter(issue => issue.order_id === order_id)
-    }
+    const skip = (page - 1) * limit;
 
-    // Filter by batch if specified
-    if (batch_id) {
-      filteredIssues = filteredIssues.filter(issue => issue.batch_id === batch_id)
-    }
+    const where = {
+      AND: [
+        orderId ? { orderId } : {},
+        fabricBatchId ? { fabricBatchId } : {},
+        startDate ? { createdAt: { gte: new Date(startDate) } } : {},
+        endDate ? { createdAt: { lte: new Date(endDate) } } : {},
+      ]
+    };
 
-    // Filter by date range
-    if (start_date) {
-      filteredIssues = filteredIssues.filter(issue => 
-        new Date(issue.created_at) >= new Date(start_date)
-      )
-    }
-    if (end_date) {
-      filteredIssues = filteredIssues.filter(issue => 
-        new Date(issue.created_at) <= new Date(end_date)
-      )
-    }
-
-    // Sort by creation date (newest first)
-    filteredIssues.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    const [fabricIssues, total] = await Promise.all([
+      prisma.fabricIssue.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              client: {
+                select: {
+                  name: true,
+                  company: true,
+                }
+              },
+              brand: {
+                select: {
+                  name: true,
+                }
+              }
+            }
+          },
+          fabricBatch: {
+            select: {
+              id: true,
+              lotNo: true,
+              fabricType: true,
+              color: true,
+              gsm: true,
+              widthCm: true,
+              uom: true,
+              qtyOnHand: true,
+            }
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.fabricIssue.count({ where }),
+    ]);
 
     return NextResponse.json({
       success: true,
-      data: filteredIssues,
-      total: filteredIssues.length
-    })
-
+      data: {
+        fabricIssues,
+        pagination: {
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        }
+      }
+    });
   } catch (error) {
-    console.error('Error fetching cut issues:', error)
+    console.error('Error fetching fabric issues:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to fetch cut issues',
-        data: []
-      },
+      { success: false, error: 'Failed to fetch fabric issues' },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    
-    // Validate required fields
-    const requiredFields = ['order_id', 'batch_id', 'qty_issued', 'uom']
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            error: `Missing required field: ${field}` 
+    const body = await request.json();
+    const validatedData = CreateFabricIssueSchema.parse(body);
+
+    // Check if order exists
+    const order = await prisma.order.findUnique({
+      where: { id: validatedData.orderId }
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { success: false, error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if fabric batch exists and has sufficient quantity
+    const fabricBatch = await prisma.fabricBatch.findUnique({
+      where: { id: validatedData.fabricBatchId }
+    });
+
+    if (!fabricBatch) {
+      return NextResponse.json(
+        { success: false, error: 'Fabric batch not found' },
+        { status: 404 }
+      );
+    }
+
+    if (fabricBatch.qtyOnHand < validatedData.qtyIssued) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Insufficient fabric quantity. Available: ${fabricBatch.qtyOnHand} ${fabricBatch.uom}`
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create fabric issue and update batch quantity in a transaction
+    const fabricIssue = await prisma.$transaction(async (tx) => {
+      // Create the fabric issue
+      const newFabricIssue = await tx.fabricIssue.create({
+        data: validatedData,
+        include: {
+          order: {
+            select: {
+              id: true,
+              orderNumber: true,
+              client: {
+                select: {
+                  name: true,
+                  company: true,
+                }
+              },
+              brand: {
+                select: {
+                  name: true,
+                }
+              }
+            }
           },
-          { status: 400 }
-        )
-      }
-    }
+          fabricBatch: {
+            select: {
+              id: true,
+              lotNo: true,
+              fabricType: true,
+              color: true,
+              gsm: true,
+              widthCm: true,
+              uom: true,
+              qtyOnHand: true,
+            }
+          }
+        }
+      });
 
-    // Validate quantity
-    if (body.qty_issued <= 0) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Quantity issued must be greater than 0' 
-        },
-        { status: 400 }
-      )
-    }
+      // Update fabric batch quantity
+      await tx.fabricBatch.update({
+        where: { id: validatedData.fabricBatchId },
+        data: {
+          qtyOnHand: {
+            decrement: validatedData.qtyIssued
+          }
+        }
+      });
 
-    // Validate UOM
-    if (!['KG', 'M'].includes(body.uom)) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid UOM. Must be KG or M' 
-        },
-        { status: 400 }
-      )
-    }
-
-    // In production, you would:
-    // 1. Check if batch has sufficient quantity
-    // 2. Create CutIssue record using Prisma
-    // 3. Update FabricBatch qty_on_hand
-    // 4. Create MaterialTransaction record
-    // 5. Generate Ashley AI analysis
-
-    // Mock fabric batch lookup to validate available quantity
-    const mockFabricBatch = {
-      id: body.batch_id,
-      lot_no: 'LOT-2025-001',
-      qty_on_hand: 45.5,
-      uom: body.uom
-    }
-
-    if (body.qty_issued > mockFabricBatch.qty_on_hand) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: `Insufficient fabric quantity. Available: ${mockFabricBatch.qty_on_hand} ${body.uom}` 
-        },
-        { status: 400 }
-      )
-    }
-
-    // Create new cut issue record
-    const newCutIssue = {
-      id: (mockCutIssues.length + 1).toString(),
-      workspace_id: 'ws_1', // Would come from auth context
-      order_id: body.order_id,
-      batch_id: body.batch_id,
-      qty_issued: parseFloat(body.qty_issued),
-      uom: body.uom,
-      issued_by: body.issued_by || 'current_user', // Would come from auth context
-      created_at: new Date().toISOString(),
-      
-      // Related data that would be fetched in production
-      order: {
-        order_number: 'TCAS-2025-000001',
-        brand: { name: 'Trendy Casual', code: 'TCAS' }
-      },
-      batch: {
-        lot_no: mockFabricBatch.lot_no,
-        gsm: 280,
-        width_cm: 160,
-        color: 'Navy Blue'
-      },
-      
-      // Ashley AI analysis
-      ashley_analysis: {
-        estimated_pieces: calculateEstimatedPieces(body.qty_issued, body.uom),
-        efficiency_score: 85,
-        recommendations: [
-          'Optimal fabric usage for this order type',
-          'Consider pre-shrinking fabric for better yield'
-        ],
-        risk_factors: [],
-        utilization_forecast: 'Good'
-      }
-    }
-
-    // Add to mock data
-    mockCutIssues.push(newCutIssue)
-
-    // In production: Update fabric batch quantity
-    // await prisma.fabricBatch.update({
-    //   where: { id: body.batch_id },
-    //   data: {
-    //     qty_on_hand: { decrement: body.qty_issued }
-    //   }
-    // })
-
-    // In production: Create material transaction
-    // await prisma.materialTransaction.create({
-    //   data: {
-    //     workspace_id: 'ws_1',
-    //     material_inventory_id: body.batch_id,
-    //     transaction_type: 'OUT',
-    //     quantity: body.qty_issued,
-    //     reference_type: 'ORDER',
-    //     reference_id: body.order_id,
-    //     notes: `Fabric issued to cutting for order ${body.order_id}`,
-    //     created_by: 'current_user'
-    //   }
-    // })
+      return newFabricIssue;
+    });
 
     return NextResponse.json({
       success: true,
-      data: newCutIssue,
-      message: 'Fabric issued to cutting successfully',
-      ashley_insights: newCutIssue.ashley_analysis
-    })
-
+      data: fabricIssue,
+      message: 'Fabric issued to cutting successfully'
+    }, { status: 201 });
   } catch (error) {
-    console.error('Error creating cut issue:', error)
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
+    }
+
+    console.error('Error creating fabric issue:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to issue fabric to cutting' 
-      },
+      { success: false, error: 'Failed to issue fabric to cutting' },
       { status: 500 }
-    )
+    );
   }
 }
 
-function calculateEstimatedPieces(quantity: number, uom: string): number {
-  // Ashley AI estimation based on average garment requirements
-  const averageGarmentWeight = 0.3 // kg for medium garment
-  const averageGarmentLength = 0.8 // meters for medium garment
-  
-  if (uom === 'KG') {
-    return Math.floor(quantity / averageGarmentWeight)
-  } else {
-    return Math.floor(quantity / averageGarmentLength)
+export async function PUT(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Fabric issue ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const body = await request.json();
+    const validatedData = UpdateFabricIssueSchema.parse(body);
+
+    // Check if fabric issue exists
+    const existingIssue = await prisma.fabricIssue.findUnique({
+      where: { id }
+    });
+
+    if (!existingIssue) {
+      return NextResponse.json(
+        { success: false, error: 'Fabric issue not found' },
+        { status: 404 }
+      );
+    }
+
+    const fabricIssue = await prisma.fabricIssue.update({
+      where: { id },
+      data: validatedData,
+      include: {
+        order: {
+          select: {
+            id: true,
+            orderNumber: true,
+            client: {
+              select: {
+                name: true,
+                company: true,
+              }
+            },
+            brand: {
+              select: {
+                name: true,
+              }
+            }
+          }
+        },
+        fabricBatch: {
+          select: {
+            id: true,
+            lotNo: true,
+            fabricType: true,
+            color: true,
+            gsm: true,
+            widthCm: true,
+            uom: true,
+            qtyOnHand: true,
+          }
+        }
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: fabricIssue,
+      message: 'Fabric issue updated successfully'
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
+    }
+
+    console.error('Error updating fabric issue:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update fabric issue' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Fabric issue ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if fabric issue exists
+    const existingIssue = await prisma.fabricIssue.findUnique({
+      where: { id },
+      include: {
+        fabricBatch: true
+      }
+    });
+
+    if (!existingIssue) {
+      return NextResponse.json(
+        { success: false, error: 'Fabric issue not found' },
+        { status: 404 }
+      );
+    }
+
+    // Delete fabric issue and restore batch quantity in a transaction
+    await prisma.$transaction(async (tx) => {
+      // Delete the fabric issue
+      await tx.fabricIssue.delete({
+        where: { id }
+      });
+
+      // Restore fabric batch quantity
+      await tx.fabricBatch.update({
+        where: { id: existingIssue.fabricBatchId },
+        data: {
+          qtyOnHand: {
+            increment: existingIssue.qtyIssued
+          }
+        }
+      });
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Fabric issue deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting fabric issue:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete fabric issue' },
+      { status: 500 }
+    );
   }
 }

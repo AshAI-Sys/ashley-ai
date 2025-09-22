@@ -41,7 +41,15 @@
       "Bash(rm:*)",
       "Bash(findstr:*)",
       "Bash(cmd /c:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(while read dir)",
+      "Bash(do if [ ! -f \"$dir/route.ts\" ])",
+      "Bash([ ! -f \"$dir/route.js\" ])",
+      "Bash(then echo \"MISSING: $dir\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(then basename \"$dir\")"
     ],
     "deny": [],
     "ask": []
