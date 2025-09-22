@@ -68,7 +68,7 @@ const statusIcons = {
     DELAYED: <lucide_react_1.AlertTriangle className="h-3 w-3 text-red-600"/>,
     PAUSED: <lucide_react_1.Pause className="h-3 w-3 text-ash-orange-600"/>,
 };
-exports.GanttChart = React.forwardRef(({ tasks, startDate: propStartDate, endDate: propEndDate, onTaskClick, onTaskUpdate, className }, ref) => {
+exports.GanttChart = React.forwardRef(({ tasks, startDate: propStartDate, endDate: propEndDate, onTaskClick, className }, ref) => {
     // Calculate date range
     const allDates = tasks.flatMap(task => [
         task.startDate,

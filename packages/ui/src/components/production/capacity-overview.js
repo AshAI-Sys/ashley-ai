@@ -78,15 +78,6 @@ exports.CapacityOverview = React.forwardRef(({ productionLines, workerSummary, s
         ? productionLines.reduce((sum, line) => sum + line.efficiency, 0) / productionLines.length
         : 0;
     const criticalLines = productionLines.filter(line => line.status === "OVERLOADED" || line.bottleneckRisk === "HIGH").length;
-    const getUtilizationColor = (rate) => {
-        if (rate > 95)
-            return "bg-red-500";
-        if (rate > 80)
-            return "bg-ash-orange-500";
-        if (rate > 60)
-            return "bg-ash-blue-500";
-        return "bg-ash-green-500";
-    };
     const getEfficiencyTrend = (efficiency) => {
         if (efficiency > 85)
             return <lucide_react_1.TrendingUp className="h-4 w-4 text-ash-green-600"/>;

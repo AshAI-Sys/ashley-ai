@@ -38,7 +38,10 @@
       "Read(//d/Laptop Pics/Screenshots/**)",
       "Bash(copy:*)",
       "Bash(netstat:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(findstr:*)",
+      "Bash(cmd /c:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

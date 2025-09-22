@@ -112,13 +112,6 @@ const garmentTypeLabels = {
     UNIFORM: "Uniform",
     OTHER: "Other (Custom)",
 };
-const materialUnits = {
-    YARDS: "Yards",
-    METERS: "Meters",
-    PIECES: "Pieces",
-    KG: "Kilograms",
-    GRAMS: "Grams",
-};
 const printingMethods = {
     SCREEN: "Screen Printing",
     DIGITAL: "Digital Printing",
@@ -160,14 +153,7 @@ exports.OrderIntakeForm = React.forwardRef(({ initialData, clients, onSubmit, on
             ...initialData,
         },
     });
-    const { fields: materialFields, append: addMaterial, remove: removeMaterial } = (0, react_hook_form_1.useFieldArray)({
-        control: form.control,
-        name: "materials",
-    });
-    const { fields: colorwayFields, append: addColorway, remove: removeColorway } = (0, react_hook_form_1.useFieldArray)({
-        control: form.control,
-        name: "colorways",
-    });
+    // Material and colorway management - arrays handled in form defaults
     const watchedGarmentType = form.watch("garmentType");
     const watchedQuantity = form.watch("quantity");
     const watchedSizeCurve = form.watch("sizeCurve");

@@ -1,0 +1,72 @@
+interface MockModel {
+    findMany: (args?: any) => Promise<any[]>;
+    findUnique: (args?: any) => Promise<any>;
+    create: (args?: any) => Promise<any>;
+    update: (args?: any) => Promise<any>;
+    delete: (args?: any) => Promise<any>;
+    count: (args?: any) => Promise<number>;
+    upsert: (args?: any) => Promise<any>;
+}
+interface MockPrismaClient {
+    [key: string]: MockModel | any;
+    $connect: () => Promise<void>;
+    $disconnect: () => Promise<void>;
+}
+declare class MockPrisma implements MockPrismaClient {
+    workspace: MockModel;
+    client: MockModel;
+    order: MockModel;
+    employee: MockModel;
+    attendanceLog: MockModel;
+    payrollPeriod: MockModel;
+    payrollEarning: MockModel;
+    qualityControlCheck: MockModel;
+    inspection: MockModel;
+    defectCode: MockModel;
+    capa: MockModel;
+    designAsset: MockModel;
+    lay: MockModel;
+    bundle: MockModel;
+    cuttingRun: MockModel;
+    printRun: MockModel;
+    sewingRun: MockModel;
+    finishingRun: MockModel;
+    finishedUnit: MockModel;
+    carton: MockModel;
+    shipment: MockModel;
+    delivery: MockModel;
+    invoice: MockModel;
+    invoiceItem: MockModel;
+    payment: MockModel;
+    creditNote: MockModel;
+    bankAccount: MockModel;
+    expense: MockModel;
+    costCenter: MockModel;
+    budget: MockModel;
+    financialReport: MockModel;
+    asset: MockModel;
+    workOrder: MockModel;
+    maintenanceSchedule: MockModel;
+    clientSession: MockModel;
+    clientNotification: MockModel;
+    clientActivity: MockModel;
+    clientMessage: MockModel;
+    clientPortalSettings: MockModel;
+    demandForecast: MockModel;
+    productRecommendation: MockModel;
+    marketTrend: MockModel;
+    inventoryInsight: MockModel;
+    aiModelMetrics: MockModel;
+    customerSegment: MockModel;
+    automationRule: MockModel;
+    automationExecution: MockModel;
+    notificationTemplate: MockModel;
+    notification: MockModel;
+    alert: MockModel;
+    integration: MockModel;
+    integrationSyncLog: MockModel;
+    $connect(): Promise<void>;
+    $disconnect(): Promise<void>;
+}
+export declare const prisma: MockPrismaClient | MockPrisma;
+export {};

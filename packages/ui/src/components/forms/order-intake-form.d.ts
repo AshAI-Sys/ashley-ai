@@ -143,7 +143,7 @@ export interface OrderIntakeFormProps {
     }>;
     onSubmit: (data: OrderIntakeFormData) => Promise<void>;
     onCancel?: () => void;
-    onValidate?: (data: Partial<OrderIntakeFormData>) => Promise<any>;
+    onValidate?: (data: Partial<OrderIntakeFormData>) => Promise<unknown>;
     isLoading?: boolean;
     ashleyAnalysis?: {
         risk: "GREEN" | "AMBER" | "RED";

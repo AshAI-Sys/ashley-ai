@@ -58,6 +58,12 @@ declare const CreateVersionSchema: z.ZodObject<{
     }>>;
     createdBy: z.ZodString;
 }, "strip", z.ZodTypeAny, {
+    metadata?: {
+        dpi?: number;
+        colorProfile?: string;
+        notes?: string;
+        tags?: string[];
+    };
     assetId?: string;
     files?: {
         mockupUrl?: string;
@@ -73,14 +79,14 @@ declare const CreateVersionSchema: z.ZodObject<{
         offsetY?: number;
     }[];
     palette?: string[];
-    metadata?: {
-        dpi?: number;
-        colorProfile?: string;
-        notes?: string;
-        tags?: string[];
-    };
     createdBy?: string;
 }, {
+    metadata?: {
+        dpi?: number;
+        colorProfile?: string;
+        notes?: string;
+        tags?: string[];
+    };
     assetId?: string;
     files?: {
         mockupUrl?: string;
@@ -96,12 +102,6 @@ declare const CreateVersionSchema: z.ZodObject<{
         offsetY?: number;
     }[];
     palette?: string[];
-    metadata?: {
-        dpi?: number;
-        colorProfile?: string;
-        notes?: string;
-        tags?: string[];
-    };
     createdBy?: string;
 }>;
 declare const CompareVersionsSchema: z.ZodObject<{

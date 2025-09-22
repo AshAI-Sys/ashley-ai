@@ -75,9 +75,9 @@ const statusConfig = {
     PARTIAL: { variant: "warning", label: "Partial" },
     REFUNDED: { variant: "secondary", label: "Refunded" },
 };
-const StatusBadge = React.forwardRef(({ status, type, className, ...props }, ref) => {
+const StatusBadge = React.forwardRef(({ status, className, ...props }, _ref) => {
     const config = statusConfig[status] || { variant: "outline", label: status };
-    return (<badge_1.Badge ref={ref} variant={config.variant} className={(0, utils_1.cn)("font-medium", className)} {...props}>
+    return (<badge_1.Badge variant={config.variant} className={(0, utils_1.cn)("font-medium", className)} {...props}>
       {config.label || status}
     </badge_1.Badge>);
 });

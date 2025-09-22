@@ -28,6 +28,7 @@ declare const CreateWorkflowSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     workspaceId?: string;
     designAssetId?: string;
+    priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
     approvers?: string[];
     stages?: {
         name?: string;
@@ -36,10 +37,10 @@ declare const CreateWorkflowSchema: z.ZodObject<{
         autoAdvance?: boolean;
     }[];
     dueDate?: Date;
-    priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 }, {
     workspaceId?: string;
     designAssetId?: string;
+    priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
     approvers?: string[];
     stages?: {
         name?: string;
@@ -48,7 +49,6 @@ declare const CreateWorkflowSchema: z.ZodObject<{
         autoAdvance?: boolean;
     }[];
     dueDate?: Date;
-    priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
 }>;
 export declare class DesignApprovalWorkflow extends EventEmitter {
     private db;
