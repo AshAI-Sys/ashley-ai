@@ -1,0 +1,71 @@
+'use client'
+
+import { useAuth } from '../lib/auth-context'
+import { hasAccess, User } from '../lib/permissions'
+import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+interface RouteGuardProps {
+  children: React.ReactNode
+}
+
+export default function RouteGuard({ children }: RouteGuardProps) {
+  const { user, isLoading } = useAuth()
+  const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      // Transform user to permissions User interface
+      const permUser: User = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role as any,
+        position: user.position || '',
+        department: user.department || 'Administration',
+        permissions: user.permissions || {}
+      }
+
+      // Check if user has access to current route
+      const routeAccess = hasAccess(permUser, pathname)
+
+      if (!routeAccess) {
+        // Redirect to dashboard if no access
+        router.push('/dashboard')
+        return
+      }
+    }
+  }, [user, isLoading, pathname, router])
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h1>
+          <p className="text-gray-600 mb-4">Please log in to access this page</p>
+          <button
+            onClick={() => router.push('/login')}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}

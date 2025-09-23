@@ -1,46 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useAuth } from '../../lib/auth-context'
+import { User } from '../../lib/permissions'
 import DashboardLayout from '@/components/dashboard-layout'
+import RouteGuard from '@/components/route-guard'
+import RoleWidgets from '@/components/dashboard/role-widgets'
+import RoleActivities from '@/components/dashboard/role-activities'
 
 export default function DashboardPage() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const { user, logout, isLoading } = useAuth()
 
-  useEffect(() => {
-    try {
-      const token = localStorage.getItem('ash_token')
-      console.log('Token found:', !!token)
-
-      if (!token) {
-        console.log('No token, redirecting to login')
-        router.push('/login')
-        return
-      }
-
-      console.log('Setting user data')
-      // Simulate user data from token
-      setUser({
-        name: 'Admin User',
-        email: 'admin@ash.com',
-        role: 'Administrator'
-      })
-      setLoading(false)
-      console.log('Loading set to false')
-    } catch (error) {
-      console.error('Error in useEffect:', error)
-      setLoading(false)
-    }
-  }, [router])
-
-  const handleLogout = () => {
-    localStorage.removeItem('ash_token')
-    router.push('/')
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -51,103 +21,66 @@ export default function DashboardPage() {
     )
   }
 
+  if (!user) {
+    return null // RouteGuard will handle redirect
+  }
+
+  // Transform user to permissions User interface
+  const permUser: User = {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role as any,
+    position: user.position || '',
+    department: user.department || 'Administration',
+    permissions: user.permissions || {}
+  }
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'admin': return 'Administrator'
+      case 'manager': return 'Manager'
+      case 'supervisor': return 'Supervisor'
+      case 'operator': return 'Operator'
+      case 'employee': return 'Employee'
+      default: return 'Employee'
+    }
+  }
+
   return (
-    <DashboardLayout>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-sm text-gray-600">Welcome back, {user?.name}</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-6 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Stats Cards */}
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-gray-700 mb-2">
-                Total Orders
-              </h3>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
-                1,234
-              </p>
-              <p className="text-sm text-green-600">
-                ↗️ +12% from last month
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-gray-700 mb-2">
-                Production Lines
-              </h3>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
-                8
-              </p>
-              <p className="text-sm text-green-600">
-                ✅ All operational
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-sm">
-              <h3 className="text-base font-semibold text-gray-700 mb-2">
-                Efficiency
-              </h3>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
-                94%
-              </p>
-              <p className="text-sm text-green-600">
-                🎯 Above target
-              </p>
-            </div>
-          </div>
-
-          {/* Recent Activity */}
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              Recent Activity
-            </h2>
-
-            <div className="space-y-3">
-              <div className="p-3 bg-gray-50 rounded-md border-l-4 border-blue-500">
-                <p className="text-sm font-medium text-gray-900 mb-1">
-                  Order #ASH-2025-001 completed
-                </p>
-                <p className="text-xs text-gray-600">
-                  2 hours ago • 500 units delivered
+    <RouteGuard>
+      <DashboardLayout>
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <header className="bg-white border-b border-gray-200 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+                <p className="text-sm text-gray-600">
+                  Welcome back, {user.name} • {getRoleDisplayName(user.role)} • {user.department}
                 </p>
               </div>
-
-              <div className="p-3 bg-gray-50 rounded-md border-l-4 border-green-500">
-                <p className="text-sm font-medium text-gray-900 mb-1">
-                  Quality check passed for Bundle #B-789
-                </p>
-                <p className="text-xs text-gray-600">
-                  4 hours ago • 100% quality score
-                </p>
-              </div>
-
-              <div className="p-3 bg-gray-50 rounded-md border-l-4 border-amber-500">
-                <p className="text-sm font-medium text-gray-900 mb-1">
-                  New order received from Brand XYZ
-                </p>
-                <p className="text-xs text-gray-600">
-                  6 hours ago • 1,000 units requested
-                </p>
-              </div>
+              <button
+                onClick={logout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
             </div>
-          </div>
-        </main>
-      </div>
-    </DashboardLayout>
+          </header>
+
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-6 py-8">
+            {/* Role-specific Widgets */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <RoleWidgets user={permUser} />
+            </div>
+
+            {/* Role-specific Recent Activities */}
+            <RoleActivities user={permUser} />
+          </main>
+        </div>
+      </DashboardLayout>
+    </RouteGuard>
   )
 }

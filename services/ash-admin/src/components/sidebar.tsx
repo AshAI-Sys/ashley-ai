@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useAuth } from '../lib/auth-context'
+import { getAccessibleNavigation, hasAccess, User } from '../lib/permissions'
 import {
   Building2,
   ShoppingCart,
@@ -25,29 +27,51 @@ import {
   ChevronRight
 } from 'lucide-react'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Clients', href: '/clients', icon: Building2 },
-  { name: 'Orders', href: '/orders', icon: ShoppingCart },
-  { name: 'Design & Approval', href: '/designs', icon: Palette },
-  { name: 'Cutting Operations', href: '/cutting', icon: Scissors },
-  { name: 'Printing Operations', href: '/printing', icon: Printer },
-  { name: 'Sewing Operations', href: '/sewing', icon: PocketKnife },
-  { name: 'Quality Control', href: '/quality-control', icon: CheckCircle },
-  { name: 'Finishing & Packing', href: '/finishing-packing', icon: Package },
-  { name: 'Delivery Management', href: '/delivery', icon: Truck },
-  { name: 'Finance', href: '/finance', icon: DollarSign },
-  { name: 'HR & Payroll', href: '/hr-payroll', icon: Users },
-  { name: 'Maintenance', href: '/maintenance', icon: Wrench },
-  { name: 'Client Portal', href: '/client-portal', icon: Globe },
-  { name: 'Merchandising AI', href: '/merchandising-ai', icon: Bot },
-  { name: 'Automation Engine', href: '/automation', icon: Zap },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-]
+const iconMap = {
+  Home,
+  Building2,
+  ShoppingCart,
+  Palette,
+  Scissors,
+  Printer,
+  PocketKnife,
+  CheckCircle,
+  Package,
+  Truck,
+  DollarSign,
+  Users,
+  Wrench,
+  Globe,
+  Bot,
+  Zap,
+  BarChart3,
+}
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
+  const { user } = useAuth()
+
+  // Get filtered navigation based on user role and department
+  const navigation = useMemo(() => {
+    if (!user) {
+      // Default navigation for non-authenticated users
+      return [{ name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*' }]
+    }
+
+    // Transform user to match our permissions User interface
+    const permUser: User = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role as any,
+      position: user.position || '',
+      department: user.department || 'Administration',
+      permissions: user.permissions || {}
+    }
+
+    return getAccessibleNavigation(permUser)
+  }, [user])
 
   return (
     <div className={`bg-gray-900 text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} min-h-screen flex flex-col`}>
@@ -82,7 +106,7 @@ export default function Sidebar() {
       <nav className="flex-1 p-3 space-y-1">
         {navigation.map((item) => {
           const isActive = pathname === item.href
-          const Icon = item.icon
+          const Icon = iconMap[item.icon as keyof typeof iconMap] || Home
 
           return (
             <Link
@@ -106,6 +130,13 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-700">
+        {!collapsed && user && (
+          <div className="text-xs text-gray-400 mb-3">
+            <p className="font-medium text-gray-300">{user.name}</p>
+            <p>{user.position}</p>
+            <p>{user.department} • {user.role}</p>
+          </div>
+        )}
         {!collapsed && (
           <div className="text-xs text-gray-400">
             <p>Ashley AI v1.0</p>
