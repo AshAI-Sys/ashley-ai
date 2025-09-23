@@ -151,6 +151,7 @@ export default function AshleyAIOptimization({
   }, [autoRefresh, runId])
 
   const getPriorityColor = (priority: string) => {
+    if (!priority) return 'outline'
     switch (priority.toLowerCase()) {
       case 'critical': return 'destructive'
       case 'high': return 'destructive'

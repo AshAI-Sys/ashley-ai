@@ -219,6 +219,8 @@ export default function MaintenancePage() {
   }
 
   const getStatusBadge = (status: string) => {
+    if (!status) return <Badge className="bg-gray-100 text-gray-800">Unknown</Badge>
+
     switch (status.toLowerCase()) {
       case 'active':
         return <Badge className="bg-green-100 text-green-800">Active</Badge>
@@ -244,6 +246,8 @@ export default function MaintenancePage() {
   }
 
   const getPriorityBadge = (priority: string) => {
+    if (!priority) return <Badge className="bg-gray-100 text-gray-800">Normal</Badge>
+
     switch (priority.toLowerCase()) {
       case 'critical':
         return <Badge className="bg-red-500 text-white">Critical</Badge>
