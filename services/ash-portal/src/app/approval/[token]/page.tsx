@@ -182,6 +182,8 @@ export default function ClientApprovalPage() {
   }
 
   const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800'
+
     switch (status.toUpperCase()) {
       case 'SENT': return 'bg-blue-100 text-blue-800'
       case 'APPROVED': return 'bg-green-100 text-green-800'
@@ -192,6 +194,8 @@ export default function ClientApprovalPage() {
   }
 
   const getMethodColor = (method: string) => {
+    if (!method) return 'bg-gray-100 text-gray-800'
+
     switch (method.toUpperCase()) {
       case 'SILKSCREEN': return 'bg-purple-100 text-purple-800'
       case 'SUBLIMATION': return 'bg-cyan-100 text-cyan-800'
