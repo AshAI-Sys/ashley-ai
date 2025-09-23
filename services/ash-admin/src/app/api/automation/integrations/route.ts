@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/db';
+import { prisma } from '@/lib/db';
 
 // GET /api/automation/integrations - Get integrations
 export async function GET(request: NextRequest) {
@@ -233,7 +233,7 @@ function maskSensitiveConfig(config: any): any {
 }
 
 function validateIntegrationConfig(type: string, provider: string, config: any): { valid: boolean; error?: string } {
-  const requiredFields: Record<string, string[]> = {
+  const requiredFields: Record<string, Record<string, string[]>> = {
     EMAIL: {
       MAILGUN: ['api_key', 'domain'],
       SENDGRID: ['api_key'],

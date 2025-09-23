@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../lib/db'
+import { prisma } from '@/lib/db'
 
 // GET - Fetch all comments for a design
 export async function GET(
@@ -131,7 +131,7 @@ export async function POST(
 
     // Handle file attachments
     const attachmentUrls: string[] = []
-    for (const [key, value] of formData.entries()) {
+    for (const [key, value] of Array.from(formData.entries())) {
       if (key.startsWith('attachment_') && value instanceof File) {
         // TODO: Upload to cloud storage
         const filename = `${Date.now()}-${value.name}`

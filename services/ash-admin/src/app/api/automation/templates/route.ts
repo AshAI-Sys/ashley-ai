@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../lib/db';
+import { prisma } from '@/lib/db';
 
 // GET /api/automation/templates - Get notification templates
 export async function GET(request: NextRequest) {
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         return {
           ...template,
           usage_stats: {
-            total: Object.values(usage).reduce((sum, count) => sum + count, 0),
+            total: Object.values(usage).reduce((sum: number, count) => sum + (count as number), 0),
             ...usage
           }
         };

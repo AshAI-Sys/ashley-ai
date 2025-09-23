@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../lib/db'
+import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
@@ -208,7 +208,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
 
   // Generate recommendations based on patterns
   Object.entries(methodIssues).forEach(([method, count]) => {
-    if (count >= 2) {
+    if ((count as number) >= 2) {
       recommendations.push({
         type: 'METHOD_OPTIMIZATION',
         priority: 'HIGH',

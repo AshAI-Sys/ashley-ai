@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../lib/db'
+import { prisma } from '@/lib/db'
 import { requireAuth, validateWorkspaceAccess } from '@/lib/auth-middleware'
 import { validateRequired, validateNumber, validateEnum, createValidationErrorResponse, validateAndSanitizeMarketTrendData } from '@/lib/validation'
 

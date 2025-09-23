@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../lib/db'
+import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
@@ -341,12 +341,12 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
   // Based on efficiency score
   if (insights.efficiency_score.score < 0.8) {
     const worstFactor = Object.entries(insights.efficiency_score.factors)
-      .sort(([,a], [,b]) => a - b)[0]
+      .sort(([,a], [,b]) => (a as number) - (b as number))[0]
     
     recommendations.push({
       type: 'EFFICIENCY',
       priority: 'HIGH',
-      message: `Improve ${worstFactor[0]} efficiency (currently ${Math.round(worstFactor[1] * 100)}%)`,
+      message: `Improve ${worstFactor[0]} efficiency (currently ${Math.round((worstFactor[1] as number) * 100)}%)`,
       action: getEfficiencyAction(worstFactor[0], printRun.print_method)
     })
   }

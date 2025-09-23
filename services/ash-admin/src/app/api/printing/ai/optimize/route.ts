@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../lib/db'
+import { prisma } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
@@ -177,7 +177,7 @@ function calculateMachineEfficiency(machine: any) {
   const maintenanceBonus = machine.last_maintenance ? 0.05 : -0.1
   const agefactor = machine.install_date ? Math.max(0.7, 1 - ((Date.now() - new Date(machine.install_date).getTime()) / (1000 * 60 * 60 * 24 * 365 * 5))) : 0.85
   
-  return Math.min(0.98, Math.max(0.6, baseEfficiency + maintenanceBonus) * ageFactory)
+  return Math.min(0.98, Math.max(0.6, baseEfficiency + maintenanceBonus) * agefactor)
 }
 
 function calculateHistoricalPerformance(runs: any[]) {
@@ -306,7 +306,7 @@ function generateRecommendations(method: string, methodOpt: any, baseFactors: an
 
 function calculateConfidenceScore(factors: any, historicalCount: number) {
   const dataConfidence = Math.min(0.95, 0.6 + (historicalCount / 50) * 0.35)
-  const factorConfidence = Object.values(factors).reduce((sum: number, val: any) => sum + (typeof val === 'number' ? val : 0), 0) / Object.keys(factors).length
+  const factorConfidence = (Object.values(factors).reduce((sum: number, val: any) => (sum as number) + (typeof val === 'number' ? (val as number) : 0), 0) as number) / Object.keys(factors).length
   
   return Math.round((dataConfidence * factorConfidence) * 100) / 100
 }

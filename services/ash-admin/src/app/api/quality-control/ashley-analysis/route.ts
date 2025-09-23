@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../lib/db'
+import { prisma } from '@/lib/db'
 
 // Ashley AI Quality Control Analytics
 export async function POST(request: NextRequest) {
@@ -179,7 +179,7 @@ async function performRootCausePrediction(inspection: any) {
 
     switch (category) {
       case 'PRINTING':
-        if (pattern.severity_distribution.CRITICAL > 0) {
+        if ((pattern as any)?.severity_distribution?.CRITICAL > 0) {
           likelyRootCause = 'Ink viscosity or screen registration issue'
           confidence = 85
           preventiveActions = [
