@@ -20,6 +20,7 @@ import {
   MessageCircle
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { ClientOnly } from '@/components/client-only'
 
 interface Order {
   id: string
@@ -167,11 +168,13 @@ export default function DashboardPage() {
               <div className="relative">
                 <Button variant="outline" size="sm" className="relative">
                   <Bell className="h-4 w-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
+                  <ClientOnly>
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-2 -right-2 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </ClientOnly>
                 </Button>
               </div>
             </div>
@@ -245,11 +248,13 @@ export default function DashboardPage() {
             <TabsTrigger value="orders">Recent Orders</TabsTrigger>
             <TabsTrigger value="notifications" className="relative">
               Notifications
-              {unreadCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
-                  {unreadCount}
-                </span>
-              )}
+              <ClientOnly>
+                {unreadCount > 0 && (
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </ClientOnly>
             </TabsTrigger>
           </TabsList>
 
