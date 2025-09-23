@@ -7,10 +7,10 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ASH AI Admin',
+  title: 'Ash-AI Admin',
   description: 'Apparel Smart Hub - AI-powered Manufacturing ERP',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/ash-ai-logo.svg',
   },
 }
 

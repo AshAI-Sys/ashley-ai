@@ -1,0 +1,23 @@
+<svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sewing Machine Body -->
+  <path d="M10 30 L10 55 Q10 60 15 60 L55 60 Q60 60 60 55 L60 30 Q60 25 55 25 L15 25 Q10 25 10 30 Z" fill="#2B3A67"/>
+
+  <!-- Sewing Machine Top -->
+  <path d="M15 20 L15 30 L55 30 L55 20 Q55 15 50 15 L20 15 Q15 15 15 20 Z" fill="#2B3A67"/>
+
+  <!-- Sewing Machine Arm -->
+  <path d="M25 15 L25 5 Q25 2 28 2 L42 2 Q45 2 45 5 L45 15" fill="#2B3A67"/>
+
+  <!-- Needle -->
+  <line x1="35" y1="60" x2="35" y2="65" stroke="#2B3A67" stroke-width="2"/>
+
+  <!-- Brain Icon -->
+  <circle cx="45" cy="35" r="8" fill="#7DD3FC"/>
+
+  <!-- Brain Details -->
+  <path d="M40 32 Q42 30 44 32 Q46 30 48 32 Q48 35 46 37 Q44 39 42 37 Q40 35 40 32" fill="#2B3A67"/>
+  <path d="M41 35 Q43 33 45 35 Q47 33 49 35" stroke="#2B3A67" stroke-width="1" fill="none"/>
+
+  <!-- Text "Ash-Ai" -->
+  <text x="10" y="78" font-family="serif" font-size="12" font-weight="bold" fill="#2B3A67">Ash-Ai</text>
+</svg>

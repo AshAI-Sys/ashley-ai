@@ -56,11 +56,15 @@ export default function Sidebar() {
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                <Bot className="w-5 h-5" />
+              <div className="w-10 h-8 mr-3">
+                <img
+                  src="/ash-ai-logo.svg"
+                  alt="Ash-AI Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
-                <h1 className="font-bold text-lg">ASH AI</h1>
+                <h1 className="font-bold text-lg">Ash-AI</h1>
                 <p className="text-xs text-gray-400">Manufacturing ERP</p>
               </div>
             </div>
