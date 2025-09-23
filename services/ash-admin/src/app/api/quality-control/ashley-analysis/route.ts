@@ -187,7 +187,7 @@ async function performRootCausePrediction(inspection: any) {
             'Verify screen registration accuracy',
             'Inspect squeegee condition'
           ]
-        } else if (pattern.severity_distribution.MAJOR > pattern.severity_distribution.MINOR) {
+        } else if ((pattern as any)?.severity_distribution?.MAJOR > (pattern as any)?.severity_distribution?.MINOR) {
           likelyRootCause = 'Print pressure or speed settings'
           confidence = 70
           preventiveActions = [
@@ -199,7 +199,7 @@ async function performRootCausePrediction(inspection: any) {
         break
 
       case 'SEWING':
-        if (Object.keys(pattern.locations).length > 3) {
+        if (Object.keys((pattern as any)?.locations || {}).length > 3) {
           likelyRootCause = 'Machine calibration or operator training issue'
           confidence = 80
           preventiveActions = [

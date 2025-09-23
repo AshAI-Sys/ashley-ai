@@ -450,7 +450,7 @@ export default function MachinesPage() {
                       <SelectValue placeholder="All workcenters" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All workcenters</SelectItem>
+                      <SelectItem value="all">All workcenters</SelectItem>
                       <SelectItem value="PRINTING">Screen Printing</SelectItem>
                       <SelectItem value="HEAT_PRESS">Heat Press</SelectItem>
                       <SelectItem value="EMB">Embroidery</SelectItem>
@@ -466,7 +466,7 @@ export default function MachinesPage() {
                       <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All statuses</SelectItem>
+                      <SelectItem value="all">All statuses</SelectItem>
                       <SelectItem value="active">Active only</SelectItem>
                       <SelectItem value="available">Available</SelectItem>
                       <SelectItem value="busy">Busy</SelectItem>

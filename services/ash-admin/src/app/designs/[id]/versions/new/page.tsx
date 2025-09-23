@@ -260,7 +260,7 @@ export default function NewVersionPage() {
       if (result.status === 'PASS') {
         toast.success('Design validation passed!')
       } else if (result.status === 'WARN') {
-        toast.warning(`Design validation passed with warnings: ${result.issues?.length || 0} issues found`)
+        toast(`Design validation passed with warnings: ${result.issues?.length || 0} issues found`, { style: { background: '#f59e0b', color: 'white' } })
       } else {
         toast.error(`Design validation failed: ${result.issues?.length || 0} critical issues found`)
       }

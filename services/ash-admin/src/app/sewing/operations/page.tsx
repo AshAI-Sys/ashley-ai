@@ -466,7 +466,7 @@ export default function SewingOperationsPage() {
                 <SelectValue placeholder="All product types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All product types</SelectItem>
+                <SelectItem value="all">All product types</SelectItem>
                 {productTypes.map(type => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}

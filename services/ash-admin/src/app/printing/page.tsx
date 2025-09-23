@@ -318,7 +318,7 @@ export default function PrintingPage() {
                       <SelectValue placeholder="All methods" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All methods</SelectItem>
+                      <SelectItem value="all">All methods</SelectItem>
                       <SelectItem value="SILKSCREEN">Silkscreen</SelectItem>
                       <SelectItem value="SUBLIMATION">Sublimation</SelectItem>
                       <SelectItem value="DTF">DTF</SelectItem>
@@ -334,7 +334,7 @@ export default function PrintingPage() {
                       <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All statuses</SelectItem>
+                      <SelectItem value="all">All statuses</SelectItem>
                       <SelectItem value="CREATED">Created</SelectItem>
                       <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                       <SelectItem value="PAUSED">Paused</SelectItem>
@@ -350,7 +350,7 @@ export default function PrintingPage() {
                       <SelectValue placeholder="All machines" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All machines</SelectItem>
+                      <SelectItem value="all">All machines</SelectItem>
                       {(machines || []).map(machine => (
                         <SelectItem key={machine.id} value={machine.id}>
                           {machine.name}

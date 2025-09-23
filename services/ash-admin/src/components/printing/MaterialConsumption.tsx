@@ -335,7 +335,7 @@ export default function MaterialConsumption({ runId, method, onUpdate, readOnly 
                               <SelectValue placeholder="All types" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All types</SelectItem>
+                              <SelectItem value="all">All types</SelectItem>
                               {materialTypes.map(type => (
                                 <SelectItem key={type} value={type}>{type}</SelectItem>
                               ))}

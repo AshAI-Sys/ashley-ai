@@ -473,7 +473,7 @@ export default function SewingPage() {
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All statuses</SelectItem>
+                    <SelectItem value="all">All statuses</SelectItem>
                     <SelectItem value="CREATED">Created</SelectItem>
                     <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                     <SelectItem value="DONE">Completed</SelectItem>
@@ -485,7 +485,7 @@ export default function SewingPage() {
                     <SelectValue placeholder="All operations" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All operations</SelectItem>
+                    <SelectItem value="all">All operations</SelectItem>
                     {(operations || []).map(op => (
                       <SelectItem key={op.id} value={op.name}>{op.name}</SelectItem>
                     ))}
@@ -497,7 +497,7 @@ export default function SewingPage() {
                     <SelectValue placeholder="All operators" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All operators</SelectItem>
+                    <SelectItem value="all">All operators</SelectItem>
                     {(operators || []).map(op => (
                       <SelectItem key={op.id} value={op.id}>
                         {op.first_name} {op.last_name}
