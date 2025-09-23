@@ -1,23 +1,50 @@
-<svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Sewing Machine Body -->
-  <path d="M10 30 L10 55 Q10 60 15 60 L55 60 Q60 60 60 55 L60 30 Q60 25 55 25 L15 25 Q10 25 10 30 Z" fill="#2B3A67"/>
+<svg width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="200" height="240" fill="#F5EFE7"/>
 
-  <!-- Sewing Machine Top -->
-  <path d="M15 20 L15 30 L55 30 L55 20 Q55 15 50 15 L20 15 Q15 15 15 20 Z" fill="#2B3A67"/>
+  <!-- Sewing Machine Main Body -->
+  <path d="M40 80 Q40 70 50 70 L150 70 Q160 70 160 80 L160 120 Q160 130 150 130 L130 130 L130 140 Q130 150 120 150 L70 150 Q60 150 60 140 L60 130 L50 130 Q40 130 40 120 Z" fill="#2B3A67"/>
 
-  <!-- Sewing Machine Arm -->
-  <path d="M25 15 L25 5 Q25 2 28 2 L42 2 Q45 2 45 5 L45 15" fill="#2B3A67"/>
+  <!-- Sewing Machine Head -->
+  <path d="M70 30 Q70 20 80 20 L120 20 Q130 20 130 30 L130 70 L70 70 Z" fill="#2B3A67"/>
 
-  <!-- Needle -->
-  <line x1="35" y1="60" x2="35" y2="65" stroke="#2B3A67" stroke-width="2"/>
+  <!-- Sewing Machine Thread Spool Pin -->
+  <rect x="115" y="15" width="8" height="15" rx="4" fill="#2B3A67"/>
 
-  <!-- Brain Icon -->
-  <circle cx="45" cy="35" r="8" fill="#7DD3FC"/>
+  <!-- Sewing Machine Arm Connection -->
+  <path d="M100 70 L100 30" stroke="#2B3A67" stroke-width="8"/>
+
+  <!-- Needle Area -->
+  <rect x="95" y="145" width="10" height="20" fill="#2B3A67"/>
+  <line x1="100" y1="165" x2="100" y2="175" stroke="#2B3A67" stroke-width="3"/>
+
+  <!-- Brain Icon Inside Machine -->
+  <ellipse cx="100" cy="50" rx="20" ry="18" fill="#7DD3FC"/>
 
   <!-- Brain Details -->
-  <path d="M40 32 Q42 30 44 32 Q46 30 48 32 Q48 35 46 37 Q44 39 42 37 Q40 35 40 32" fill="#2B3A67"/>
-  <path d="M41 35 Q43 33 45 35 Q47 33 49 35" stroke="#2B3A67" stroke-width="1" fill="none"/>
+  <path d="M85 45 Q90 40 95 45 Q100 40 105 45 Q110 40 115 45 Q115 50 110 55 Q105 60 100 55 Q95 60 90 55 Q85 50 85 45" fill="#2B3A67"/>
+  <path d="M88 50 Q93 47 98 50 Q103 47 108 50" stroke="#2B3A67" stroke-width="2" fill="none"/>
+  <path d="M90 53 Q95 50 100 53 Q105 50 110 53" stroke="#2B3A67" stroke-width="2" fill="none"/>
 
-  <!-- Text "Ash-Ai" -->
-  <text x="10" y="78" font-family="serif" font-size="12" font-weight="bold" fill="#2B3A67">Ash-Ai</text>
+  <!-- Decorative Script Text "Ash-Ai" -->
+  <g transform="translate(30, 200)">
+    <!-- A -->
+    <path d="M5 30 Q8 15 15 15 Q22 15 25 30 L20 30 Q18 25 15 25 Q12 25 10 30 Z M12 28 L18 28" stroke="#2B3A67" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- s -->
+    <path d="M30 25 Q35 20 40 25 Q35 30 30 25 Q35 30 40 35 Q35 40 30 35" stroke="#2B3A67" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- h -->
+    <path d="M45 15 L45 40 M45 25 Q50 20 55 25 L55 40" stroke="#2B3A67" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- - -->
+    <line x1="62" y1="30" x2="72" y2="30" stroke="#2B3A67" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- A -->
+    <path d="M80 30 Q83 15 90 15 Q97 15 100 30 L95 30 Q93 25 90 25 Q87 25 85 30 Z M87 28 L93 28" stroke="#2B3A67" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- i -->
+    <circle cx="108" cy="18" r="2" fill="#2B3A67"/>
+    <line x1="108" y1="25" x2="108" y2="40" stroke="#2B3A67" stroke-width="3" stroke-linecap="round"/>
+  </g>
 </svg>
