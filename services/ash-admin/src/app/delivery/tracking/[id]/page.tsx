@@ -449,7 +449,7 @@ export default function ShipmentTrackingPage({ params }: { params: { id: string 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <div className="font-medium text-gray-900">
-                            {event.event_type.replace('_', ' ')}
+                            {event.event_type?.replace('_', ' ') || 'Unknown Event'}
                           </div>
                           <div className="text-sm text-gray-500">
                             {new Date(event.timestamp).toLocaleString()}

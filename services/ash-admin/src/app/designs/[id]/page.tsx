@@ -455,7 +455,7 @@ export default function DesignDetailsPage() {
                     {placements.map((placement: any, index: number) => (
                       <div key={index} className="p-3 border rounded">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium capitalize">{placement.area.replace('_', ' ')}</h4>
+                          <h4 className="font-medium capitalize">{placement.area?.replace('_', ' ') || 'Unknown Area'}</h4>
                           <span className="text-sm text-muted-foreground">
                             {placement.width_cm} × {placement.height_cm} cm
                           </span>

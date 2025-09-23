@@ -514,7 +514,7 @@ export default function PrintingPage() {
                     </Badge>
                   </div>
                   <CardDescription>
-                    Workcenter: {machine.workcenter.replace('_', ' ')}
+                    Workcenter: {machine.workcenter?.replace('_', ' ') || 'No workcenter'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

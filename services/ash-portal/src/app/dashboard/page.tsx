@@ -284,7 +284,7 @@ export default function DashboardPage() {
                           </Badge>
                         )}
                         <Badge className={getStatusColor(order.status)}>
-                          {order.status.replace('_', ' ')}
+                          {order.status?.replace('_', ' ') || 'Unknown'}
                         </Badge>
                       </div>
                     </div>

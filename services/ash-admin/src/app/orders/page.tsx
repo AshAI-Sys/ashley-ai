@@ -142,7 +142,7 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="font-semibold text-lg">{order.order_number}</h3>
                       <Badge className={getStatusColor(order.status)}>
-                        {order.status.replace('_', ' ').toUpperCase()}
+                        {order.status ? order.status.replace('_', ' ').toUpperCase() : 'UNKNOWN'}
                       </Badge>
                     </div>
                     

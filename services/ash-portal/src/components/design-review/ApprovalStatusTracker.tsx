@@ -135,7 +135,7 @@ export function ApprovalStatusTracker({
               variant="secondary" 
               className={`${config.color.replace('text-', 'bg-').replace('-600', '-100')} border-current`}
             >
-              {currentStatus.replace('_', ' ')}
+              {currentStatus?.replace('_', ' ') || 'Unknown'}
             </Badge>
           </div>
         </CardHeader>

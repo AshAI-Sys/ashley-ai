@@ -794,7 +794,7 @@ export default function SewingRunDetailsPage() {
                        <Clock className="w-4 h-4 text-gray-600" />}
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium">{entry.action.toLowerCase().replace('_', ' ')}</p>
+                      <p className="font-medium">{entry.action?.toLowerCase()?.replace('_', ' ') || 'Unknown Action'}</p>
                       <p className="text-sm text-muted-foreground">
                         {new Date(entry.timestamp).toLocaleString()}
                       </p>

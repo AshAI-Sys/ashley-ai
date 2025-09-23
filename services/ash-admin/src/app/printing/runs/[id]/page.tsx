@@ -356,7 +356,7 @@ export default function PrintRunDetailsPage() {
               {run.machine?.name || 'No machine assigned'}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {run.machine?.workcenter.replace('_', ' ')}
+              {run.machine?.workcenter?.replace('_', ' ') || 'No workcenter'}
             </p>
           </CardContent>
         </Card>

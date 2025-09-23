@@ -329,7 +329,7 @@ export default function VersionManagementPage() {
                       <div className="flex flex-wrap gap-2">
                         {placements.map((placement: any, index: number) => (
                           <Badge key={index} variant="outline" className="text-xs">
-                            {placement.area.replace('_', ' ')}: {placement.width_cm}×{placement.height_cm}cm
+                            {placement.area?.replace('_', ' ') || 'Unknown'}: {placement.width_cm}×{placement.height_cm}cm
                           </Badge>
                         ))}
                       </div>

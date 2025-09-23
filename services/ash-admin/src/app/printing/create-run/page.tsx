@@ -397,7 +397,7 @@ export default function CreatePrintRunPage() {
                     <SelectContent>
                       {getAvailableMachines().map((machine) => (
                         <SelectItem key={machine.id} value={machine.id}>
-                          {machine.name} ({machine.workcenter.replace('_', ' ')})
+                          {machine.name} ({machine.workcenter?.replace('_', ' ') || 'No workcenter'})
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -261,7 +261,7 @@ export default function ClientApprovalPage() {
             </div>
             <div className="flex items-center gap-2">
               <Badge className={getStatusColor(approvalData.status)}>
-                {approvalData.status.replace('_', ' ')}
+                {approvalData.status?.replace('_', ' ') || 'Unknown'}
               </Badge>
               <Badge className={getMethodColor(approvalData.design_asset.method)}>
                 {approvalData.design_asset.method}
@@ -397,7 +397,7 @@ export default function ClientApprovalPage() {
                         <div key={index} className="p-3 bg-gray-50 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium capitalize">
-                              {placement.area.replace('_', ' ')}
+                              {placement.area?.replace('_', ' ') || 'Unknown Area'}
                             </h4>
                             <span className="text-sm text-gray-600">
                               {placement.width_cm} × {placement.height_cm} cm

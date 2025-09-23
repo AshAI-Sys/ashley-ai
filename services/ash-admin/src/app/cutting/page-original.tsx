@@ -133,6 +133,7 @@ export default function CuttingPage() {
   }
 
   const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800'
     switch (status.toUpperCase()) {
       case 'CREATED': return 'bg-blue-100 text-blue-800'
       case 'IN_SEWING': return 'bg-yellow-100 text-yellow-800'
