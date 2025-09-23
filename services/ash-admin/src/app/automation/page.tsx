@@ -113,7 +113,8 @@ export default function AutomationPage() {
 
   const ActivityItem = ({ activity }: { activity: any }) => {
     const getStatusColor = (status: string) => {
-      switch (status) {
+      if (!status) return 'text-gray-600 bg-gray-50';
+      switch (status.toUpperCase()) {
         case 'SUCCESS': case 'SENT': case 'RESOLVED': return 'text-green-600 bg-green-50';
         case 'FAILED': case 'OPEN': return 'text-red-600 bg-red-50';
         case 'PENDING': case 'ACKNOWLEDGED': return 'text-yellow-600 bg-yellow-50';

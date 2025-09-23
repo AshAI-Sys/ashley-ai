@@ -143,7 +143,8 @@ export default function AshleyValidation({
   }
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    if (!status) return 'bg-gray-100 text-gray-800 border-gray-200'
+    switch (status.toUpperCase()) {
       case 'PASS': return 'bg-green-100 text-green-800 border-green-200'
       case 'WARN': return 'bg-yellow-100 text-yellow-800 border-yellow-200'
       case 'FAIL': return 'bg-red-100 text-red-800 border-red-200'
@@ -152,7 +153,8 @@ export default function AshleyValidation({
   }
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
+    if (!status) return <Clock className="w-5 h-5 text-gray-600" />
+    switch (status.toUpperCase()) {
       case 'PASS': return <CheckCircle className="w-5 h-5 text-green-600" />
       case 'WARN': return <AlertCircle className="w-5 h-5 text-yellow-600" />
       case 'FAIL': return <XCircle className="w-5 h-5 text-red-600" />
@@ -161,7 +163,8 @@ export default function AshleyValidation({
   }
 
   const getSeverityColor = (severity: string) => {
-    switch (severity) {
+    if (!severity) return 'bg-gray-100 text-gray-800'
+    switch (severity.toUpperCase()) {
       case 'CRITICAL': return 'bg-red-100 text-red-800'
       case 'WARNING': return 'bg-yellow-100 text-yellow-800'
       case 'INFO': return 'bg-blue-100 text-blue-800'

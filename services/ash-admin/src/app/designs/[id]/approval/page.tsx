@@ -306,6 +306,7 @@ export default function DesignApprovalPage() {
   }
 
   const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800'
     switch (status.toUpperCase()) {
       case 'SENT': return 'bg-blue-100 text-blue-800'
       case 'APPROVED': return 'bg-green-100 text-green-800'
@@ -316,6 +317,7 @@ export default function DesignApprovalPage() {
   }
 
   const getStatusIcon = (status: string) => {
+    if (!status) return <Clock className="w-4 h-4" />
     switch (status.toUpperCase()) {
       case 'SENT': return <Clock className="w-4 h-4" />
       case 'APPROVED': return <CheckCircle className="w-4 h-4" />

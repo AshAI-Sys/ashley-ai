@@ -124,6 +124,7 @@ export default function DesignDetailsPage() {
   }
 
   const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-100 text-gray-800'
     switch (status.toUpperCase()) {
       case 'DRAFT': return 'bg-gray-100 text-gray-800'
       case 'PENDING_APPROVAL': return 'bg-yellow-100 text-yellow-800'
@@ -135,6 +136,7 @@ export default function DesignDetailsPage() {
   }
 
   const getMethodColor = (method: string) => {
+    if (!method) return 'bg-gray-100 text-gray-800'
     switch (method.toUpperCase()) {
       case 'SILKSCREEN': return 'bg-purple-100 text-purple-800'
       case 'SUBLIMATION': return 'bg-cyan-100 text-cyan-800'
@@ -145,6 +147,7 @@ export default function DesignDetailsPage() {
   }
 
   const getCheckResultColor = (result: string) => {
+    if (!result) return 'bg-gray-100 text-gray-800'
     switch (result.toUpperCase()) {
       case 'PASS': return 'bg-green-100 text-green-800'
       case 'WARN': return 'bg-yellow-100 text-yellow-800'
