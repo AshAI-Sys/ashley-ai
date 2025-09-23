@@ -94,13 +94,13 @@ export default function FinishingPackingPage() {
   const loadFinishingData = async () => {
     const response = await fetch('/api/finishing/runs')
     const data = await response.json()
-    setFinishingRuns(data.runs || [])
+    setFinishingRuns(Array.isArray(data.runs) ? data.runs : Array.isArray(data) ? data : [])
   }
 
   const loadPackingData = async () => {
     const response = await fetch('/api/packing/cartons')
     const data = await response.json()
-    setCartons(data.cartons || [])
+    setCartons(Array.isArray(data.cartons) ? data.cartons : Array.isArray(data) ? data : [])
   }
 
   const loadStats = async () => {
@@ -451,7 +451,7 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {(finishingRuns || []).map((run) => (
+              {(Array.isArray(filteredFinishingRuns) ? filteredFinishingRuns : []).map((run) => (
                 <tr key={run.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -486,7 +486,7 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {(run.materials_used || []).map((material, index) => (
+                      {(Array.isArray(run.materials_used) ? run.materials_used : []).map((material, index) => (
                         <div key={index} className="text-xs text-gray-600">
                           {material.item_name}: {material.quantity} {material.uom}
                         </div>
@@ -558,7 +558,7 @@ function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], g
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {(cartons || []).map((carton) => (
+              {(Array.isArray(filteredCartons) ? filteredCartons : []).map((carton) => (
                 <tr key={carton.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>

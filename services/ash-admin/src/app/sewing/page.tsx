@@ -131,7 +131,7 @@ export default function SewingPage() {
       // Handle API responses or use mock data
       if (runsResponse.ok) {
         const runsData = await runsResponse.json()
-        setSewingRuns(runsData.data || [])
+        setSewingRuns(Array.isArray(runsData.data) ? runsData.data : Array.isArray(runsData) ? runsData : [])
       } else {
         // Mock data for demo
         setSewingRuns([
@@ -191,7 +191,7 @@ export default function SewingPage() {
 
       if (operationsResponse.ok) {
         const operationsData = await operationsResponse.json()
-        setOperations(operationsData.data || [])
+        setOperations(Array.isArray(operationsData.data) ? operationsData.data : Array.isArray(operationsData) ? operationsData : [])
       } else {
         setOperations([
           { id: '1', product_type: 'Hoodie', name: 'Join shoulders', standard_minutes: 1.5, piece_rate: 2.25 },
@@ -204,7 +204,7 @@ export default function SewingPage() {
 
       if (operatorsResponse.ok) {
         const operatorsData = await operatorsResponse.json()
-        setOperators(operatorsData.data || [])
+        setOperators(Array.isArray(operatorsData.data) ? operatorsData.data : Array.isArray(operatorsData) ? operatorsData : [])
       } else {
         setOperators([
           { id: '1', employee_number: 'EMP001', first_name: 'Maria', last_name: 'Santos', position: 'Sewing Operator', department: 'SEWING' },
@@ -486,7 +486,7 @@ export default function SewingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All operations</SelectItem>
-                    {(operations || []).map(op => (
+                    {(Array.isArray(operations) ? operations : []).map(op => (
                       <SelectItem key={op.id} value={op.name}>{op.name}</SelectItem>
                     ))}
                   </SelectContent>
@@ -498,7 +498,7 @@ export default function SewingPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All operators</SelectItem>
-                    {(operators || []).map(op => (
+                    {(Array.isArray(operators) ? operators : []).map(op => (
                       <SelectItem key={op.id} value={op.id}>
                         {op.first_name} {op.last_name}
                       </SelectItem>
@@ -511,7 +511,7 @@ export default function SewingPage() {
 
           {/* Sewing Runs List */}
           <div className="space-y-4">
-            {(sewingRuns || []).map((run) => (
+            {(Array.isArray(sewingRuns) ? sewingRuns : []).map((run) => (
               <Card key={run.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -646,7 +646,7 @@ export default function SewingPage() {
 
         <TabsContent value="operators" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(operators || []).map((operator) => (
+            {(Array.isArray(operators) ? operators : []).map((operator) => (
               <Card key={operator.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -820,7 +820,7 @@ export default function SewingPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {(operations || []).slice(0, 5).map((operation) => (
+                  {(Array.isArray(operations) ? operations : []).slice(0, 5).map((operation) => (
                     <div key={operation.id} className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{operation.name}</p>
