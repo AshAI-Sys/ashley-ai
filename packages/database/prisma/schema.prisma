@@ -641,6 +641,9 @@ model Employee {
   employee_number String
   first_name      String
   last_name       String
+  email           String   @unique
+  password_hash   String
+  role            String   @default("employee") // admin, manager, supervisor, operator, employee
   position        String
   department      String
   hire_date       DateTime
@@ -649,6 +652,8 @@ model Employee {
   piece_rate      Float?
   is_active       Boolean  @default(true)
   contact_info    String?  // JSON as string
+  permissions     String?  // JSON as string for role-based permissions
+  last_login      DateTime?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   deleted_at      DateTime?
