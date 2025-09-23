@@ -94,6 +94,8 @@ export default function DashboardPage() {
   }
 
   const getStatusColor = (status: string) => {
+    if (!status) return 'bg-gray-500'
+
     const colors: Record<string, string> = {
       'draft': 'bg-gray-500',
       'confirmed': 'bg-blue-500',
@@ -104,26 +106,30 @@ export default function DashboardPage() {
       'delivered': 'bg-emerald-500',
       'cancelled': 'bg-red-500'
     }
-    return colors[status] || 'bg-gray-500'
+    return colors[status.toLowerCase()] || 'bg-gray-500'
   }
 
   const getPaymentStatusColor = (status: string) => {
+    if (!status) return 'text-gray-600 bg-gray-50'
+
     const colors: Record<string, string> = {
       'paid': 'text-green-600 bg-green-50',
       'partial': 'text-orange-600 bg-orange-50',
       'pending': 'text-red-600 bg-red-50'
     }
-    return colors[status] || 'text-gray-600 bg-gray-50'
+    return colors[status.toLowerCase()] || 'text-gray-600 bg-gray-50'
   }
 
   const getPriorityColor = (priority: string) => {
+    if (!priority) return 'text-gray-600'
+
     const colors: Record<string, string> = {
       'LOW': 'text-gray-600',
       'MEDIUM': 'text-blue-600',
       'HIGH': 'text-orange-600',
       'URGENT': 'text-red-600'
     }
-    return colors[priority] || 'text-gray-600'
+    return colors[priority.toUpperCase()] || 'text-gray-600'
   }
 
   const formatCurrency = (amount: number, currency: string) => {
