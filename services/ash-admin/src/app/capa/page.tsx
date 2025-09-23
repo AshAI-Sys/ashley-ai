@@ -376,7 +376,7 @@ export default function CAPAPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredTasks.map((task) => (
+                {(filteredTasks || []).map((task) => (
                   <tr key={task.id} className={`hover:bg-gray-50 ${isOverdue(task.due_date) ? 'bg-red-50' : ''}`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">

@@ -310,7 +310,7 @@ export default function AutomationPage() {
               </div>
 
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {stats.recent_activity.length > 0 ? (
+                {stats.recent_activity && stats.recent_activity.length > 0 ? (
                   stats.recent_activity.map((activity, index) => (
                     <ActivityItem key={index} activity={activity} />
                   ))

@@ -457,7 +457,7 @@ export default function ClientBrandsPage() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {brands.map((brand) => {
+          {(brands || []).map((brand) => {
             const settings = formatSettings(brand.settings)
             return (
               <Card key={brand.id} className="hover:shadow-md transition-shadow">

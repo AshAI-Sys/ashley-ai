@@ -149,7 +149,7 @@ export default function OrdersPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
                       <div>
                         <span className="font-medium">Client:</span><br />
-                        {order.client.name}
+                        {order.client?.name || 'No Client'}
                       </div>
                       <div>
                         <span className="font-medium">Brand:</span><br />
@@ -157,7 +157,7 @@ export default function OrdersPage() {
                       </div>
                       <div>
                         <span className="font-medium">Amount:</span><br />
-                        ₱{order.total_amount.toLocaleString()}
+                        ₱{(order.total_amount || 0).toLocaleString()}
                       </div>
                       <div>
                         <span className="font-medium">Delivery:</span><br />
@@ -166,10 +166,10 @@ export default function OrdersPage() {
                     </div>
                     
                     <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-                      <span>{order._count.line_items} items</span>
-                      <span>{order._count.design_assets} designs</span>
-                      <span>{order._count.bundles} bundles</span>
-                      <span>Created {new Date(order.created_at).toLocaleDateString()}</span>
+                      <span>{order._count?.line_items || 0} items</span>
+                      <span>{order._count?.design_assets || 0} designs</span>
+                      <span>{order._count?.bundles || 0} bundles</span>
+                      <span>Created {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'Unknown'}</span>
                     </div>
                   </div>
                   

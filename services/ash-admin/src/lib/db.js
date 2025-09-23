@@ -23,7 +23,18 @@ const createMockModel = (mockData = mockRecord) => ({
     update: async (args) => ({ ...mockData, ...args?.data }),
     delete: async () => mockData,
     count: async () => 0,
-    upsert: async (args) => ({ ...mockData, ...args?.create, ...args?.update })
+    upsert: async (args) => ({ ...mockData, ...args?.create, ...args?.update }),
+    groupBy: async (args) => [{
+        ...args?.by?.reduce((acc, key) => ({ ...acc, [key]: 'mock-value' }), {}),
+        _count: { [args?.by?.[0] || 'id']: 1 }
+    }],
+    aggregate: async (args) => ({
+        _count: { _all: 0 },
+        _sum: Object.keys(args?._sum || {}).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+        _avg: Object.keys(args?._avg || {}).reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+        _min: Object.keys(args?._min || {}).reduce((acc, key) => ({ ...acc, [key]: null }), {}),
+        _max: Object.keys(args?._max || {}).reduce((acc, key) => ({ ...acc, [key]: null }), {})
+    })
 });
 class MockPrisma {
     constructor() {
