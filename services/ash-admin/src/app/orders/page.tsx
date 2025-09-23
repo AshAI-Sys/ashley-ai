@@ -140,47 +140,47 @@ export default function OrdersPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg">{order.order_number}</h3>
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status ? order.status.replace('_', ' ').toUpperCase() : 'UNKNOWN'}
+                      <h3 className="font-semibold text-lg">{order?.order_number || 'Unknown Order'}</h3>
+                      <Badge className={getStatusColor(order?.status)}>
+                        {order?.status ? order.status.replace('_', ' ').toUpperCase() : 'UNKNOWN'}
                       </Badge>
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
                       <div>
                         <span className="font-medium">Client:</span><br />
-                        {order.client?.name || 'No Client'}
+                        {order?.client?.name || 'No Client'}
                       </div>
                       <div>
                         <span className="font-medium">Brand:</span><br />
-                        {order.brand?.name || 'No Brand'}
+                        {order?.brand?.name || 'No Brand'}
                       </div>
                       <div>
                         <span className="font-medium">Amount:</span><br />
-                        ₱{(order.total_amount || 0).toLocaleString()}
+                        ₱{(order?.total_amount || 0).toLocaleString()}
                       </div>
                       <div>
                         <span className="font-medium">Delivery:</span><br />
-                        {order.delivery_date ? new Date(order.delivery_date).toLocaleDateString() : 'TBD'}
+                        {order?.delivery_date ? new Date(order.delivery_date).toLocaleDateString() : 'TBD'}
                       </div>
                     </div>
                     
                     <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-                      <span>{order._count?.line_items || 0} items</span>
-                      <span>{order._count?.design_assets || 0} designs</span>
-                      <span>{order._count?.bundles || 0} bundles</span>
-                      <span>Created {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'Unknown'}</span>
+                      <span>{order?._count?.line_items || 0} items</span>
+                      <span>{order?._count?.design_assets || 0} designs</span>
+                      <span>{order?._count?.bundles || 0} bundles</span>
+                      <span>Created {order?.created_at ? new Date(order.created_at).toLocaleDateString() : 'Unknown'}</span>
                     </div>
                   </div>
                   
                   <div className="flex gap-2">
-                    <Link href={`/orders/${order.id}`}>
+                    <Link href={`/orders/${order?.id || ''}`}>
                       <Button variant="outline" size="sm">
                         <Eye className="w-4 h-4 mr-1" />
                         View
                       </Button>
                     </Link>
-                    <Link href={`/orders/${order.id}/edit`}>
+                    <Link href={`/orders/${order?.id || ''}/edit`}>
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
