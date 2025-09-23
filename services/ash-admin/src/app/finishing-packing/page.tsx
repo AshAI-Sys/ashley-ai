@@ -451,21 +451,21 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {(Array.isArray(filteredFinishingRuns) ? filteredFinishingRuns : []).map((run) => (
+              {(Array.isArray(runs) ? runs : []).map((run) => (
                 <tr key={run.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        {run.order.order_number}
+                        {run.order?.order_number || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        Bundle: {run.bundle.qr_code} ({run.bundle.size_code}) - {run.bundle.qty} pcs
+                        Bundle: {run.bundle?.qr_code || 'N/A'} ({run.bundle?.size_code || 'N/A'}) - {run.bundle?.qty || 0} pcs
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {run.operator.first_name} {run.operator.last_name}
+                      {run.operator?.first_name || 'N/A'} {run.operator?.last_name || ''}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -558,39 +558,39 @@ function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], g
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {(Array.isArray(filteredCartons) ? filteredCartons : []).map((carton) => (
+              {(Array.isArray(cartons) ? cartons : []).map((carton) => (
                 <tr key={carton.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        {carton.carton_no}
+                        {carton.carton_no || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        Order: {carton.order.order_number}
+                        Order: {carton.order?.order_number || 'N/A'}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {carton.dimensions.length}×{carton.dimensions.width}×{carton.dimensions.height} cm
+                      {carton.dimensions?.length || 0}×{carton.dimensions?.width || 0}×{carton.dimensions?.height || 0} cm
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm text-gray-900">
-                        {carton.actual_weight} kg
+                        {carton.actual_weight || 0} kg
                       </div>
                       <div className="flex items-center mt-1">
                         <div className="text-sm text-gray-500 mr-2">
-                          {carton.fill_percent}% fill
+                          {carton.fill_percent || 0}% fill
                         </div>
                         <div className="w-16 bg-gray-200 rounded-full h-2">
                           <div
                             className={`h-2 rounded-full ${
-                              carton.fill_percent >= 90 ? 'bg-green-600' :
-                              carton.fill_percent >= 70 ? 'bg-yellow-600' : 'bg-red-600'
+                              (carton.fill_percent || 0) >= 90 ? 'bg-green-600' :
+                              (carton.fill_percent || 0) >= 70 ? 'bg-yellow-600' : 'bg-red-600'
                             }`}
-                            style={{ width: `${carton.fill_percent}%` }}
+                            style={{ width: `${carton.fill_percent || 0}%` }}
                           ></div>
                         </div>
                       </div>
@@ -598,7 +598,7 @@ function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], g
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {carton.units_count} units
+                      {carton.units_count || 0} units
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
