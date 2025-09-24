@@ -60,15 +60,34 @@ export default function Sidebar() {
       return [{ name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*' }]
     }
 
+    // Map current roles to our RBAC roles for compatibility
+    const roleMapping = {
+      'admin': 'admin',
+      'Admin': 'admin',
+      'manager': 'manager',
+      'Manager': 'manager',
+      'CSR': 'designer',
+      'Worker': 'cutting_operator',
+      'Client': 'warehouse_staff'
+    } as const
+
+    const mappedRole = roleMapping[user.role as keyof typeof roleMapping] || 'cutting_operator'
+
+    // Get permissions based on role if not provided
+    const { getRoleBasedPermissions } = require('../lib/rbac')
+    const userPermissions = user.permissions && user.permissions.length > 0
+      ? user.permissions
+      : getRoleBasedPermissions(user.role || mappedRole)
+
     // Transform user to match our permissions User interface
     const permUser: User = {
       id: user.id,
       email: user.email,
-      name: user.name,
-      role: user.role as any,
+      name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+      role: mappedRole,
       position: user.position || '',
       department: user.department || 'Administration',
-      permissions: user.permissions || {}
+      permissions: userPermissions
     }
 
     return getAccessibleNavigation(permUser)

@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, apiRateLimit } from './rate-limit'
 import { verifyToken, JWTPayload } from './jwt'
+import { Permission, Role, getAllPermissionsForRole, hasPermission, hasAnyPermission } from './rbac'
 
 export interface AuthUser {
   id: string
   email: string
-  role: string
+  role: Role
   workspaceId: string
+  permissions: Permission[]
 }
 
 export async function authenticateRequest(request: NextRequest): Promise<AuthUser | null> {
@@ -21,11 +23,13 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
     // Development mode fallback - only in development
     if (process.env.NODE_ENV === 'development' && token === 'demo-jwt-token-12345') {
       console.warn('Using demo authentication token - DEVELOPMENT ONLY')
+      const role: Role = 'admin'
       return {
         id: 'demo-user-1',
         email: 'admin@ashleyai.com',
-        role: 'admin',
-        workspaceId: 'demo-workspace-1'
+        role,
+        workspaceId: 'demo-workspace-1',
+        permissions: getAllPermissionsForRole(role)
       }
     }
 
@@ -35,11 +39,13 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
       return null
     }
 
+    const role = payload.role as Role
     return {
       id: payload.userId,
       email: payload.email,
-      role: payload.role,
-      workspaceId: payload.workspaceId
+      role,
+      workspaceId: payload.workspaceId,
+      permissions: getAllPermissionsForRole(role)
     }
 
     // TODO: Implement proper JWT validation
@@ -66,6 +72,53 @@ export function requireAuth(handler: (request: NextRequest, user: AuthUser) => P
 
     return handler(request, user)
   })
+}
+
+// Permission-based middleware functions
+export function requirePermission(permission: Permission) {
+  return function(handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>) {
+    return requireAuth(async (request: NextRequest, user: AuthUser) => {
+      if (!hasPermission(user.permissions, permission)) {
+        return NextResponse.json(
+          { error: `Access denied. Required permission: ${permission}` },
+          { status: 403 }
+        )
+      }
+      return handler(request, user)
+    })
+  }
+}
+
+export function requireAnyPermission(permissions: Permission[]) {
+  return function(handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>) {
+    return requireAuth(async (request: NextRequest, user: AuthUser) => {
+      if (!hasAnyPermission(user.permissions, permissions)) {
+        return NextResponse.json(
+          { error: `Access denied. Required permissions: ${permissions.join(' or ')}` },
+          { status: 403 }
+        )
+      }
+      return handler(request, user)
+    })
+  }
+}
+
+export function requireRole(role: Role) {
+  return function(handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>) {
+    return requireAuth(async (request: NextRequest, user: AuthUser) => {
+      if (user.role !== role) {
+        return NextResponse.json(
+          { error: `Access denied. Required role: ${role}` },
+          { status: 403 }
+        )
+      }
+      return handler(request, user)
+    })
+  }
+}
+
+export function requireAdmin() {
+  return requireRole('admin')
 }
 
 export function validateWorkspaceAccess(userWorkspaceId: string, requestedWorkspaceId: string): boolean {
