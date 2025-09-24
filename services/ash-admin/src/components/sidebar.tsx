@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '../lib/auth-context'
 import { getAccessibleNavigation, hasAccess, User } from '../lib/permissions'
+import HydrationSafeIcon from './hydration-safe-icon'
 import {
   Building2,
   ShoppingCart,
@@ -97,7 +98,10 @@ export default function Sidebar() {
             onClick={() => setCollapsed(!collapsed)}
             className="p-1.5 rounded-md hover:bg-gray-700 transition-colors"
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            <HydrationSafeIcon
+              Icon={collapsed ? ChevronRight : ChevronLeft}
+              className="w-4 h-4"
+            />
           </button>
         </div>
       </div>
@@ -121,7 +125,10 @@ export default function Sidebar() {
               `}
               title={collapsed ? item.name : undefined}
             >
-              <Icon className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0`} />
+              <HydrationSafeIcon
+                Icon={Icon}
+                className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0`}
+              />
               {!collapsed && <span>{item.name}</span>}
             </Link>
           )

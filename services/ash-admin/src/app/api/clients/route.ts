@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Error creating client:', error);
+    // Force recompilation
     return NextResponse.json(
       { success: false, error: 'Failed to create client' },
       { status: 500 }

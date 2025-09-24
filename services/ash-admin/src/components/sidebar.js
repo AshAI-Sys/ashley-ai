@@ -24,7 +24,7 @@ const navigation = [
     { name: 'HR & Payroll', href: '/hr-payroll', icon: lucide_react_1.Users },
     { name: 'Maintenance', href: '/maintenance', icon: lucide_react_1.Wrench },
     { name: 'Client Portal', href: '/client-portal', icon: lucide_react_1.Globe },
-    { name: 'Merchandising AI', href: '/merchandising-ai', icon: lucide_react_1.Bot },
+    { name: 'Merchandising AI', href: '/merchandising', icon: lucide_react_1.Bot },
     { name: 'Automation Engine', href: '/automation', icon: lucide_react_1.Zap },
     { name: 'Analytics', href: '/analytics', icon: lucide_react_1.BarChart3 },
 ];
