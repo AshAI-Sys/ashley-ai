@@ -11,4 +11,5 @@ export declare const AuthContext: React.Context<AuthContextType>;
 export declare function AuthProvider({ children }: {
     children: React.ReactNode;
 }): React.JSX.Element;
+export declare function useAuth(): AuthContextType;
 export {};

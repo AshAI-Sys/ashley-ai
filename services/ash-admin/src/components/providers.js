@@ -5,7 +5,7 @@ exports.Providers = Providers;
 const react_query_1 = require("@tanstack/react-query");
 const react_query_devtools_1 = require("@tanstack/react-query-devtools");
 const react_1 = require("react");
-const auth_context_1 = require("@/lib/auth-context");
+const auth_context_1 = require("../lib/auth-context");
 function Providers({ children }) {
     const [queryClient] = (0, react_1.useState)(() => new react_query_1.QueryClient({
         defaultOptions: {

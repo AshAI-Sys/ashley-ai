@@ -36,6 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthContext = void 0;
 exports.AuthProvider = AuthProvider;
+exports.useAuth = useAuth;
 const react_1 = __importStar(require("react"));
 const api_1 = require("./api");
 exports.AuthContext = (0, react_1.createContext)(undefined);
@@ -96,4 +97,12 @@ function AuthProvider({ children }) {
         }}>
       {children}
     </exports.AuthContext.Provider>);
+}
+// Custom hook to use auth context
+function useAuth() {
+    const context = (0, react_1.useContext)(exports.AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
 }

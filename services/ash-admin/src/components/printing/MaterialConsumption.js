@@ -324,7 +324,7 @@ function MaterialConsumption({ runId, method, onUpdate, readOnly = false }) {
                               <select_1.SelectValue placeholder="All types"/>
                             </select_1.SelectTrigger>
                             <select_1.SelectContent>
-                              <select_1.SelectItem value="">All types</select_1.SelectItem>
+                              <select_1.SelectItem value="all">All types</select_1.SelectItem>
                               {materialTypes.map(type => (<select_1.SelectItem key={type} value={type}>{type}</select_1.SelectItem>))}
                             </select_1.SelectContent>
                           </select_1.Select>

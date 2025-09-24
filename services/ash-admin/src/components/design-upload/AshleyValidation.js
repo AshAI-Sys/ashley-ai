@@ -114,7 +114,9 @@ function AshleyValidation({ designId, version, method, files, placements, palett
         }
     };
     const getStatusColor = (status) => {
-        switch (status) {
+        if (!status)
+            return 'bg-gray-100 text-gray-800 border-gray-200';
+        switch (status.toUpperCase()) {
             case 'PASS': return 'bg-green-100 text-green-800 border-green-200';
             case 'WARN': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
             case 'FAIL': return 'bg-red-100 text-red-800 border-red-200';
@@ -122,7 +124,9 @@ function AshleyValidation({ designId, version, method, files, placements, palett
         }
     };
     const getStatusIcon = (status) => {
-        switch (status) {
+        if (!status)
+            return <lucide_react_1.Clock className="w-5 h-5 text-gray-600"/>;
+        switch (status.toUpperCase()) {
             case 'PASS': return <lucide_react_1.CheckCircle className="w-5 h-5 text-green-600"/>;
             case 'WARN': return <lucide_react_1.AlertCircle className="w-5 h-5 text-yellow-600"/>;
             case 'FAIL': return <lucide_react_1.XCircle className="w-5 h-5 text-red-600"/>;
@@ -130,7 +134,9 @@ function AshleyValidation({ designId, version, method, files, placements, palett
         }
     };
     const getSeverityColor = (severity) => {
-        switch (severity) {
+        if (!severity)
+            return 'bg-gray-100 text-gray-800';
+        switch (severity.toUpperCase()) {
             case 'CRITICAL': return 'bg-red-100 text-red-800';
             case 'WARNING': return 'bg-yellow-100 text-yellow-800';
             case 'INFO': return 'bg-blue-100 text-blue-800';

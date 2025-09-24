@@ -83,6 +83,8 @@ function ProductionDashboard() {
         }
     };
     const getStatusColor = (status) => {
+        if (!status)
+            return 'bg-gray-500';
         const colors = {
             'completed': 'bg-green-500',
             'in_progress': 'bg-blue-500',
@@ -90,15 +92,17 @@ function ProductionDashboard() {
             'cancelled': 'bg-red-500',
             'on_hold': 'bg-orange-500'
         };
-        return colors[status] || 'bg-gray-500';
+        return colors[status.toLowerCase()] || 'bg-gray-500';
     };
     const getPriorityColor = (priority) => {
+        if (!priority)
+            return 'text-gray-600 bg-gray-50';
         const colors = {
             'high': 'text-red-600 bg-red-50',
             'medium': 'text-yellow-600 bg-yellow-50',
             'low': 'text-green-600 bg-green-50'
         };
-        return colors[priority] || 'text-gray-600 bg-gray-50';
+        return colors[priority.toLowerCase()] || 'text-gray-600 bg-gray-50';
     };
     if (loading)
         return <div className="flex items-center justify-center h-64">Loading dashboard...</div>;

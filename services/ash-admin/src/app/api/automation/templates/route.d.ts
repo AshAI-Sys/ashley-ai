@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 export declare function GET(request: NextRequest): Promise<NextResponse<{
     success: boolean;
-    data: any[];
+    data: any;
     meta: {
         total: any;
         filters: {

@@ -83,6 +83,8 @@ function AIInsightsDashboard() {
         return <lucide_react_1.Activity className="h-4 w-4 text-gray-500"/>;
     };
     const getPriorityColor = (priority) => {
+        if (!priority)
+            return 'outline';
         switch (priority.toLowerCase()) {
             case 'critical': return 'destructive';
             case 'high': return 'destructive';

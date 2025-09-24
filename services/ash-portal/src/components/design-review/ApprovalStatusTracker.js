@@ -96,7 +96,7 @@ function ApprovalStatusTracker({ currentStatus, approvalDate, expiryDate, approv
               {config.label}
             </card_1.CardTitle>
             <badge_1.Badge variant="secondary" className={`${config.color.replace('text-', 'bg-').replace('-600', '-100')} border-current`}>
-              {currentStatus.replace('_', ' ')}
+              {currentStatus?.replace('_', ' ') || 'Unknown'}
             </badge_1.Badge>
           </div>
         </card_1.CardHeader>

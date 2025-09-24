@@ -37,12 +37,7 @@ export declare function GET(request: NextRequest): Promise<NextResponse<{
             };
         };
         charts: {
-            rule_executions: {
-                timestamp: string;
-                successful: number;
-                failed: number;
-                total: number;
-            }[];
+            rule_executions: any;
             notifications_by_channel: any;
             alerts_by_severity: any;
             integration_sync_status: any;

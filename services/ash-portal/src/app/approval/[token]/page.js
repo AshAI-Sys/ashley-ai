@@ -148,6 +148,8 @@ function ClientApprovalPage() {
         setAttachments(prev => prev.filter((_, i) => i !== index));
     };
     const getStatusColor = (status) => {
+        if (!status)
+            return 'bg-gray-100 text-gray-800';
         switch (status.toUpperCase()) {
             case 'SENT': return 'bg-blue-100 text-blue-800';
             case 'APPROVED': return 'bg-green-100 text-green-800';
@@ -157,6 +159,8 @@ function ClientApprovalPage() {
         }
     };
     const getMethodColor = (method) => {
+        if (!method)
+            return 'bg-gray-100 text-gray-800';
         switch (method.toUpperCase()) {
             case 'SILKSCREEN': return 'bg-purple-100 text-purple-800';
             case 'SUBLIMATION': return 'bg-cyan-100 text-cyan-800';
@@ -213,7 +217,7 @@ function ClientApprovalPage() {
             </div>
             <div className="flex items-center gap-2">
               <badge_1.Badge className={getStatusColor(approvalData.status)}>
-                {approvalData.status.replace('_', ' ')}
+                {approvalData.status?.replace('_', ' ') || 'Unknown'}
               </badge_1.Badge>
               <badge_1.Badge className={getMethodColor(approvalData.design_asset.method)}>
                 {approvalData.design_asset.method}
@@ -319,7 +323,7 @@ function ClientApprovalPage() {
                       {placements.map((placement, index) => (<div key={index} className="p-3 bg-gray-50 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-medium capitalize">
-                              {placement.area.replace('_', ' ')}
+                              {placement.area?.replace('_', ' ') || 'Unknown Area'}
                             </h4>
                             <span className="text-sm text-gray-600">
                               {placement.width_cm} × {placement.height_cm} cm

@@ -55,7 +55,7 @@ function ClientBrandSection({ clients, selectedClientId, selectedBrandId, channe
         address: ''
     });
     const [creatingClient, setCreatingClient] = (0, react_1.useState)(false);
-    const selectedClient = Array.isArray(clients) ? clients.find(c => c.id === selectedClientId) : null;
+    const selectedClient = clients.find(c => c.id === selectedClientId);
     const handleCreateClient = async () => {
         if (!newClientForm.name.trim()) {
             react_hot_toast_1.toast.error('Client name is required');
@@ -115,13 +115,13 @@ function ClientBrandSection({ clients, selectedClientId, selectedBrandId, channe
                   <select_1.SelectValue placeholder="Select client"/>
                 </select_1.SelectTrigger>
                 <select_1.SelectContent>
-                  {Array.isArray(clients) ? clients.map(client => (<select_1.SelectItem key={client.id} value={client.id}>
+                  {clients.map(client => (<select_1.SelectItem key={client.id} value={client.id}>
                       <div className="flex items-center gap-2">
                         <lucide_react_1.User className="w-4 h-4"/>
                         <span>{client.name}</span>
                         {client.company && (<span className="text-muted-foreground">({client.company})</span>)}
                       </div>
-                    </select_1.SelectItem>)) : null}
+                    </select_1.SelectItem>))}
                 </select_1.SelectContent>
               </select_1.Select>
               
