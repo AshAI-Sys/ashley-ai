@@ -123,18 +123,21 @@ export default function NewDesignPage() {
       setLoading(true)
       const response = await fetch('/api/orders?include=brand,client&status=INTAKE,DESIGN_PENDING')
       const data = await response.json()
-      if (data.success) {
+      if (data.success && Array.isArray(data.data)) {
         setOrders(data.data)
+      } else {
+        setOrders([])
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error)
       toast.error('Failed to fetch orders')
+      setOrders([])
     } finally {
       setLoading(false)
     }
   }
 
-  const selectedOrder = orders.find(o => o.id === formData.order_id)
+  const selectedOrder = orders?.find(o => o.id === formData.order_id)
 
   // Auto-populate brand when order is selected
   useEffect(() => {
@@ -520,7 +523,7 @@ export default function NewDesignPage() {
                     <SelectValue placeholder="Select purchase order" />
                   </SelectTrigger>
                   <SelectContent>
-                    {orders.map(order => (
+                    {orders?.map(order => (
                       <SelectItem key={order.id} value={order.id}>
                         {order.order_number} - {order.client.name} ({order.brand.name})
                       </SelectItem>
