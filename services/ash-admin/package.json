@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev -p 3001",
+    "dev": "next dev -p 3004",
     "start": "next start -p 3002",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
@@ -28,7 +28,7 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "database": "link:..\\..\\..\\packages\\database",
+    "@ash-ai/database": "workspace:*",
     "date-fns": "^2.30.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.263.0",
