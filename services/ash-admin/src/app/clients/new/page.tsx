@@ -115,7 +115,7 @@ export default function NewClientPage() {
     try {
       const payload = {
         ...formData,
-        address: JSON.stringify(formData.address),
+        address: formData.address,
         payment_terms: formData.payment_terms || undefined,
         credit_limit: formData.credit_limit || undefined
       }

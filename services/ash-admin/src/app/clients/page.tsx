@@ -55,9 +55,9 @@ export default function ClientsPage() {
       const response = await api.getClients(params)
       
       if (response.success) {
-        setClients(response.data || [])
-        setTotalPages(response.pagination?.total_pages || 1)
-        setTotalCount(response.pagination?.total_count || 0)
+        setClients(response.data?.clients || [])
+        setTotalPages(response.data?.pagination?.pages || 1)
+        setTotalCount(response.data?.pagination?.total || 0)
       } else {
         setClients([])
         setTotalPages(1)

@@ -5,12 +5,22 @@ import { z } from 'zod';
 
 const CreateClientSchema = z.object({
   name: z.string().min(1, 'Client name is required'),
+  contact_person: z.string().optional(),
   company: z.string().optional(),
   email: z.string().email('Valid email is required'),
   phone: z.string().optional(),
-  address: z.string().optional(),
+  address: z.union([z.string(), z.object({
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    postal_code: z.string().optional(),
+    country: z.string().optional(),
+  })]).optional(),
   city: z.string().optional(),
   country: z.string().optional(),
+  tax_id: z.string().optional(),
+  payment_terms: z.number().optional(),
+  credit_limit: z.number().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE', 'PENDING']).default('ACTIVE'),
   notes: z.string().optional(),
 });
@@ -102,6 +112,10 @@ export async function POST(request: NextRequest) {
     const newClient = {
       id: `client-${Date.now()}`,
       ...validatedData,
+      // Ensure address is a string for storage
+      address: typeof validatedData.address === 'object'
+        ? JSON.stringify(validatedData.address)
+        : validatedData.address,
       createdAt: new Date(),
       brands: [],
       orders: [],

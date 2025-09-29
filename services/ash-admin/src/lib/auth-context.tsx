@@ -28,8 +28,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    // Mark component as mounted to avoid hydration mismatches
+    setMounted(true)
+
     // Check for stored token on mount
     const storedToken = localStorage.getItem('ash_token')
     if (storedToken) {
@@ -101,6 +105,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null)
     localStorage.removeItem('ash_token')
     localStorage.removeItem('ash_user')
+  }
+
+  // Don't render children until after hydration to prevent mismatches
+  if (!mounted) {
+    return (
+      <AuthContext.Provider value={{
+        user: null,
+        token: null,
+        login,
+        logout,
+        isLoading: true
+      }}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </AuthContext.Provider>
+    )
   }
 
   return (
