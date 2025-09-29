@@ -1,13 +1,23 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { User, AuthToken } from '@ash/types'
-import { api } from './api'
+
+interface User {
+  id: string
+  email: string
+  name: string
+  role: string
+  position?: string
+  department?: string
+  permissions?: string[]
+  first_name?: string
+  last_name?: string
+}
 
 interface AuthContextType {
   user: User | null
   token: string | null
-  login: (email: string, password: string, workspaceSlug?: string) => Promise<void>
+  login: (email: string, password: string) => Promise<void>
   logout: () => void
   isLoading: boolean
 }
@@ -24,49 +34,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedToken = localStorage.getItem('ash_token')
     if (storedToken) {
       setToken(storedToken)
-      api.setAuthToken(storedToken)
-      
-      // Verify token and get user info
-      api.getCurrentUser()
-        .then(({ user }) => {
-          setUser(user)
-        })
-        .catch(() => {
-          // Token is invalid, remove it
-          localStorage.removeItem('ash_token')
-          setToken(null)
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    } else {
-      setIsLoading(false)
+
+      // Set demo user for any token
+      setUser({
+        id: 'demo-user-1',
+        email: 'admin@ashleyai.com',
+        name: 'Demo Admin',
+        role: 'admin',
+        position: 'System Administrator',
+        department: 'Administration',
+        permissions: ['all']
+      })
     }
+    setIsLoading(false)
   }, [])
 
-  const login = async (email: string, password: string, workspaceSlug?: string) => {
-    try {
-      const response = await api.login(email, password, workspaceSlug)
-      
-      setUser(response.user)
-      setToken(response.access_token)
-      
-      // Store token
-      localStorage.setItem('ash_token', response.access_token)
-      api.setAuthToken(response.access_token)
-      
-      // TODO: Store refresh token securely
-      
-    } catch (error) {
-      throw error
+  const login = async (email: string, password: string) => {
+    // Demo mode - always succeed for demo credentials
+    if (email === 'admin@ashleyai.com' && password === 'demo123') {
+      const demoUser = {
+        id: 'demo-user-1',
+        email: 'admin@ashleyai.com',
+        name: 'Demo Admin',
+        role: 'admin',
+        position: 'System Administrator',
+        department: 'Administration',
+        permissions: ['all']
+      }
+
+      const demoToken = 'demo_token_' + Date.now()
+
+      setUser(demoUser)
+      setToken(demoToken)
+      localStorage.setItem('ash_token', demoToken)
+      return
     }
+
+    throw new Error('Invalid credentials')
   }
 
   const logout = () => {
     setUser(null)
     setToken(null)
     localStorage.removeItem('ash_token')
-    api.setAuthToken(null)
   }
 
   return (
