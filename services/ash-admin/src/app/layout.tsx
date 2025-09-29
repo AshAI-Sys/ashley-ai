@@ -10,7 +10,9 @@ export const metadata: Metadata = {
   title: 'Ashley AI Admin',
   description: 'Ashley AI - Apparel Smart Hub with Artificial Intelligence',
   icons: {
-    icon: '/ash-ai-logo.png',
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/ash-ai-logo.png',
   },
 }
 

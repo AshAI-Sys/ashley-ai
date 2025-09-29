@@ -16,20 +16,33 @@ export default function HomePage() {
         textAlign: 'center',
         maxWidth: '400px'
       }}>
+        <div style={{ marginBottom: '24px' }}>
+          <img
+            src="/ash-ai-logo.png"
+            alt="Ashley AI Logo"
+            style={{
+              width: '80px',
+              height: '80px',
+              margin: '0 auto',
+              display: 'block'
+            }}
+          />
+        </div>
+
         <h1 style={{
           fontSize: '32px',
           fontWeight: 'bold',
           color: '#1f2937',
           marginBottom: '16px'
         }}>
-          ASH AI Admin
+          Ashley AI Admin
         </h1>
-        
+
         <p style={{
           color: '#6b7280',
           marginBottom: '32px'
         }}>
-          Manufacturing ERP System
+          Apparel Smart Hub - Artificial Intelligence
         </p>
         
         <div style={{ marginBottom: '16px' }}>

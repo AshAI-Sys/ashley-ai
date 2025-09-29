@@ -108,8 +108,8 @@ export default function Sidebar() {
                 />
               </div>
               <div>
-                <h1 className="font-bold text-lg">Ash-AI</h1>
-                <p className="text-xs text-gray-400">Manufacturing ERP</p>
+                <h1 className="font-bold text-lg">Ashley AI</h1>
+                <p className="text-xs text-gray-400">Apparel Smart Hub</p>
               </div>
             </div>
           )}
