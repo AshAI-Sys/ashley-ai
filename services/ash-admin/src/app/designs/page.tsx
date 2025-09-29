@@ -72,7 +72,7 @@ export default function DesignsPage() {
       const data = await response.json()
       
       if (data.success) {
-        setDesigns(data.data || [])
+        setDesigns(data.data?.designs || [])
       } else {
         setDesigns([])
       }

@@ -7,77 +7,128 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const search = searchParams.get('search') || '';
     const status = searchParams.get('status') || '';
+    const method = searchParams.get('method') || '';
 
-    // Demo designs data
+    // Demo designs data - formatted to match frontend DesignAsset interface
     const demoDesigns = [
       {
         id: 'design-1',
         name: 'Manila Shirts Classic Logo',
-        designType: 'LOGO',
+        method: 'SILKSCREEN',
         status: 'APPROVED',
-        orderId: 'order-1',
+        current_version: 3,
+        is_best_seller: true,
+        created_at: '2024-09-15T00:00:00Z',
+        updated_at: '2024-09-20T00:00:00Z',
         order: {
           id: 'order-1',
-          orderNumber: 'ORD-2024-001',
-          client: { name: 'Manila Shirts Co.' }
+          order_number: 'ORD-2024-001',
+          status: 'APPROVED'
         },
-        version: 3,
-        approvalStatus: 'APPROVED',
-        approvalDate: new Date('2024-09-20'),
-        createdAt: new Date('2024-09-15'),
-        updatedAt: new Date('2024-09-20'),
-        fileUrl: '/designs/manila-classic-logo-v3.png',
-        thumbnailUrl: '/designs/thumbnails/manila-classic-logo-v3.jpg',
-        specifications: {
-          printMethod: 'silkscreen',
-          colors: ['navy', 'white'],
-          dimensions: { width: 10, height: 8 }
+        brand: {
+          id: 'brand-1',
+          name: 'Manila Classic',
+          code: 'MNLC'
+        },
+        versions: [
+          {
+            id: 'version-1',
+            version: 3,
+            files: '{"logo": "/designs/manila-classic-logo-v3.png", "specs": "/designs/manila-classic-specs-v3.pdf"}',
+            created_at: '2024-09-20T00:00:00Z'
+          }
+        ],
+        approvals: [
+          {
+            id: 'approval-1',
+            status: 'APPROVED',
+            created_at: '2024-09-20T00:00:00Z',
+            client: {
+              name: 'Manila Shirts Co.'
+            }
+          }
+        ],
+        _count: {
+          versions: 3,
+          approvals: 1,
+          checks: 2
         }
       },
       {
         id: 'design-2',
         name: 'Cebu Fashion Polo Design',
-        designType: 'EMBROIDERY',
+        method: 'EMBROIDERY',
         status: 'PENDING_APPROVAL',
-        orderId: 'order-2',
+        current_version: 1,
+        is_best_seller: false,
+        created_at: '2024-09-22T00:00:00Z',
+        updated_at: '2024-09-22T00:00:00Z',
         order: {
           id: 'order-2',
-          orderNumber: 'ORD-2024-002',
-          client: { name: 'Cebu Fashion House' }
+          order_number: 'ORD-2024-002',
+          status: 'PENDING_APPROVAL'
         },
-        version: 1,
-        approvalStatus: 'PENDING_CLIENT',
-        createdAt: new Date('2024-09-22'),
-        updatedAt: new Date('2024-09-22'),
-        fileUrl: '/designs/cebu-polo-embroidery-v1.dst',
-        thumbnailUrl: '/designs/thumbnails/cebu-polo-embroidery-v1.jpg',
-        specifications: {
-          printMethod: 'embroidery',
-          colors: ['gold', 'black'],
-          dimensions: { width: 6, height: 4 }
+        brand: {
+          id: 'brand-2',
+          name: 'Cebu Fashion',
+          code: 'CBFS'
+        },
+        versions: [
+          {
+            id: 'version-2',
+            version: 1,
+            files: '{"embroidery": "/designs/cebu-polo-embroidery-v1.dst", "preview": "/designs/cebu-polo-preview-v1.jpg"}',
+            created_at: '2024-09-22T00:00:00Z'
+          }
+        ],
+        approvals: [],
+        _count: {
+          versions: 1,
+          approvals: 0,
+          checks: 1
         }
       },
       {
         id: 'design-3',
         name: 'Davao Hoodie Graphics',
-        designType: 'GRAPHICS',
-        status: 'IN_REVISION',
-        orderId: 'order-3',
+        method: 'DTF',
+        status: 'DRAFT',
+        current_version: 2,
+        is_best_seller: false,
+        created_at: '2024-09-18T00:00:00Z',
+        updated_at: '2024-09-25T00:00:00Z',
         order: {
           id: 'order-3',
-          orderNumber: 'ORD-2024-003',
-          client: { name: 'Davao Apparel Co.' }
+          order_number: 'ORD-2024-003',
+          status: 'DRAFT'
         },
-        version: 2,
-        approvalStatus: 'REVISION_REQUESTED',
-        createdAt: new Date('2024-09-18'),
-        updatedAt: new Date('2024-09-25'),
-        fileUrl: '/designs/davao-hoodie-graphics-v2.ai',
-        thumbnailUrl: '/designs/thumbnails/davao-hoodie-graphics-v2.jpg',
-        specifications: {
-          printMethod: 'dtf',
-          colors: ['multicolor'],
-          dimensions: { width: 12, height: 10 }
+        brand: {
+          id: 'brand-3',
+          name: 'Davao Graphics',
+          code: 'DVGR'
+        },
+        versions: [
+          {
+            id: 'version-3',
+            version: 2,
+            files: '{"graphics": "/designs/davao-hoodie-graphics-v2.ai", "mockup": "/designs/davao-hoodie-mockup-v2.jpg"}',
+            created_at: '2024-09-25T00:00:00Z'
+          }
+        ],
+        approvals: [
+          {
+            id: 'approval-3',
+            status: 'REVISION_REQUESTED',
+            created_at: '2024-09-24T00:00:00Z',
+            client: {
+              name: 'Davao Apparel Co.'
+            }
+          }
+        ],
+        _count: {
+          versions: 2,
+          approvals: 1,
+          checks: 3
         }
       }
     ];
@@ -89,13 +140,17 @@ export async function GET(request: NextRequest) {
       if (search) {
         matches = matches && (
           design.name.toLowerCase().includes(search.toLowerCase()) ||
-          design.order.client.name.toLowerCase().includes(search.toLowerCase()) ||
-          design.order.orderNumber.toLowerCase().includes(search.toLowerCase())
+          design.brand.name.toLowerCase().includes(search.toLowerCase()) ||
+          design.order.order_number.toLowerCase().includes(search.toLowerCase())
         );
       }
 
       if (status) {
         matches = matches && design.status === status;
+      }
+
+      if (method) {
+        matches = matches && design.method === method;
       }
 
       return matches;
