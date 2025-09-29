@@ -71,33 +71,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string) => {
-    // Demo mode - always succeed for demo credentials
-    if (email === 'admin@ashleyai.com' && password === 'demo123') {
-      const demoUser = {
-        id: 'demo-user-1',
-        email: 'admin@ashleyai.com',
-        name: 'Demo Admin',
-        role: 'admin',
-        position: 'System Administrator',
-        department: 'Administration',
-        permissions: ['all']
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Invalid credentials')
       }
 
-      const demoToken = 'demo_token_' + Date.now()
+      const data = await response.json()
+      const { access_token, user: userData } = data.data
 
-      setUser(demoUser)
-      setToken(demoToken)
-      localStorage.setItem('ash_token', demoToken)
-      return
+      setUser(userData)
+      setToken(access_token)
+      localStorage.setItem('ash_token', access_token)
+      localStorage.setItem('ash_user', JSON.stringify(userData))
+    } catch (error) {
+      throw new Error('Invalid credentials')
     }
-
-    throw new Error('Invalid credentials')
   }
 
   const logout = () => {
     setUser(null)
     setToken(null)
     localStorage.removeItem('ash_token')
+    localStorage.removeItem('ash_user')
   }
 
   return (

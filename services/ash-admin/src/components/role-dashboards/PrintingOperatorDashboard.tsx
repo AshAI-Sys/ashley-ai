@@ -1,1 +1,12 @@
-'use client'\n\nexport default function PrintingOperatorDashboard() {\n  return (\n    <div className="space-y-6">\n      <div className="bg-white rounded-lg p-6 shadow-sm">\n        <h2 className="text-lg font-semibold text-gray-900 mb-4">🖨️ Printing Operator Dashboard</h2>\n        <p className="text-gray-600">Printing tasks, ink management, and quality control.</p>\n      </div>\n    </div>\n  )\n}
+'use client'
+
+export default function PrintingOperatorDashboard() {
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">🖨️ Printing Operator Dashboard</h2>
+        <p className="text-gray-600">Printing tasks, ink management, and quality control.</p>
+      </div>
+    </div>
+  )
+}
