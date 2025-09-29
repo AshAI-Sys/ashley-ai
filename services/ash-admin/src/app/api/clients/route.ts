@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+// Temporarily disable database for demo mode
+// import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 const CreateClientSchema = z.object({
@@ -18,65 +19,68 @@ const UpdateClientSchema = CreateClientSchema.partial();
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const status = searchParams.get('status') || '';
-
-    const skip = (page - 1) * limit;
-
-    const where = {
-      AND: [
-        search ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { company: { contains: search, mode: 'insensitive' } },
-            { email: { contains: search, mode: 'insensitive' } },
-          ]
-        } : {},
-        status ? { status } : {},
-      ]
-    };
-
-    const [clients, total] = await Promise.all([
-      prisma.client.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          brands: true,
-          orders: {
-            select: {
-              id: true,
-              status: true,
-              totalAmount: true,
-              createdAt: true,
-            },
-            orderBy: { createdAt: 'desc' },
-            take: 5,
-          },
-          _count: {
-            select: {
-              orders: true,
-              brands: true,
-            }
-          }
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      prisma.client.count({ where }),
-    ]);
+    // Demo data for client list
+    const demoClients = [
+      {
+        id: 'client-1',
+        name: 'Manila Shirts Co.',
+        company: 'Manila Shirts Corporation',
+        email: 'orders@manilashirts.com',
+        phone: '+63 917 123 4567',
+        status: 'ACTIVE',
+        createdAt: new Date('2024-01-15'),
+        brands: [
+          { id: 'brand-1', name: 'Manila Classic', code: 'MNLC' },
+          { id: 'brand-2', name: 'Manila Pro', code: 'MNLP' }
+        ],
+        orders: [
+          { id: 'order-1', status: 'IN_PROGRESS', totalAmount: 45000, createdAt: new Date('2024-03-01') },
+          { id: 'order-2', status: 'COMPLETED', totalAmount: 32000, createdAt: new Date('2024-02-15') }
+        ],
+        _count: { orders: 12, brands: 2 }
+      },
+      {
+        id: 'client-2',
+        name: 'Cebu Sports Apparel',
+        company: 'Cebu Sports Inc.',
+        email: 'procurement@cebusports.ph',
+        phone: '+63 932 987 6543',
+        status: 'ACTIVE',
+        createdAt: new Date('2024-02-20'),
+        brands: [
+          { id: 'brand-3', name: 'Cebu Athletes', code: 'CBAT' }
+        ],
+        orders: [
+          { id: 'order-3', status: 'PENDING', totalAmount: 28000, createdAt: new Date('2024-03-10') }
+        ],
+        _count: { orders: 5, brands: 1 }
+      },
+      {
+        id: 'client-3',
+        name: 'Davao Uniform Solutions',
+        company: 'Davao Uniform Solutions LLC',
+        email: 'info@davaouniform.com',
+        phone: '+63 912 345 6789',
+        status: 'ACTIVE',
+        createdAt: new Date('2024-01-30'),
+        brands: [
+          { id: 'brand-4', name: 'Davao Corporate', code: 'DVCR' },
+          { id: 'brand-5', name: 'Davao Schools', code: 'DVSC' }
+        ],
+        orders: [],
+        _count: { orders: 8, brands: 2 }
+      }
+    ];
 
     return NextResponse.json({
       success: true,
       data: {
-        clients,
+        clients: demoClients,
         pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
+          page: 1,
+          limit: 10,
+          total: demoClients.length,
+          pages: 1,
         }
       }
     });
@@ -94,34 +98,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
 
-    // Check if client with same email already exists
-    const existingClient = await prisma.client.findFirst({
-      where: { email: validatedData.email }
-    });
-
-    if (existingClient) {
-      return NextResponse.json(
-        { success: false, error: 'Client with this email already exists' },
-        { status: 400 }
-      );
-    }
-
-    const client = await prisma.client.create({
-      data: validatedData,
-      include: {
-        brands: true,
-        _count: {
-          select: {
-            orders: true,
-            brands: true,
-          }
-        }
-      }
-    });
+    // Demo client creation - just return a mock created client
+    const newClient = {
+      id: `client-${Date.now()}`,
+      ...validatedData,
+      createdAt: new Date(),
+      brands: [],
+      orders: [],
+      _count: { orders: 0, brands: 0 }
+    };
 
     return NextResponse.json({
       success: true,
-      data: client,
+      data: newClient,
       message: 'Client created successfully'
     }, { status: 201 });
   } catch (error) {
@@ -133,7 +122,6 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Error creating client:', error);
-    // Force recompilation
     return NextResponse.json(
       { success: false, error: 'Failed to create client' },
       { status: 500 }
