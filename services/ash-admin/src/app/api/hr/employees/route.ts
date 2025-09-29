@@ -9,8 +9,9 @@ import {
   NotFoundError,
   withErrorHandling
 } from '../../../../lib/error-handling'
+import { requireAnyPermission } from '../../../../lib/auth-middleware'
 
-export const GET = withErrorHandling(async (request: NextRequest) => {
+export const GET = requireAnyPermission(['hr:read'])(withErrorHandling(async (request: NextRequest, user: any) => {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const position = searchParams.get('position')

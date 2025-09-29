@@ -11,8 +11,9 @@ import {
   withErrorHandling,
   ValidationError
 } from '../../../../lib/error-handling'
+import { requireAnyPermission } from '../../../../lib/auth-middleware'
 
-export const GET = withErrorHandling(async (request: NextRequest) => {
+export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(async (request: NextRequest, user: any) => {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const client_id = searchParams.get('client_id')

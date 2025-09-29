@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import DashboardLayout from '@/components/dashboard-layout'
+import PermissionGate, { usePermissions } from '@/components/PermissionGate'
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const { hasPermission, hasRole, isAdmin } = usePermissions()
 
   useEffect(() => {
     const checkAuth = () => {
@@ -182,6 +184,156 @@ export default function DashboardPage() {
                 Password: demo123<br/>
                 Role: Administrator (Full system access)
               </p>
+            </div>
+          </div>
+
+          {/* Role-Based Content Demonstration */}
+          <div className="mt-8 space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900">
+              🎭 Role-Based Content Visibility Demo
+            </h2>
+
+            {/* Admin Only Section */}
+            <PermissionGate roles={['admin']} fallback={
+              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <p className="text-gray-500">
+                  🔒 Admin-only content hidden (requires Admin role)
+                </p>
+              </div>
+            }>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-red-900 mb-3">
+                  🔴 Administrator Dashboard
+                </h3>
+                <p className="text-red-800 mb-4">
+                  You are seeing this content because you have Administrator privileges.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">System Settings</h4>
+                    <p className="text-sm text-gray-600">Configure global system settings</p>
+                  </div>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">User Management</h4>
+                    <p className="text-sm text-gray-600">Manage all user accounts and roles</p>
+                  </div>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Security Logs</h4>
+                    <p className="text-sm text-gray-600">View system security and audit logs</p>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* Finance Permission Section */}
+            <PermissionGate permissions={['finance:read']} fallback={
+              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <p className="text-gray-500">
+                  🔒 Finance content hidden (requires finance:read permission)
+                </p>
+              </div>
+            }>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-green-900 mb-3">
+                  💰 Finance Dashboard
+                </h3>
+                <p className="text-green-800 mb-4">
+                  You can see financial data because you have finance:read permissions.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Revenue: ₱2,450,000</h4>
+                    <p className="text-sm text-gray-600">This month's total revenue</p>
+                  </div>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Expenses: ₱1,890,000</h4>
+                    <p className="text-sm text-gray-600">This month's operating expenses</p>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* HR Permission Section */}
+            <PermissionGate permissions={['hr:read']} fallback={
+              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <p className="text-gray-500">
+                  🔒 HR content hidden (requires hr:read permission)
+                </p>
+              </div>
+            }>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-3">
+                  👥 HR Dashboard
+                </h3>
+                <p className="text-blue-800 mb-4">
+                  Employee information visible with HR permissions.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Total Employees: 245</h4>
+                    <p className="text-sm text-gray-600">Active workforce count</p>
+                  </div>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Attendance Rate: 94%</h4>
+                    <p className="text-sm text-gray-600">Current month attendance</p>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* Production Permission Section */}
+            <PermissionGate permissions={['cutting:read', 'printing:read', 'sewing:read']} fallback={
+              <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <p className="text-gray-500">
+                  🔒 Production content hidden (requires production permissions)
+                </p>
+              </div>
+            }>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-yellow-900 mb-3">
+                  🏭 Production Dashboard
+                </h3>
+                <p className="text-yellow-800 mb-4">
+                  Production metrics visible with cutting, printing, or sewing permissions.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Orders in Production: 23</h4>
+                    <p className="text-sm text-gray-600">Currently being processed</p>
+                  </div>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Daily Output: 1,234 units</h4>
+                    <p className="text-sm text-gray-600">Units completed today</p>
+                  </div>
+                  <div className="bg-white p-4 rounded border">
+                    <h4 className="font-medium text-gray-900">Efficiency: 87%</h4>
+                    <p className="text-sm text-gray-600">Overall production efficiency</p>
+                  </div>
+                </div>
+              </div>
+            </PermissionGate>
+
+            {/* Role Information */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                📋 Your Current Access Level
+              </h3>
+              <div className="space-y-2">
+                <p className="text-sm">
+                  <span className="font-medium">Role:</span> {user?.role || 'Unknown'}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Department:</span> {user?.department || 'Unknown'}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Admin Status:</span> {isAdmin ? '✅ Yes' : '❌ No'}
+                </p>
+                <div className="mt-4 text-xs text-gray-600">
+                  <p><strong>Note:</strong> The content sections above demonstrate role-based access control.</p>
+                  <p>Different users will see different sections based on their assigned roles and permissions.</p>
+                  <p>Admin users can see all sections, while other roles see only their relevant content.</p>
+                </div>
+              </div>
             </div>
           </div>
         </main>
