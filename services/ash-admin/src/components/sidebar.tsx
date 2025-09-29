@@ -102,8 +102,8 @@ export default function Sidebar() {
             <div className="flex items-center">
               <div className="w-10 h-8 mr-3">
                 <img
-                  src="/ash-ai-logo.svg"
-                  alt="Ash-AI Logo"
+                  src="/ash-ai-logo.png"
+                  alt="Ashley AI Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
