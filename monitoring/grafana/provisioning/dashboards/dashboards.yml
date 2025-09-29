@@ -1,0 +1,14 @@
+# Grafana Dashboard Provisioning for Ashley AI
+apiVersion: 1
+
+providers:
+  # Ashley AI Dashboard configuration
+  - name: 'ashley-ai-dashboards'
+    orgId: 1
+    folder: 'Ashley AI'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -5,8 +5,14 @@ const nextConfig = {
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.ASH_STRIPE_PUBLISHABLE_KEY,
     WATCHPACK_POLLING: process.env.WATCHPACK_POLLING || true,
   },
-  // Disable source maps for faster builds
+  // Production optimizations
   productionBrowserSourceMaps: false,
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: false,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   async rewrites() {
     return [
       {
@@ -17,19 +23,17 @@ const nextConfig = {
   },
   images: {
     domains: ['localhost', 'via.placeholder.com'],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
   },
-  // Optimize for development stability
+  // Optimize for both development and production
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
-      // Completely disable file watching to prevent path errors
+      // Development stability fixes
       config.watchOptions = false
-
-      // Fix watchpack TypeError with undefined paths
       config.infrastructureLogging = {
         level: 'error',
       }
-
-      // Resolve path issues in monorepo
       config.resolve = {
         ...config.resolve,
         symlinks: false,
@@ -39,16 +43,32 @@ const nextConfig = {
           path: false,
         },
       }
-
-      // Disable watch mode for development
       config.watch = false
       config.cache = false
     }
+
+    // Production optimizations
+    if (!dev) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            priority: 10,
+            reuseExistingChunk: true,
+          },
+        },
+      }
+    }
+
     return config
   },
-  // Improve development experience
+  // Improve performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@ash/ui'],
+    optimizeCss: true,
+    scrollRestoration: true,
   },
   // Disable strict mode to prevent double rendering issues
   reactStrictMode: false,
