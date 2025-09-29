@@ -477,6 +477,9 @@ importers:
       '@ash-ai/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/react':
         specifier: ^18.2.0
         version: 18.3.24
