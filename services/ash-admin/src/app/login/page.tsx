@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@ashleyai.com')
-  const [password, setPassword] = useState('demo123')
+  const [password, setPassword] = useState('admin123')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     try {
       // Demo mode fallback - direct login for demo credentials
-      if (email === 'admin@ashleyai.com' && password === 'demo123') {
+      if (email === 'admin@ashleyai.com' && password === 'admin123') {
         console.log('Demo mode login detected')
         // Generate a demo token
         const demoToken = 'demo_token_' + Date.now()
@@ -61,7 +61,7 @@ export default function LoginPage() {
       setError('Login failed. Using demo mode fallback for admin@ashleyai.com')
 
       // Fallback for demo credentials if API fails
-      if (email === 'admin@ashleyai.com' && password === 'demo123') {
+      if (email === 'admin@ashleyai.com' && password === 'admin123') {
         const demoToken = 'demo_token_' + Date.now()
         localStorage.setItem('ash_token', demoToken)
         router.push('/dashboard')
@@ -177,7 +177,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="demo123"
+              placeholder="admin123"
               required
               style={{
                 width: '100%',
