@@ -45,15 +45,15 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy the built application
-COPY --from=builder /app/apps/admin/public ./apps/admin/public
+COPY --from=builder /app/services/ash-admin/public ./services/ash-admin/public
 
 # Set the correct permission for prerender cache
-RUN mkdir apps/admin/.next
-RUN chown nextjs:nodejs apps/admin/.next
+RUN mkdir -p services/ash-admin/.next
+RUN chown nextjs:nodejs services/ash-admin/.next
 
 # Copy built application and dependencies
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/admin/.next/static ./apps/admin/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/services/ash-admin/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/services/ash-admin/.next/static ./services/ash-admin/.next/static
 
 # Copy Prisma generated client
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
@@ -70,7 +70,7 @@ ENV NODE_ENV production
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD node healthcheck.js || exit 1
 
-CMD ["node", "apps/admin/server.js"]
+CMD ["node", "services/ash-admin/server.js"]
 
 # Development stage for hot reloading
 FROM base AS development
