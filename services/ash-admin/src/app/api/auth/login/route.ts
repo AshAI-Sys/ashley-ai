@@ -228,4 +228,4 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
   // For now, all other logins fail - focus on demo accounts only
   throw new AuthenticationError('Invalid email or password - Use demo accounts for testing')
-}))
+})
