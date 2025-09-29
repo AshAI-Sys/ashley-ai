@@ -11,25 +11,33 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('Form submitted - preventing default...')
     e.preventDefault()
+    e.stopPropagation()
+
     setIsLoading(true)
     setError('')
 
     console.log('Login attempt:', { email, password })
 
-    // Demo mode fallback - direct login for demo credentials
-    if (email === 'admin@ashleyai.com' && password === 'demo123') {
-      console.log('Demo mode login detected')
-      // Generate a demo token
-      const demoToken = 'demo_token_' + Date.now()
-      console.log('Setting token:', demoToken)
-      localStorage.setItem('ash_token', demoToken)
-      console.log('Token set, redirecting to dashboard')
-      router.push('/dashboard')
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 100)
-      return
+    try {
+      // Demo mode fallback - direct login for demo credentials
+      if (email === 'admin@ashleyai.com' && password === 'demo123') {
+        console.log('Demo mode login detected')
+        // Generate a demo token
+        const demoToken = 'demo_token_' + Date.now()
+        console.log('Setting token:', demoToken)
+        localStorage.setItem('ash_token', demoToken)
+        console.log('Token set, redirecting to dashboard')
+
+        // Use window.location for more reliable redirect
+        window.location.href = '/dashboard'
+        return
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      setError('Login failed. Please try again.')
+      setIsLoading(false)
     }
 
     try {
@@ -126,7 +134,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }} method="POST" action="#">>
+        <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }} method="POST" action="#">
           <div style={{ marginBottom: '16px' }}>
             <label style={{
               display: 'block',
@@ -184,7 +192,8 @@ export default function LoginPage() {
           </div>
           
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             disabled={isLoading}
             style={{
               width: '100%',
