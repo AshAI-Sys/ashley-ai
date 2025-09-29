@@ -1,7 +1,5 @@
 "use strict";
-// Role-based access control utilities
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ROLE_PERMISSIONS = exports.DEPARTMENT_ACCESS = void 0;
 exports.hasAccess = hasAccess;
 exports.getAccessibleNavigation = getAccessibleNavigation;
 exports.canCreate = canCreate;
@@ -9,102 +7,21 @@ exports.canEdit = canEdit;
 exports.canDelete = canDelete;
 exports.canApprove = canApprove;
 exports.getRoleInfo = getRoleInfo;
-// Department-based access mapping
-exports.DEPARTMENT_ACCESS = {
-    'Cutting': ['/cutting', '/dashboard'],
-    'Printing': ['/printing', '/dashboard'],
-    'Sewing': ['/sewing', '/dashboard'],
-    'Quality': ['/quality-control', '/dashboard'],
-    'Finishing': ['/finishing-packing', '/dashboard'],
-    'Delivery': ['/delivery', '/dashboard'],
-    'Finance': ['/finance', '/dashboard'],
-    'HR': ['/hr-payroll', '/dashboard'],
-    'Maintenance': ['/maintenance', '/dashboard'],
-    'Administration': [], // Full access
-    'Management': [] // Full access
-};
-// Role-based access mapping
-exports.ROLE_PERMISSIONS = {
-    admin: {
-        description: 'Full system access',
-        departments: ['*'], // All departments
-        canAccess: [
-            '/dashboard', '/clients', '/orders', '/designs',
-            '/cutting', '/printing', '/sewing', '/quality-control',
-            '/finishing-packing', '/delivery', '/finance', '/hr-payroll',
-            '/maintenance', '/client-portal', '/merchandising-ai',
-            '/automation', '/analytics'
-        ],
-        canCreate: true,
-        canEdit: true,
-        canDelete: true,
-        canApprove: true
-    },
-    manager: {
-        description: 'Department and team management',
-        departments: ['*'], // Can see all but edit own department
-        canAccess: [
-            '/dashboard', '/clients', '/orders', '/designs',
-            '/cutting', '/printing', '/sewing', '/quality-control',
-            '/finishing-packing', '/delivery', '/finance', '/hr-payroll',
-            '/maintenance', '/analytics'
-        ],
-        canCreate: true,
-        canEdit: true,
-        canDelete: false,
-        canApprove: true
-    },
-    supervisor: {
-        description: 'Team supervision and operations',
-        departments: [], // Based on employee department
-        canAccess: ['/dashboard'], // Plus department-specific access
-        canCreate: true,
-        canEdit: true,
-        canDelete: false,
-        canApprove: true
-    },
-    operator: {
-        description: 'Production operations',
-        departments: [], // Based on employee department
-        canAccess: ['/dashboard'], // Plus department-specific access
-        canCreate: true,
-        canEdit: true,
-        canDelete: false,
-        canApprove: false
-    },
-    employee: {
-        description: 'Basic system access',
-        departments: [], // Based on employee department
-        canAccess: ['/dashboard'], // Plus limited department access
-        canCreate: false,
-        canEdit: false,
-        canDelete: false,
-        canApprove: false
-    }
-};
+// Role-based access control utilities
+const rbac_1 = require("./rbac");
+// Legacy role mapping for backwards compatibility (now using RBAC system)
 // Check if user has access to a specific route
 function hasAccess(user, route) {
-    const role = user.role;
-    const department = user.department;
-    // Admin has access to everything
-    if (role === 'admin')
-        return true;
-    // Manager has access to most things
-    if (role === 'manager') {
-        return exports.ROLE_PERMISSIONS.manager.canAccess.includes(route);
+    // If no permissions are provided, get them from the role
+    let userPermissions = user.permissions;
+    if (!userPermissions || userPermissions.length === 0) {
+        const { getRoleBasedPermissions } = require('./rbac');
+        userPermissions = getRoleBasedPermissions(user.role);
     }
-    // Get role permissions
-    const rolePerms = exports.ROLE_PERMISSIONS[role];
-    if (!rolePerms)
-        return false;
-    // Check if route is in role's base access
-    if (rolePerms.canAccess.includes(route))
-        return true;
-    // Check department-specific access
-    const deptAccess = exports.DEPARTMENT_ACCESS[department];
-    if (deptAccess && deptAccess.includes(route))
-        return true;
-    return false;
+    // Convert route to page key (remove leading slash)
+    const pageKey = route.replace('/', '');
+    // Use our RBAC system to check access
+    return (0, rbac_1.canAccessPage)(userPermissions, pageKey);
 }
 // Get accessible navigation items for user
 function getAccessibleNavigation(user) {
@@ -122,33 +39,77 @@ function getAccessibleNavigation(user) {
         { name: 'Finance', href: '/finance', icon: 'DollarSign', department: 'Finance' },
         { name: 'HR & Payroll', href: '/hr-payroll', icon: 'Users', department: 'HR' },
         { name: 'Maintenance', href: '/maintenance', icon: 'Wrench', department: 'Maintenance' },
-        { name: 'Client Portal', href: '/client-portal', icon: 'Globe', department: 'Management' },
-        { name: 'Merchandising AI', href: '/merchandising-ai', icon: 'Bot', department: 'Management' },
+        { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management' },
         { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management' },
-        { name: 'Analytics', href: '/analytics', icon: 'BarChart3', department: 'Management' },
     ];
     return allNavigation.filter(item => {
-        // Always show dashboard
+        // Always show dashboard (everyone can see dashboard, filtered by their permissions)
         if (item.href === '/dashboard')
             return true;
-        // Check if user has access to this route
+        // Check if user has access to this route using RBAC
         return hasAccess(user, item.href);
     });
 }
-// Check specific permissions
-function canCreate(user) {
-    return exports.ROLE_PERMISSIONS[user.role]?.canCreate || false;
+// Check specific permissions using RBAC system
+function canCreate(user, context) {
+    // If no permissions are provided, get them from the role
+    let userPermissions = user.permissions;
+    if (!userPermissions || userPermissions.length === 0) {
+        const { getRoleBasedPermissions } = require('./rbac');
+        userPermissions = getRoleBasedPermissions(user.role);
+    }
+    // Check for create permissions in the specific context
+    const createPermissions = userPermissions.filter(p => p.includes(':create'));
+    return createPermissions.length > 0;
 }
-function canEdit(user) {
-    return exports.ROLE_PERMISSIONS[user.role]?.canEdit || false;
+function canEdit(user, context) {
+    // If no permissions are provided, get them from the role
+    let userPermissions = user.permissions;
+    if (!userPermissions || userPermissions.length === 0) {
+        const { getRoleBasedPermissions } = require('./rbac');
+        userPermissions = getRoleBasedPermissions(user.role);
+    }
+    // Check for update permissions in the specific context
+    const updatePermissions = userPermissions.filter(p => p.includes(':update'));
+    return updatePermissions.length > 0;
 }
-function canDelete(user) {
-    return exports.ROLE_PERMISSIONS[user.role]?.canDelete || false;
+function canDelete(user, context) {
+    // If no permissions are provided, get them from the role
+    let userPermissions = user.permissions;
+    if (!userPermissions || userPermissions.length === 0) {
+        const { getRoleBasedPermissions } = require('./rbac');
+        userPermissions = getRoleBasedPermissions(user.role);
+    }
+    // Check for delete permissions in the specific context
+    const deletePermissions = userPermissions.filter(p => p.includes(':delete'));
+    return deletePermissions.length > 0;
 }
-function canApprove(user) {
-    return exports.ROLE_PERMISSIONS[user.role]?.canApprove || false;
+function canApprove(user, context) {
+    // If no permissions are provided, get them from the role
+    let userPermissions = user.permissions;
+    if (!userPermissions || userPermissions.length === 0) {
+        const { getRoleBasedPermissions } = require('./rbac');
+        userPermissions = getRoleBasedPermissions(user.role);
+    }
+    // Check for approve permissions in the specific context
+    const approvePermissions = userPermissions.filter(p => p.includes(':approve'));
+    return approvePermissions.length > 0;
 }
 // Get user's role display info
 function getRoleInfo(role) {
-    return exports.ROLE_PERMISSIONS[role] || { description: 'Unknown role' };
+    const roleDescriptions = {
+        admin: { description: 'Full system access' },
+        manager: { description: 'Department management' },
+        designer: { description: 'Design workflow' },
+        cutting_operator: { description: 'Cutting operations' },
+        printing_operator: { description: 'Printing operations' },
+        sewing_operator: { description: 'Sewing operations' },
+        qc_inspector: { description: 'Quality control' },
+        finishing_operator: { description: 'Finishing & packing' },
+        warehouse_staff: { description: 'Delivery & warehouse' },
+        finance_staff: { description: 'Finance operations' },
+        hr_staff: { description: 'HR operations' },
+        maintenance_tech: { description: 'Maintenance' }
+    };
+    return roleDescriptions[role] || { description: 'Unknown role' };
 }

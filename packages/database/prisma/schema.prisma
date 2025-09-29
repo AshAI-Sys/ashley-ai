@@ -134,6 +134,8 @@ model User {
   first_name      String
   last_name       String
   role            String    // Role as string instead of enum
+  position        String?   // Job position
+  department      String?   // Department name
   permissions     String?   // JSON array as string
   is_active       Boolean   @default(true)
   requires_2fa    Boolean   @default(false)

@@ -25,4 +25,4 @@ export declare function serializeAshleyAnalysis(analysis: AshleyAnalysis): strin
 export declare function softDelete(model: keyof typeof db, id: string, workspaceId: string, userId?: string): Promise<any>;
 export declare function parseJsonField<T>(jsonString: string | null): T | null;
 export declare function stringifyJsonField<T>(data: T): string;
-export declare function withTransaction<T>(callback: (tx: typeof db) => Promise<T>): Promise<T>;
+export declare function withTransaction<T>(callback: (tx: any) => Promise<T>): Promise<T>;

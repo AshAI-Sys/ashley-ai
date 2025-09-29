@@ -1,4 +1,4 @@
 import React from 'react';
-export declare function Providers({ children }: {
+export default function Providers({ children }: {
     children: React.ReactNode;
 }): React.JSX.Element;

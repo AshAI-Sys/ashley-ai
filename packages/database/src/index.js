@@ -20,6 +20,7 @@ exports.disconnect = exports.healthCheck = exports.prisma = void 0;
 __exportStar(require("./client"), exports);
 __exportStar(require("./types"), exports);
 __exportStar(require("./utils"), exports);
+// All Prisma types are re-exported through client.ts
 // Legacy exports for backwards compatibility
 var client_1 = require("./client");
 Object.defineProperty(exports, "prisma", { enumerable: true, get: function () { return client_1.db; } });
