@@ -86,10 +86,10 @@ export default function Sidebar() {
       id: user.id,
       email: user.email,
       name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-      role: mappedRole,
+      role: user.role === 'admin' || user.role === 'Admin' ? 'admin' : mappedRole,
       position: user.position || '',
       department: user.department || 'Administration',
-      permissions: userPermissions
+      permissions: user.role === 'admin' || user.role === 'Admin' ? ['all'] : userPermissions
     }
 
     return getAccessibleNavigation(permUser)
