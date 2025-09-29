@@ -47,6 +47,7 @@ export function getAccessibleNavigation(user: User) {
     { name: 'Finance', href: '/finance', icon: 'DollarSign', department: 'Finance', permission: 'finance.view' },
     { name: 'HR & Payroll', href: '/hr-payroll', icon: 'Users', department: 'HR', permission: 'hr.view' },
     { name: 'Maintenance', href: '/maintenance', icon: 'Wrench', department: 'Maintenance', permission: 'maintenance.view' },
+    { name: 'User Management', href: '/admin/users', icon: 'Users', department: 'Administration', permission: 'admin.users' },
     { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management', permission: 'merchandising.view' },
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management', permission: 'automation.view' },
   ]
