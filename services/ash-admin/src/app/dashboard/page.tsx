@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import DashboardLayout from '@/components/dashboard-layout'
-import PermissionGate, { usePermissions } from '@/components/PermissionGate'
+import RoleSpecificDashboard from '@/components/role-dashboards/RoleSpecificDashboard'
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null)
