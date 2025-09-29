@@ -3,7 +3,10 @@ const nextConfig = {
   env: {
     ASH_API_URL: process.env.ASH_API_URL || 'http://localhost:3001',
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.ASH_STRIPE_PUBLISHABLE_KEY,
+    WATCHPACK_POLLING: process.env.WATCHPACK_POLLING || true,
   },
+  // Disable source maps for faster builds
+  productionBrowserSourceMaps: false,
   async rewrites() {
     return [
       {
@@ -18,13 +21,8 @@ const nextConfig = {
   // Optimize for development stability
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
-      // Fix watchpack issues in development
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-        ignored: /node_modules/,
-        followSymlinks: false,
-      }
+      // Completely disable file watching to prevent path errors
+      config.watchOptions = false
 
       // Fix watchpack TypeError with undefined paths
       config.infrastructureLogging = {
@@ -35,7 +33,16 @@ const nextConfig = {
       config.resolve = {
         ...config.resolve,
         symlinks: false,
+        fallback: {
+          ...config.resolve.fallback,
+          fs: false,
+          path: false,
+        },
       }
+
+      // Disable watch mode for development
+      config.watch = false
+      config.cache = false
     }
     return config
   },
