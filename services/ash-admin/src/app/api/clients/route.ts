@@ -2,6 +2,37 @@ import { NextRequest, NextResponse } from 'next/server';
 // Temporarily disable database for demo mode
 // import { prisma } from '@/lib/db';
 import { z } from 'zod';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// File-based storage for created clients (persists across hot reloads)
+const STORAGE_FILE = path.join(process.cwd(), '.next', 'created-clients.json');
+
+// Helper functions for file-based storage
+const loadCreatedClients = (): any[] => {
+  try {
+    if (fs.existsSync(STORAGE_FILE)) {
+      const data = fs.readFileSync(STORAGE_FILE, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.warn('Could not load created clients:', error);
+  }
+  return [];
+};
+
+const saveCreatedClients = (clients: any[]): void => {
+  try {
+    // Ensure .next directory exists
+    const nextDir = path.dirname(STORAGE_FILE);
+    if (!fs.existsSync(nextDir)) {
+      fs.mkdirSync(nextDir, { recursive: true });
+    }
+    fs.writeFileSync(STORAGE_FILE, JSON.stringify(clients, null, 2));
+  } catch (error) {
+    console.warn('Could not save created clients:', error);
+  }
+};
 
 const CreateClientSchema = z.object({
   name: z.string().min(1, 'Client name is required'),
@@ -82,14 +113,18 @@ export async function GET(request: NextRequest) {
       }
     ];
 
+    // Load created clients from file storage and combine with demo clients
+    const createdClients = loadCreatedClients();
+    const allClients = [...demoClients, ...createdClients];
+
     return NextResponse.json({
       success: true,
       data: {
-        clients: demoClients,
+        clients: allClients,
         pagination: {
           page: 1,
           limit: 10,
-          total: demoClients.length,
+          total: allClients.length,
           pages: 1,
         }
       }
@@ -108,19 +143,29 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
 
-    // Demo client creation - just return a mock created client
+    // Create new client with proper formatting to match frontend interface
     const newClient = {
       id: `client-${Date.now()}`,
-      ...validatedData,
-      // Ensure address is a string for storage
+      name: validatedData.name,
+      contact_person: validatedData.contact_person || '',
+      email: validatedData.email,
+      phone: validatedData.phone || '',
       address: typeof validatedData.address === 'object'
         ? JSON.stringify(validatedData.address)
-        : validatedData.address,
-      createdAt: new Date(),
-      brands: [],
-      orders: [],
+        : (validatedData.address || ''),
+      tax_id: validatedData.tax_id || '',
+      payment_terms: validatedData.payment_terms || null,
+      credit_limit: validatedData.credit_limit || null,
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
       _count: { orders: 0, brands: 0 }
     };
+
+    // Load existing created clients, add new client, and save back to file
+    const createdClients = loadCreatedClients();
+    createdClients.push(newClient);
+    saveCreatedClients(createdClients);
 
     return NextResponse.json({
       success: true,
