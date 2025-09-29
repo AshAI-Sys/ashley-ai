@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { db } = require('@ash-ai/database');
+const prisma = db;
 
 console.log('Testing admin service Prisma connection...');
 

@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database'
 import { emailService } from '../email/emailService'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 export interface NotificationData {
   workspace_id: string

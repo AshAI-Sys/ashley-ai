@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database'
 import crypto from 'crypto'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+const { db } = require('@ash-ai/database');
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 const advancedFinanceController = {
   

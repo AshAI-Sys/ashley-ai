@@ -4,14 +4,14 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@ash-ai/ui/card'
 import { Button } from '@ash-ai/ui/button'
 import { Badge } from '@ash-ai/ui/badge'
-import { 
-  ZoomIn, 
-  ZoomOut, 
-  RotateCw, 
-  Download, 
-  Maximize, 
+import {
+  ZoomIn,
+  ZoomOut,
+  RotateCw,
+  Download,
+  Maximize,
   Eye,
-  Grid3X3,
+  Grid,
   Move,
   Image as ImageIcon
 } from 'lucide-react'

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-import { tokenService } from '@ash/core/lib/security/tokenService'
+import { db } from '@ash-ai/database'
+import { tokenService } from '@ash/core/src/lib/security/tokenService'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 export async function GET(
   request: NextRequest,

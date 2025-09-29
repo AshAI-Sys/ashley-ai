@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database'
 import { logger } from '@ash/shared'
 import { z } from 'zod'
 import { Request, Response, NextFunction } from 'express'
 
 const router = Router()
-const prisma = new PrismaClient()
+const prisma = db
 
 // ================================
 // VALIDATION SCHEMAS

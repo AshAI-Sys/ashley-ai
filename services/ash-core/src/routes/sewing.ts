@@ -1,11 +1,11 @@
 import { Router } from 'express'
 import { body, param, query, validationResult } from 'express-validator'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database'
 import { requirePermission, AuthenticatedRequest } from '../middleware/auth'
 import { logger } from '@ash/shared'
 
 const router = Router()
-const prisma = new PrismaClient()
+const prisma = db
 
 // ================================
 // Stage 5: Sewing Operations API

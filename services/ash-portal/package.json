@@ -12,12 +12,15 @@
     "clean": "rm -rf .next out dist"
   },
   "dependencies": {
+    "@ash-ai/database": "workspace:*",
     "@ash-ai/ui": "workspace:*",
+    "@ash/core": "workspace:*",
     "@ash/types": "workspace:*",
     "@hookform/resolvers": "^3.1.0",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-dialog": "^1.0.0",
     "@radix-ui/react-dropdown-menu": "^2.0.0",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-progress": "^1.0.0",
     "@radix-ui/react-tabs": "^1.0.0",
     "@stripe/react-stripe-js": "^2.0.0",

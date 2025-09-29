@@ -1,8 +1,8 @@
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 export interface ApprovalTokenPayload {
   approvalId: string

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database'
 import { verify } from 'jsonwebtoken'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 interface JWTPayload {
   clientId: string

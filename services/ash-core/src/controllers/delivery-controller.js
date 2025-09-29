@@ -1,7 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const { db } = require('@ash-ai/database');
 const QRCode = require('qrcode');
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 const deliveryController = {
   // Get all deliveries for a workspace

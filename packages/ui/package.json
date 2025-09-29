@@ -12,6 +12,38 @@
     },
     "./styles": {
       "default": "./src/styles/globals.css"
+    },
+    "./card": {
+      "types": "./src/components/card.tsx",
+      "default": "./src/components/card.tsx"
+    },
+    "./button": {
+      "types": "./src/components/button.tsx",
+      "default": "./src/components/button.tsx"
+    },
+    "./badge": {
+      "types": "./src/components/badge.tsx",
+      "default": "./src/components/badge.tsx"
+    },
+    "./separator": {
+      "types": "./src/components/separator.tsx",
+      "default": "./src/components/separator.tsx"
+    },
+    "./textarea": {
+      "types": "./src/components/textarea.tsx",
+      "default": "./src/components/textarea.tsx"
+    },
+    "./input": {
+      "types": "./src/components/input.tsx",
+      "default": "./src/components/input.tsx"
+    },
+    "./label": {
+      "types": "./src/components/label.tsx",
+      "default": "./src/components/label.tsx"
+    },
+    "./progress": {
+      "types": "./src/components/progress.tsx",
+      "default": "./src/components/progress.tsx"
     }
   },
   "scripts": {

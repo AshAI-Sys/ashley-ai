@@ -2,6 +2,9 @@
 
 import React from 'react'
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+function Providers({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
+
+export { Providers }
+export default Providers
