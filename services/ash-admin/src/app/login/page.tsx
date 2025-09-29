@@ -15,15 +15,20 @@ export default function LoginPage() {
     setIsLoading(true)
     setError('')
 
+    console.log('Login attempt:', { email, password })
+
     // Demo mode fallback - direct login for demo credentials
     if (email === 'admin@ashleyai.com' && password === 'demo123') {
+      console.log('Demo mode login detected')
+      // Generate a demo token
+      const demoToken = 'demo_token_' + Date.now()
+      console.log('Setting token:', demoToken)
+      localStorage.setItem('ash_token', demoToken)
+      console.log('Token set, redirecting to dashboard')
+      router.push('/dashboard')
       setTimeout(() => {
-        // Generate a demo token
-        const demoToken = 'demo_token_' + Date.now()
-        localStorage.setItem('ash_token', demoToken)
-        router.push('/dashboard')
         setIsLoading(false)
-      }, 1000)
+      }, 100)
       return
     }
 
@@ -121,7 +126,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }}>
+        <form onSubmit={handleSubmit} style={{ marginBottom: '24px' }} method="POST" action="#">>
           <div style={{ marginBottom: '16px' }}>
             <label style={{
               display: 'block',

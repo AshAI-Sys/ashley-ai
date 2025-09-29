@@ -10,31 +10,41 @@ export default function DashboardPage() {
   const router = useRouter()
 
   useEffect(() => {
-    try {
-      const token = localStorage.getItem('ash_token')
-      console.log('Token found:', !!token)
+    const checkAuth = () => {
+      try {
+        console.log('Dashboard: Checking authentication...')
+        const token = localStorage.getItem('ash_token')
+        console.log('Dashboard: Token found:', !!token, token?.substring(0, 20) + '...')
 
-      if (!token) {
-        console.log('No token, redirecting to login')
+        if (!token) {
+          console.log('Dashboard: No token, redirecting to login')
+          router.push('/login')
+          return
+        }
+
+        console.log('Dashboard: Token valid, setting user data')
+        // Simulate user data from token - Will integrate with auth context later
+        setUser({
+          name: 'Demo Admin',
+          email: 'admin@ashleyai.com',
+          role: 'admin',
+          position: 'System Administrator',
+          department: 'Administration'
+        })
+        setLoading(false)
+        console.log('Dashboard: Loading complete')
+      } catch (error) {
+        console.error('Dashboard: Error in auth check:', error)
+        setLoading(false)
         router.push('/login')
-        return
       }
-
-      console.log('Setting user data')
-      // Simulate user data from token - Will integrate with auth context later
-      setUser({
-        name: 'Demo Admin',
-        email: 'admin@ashleyai.com',
-        role: 'admin',
-        position: 'System Administrator',
-        department: 'Administration'
-      })
-      setLoading(false)
-      console.log('Loading set to false')
-    } catch (error) {
-      console.error('Error in useEffect:', error)
-      setLoading(false)
     }
+
+    // Check immediately and also with a small delay to ensure localStorage is available
+    checkAuth()
+    const timeoutId = setTimeout(checkAuth, 100)
+
+    return () => clearTimeout(timeoutId)
   }, [router])
 
   const handleLogout = () => {
