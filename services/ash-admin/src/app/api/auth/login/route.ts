@@ -27,13 +27,25 @@ export const POST = rateLimit(authRateLimit)(withErrorHandling(async (request: N
     throw emailError
   }
 
-  // Demo authentication - keep for fallback
-  if (email === 'admin@ashleyai.com' && password === 'demo123') {
+  // Demo authentication - multiple admin accounts for testing
+  const demoAccounts = [
+    { email: 'admin@ashleyai.com', password: 'demo123', role: 'admin' },
+    { email: 'admin@ash.ai', password: 'password123', role: 'admin' },
+    { email: 'demo@ash.ai', password: 'password', role: 'admin' },
+    { email: 'admin', password: 'admin', role: 'admin' },
+    { email: 'test@test.com', password: 'test', role: 'admin' }
+  ]
+
+  const demoAccount = demoAccounts.find(account =>
+    account.email === email.toLowerCase() && account.password === password
+  )
+
+  if (demoAccount) {
     // Generate proper JWT token
     const userData = {
       userId: 'demo-user-1',
-      email: 'admin@ashleyai.com',
-      role: 'admin',
+      email: demoAccount.email,
+      role: demoAccount.role,
       workspaceId: 'demo-workspace-1'
     }
 
@@ -43,10 +55,13 @@ export const POST = rateLimit(authRateLimit)(withErrorHandling(async (request: N
       access_token: token,
       user: {
         id: 'demo-user-1',
-        email: email,
-        name: 'Demo Admin',
-        role: 'admin',
-        workspaceId: 'demo-workspace-1'
+        email: demoAccount.email,
+        name: 'Ashley AI Admin',
+        role: demoAccount.role,
+        position: 'System Administrator',
+        department: 'Administration',
+        workspaceId: 'demo-workspace-1',
+        permissions: ['*'] // Admin has all permissions
       }
     }
 

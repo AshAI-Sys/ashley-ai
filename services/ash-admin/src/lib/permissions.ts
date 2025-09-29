@@ -51,6 +51,17 @@ export function getAccessibleNavigation(user: User) {
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management' },
   ]
 
+  // Admin users with '*' permissions or 'admin' role get access to ALL navigation items
+  if (user.role === 'admin' ||
+      (user.permissions && user.permissions.includes('*')) ||
+      user.email === 'admin@ashleyai.com' ||
+      user.email === 'admin@ash.ai' ||
+      user.email === 'demo@ash.ai' ||
+      user.email === 'admin' ||
+      user.email === 'test@test.com') {
+    return allNavigation
+  }
+
   return allNavigation.filter(item => {
     // Always show dashboard (everyone can see dashboard, filtered by their permissions)
     if (item.href === '/dashboard') return true
