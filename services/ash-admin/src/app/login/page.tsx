@@ -21,26 +21,6 @@ export default function LoginPage() {
     console.log('Login attempt:', { email, password })
 
     try {
-      // Demo mode fallback - direct login for demo credentials
-      if (email === 'admin@ashleyai.com' && password === 'admin123') {
-        console.log('Demo mode login detected')
-        // Generate a demo token
-        const demoToken = 'demo_token_' + Date.now()
-        console.log('Setting token:', demoToken)
-        localStorage.setItem('ash_token', demoToken)
-        console.log('Token set, redirecting to dashboard')
-
-        // Use window.location for more reliable redirect
-        window.location.href = '/dashboard'
-        return
-      }
-    } catch (error) {
-      console.error('Login error:', error)
-      setError('Login failed. Please try again.')
-      setIsLoading(false)
-    }
-
-    try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -49,23 +29,30 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
 
+      console.log('API Response status:', response.status)
+
       if (response.ok) {
         const data = await response.json()
-        localStorage.setItem('ash_token', data.access_token)
-        router.push('/dashboard')
+        console.log('Login successful:', data)
+
+        if (data.success && data.data.access_token) {
+          localStorage.setItem('ash_token', data.data.access_token)
+          localStorage.setItem('ash_user', JSON.stringify(data.data.user))
+          console.log('Token stored, redirecting to dashboard')
+
+          // Use window.location for more reliable redirect
+          window.location.href = '/dashboard'
+        } else {
+          setError('Login failed: Invalid response format')
+        }
       } else {
-        setError('Invalid credentials. Please try again.')
+        const errorData = await response.json().catch(() => ({}))
+        console.log('Login failed:', errorData)
+        setError(errorData.error || 'Invalid credentials. Please try again.')
       }
     } catch (err) {
       console.error('Login error:', err)
-      setError('Login failed. Using demo mode fallback for admin@ashleyai.com')
-
-      // Fallback for demo credentials if API fails
-      if (email === 'admin@ashleyai.com' && password === 'admin123') {
-        const demoToken = 'demo_token_' + Date.now()
-        localStorage.setItem('ash_token', demoToken)
-        router.push('/dashboard')
-      }
+      setError('Login failed. Please check your connection and try again.')
     } finally {
       setIsLoading(false)
     }

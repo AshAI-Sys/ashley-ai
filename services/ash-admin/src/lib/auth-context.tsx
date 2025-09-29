@@ -35,16 +35,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (storedToken) {
       setToken(storedToken)
 
-      // Set demo user for any token
-      setUser({
-        id: 'demo-user-1',
-        email: 'admin@ashleyai.com',
-        name: 'Demo Admin',
-        role: 'admin',
-        position: 'System Administrator',
-        department: 'Administration',
-        permissions: ['all']
-      })
+      // Get stored user data if available
+      const storedUser = localStorage.getItem('ash_user')
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          setUser(userData)
+        } catch (error) {
+          console.error('Error parsing stored user data:', error)
+          // Fallback to demo user
+          setUser({
+            id: 'demo-user-1',
+            email: 'admin@ashleyai.com',
+            name: 'Demo Admin',
+            role: 'admin',
+            position: 'System Administrator',
+            department: 'Administration',
+            permissions: ['*']
+          })
+        }
+      } else {
+        // Fallback to demo user if no stored user data
+        setUser({
+          id: 'demo-user-1',
+          email: 'admin@ashleyai.com',
+          name: 'Demo Admin',
+          role: 'admin',
+          position: 'System Administrator',
+          department: 'Administration',
+          permissions: ['*']
+        })
+      }
     }
     setIsLoading(false)
   }, [])

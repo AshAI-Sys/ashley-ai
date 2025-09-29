@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { rateLimit, authRateLimit } from '../../../../lib/rate-limit'
+// Temporarily disabled rate limiting for login
+// import { rateLimit, authRateLimit } from '../../../../lib/rate-limit'
 import { generateToken } from '../../../../lib/jwt'
 import {
   createSuccessResponse,
@@ -12,7 +13,7 @@ import {
 // import { prisma } from '../../../../lib/db'
 // import bcrypt from 'bcryptjs'
 
-export const POST = rateLimit(authRateLimit)(withErrorHandling(async (request: NextRequest) => {
+export const POST = withErrorHandling(async (request: NextRequest) => {
   const body = await request.json()
   const { email, password } = body
 

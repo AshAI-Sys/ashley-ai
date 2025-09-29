@@ -25,14 +25,22 @@ export default function DashboardPage() {
         }
 
         console.log('Dashboard: Token valid, setting user data')
-        // Simulate user data from token - Will integrate with auth context later
-        setUser({
-          name: 'Demo Admin',
-          email: 'admin@ashleyai.com',
-          role: 'admin',
-          position: 'System Administrator',
-          department: 'Administration'
-        })
+        // Get user data from localStorage (stored during login)
+        const storedUser = localStorage.getItem('ash_user')
+        if (storedUser) {
+          const userData = JSON.parse(storedUser)
+          setUser(userData)
+          console.log('Dashboard: User data loaded:', userData)
+        } else {
+          // Fallback to demo data if no stored user data
+          setUser({
+            name: 'Demo Admin',
+            email: 'admin@ashleyai.com',
+            role: 'admin',
+            position: 'System Administrator',
+            department: 'Administration'
+          })
+        }
         setLoading(false)
         console.log('Dashboard: Loading complete')
       } catch (error) {
