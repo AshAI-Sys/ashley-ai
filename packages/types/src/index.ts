@@ -54,6 +54,13 @@ export interface AuthToken {
   token_type?: string
 }
 
+export interface LoginResponse {
+  token: string
+  user: User
+  workspace: Workspace
+}
+
 // Common types
-export type Role = 'Admin' | 'Manager' | 'CSR' | 'Worker' | 'Client'
+export type Role = 'Admin' | 'Manager' | 'CSR' | 'Worker' | 'Client' | 'supervisor' | 'operator' | 'employee'
 export type OrderStatus = 'draft' | 'pending' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled'
+export type Permission = string

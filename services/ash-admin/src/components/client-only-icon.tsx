@@ -16,7 +16,7 @@ const ClientOnlyIcon = ({
 // Use dynamic import with no SSR to prevent hydration errors
 export default dynamic(() => Promise.resolve(ClientOnlyIcon), {
   ssr: false,
-  loading: () => <div className={`${props.className || 'w-4 h-4'} animate-pulse bg-gray-300 rounded`} />
+  loading: () => <div className="w-4 h-4 animate-pulse bg-gray-300 rounded" />
 })
 
 // For the loading fallback, we need to handle props properly

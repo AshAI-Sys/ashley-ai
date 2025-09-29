@@ -40,7 +40,7 @@ router.get('/operations', [
       orderBy: {
         product_type: 'asc'
       }
-    // })
+    })
 
     res.json({ success: true, data: operations })
   } catch (error) {
