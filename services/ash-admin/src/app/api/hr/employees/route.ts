@@ -95,7 +95,7 @@ export const GET = requireAnyPermission(['hr:read'])(withErrorHandling(async (re
     return createSuccessResponse(processedEmployees)
 })
 
-export const POST = withErrorHandling(async (request: NextRequest) => {
+export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()
   const {
     first_name,
@@ -176,7 +176,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   }
 
   return createSuccessResponse(responseData, 201)
-})
+}))
 
 export const PUT = withErrorHandling(async (request: NextRequest) => {
   const data = await request.json()

@@ -69,7 +69,7 @@ export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(asyn
     return createSuccessResponse(processedInvoices)
 })
 
-export const POST = withErrorHandling(async (request: NextRequest) => {
+export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()
   const {
     brand_id,
@@ -216,4 +216,4 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   })
 
   return createSuccessResponse(invoice, 201)
-})
+}))
