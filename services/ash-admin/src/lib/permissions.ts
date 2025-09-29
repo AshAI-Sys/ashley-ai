@@ -50,6 +50,7 @@ export function getAccessibleNavigation(user: User) {
     { name: 'User Management', href: '/admin/users', icon: 'Users', department: 'Administration', permission: 'admin.users' },
     { name: 'Employee Onboarding', href: '/admin/onboarding', icon: 'UserPlus', department: 'Administration', permission: 'admin.onboarding' },
     { name: 'Audit Logs', href: '/admin/audit', icon: 'Shield', department: 'Administration', permission: 'admin.audit' },
+    { name: 'Reports & Analytics', href: '/admin/reports', icon: 'BarChart3', department: 'Administration', permission: 'admin.reports' },
     { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management', permission: 'merchandising.view' },
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management', permission: 'automation.view' },
   ]
