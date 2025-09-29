@@ -1,7 +1,7 @@
 // ASH AI Database Utilities
 // Helper functions for database operations
 
-import { db } from "./client";
+import { db, type DatabaseTransaction } from "./client";
 import type { WithWorkspaceId, AshleyAnalysis } from "./types";
 
 // Multi-tenancy helpers
@@ -164,9 +164,9 @@ export function stringifyJsonField<T>(data: T): string {
 
 // Database transaction wrapper with error handling
 export async function withTransaction<T>(
-  callback: (tx: typeof db) => Promise<T>
+  callback: (tx: any) => Promise<T>
 ): Promise<T> {
-  return await db.$transaction(async (tx) => {
+  return await db.$transaction(async (tx: any) => {
     try {
       return await callback(tx);
     } catch (error) {

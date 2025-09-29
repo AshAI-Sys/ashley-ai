@@ -16,7 +16,7 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
 export * from "@prisma/client";
 
 // Type-safe database helpers
-export type DatabaseTransaction = Parameters<Parameters<typeof db.$transaction>[0]>[0];
+export type DatabaseTransaction = Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
 
 // Connection health check
 export async function healthCheck(): Promise<boolean> {
