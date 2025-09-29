@@ -93,11 +93,7 @@ export const GET = requireAnyPermission(['hr:read'])(withErrorHandling(async (re
     })
 
     return createSuccessResponse(processedEmployees)
-  } catch (error) {
-    console.error('Error fetching employees:', error)
-    return createErrorResponse('Failed to fetch employees', 500)
-  }
-})
+}))
 
 export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()
