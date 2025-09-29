@@ -9,9 +9,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "composite": true
+    "composite": true,
+    "types": []
   },
   "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"]

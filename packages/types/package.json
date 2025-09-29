@@ -10,8 +10,8 @@
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
     "typescript": "^5.0.0"
   },
   "files": [
