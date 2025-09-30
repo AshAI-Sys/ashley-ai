@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.tokenService = exports.TokenService = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const database_1 = require("@ash-ai/database");
+const prisma = database_1.db;
 class TokenService {
     constructor() {
         this.JWT_SECRET = process.env.JWT_SECRET || this.generateRandomSecret();

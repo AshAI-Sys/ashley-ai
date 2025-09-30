@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
-const client_1 = require("@prisma/client");
+const database_1 = require("@ash-ai/database");
 const auth_1 = require("../middleware/auth");
 const shared_1 = require("@ash/shared");
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
+const prisma = database_1.db;
 // ================================
 // Stage 5: Sewing Operations API
 // ================================
@@ -35,18 +35,13 @@ router.get('/operations', [
             orderBy: {
                 product_type: 'asc'
             }
-            // })
-            ,
-            // })
-            res, : .json({ success: true, data: operations })
         });
-        try { }
-        catch (error) {
-            shared_1.logger.error('Error fetching sewing operations', error);
-            res.status(500).json({ success: false, error: 'Failed to fetch sewing operations' });
-        }
+        res.json({ success: true, data: operations });
     }
-    finally { }
+    catch (error) {
+        shared_1.logger.error('Error fetching sewing operations', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch sewing operations' });
+    }
 });
 // Create sewing operation
 router.post('/operations', [

@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GET = GET;
 const server_1 = require("next/server");
-const client_1 = require("@prisma/client");
-const tokenService_1 = require("@ash/core/lib/security/tokenService");
-const prisma = new client_1.PrismaClient();
+const database_1 = require("@ash-ai/database");
+const tokenService_1 = require("@ash/core/src/lib/security/tokenService");
+const prisma = database_1.db;
 async function GET(request, { params }) {
     try {
         // Get client IP and user agent for security logging

@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = HomePage;
 const react_1 = require("react");
 const navigation_1 = require("next/navigation");
-const ui_1 = require("@ash/ui");
+const button_1 = require("@/components/ui/button");
 const card_1 = require("@/components/ui/card");
 const input_1 = require("@/components/ui/input");
 const label_1 = require("@/components/ui/label");
@@ -140,9 +140,9 @@ function HomePage() {
                   <label_1.Label htmlFor="email">Email Address</label_1.Label>
                   <input_1.Input id="email" type="email" placeholder="your.email@company.com" value={email} onChange={(e) => setEmail(e.target.value)} required/>
                 </div>
-                <ui_1.Button type="submit" className="w-full" disabled={isLoading}>
+                <button_1.Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Sending...' : 'Send Magic Link'}
-                </ui_1.Button>
+                </button_1.Button>
               </form>
               
               <div className="mt-6 pt-6 border-t text-center">

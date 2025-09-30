@@ -1,7 +1,7 @@
 'use client';
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ClientOnly;
+exports.ClientOnly = ClientOnly;
 const react_1 = require("react");
 function ClientOnly({ children }) {
     const [hasMounted, setHasMounted] = (0, react_1.useState)(false);
@@ -13,3 +13,4 @@ function ClientOnly({ children }) {
     }
     return <>{children}</>;
 }
+exports.default = ClientOnly;

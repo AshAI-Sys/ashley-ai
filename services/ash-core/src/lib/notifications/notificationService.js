@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.notificationService = exports.NotificationService = void 0;
-const client_1 = require("@prisma/client");
+const database_1 = require("@ash-ai/database");
 const emailService_1 = require("../email/emailService");
-const prisma = new client_1.PrismaClient();
+const prisma = database_1.db;
 class NotificationService {
     // Create in-app notification
     async createNotification(data) {

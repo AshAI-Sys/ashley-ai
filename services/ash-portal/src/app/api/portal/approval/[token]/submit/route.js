@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.POST = POST;
 const server_1 = require("next/server");
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient();
+const database_1 = require("@ash-ai/database");
+const prisma = database_1.db;
 async function POST(request, { params }) {
     try {
         // Parse form data for file uploads

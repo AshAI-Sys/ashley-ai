@@ -8,10 +8,12 @@ const providers_1 = require("@/components/providers");
 const react_hot_toast_1 = require("react-hot-toast");
 const inter = (0, google_1.Inter)({ subsets: ['latin'] });
 exports.metadata = {
-    title: 'ASH AI Portal',
-    description: 'Client Portal - Track your orders and manage your account',
+    title: 'Ashley AI Portal',
+    description: 'Ashley AI Client Portal - Track your orders and manage your account',
     icons: {
-        icon: '/favicon.ico',
+        icon: '/favicon.png',
+        shortcut: '/favicon.png',
+        apple: '/ash-ai-logo.png',
     },
 };
 function RootLayout({ children, }) {
