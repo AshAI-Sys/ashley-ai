@@ -1,11 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import DashboardLayout from '@/components/dashboard-layout'
+import { SkeletonTable } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
+import { ErrorAlert } from '@/components/ui/error-alert'
+import { useDebounce } from '@/hooks/useDebounce'
 import {
   Users,
   Clock,
@@ -23,7 +29,9 @@ import {
   Timer,
   UserX,
   Download,
-  Filter
+  Filter,
+  RefreshCw,
+  Search
 } from 'lucide-react'
 
 interface HRMetrics {
@@ -39,19 +47,16 @@ interface HRMetrics {
 
 interface Employee {
   id: string
-  name: string
+  first_name: string
+  last_name: string
   employee_number: string
   position: string
   department: string
-  status: string
+  is_active: boolean
   hire_date: string
   salary_type: string
   base_salary: number
   piece_rate: number
-  attendance_status?: string
-  last_checkin?: string
-  total_productions: number
-  qc_inspections_count: number
 }
 
 interface AttendanceLog {
@@ -78,82 +83,91 @@ interface PayrollRun {
 }
 
 export default function HRPayrollPage() {
-  const [metrics, setMetrics] = useState<HRMetrics | null>(null)
-  const [employees, setEmployees] = useState<Employee[]>([])
-  const [attendanceLogs, setAttendanceLogs] = useState<AttendanceLog[]>([])
-  const [payrollRuns, setPayrollRuns] = useState<PayrollRun[]>([])
-  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
 
-  useEffect(() => {
-    fetchHRData()
-  }, [])
+  const debouncedSearch = useDebounce(searchQuery, 500)
 
-  const fetchHRData = async () => {
-    try {
-      setLoading(true)
+  // Fetch metrics
+  const { data: metricsData, isLoading: metricsLoading, error: metricsError, refetch: refetchMetrics, isFetching: metricsFetching } = useQuery({
+    queryKey: ['hr-metrics'],
+    queryFn: async () => {
+      const response = await fetch('/api/hr/stats')
+      const data = await response.json()
+      if (!data.success) throw new Error('Failed to load HR metrics')
+      return data.data as HRMetrics
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      // Fetch real data from APIs
-      const [metricsRes, employeesRes, attendanceRes, payrollRes] = await Promise.all([
-        fetch('/api/hr/stats'),
-        fetch('/api/hr/employees'),
-        fetch('/api/hr/attendance'),
-        fetch('/api/hr/payroll')
-      ])
+  // Fetch employees
+  const { data: employeesData, isLoading: employeesLoading, error: employeesError, refetch: refetchEmployees, isFetching: employeesFetching } = useQuery({
+    queryKey: ['employees', debouncedSearch, statusFilter],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (debouncedSearch) params.append('search', debouncedSearch)
+      if (statusFilter !== 'all') params.append('status', statusFilter)
 
-      const metricsData = await metricsRes.json()
-      const employeesData = await employeesRes.json()
-      const attendanceData = await attendanceRes.json()
-      const payrollData = await payrollRes.json()
+      const response = await fetch(`/api/hr/employees?${params}`)
+      const data = await response.json()
+      if (!data.success) throw new Error('Failed to load employees')
+      return (data.data || []) as Employee[]
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (metricsData.success) {
-        setMetrics(metricsData.data)
-      }
+  // Fetch attendance
+  const { data: attendanceData, isLoading: attendanceLoading, error: attendanceError, refetch: refetchAttendance, isFetching: attendanceFetching } = useQuery({
+    queryKey: ['attendance'],
+    queryFn: async () => {
+      const response = await fetch('/api/hr/attendance')
+      const data = await response.json()
+      if (!data.success) throw new Error('Failed to load attendance')
+      return (data.data || []) as AttendanceLog[]
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (employeesData.success) {
-        setEmployees(employeesData.data || [])
-      } else {
-        setEmployees([])
-      }
+  // Fetch payroll
+  const { data: payrollData, isLoading: payrollLoading, error: payrollError, refetch: refetchPayroll, isFetching: payrollFetching } = useQuery({
+    queryKey: ['payroll'],
+    queryFn: async () => {
+      const response = await fetch('/api/hr/payroll')
+      const data = await response.json()
+      if (!data.success) throw new Error('Failed to load payroll')
+      return (data.data || []) as PayrollRun[]
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (attendanceData.success) {
-        setAttendanceLogs(attendanceData.data || [])
-      } else {
-        setAttendanceLogs([])
-      }
-
-      if (payrollData.success) {
-        setPayrollRuns(payrollData.data || [])
-      } else {
-        setPayrollRuns([])
-      }
-
-      setLoading(false)
-    } catch (error) {
-      console.error('Error fetching HR data:', error)
-      setLoading(false)
-
-      // Fallback to mock data if API fails
-      setMetrics({
-        total_employees: 0,
-        active_employees: 0,
-        present_today: 0,
-        absent_today: 0,
-        overtime_requests: 0,
-        pending_leaves: 0,
-        upcoming_payroll: new Date().toISOString().split('T')[0],
-        total_payroll_cost: 0
-      })
-      setEmployees([])
-      setAttendanceLogs([])
-      setPayrollRuns([])
-    }
+  const metrics = metricsData || {
+    total_employees: 0,
+    active_employees: 0,
+    present_today: 0,
+    absent_today: 0,
+    overtime_requests: 0,
+    pending_leaves: 0,
+    upcoming_payroll: new Date().toISOString(),
+    total_payroll_cost: 0
   }
 
+  const employees = employeesData || []
+  const attendanceLogs = attendanceData || []
+  const payrollRuns = payrollData || []
 
+  const getStatusBadge = (status: string | boolean) => {
+    // Handle boolean status (for is_active)
+    if (typeof status === 'boolean') {
+      return status ?
+        <Badge className="bg-green-100 text-green-800">Active</Badge> :
+        <Badge className="bg-gray-100 text-gray-800">Inactive</Badge>
+    }
 
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status?.toUpperCase()) {
       case 'ACTIVE':
         return <Badge className="bg-green-100 text-green-800">Active</Badge>
       case 'INACTIVE':
@@ -185,18 +199,14 @@ export default function HRPayrollPage() {
     return new Date(dateString).toLocaleDateString()
   }
 
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Loading HR data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
+  const handleRefreshAll = () => {
+    refetchMetrics()
+    refetchEmployees()
+    refetchAttendance()
+    refetchPayroll()
   }
+
+  const isFetching = metricsFetching || employeesFetching || attendanceFetching || payrollFetching
 
   return (
     <DashboardLayout>
@@ -208,6 +218,14 @@ export default function HRPayrollPage() {
             <p className="text-gray-600">Manage employees, attendance, and payroll operations</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleRefreshAll}
+              disabled={isFetching}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              {isFetching ? 'Refreshing...' : 'Refresh'}
+            </Button>
             <Button variant="outline">
               <Download className="w-4 h-4 mr-2" />
               Export Reports
@@ -220,79 +238,97 @@ export default function HRPayrollPage() {
         </div>
 
         {/* HR Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Employees</p>
-                  <p className="text-2xl font-bold text-gray-900">{metrics?.total_employees || 0}</p>
+        {metricsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : metricsError ? (
+          <ErrorAlert message="Failed to load HR metrics" retry={refetchMetrics} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Total Employees</p>
+                    <p className="text-2xl font-bold text-gray-900">{metrics.total_employees}</p>
+                  </div>
+                  <div className="bg-blue-100 p-3 rounded-full">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
                 </div>
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <Users className="w-6 h-6 text-blue-600" />
+                <div className="flex items-center mt-2">
+                  <UserCheck className="w-4 h-4 text-green-500 mr-1" />
+                  <span className="text-sm text-green-600">{metrics.active_employees} active</span>
                 </div>
-              </div>
-              <div className="flex items-center mt-2">
-                <UserCheck className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-sm text-green-600">{metrics?.active_employees || 0} active</span>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Attendance Today</p>
-                  <p className="text-2xl font-bold text-gray-900">{metrics?.present_today || 0}</p>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Attendance Today</p>
+                    <p className="text-2xl font-bold text-gray-900">{metrics.present_today}</p>
+                  </div>
+                  <div className="bg-green-100 p-3 rounded-full">
+                    <Clock className="w-6 h-6 text-green-600" />
+                  </div>
                 </div>
-                <div className="bg-green-100 p-3 rounded-full">
-                  <Clock className="w-6 h-6 text-green-600" />
+                <div className="flex items-center mt-2">
+                  <UserX className="w-4 h-4 text-red-500 mr-1" />
+                  <span className="text-sm text-red-600">{metrics.absent_today} absent</span>
                 </div>
-              </div>
-              <div className="flex items-center mt-2">
-                <UserX className="w-4 h-4 text-red-500 mr-1" />
-                <span className="text-sm text-red-600">{metrics?.absent_today || 0} absent</span>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Pending Approvals</p>
-                  <p className="text-2xl font-bold text-gray-900">{(metrics?.overtime_requests || 0) + (metrics?.pending_leaves || 0)}</p>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Pending Approvals</p>
+                    <p className="text-2xl font-bold text-gray-900">{metrics.overtime_requests + metrics.pending_leaves}</p>
+                  </div>
+                  <div className="bg-yellow-100 p-3 rounded-full">
+                    <AlertCircle className="w-6 h-6 text-yellow-600" />
+                  </div>
                 </div>
-                <div className="bg-yellow-100 p-3 rounded-full">
-                  <AlertCircle className="w-6 h-6 text-yellow-600" />
+                <div className="flex items-center mt-2">
+                  <Timer className="w-4 h-4 text-yellow-500 mr-1" />
+                  <span className="text-sm text-yellow-600">{metrics.overtime_requests} OT, {metrics.pending_leaves} leaves</span>
                 </div>
-              </div>
-              <div className="flex items-center mt-2">
-                <Timer className="w-4 h-4 text-yellow-500 mr-1" />
-                <span className="text-sm text-yellow-600">{metrics?.overtime_requests || 0} OT, {metrics?.pending_leaves || 0} leaves</span>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Monthly Payroll</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics?.total_payroll_cost || 0)}</p>
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Monthly Payroll</p>
+                    <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics.total_payroll_cost)}</p>
+                  </div>
+                  <div className="bg-purple-100 p-3 rounded-full">
+                    <DollarSign className="w-6 h-6 text-purple-600" />
+                  </div>
                 </div>
-                <div className="bg-purple-100 p-3 rounded-full">
-                  <DollarSign className="w-6 h-6 text-purple-600" />
+                <div className="flex items-center mt-2">
+                  <Calendar className="w-4 h-4 text-gray-500 mr-1" />
+                  <span className="text-sm text-gray-600">Next run: {formatDate(metrics.upcoming_payroll)}</span>
                 </div>
-              </div>
-              <div className="flex items-center mt-2">
-                <Calendar className="w-4 h-4 text-gray-500 mr-1" />
-                <span className="text-sm text-gray-600">Next run: {formatDate(metrics?.upcoming_payroll || '')}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="employees" className="space-y-4">
@@ -325,55 +361,91 @@ export default function HRPayrollPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {(employees || []).map((employee) => (
-                    <div key={employee.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">{employee.name}</h3>
-                            {getStatusBadge(employee.status)}
-                            {employee.attendance_status && getStatusBadge(employee.attendance_status)}
+                {/* Search and Filter */}
+                <div className="flex gap-4 mb-6">
+                  <div className="flex-1 max-w-sm">
+                    <div className="relative">
+                      <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                      <Input
+                        placeholder="Search employees..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-9"
+                      />
+                    </div>
+                  </div>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="active">Active Only</option>
+                    <option value="inactive">Inactive Only</option>
+                  </select>
+                </div>
+
+                {employeesError && (
+                  <ErrorAlert message="Failed to load employees" retry={refetchEmployees} />
+                )}
+
+                {employeesLoading ? (
+                  <SkeletonTable />
+                ) : employees.length === 0 ? (
+                  <EmptyState
+                    icon={Users}
+                    title="No employees found"
+                    description={searchQuery ? `No employees match "${searchQuery}"` : "Get started by adding your first employee"}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {employees.map((employee) => (
+                      <div key={employee.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold">{employee.first_name} {employee.last_name}</h3>
+                              {getStatusBadge(employee.is_active)}
+                              <Badge className="bg-gray-100 text-gray-800">{employee.employee_number}</Badge>
+                            </div>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-600">Position:</span><br />
+                                <span className="font-medium">{employee.position}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Department:</span><br />
+                                <span className="font-medium">{employee.department}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Salary Type:</span><br />
+                                <span className="font-medium">{employee.salary_type}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Base Salary:</span><br />
+                                <span className="font-medium">{formatCurrency(employee.base_salary || 0)}</span>
+                              </div>
+                            </div>
+                            <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                              <span>Hired: {formatDate(employee.hire_date)}</span>
+                              {employee.piece_rate && <span>Piece Rate: ₱{employee.piece_rate}</span>}
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <span className="text-gray-600">Position:</span><br />
-                              <span className="font-medium">{employee.position}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Department:</span><br />
-                              <span className="font-medium">{employee.department}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Salary Type:</span><br />
-                              <span className="font-medium">{employee.salary_type}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Base Salary:</span><br />
-                              <span className="font-medium">{formatCurrency(employee.base_salary || 0)}</span>
-                            </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-1" />
+                              View
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
                           </div>
-                          <div className="flex gap-4 mt-2 text-xs text-gray-500">
-                            <span>Hired: {formatDate(employee.hire_date)}</span>
-                            {employee.last_checkin && (
-                              <span>Last check-in: {formatDateTime(employee.last_checkin)}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Edit className="w-4 h-4 mr-1" />
-                            Edit
-                          </Button>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -400,55 +472,69 @@ export default function HRPayrollPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {(attendanceLogs || []).map((log) => (
-                    <div key={log.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">{log.employee.name}</h3>
-                            <Badge className={log.time_in && !log.time_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
-                              {log.time_in && !log.time_out ? 'Present' : log.time_out ? 'Completed' : 'Clock In'}
-                            </Badge>
-                            {getStatusBadge(log.status)}
+                {attendanceError && (
+                  <ErrorAlert message="Failed to load attendance logs" retry={refetchAttendance} />
+                )}
+
+                {attendanceLoading ? (
+                  <SkeletonTable />
+                ) : attendanceLogs.length === 0 ? (
+                  <EmptyState
+                    icon={Clock}
+                    title="No attendance logs"
+                    description="Attendance records will appear here once employees clock in"
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {attendanceLogs.map((log) => (
+                      <div key={log.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold">{log.employee.name}</h3>
+                              <Badge className={log.time_in && !log.time_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                                {log.time_in && !log.time_out ? 'Present' : log.time_out ? 'Completed' : 'Not Clocked In'}
+                              </Badge>
+                              {getStatusBadge(log.status)}
+                            </div>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-600">Date:</span><br />
+                                <span className="font-medium">{formatDate(log.date)}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Time In:</span><br />
+                                <span className="font-medium">{log.time_in ? formatDateTime(log.time_in) : 'Not clocked in'}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Time Out:</span><br />
+                                <span className="font-medium">{log.time_out ? formatDateTime(log.time_out) : 'Not clocked out'}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Overtime:</span><br />
+                                <span className="font-medium">{log.overtime_minutes || 0} mins</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                            <div>
-                              <span className="text-gray-600">Employee:</span><br />
-                              <span className="font-medium">{log.employee.role}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Date:</span><br />
-                              <span className="font-medium">{formatDate(log.date)}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Time In:</span><br />
-                              <span className="font-medium">{log.time_in ? formatDateTime(log.time_in) : 'Not clocked in'}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Time Out:</span><br />
-                              <span className="font-medium">{log.time_out ? formatDateTime(log.time_out) : 'Not clocked out'}</span>
-                            </div>
+                          <div className="flex gap-2">
+                            {log.status === 'PENDING' && (
+                              <>
+                                <Button variant="outline" size="sm">
+                                  <CheckCircle className="w-4 h-4 mr-1 text-green-600" />
+                                  Approve
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  <XCircle className="w-4 h-4 mr-1 text-red-600" />
+                                  Reject
+                                </Button>
+                              </>
+                            )}
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          {log.status === 'PENDING' && (
-                            <>
-                              <Button variant="outline" size="sm">
-                                <CheckCircle className="w-4 h-4 mr-1 text-green-600" />
-                                Approve
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <XCircle className="w-4 h-4 mr-1 text-red-600" />
-                                Reject
-                              </Button>
-                            </>
-                          )}
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -475,46 +561,60 @@ export default function HRPayrollPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {(payrollRuns || []).map((payroll) => (
-                    <div key={payroll.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">
-                              Payroll {formatDate(payroll.period_start)} - {formatDate(payroll.period_end)}
-                            </h3>
-                            {getStatusBadge(payroll.status)}
+                {payrollError && (
+                  <ErrorAlert message="Failed to load payroll runs" retry={refetchPayroll} />
+                )}
+
+                {payrollLoading ? (
+                  <SkeletonTable />
+                ) : payrollRuns.length === 0 ? (
+                  <EmptyState
+                    icon={DollarSign}
+                    title="No payroll runs"
+                    description="Create your first payroll run to process employee compensation"
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {payrollRuns.map((payroll) => (
+                      <div key={payroll.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold">
+                                Payroll {formatDate(payroll.period_start)} - {formatDate(payroll.period_end)}
+                              </h3>
+                              {getStatusBadge(payroll.status)}
+                            </div>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-600">Total Amount:</span><br />
+                                <span className="font-medium text-green-600">{formatCurrency(payroll.total_amount)}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Employees:</span><br />
+                                <span className="font-medium">{payroll.employee_count}</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Created:</span><br />
+                                <span className="font-medium">{formatDate(payroll.created_at)}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                            <div>
-                              <span className="text-gray-600">Total Amount:</span><br />
-                              <span className="font-medium text-green-600">{formatCurrency(payroll.total_amount)}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Employees:</span><br />
-                              <span className="font-medium">{payroll.employee_count}</span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Created:</span><br />
-                              <span className="font-medium">{formatDate(payroll.created_at)}</span>
-                            </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-1" />
+                              View Details
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <Download className="w-4 h-4 mr-1" />
+                              Export
+                            </Button>
                           </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 mr-1" />
-                            View Details
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Download className="w-4 h-4 mr-1" />
-                            Export
-                          </Button>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
