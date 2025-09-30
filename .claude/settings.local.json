@@ -51,7 +51,9 @@
       "Bash(done)",
       "Bash(then basename \"$dir\")",
       "Bash(test:*)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(cat:*)",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []
