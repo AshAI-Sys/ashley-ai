@@ -26,25 +26,6 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
   },
-  // Optimize for both development and production
-  webpack: (config, { dev, isServer }) => {
-    // Production optimizations
-    if (!dev) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: 10,
-            reuseExistingChunk: true,
-          },
-        },
-      }
-    }
-
-    return config
-  },
   // Improve performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@ash/ui'],
