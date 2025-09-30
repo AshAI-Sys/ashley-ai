@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/dashboard-layout'
-import { 
-  Users, 
-  ClipboardCheck, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  Users,
+  ClipboardCheck,
+  AlertTriangle,
+  CheckCircle,
   XCircle,
   Clock,
   TrendingUp,
@@ -15,8 +16,12 @@ import {
   Filter,
   Plus,
   Eye,
-  FileText
+  FileText,
+  RefreshCw
 } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 
 interface QCInspection {
   id: string
@@ -48,79 +53,84 @@ interface QCStats {
 }
 
 export default function QualityControlPage() {
-  const [inspections, setInspections] = useState<QCInspection[]>([])
-  const [stats, setStats] = useState<QCStats | null>(null)
-  const [loading, setLoading] = useState(true)
   const [selectedPeriod, setSelectedPeriod] = useState('today')
   const [filterType, setFilterType] = useState('all')
   const [filterResult, setFilterResult] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
-  
-  useEffect(() => {
-    loadData()
-  }, [selectedPeriod, filterType, filterResult])
 
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      // Calculate date range
-      const now = new Date()
-      const fromDate = new Date()
-      
-      switch (selectedPeriod) {
-        case 'today':
-          fromDate.setHours(0, 0, 0, 0)
-          break
-        case 'week':
-          fromDate.setDate(now.getDate() - 7)
-          break
-        case 'month':
-          fromDate.setMonth(now.getMonth() - 1)
-          break
-        default:
-          fromDate.setDate(now.getDate() - 7)
-      }
+  // Calculate date range based on period
+  const getDateRange = () => {
+    const now = new Date()
+    const fromDate = new Date()
 
+    switch (selectedPeriod) {
+      case 'today':
+        fromDate.setHours(0, 0, 0, 0)
+        break
+      case 'week':
+        fromDate.setDate(now.getDate() - 7)
+        break
+      case 'month':
+        fromDate.setMonth(now.getMonth() - 1)
+        break
+      default:
+        fromDate.setDate(now.getDate() - 7)
+    }
+
+    return { fromDate, toDate: now }
+  }
+
+  // Fetch QC inspections with filters
+  const {
+    data: inspections = [],
+    isLoading: inspectionsLoading,
+    error: inspectionsError,
+    refetch: refetchInspections,
+    isFetching: inspectionsFetching
+  } = useQuery({
+    queryKey: ['qc-inspections', selectedPeriod, filterType, filterResult],
+    queryFn: async () => {
+      const { fromDate, toDate } = getDateRange()
       const params = new URLSearchParams({
         from_date: fromDate.toISOString(),
-        to_date: now.toISOString(),
+        to_date: toDate.toISOString(),
         page: '1',
         limit: '50'
       })
-      
+
       if (filterType !== 'all') params.append('inspection_type', filterType)
       if (filterResult !== 'all') params.append('result', filterResult)
 
       const response = await fetch(`/api/quality-control/inspections?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch QC inspections')
       const data = await response.json()
-      
-      if (data.inspections) {
-        setInspections(data.inspections)
-        
-        // Calculate stats
-        const total = data.inspections.length
-        const passed = data.inspections.filter((i: QCInspection) => i.status === 'PASSED').length
-        const failed = data.inspections.filter((i: QCInspection) => i.status === 'FAILED').length
-        const pending = data.inspections.filter((i: QCInspection) => i.status === 'OPEN').length
-        const totalDefects = data.inspections.reduce((sum: number, i: QCInspection) => 
-          sum + i.critical_found + i.major_found + i.minor_found, 0)
-        const totalSamples = data.inspections.reduce((sum: number, i: QCInspection) => sum + i.sample_size, 0)
-        
-        setStats({
-          total_inspections: total,
-          passed,
-          failed,
-          pending,
-          defect_rate: totalSamples > 0 ? (totalDefects / totalSamples) * 100 : 0,
-          avg_sample_size: total > 0 ? totalSamples / total : 0
-        })
-      }
-    } catch (error) {
-      console.error('Error loading QC data:', error)
-    } finally {
-      setLoading(false)
-    }
+      return Array.isArray(data.inspections) ? data.inspections as QCInspection[] : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
+
+  // Calculate stats from inspections data
+  const stats: QCStats = {
+    total_inspections: inspections.length,
+    passed: inspections.filter(i => i.status === 'PASSED').length,
+    failed: inspections.filter(i => i.status === 'FAILED').length,
+    pending: inspections.filter(i => i.status === 'OPEN').length,
+    defect_rate: inspections.length > 0
+      ? (inspections.reduce((sum, i) => sum + i.critical_found + i.major_found + i.minor_found, 0) /
+         inspections.reduce((sum, i) => sum + i.sample_size, 0)) * 100
+      : 0,
+    avg_sample_size: inspections.length > 0
+      ? inspections.reduce((sum, i) => sum + i.sample_size, 0) / inspections.length
+      : 0
   }
+
+  const handleRefresh = () => {
+    refetchInspections()
+  }
+
+  const isLoading = inspectionsLoading
+  const isFetching = inspectionsFetching
 
   const filteredInspections = inspections.filter(inspection =>
     searchTerm === '' || 

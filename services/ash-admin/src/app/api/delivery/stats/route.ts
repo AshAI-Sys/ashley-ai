@@ -147,30 +147,25 @@ async function getGeographicDistribution() {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
         }
       },
-      select: { consignee_info: true }
+      select: { consignee_address: true }
     })
 
     const cityCount: Record<string, number> = {}
 
     shipments.forEach(shipment => {
-      if (shipment.consignee_info) {
-        try {
-          const consignee = JSON.parse(shipment.consignee_info)
-          const address = consignee.address || ''
+      if (shipment.consignee_address) {
+        const address = shipment.consignee_address
 
-          // Extract city from address (simplified)
-          let city = 'Other'
-          if (address.includes('Quezon City')) city = 'Quezon City'
-          else if (address.includes('Manila')) city = 'Manila'
-          else if (address.includes('Makati')) city = 'Makati'
-          else if (address.includes('BGC') || address.includes('Taguig')) city = 'BGC/Taguig'
-          else if (address.includes('Pasig')) city = 'Pasig'
-          else if (address.includes('Mandaluyong')) city = 'Mandaluyong'
+        // Extract city from address (simplified)
+        let city = 'Other'
+        if (address.includes('Quezon City')) city = 'Quezon City'
+        else if (address.includes('Manila')) city = 'Manila'
+        else if (address.includes('Makati')) city = 'Makati'
+        else if (address.includes('BGC') || address.includes('Taguig')) city = 'BGC/Taguig'
+        else if (address.includes('Pasig')) city = 'Pasig'
+        else if (address.includes('Mandaluyong')) city = 'Mandaluyong'
 
-          cityCount[city] = (cityCount[city] || 0) + 1
-        } catch (error) {
-          // Invalid JSON, skip
-        }
+        cityCount[city] = (cityCount[city] || 0) + 1
       }
     })
 
