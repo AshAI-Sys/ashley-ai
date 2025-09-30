@@ -1,44 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-// Temporarily disable database for demo mode
-// import { prisma } from '@/lib/db';
+import { PrismaClient } from '@ash/database';
 import { z } from 'zod';
-import * as fs from 'fs';
-import * as path from 'path';
 
-// File-based storage for created clients (persists across hot reloads)
-const STORAGE_FILE = path.join(process.cwd(), '.next', 'created-clients.json');
+const prisma = new PrismaClient();
 
-// Helper functions for file-based storage
-const loadCreatedClients = (): any[] => {
-  try {
-    if (fs.existsSync(STORAGE_FILE)) {
-      const data = fs.readFileSync(STORAGE_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.warn('Could not load created clients:', error);
-  }
-  return [];
-};
-
-const saveCreatedClients = (clients: any[]): void => {
-  try {
-    // Ensure .next directory exists
-    const nextDir = path.dirname(STORAGE_FILE);
-    if (!fs.existsSync(nextDir)) {
-      fs.mkdirSync(nextDir, { recursive: true });
-    }
-    fs.writeFileSync(STORAGE_FILE, JSON.stringify(clients, null, 2));
-  } catch (error) {
-    console.warn('Could not save created clients:', error);
-  }
-};
+// Default workspace for demo
+const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
 
 const CreateClientSchema = z.object({
   name: z.string().min(1, 'Client name is required'),
   contact_person: z.string().optional(),
-  company: z.string().optional(),
-  email: z.string().email('Valid email is required'),
+  email: z.string().email('Valid email is required').optional(),
   phone: z.string().optional(),
   address: z.union([z.string(), z.object({
     street: z.string().optional(),
@@ -47,87 +19,86 @@ const CreateClientSchema = z.object({
     postal_code: z.string().optional(),
     country: z.string().optional(),
   })]).optional(),
-  city: z.string().optional(),
-  country: z.string().optional(),
   tax_id: z.string().optional(),
   payment_terms: z.number().optional(),
   credit_limit: z.number().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE', 'PENDING']).default('ACTIVE'),
-  notes: z.string().optional(),
+  is_active: z.boolean().default(true),
 });
-
-const UpdateClientSchema = CreateClientSchema.partial();
 
 export async function GET(request: NextRequest) {
   try {
-    // Demo data for client list
-    const demoClients = [
-      {
-        id: 'client-1',
-        name: 'Manila Shirts Co.',
-        company: 'Manila Shirts Corporation',
-        email: 'orders@manilashirts.com',
-        phone: '+63 917 123 4567',
-        status: 'ACTIVE',
-        createdAt: new Date('2024-01-15'),
-        brands: [
-          { id: 'brand-1', name: 'Manila Classic', code: 'MNLC' },
-          { id: 'brand-2', name: 'Manila Pro', code: 'MNLP' }
-        ],
-        orders: [
-          { id: 'order-1', status: 'IN_PROGRESS', totalAmount: 45000, createdAt: new Date('2024-03-01') },
-          { id: 'order-2', status: 'COMPLETED', totalAmount: 32000, createdAt: new Date('2024-02-15') }
-        ],
-        _count: { orders: 12, brands: 2 }
-      },
-      {
-        id: 'client-2',
-        name: 'Cebu Sports Apparel',
-        company: 'Cebu Sports Inc.',
-        email: 'procurement@cebusports.ph',
-        phone: '+63 932 987 6543',
-        status: 'ACTIVE',
-        createdAt: new Date('2024-02-20'),
-        brands: [
-          { id: 'brand-3', name: 'Cebu Athletes', code: 'CBAT' }
-        ],
-        orders: [
-          { id: 'order-3', status: 'PENDING', totalAmount: 28000, createdAt: new Date('2024-03-10') }
-        ],
-        _count: { orders: 5, brands: 1 }
-      },
-      {
-        id: 'client-3',
-        name: 'Davao Uniform Solutions',
-        company: 'Davao Uniform Solutions LLC',
-        email: 'info@davaouniform.com',
-        phone: '+63 912 345 6789',
-        status: 'ACTIVE',
-        createdAt: new Date('2024-01-30'),
-        brands: [
-          { id: 'brand-4', name: 'Davao Corporate', code: 'DVCR' },
-          { id: 'brand-5', name: 'Davao Schools', code: 'DVSC' }
-        ],
-        orders: [],
-        _count: { orders: 8, brands: 2 }
-      }
-    ];
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
+    const search = searchParams.get('search') || '';
+    const is_active = searchParams.get('is_active');
 
-    // Load created clients from file storage and combine with demo clients
-    const createdClients = loadCreatedClients();
-    const allClients = [...demoClients, ...createdClients];
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      workspace_id: DEFAULT_WORKSPACE_ID,
+    };
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { contact_person: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (is_active !== null && is_active !== undefined) {
+      where.is_active = is_active === 'true';
+    }
+
+    // Fetch clients with related data
+    const [clients, total] = await Promise.all([
+      prisma.client.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          brands: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+            },
+          },
+          orders: {
+            select: {
+              id: true,
+              status: true,
+              total_amount: true,
+              created_at: true,
+            },
+            orderBy: { created_at: 'desc' },
+            take: 5,
+          },
+          _count: {
+            select: {
+              orders: true,
+              brands: true,
+            },
+          },
+        },
+        orderBy: { created_at: 'desc' },
+      }),
+      prisma.client.count({ where }),
+    ]);
 
     return NextResponse.json({
       success: true,
       data: {
-        clients: allClients,
+        clients,
         pagination: {
-          page: 1,
-          limit: 10,
-          total: allClients.length,
-          pages: 1,
-        }
-      }
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit),
+        },
+      },
     });
   } catch (error) {
     console.error('Error fetching clients:', error);
@@ -143,39 +114,51 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
 
-    // Create new client with proper formatting to match frontend interface
-    const newClient = {
-      id: `client-${Date.now()}`,
-      name: validatedData.name,
-      contact_person: validatedData.contact_person || '',
-      email: validatedData.email,
-      phone: validatedData.phone || '',
-      address: typeof validatedData.address === 'object'
-        ? JSON.stringify(validatedData.address)
-        : (validatedData.address || ''),
-      tax_id: validatedData.tax_id || '',
-      payment_terms: validatedData.payment_terms || null,
-      credit_limit: validatedData.credit_limit || null,
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      _count: { orders: 0, brands: 0 }
-    };
+    // Convert address object to JSON string if it's an object
+    const addressData = typeof validatedData.address === 'object'
+      ? JSON.stringify(validatedData.address)
+      : validatedData.address;
 
-    // Load existing created clients, add new client, and save back to file
-    const createdClients = loadCreatedClients();
-    createdClients.push(newClient);
-    saveCreatedClients(createdClients);
+    // Create new client
+    const newClient = await prisma.client.create({
+      data: {
+        workspace_id: DEFAULT_WORKSPACE_ID,
+        name: validatedData.name,
+        contact_person: validatedData.contact_person || '',
+        email: validatedData.email || '',
+        phone: validatedData.phone || '',
+        address: addressData,
+        tax_id: validatedData.tax_id || '',
+        payment_terms: validatedData.payment_terms || null,
+        credit_limit: validatedData.credit_limit || null,
+        is_active: validatedData.is_active,
+      },
+      include: {
+        _count: {
+          select: {
+            orders: true,
+            brands: true,
+          },
+        },
+      },
+    });
 
-    return NextResponse.json({
-      success: true,
-      data: newClient,
-      message: 'Client created successfully'
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: newClient,
+        message: 'Client created successfully',
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        {
+          success: false,
+          error: 'Validation failed',
+          details: error.errors,
+        },
         { status: 400 }
       );
     }
@@ -183,142 +166,6 @@ export async function POST(request: NextRequest) {
     console.error('Error creating client:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create client' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: 'Client ID is required' },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const validatedData = UpdateClientSchema.parse(body);
-
-    // Check if client exists
-    const existingClient = await prisma.client.findUnique({
-      where: { id }
-    });
-
-    if (!existingClient) {
-      return NextResponse.json(
-        { success: false, error: 'Client not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check email uniqueness if email is being updated
-    if (validatedData.email && validatedData.email !== existingClient.email) {
-      const emailExists = await prisma.client.findFirst({
-        where: {
-          email: validatedData.email,
-          id: { not: id }
-        }
-      });
-
-      if (emailExists) {
-        return NextResponse.json(
-          { success: false, error: 'Client with this email already exists' },
-          { status: 400 }
-        );
-      }
-    }
-
-    const client = await prisma.client.update({
-      where: { id },
-      data: validatedData,
-      include: {
-        brands: true,
-        _count: {
-          select: {
-            orders: true,
-            brands: true,
-          }
-        }
-      }
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: client,
-      message: 'Client updated successfully'
-    });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
-        { status: 400 }
-      );
-    }
-
-    console.error('Error updating client:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update client' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { success: false, error: 'Client ID is required' },
-        { status: 400 }
-      );
-    }
-
-    // Check if client exists
-    const existingClient = await prisma.client.findUnique({
-      where: { id },
-      include: {
-        _count: {
-          select: {
-            orders: true,
-            brands: true,
-          }
-        }
-      }
-    });
-
-    if (!existingClient) {
-      return NextResponse.json(
-        { success: false, error: 'Client not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check if client has orders or brands (prevent deletion if they do)
-    if (existingClient._count.orders > 0) {
-      return NextResponse.json(
-        { success: false, error: 'Cannot delete client with existing orders' },
-        { status: 400 }
-      );
-    }
-
-    await prisma.client.delete({
-      where: { id }
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: 'Client deleted successfully'
-    });
-  } catch (error) {
-    console.error('Error deleting client:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete client' },
       { status: 500 }
     );
   }

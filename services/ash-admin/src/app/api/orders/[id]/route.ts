@@ -1,105 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@ash/database'
 
-// Demo orders data (same as list endpoint)
-const demoOrders = [
-  {
-    id: 'order-1',
-    orderNumber: 'ORD-2024-001',
-    clientId: 'client-1',
-    client: {
-      id: 'client-1',
-      name: 'Manila Shirts Co.',
-      company: 'Manila Shirts Corporation'
-    },
-    brandId: 'brand-1',
-    brand: {
-      id: 'brand-1',
-      name: 'Manila Classic',
-      code: 'MNLC'
-    },
-    status: 'IN_PRODUCTION',
-    priority: 'HIGH',
-    totalAmount: 125000,
-    currency: 'PHP',
-    targetDeliveryDate: new Date('2024-12-15'),
-    createdAt: new Date('2024-09-15'),
-    updatedAt: new Date('2024-09-28'),
-    lineItems: [
-      {
-        id: 'item-1',
-        productType: 'T-Shirt',
-        description: 'Cotton crew neck t-shirts with custom print',
-        quantity: 500,
-        unitPrice: 250,
-        totalPrice: 125000,
-        sizeCurve: { XS: 50, S: 100, M: 150, L: 125, XL: 75 }
-      }
-    ],
-    _count: { lineItems: 1 }
-  },
-  {
-    id: 'order-2',
-    orderNumber: 'ORD-2024-002',
-    clientId: 'client-2',
-    client: {
-      id: 'client-2',
-      name: 'Cebu Fashion House',
-      company: 'Cebu Fashion House Inc.'
-    },
-    brandId: 'brand-2',
-    brand: {
-      id: 'brand-2',
-      name: 'Cebu Style',
-      code: 'CEBU'
-    },
-    status: 'PENDING_APPROVAL',
-    priority: 'MEDIUM',
-    totalAmount: 89500,
-    currency: 'PHP',
-    targetDeliveryDate: new Date('2024-12-20'),
-    createdAt: new Date('2024-09-20'),
-    updatedAt: new Date('2024-09-27'),
-    lineItems: [
-      {
-        id: 'item-2',
-        productType: 'Polo Shirt',
-        description: 'Polo shirts with embroidered logo',
-        quantity: 300,
-        unitPrice: 298.33,
-        totalPrice: 89500
-      }
-    ],
-    _count: { lineItems: 1 }
-  },
-  {
-    id: 'order-3',
-    orderNumber: 'ORD-2024-003',
-    clientId: 'client-3',
-    client: {
-      id: 'client-3',
-      name: 'Davao Apparel Co.',
-      company: 'Davao Apparel Corporation'
-    },
-    status: 'COMPLETED',
-    priority: 'LOW',
-    totalAmount: 67500,
-    currency: 'PHP',
-    targetDeliveryDate: new Date('2024-11-30'),
-    createdAt: new Date('2024-09-10'),
-    updatedAt: new Date('2024-09-25'),
-    lineItems: [
-      {
-        id: 'item-3',
-        productType: 'Hoodie',
-        description: 'Custom printed hoodies',
-        quantity: 200,
-        unitPrice: 337.5,
-        totalPrice: 67500
-      }
-    ],
-    _count: { lineItems: 1 }
-  }
-]
+const prisma = new PrismaClient()
+const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
 
 // GET /api/orders/[id] - Get single order
 export async function GET(
@@ -107,7 +10,37 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const order = demoOrders.find(o => o.id === params.id)
+    const order = await prisma.order.findFirst({
+      where: {
+        id: params.id,
+        workspace_id: DEFAULT_WORKSPACE_ID,
+      },
+      include: {
+        client: true,
+        brand: true,
+        line_items: true,
+        design_assets: {
+          orderBy: { created_at: 'desc' },
+          take: 5,
+        },
+        invoices: {
+          select: {
+            id: true,
+            invoice_number: true,
+            status: true,
+            total_amount: true,
+            due_date: true,
+          },
+        },
+        _count: {
+          select: {
+            line_items: true,
+            design_assets: true,
+            invoices: true,
+          },
+        },
+      },
+    })
 
     if (!order) {
       return NextResponse.json(
@@ -118,7 +51,7 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      data: order
+      data: order,
     })
   } catch (error) {
     console.error('Failed to fetch order:', error)
@@ -137,15 +70,33 @@ export async function PUT(
   try {
     const body = await request.json()
 
-    // In demo mode, just return success with updated data
+    const order = await prisma.order.update({
+      where: { id: params.id },
+      data: {
+        order_number: body.order_number,
+        client_id: body.client_id,
+        brand_id: body.brand_id || null,
+        status: body.status ? body.status.toLowerCase() : undefined,
+        total_amount: body.total_amount ? parseFloat(body.total_amount) : undefined,
+        currency: body.currency,
+        delivery_date: body.delivery_date ? new Date(body.delivery_date) : undefined,
+        notes: body.notes,
+      },
+      include: {
+        client: true,
+        brand: true,
+        _count: {
+          select: {
+            line_items: true,
+          },
+        },
+      },
+    })
+
     return NextResponse.json({
       success: true,
-      data: {
-        id: params.id,
-        ...body,
-        updatedAt: new Date().toISOString()
-      },
-      message: 'Order updated successfully'
+      data: order,
+      message: 'Order updated successfully',
     })
   } catch (error) {
     console.error('Failed to update order:', error)
@@ -162,9 +113,13 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    await prisma.order.delete({
+      where: { id: params.id },
+    })
+
     return NextResponse.json({
       success: true,
-      message: 'Order deleted successfully'
+      message: 'Order deleted successfully',
     })
   } catch (error) {
     console.error('Failed to delete order:', error)
