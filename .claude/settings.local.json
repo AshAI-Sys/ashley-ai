@@ -60,7 +60,8 @@
       "Bash(tasklist)",
       "Bash(Remove-Item -Path \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-ai\\logs\" -Recurse -Force -ErrorAction SilentlyContinue)",
       "Bash(Remove-Item -Path \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-api\\logs\" -Recurse -Force -ErrorAction SilentlyContinue)",
-      "Bash(Write-Output \"Deleted all log folders\")"
+      "Bash(Write-Output \"Deleted all log folders\")",
+      "Bash(vercel:*)"
     ],
     "deny": [],
     "ask": []
