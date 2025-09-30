@@ -1,10 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
+import { ErrorAlert } from '@/components/ui/error-alert'
 import DashboardLayout from '@/components/dashboard-layout'
 import {
   DollarSign,
@@ -20,7 +24,8 @@ import {
   Plus,
   Eye,
   Download,
-  Filter
+  Filter,
+  RefreshCw
 } from 'lucide-react'
 
 interface FinanceMetrics {
@@ -32,6 +37,7 @@ interface FinanceMetrics {
   pending_bills: number
   cash_flow: number
   ytd_revenue: number
+  revenue_growth?: number
 }
 
 interface Invoice {
@@ -44,7 +50,7 @@ interface Invoice {
   status: string
   date_issued: string
   due_date: string
-  days_overdue?: number
+  days_overdue?: number | null
 }
 
 interface Bill {
@@ -58,99 +64,89 @@ interface Bill {
 }
 
 export default function FinancePage() {
-  const [metrics, setMetrics] = useState<FinanceMetrics | null>(null)
-  const [invoices, setInvoices] = useState<Invoice[]>([])
-  const [bills, setBills] = useState<Bill[]>([])
-  const [loading, setLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState<string>('all')
 
-  useEffect(() => {
-    fetchFinanceData()
-  }, [])
+  // Fetch finance metrics
+  const {
+    data: metrics,
+    isLoading: metricsLoading,
+    error: metricsError,
+    refetch: refetchMetrics,
+    isFetching: metricsFetching
+  } = useQuery({
+    queryKey: ['finance-metrics'],
+    queryFn: async () => {
+      const response = await fetch('/api/finance/stats')
+      const data = await response.json()
+      if (!data.success) throw new Error(data.error || 'Failed to fetch finance metrics')
+      return data.data as FinanceMetrics
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-  const fetchFinanceData = async () => {
-    try {
-      setLoading(true)
+  // Fetch invoices
+  const {
+    data: invoices = [],
+    isLoading: invoicesLoading,
+    error: invoicesError,
+    refetch: refetchInvoices,
+    isFetching: invoicesFetching
+  } = useQuery({
+    queryKey: ['finance-invoices', statusFilter],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (statusFilter !== 'all') params.append('status', statusFilter)
 
-      // Mock data for now - would be real API calls
-      setTimeout(() => {
-        setMetrics({
-          total_revenue: 2450000,
-          outstanding_invoices: 185000,
-          overdue_invoices: 45000,
-          total_cogs: 1680000,
-          gross_margin: 31.4,
-          pending_bills: 98000,
-          cash_flow: 67000,
-          ytd_revenue: 28500000
-        })
+      const response = await fetch(`/api/finance/invoices?${params}`)
+      const data = await response.json()
+      if (!data.success) throw new Error(data.error || 'Failed to fetch invoices')
+      return data.data as Invoice[]
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-        setInvoices([
-          {
-            id: '1',
-            invoice_no: 'BRAND-2025-001',
-            client: { name: 'Nike Inc' },
-            brand: { name: 'Nike Performance' },
-            total: 125000,
-            balance: 125000,
-            status: 'OVERDUE',
-            date_issued: '2024-12-01',
-            due_date: '2024-12-31',
-            days_overdue: 15
-          },
-          {
-            id: '2',
-            invoice_no: 'BRAND-2025-002',
-            client: { name: 'Adidas Corp' },
-            brand: { name: 'Adidas Originals' },
-            total: 89500,
-            balance: 45000,
-            status: 'PARTIAL',
-            date_issued: '2025-01-05',
-            due_date: '2025-02-05',
-          },
-          {
-            id: '3',
-            invoice_no: 'BRAND-2025-003',
-            client: { name: 'Under Armour' },
-            brand: { name: 'UA Sports' },
-            total: 156000,
-            balance: 156000,
-            status: 'OPEN',
-            date_issued: '2025-01-10',
-            due_date: '2025-02-10',
-          }
-        ])
+  // Fetch bills
+  const {
+    data: bills = [],
+    isLoading: billsLoading,
+    error: billsError,
+    refetch: refetchBills,
+    isFetching: billsFetching
+  } = useQuery({
+    queryKey: ['finance-bills'],
+    queryFn: async () => {
+      const response = await fetch('/api/finance/bills')
+      const data = await response.json()
+      if (!data.success) throw new Error(data.error || 'Failed to fetch bills')
 
-        setBills([
-          {
-            id: '1',
-            bill_no: 'SUPP-001-2025',
-            supplier: { name: 'Textile Corp Ltd' },
-            total: 45000,
-            status: 'OPEN',
-            due_date: '2025-01-25',
-            days_until_due: 10
-          },
-          {
-            id: '2',
-            bill_no: 'SUPP-002-2025',
-            supplier: { name: 'Pacific Inks Inc' },
-            total: 28500,
-            status: 'OPEN',
-            due_date: '2025-01-30',
-            days_until_due: 15
-          }
-        ])
+      // Calculate days_until_due for each bill
+      return (data.data || []).map((bill: any) => {
+        const today = new Date()
+        const dueDate = new Date(bill.due_date)
+        const daysUntilDue = bill.status !== 'PAID' && dueDate > today
+          ? Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+          : null
 
-        setLoading(false)
-      }, 1000)
-    } catch (error) {
-      console.error('Error fetching finance data:', error)
-      setInvoices([])
-      setBills([])
-      setLoading(false)
-    }
+        return {
+          ...bill,
+          days_until_due: daysUntilDue
+        }
+      })
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
+
+  const handleRefreshAll = () => {
+    refetchMetrics()
+    refetchInvoices()
+    refetchBills()
   }
+
+  const isLoading = metricsLoading || invoicesLoading || billsLoading
+  const isFetching = metricsFetching || invoicesFetching || billsFetching
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -175,19 +171,6 @@ export default function FinancePage() {
     return new Date(dateString).toLocaleDateString()
   }
 
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Loading finance data...</p>
-          </div>
-        </div>
-      </DashboardLayout>
-    )
-  }
-
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
@@ -198,6 +181,14 @@ export default function FinancePage() {
             <p className="text-gray-600">Manage invoices, payments, bills, and financial reporting</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleRefreshAll}
+              disabled={isFetching}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              {isFetching ? 'Refreshing...' : 'Refresh'}
+            </Button>
             <Button variant="outline">
               <Download className="w-4 h-4 mr-2" />
               Export Reports
@@ -209,25 +200,59 @@ export default function FinancePage() {
           </div>
         </div>
 
+        {/* Error Alerts */}
+        {metricsError && (
+          <ErrorAlert
+            title="Failed to load metrics"
+            message={metricsError.message}
+            retry={refetchMetrics}
+          />
+        )}
+
         {/* Finance Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Total Revenue (YTD)</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics?.ytd_revenue || 0)}</p>
-                </div>
-                <div className="bg-green-100 p-3 rounded-full">
-                  <DollarSign className="w-6 h-6 text-green-600" />
-                </div>
-              </div>
-              <div className="flex items-center mt-2">
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-sm text-green-600">+12.5% from last month</span>
-              </div>
-            </CardContent>
-          </Card>
+          {metricsLoading ? (
+            <>
+              {[...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-6">
+                    <div className="space-y-3">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-8 w-1/2" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </>
+          ) : (
+            <>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Total Revenue (YTD)</p>
+                      <p className="text-2xl font-bold text-gray-900">{formatCurrency(metrics?.ytd_revenue || 0)}</p>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <DollarSign className="w-6 h-6 text-green-600" />
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-2">
+                    {(metrics?.revenue_growth || 0) >= 0 ? (
+                      <>
+                        <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                        <span className="text-sm text-green-600">+{metrics?.revenue_growth?.toFixed(1) || 0}% from last month</span>
+                      </>
+                    ) : (
+                      <>
+                        <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                        <span className="text-sm text-red-600">{metrics?.revenue_growth?.toFixed(1) || 0}% from last month</span>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
           <Card>
             <CardContent className="p-6">
@@ -281,6 +306,8 @@ export default function FinancePage() {
               </div>
             </CardContent>
           </Card>
+            </>
+          )}
         </div>
 
         {/* Main Content Tabs */}
@@ -294,6 +321,14 @@ export default function FinancePage() {
 
           {/* Invoices/AR Tab */}
           <TabsContent value="invoices" className="space-y-4">
+            {invoicesError && (
+              <ErrorAlert
+                title="Failed to load invoices"
+                message={invoicesError.message}
+                retry={refetchInvoices}
+              />
+            )}
+
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -302,10 +337,17 @@ export default function FinancePage() {
                     <CardDescription>Manage customer invoices and payments</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Filter className="w-4 h-4 mr-2" />
-                      Filter
-                    </Button>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                    >
+                      <option value="all">All Status</option>
+                      <option value="OPEN">Open</option>
+                      <option value="PARTIAL">Partial</option>
+                      <option value="PAID">Paid</option>
+                      <option value="OVERDUE">Overdue</option>
+                    </select>
                     <Button size="sm">
                       <Plus className="w-4 h-4 mr-2" />
                       New Invoice
@@ -314,8 +356,33 @@ export default function FinancePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {(invoices || []).map((invoice) => (
+                {invoicesLoading ? (
+                  <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="border rounded-lg p-4">
+                        <Skeleton className="h-6 w-48 mb-4" />
+                        <div className="grid grid-cols-4 gap-4">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : invoices.length === 0 ? (
+                  <EmptyState
+                    icon={Receipt}
+                    title="No invoices found"
+                    description={statusFilter !== 'all' ? `No invoices with status "${statusFilter}"` : "No invoices in the system yet"}
+                    action={{
+                      label: "Create Invoice",
+                      onClick: () => console.log('Create invoice')
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {invoices.map((invoice) => (
                     <div key={invoice.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -364,13 +431,22 @@ export default function FinancePage() {
                       </div>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Bills/AP Tab */}
           <TabsContent value="bills" className="space-y-4">
+            {billsError && (
+              <ErrorAlert
+                title="Failed to load bills"
+                message={billsError.message}
+                retry={refetchBills}
+              />
+            )}
+
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
@@ -379,10 +455,6 @@ export default function FinancePage() {
                     <CardDescription>Manage supplier bills and payments</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Filter className="w-4 h-4 mr-2" />
-                      Filter
-                    </Button>
                     <Button size="sm">
                       <Plus className="w-4 h-4 mr-2" />
                       New Bill
@@ -391,8 +463,32 @@ export default function FinancePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {(bills || []).map((bill) => (
+                {billsLoading ? (
+                  <div className="space-y-4">
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="border rounded-lg p-4">
+                        <Skeleton className="h-6 w-48 mb-4" />
+                        <div className="grid grid-cols-3 gap-4">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : bills.length === 0 ? (
+                  <EmptyState
+                    icon={FileText}
+                    title="No bills found"
+                    description="No pending bills in the system"
+                    action={{
+                      label: "Create Bill",
+                      onClick: () => console.log('Create bill')
+                    }}
+                  />
+                ) : (
+                  <div className="space-y-4">
+                    {bills.map((bill) => (
                     <div key={bill.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -433,7 +529,8 @@ export default function FinancePage() {
                       </div>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

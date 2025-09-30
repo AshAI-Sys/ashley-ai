@@ -1,81 +1,466 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Package,
+  DollarSign,
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  RefreshCw,
+  ArrowRight,
+  Building2,
+  Scissors,
+  Printer,
+  BadgeCheck
+} from 'lucide-react'
+import Link from 'next/link'
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell
+} from 'recharts'
+
+interface DashboardStats {
+  totalClients: number
+  totalOrders: number
+  totalRevenue: number
+  activeEmployees: number
+  ordersInProduction: number
+  pendingApprovals: number
+  completedThisMonth: number
+  ordersByStatus: { status: string, count: number, amount: number }[]
+  revenueByMonth: { month: string, revenue: number, orders: number }[]
+  employeesByDepartment: { department: string, count: number }[]
+  recentActivity: { type: string, message: string, timestamp: string }[]
+}
+
+const STATUS_COLORS = {
+  draft: '#9CA3AF',
+  pending_approval: '#F59E0B',
+  confirmed: '#3B82F6',
+  in_production: '#8B5CF6',
+  completed: '#10B981',
+  cancelled: '#EF4444'
+}
+
 export default function AdminDashboard() {
-  return (
-    <div className="space-y-6">
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-blue-500">
-          <h3 className="text-base font-semibold text-gray-700 mb-2">🏢 System Overview</h3>
-          <p className="text-3xl font-bold text-gray-900 mb-1">All Access</p>
-          <p className="text-sm text-blue-600">Complete system control</p>
-        </div>
-        <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-green-500">
-          <h3 className="text-base font-semibold text-gray-700 mb-2">👥 Active Users</h3>
-          <p className="text-3xl font-bold text-gray-900 mb-1">247</p>
-          <p className="text-sm text-green-600">+12 this week</p>
-        </div>
-        <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-yellow-500">
-          <h3 className="text-base font-semibold text-gray-700 mb-2">📊 System Health</h3>
-          <p className="text-3xl font-bold text-gray-900 mb-1">99.8%</p>
-          <p className="text-sm text-yellow-600">Uptime</p>
-        </div>
-        <div className="bg-white rounded-lg p-6 shadow-sm border-l-4 border-purple-500">
-          <h3 className="text-base font-semibold text-gray-700 mb-2">⚡ Performance</h3>
-          <p className="text-3xl font-bold text-gray-900 mb-1">Fast</p>
-          <p className="text-sm text-purple-600">All systems optimal</p>
+  // Fetch dashboard stats
+  const { data: stats, isLoading, error, refetch, isFetching } = useQuery({
+    queryKey: ['admin-dashboard'],
+    queryFn: async () => {
+      const [clientsRes, ordersRes, employeesRes] = await Promise.all([
+        fetch('/api/clients?limit=1'),
+        fetch('/api/orders?limit=100'),
+        fetch('/api/hr/employees?limit=100').catch(() => null)
+      ])
+
+      const clientsData = await clientsRes.json()
+      const ordersData = await ordersRes.json()
+      const employeesData = employeesRes ? await employeesRes.json() : { success: false, data: [] }
+
+      const orders = ordersData.data?.orders || []
+      const employees = employeesData.success ? (employeesData.data || []) : []
+
+      // Calculate order statistics by status
+      const ordersByStatus = orders.reduce((acc: any, order: any) => {
+        const status = order.status || 'draft'
+        if (!acc[status]) {
+          acc[status] = { status, count: 0, amount: 0 }
+        }
+        acc[status].count++
+        acc[status].amount += order.total_amount || 0
+        return acc
+      }, {})
+
+      // Calculate employees by department
+      const employeesByDept = employees.reduce((acc: any, emp: any) => {
+        const dept = emp.department || 'Other'
+        acc[dept] = (acc[dept] || 0) + 1
+        return acc
+      }, {})
+
+      // Calculate total revenue
+      const totalRevenue = orders.reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0)
+
+      // Orders in production
+      const ordersInProduction = orders.filter((o: any) => o.status === 'in_production').length
+
+      // Pending approvals
+      const pendingApprovals = orders.filter((o: any) => o.status === 'pending_approval').length
+
+      // Completed this month
+      const thisMonth = new Date().getMonth()
+      const completedThisMonth = orders.filter((o: any) => {
+        return o.status === 'completed' && new Date(o.created_at).getMonth() === thisMonth
+      }).length
+
+      return {
+        totalClients: clientsData.data?.pagination?.total || 0,
+        totalOrders: orders.length,
+        totalRevenue,
+        activeEmployees: employees.filter((e: any) => e.status === 'ACTIVE' || e.is_active).length,
+        ordersInProduction,
+        pendingApprovals,
+        completedThisMonth,
+        ordersByStatus: Object.values(ordersByStatus),
+        employeesByDepartment: Object.entries(employeesByDept).map(([department, count]) => ({ department, count })),
+        revenueByMonth: [], // Would need historical data
+        recentActivity: []
+      } as DashboardStats
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="animate-pulse space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
+    )
+  }
 
-      {/* Admin Tasks */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">🔧 Administrator Tasks</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <h3 className="font-medium text-gray-900">👤 User Management</h3>
-            <p className="text-sm text-gray-600 mt-1">Manage employee accounts and permissions</p>
-          </div>
-          <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <h3 className="font-medium text-gray-900">⚙️ System Settings</h3>
-            <p className="text-sm text-gray-600 mt-1">Configure global system preferences</p>
-          </div>
-          <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <h3 className="font-medium text-gray-900">📊 Reports & Analytics</h3>
-            <p className="text-sm text-gray-600 mt-1">View comprehensive system reports</p>
-          </div>
-          <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <h3 className="font-medium text-gray-900">🔒 Security & Auditing</h3>
-            <p className="text-sm text-gray-600 mt-1">Monitor security events and logs</p>
-          </div>
-          <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <h3 className="font-medium text-gray-900">💾 Database Management</h3>
-            <p className="text-sm text-gray-600 mt-1">Backup and maintenance operations</p>
-          </div>
-          <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-            <h3 className="font-medium text-gray-900">🔄 System Updates</h3>
-            <p className="text-sm text-gray-600 mt-1">Manage system updates and patches</p>
-          </div>
+  if (error) {
+    return (
+      <div className="p-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <p className="text-gray-600 mb-4">Failed to load dashboard data</p>
+              <Button onClick={() => refetch()}>Retry</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const formatCurrency = (amount: number) => `₱${amount.toLocaleString()}`
+
+  return (
+    <div className="space-y-6">
+      {/* Header with Refresh */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-600">Complete system overview and analytics</p>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+          {isFetching ? 'Refreshing...' : 'Refresh'}
+        </Button>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats?.totalRevenue || 0)}</p>
+                <p className="text-sm text-green-600 mt-1">
+                  <TrendingUp className="w-4 h-4 inline mr-1" />
+                  {stats?.totalOrders || 0} orders
+                </p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-full">
+                <DollarSign className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Active Orders</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.totalOrders || 0}</p>
+                <p className="text-sm text-blue-600 mt-1">
+                  <Package className="w-4 h-4 inline mr-1" />
+                  {stats?.ordersInProduction || 0} in production
+                </p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-full">
+                <Package className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Total Clients</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.totalClients || 0}</p>
+                <p className="text-sm text-purple-600 mt-1">
+                  <Building2 className="w-4 h-4 inline mr-1" />
+                  Active partnerships
+                </p>
+              </div>
+              <div className="bg-purple-100 p-3 rounded-full">
+                <Building2 className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Employees</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.activeEmployees || 0}</p>
+                <p className="text-sm text-orange-600 mt-1">
+                  <Users className="w-4 h-4 inline mr-1" />
+                  Active workforce
+                </p>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-full">
+                <Users className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Alerts & Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="border-l-4 border-yellow-500">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Pending Approvals</p>
+                <p className="text-3xl font-bold text-yellow-600">{stats?.pendingApprovals || 0}</p>
+                <p className="text-sm text-gray-500 mt-2">Orders awaiting approval</p>
+              </div>
+              <AlertCircle className="w-8 h-8 text-yellow-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-purple-500">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">In Production</p>
+                <p className="text-3xl font-bold text-purple-600">{stats?.ordersInProduction || 0}</p>
+                <p className="text-sm text-gray-500 mt-2">Active production runs</p>
+              </div>
+              <Clock className="w-8 h-8 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-l-4 border-green-500">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Completed</p>
+                <p className="text-3xl font-bold text-green-600">{stats?.completedThisMonth || 0}</p>
+                <p className="text-sm text-gray-500 mt-2">Orders this month</p>
+              </div>
+              <CheckCircle className="w-8 h-8 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Orders by Status */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Orders by Status</CardTitle>
+            <CardDescription>Current order distribution across all stages</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats?.ordersByStatus && stats.ordersByStatus.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={stats.ordersByStatus}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="status" tick={{ fontSize: 12 }} />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value: any, name: string) => {
+                      if (name === 'count') return [value, 'Orders']
+                      if (name === 'amount') return [formatCurrency(value), 'Revenue']
+                      return [value, name]
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="count" fill="#3B82F6" name="Orders" />
+                  <Bar dataKey="amount" fill="#10B981" name="Revenue (₱)" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-400">
+                No order data available
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Employees by Department */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Workforce Distribution</CardTitle>
+            <CardDescription>Employees across all departments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats?.employeesByDepartment && stats.employeesByDepartment.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={stats.employeesByDepartment}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={(entry) => `${entry.department}: ${entry.count}`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="count"
+                  >
+                    {stats.employeesByDepartment.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={Object.values(STATUS_COLORS)[index % Object.values(STATUS_COLORS).length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center text-gray-400">
+                No employee data available
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">⚡ Quick Actions</h2>
-        <div className="flex flex-wrap gap-3">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
-            View All Orders
-          </button>
-          <button className="px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700">
-            Production Status
-          </button>
-          <button className="px-4 py-2 bg-yellow-600 text-white rounded-md text-sm font-medium hover:bg-yellow-700">
-            Financial Reports
-          </button>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-md text-sm font-medium hover:bg-purple-700">
-            Employee Management
-          </button>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>Navigate to key sections of the system</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Link href="/orders">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <Package className="w-6 h-6" />
+                <span>View Orders</span>
+              </Button>
+            </Link>
+            <Link href="/clients">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <Building2 className="w-6 h-6" />
+                <span>Manage Clients</span>
+              </Button>
+            </Link>
+            <Link href="/hr-payroll">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <Users className="w-6 h-6" />
+                <span>HR & Payroll</span>
+              </Button>
+            </Link>
+            <Link href="/finance">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <DollarSign className="w-6 h-6" />
+                <span>Finance</span>
+              </Button>
+            </Link>
+            <Link href="/cutting">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <Scissors className="w-6 h-6" />
+                <span>Cutting</span>
+              </Button>
+            </Link>
+            <Link href="/printing">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <Printer className="w-6 h-6" />
+                <span>Printing</span>
+              </Button>
+            </Link>
+            <Link href="/quality-control">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <BadgeCheck className="w-6 h-6" />
+                <span>Quality Control</span>
+              </Button>
+            </Link>
+            <Link href="/analytics">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+                <TrendingUp className="w-6 h-6" />
+                <span>Analytics</span>
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Manufacturing Stages Overview */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Manufacturing Stages</CardTitle>
+          <CardDescription>Quick access to all 14 production stages</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { name: 'Order Intake', icon: Package, href: '/orders', color: 'blue' },
+              { name: 'Design & Approval', icon: AlertCircle, href: '/designs', color: 'purple' },
+              { name: 'Cutting', icon: Scissors, href: '/cutting', color: 'orange' },
+              { name: 'Printing', icon: Printer, href: '/printing', color: 'green' },
+              { name: 'Sewing', icon: Users, href: '/sewing', color: 'yellow' },
+              { name: 'Quality Control', icon: BadgeCheck, href: '/quality-control', color: 'red' },
+              { name: 'Finishing & Packing', icon: Package, href: '/finishing-packing', color: 'indigo' },
+              { name: 'Delivery', icon: Clock, href: '/delivery', color: 'pink' },
+            ].map((stage) => (
+              <Link key={stage.name} href={stage.href}>
+                <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <stage.icon className={`w-6 h-6 text-${stage.color}-600 mb-2`} />
+                  <h3 className="font-medium text-gray-900">{stage.name}</h3>
+                  <ArrowRight className="w-4 h-4 text-gray-400 mt-2" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
