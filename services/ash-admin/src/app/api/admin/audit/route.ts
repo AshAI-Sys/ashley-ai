@@ -329,8 +329,8 @@ export const POST = requireAnyPermission(['admin:create'])(async (request: NextR
   }
 })
 
-// Helper function to create audit log
-export async function createAuditLog(
+// Helper function to create audit log (internal use only)
+async function createAuditLog(
   performer_user_id: string,
   action: string,
   description: string,

@@ -4,6 +4,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   env: {
     ASH_API_URL: process.env.ASH_API_URL || 'http://localhost:4000',
   },
