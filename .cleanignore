@@ -1,0 +1,53 @@
+# Ashley AI - Clean Script Ignore List
+# Files and directories to NEVER delete during cleanup
+
+# Source Code
+*.ts
+*.tsx
+*.js
+*.jsx
+*.json
+*.md
+*.prisma
+
+# Important Configs
+.env
+.env.*
+.gitignore
+.eslintrc*
+.prettierrc*
+tsconfig.json
+next.config.js
+package.json
+pnpm-lock.yaml
+turbo.json
+
+# Directories to preserve
+/src
+/app
+/pages
+/components
+/lib
+/utils
+/styles
+/public
+/prisma
+/docs
+/scripts
+
+# Git
+/.git
+
+# Dependencies (let user decide)
+/node_modules
+
+# Database
+*.db
+!*.db.backup
+!backup*.db
+
+# Important docs
+README.md
+CLAUDE.md
+CLIENT_UPDATED_PLAN.md
+PRODUCTION_READY.md
