@@ -34,20 +34,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Mark component as mounted to avoid hydration mismatches
     setMounted(true)
 
-    // Check for stored token on mount
-    const storedToken = localStorage.getItem('ash_token')
-    if (storedToken) {
-      setToken(storedToken)
+    // Check for stored token on mount (only in browser)
+    if (typeof window !== 'undefined') {
+      const storedToken = localStorage.getItem('ash_token')
+      if (storedToken) {
+        setToken(storedToken)
 
-      // Get stored user data if available
-      const storedUser = localStorage.getItem('ash_user')
-      if (storedUser) {
-        try {
-          const userData = JSON.parse(storedUser)
-          setUser(userData)
-        } catch (error) {
-          console.error('Error parsing stored user data:', error)
-          // Fallback to demo user
+        // Get stored user data if available
+        const storedUser = localStorage.getItem('ash_user')
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser)
+            setUser(userData)
+          } catch (error) {
+            console.error('Error parsing stored user data:', error)
+            // Fallback to demo user
+            setUser({
+              id: 'demo-user-1',
+              email: 'admin@ashleyai.com',
+              name: 'Demo Admin',
+              role: 'admin',
+              position: 'System Administrator',
+              department: 'Administration',
+              permissions: ['*']
+            })
+          }
+        } else {
+          // Fallback to demo user if no stored user data
           setUser({
             id: 'demo-user-1',
             email: 'admin@ashleyai.com',
@@ -58,17 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             permissions: ['*']
           })
         }
-      } else {
-        // Fallback to demo user if no stored user data
-        setUser({
-          id: 'demo-user-1',
-          email: 'admin@ashleyai.com',
-          name: 'Demo Admin',
-          role: 'admin',
-          position: 'System Administrator',
-          department: 'Administration',
-          permissions: ['*']
-        })
       }
     }
     setIsLoading(false)
@@ -103,8 +105,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null)
     setToken(null)
-    localStorage.removeItem('ash_token')
-    localStorage.removeItem('ash_user')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('ash_token')
+      localStorage.removeItem('ash_user')
+    }
   }
 
   // Don't render children until after hydration to prevent mismatches
