@@ -49,7 +49,8 @@
       "Bash(then echo \"MISSING: $dir\")",
       "Bash(fi)",
       "Bash(done)",
-      "Bash(then basename \"$dir\")"
+      "Bash(then basename \"$dir\")",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

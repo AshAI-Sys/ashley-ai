@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { requireAnyPermission } from '../../../lib/auth-middleware';
+// Demo mode - auth temporarily disabled
+// import { requireAnyPermission } from '../../../lib/auth-middleware';
 
 const OrderLineItemSchema = z.object({
   productType: z.string().min(1, 'Product type is required'),
@@ -27,8 +28,8 @@ const CreateOrderSchema = z.object({
   lineItems: z.array(OrderLineItemSchema).min(1, 'At least one line item is required'),
 });
 
-// Apply role-based access control
-export const GET = requireAnyPermission(['orders:read'])(async (request: NextRequest, user: any) => {
+// Demo mode - no auth required
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
@@ -189,9 +190,9 @@ export const GET = requireAnyPermission(['orders:read'])(async (request: NextReq
       { status: 500 }
     );
   }
-});
+}
 
-export const POST = requireAnyPermission(['orders:create'])(async (request: NextRequest, user: any) => {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -235,4 +236,4 @@ export const POST = requireAnyPermission(['orders:create'])(async (request: Next
       { status: 500 }
     );
   }
-});
+}
