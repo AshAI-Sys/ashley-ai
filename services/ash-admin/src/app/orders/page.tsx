@@ -1,13 +1,18 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Filter, Eye, Edit } from 'lucide-react'
+import { Plus, Search, Filter, Eye, Edit, Package, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import DashboardLayout from '@/components/dashboard-layout'
+import { SkeletonTable } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
+import { ErrorAlert } from '@/components/ui/error-alert'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface Order {
   id: string
@@ -32,34 +37,39 @@ interface Order {
 }
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
 
-  useEffect(() => {
-    fetchOrders()
-  }, [search, statusFilter])
+  // Debounce search to reduce API calls
+  const debouncedSearch = useDebounce(search, 500)
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true)
+  // React Query for data fetching with auto-refresh
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
+    queryKey: ['orders', debouncedSearch, statusFilter, currentPage],
+    queryFn: async () => {
       const params = new URLSearchParams()
-      if (search) params.append('search', search)
+      params.append('page', currentPage.toString())
+      params.append('limit', '10')
+      if (debouncedSearch) params.append('search', debouncedSearch)
       if (statusFilter !== 'all') params.append('status', statusFilter)
-      
+
       const response = await fetch(`/api/orders?${params}`)
-      const data = await response.json()
-      
-      if (data.success) {
-        setOrders(data.data?.orders || data.data || [])
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch orders')
       }
-    } catch (error) {
-      console.error('Failed to fetch orders:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return result.data
+    },
+    staleTime: 30000, // Data considered fresh for 30 seconds
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    refetchOnWindowFocus: true, // Refresh when user returns to tab
+  })
+
+  const orders = data?.orders || []
+  const totalPages = data?.pagination?.totalPages || 1
+  const totalCount = data?.pagination?.total || 0
 
   const getStatusColor = (status: string) => {
     if (!status) return 'bg-gray-100 text-gray-800'
@@ -83,12 +93,23 @@ export default function OrdersPage() {
           <h1 className="text-3xl font-bold">Production Orders</h1>
           <p className="text-muted-foreground">Manage your production orders and track their progress</p>
         </div>
-        <Link href="/orders/new">
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            New Production Order
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+            {isFetching ? 'Refreshing...' : 'Refresh'}
           </Button>
-        </Link>
+          <Link href="/orders/new">
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              New Production Order
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -106,12 +127,15 @@ export default function OrdersPage() {
                 />
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
-              <select 
-                value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)}
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value)
+                  setCurrentPage(1) // Reset to first page on filter change
+                }}
                 className="px-3 py-2 border border-gray-200 rounded-md text-sm"
               >
                 <option value="all">All Status</option>
@@ -124,17 +148,30 @@ export default function OrdersPage() {
               </select>
             </div>
           </div>
+
+          {totalCount > 0 && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              Showing {orders.length} of {totalCount} orders
+              {search && ` • Searching for "${search}"`}
+            </div>
+          )}
         </CardContent>
       </Card>
 
+      {/* Error State */}
+      {isError && (
+        <ErrorAlert
+          message={error?.message || 'Failed to load orders. Please try again.'}
+          retry={() => refetch()}
+        />
+      )}
+
       {/* Orders List */}
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+      {isLoading ? (
+        <SkeletonTable />
       ) : (
         <div className="grid gap-4">
-          {(orders || []).map((order) => (
+          {orders.map((order) => (
             <Card key={order.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
                 <div className="flex justify-between items-start">
@@ -191,17 +228,45 @@ export default function OrdersPage() {
               </CardContent>
             </Card>
           ))}
-          
-          {orders.length === 0 && (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground mb-4">No orders found</p>
-                <Link href="/orders/new">
-                  <Button>Create your first production order</Button>
-                </Link>
-              </CardContent>
-            </Card>
+
+          {orders.length === 0 && !isLoading && !isError && (
+            <EmptyState
+              icon={Package}
+              title="No orders found"
+              description={search ? `No orders match "${search}"` : "Get started by creating your first production order"}
+              action={{
+                label: "Create Order",
+                href: "/orders/new"
+              }}
+            />
           )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === 1 || isFetching}
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+          >
+            Previous
+          </Button>
+
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage === totalPages || isFetching}
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+          >
+            Next
+          </Button>
         </div>
       )}
       </div>

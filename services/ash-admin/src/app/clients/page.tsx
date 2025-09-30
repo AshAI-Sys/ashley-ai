@@ -1,14 +1,19 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Filter, Eye, Edit, Building2, Users, Phone, Mail, MapPin } from 'lucide-react'
+import { Plus, Search, Filter, Eye, Edit, Building2, Users, Phone, Mail, MapPin, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import DashboardLayout from '@/components/dashboard-layout'
+import { SkeletonTable } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
+import { ErrorAlert } from '@/components/ui/error-alert'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface Client {
   id: string
@@ -30,48 +35,37 @@ interface Client {
 }
 
 export default function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>([])
-  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalCount, setTotalCount] = useState(0)
 
-  useEffect(() => {
-    fetchClients()
-  }, [search, statusFilter, currentPage])
+  // Debounce search to reduce API calls
+  const debouncedSearch = useDebounce(search, 500)
 
-  const fetchClients = async () => {
-    try {
-      setLoading(true)
+  // React Query for data fetching with auto-refresh
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
+    queryKey: ['clients', debouncedSearch, statusFilter, currentPage],
+    queryFn: async () => {
       const params = {
         page: currentPage,
         limit: 20,
-        ...(search && { search }),
+        ...(debouncedSearch && { search: debouncedSearch }),
         ...(statusFilter !== 'all' && { is_active: statusFilter === 'active' })
       }
-      
       const response = await api.getClients(params)
-      
-      if (response.success) {
-        setClients(response.data?.clients || [])
-        setTotalPages(response.data?.pagination?.pages || 1)
-        setTotalCount(response.data?.pagination?.total || 0)
-      } else {
-        setClients([])
-        setTotalPages(1)
-        setTotalCount(0)
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch clients')
       }
-    } catch (error) {
-      console.error('Failed to fetch clients:', error)
-      setClients([])
-      setTotalPages(1)
-      setTotalCount(0)
-    } finally {
-      setLoading(false)
-    }
-  }
+      return response.data
+    },
+    staleTime: 30000, // Data considered fresh for 30 seconds
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    refetchOnWindowFocus: true, // Refresh when user returns to tab
+  })
+
+  const clients = data?.clients || []
+  const totalPages = data?.pagination?.pages || 1
+  const totalCount = data?.pagination?.total || 0
 
   const formatAddress = (address: string | null) => {
     if (!address) return 'No address'
@@ -96,12 +90,23 @@ export default function ClientsPage() {
           <h1 className="text-3xl font-bold">Clients</h1>
           <p className="text-muted-foreground">Manage your clients and their information</p>
         </div>
-        <Link href="/clients/new">
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            New Client
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="gap-2"
+          >
+            <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+            {isFetching ? 'Refreshing...' : 'Refresh'}
           </Button>
-        </Link>
+          <Link href="/clients/new">
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              New Client
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}
@@ -119,12 +124,15 @@ export default function ClientsPage() {
                 />
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
-              <select 
-                value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)}
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value)
+                  setCurrentPage(1) // Reset to first page on filter change
+                }}
                 className="px-3 py-2 border border-gray-200 rounded-md text-sm"
               >
                 <option value="all">All Clients</option>
@@ -133,23 +141,30 @@ export default function ClientsPage() {
               </select>
             </div>
           </div>
-          
+
           {totalCount > 0 && (
             <div className="mt-2 text-sm text-muted-foreground">
               Showing {clients.length} of {totalCount} clients
+              {search && ` • Searching for "${search}"`}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Clients List */}
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+      {/* Error State */}
+      {isError && (
+        <ErrorAlert
+          message={error?.message || 'Failed to load clients. Please try again.'}
+          retry={() => refetch()}
+        />
+      )}
+
+      {/* Loading State */}
+      {isLoading ? (
+        <SkeletonTable />
       ) : (
         <div className="grid gap-4">
-          {(clients || []).map((client) => (
+          {clients.map((client) => (
             <Card key={client.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
                 <div className="flex justify-between items-start">
@@ -237,17 +252,17 @@ export default function ClientsPage() {
               </CardContent>
             </Card>
           ))}
-          
-          {clients.length === 0 && (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <Building2 className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-muted-foreground mb-4">No clients found</p>
-                <Link href="/clients/new">
-                  <Button>Create your first client</Button>
-                </Link>
-              </CardContent>
-            </Card>
+
+          {clients.length === 0 && !isLoading && !isError && (
+            <EmptyState
+              icon={Building2}
+              title="No clients found"
+              description={search ? `No clients match "${search}"` : "Get started by creating your first client"}
+              action={{
+                label: "Create Client",
+                href: "/clients/new"
+              }}
+            />
           )}
         </div>
       )}
