@@ -67,7 +67,7 @@ export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(asyn
     })
 
     return createSuccessResponse(processedInvoices)
-})
+}))
 
 export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()
