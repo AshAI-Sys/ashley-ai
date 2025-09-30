@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash/database'
+import { PrismaClient } from '@ash-ai/database'
 
 const prisma = new PrismaClient()
 const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@ash/database';
+import { PrismaClient } from '@ash-ai/database';
 import { z } from 'zod';
 
 const prisma = new PrismaClient();
