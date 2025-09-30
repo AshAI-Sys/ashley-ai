@@ -33,11 +33,11 @@ export async function GET(_request: NextRequest) {
         }
       }),
 
-      // Delivered today
+      // Delivered today (using updated_at as proxy for delivery timestamp)
       prisma.shipment.count({
         where: {
           status: 'DELIVERED',
-          delivered_at: {
+          updated_at: {
             gte: today,
             lt: tomorrow
           }
@@ -58,29 +58,28 @@ export async function GET(_request: NextRequest) {
         }
       }),
 
-      // Delivered this week
+      // Delivered this week (using updated_at as proxy)
       prisma.shipment.count({
         where: {
           status: 'DELIVERED',
-          delivered_at: {
+          updated_at: {
             gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
             lt: new Date()
           }
         }
       }),
 
-      // Average delivery times (last 50 delivered shipments)
+      // Average delivery times (last 50 delivered shipments, using updated_at as delivery time)
       prisma.shipment.findMany({
         where: {
-          status: 'DELIVERED',
-          delivered_at: { not: null }
+          status: 'DELIVERED'
         },
         select: {
           created_at: true,
-          delivered_at: true,
+          updated_at: true,
           eta: true
         },
-        orderBy: { delivered_at: 'desc' },
+        orderBy: { updated_at: 'desc' },
         take: 50
       })
     ])
@@ -88,12 +87,12 @@ export async function GET(_request: NextRequest) {
     // Calculate on-time rate
     const onTimeRate = totalShipmentsThisWeek > 0 ? (deliveredThisWeek / totalShipmentsThisWeek) * 100 : 0
 
-    // Calculate average delivery time
+    // Calculate average delivery time (using updated_at as delivery timestamp)
     let avgDeliveryTime = 0
     if (averageDeliveryTimes.length > 0) {
       const totalDeliveryTime = averageDeliveryTimes.reduce((sum, shipment) => {
-        if (shipment.delivered_at && shipment.created_at) {
-          const deliveryTime = shipment.delivered_at.getTime() - shipment.created_at.getTime()
+        if (shipment.updated_at && shipment.created_at) {
+          const deliveryTime = shipment.updated_at.getTime() - shipment.created_at.getTime()
           return sum + (deliveryTime / (1000 * 60 * 60)) // Convert to hours
         }
         return sum
@@ -101,10 +100,10 @@ export async function GET(_request: NextRequest) {
       avgDeliveryTime = totalDeliveryTime / averageDeliveryTimes.length
     }
 
-    // Get on-time performance (deliveries within ETA)
+    // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
     const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
-      if (shipment.delivered_at && shipment.eta) {
-        return shipment.delivered_at <= shipment.eta
+      if (shipment.updated_at && shipment.eta) {
+        return shipment.updated_at <= shipment.eta
       }
       return false
     }).length
@@ -197,20 +196,19 @@ async function getMethodPerformance() {
         prisma.shipment.findMany({
           where: {
             method,
-            status: 'DELIVERED',
-            delivered_at: { not: null }
+            status: 'DELIVERED'
           },
-          select: { created_at: true, delivered_at: true },
+          select: { created_at: true, updated_at: true },
           take: 20,
-          orderBy: { delivered_at: 'desc' }
+          orderBy: { updated_at: 'desc' }
         })
       ])
 
       let averageTime = 0
       if (avgTime.length > 0) {
         const totalTime = avgTime.reduce((sum, shipment) => {
-          if (shipment.delivered_at) {
-            return sum + (shipment.delivered_at.getTime() - shipment.created_at.getTime())
+          if (shipment.updated_at) {
+            return sum + (shipment.updated_at.getTime() - shipment.created_at.getTime())
           }
           return sum
         }, 0)
