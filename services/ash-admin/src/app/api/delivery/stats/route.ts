@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 
 export async function GET(_request: NextRequest) {
   try {
+    // Calculate delivery statistics using updated_at as proxy for delivery timestamp
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const tomorrow = new Date(today)
