@@ -1,12 +1,15 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/dashboard-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Filter, Eye, Edit, Send, Lock, Upload } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Plus, Search, Filter, Eye, Edit, Send, Lock, Upload, RefreshCw, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 
 interface DesignAsset {
@@ -50,38 +53,38 @@ interface DesignAsset {
 }
 
 export default function DesignsPage() {
-  const [designs, setDesigns] = useState<DesignAsset[]>([])
-  const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [methodFilter, setMethodFilter] = useState('all')
 
-  useEffect(() => {
-    fetchDesigns()
-  }, [search, statusFilter, methodFilter])
-
-  const fetchDesigns = async () => {
-    try {
-      setLoading(true)
+  // React Query: Designs
+  const {
+    data: designs = [],
+    isLoading,
+    error,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['designs', search, statusFilter, methodFilter],
+    queryFn: async () => {
       const params = new URLSearchParams()
       if (search) params.append('search', search)
       if (statusFilter !== 'all') params.append('status', statusFilter)
       if (methodFilter !== 'all') params.append('method', methodFilter)
-      
+
       const response = await fetch(`/api/designs?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch designs')
       const data = await response.json()
-      
-      if (data.success) {
-        setDesigns(data.data?.designs || [])
-      } else {
-        setDesigns([])
-      }
-    } catch (error) {
-      console.error('Failed to fetch designs:', error)
-      setDesigns([])
-    } finally {
-      setLoading(false)
-    }
+
+      return data.success ? (data.data?.designs || []) : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  })
+
+  // Master refresh function
+  const handleRefreshAll = () => {
+    refetch()
   }
 
   const getStatusColor = (status: string) => {
@@ -116,14 +119,14 @@ export default function DesignsPage() {
     if (!confirm('Are you sure you want to lock this design version? This cannot be undone.')) {
       return
     }
-    
+
     try {
       const response = await fetch(`/api/designs/${designId}/versions/${version}/lock`, {
         method: 'POST'
       })
-      
+
       if (response.ok) {
-        fetchDesigns()
+        refetch()
       }
     } catch (error) {
       console.error('Failed to lock design:', error)
@@ -138,13 +141,33 @@ export default function DesignsPage() {
           <h1 className="text-3xl font-bold">Design Assets</h1>
           <p className="text-muted-foreground">Manage design files, versions, and client approvals</p>
         </div>
-        <Link href="/designs/new">
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Design
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={handleRefreshAll}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+            Refresh
           </Button>
-        </Link>
+          <Link href="/designs/new">
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Design
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load designs. <button onClick={handleRefreshAll} className="underline ml-1">Retry</button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Filters */}
       <Card className="mb-6">
@@ -194,13 +217,44 @@ export default function DesignsPage() {
       </Card>
 
       {/* Design Assets List */}
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {(designs || []).map((design) => (
+      <div className="grid gap-4">
+        {isLoading ? (
+          <>
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="hover:shadow-md transition-shadow">
+                <CardContent className="py-4">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-5 w-20" />
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                      <div className="flex gap-4">
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-8 w-16" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </>
+        ) : (
+          <>
+            {(designs || []).map((design) => (
             <Card key={design.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
                 <div className="flex justify-between items-start">
@@ -296,7 +350,7 @@ export default function DesignsPage() {
               </CardContent>
             </Card>
           ))}
-          
+
           {designs.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
@@ -307,8 +361,9 @@ export default function DesignsPage() {
               </CardContent>
             </Card>
           )}
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </div>
     </DashboardLayout>
   )

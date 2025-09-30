@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/dashboard-layout'
 import {
   Package,
@@ -16,13 +17,16 @@ import {
   Printer,
   Scissors,
   Tags,
-  Box
+  Box,
+  RefreshCw
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface FinishingRun {
   id: string
@@ -63,121 +67,81 @@ interface FinishingStats {
 
 export default function FinishingPackingPage() {
   const [activeTab, setActiveTab] = useState<'finishing' | 'packing'>('finishing')
-  const [finishingRuns, setFinishingRuns] = useState<FinishingRun[]>([])
-  const [cartons, setCartons] = useState<Carton[]>([])
-  const [stats, setStats] = useState<FinishingStats | null>(null)
-  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
 
-  useEffect(() => {
-    loadData()
-  }, [activeTab])
+  // React Query: Finishing Runs
+  const {
+    data: finishingRuns = [],
+    isLoading: finishingRunsLoading,
+    error: finishingRunsError,
+    refetch: refetchFinishingRuns,
+    isFetching: finishingRunsFetching
+  } = useQuery({
+    queryKey: ['finishing-runs'],
+    queryFn: async () => {
+      const response = await fetch('/api/finishing/runs')
+      if (!response.ok) throw new Error('Failed to fetch finishing runs')
+      const data = await response.json()
+      return Array.isArray(data.runs) ? data.runs : Array.isArray(data) ? data : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+    enabled: activeTab === 'finishing'
+  })
 
-  const loadData = async () => {
-    setLoading(true)
-    try {
-      if (activeTab === 'finishing') {
-        await loadFinishingData()
-      } else {
-        await loadPackingData()
-      }
-      await loadStats()
-    } catch (error) {
-      console.error('Error loading data:', error)
-      loadMockData()
-    } finally {
-      setLoading(false)
-    }
-  }
+  // React Query: Packing Cartons
+  const {
+    data: cartons = [],
+    isLoading: cartonsLoading,
+    error: cartonsError,
+    refetch: refetchCartons,
+    isFetching: cartonsFetching
+  } = useQuery({
+    queryKey: ['packing-cartons'],
+    queryFn: async () => {
+      const response = await fetch('/api/packing/cartons')
+      if (!response.ok) throw new Error('Failed to fetch packing cartons')
+      const data = await response.json()
+      return Array.isArray(data.cartons) ? data.cartons : Array.isArray(data) ? data : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+    enabled: activeTab === 'packing'
+  })
 
-  const loadFinishingData = async () => {
-    const response = await fetch('/api/finishing/runs')
-    const data = await response.json()
-    setFinishingRuns(Array.isArray(data.runs) ? data.runs : Array.isArray(data) ? data : [])
-  }
+  // React Query: Stats (always fetch)
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+    isFetching: statsFetching
+  } = useQuery({
+    queryKey: ['finishing-packing-stats'],
+    queryFn: async () => {
+      const response = await fetch('/api/finishing-packing/stats')
+      if (!response.ok) throw new Error('Failed to fetch stats')
+      const data = await response.json()
+      return data
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  })
 
-  const loadPackingData = async () => {
-    const response = await fetch('/api/packing/cartons')
-    const data = await response.json()
-    setCartons(Array.isArray(data.cartons) ? data.cartons : Array.isArray(data) ? data : [])
-  }
+  // Combined loading and error states
+  const isLoading = activeTab === 'finishing' ? finishingRunsLoading : cartonsLoading
+  const isFetching = statsFetching || (activeTab === 'finishing' ? finishingRunsFetching : cartonsFetching)
+  const error = statsError || (activeTab === 'finishing' ? finishingRunsError : cartonsError)
 
-  const loadStats = async () => {
-    const response = await fetch('/api/finishing-packing/stats')
-    const data = await response.json()
-    setStats(data)
-  }
-
-  const loadMockData = () => {
-    // Mock data for demonstration
+  // Master refresh function
+  const handleRefreshAll = () => {
+    refetchStats()
     if (activeTab === 'finishing') {
-      setFinishingRuns([
-        {
-          id: '1',
-          order: { order_number: 'ORD-2024-001' },
-          bundle: { qr_code: 'BDL-001', size_code: 'M', qty: 50 },
-          operator: { first_name: 'Maria', last_name: 'Santos' },
-          status: 'IN_PROGRESS',
-          tasks_completed: 3,
-          total_tasks: 5,
-          started_at: '2024-09-15T08:30:00Z',
-          materials_used: [
-            { item_name: 'Hangtags', quantity: 50, uom: 'pcs' },
-            { item_name: 'Polybags', quantity: 50, uom: 'pcs' }
-          ]
-        },
-        {
-          id: '2',
-          order: { order_number: 'ORD-2024-002' },
-          bundle: { qr_code: 'BDL-002', size_code: 'L', qty: 75 },
-          operator: { first_name: 'Juan', last_name: 'Cruz' },
-          status: 'COMPLETED',
-          tasks_completed: 5,
-          total_tasks: 5,
-          started_at: '2024-09-15T09:00:00Z',
-          completed_at: '2024-09-15T11:30:00Z',
-          materials_used: [
-            { item_name: 'Hangtags', quantity: 75, uom: 'pcs' },
-            { item_name: 'Polybags', quantity: 75, uom: 'pcs' },
-            { item_name: 'Size Labels', quantity: 75, uom: 'pcs' }
-          ]
-        }
-      ])
+      refetchFinishingRuns()
     } else {
-      setCartons([
-        {
-          id: '1',
-          carton_no: 'CTN-001',
-          order: { order_number: 'ORD-2024-001' },
-          dimensions: { length: 40, width: 30, height: 25 },
-          actual_weight: 2.5,
-          fill_percent: 85,
-          status: 'OPEN',
-          units_count: 25,
-          created_at: '2024-09-15T10:00:00Z'
-        },
-        {
-          id: '2',
-          carton_no: 'CTN-002',
-          order: { order_number: 'ORD-2024-001' },
-          dimensions: { length: 40, width: 30, height: 25 },
-          actual_weight: 3.1,
-          fill_percent: 95,
-          status: 'CLOSED',
-          units_count: 30,
-          created_at: '2024-09-15T10:30:00Z'
-        }
-      ])
+      refetchCartons()
     }
-
-    setStats({
-      pending_orders: 12,
-      in_progress: 5,
-      completed_today: 8,
-      packed_today: 6,
-      efficiency_rate: 87.5
-    })
   }
 
   const getStatusBadge = (status: string) => {
@@ -203,28 +167,43 @@ export default function FinishingPackingPage() {
 
   const filteredFinishingRuns = finishingRuns.filter(run =>
     (searchTerm === '' ||
-     run.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     run.bundle.qr_code.toLowerCase().includes(searchTerm.toLowerCase())) &&
+     run.order?.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     run.bundle?.qr_code?.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (filterStatus === 'all' || run.status === filterStatus)
   )
 
   const filteredCartons = cartons.filter(carton =>
     (searchTerm === '' ||
-     carton.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     carton.carton_no.toLowerCase().includes(searchTerm.toLowerCase())) &&
+     carton.order?.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     carton.carton_no?.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (filterStatus === 'all' || carton.status === filterStatus)
   )
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading finishing & packing data...</p>
+  // Skeleton Loaders
+  const StatCardSkeleton = () => (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center">
+          <Skeleton className="h-6 w-6 rounded" />
+          <div className="ml-5 w-0 flex-1">
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-6 w-12" />
+          </div>
         </div>
-      </div>
-    )
-  }
+      </CardContent>
+    </Card>
+  )
+
+  const TableRowSkeleton = () => (
+    <tr>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-full" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-full" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-full" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-full" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-full" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-20" /></td>
+    </tr>
+  )
 
   return (
     <DashboardLayout>
@@ -240,6 +219,14 @@ export default function FinishingPackingPage() {
             </p>
           </div>
           <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            <Button
+              variant="outline"
+              onClick={handleRefreshAll}
+              disabled={isFetching}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
             <Button variant="outline">
               <Printer className="w-4 h-4 mr-2" />
               Print Labels
@@ -251,9 +238,26 @@ export default function FinishingPackingPage() {
           </div>
         </div>
 
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Failed to load data. <button onClick={handleRefreshAll} className="underline ml-1">Retry</button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Stats Cards */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          {statsLoading ? (
+            <>
+              {[...Array(5)].map((_, i) => (
+                <StatCardSkeleton key={i} />
+              ))}
+            </>
+          ) : stats ? (
+            <>
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center">
@@ -333,8 +337,9 @@ export default function FinishingPackingPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
+            </>
+          ) : null}
+        </div>
 
         {/* Tab Navigation */}
         <div className="border-b border-gray-200 mb-6">
@@ -409,9 +414,19 @@ export default function FinishingPackingPage() {
 
         {/* Content */}
         {activeTab === 'finishing' ? (
-          <FinishingRunsTable runs={filteredFinishingRuns} getStatusBadge={getStatusBadge} />
+          <FinishingRunsTable
+            runs={filteredFinishingRuns}
+            getStatusBadge={getStatusBadge}
+            isLoading={finishingRunsLoading}
+            TableRowSkeleton={TableRowSkeleton}
+          />
         ) : (
-          <PackingCartonsTable cartons={filteredCartons} getStatusBadge={getStatusBadge} />
+          <PackingCartonsTable
+            cartons={filteredCartons}
+            getStatusBadge={getStatusBadge}
+            isLoading={cartonsLoading}
+            TableRowSkeleton={TableRowSkeleton}
+          />
         )}
       </div>
     </DashboardLayout>
@@ -419,7 +434,17 @@ export default function FinishingPackingPage() {
 }
 
 // Separate component for Finishing Runs Table
-function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], getStatusBadge: (status: string) => JSX.Element }) {
+function FinishingRunsTable({
+  runs,
+  getStatusBadge,
+  isLoading,
+  TableRowSkeleton
+}: {
+  runs: FinishingRun[]
+  getStatusBadge: (status: string) => JSX.Element
+  isLoading: boolean
+  TableRowSkeleton: () => JSX.Element
+}) {
   return (
     <Card>
       <CardHeader>
@@ -451,7 +476,14 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {(Array.isArray(runs) ? runs : []).map((run) => (
+              {isLoading ? (
+                <>
+                  {[...Array(3)].map((_, i) => (
+                    <TableRowSkeleton key={i} />
+                  ))}
+                </>
+              ) : (
+                (Array.isArray(runs) ? runs : []).map((run) => (
                 <tr key={run.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -506,12 +538,13 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
           </table>
         </div>
 
-        {runs.length === 0 && (
+        {!isLoading && runs.length === 0 && (
           <div className="text-center py-12">
             <Scissors className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No finishing operations</h3>
@@ -526,7 +559,17 @@ function FinishingRunsTable({ runs, getStatusBadge }: { runs: FinishingRun[], ge
 }
 
 // Separate component for Packing Cartons Table
-function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], getStatusBadge: (status: string) => JSX.Element }) {
+function PackingCartonsTable({
+  cartons,
+  getStatusBadge,
+  isLoading,
+  TableRowSkeleton
+}: {
+  cartons: Carton[]
+  getStatusBadge: (status: string) => JSX.Element
+  isLoading: boolean
+  TableRowSkeleton: () => JSX.Element
+}) {
   return (
     <Card>
       <CardHeader>
@@ -558,7 +601,14 @@ function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], g
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {(Array.isArray(cartons) ? cartons : []).map((carton) => (
+              {isLoading ? (
+                <>
+                  {[...Array(3)].map((_, i) => (
+                    <TableRowSkeleton key={i} />
+                  ))}
+                </>
+              ) : (
+                (Array.isArray(cartons) ? cartons : []).map((carton) => (
                 <tr key={carton.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -622,12 +672,13 @@ function PackingCartonsTable({ cartons, getStatusBadge }: { cartons: Carton[], g
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
           </table>
         </div>
 
-        {cartons.length === 0 && (
+        {!isLoading && cartons.length === 0 && (
           <div className="text-center py-12">
             <Box className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">No cartons found</h3>
