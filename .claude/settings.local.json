@@ -56,7 +56,8 @@
       "Bash(powershell:*)",
       "Bash(grep:*)",
       "Bash(awk:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(tasklist)"
     ],
     "deny": [],
     "ask": []
