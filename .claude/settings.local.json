@@ -63,7 +63,9 @@
       "Bash(Write-Output \"Deleted all log folders\")",
       "Bash(vercel:*)",
       "Bash(set DATABASE_URL=postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require)",
-      "Bash(Remove-Item \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\webhooks\" -Recurse -Force)"
+      "Bash(Remove-Item \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\webhooks\" -Recurse -Force)",
+      "Bash(robocopy:*)",
+      "Read(//c/Users/Khell/Desktop/Ashley AI Backup/**)"
     ],
     "deny": [],
     "ask": []
