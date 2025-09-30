@@ -1,10 +1,6 @@
 {
-  "buildCommand": "cd ../.. && pnpm install && cd services/ash-admin && pnpm build",
-  "installCommand": "pnpm install",
   "framework": "nextjs",
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "NEXTAUTH_URL": "@nextauth_url"
-  }
+  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @ash/admin build",
+  "devCommand": "pnpm dev",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
 }

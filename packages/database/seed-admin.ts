@@ -23,19 +23,25 @@ async function main() {
 
   // Create admin user
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@ashleyai.com' },
+    where: {
+      workspace_id_email: {
+        workspace_id: workspace.id,
+        email: 'admin@ashleyai.com'
+      }
+    },
     update: {
-      password: hashedPassword
+      password_hash: hashedPassword
     },
     create: {
       email: 'admin@ashleyai.com',
-      password: hashedPassword,
-      name: 'System Administrator',
+      password_hash: hashedPassword,
+      first_name: 'System',
+      last_name: 'Administrator',
       role: 'ADMIN',
-      status: 'ACTIVE',
+      is_active: true,
       position: 'System Administrator',
       department: 'Administration',
-      workspaceId: workspace.id
+      workspace_id: workspace.id
     }
   })
 

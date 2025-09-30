@@ -31,8 +31,11 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   }
 
   // Find user in database
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
+  const user = await prisma.user.findFirst({
+    where: {
+      email: email.toLowerCase(),
+      is_active: true
+    },
     include: {
       workspace: true
     }
@@ -43,14 +46,13 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   }
 
   // Verify password using bcrypt
-  const isValidPassword = await bcrypt.compare(password, user.password)
-  if (!isValidPassword) {
+  if (!user.password_hash) {
     throw new AuthenticationError('Invalid email or password')
   }
 
-  // Check if user account is active
-  if (user.status !== 'ACTIVE') {
-    throw new AuthenticationError('Account is not active. Please contact administrator.')
+  const isValidPassword = await bcrypt.compare(password, user.password_hash)
+  if (!isValidPassword) {
+    throw new AuthenticationError('Invalid email or password')
   }
 
   // Generate JWT token with user data
@@ -58,7 +60,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
     userId: user.id,
     email: user.email,
     role: user.role,
-    workspaceId: user.workspaceId
+    workspaceId: user.workspace_id
   }
 
   const token = generateToken(userData)
@@ -66,7 +68,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   // Update last login timestamp
   await prisma.user.update({
     where: { id: user.id },
-    data: { lastLogin: new Date() }
+    data: { last_login_at: new Date() }
   })
 
   // Return success response with token and user data
@@ -75,11 +77,11 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
     user: {
       id: user.id,
       email: user.email,
-      name: user.name,
+      name: `${user.first_name} ${user.last_name}`,
       role: user.role,
       position: user.position || null,
       department: user.department || null,
-      workspaceId: user.workspaceId
+      workspaceId: user.workspace_id
     }
   }
 
