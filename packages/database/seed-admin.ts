@@ -12,9 +12,7 @@ async function main() {
     update: {},
     create: {
       name: 'Ashley AI',
-      slug: 'ashley-ai',
-      description: 'Manufacturing ERP System',
-      status: 'ACTIVE'
+      slug: 'ashley-ai'
     }
   })
 
