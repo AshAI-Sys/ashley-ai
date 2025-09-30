@@ -28,25 +28,6 @@ const nextConfig = {
   },
   // Optimize for both development and production
   webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      // Development stability fixes
-      config.watchOptions = false
-      config.infrastructureLogging = {
-        level: 'error',
-      }
-      config.resolve = {
-        ...config.resolve,
-        symlinks: false,
-        fallback: {
-          ...config.resolve.fallback,
-          fs: false,
-          path: false,
-        },
-      }
-      config.watch = false
-      config.cache = false
-    }
-
     // Production optimizations
     if (!dev) {
       config.optimization.splitChunks = {
