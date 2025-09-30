@@ -293,22 +293,20 @@ export default function MaintenancePage() {
     return new Date(dateString).toLocaleDateString()
   }
 
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900" />
-        </div>
-      </DashboardLayout>
-    )
-  }
-
   return (
     <DashboardLayout>
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Maintenance Management</h2>
           <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              onClick={handleRefreshAll}
+              disabled={isFetching}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               New Work Order
@@ -316,20 +314,47 @@ export default function MaintenancePage() {
           </div>
         </div>
 
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              Failed to load maintenance data. <button onClick={handleRefreshAll} className="underline ml-1">Retry</button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Overview Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats?.overview.total_assets || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats?.overview.asset_utilization || 0}% utilization rate
-              </p>
-            </CardContent>
-          </Card>
+          {statsLoading ? (
+            <>
+              {[...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-4 rounded" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-8 w-16 mb-2" />
+                    <Skeleton className="h-3 w-32" />
+                  </CardContent>
+                </Card>
+              ))}
+            </>
+          ) : (
+            <>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats?.overview.total_assets || 0}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats?.overview.asset_utilization || 0}% utilization rate
+                  </p>
+                </CardContent>
+              </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -373,6 +398,8 @@ export default function MaintenancePage() {
               </p>
             </CardContent>
           </Card>
+            </>
+          )}
         </div>
 
         {/* Alerts */}

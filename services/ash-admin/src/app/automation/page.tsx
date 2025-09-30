@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Play,
   Pause,
@@ -14,7 +15,8 @@ import {
   XCircle,
   TrendingUp,
   Users,
-  Link
+  Link,
+  RefreshCw
 } from 'lucide-react';
 
 interface AutomationStats {
@@ -61,30 +63,27 @@ interface AutomationStats {
 }
 
 export default function AutomationPage() {
-  const [stats, setStats] = useState<AutomationStats | null>(null);
-  const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('7d');
   const [activeTab, setActiveTab] = useState('overview');
 
-  useEffect(() => {
-    fetchStats();
-  }, [timeRange]);
-
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
+  // React Query: Stats
+  const {
+    data: stats,
+    isLoading: loading,
+    error,
+    refetch,
+    isFetching
+  } = useQuery({
+    queryKey: ['automation-stats', timeRange],
+    queryFn: async () => {
       const response = await fetch(`/api/automation/stats?time_range=${timeRange}`);
+      if (!response.ok) throw new Error('Failed to fetch automation stats');
       const data = await response.json();
-
-      if (data.success) {
-        setStats(data.data);
-      }
-    } catch (error) {
-      console.error('Error fetching automation stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data.success ? data.data : null;
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  });
 
   const StatCard = ({ title, value, subtitle, icon: Icon, color = 'blue', trend }: any) => (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -185,6 +184,14 @@ export default function AutomationPage() {
             <option value="7d">Last 7 Days</option>
             <option value="30d">Last 30 Days</option>
           </select>
+
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+          </button>
 
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
             Create Rule
