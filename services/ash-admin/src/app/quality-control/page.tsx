@@ -180,16 +180,48 @@ export default function QualityControlPage() {
     )
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading quality control data...</p>
+  // Error Alert Component
+  const ErrorAlert = ({ error, onRetry }: { error: Error; onRetry: () => void }) => (
+    <Alert className="mb-6 border-red-200 bg-red-50">
+      <AlertCircle className="h-4 w-4 text-red-600" />
+      <AlertTitle className="text-red-800">Error</AlertTitle>
+      <AlertDescription className="text-red-700">
+        {error.message}
+        <Button variant="outline" size="sm" onClick={onRetry} className="ml-4">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Retry
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+
+  // Skeleton Loaders
+  const StatCardSkeleton = () => (
+    <div className="bg-white overflow-hidden shadow rounded-lg">
+      <div className="p-5">
+        <div className="flex items-center">
+          <Skeleton className="h-6 w-6 rounded" />
+          <div className="ml-5 w-0 flex-1">
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-6 w-16" />
+          </div>
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+
+  const InspectionRowSkeleton = () => (
+    <tr>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-32" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-24" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-20" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-16" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-24" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-16" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-20" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-12" /></td>
+    </tr>
+  )
 
   return (
     <DashboardLayout>
@@ -205,6 +237,14 @@ export default function QualityControlPage() {
             </p>
           </div>
           <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isFetching}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
             <button
               onClick={() => window.location.href = '/quality-control/analytics'}
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
@@ -222,8 +262,15 @@ export default function QualityControlPage() {
           </div>
         </div>
 
+        {/* Error Alert */}
+        {inspectionsError && <ErrorAlert error={inspectionsError as Error} onRetry={refetchInspections} />}
+
         {/* Stats Cards */}
-        {stats && (
+        {inspectionsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[...Array(4)].map((_, i) => <StatCardSkeleton key={i} />)}
+          </div>
+        ) : stats ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
@@ -295,7 +342,7 @@ export default function QualityControlPage() {
               </div>
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Filters */}
         <div className="bg-white shadow rounded-lg mb-6">
@@ -386,7 +433,9 @@ export default function QualityControlPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredInspections.map((inspection) => (
+                {inspectionsLoading ? (
+                  [...Array(5)].map((_, i) => <InspectionRowSkeleton key={i} />)
+                ) : filteredInspections.map((inspection) => (
                   <tr key={inspection.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
@@ -445,13 +494,15 @@ export default function QualityControlPage() {
               </tbody>
             </table>
           </div>
-          
-          {filteredInspections.length === 0 && (
+
+          {!inspectionsLoading && filteredInspections.length === 0 && (
             <div className="text-center py-12">
               <ClipboardCheck className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">No inspections found</h3>
               <p className="mt-1 text-sm text-gray-500">
-                Get started by creating your first quality inspection.
+                {searchTerm || filterType !== 'all' || filterResult !== 'all'
+                  ? 'Try adjusting your filters or search criteria.'
+                  : 'Get started by creating your first quality inspection.'}
               </p>
             </div>
           )}
