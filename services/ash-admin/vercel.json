@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && cd packages/database && npx prisma generate && cd ../.. && pnpm --filter @ash/admin build",
+  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm --filter @ash-ai/database db:generate && pnpm --filter @ash/admin build",
   "devCommand": "pnpm dev",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
 }
