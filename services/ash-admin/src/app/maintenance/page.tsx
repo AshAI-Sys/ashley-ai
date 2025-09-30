@@ -1,10 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import DashboardLayout from '@/components/dashboard-layout'
 import {
   Settings,
@@ -22,7 +25,8 @@ import {
   Trash2,
   Users,
   Activity,
-  BarChart3
+  BarChart3,
+  RefreshCw
 } from 'lucide-react'
 
 interface MaintenanceStats {
@@ -144,78 +148,93 @@ interface MaintenanceSchedule {
 }
 
 export default function MaintenancePage() {
-  const [stats, setStats] = useState<MaintenanceStats | null>(null)
-  const [assets, setAssets] = useState<Asset[]>([])
-  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([])
-  const [schedules, setSchedules] = useState<MaintenanceSchedule[]>([])
-  const [loading, setLoading] = useState(true)
+  // React Query: Stats
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+    isFetching: statsFetching
+  } = useQuery({
+    queryKey: ['maintenance-stats'],
+    queryFn: async () => {
+      const response = await fetch('/api/maintenance/stats')
+      if (!response.ok) throw new Error('Failed to fetch stats')
+      const data = await response.json()
+      return data.success ? data.data : null
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  })
 
-  useEffect(() => {
-    fetchMaintenanceData()
-  }, [])
+  // React Query: Assets
+  const {
+    data: assets = [],
+    isLoading: assetsLoading,
+    error: assetsError,
+    refetch: refetchAssets,
+    isFetching: assetsFetching
+  } = useQuery({
+    queryKey: ['maintenance-assets'],
+    queryFn: async () => {
+      const response = await fetch('/api/maintenance/assets')
+      if (!response.ok) throw new Error('Failed to fetch assets')
+      const data = await response.json()
+      return data.success ? (data.data || []) : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  })
 
-  const fetchMaintenanceData = async () => {
-    try {
-      setLoading(true)
+  // React Query: Work Orders
+  const {
+    data: workOrders = [],
+    isLoading: workOrdersLoading,
+    error: workOrdersError,
+    refetch: refetchWorkOrders,
+    isFetching: workOrdersFetching
+  } = useQuery({
+    queryKey: ['maintenance-work-orders'],
+    queryFn: async () => {
+      const response = await fetch('/api/maintenance/work-orders')
+      if (!response.ok) throw new Error('Failed to fetch work orders')
+      const data = await response.json()
+      return data.success ? (data.data || []) : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  })
 
-      // Fetch data from APIs
-      const [statsRes, assetsRes, workOrdersRes, schedulesRes] = await Promise.all([
-        fetch('/api/maintenance/stats'),
-        fetch('/api/maintenance/assets'),
-        fetch('/api/maintenance/work-orders'),
-        fetch('/api/maintenance/schedules')
-      ])
+  // React Query: Schedules
+  const {
+    data: schedules = [],
+    isLoading: schedulesLoading,
+    error: schedulesError,
+    refetch: refetchSchedules,
+    isFetching: schedulesFetching
+  } = useQuery({
+    queryKey: ['maintenance-schedules'],
+    queryFn: async () => {
+      const response = await fetch('/api/maintenance/schedules')
+      if (!response.ok) throw new Error('Failed to fetch schedules')
+      const data = await response.json()
+      return data.success ? (data.data || []) : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000
+  })
 
-      const statsData = await statsRes.json()
-      const assetsData = await assetsRes.json()
-      const workOrdersData = await workOrdersRes.json()
-      const schedulesData = await schedulesRes.json()
+  // Combined loading and error states
+  const loading = statsLoading || assetsLoading || workOrdersLoading || schedulesLoading
+  const isFetching = statsFetching || assetsFetching || workOrdersFetching || schedulesFetching
+  const error = statsError || assetsError || workOrdersError || schedulesError
 
-      if (statsData.success) setStats(statsData.data)
-      if (assetsData.success) setAssets(assetsData.data || [])
-      else setAssets([])
-      if (workOrdersData.success) setWorkOrders(workOrdersData.data || [])
-      else setWorkOrders([])
-      if (schedulesData.success) setSchedules(schedulesData.data || [])
-      else setSchedules([])
-
-      setLoading(false)
-    } catch (error) {
-      console.error('Error fetching maintenance data:', error)
-      setLoading(false)
-      // Set empty fallback data
-      setStats({
-        overview: {
-          total_assets: 0,
-          active_assets: 0,
-          asset_utilization: 0,
-          total_work_orders: 0,
-          open_work_orders: 0,
-          completed_this_month: 0,
-          pending_work_orders: 0,
-          completion_rate: 0,
-          overdue_maintenance: 0,
-          total_schedules: 0,
-          maintenance_costs_this_month: 0
-        },
-        distributions: {
-          work_orders_by_type: [],
-          work_orders_by_priority: [],
-          assets_by_type: []
-        },
-        upcoming_maintenance: [],
-        recent_activity: [],
-        alerts: {
-          overdue_count: 0,
-          high_priority_open: 0,
-          unassigned_count: 0,
-          inactive_assets: 0
-        }
-      })
-      setAssets([])
-      setWorkOrders([])
-      setSchedules([])
-    }
+  // Master refresh function
+  const handleRefreshAll = () => {
+    refetchStats()
+    refetchAssets()
+    refetchWorkOrders()
+    refetchSchedules()
   }
 
   const getStatusBadge = (status: string) => {
