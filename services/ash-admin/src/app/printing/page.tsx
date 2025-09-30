@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/dashboard-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -9,9 +10,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Play, Pause, Square, Eye, Package2, Printer, Zap, Shirt, Palette, Brain } from 'lucide-react'
+import { Play, Pause, Square, Eye, Package2, Printer, Zap, Shirt, Palette, Brain, RefreshCw, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import AIInsightsDashboard from '@/components/printing/AIInsightsDashboard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 interface PrintRun {
   id: string
@@ -75,124 +78,94 @@ const statusColors = {
 }
 
 export default function PrintingPage() {
-  const [printRuns, setPrintRuns] = useState<PrintRun[]>([])
-  const [machines, setMachines] = useState<Machine[]>([])
-  const [dashboard, setDashboard] = useState<Dashboard | null>(null)
-  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState({
     method: '',
     status: '',
     machine: ''
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [filter])
+  // Fetch print runs with filters
+  const {
+    data: printRuns = [],
+    isLoading: runsLoading,
+    error: runsError,
+    refetch: refetchRuns,
+    isFetching: runsFetching
+  } = useQuery({
+    queryKey: ['printing-runs', filter.method, filter.status],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (filter.method && filter.method !== 'all') params.append('method', filter.method)
+      if (filter.status && filter.status !== 'all') params.append('status', filter.status)
 
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      
-      // Fetch print runs with filters
-      const runsParams = new URLSearchParams()
-      if (filter.method) runsParams.append('method', filter.method)
-      if (filter.status) runsParams.append('status', filter.status)
-      
-      const [runsResponse, machinesResponse, dashboardResponse] = await Promise.all([
-        fetch(`/api/printing/runs?${runsParams}`),
-        fetch('/api/printing/machines'),
-        fetch('/api/printing/dashboard')
-      ])
+      const response = await fetch(`/api/printing/runs?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch print runs')
+      const data = await response.json()
+      return data.data as PrintRun[]
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (runsResponse.ok) {
-        const runsData = await runsResponse.json()
-        setPrintRuns(runsData.data || [])
-      } else {
-        // Mock data for demo
-        setPrintRuns([
-          {
-            id: '1',
-            method: 'SILKSCREEN',
-            status: 'IN_PROGRESS',
-            order: {
-              order_number: 'TCAS-2025-000001',
-              brand: { name: 'Trendy Casual', code: 'TCAS' },
-              line_items: [{ description: 'Premium Hoodie' }]
-            },
-            machine: { name: 'M&R Sportsman EX', workcenter: 'PRINTING' },
-            target_qty: 100,
-            outputs: [{ qty_completed: 65 }],
-            rejects: [{ qty_rejected: 2 }],
-            started_at: new Date().toISOString(),
-            created_at: new Date().toISOString()
-          },
-          {
-            id: '2',
-            method: 'EMBROIDERY',
-            status: 'CREATED',
-            order: {
-              order_number: 'URBN-2025-000001',
-              brand: { name: 'Urban Streetwear', code: 'URBN' },
-              line_items: [{ description: 'Logo T-Shirt' }]
-            },
-            machine: { name: 'Tajima 16-Head', workcenter: 'EMB' },
-            target_qty: 50,
-            outputs: [],
-            rejects: [],
-            created_at: new Date().toISOString()
-          }
-        ])
-      }
+  // Fetch machines
+  const {
+    data: machines = [],
+    isLoading: machinesLoading,
+    error: machinesError,
+    refetch: refetchMachines,
+    isFetching: machinesFetching
+  } = useQuery({
+    queryKey: ['printing-machines'],
+    queryFn: async () => {
+      const response = await fetch('/api/printing/machines')
+      if (!response.ok) throw new Error('Failed to fetch machines')
+      const data = await response.json()
+      return data.data as Machine[]
+    },
+    staleTime: 60000,
+    refetchInterval: 120000,
+  })
 
-      if (machinesResponse.ok) {
-        const machinesData = await machinesResponse.json()
-        setMachines(machinesData.data || [])
-      } else {
-        setMachines([
-          { id: '1', name: 'M&R Sportsman EX', workcenter: 'PRINTING', is_active: true },
-          { id: '2', name: 'Epson SureColor F570', workcenter: 'PRINTING', is_active: true },
-          { id: '3', name: 'Heat Press Pro 15x15', workcenter: 'HEAT_PRESS', is_active: true },
-          { id: '4', name: 'Tajima 16-Head', workcenter: 'EMB', is_active: true }
-        ])
-      }
+  // Fetch dashboard stats
+  const {
+    data: dashboard,
+    isLoading: dashboardLoading,
+    error: dashboardError,
+    refetch: refetchDashboard,
+    isFetching: dashboardFetching
+  } = useQuery({
+    queryKey: ['printing-dashboard'],
+    queryFn: async () => {
+      const response = await fetch('/api/printing/dashboard')
+      if (!response.ok) throw new Error('Failed to fetch dashboard')
+      const data = await response.json()
+      return data.data as Dashboard
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (dashboardResponse.ok) {
-        const dashData = await dashboardResponse.json()
-        setDashboard(dashData.data || null)
-      } else {
-        setDashboard({
-          active_runs: 3,
-          todays_runs: 12,
-          method_breakdown: [
-            { method: 'SILKSCREEN', _count: 8 },
-            { method: 'EMBROIDERY', _count: 3 },
-            { method: 'SUBLIMATION', _count: 1 }
-          ],
-          recent_rejects: []
-        })
-      }
-
-    } catch (error) {
-      console.error('Failed to fetch printing data:', error)
-      setPrintRuns([])
-      setMachines([])
-      setDashboard(null)
-    } finally {
-      setLoading(false)
-    }
+  const handleRefreshAll = () => {
+    refetchRuns()
+    refetchMachines()
+    refetchDashboard()
   }
+
+  const isLoading = runsLoading || machinesLoading || dashboardLoading
+  const isFetching = runsFetching || machinesFetching || dashboardFetching
 
   const handleRunAction = async (runId: string, action: 'start' | 'pause' | 'complete') => {
     try {
-      const endpoint = action === 'start' ? 'start' : 
+      const endpoint = action === 'start' ? 'start' :
                      action === 'pause' ? 'pause' : 'complete'
-      
+
       const response = await fetch(`/api/printing/runs/${runId}/${endpoint}`, {
         method: 'POST'
       })
 
       if (response.ok) {
-        fetchData() // Refresh data
+        refetchRuns() // Refresh data
+        refetchDashboard()
       } else {
         console.error(`Failed to ${action} print run`)
       }
@@ -214,18 +187,64 @@ export default function PrintingPage() {
     return run.target_qty > 0 ? Math.round((completed / run.target_qty) * 100) : 0
   }
 
-  if (loading) {
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <Printer className="w-8 h-8 mx-auto mb-4 animate-pulse" />
-            <p>Loading printing operations...</p>
+  // Error Alert Component
+  const ErrorAlert = ({ error, onRetry }: { error: Error; onRetry: () => void }) => (
+    <Alert className="mb-6 border-red-200 bg-red-50">
+      <AlertCircle className="h-4 w-4 text-red-600" />
+      <AlertTitle className="text-red-800">Error</AlertTitle>
+      <AlertDescription className="text-red-700">
+        {error.message}
+        <Button variant="outline" size="sm" onClick={onRetry} className="ml-4">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Retry
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+
+  // Skeleton Loaders
+  const StatCardSkeleton = () => (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-4 rounded" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-8 w-16" />
+      </CardContent>
+    </Card>
+  )
+
+  const PrintRunCardSkeleton = () => (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-6 w-24" />
           </div>
         </div>
-      </div>
-    )
-  }
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Skeleton className="h-2 w-full" />
+        <div className="grid grid-cols-2 gap-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+      </CardContent>
+    </Card>
+  )
 
   return (
     <DashboardLayout>
@@ -237,6 +256,14 @@ export default function PrintingPage() {
           <p className="text-muted-foreground">Multi-method printing workflow management</p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefreshAll}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
           <Link href="/printing/create-run">
             <Button className="bg-blue-600 hover:bg-blue-700">
               <Printer className="w-4 h-4 mr-2" />
@@ -246,8 +273,17 @@ export default function PrintingPage() {
         </div>
       </div>
 
+      {/* Error Alerts */}
+      {dashboardError && <ErrorAlert error={dashboardError as Error} onRetry={refetchDashboard} />}
+      {runsError && <ErrorAlert error={runsError as Error} onRetry={refetchRuns} />}
+      {machinesError && <ErrorAlert error={machinesError as Error} onRetry={refetchMachines} />}
+
       {/* Dashboard Cards */}
-      {dashboard && (
+      {dashboardLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => <StatCardSkeleton key={i} />)}
+        </div>
+      ) : dashboard ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -293,7 +329,7 @@ export default function PrintingPage() {
             </CardContent>
           </Card>
         </div>
-      )}
+      ) : null}
 
       <Tabs defaultValue="runs" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
@@ -365,7 +401,9 @@ export default function PrintingPage() {
 
           {/* Print Runs List */}
           <div className="space-y-4">
-            {(printRuns || []).map((run) => {
+            {runsLoading ? (
+              [...Array(3)].map((_, i) => <PrintRunCardSkeleton key={i} />)
+            ) : (printRuns || []).map((run) => {
               const MethodIcon = methodIcons[run.method]
               const completed = getCompletedQty(run)
               const rejected = getRejectedQty(run)
@@ -482,12 +520,14 @@ export default function PrintingPage() {
               )
             })}
 
-            {printRuns.length === 0 && (
+            {!runsLoading && printRuns.length === 0 && (
               <Card>
                 <CardContent className="flex items-center justify-center h-32">
                   <div className="text-center">
                     <Printer className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-muted-foreground">No print runs found</p>
+                    <p className="text-muted-foreground">
+                      {filter.method || filter.status ? 'No print runs match your filters' : 'No print runs found'}
+                    </p>
                     <Link href="/printing/create-run">
                       <Button className="mt-2" variant="outline">Create First Run</Button>
                     </Link>

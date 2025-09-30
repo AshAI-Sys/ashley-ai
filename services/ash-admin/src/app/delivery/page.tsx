@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/dashboard-layout'
 import {
   Truck,
@@ -18,13 +19,16 @@ import {
   Filter,
   Eye,
   Edit,
-  Printer
+  Printer,
+  RefreshCw
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 interface DeliveryShipment {
   id: string
@@ -70,21 +74,39 @@ interface DeliveryStats {
 }
 
 export default function DeliveryPage() {
-  const [shipments, setShipments] = useState<DeliveryShipment[]>([])
-  const [stats, setStats] = useState<DeliveryStats | null>(null)
-  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterMethod, setFilterMethod] = useState('all')
   const [selectedView, setSelectedView] = useState<'list' | 'map'>('list')
 
-  useEffect(() => {
-    loadData()
-  }, [filterStatus, filterMethod])
+  // Fetch delivery stats
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+    isFetching: statsFetching
+  } = useQuery({
+    queryKey: ['delivery-stats'],
+    queryFn: async () => {
+      const response = await fetch('/api/delivery/stats')
+      if (!response.ok) throw new Error('Failed to fetch delivery stats')
+      return response.json() as Promise<DeliveryStats>
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-  const loadData = async () => {
-    setLoading(true)
-    try {
+  // Fetch shipments with filters
+  const {
+    data: shipments = [],
+    isLoading: shipmentsLoading,
+    error: shipmentsError,
+    refetch: refetchShipments,
+    isFetching: shipmentsFetching
+  } = useQuery({
+    queryKey: ['delivery-shipments', filterStatus, filterMethod],
+    queryFn: async () => {
       const params = new URLSearchParams({
         page: '1',
         limit: '50'
@@ -94,127 +116,21 @@ export default function DeliveryPage() {
       if (filterMethod !== 'all') params.append('method', filterMethod)
 
       const response = await fetch(`/api/delivery/shipments?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch shipments')
       const data = await response.json()
+      return data.shipments as DeliveryShipment[]
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (data.shipments) {
-        setShipments(data.shipments || [])
-      }
-
-      const statsResponse = await fetch('/api/delivery/stats')
-      const statsData = await statsResponse.json()
-      setStats(statsData)
-
-    } catch (error) {
-      console.error('Error loading delivery data:', error)
-      loadMockData()
-    } finally {
-      setLoading(false)
-    }
+  const handleRefreshAll = () => {
+    refetchStats()
+    refetchShipments()
   }
 
-  const loadMockData = () => {
-    // Mock data for demonstration
-    setShipments([
-      {
-        id: '1',
-        shipment_number: 'SH-2024-001',
-        order: { order_number: 'ORD-2024-001' },
-        consignee: {
-          name: 'Juan Dela Cruz',
-          address: '123 Main St, Quezon City, Metro Manila',
-          phone: '+63 917 123 4567'
-        },
-        method: 'DRIVER',
-        status: 'IN_TRANSIT',
-        cartons_count: 3,
-        total_weight: 8.5,
-        cod_amount: 2500,
-        driver: {
-          first_name: 'Pedro',
-          last_name: 'Santos',
-          phone: '+63 917 987 6543'
-        },
-        vehicle: {
-          plate_no: 'ABC-123',
-          type: 'Van'
-        },
-        tracking_events: [
-          {
-            event_type: 'DISPATCHED',
-            location: 'Warehouse - Manila',
-            timestamp: '2024-09-15T08:00:00Z',
-            notes: 'Package picked up by driver'
-          },
-          {
-            event_type: 'IN_TRANSIT',
-            location: 'EDSA - Quezon City',
-            timestamp: '2024-09-15T09:30:00Z'
-          }
-        ],
-        eta: '2024-09-15T12:00:00Z',
-        created_at: '2024-09-15T07:30:00Z'
-      },
-      {
-        id: '2',
-        shipment_number: 'SH-2024-002',
-        order: { order_number: 'ORD-2024-002' },
-        consignee: {
-          name: 'Maria Santos',
-          address: '456 Commerce Ave, Makati City, Metro Manila',
-          phone: '+63 918 234 5678'
-        },
-        method: 'LALAMOVE',
-        status: 'DELIVERED',
-        cartons_count: 2,
-        total_weight: 4.2,
-        tracking_events: [
-          {
-            event_type: 'DELIVERED',
-            location: '456 Commerce Ave, Makati City',
-            timestamp: '2024-09-15T10:45:00Z',
-            notes: 'Package delivered successfully'
-          }
-        ],
-        eta: '2024-09-15T11:00:00Z',
-        created_at: '2024-09-15T08:00:00Z',
-        delivered_at: '2024-09-15T10:45:00Z'
-      },
-      {
-        id: '3',
-        shipment_number: 'SH-2024-003',
-        order: { order_number: 'ORD-2024-003' },
-        consignee: {
-          name: 'Robert Chen',
-          address: '789 Business Park, BGC, Taguig City',
-          phone: '+63 919 345 6789'
-        },
-        method: 'GRAB',
-        status: 'FAILED',
-        cartons_count: 1,
-        total_weight: 2.1,
-        cod_amount: 1200,
-        tracking_events: [
-          {
-            event_type: 'FAILED_DELIVERY',
-            location: '789 Business Park, BGC',
-            timestamp: '2024-09-15T11:15:00Z',
-            notes: 'Recipient not available'
-          }
-        ],
-        eta: '2024-09-15T12:30:00Z',
-        created_at: '2024-09-15T09:00:00Z'
-      }
-    ])
-
-    setStats({
-      ready_for_pickup: 8,
-      in_transit: 5,
-      delivered_today: 12,
-      failed_deliveries: 2,
-      on_time_rate: 89.5,
-      avg_delivery_time: 3.2
-    })
-  }
+  const isLoading = statsLoading || shipmentsLoading
+  const isFetching = statsFetching || shipmentsFetching
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -251,24 +167,53 @@ export default function DeliveryPage() {
   }
 
   const filteredShipments = shipments.filter(shipment =>
-    (searchTerm === '' ||
-     shipment.shipment_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     shipment.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     shipment.consignee.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (filterStatus === 'all' || shipment.status === filterStatus) &&
-    (filterMethod === 'all' || shipment.method === filterMethod)
+    searchTerm === '' ||
+    shipment.shipment_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    shipment.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    shipment.consignee.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading delivery data...</p>
+  // Error Alert Component
+  const ErrorAlert = ({ error, onRetry }: { error: Error; onRetry: () => void }) => (
+    <Alert className="mb-6 border-red-200 bg-red-50">
+      <AlertCircle className="h-4 w-4 text-red-600" />
+      <AlertTitle className="text-red-800">Error</AlertTitle>
+      <AlertDescription className="text-red-700">
+        {error.message}
+        <Button variant="outline" size="sm" onClick={onRetry} className="ml-4">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Retry
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+
+  // Skeleton Loaders
+  const StatCardSkeleton = () => (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center">
+          <Skeleton className="h-6 w-6 rounded" />
+          <div className="ml-5 w-0 flex-1">
+            <Skeleton className="h-4 w-24 mb-2" />
+            <Skeleton className="h-6 w-12" />
+          </div>
         </div>
-      </div>
-    )
-  }
+      </CardContent>
+    </Card>
+  )
+
+  const ShipmentRowSkeleton = () => (
+    <tr>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-32" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-16 w-48" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-12 w-24" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-6 w-20" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-12 w-24" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-10 w-20" /></td>
+      <td className="px-6 py-4"><Skeleton className="h-8 w-24" /></td>
+    </tr>
+  )
 
   return (
     <DashboardLayout>
@@ -284,6 +229,14 @@ export default function DeliveryPage() {
             </p>
           </div>
           <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            <Button
+              variant="outline"
+              onClick={handleRefreshAll}
+              disabled={isFetching}
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
             <Button variant="outline">
               <Printer className="w-4 h-4 mr-2" />
               Dispatch Reports
@@ -295,8 +248,16 @@ export default function DeliveryPage() {
           </div>
         </div>
 
+        {/* Error Alerts */}
+        {statsError && <ErrorAlert error={statsError as Error} onRetry={refetchStats} />}
+        {shipmentsError && <ErrorAlert error={shipmentsError as Error} onRetry={refetchShipments} />}
+
         {/* Stats Cards */}
-        {stats && (
+        {statsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+            {[...Array(6)].map((_, i) => <StatCardSkeleton key={i} />)}
+          </div>
+        ) : stats ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
             <Card>
               <CardContent className="p-6">
@@ -394,6 +355,17 @@ export default function DeliveryPage() {
               </CardContent>
             </Card>
           </div>
+        ) : null}
+
+        {/* Empty State for Stats */}
+        {!statsLoading && !stats && !statsError && (
+          <Alert className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>No Statistics Available</AlertTitle>
+            <AlertDescription>
+              Unable to load delivery statistics. Please check back later.
+            </AlertDescription>
+          </Alert>
         )}
 
         {/* View Toggle & Filters */}
@@ -464,7 +436,7 @@ export default function DeliveryPage() {
         {/* Shipments List */}
         <Card>
           <CardHeader>
-            <CardTitle>Delivery Shipments</CardTitle>
+            <CardTitle>Delivery Shipments ({filteredShipments.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -495,7 +467,9 @@ export default function DeliveryPage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {(filteredShipments || []).map((shipment) => (
+                  {shipmentsLoading ? (
+                    [...Array(5)].map((_, i) => <ShipmentRowSkeleton key={i} />)
+                  ) : (filteredShipments || []).map((shipment) => (
                     <tr key={shipment.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
@@ -588,13 +562,23 @@ export default function DeliveryPage() {
               </table>
             </div>
 
-            {filteredShipments.length === 0 && (
+            {!shipmentsLoading && filteredShipments.length === 0 && (
               <div className="text-center py-12">
                 <Truck className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No shipments found</h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Get started by creating a new shipment.
+                  {searchTerm ? 'Try adjusting your search criteria.' : 'Get started by creating a new shipment.'}
                 </p>
+                {searchTerm && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    onClick={() => setSearchTerm('')}
+                  >
+                    Clear Search
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>

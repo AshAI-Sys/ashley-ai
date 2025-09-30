@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '@/components/dashboard-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -8,13 +9,13 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Scissors, 
-  Play, 
-  Pause, 
+import {
+  Scissors,
+  Play,
+  Pause,
   Square,
   Clock,
-  TrendingUp, 
+  TrendingUp,
   Users,
   AlertCircle,
   CheckCircle,
@@ -25,9 +26,12 @@ import {
   Eye,
   BarChart3,
   Brain,
-  Timer
+  Timer,
+  RefreshCw
 } from 'lucide-react'
 import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 interface SewingRun {
   id: string
@@ -93,11 +97,6 @@ const statusColors = {
 }
 
 export default function SewingPage() {
-  const [sewingRuns, setSewingRuns] = useState<SewingRun[]>([])
-  const [operations, setOperations] = useState<SewingOperation[]>([])
-  const [operators, setOperators] = useState<Employee[]>([])
-  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null)
-  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
   const [filters, setFilters] = useState({
     status: '',
@@ -106,138 +105,97 @@ export default function SewingPage() {
     search: ''
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [filters])
-
-  const fetchData = async () => {
-    try {
-      setLoading(true)
-      
-      // Build query parameters
+  // Fetch sewing runs with filters
+  const {
+    data: sewingRuns = [],
+    isLoading: runsLoading,
+    error: runsError,
+    refetch: refetchRuns,
+    isFetching: runsFetching
+  } = useQuery({
+    queryKey: ['sewing-runs', filters.status, filters.operation, filters.operator, filters.search],
+    queryFn: async () => {
       const params = new URLSearchParams()
-      if (filters.status) params.append('status', filters.status)
-      if (filters.operation) params.append('operation', filters.operation)
-      if (filters.operator) params.append('operator', filters.operator)
+      if (filters.status && filters.status !== 'all') params.append('status', filters.status)
+      if (filters.operation && filters.operation !== 'all') params.append('operation', filters.operation)
+      if (filters.operator && filters.operator !== 'all') params.append('operator', filters.operator)
       if (filters.search) params.append('search', filters.search)
 
-      const [runsResponse, operationsResponse, operatorsResponse, statsResponse] = await Promise.all([
-        fetch(`/api/sewing/runs?${params}`),
-        fetch('/api/sewing/operations'),
-        fetch('/api/employees?department=SEWING'),
-        fetch('/api/sewing/dashboard')
-      ])
+      const response = await fetch(`/api/sewing/runs?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch sewing runs')
+      const data = await response.json()
+      return Array.isArray(data.data) ? data.data as SewingRun[] : []
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      // Handle API responses or use mock data
-      if (runsResponse.ok) {
-        const runsData = await runsResponse.json()
-        setSewingRuns(Array.isArray(runsData.data) ? runsData.data : Array.isArray(runsData) ? runsData : [])
-      } else {
-        // Mock data for demo
-        setSewingRuns([
-          {
-            id: '1',
-            operation_name: 'Join shoulders',
-            status: 'IN_PROGRESS',
-            order: {
-              order_number: 'TCAS-2025-000001',
-              brand: { name: 'Trendy Casual', code: 'TCAS' }
-            },
-            operator: {
-              first_name: 'Maria',
-              last_name: 'Santos',
-              employee_number: 'EMP001'
-            },
-            bundle: {
-              id: 'bundle-001',
-              size_code: 'M',
-              qty: 20,
-              qr_code: 'ash://bundle/001'
-            },
-            qty_good: 15,
-            qty_reject: 0,
-            earned_minutes: 22.5,
-            actual_minutes: 25,
-            efficiency_pct: 90,
-            piece_rate_pay: 45.00,
-            started_at: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-            created_at: new Date().toISOString()
-          },
-          {
-            id: '2',
-            operation_name: 'Attach collar',
-            status: 'CREATED',
-            order: {
-              order_number: 'URBN-2025-000001',
-              brand: { name: 'Urban Streetwear', code: 'URBN' }
-            },
-            operator: {
-              first_name: 'Carlos',
-              last_name: 'Rodriguez',
-              employee_number: 'EMP002'
-            },
-            bundle: {
-              id: 'bundle-002',
-              size_code: 'L',
-              qty: 25,
-              qr_code: 'ash://bundle/002'
-            },
-            qty_good: 0,
-            qty_reject: 0,
-            created_at: new Date().toISOString()
-          }
-        ])
-      }
+  // Fetch sewing operations
+  const {
+    data: operations = [],
+    isLoading: operationsLoading,
+    error: operationsError,
+    refetch: refetchOperations,
+    isFetching: operationsFetching
+  } = useQuery({
+    queryKey: ['sewing-operations'],
+    queryFn: async () => {
+      const response = await fetch('/api/sewing/operations')
+      if (!response.ok) throw new Error('Failed to fetch operations')
+      const data = await response.json()
+      return Array.isArray(data.data) ? data.data as SewingOperation[] : []
+    },
+    staleTime: 60000,
+    refetchInterval: 120000,
+  })
 
-      if (operationsResponse.ok) {
-        const operationsData = await operationsResponse.json()
-        setOperations(Array.isArray(operationsData.data) ? operationsData.data : Array.isArray(operationsData) ? operationsData : [])
-      } else {
-        setOperations([
-          { id: '1', product_type: 'Hoodie', name: 'Join shoulders', standard_minutes: 1.5, piece_rate: 2.25 },
-          { id: '2', product_type: 'Hoodie', name: 'Attach collar', standard_minutes: 2.0, piece_rate: 3.00, depends_on: ['Join shoulders'] },
-          { id: '3', product_type: 'Hoodie', name: 'Set sleeves', standard_minutes: 3.5, piece_rate: 5.25 },
-          { id: '4', product_type: 'Hoodie', name: 'Side seams', standard_minutes: 2.8, piece_rate: 4.20 },
-          { id: '5', product_type: 'Hoodie', name: 'Hem bottom', standard_minutes: 1.2, piece_rate: 1.80 }
-        ])
-      }
+  // Fetch operators (employees in sewing department)
+  const {
+    data: operators = [],
+    isLoading: operatorsLoading,
+    error: operatorsError,
+    refetch: refetchOperators,
+    isFetching: operatorsFetching
+  } = useQuery({
+    queryKey: ['sewing-operators'],
+    queryFn: async () => {
+      const response = await fetch('/api/employees?department=SEWING')
+      if (!response.ok) throw new Error('Failed to fetch operators')
+      const data = await response.json()
+      return Array.isArray(data.data) ? data.data as Employee[] : []
+    },
+    staleTime: 60000,
+    refetchInterval: 120000,
+  })
 
-      if (operatorsResponse.ok) {
-        const operatorsData = await operatorsResponse.json()
-        setOperators(Array.isArray(operatorsData.data) ? operatorsData.data : Array.isArray(operatorsData) ? operatorsData : [])
-      } else {
-        setOperators([
-          { id: '1', employee_number: 'EMP001', first_name: 'Maria', last_name: 'Santos', position: 'Sewing Operator', department: 'SEWING' },
-          { id: '2', employee_number: 'EMP002', first_name: 'Carlos', last_name: 'Rodriguez', position: 'Senior Operator', department: 'SEWING' },
-          { id: '3', employee_number: 'EMP003', first_name: 'Ana', last_name: 'Cruz', position: 'Sewing Operator', department: 'SEWING' },
-          { id: '4', employee_number: 'EMP004', first_name: 'Juan', last_name: 'Dela Cruz', position: 'Team Leader', department: 'SEWING' }
-        ])
-      }
+  // Fetch dashboard stats
+  const {
+    data: dashboardStats,
+    isLoading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+    isFetching: statsFetching
+  } = useQuery({
+    queryKey: ['sewing-dashboard'],
+    queryFn: async () => {
+      const response = await fetch('/api/sewing/dashboard')
+      if (!response.ok) throw new Error('Failed to fetch dashboard stats')
+      const data = await response.json()
+      return data.data as DashboardStats
+    },
+    staleTime: 30000,
+    refetchInterval: 60000,
+  })
 
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json()
-        setDashboardStats(statsData.data)
-      } else {
-        setDashboardStats({
-          active_runs: 8,
-          todays_completed: 24,
-          operators_working: 12,
-          avg_efficiency: 94,
-          pending_bundles: 15,
-          total_pieces_today: 580
-        })
-      }
-
-    } catch (error) {
-      console.error('Failed to fetch sewing data:', error)
-      setSewingRuns([])
-      setOperations([])
-      setOperators([])
-      setDashboardStats(null)
-    } finally {
-      setLoading(false)
-    }
+  const handleRefreshAll = () => {
+    refetchRuns()
+    refetchOperations()
+    refetchOperators()
+    refetchStats()
   }
+
+  const isLoading = runsLoading || operationsLoading || operatorsLoading || statsLoading
+  const isFetching = runsFetching || operationsFetching || operatorsFetching || statsFetching
 
   const handleRunAction = async (runId: string, action: 'start' | 'pause' | 'complete') => {
     try {
@@ -246,7 +204,8 @@ export default function SewingPage() {
       })
 
       if (response.ok) {
-        fetchData() // Refresh data
+        refetchRuns() // Refresh data
+        refetchStats()
       } else {
         console.error(`Failed to ${action} sewing run`)
       }
@@ -262,18 +221,66 @@ export default function SewingPage() {
     return 'text-red-600'
   }
 
-  if (loading) {
-    return (
-      <div className="container mx-auto py-6">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-center">
-            <Scissors className="w-8 h-8 mx-auto mb-4 animate-pulse" />
-            <p>Loading sewing operations...</p>
+  // Error Alert Component
+  const ErrorAlert = ({ error, onRetry }: { error: Error; onRetry: () => void }) => (
+    <Alert className="mb-6 border-red-200 bg-red-50">
+      <AlertCircle className="h-4 w-4 text-red-600" />
+      <AlertTitle className="text-red-800">Error</AlertTitle>
+      <AlertDescription className="text-red-700">
+        {error.message}
+        <Button variant="outline" size="sm" onClick={onRetry} className="ml-4">
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Retry
+        </Button>
+      </AlertDescription>
+    </Alert>
+  )
+
+  // Skeleton Loaders
+  const StatCardSkeleton = () => (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-4 w-4 rounded" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-8 w-16" />
+      </CardContent>
+    </Card>
+  )
+
+  const SewingRunCardSkeleton = () => (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-4 w-32" />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-6 w-16" />
           </div>
         </div>
-      </div>
-    )
-  }
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Skeleton className="h-2 w-full" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="flex gap-2 pt-2">
+          <Skeleton className="h-9 w-20" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+      </CardContent>
+    </Card>
+  )
 
   return (
     <DashboardLayout>
@@ -285,6 +292,14 @@ export default function SewingPage() {
           <p className="text-muted-foreground">Production tracking with real-time efficiency monitoring</p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRefreshAll}
+            disabled={isFetching}
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
           <Link href="/sewing/operations">
             <Button variant="outline">
               <BarChart3 className="w-4 h-4 mr-2" />
@@ -300,8 +315,18 @@ export default function SewingPage() {
         </div>
       </div>
 
+      {/* Error Alerts */}
+      {statsError && <ErrorAlert error={statsError as Error} onRetry={refetchStats} />}
+      {runsError && <ErrorAlert error={runsError as Error} onRetry={refetchRuns} />}
+      {operationsError && <ErrorAlert error={operationsError as Error} onRetry={refetchOperations} />}
+      {operatorsError && <ErrorAlert error={operatorsError as Error} onRetry={refetchOperators} />}
+
       {/* Dashboard Cards */}
-      {dashboardStats && (
+      {statsLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          {[...Array(6)].map((_, i) => <StatCardSkeleton key={i} />)}
+        </div>
+      ) : dashboardStats ? (
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -365,7 +390,7 @@ export default function SewingPage() {
             </CardContent>
           </Card>
         </div>
-      )}
+      ) : null}
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
@@ -511,7 +536,9 @@ export default function SewingPage() {
 
           {/* Sewing Runs List */}
           <div className="space-y-4">
-            {(Array.isArray(sewingRuns) ? sewingRuns : []).map((run) => (
+            {runsLoading ? (
+              [...Array(3)].map((_, i) => <SewingRunCardSkeleton key={i} />)
+            ) : (Array.isArray(sewingRuns) ? sewingRuns : []).map((run) => (
               <Card key={run.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -628,12 +655,16 @@ export default function SewingPage() {
               </Card>
             ))}
 
-            {sewingRuns.length === 0 && (
+            {!runsLoading && sewingRuns.length === 0 && (
               <Card>
                 <CardContent className="flex items-center justify-center h-32">
                   <div className="text-center">
                     <Scissors className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-muted-foreground">No sewing runs found</p>
+                    <p className="text-muted-foreground">
+                      {filters.status || filters.operation || filters.operator || filters.search
+                        ? 'No sewing runs match your filters'
+                        : 'No sewing runs found'}
+                    </p>
                     <Link href="/sewing/runs/new">
                       <Button className="mt-2" variant="outline">Create First Run</Button>
                     </Link>
