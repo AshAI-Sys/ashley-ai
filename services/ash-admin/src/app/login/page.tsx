@@ -35,9 +35,9 @@ export default function LoginPage() {
         const data = await response.json()
         console.log('Login successful:', data)
 
-        if (data.success && data.data.access_token) {
-          localStorage.setItem('ash_token', data.data.access_token)
-          localStorage.setItem('ash_user', JSON.stringify(data.data.user))
+        if (data.success && data.access_token) {
+          localStorage.setItem('ash_token', data.access_token)
+          localStorage.setItem('ash_user', JSON.stringify(data.user))
           console.log('Token stored, redirecting to dashboard')
 
           // Use window.location for more reliable redirect
