@@ -82,14 +82,15 @@ export default function Sidebar() {
       : getRoleBasedPermissions(user.role || mappedRole)
 
     // Transform user to match our permissions User interface
+    const isAdmin = user.role?.toLowerCase() === 'admin'
     const permUser: User = {
       id: user.id,
       email: user.email,
       name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-      role: user.role === 'admin' || user.role === 'Admin' ? 'admin' : mappedRole,
+      role: isAdmin ? 'admin' : mappedRole,
       position: user.position || '',
       department: user.department || 'Administration',
-      permissions: user.role === 'admin' || user.role === 'Admin' ? ['all'] : userPermissions
+      permissions: isAdmin ? ['all'] : userPermissions
     }
 
     return getAccessibleNavigation(permUser)

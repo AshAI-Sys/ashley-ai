@@ -55,8 +55,9 @@ export function getAccessibleNavigation(user: User) {
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management', permission: 'automation.view' },
   ]
 
-  // Admin users get access to ALL navigation items
-  if (user.role === 'admin' || user.role === 'Admin') {
+  // Admin users get access to ALL navigation items (case-insensitive)
+  const userRoleLower = user.role?.toLowerCase()
+  if (userRoleLower === 'admin') {
     return allNavigation
   }
 
