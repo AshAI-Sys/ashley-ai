@@ -30,7 +30,9 @@ export default function RoleSpecificDashboard() {
 
   // Map roles to their specific dashboards
   const roleDashboardMap: Record<string, JSX.Element> = {
+    'ADMIN': <AdminDashboard />,
     'admin': <AdminDashboard />,
+    'MANAGER': <ManagerDashboard />,
     'manager': <ManagerDashboard />,
     'designer': <DesignerDashboard />,
     'cutting_supervisor': <CuttingOperatorDashboard />,
@@ -46,7 +48,7 @@ export default function RoleSpecificDashboard() {
     'csr': <CSRDashboard />
   }
 
-  const DashboardComponent = roleDashboardMap[user.role] || AdminDashboard
+  const DashboardComponent = roleDashboardMap[user.role] || <AdminDashboard />
 
   return (
     <div className="min-h-screen bg-gray-50">
