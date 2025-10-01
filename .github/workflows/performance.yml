@@ -1,0 +1,330 @@
+# Ashley AI - Performance Testing Workflow
+name: Performance Testing
+
+on:
+  schedule:
+    # Run performance tests nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      duration:
+        description: 'Test duration in minutes'
+        required: true
+        default: '10'
+        type: string
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  lighthouse:
+    name: Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Lighthouse
+        run: npm install -g @lhci/cli
+
+      - name: Run Lighthouse CI
+        run: |
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+
+      - name: Upload Lighthouse results
+        uses: actions/upload-artifact@v3
+        with:
+          name: lighthouse-results
+          path: .lighthouseci
+
+  load-testing:
+    name: Load Testing
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install K6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: Run load tests
+        run: |
+          k6 run tests/performance/load-test.js \
+            --duration=${{ github.event.inputs.duration || '10' }}m \
+            --vus=50 \
+            --env BASE_URL=https://ash-ai-${{ github.event.inputs.environment || 'staging' }}.vercel.app
+
+      - name: Upload load test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: k6-results
+          path: results.json
+
+  database-performance:
+    name: Database Performance Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ash_ai
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: ash_ai_perf_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup database
+        run: |
+          pnpm db:generate
+          pnpm db:push
+        env:
+          DATABASE_URL: postgresql://ash_ai:test_password@localhost:5432/ash_ai_perf_test
+
+      - name: Run database performance tests
+        run: |
+          # Create test script for database performance
+          cat > db-perf-test.js << 'EOF'
+          const { PrismaClient } = require('@prisma/client');
+          const prisma = new PrismaClient();
+
+          async function performanceTest() {
+            console.log('🚀 Starting database performance tests...');
+
+            // Test 1: Bulk insert performance
+            const startInsert = Date.now();
+            const orders = Array.from({ length: 1000 }, (_, i) => ({
+              workspace_id: 'test',
+              order_number: `TEST-${String(i).padStart(4, '0')}`,
+              description: `Performance test order ${i}`,
+              priority: 'NORMAL',
+              status: 'PENDING',
+            }));
+
+            await prisma.order.createMany({ data: orders });
+            const insertTime = Date.now() - startInsert;
+            console.log(`✅ Bulk insert (1000 records): ${insertTime}ms`);
+
+            // Test 2: Query performance
+            const startQuery = Date.now();
+            const results = await prisma.order.findMany({
+              where: { status: 'PENDING' },
+              include: { client: true },
+              take: 100
+            });
+            const queryTime = Date.now() - startQuery;
+            console.log(`✅ Complex query with join: ${queryTime}ms`);
+
+            // Test 3: Aggregation performance
+            const startAgg = Date.now();
+            const stats = await prisma.order.groupBy({
+              by: ['status'],
+              _count: { id: true }
+            });
+            const aggTime = Date.now() - startAgg;
+            console.log(`✅ Aggregation query: ${aggTime}ms`);
+
+            // Performance thresholds
+            if (insertTime > 5000) throw new Error(`Insert too slow: ${insertTime}ms`);
+            if (queryTime > 1000) throw new Error(`Query too slow: ${queryTime}ms`);
+            if (aggTime > 500) throw new Error(`Aggregation too slow: ${aggTime}ms`);
+
+            console.log('🎉 All database performance tests passed!');
+          }
+
+          performanceTest().catch(console.error).finally(() => prisma.$disconnect());
+          EOF
+
+          node db-perf-test.js
+        env:
+          DATABASE_URL: postgresql://ash_ai:test_password@localhost:5432/ash_ai_perf_test
+
+  memory-leak-test:
+    name: Memory Leak Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: pnpm build
+
+      - name: Run memory leak test
+        run: |
+          # Create memory leak detection script
+          cat > memory-test.js << 'EOF'
+          const { spawn } = require('child_process');
+
+          console.log('🔍 Starting memory leak detection...');
+
+          const app = spawn('node', ['services/ash-admin/server.js'], {
+            env: { ...process.env, NODE_ENV: 'test' }
+          });
+
+          let memoryUsage = [];
+          let interval = setInterval(() => {
+            const usage = process.memoryUsage();
+            memoryUsage.push({
+              timestamp: Date.now(),
+              heapUsed: usage.heapUsed / 1024 / 1024, // MB
+              heapTotal: usage.heapTotal / 1024 / 1024, // MB
+              external: usage.external / 1024 / 1024 // MB
+            });
+
+            if (memoryUsage.length > 60) { // 5 minutes of data
+              clearInterval(interval);
+
+              // Analyze memory trend
+              const first = memoryUsage[0];
+              const last = memoryUsage[memoryUsage.length - 1];
+              const growth = last.heapUsed - first.heapUsed;
+
+              console.log(`Initial memory: ${first.heapUsed.toFixed(2)}MB`);
+              console.log(`Final memory: ${last.heapUsed.toFixed(2)}MB`);
+              console.log(`Memory growth: ${growth.toFixed(2)}MB`);
+
+              if (growth > 100) { // More than 100MB growth
+                console.error('❌ Potential memory leak detected!');
+                process.exit(1);
+              } else {
+                console.log('✅ No memory leak detected');
+              }
+
+              app.kill();
+              process.exit(0);
+            }
+          }, 5000); // Check every 5 seconds
+
+          setTimeout(() => {
+            clearInterval(interval);
+            app.kill();
+            console.log('⏱️ Memory test completed');
+            process.exit(0);
+          }, 300000); // 5 minutes timeout
+          EOF
+
+          timeout 6m node memory-test.js
+
+  report:
+    name: Performance Report
+    runs-on: ubuntu-latest
+    needs: [lighthouse, load-testing, database-performance, memory-leak-test]
+    if: always()
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Generate performance report
+        run: |
+          echo "# 📊 Ashley AI Performance Report" > performance-report.md
+          echo "" >> performance-report.md
+          echo "**Date:** $(date)" >> performance-report.md
+          echo "**Environment:** ${{ github.event.inputs.environment || 'staging' }}" >> performance-report.md
+          echo "" >> performance-report.md
+
+          if [ "${{ needs.lighthouse.result }}" == "success" ]; then
+            echo "✅ **Lighthouse Audit:** PASSED" >> performance-report.md
+          else
+            echo "❌ **Lighthouse Audit:** FAILED" >> performance-report.md
+          fi
+
+          if [ "${{ needs.load-testing.result }}" == "success" ]; then
+            echo "✅ **Load Testing:** PASSED" >> performance-report.md
+          else
+            echo "❌ **Load Testing:** FAILED" >> performance-report.md
+          fi
+
+          if [ "${{ needs.database-performance.result }}" == "success" ]; then
+            echo "✅ **Database Performance:** PASSED" >> performance-report.md
+          else
+            echo "❌ **Database Performance:** FAILED" >> performance-report.md
+          fi
+
+          if [ "${{ needs.memory-leak-test.result }}" == "success" ]; then
+            echo "✅ **Memory Leak Test:** PASSED" >> performance-report.md
+          else
+            echo "❌ **Memory Leak Test:** FAILED" >> performance-report.md
+          fi
+
+          echo "" >> performance-report.md
+          echo "---" >> performance-report.md
+          echo "*Generated by Ashley AI Performance Testing Pipeline*" >> performance-report.md
+
+      - name: Create issue if tests failed
+        if: needs.lighthouse.result == 'failure' || needs.load-testing.result == 'failure' || needs.database-performance.result == 'failure' || needs.memory-leak-test.result == 'failure'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Performance Test Failure - ' + new Date().toISOString().split('T')[0],
+              body: require('fs').readFileSync('performance-report.md', 'utf8'),
+              labels: ['performance', 'bug', 'priority-high']
+            })

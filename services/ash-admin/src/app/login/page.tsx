@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('admin@ashleyai.com')
-  const [password, setPassword] = useState('admin123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -215,18 +215,6 @@ export default function LoginPage() {
           </a>
         </div>
         
-        <div style={{
-          marginTop: '24px',
-          padding: '16px',
-          backgroundColor: '#f3f4f6',
-          borderRadius: '8px',
-          fontSize: '12px',
-          color: '#6b7280'
-        }}>
-          <strong>Demo Mode:</strong><br />
-          Pre-filled credentials for testing<br />
-          Click "Sign In" to access dashboard
-        </div>
       </div>
     </div>
   )
