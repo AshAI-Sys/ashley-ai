@@ -37,17 +37,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check for stored token on mount (only in browser)
     if (typeof window !== 'undefined') {
       const storedToken = localStorage.getItem('ash_token')
+      console.log('🔐 AuthContext - Stored token:', storedToken ? 'EXISTS' : 'NONE')
+
       if (storedToken) {
         setToken(storedToken)
 
         // Get stored user data if available
         const storedUser = localStorage.getItem('ash_user')
+        console.log('👤 AuthContext - Stored user:', storedUser)
+
         if (storedUser) {
           try {
             const userData = JSON.parse(storedUser)
+            console.log('✅ AuthContext - Parsed user:', userData)
             setUser(userData)
           } catch (error) {
-            console.error('Error parsing stored user data:', error)
+            console.error('❌ Error parsing stored user data:', error)
             // Fallback to demo user
             setUser({
               id: 'demo-user-1',
