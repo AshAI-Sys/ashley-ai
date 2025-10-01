@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server'
 import { prisma } from '../../../lib/db'
 import bcrypt from 'bcryptjs'
 
+export async function GET() {
+  return NextResponse.json({
+    message: 'Setup endpoint - Use POST to create admin user'
+  })
+}
+
 export async function POST() {
   try {
     // Check if admin user already exists
