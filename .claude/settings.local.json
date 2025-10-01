@@ -66,7 +66,12 @@
       "Bash(Remove-Item \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\webhooks\" -Recurse -Force)",
       "Bash(robocopy:*)",
       "Read(//c/Users/Khell/Desktop/Ashley AI Backup/**)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git remote remove:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
