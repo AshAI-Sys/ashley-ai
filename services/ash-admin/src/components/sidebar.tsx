@@ -60,22 +60,42 @@ export default function Sidebar() {
   console.log('🔍 Sidebar - User role type:', typeof user?.role, user?.role)
   console.log('🔍 Sidebar - User department:', user?.department)
 
+  // All navigation items
+  const allNavigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*' },
+    { name: 'Clients', href: '/clients', icon: 'Building2', department: 'Management' },
+    { name: 'Orders', href: '/orders', icon: 'ShoppingCart', department: 'Management' },
+    { name: 'Design & Approval', href: '/designs', icon: 'Palette', department: 'Management' },
+    { name: 'Cutting Operations', href: '/cutting', icon: 'Scissors', department: 'Cutting' },
+    { name: 'Printing Operations', href: '/printing', icon: 'Printer', department: 'Printing' },
+    { name: 'Sewing Operations', href: '/sewing', icon: 'PocketKnife', department: 'Sewing' },
+    { name: 'Quality Control', href: '/quality-control', icon: 'CheckCircle', department: 'Quality' },
+    { name: 'Finishing & Packing', href: '/finishing-packing', icon: 'Package', department: 'Finishing' },
+    { name: 'Delivery Management', href: '/delivery', icon: 'Truck', department: 'Delivery' },
+    { name: 'Finance', href: '/finance', icon: 'DollarSign', department: 'Finance' },
+    { name: 'HR & Payroll', href: '/hr-payroll', icon: 'Users', department: 'HR' },
+    { name: 'Maintenance', href: '/maintenance', icon: 'Wrench', department: 'Maintenance' },
+    { name: 'User Management', href: '/admin/users', icon: 'Users', department: 'Administration' },
+    { name: 'Employee Onboarding', href: '/admin/onboarding', icon: 'UserPlus', department: 'Administration' },
+    { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management' },
+    { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management' },
+  ]
+
   // Get filtered navigation based on user role and department
   const navigation = useMemo(() => {
     if (!user) {
       // Default navigation for non-authenticated users
-      console.log('⚠️ No user found, showing default navigation')
       return [{ name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*' }]
     }
 
-    console.log('✅ User found:', user.role, user.email)
-    console.log('✅ User full object:', JSON.stringify(user, null, 2))
+    // SIMPLE FIX: If user role contains "admin" (case-insensitive), show everything
+    const userRole = (user.role || '').toLowerCase()
+    if (userRole === 'admin' || userRole === 'administrator') {
+      return allNavigation
+    }
 
-    // Map current roles to our RBAC roles for compatibility
+    // For non-admin users, use the permissions system
     const roleMapping = {
-      'admin': 'admin',
-      'Admin': 'admin',
-      'ADMIN': 'admin',
       'manager': 'manager',
       'Manager': 'manager',
       'CSR': 'designer',
@@ -85,35 +105,22 @@ export default function Sidebar() {
 
     const mappedRole = roleMapping[user.role as keyof typeof roleMapping] || 'cutting_operator'
 
-    // Get permissions based on role if not provided
     const { getRoleBasedPermissions } = require('../lib/rbac')
     const userPermissions = user.permissions && user.permissions.length > 0
       ? user.permissions
       : getRoleBasedPermissions(user.role || mappedRole)
 
-    // Transform user to match our permissions User interface
-    const isAdmin = user.role?.toLowerCase() === 'admin'
-    console.log('🔍 Is admin check:', {
-      userRole: user.role,
-      toLowerCase: user.role?.toLowerCase(),
-      isAdmin
-    })
-
     const permUser: User = {
       id: user.id,
       email: user.email,
       name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-      role: isAdmin ? 'admin' : mappedRole,
+      role: mappedRole,
       position: user.position || '',
       department: user.department || 'Administration',
-      permissions: isAdmin ? ['all'] : userPermissions
+      permissions: userPermissions
     }
 
-    console.log('🔍 Transformed permUser:', permUser)
-    const nav = getAccessibleNavigation(permUser)
-    console.log('🔍 Navigation items returned:', nav.length, nav.map(n => n.name))
-
-    return nav
+    return getAccessibleNavigation(permUser)
   }, [user])
 
   return (
