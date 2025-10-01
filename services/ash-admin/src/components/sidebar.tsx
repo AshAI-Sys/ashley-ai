@@ -55,12 +55,18 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { user } = useAuth()
 
+  // Debug logging
+  console.log('🔍 Sidebar - User object:', user)
+
   // Get filtered navigation based on user role and department
   const navigation = useMemo(() => {
     if (!user) {
       // Default navigation for non-authenticated users
+      console.log('⚠️ No user found, showing default navigation')
       return [{ name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*' }]
     }
+
+    console.log('✅ User found:', user.role, user.email)
 
     // Map current roles to our RBAC roles for compatibility
     const roleMapping = {
