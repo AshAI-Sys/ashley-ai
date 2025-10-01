@@ -137,3 +137,6 @@ docker-compose.override.yml
 *.key
 secrets/
 .vercel
+
+# Command artifacts
+nul
