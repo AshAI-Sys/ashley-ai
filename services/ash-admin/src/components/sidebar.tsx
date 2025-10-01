@@ -57,6 +57,8 @@ export default function Sidebar() {
 
   // Debug logging
   console.log('🔍 Sidebar - User object:', user)
+  console.log('🔍 Sidebar - User role type:', typeof user?.role, user?.role)
+  console.log('🔍 Sidebar - User department:', user?.department)
 
   // Get filtered navigation based on user role and department
   const navigation = useMemo(() => {
@@ -67,6 +69,7 @@ export default function Sidebar() {
     }
 
     console.log('✅ User found:', user.role, user.email)
+    console.log('✅ User full object:', JSON.stringify(user, null, 2))
 
     // Map current roles to our RBAC roles for compatibility
     const roleMapping = {
@@ -90,6 +93,12 @@ export default function Sidebar() {
 
     // Transform user to match our permissions User interface
     const isAdmin = user.role?.toLowerCase() === 'admin'
+    console.log('🔍 Is admin check:', {
+      userRole: user.role,
+      toLowerCase: user.role?.toLowerCase(),
+      isAdmin
+    })
+
     const permUser: User = {
       id: user.id,
       email: user.email,
@@ -100,7 +109,11 @@ export default function Sidebar() {
       permissions: isAdmin ? ['all'] : userPermissions
     }
 
-    return getAccessibleNavigation(permUser)
+    console.log('🔍 Transformed permUser:', permUser)
+    const nav = getAccessibleNavigation(permUser)
+    console.log('🔍 Navigation items returned:', nav.length, nav.map(n => n.name))
+
+    return nav
   }, [user])
 
   return (

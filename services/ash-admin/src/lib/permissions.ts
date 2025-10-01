@@ -33,6 +33,8 @@ export function hasAccess(user: User, route: string): boolean {
 
 // Get accessible navigation items for user
 export function getAccessibleNavigation(user: User) {
+  console.log('🔍 getAccessibleNavigation called with user:', JSON.stringify(user, null, 2))
+
   const allNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*', permission: 'dashboard.view' },
     { name: 'Clients', href: '/clients', icon: 'Building2', department: 'Management', permission: 'clients.view' },
@@ -57,12 +59,21 @@ export function getAccessibleNavigation(user: User) {
 
   // Admin users get access to ALL navigation items (case-insensitive)
   const userRoleLower = user.role?.toLowerCase()
+  console.log('🔍 Role check:', {
+    userRole: user.role,
+    userRoleLower,
+    isAdmin: userRoleLower === 'admin'
+  })
+
   if (userRoleLower === 'admin') {
+    console.log('✅ User is admin - returning all navigation')
     return allNavigation
   }
 
   // Admin users with '*' permissions get access to ALL navigation items
+  console.log('🔍 Checking permissions:', user.permissions)
   if (user.permissions && (user.permissions.includes('*') || user.permissions.includes('all'))) {
+    console.log('✅ User has all permissions - returning all navigation')
     return allNavigation
   }
 
