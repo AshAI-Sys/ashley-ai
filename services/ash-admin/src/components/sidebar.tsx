@@ -66,6 +66,7 @@ export default function Sidebar() {
     const roleMapping = {
       'admin': 'admin',
       'Admin': 'admin',
+      'ADMIN': 'admin',
       'manager': 'manager',
       'Manager': 'manager',
       'CSR': 'designer',
