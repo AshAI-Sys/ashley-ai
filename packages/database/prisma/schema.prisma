@@ -116,6 +116,11 @@ model Workspace {
   integrations         Integration[]
   integration_sync_logs IntegrationSyncLog[]
 
+  // Stage 15: AI Chat Assistant Relations
+  ai_chat_conversations AIChatConversation[]
+  ai_chat_suggestions  AIChatSuggestion[]
+  ai_chat_knowledge    AIChatKnowledge[]
+
   // Performance indexes
   @@index([is_active])
   @@index([created_at])
@@ -167,6 +172,12 @@ model User {
   acknowledged_alerts Alert[] @relation("AlertAcknowledger")
   resolved_alerts Alert[] @relation("AlertResolver")
   created_integrations Integration[] @relation("IntegrationCreator")
+
+  // Stage 15: AI Chat Assistant Relations
+  ai_chat_conversations AIChatConversation[] @relation("AIChatUser")
+  dismissed_suggestions AIChatSuggestion[] @relation("SuggestionDismisser")
+  acted_suggestions AIChatSuggestion[] @relation("SuggestionActor")
+  created_knowledge AIChatKnowledge[] @relation("KnowledgeCreator")
 
   @@unique([workspace_id, email])
 
@@ -3666,5 +3677,138 @@ model IntegrationSyncLog {
   @@index([completed_at])
 
   @@map("integration_sync_logs")
+}
+
+// ===== STAGE 15: AI CHAT ASSISTANT (NEW) =====
+
+// AI Chat Conversations - stores chat sessions with the AI assistant
+model AIChatConversation {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  user_id         String?   // User who initiated the chat (null for anonymous)
+  title           String?   // Auto-generated or user-provided title
+  context_type    String    @default("GENERAL") // GENERAL/ORDER/PRODUCTION/FINANCE/HR/etc
+  context_id      String?   // ID of related entity (order_id, client_id, etc)
+  is_archived     Boolean   @default(false)
+  is_pinned       Boolean   @default(false)
+  last_message_at DateTime  @default(now())
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User?     @relation("AIChatUser", fields: [user_id], references: [id])
+  messages        AIChatMessage[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, user_id])
+  @@index([workspace_id, context_type])
+  @@index([user_id])
+  @@index([is_archived])
+  @@index([last_message_at])
+  @@index([created_at])
+
+  @@map("ai_chat_conversations")
+}
+
+// AI Chat Messages - individual messages in conversations
+model AIChatMessage {
+  id              String    @id @default(cuid())
+  conversation_id String
+  role            String    // USER/ASSISTANT/SYSTEM
+  content         String    // The actual message text
+  message_type    String    @default("TEXT") // TEXT/IMAGE/FILE/ACTION/ERROR
+  attachments     String?   // JSON array of attachment metadata
+  metadata        String?   // JSON for additional data (tokens used, model version, etc)
+  function_calls  String?   // JSON array of AI function calls made
+  feedback        String?   // USER_LIKED/USER_DISLIKED/null
+  feedback_reason String?   // Why user liked/disliked
+  is_edited       Boolean   @default(false)
+  edited_at       DateTime?
+  created_at      DateTime  @default(now())
+
+  // Relations
+  conversation    AIChatConversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+
+  // Performance indexes
+  @@index([conversation_id])
+  @@index([role])
+  @@index([created_at])
+
+  @@map("ai_chat_messages")
+}
+
+// AI Chat Suggested Actions - AI-recommended actions based on context
+model AIChatSuggestion {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  suggestion_type String    // AUTOMATION/INSIGHT/ACTION/REMINDER/WARNING
+  category        String    // PRODUCTION/FINANCE/QUALITY/HR/INVENTORY/etc
+  title           String
+  description     String
+  confidence      Float     // 0-1 confidence score
+  priority        String    @default("MEDIUM") // LOW/MEDIUM/HIGH/URGENT
+  action_type     String?   // NAVIGATE/CREATE/UPDATE/ALERT/EXPORT
+  action_data     String?   // JSON data for executing the action
+  is_dismissed    Boolean   @default(false)
+  is_acted_upon   Boolean   @default(false)
+  dismissed_by    String?
+  dismissed_at    DateTime?
+  acted_by        String?
+  acted_at        DateTime?
+  valid_until     DateTime? // Suggestion expiration
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  dismissed_user  User?     @relation("SuggestionDismisser", fields: [dismissed_by], references: [id])
+  acted_user      User?     @relation("SuggestionActor", fields: [acted_by], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_dismissed])
+  @@index([workspace_id, category])
+  @@index([suggestion_type])
+  @@index([priority])
+  @@index([is_dismissed])
+  @@index([is_acted_upon])
+  @@index([created_at])
+
+  @@map("ai_chat_suggestions")
+}
+
+// AI Chat Knowledge Base - stores learned information and FAQs
+model AIChatKnowledge {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  category        String    // PRODUCTION/ORDERS/FINANCE/HR/SYSTEM/etc
+  question        String    // The question or topic
+  answer          String    // The answer or explanation
+  keywords        String?   // JSON array of keywords for search
+  examples        String?   // JSON array of examples
+  related_topics  String?   // JSON array of related knowledge IDs
+  usage_count     Int       @default(0)
+  helpful_count   Int       @default(0)
+  not_helpful_count Int     @default(0)
+  is_system       Boolean   @default(false) // System knowledge vs user-added
+  is_active       Boolean   @default(true)
+  created_by      String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User?     @relation("KnowledgeCreator", fields: [created_by], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, category])
+  @@index([workspace_id, is_active])
+  @@index([category])
+  @@index([is_active])
+  @@index([created_at])
+
+  @@map("ai_chat_knowledge")
 }
 
