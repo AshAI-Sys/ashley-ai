@@ -26,7 +26,8 @@ import {
   BarChart3,
   Home,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Landmark
 } from 'lucide-react'
 
 const iconMap = {
@@ -48,6 +49,7 @@ const iconMap = {
   Bot,
   Zap,
   BarChart3,
+  Landmark,
 }
 
 export default function Sidebar() {
@@ -74,6 +76,7 @@ export default function Sidebar() {
     { name: 'Delivery Management', href: '/delivery', icon: 'Truck', department: 'Delivery' },
     { name: 'Finance', href: '/finance', icon: 'DollarSign', department: 'Finance' },
     { name: 'HR & Payroll', href: '/hr-payroll', icon: 'Users', department: 'HR' },
+    { name: 'Government Reports', href: '/government', icon: 'Landmark', department: 'Finance' },
     { name: 'Maintenance', href: '/maintenance', icon: 'Wrench', department: 'Maintenance' },
     { name: 'User Management', href: '/admin/users', icon: 'Users', department: 'Administration' },
     { name: 'Employee Onboarding', href: '/admin/onboarding', icon: 'UserPlus', department: 'Administration' },
