@@ -27,6 +27,12 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
       return null
     }
 
+    // Validate session is active and not revoked
+    const isValidSession = await validateSession(token)
+    if (!isValidSession) {
+      return null
+    }
+
     const role = payload.role as Role
     return {
       id: payload.userId,
