@@ -4,13 +4,12 @@
   "description": "ASH AI Admin Interface - Backoffice Management UI",
   "private": true,
   "scripts": {
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "npx prisma generate && npx prisma migrate deploy && next build",
     "dev": "next dev -p 3001",
     "start": "next start -p 3002",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf .next out dist",
-    "postinstall": "prisma generate"
+    "clean": "rm -rf .next out dist"
   },
   "dependencies": {
     "@ash-ai/database": "workspace:*",
