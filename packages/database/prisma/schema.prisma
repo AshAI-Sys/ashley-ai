@@ -138,6 +138,9 @@ model User {
   permissions     String?   // JSON array as string
   is_active       Boolean   @default(true)
   requires_2fa    Boolean   @default(false)
+  two_factor_secret String?  // Encrypted 2FA secret
+  two_factor_enabled Boolean @default(false)
+  two_factor_backup_codes String?  // JSON array of backup codes (encrypted)
   phone_number    String?
   avatar_url      String?
   last_login_at   DateTime?

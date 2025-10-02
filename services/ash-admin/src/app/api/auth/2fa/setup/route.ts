@@ -3,6 +3,9 @@ import { z } from 'zod'
 import { requireAuth } from '../../../../../lib/auth-middleware'
 import { authenticator } from 'otplib'
 import QRCode from 'qrcode'
+import { encrypt, decrypt, hash } from '../../../../../lib/crypto'
+import { prisma } from '../../../../../lib/db'
+import { logAuthEvent } from '../../../../../lib/audit-logger'
 
 const Setup2FASchema = z.object({
   action: z.enum(['generate', 'verify', 'disable']),
@@ -74,16 +77,23 @@ async function generate2FASetup(user: any) {
     // Generate QR code as data URL
     const qrCodeDataUrl = await QRCode.toDataURL(otpauthUrl)
 
-    // In a real implementation, save the secret to the database temporarily
-    // For demo purposes, we'll return it directly
-    console.log(`2FA Setup for ${user.email}:`, { secret, otpauthUrl })
+    // Encrypt and temporarily store the secret in the database
+    // It will only be permanently saved after successful verification
+    const encryptedSecret = encrypt(secret)
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        two_factor_secret: encryptedSecret,
+        two_factor_enabled: false,  // Not enabled until verified
+      }
+    })
 
     return NextResponse.json({
       success: true,
       data: {
-        secret,
         qrCode: qrCodeDataUrl,
-        manualEntryCode: secret,
+        manualEntryCode: secret,  // Shown only during initial setup
         instructions: [
           '1. Install an authenticator app (Google Authenticator, Authy, etc.)',
           '2. Scan the QR code or manually enter the code shown below',
@@ -105,14 +115,26 @@ async function generate2FASetup(user: any) {
 // Verify 2FA setup token
 async function verify2FASetup(user: any, token: string) {
   try {
-    // In a real implementation, get the secret from the database
-    // For demo purposes, we'll simulate verification
-    const demoSecret = 'JBSWY3DPEHPK3PXP' // This would come from temp storage
+    // Get the user's stored 2FA secret from database
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { two_factor_secret: true }
+    })
+
+    if (!dbUser?.two_factor_secret) {
+      return NextResponse.json(
+        { success: false, error: 'No 2FA setup found. Please generate a new QR code first.' },
+        { status: 400 }
+      )
+    }
+
+    // Decrypt the secret
+    const secret = decrypt(dbUser.two_factor_secret)
 
     // Verify the token
     const isValid = authenticator.verify({
       token,
-      secret: demoSecret
+      secret
     })
 
     if (!isValid) {
@@ -122,14 +144,21 @@ async function verify2FASetup(user: any, token: string) {
       )
     }
 
-    // In real implementation, save the secret to the user's record and enable 2FA
-    console.log(`2FA enabled for user: ${user.email}`)
-
-    // Generate backup codes
+    // Generate and hash backup codes
     const backupCodes = generateBackupCodes()
+    const hashedBackupCodes = backupCodes.map(code => hash(code))
+
+    // Enable 2FA and save backup codes (hashed)
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        two_factor_enabled: true,
+        two_factor_backup_codes: JSON.stringify(hashedBackupCodes)
+      }
+    })
 
     // Log audit event
-    await logAuditEvent(user.id, 'USER_2FA_ENABLED', 'User enabled two-factor authentication', {
+    await logAuthEvent('2FA_ENABLED', user.workspaceId, user.id, undefined, {
       method: 'totp',
       backup_codes_generated: backupCodes.length
     })
@@ -137,8 +166,8 @@ async function verify2FASetup(user: any, token: string) {
     return NextResponse.json({
       success: true,
       data: {
-        backupCodes,
-        message: '2FA has been successfully enabled for your account'
+        backupCodes,  // Return plain codes to user (only time they'll see them)
+        message: '2FA has been successfully enabled for your account. Save your backup codes in a secure location.'
       },
       message: '2FA enabled successfully'
     })
@@ -155,11 +184,18 @@ async function verify2FASetup(user: any, token: string) {
 // Disable 2FA
 async function disable2FA(user: any) {
   try {
-    // In real implementation, remove 2FA secret and backup codes from user record
-    console.log(`2FA disabled for user: ${user.email}`)
+    // Remove 2FA secret and backup codes from user record
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        two_factor_enabled: false,
+        two_factor_secret: null,
+        two_factor_backup_codes: null
+      }
+    })
 
     // Log audit event
-    await logAuditEvent(user.id, 'USER_2FA_DISABLED', 'User disabled two-factor authentication', {
+    await logAuthEvent('2FA_DISABLED', user.workspaceId, user.id, undefined, {
       disabled_by: 'user',
       reason: 'user_request'
     })
@@ -189,22 +225,3 @@ function generateBackupCodes(): string[] {
   return codes
 }
 
-// Log audit event
-async function logAuditEvent(
-  userId: string,
-  action: string,
-  description: string,
-  metadata?: any
-) {
-  try {
-    console.log('2FA AUDIT EVENT:', {
-      user_id: userId,
-      action,
-      description,
-      metadata,
-      timestamp: new Date().toISOString()
-    })
-  } catch (error) {
-    console.error('Error logging 2FA audit event:', error)
-  }
-}

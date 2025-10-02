@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { generateToken } from '../../../../lib/jwt'
 import { prisma } from '../../../../lib/db'
 import bcrypt from 'bcryptjs'
+import { logAuthEvent } from '../../../../lib/audit-logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,6 +29,12 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
+      // Log failed login attempt
+      await logAuthEvent('LOGIN_FAILED', 'system', undefined, request, {
+        email,
+        reason: 'User not found'
+      })
+
       return NextResponse.json({
         success: false,
         error: 'Invalid email or password'
@@ -36,6 +43,12 @@ export async function POST(request: NextRequest) {
 
     // Verify password using bcrypt
     if (!user.password_hash) {
+      // Log failed login attempt
+      await logAuthEvent('LOGIN_FAILED', user.workspace_id, user.id, request, {
+        email,
+        reason: 'No password hash'
+      })
+
       return NextResponse.json({
         success: false,
         error: 'Invalid email or password'
@@ -44,6 +57,12 @@ export async function POST(request: NextRequest) {
 
     const isValidPassword = await bcrypt.compare(password, user.password_hash)
     if (!isValidPassword) {
+      // Log failed login attempt
+      await logAuthEvent('LOGIN_FAILED', user.workspace_id, user.id, request, {
+        email,
+        reason: 'Invalid password'
+      })
+
       return NextResponse.json({
         success: false,
         error: 'Invalid email or password'
@@ -64,6 +83,12 @@ export async function POST(request: NextRequest) {
     await prisma.user.update({
       where: { id: user.id },
       data: { last_login_at: new Date() }
+    })
+
+    // Log successful login
+    await logAuthEvent('LOGIN', user.workspace_id, user.id, request, {
+      email: user.email,
+      role: user.role
     })
 
     // Return success response with token and user data
