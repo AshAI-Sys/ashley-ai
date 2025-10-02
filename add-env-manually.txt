@@ -1,0 +1,49 @@
+========================================
+ADD ENVIRONMENT VARIABLES MANUALLY
+========================================
+
+Run these commands ONE BY ONE in PowerShell or Command Prompt:
+
+cd "C:\Users\Khell\Desktop\Ashley AI\services\ash-admin"
+
+# 1. DATABASE_URL (Paste your PostgreSQL connection string)
+vercel env add DATABASE_URL production
+
+# 2. NEXTAUTH_SECRET
+vercel env add NEXTAUTH_SECRET production
+# When prompted, paste: 3m+lTdu21gGfqItEpZaYTBTLgVVpIJcMN1wg0fxnzJg=
+
+# 3. JWT_SECRET
+vercel env add JWT_SECRET production
+# When prompted, paste: PbBXB94xaQ/ixP5TUQ586BsQJbbJLieLODw0pse1NiM=
+
+# 4. ENCRYPTION_KEY
+vercel env add ENCRYPTION_KEY production
+# When prompted, paste: AwHb90Svsu0H0831cU7YvDKDBCmIIZ1y0foCXhk1Fkw=
+
+# 5. NODE_ENV
+vercel env add NODE_ENV production
+# When prompted, paste: production
+
+# 6. NEXTAUTH_URL (temporary - update after deployment)
+vercel env add NEXTAUTH_URL production
+# When prompted, paste: https://ash-admin.vercel.app
+
+# 7. APP_URL (temporary - update after deployment)
+vercel env add APP_URL production
+# When prompted, paste: https://ash-admin.vercel.app
+
+========================================
+AFTER ADDING ALL VARIABLES
+========================================
+
+Deploy with:
+vercel --prod
+
+========================================
+YOUR SECRETS (for reference)
+========================================
+
+NEXTAUTH_SECRET=3m+lTdu21gGfqItEpZaYTBTLgVVpIJcMN1wg0fxnzJg=
+JWT_SECRET=PbBXB94xaQ/ixP5TUQ586BsQJbbJLieLODw0pse1NiM=
+ENCRYPTION_KEY=AwHb90Svsu0H0831cU7YvDKDBCmIIZ1y0foCXhk1Fkw=
