@@ -1,11 +1,5 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && cd packages/database && pnpm prisma generate && cd ../../services/ash-admin && pnpm build",
-  "devCommand": "pnpm dev",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "JWT_SECRET": "@jwt_secret"
-  }
+  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm build",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile"
 }
