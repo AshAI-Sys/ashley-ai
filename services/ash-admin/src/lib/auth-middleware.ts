@@ -20,19 +20,6 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
 
     const token = authHeader.substring(7)
 
-    // Development mode fallback - only in development
-    if (process.env.NODE_ENV === 'development' && token === 'demo-jwt-token-12345') {
-      console.warn('Using demo authentication token - DEVELOPMENT ONLY')
-      const role: Role = 'admin'
-      return {
-        id: 'demo-user-1',
-        email: 'admin@ashleyai.com',
-        role,
-        workspaceId: 'demo-workspace-1',
-        permissions: getAllPermissionsForRole(role)
-      }
-    }
-
     // Proper JWT validation
     const payload = verifyToken(token)
     if (!payload) {
@@ -47,12 +34,6 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
       workspaceId: payload.workspaceId,
       permissions: getAllPermissionsForRole(role)
     }
-
-    // TODO: Implement proper JWT validation
-    // const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    // return decoded as AuthUser
-
-    return null
   } catch (error) {
     console.error('Authentication error:', error)
     return null

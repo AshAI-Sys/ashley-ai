@@ -28,63 +28,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
-      // Auto-create admin user if it's the admin email and no users exist
-      if (email.toLowerCase() === 'admin@ashleyai.com' && password === 'Admin@12345') {
-        const userCount = await prisma.user.count()
-        if (userCount === 0) {
-          // Create workspace
-          const workspace = await prisma.workspace.create({
-            data: {
-              name: 'Main Workspace',
-              slug: 'main'
-            }
-          })
-
-          // Hash password
-          const hashedPassword = await bcrypt.hash('Admin@12345', 10)
-
-          // Create admin user
-          const newUser = await prisma.user.create({
-            data: {
-              email: 'admin@ashleyai.com',
-              password_hash: hashedPassword,
-              first_name: 'System',
-              last_name: 'Administrator',
-              role: 'ADMIN',
-              is_active: true,
-              workspace_id: workspace.id
-            },
-            include: {
-              workspace: true
-            }
-          })
-
-          // Generate token and return success (continue with login flow)
-          const userData = {
-            userId: newUser.id,
-            email: newUser.email,
-            role: newUser.role,
-            workspaceId: newUser.workspace_id
-          }
-
-          const token = generateToken(userData)
-
-          return NextResponse.json({
-            success: true,
-            access_token: token,
-            user: {
-              id: newUser.id,
-              email: newUser.email,
-              name: `${newUser.first_name} ${newUser.last_name}`,
-              role: newUser.role,
-              position: newUser.position || null,
-              department: newUser.department || null,
-              workspaceId: newUser.workspace_id
-            }
-          })
-        }
-      }
-
       return NextResponse.json({
         success: false,
         error: 'Invalid email or password'
