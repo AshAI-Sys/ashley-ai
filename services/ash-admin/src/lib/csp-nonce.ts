@@ -23,7 +23,21 @@ export function generateNonce(): string {
  * Create CSP header with nonce
  */
 export function createCSPHeader(nonce: string): string {
-  const cspDirectives = [
+  // Relaxed CSP for development - allows inline styles and eval for Next.js dev mode
+  const isDevelopment = process.env.NODE_ENV === 'development'
+
+  const cspDirectives = isDevelopment ? [
+    `default-src 'self'`,
+    `script-src 'self' 'unsafe-eval' 'unsafe-inline'`,
+    `style-src 'self' 'unsafe-inline'`,
+    `img-src 'self' data: https: blob:`,
+    `font-src 'self' data:`,
+    `connect-src 'self' https: ws: wss:`,
+    `frame-ancestors 'self'`,
+    `base-uri 'self'`,
+    `form-action 'self'`,
+    `object-src 'none'`,
+  ] : [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}'`,
     `style-src 'self' 'nonce-${nonce}'`,
