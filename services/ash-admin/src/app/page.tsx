@@ -1,3 +1,5 @@
+'use client'
+
 export default function HomePage() {
   return (
     <div style={{
@@ -44,7 +46,7 @@ export default function HomePage() {
         }}>
           Apparel Smart Hub - Artificial Intelligence
         </p>
-        
+
         <a
           href="/login"
           style={{
