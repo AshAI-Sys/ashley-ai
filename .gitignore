@@ -107,6 +107,7 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+*.db-journal
 database.db
 
 # TypeScript
