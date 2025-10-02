@@ -64,8 +64,8 @@ export function ChatWidget() {
         body: JSON.stringify({
           conversation_id: conversationId,
           message: userMessage,
-          workspace_id: 'default-workspace', // TODO: Get from auth context
-          user_id: null, // TODO: Get from auth context
+          workspace_id: 'demo-workspace-1', // Using demo workspace
+          user_id: 'demo-user-1', // Using demo user
         }),
       })
 
