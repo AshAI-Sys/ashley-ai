@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { logSecurityEvent, logAPIRequest } from './lib/audit-logger'
+import { generateNonce, createCSPHeader } from './lib/csp-nonce'
+import { getRedisClient } from './lib/redis/client'
 
-// Rate limiting store (in-memory, use Redis in production)
+// Initialize Redis client
+let redis: ReturnType<typeof getRedisClient> | null = null
+try {
+  redis = getRedisClient()
+} catch (error) {
+  console.warn('Redis not available, using in-memory fallback')
+}
+
+// Fallback in-memory stores (only used if Redis is unavailable)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
-
-// CSRF token store (in-memory, use Redis in production)
 const csrfTokenStore = new Map<string, { token: string; expires: number }>()
 
 // Security headers configuration
