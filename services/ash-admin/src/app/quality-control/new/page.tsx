@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { FileUpload } from '@/components/FileUpload'
 
 interface DefectCode {
   id: string
@@ -65,6 +66,14 @@ export default function NewInspectionPage() {
     result: 'ACCEPT' | 'REJECT' | 'PENDING_REVIEW'
   } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [newDefect, setNewDefect] = useState({
+    defect_code_id: '',
+    severity: 'MINOR',
+    quantity: 1,
+    location: '',
+    description: '',
+    photo_url: ''
+  })
 
   useEffect(() => {
     loadDefectCodes()
@@ -169,6 +178,34 @@ export default function NewInspectionPage() {
       ...inspectionResult,
       result
     })
+  }
+
+  const addDefect = () => {
+    if (!currentSample || !newDefect.defect_code_id) return
+
+    // Add defect to current sample
+    const updatedSample = {
+      ...currentSample,
+      defects: [...currentSample.defects, newDefect],
+      pass_fail: false // Sample fails if it has defects
+    }
+
+    // Update samples list
+    const updatedSamples = samples.map(s =>
+      s.sample_no === currentSample.sample_no ? updatedSample : s
+    )
+    setSamples(updatedSamples)
+
+    // Reset form and close modal
+    setNewDefect({
+      defect_code_id: '',
+      severity: 'MINOR',
+      quantity: 1,
+      location: '',
+      description: '',
+      photo_url: ''
+    })
+    setCurrentSample(null)
   }
 
   const saveInspection = async () => {
@@ -386,12 +423,98 @@ export default function NewInspectionPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-500 mb-4">Select defect type and provide details</p>
-              {/* Defect form would go here */}
-              <div className="flex justify-end space-x-2">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="defect_code">Defect Code</Label>
+                  <Select
+                    value={newDefect.defect_code_id}
+                    onValueChange={(value) => setNewDefect({...newDefect, defect_code_id: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select defect" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {defectCodes.map(code => (
+                        <SelectItem key={code.id} value={code.id}>
+                          {code.code} - {code.name} ({code.severity})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="severity">Severity</Label>
+                    <Select
+                      value={newDefect.severity}
+                      onValueChange={(value) => setNewDefect({...newDefect, severity: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="CRITICAL">Critical</SelectItem>
+                        <SelectItem value="MAJOR">Major</SelectItem>
+                        <SelectItem value="MINOR">Minor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="quantity">Quantity</Label>
+                    <Input
+                      id="quantity"
+                      type="number"
+                      min="1"
+                      value={newDefect.quantity}
+                      onChange={(e) => setNewDefect({...newDefect, quantity: parseInt(e.target.value) || 1})}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    placeholder="e.g., Left sleeve, Front panel"
+                    value={newDefect.location}
+                    onChange={(e) => setNewDefect({...newDefect, location: e.target.value})}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe the defect..."
+                    value={newDefect.description}
+                    onChange={(e) => setNewDefect({...newDefect, description: e.target.value})}
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <Label>Defect Photo (Optional)</Label>
+                  <FileUpload
+                    onUpload={(url) => setNewDefect({...newDefect, photo_url: url})}
+                    accept="image/*"
+                    maxSizeMB={5}
+                    folder="qc-defects"
+                    type="image"
+                    existingUrls={newDefect.photo_url ? [newDefect.photo_url] : []}
+                    onRemove={() => setNewDefect({...newDefect, photo_url: ''})}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 mt-6">
                 <Button variant="outline" onClick={() => setCurrentSample(null)}>
                   Cancel
                 </Button>
-                <Button>Add Defect</Button>
+                <Button onClick={addDefect} disabled={!newDefect.defect_code_id}>
+                  Add Defect
+                </Button>
               </div>
             </CardContent>
           </Card>

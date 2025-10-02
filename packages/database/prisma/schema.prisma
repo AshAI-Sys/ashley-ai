@@ -80,7 +80,8 @@ model Workspace {
   
   // Stage 8: Delivery Relations
   deliveries       Delivery[]
-  
+  pod_records      PODRecord[]
+
   // Stage 2: Production Planning Relations
   worker_assignments WorkerAssignment[] @relation("WorkspaceWorkerAssignments")
   worker_allocations WorkerAllocation[] @relation("WorkspaceWorkerAllocations")
@@ -2994,6 +2995,7 @@ model Delivery {
   order            Order                    @relation(fields: [order_id], references: [id])
   shipments        ShipmentDelivery[]
   tracking_events  DeliveryTrackingEvent[]
+  pod_records      PODRecord[]
   
   // Performance indexes
   @@index([workspace_id])
@@ -3035,6 +3037,38 @@ model DeliveryTrackingEvent {
   delivery Delivery @relation(fields: [delivery_id], references: [id])
 
   @@map("delivery_tracking_events")
+}
+
+// Proof of Delivery records
+model PODRecord {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  delivery_id     String
+  shipment_id     String?
+  carton_id       String?
+  recipient_name  String
+  recipient_phone String?
+  signature_url   String?  // Photo of signature
+  photo_urls      String?  // JSON array of delivery photos
+  notes           String?
+  latitude        Float?
+  longitude       Float?
+  geolocation     String?  // Human-readable address
+  delivery_status String   @default("DELIVERED") // DELIVERED/PARTIAL/FAILED
+  cod_amount      Float?   // Cash on delivery amount
+  cod_collected   Float?   // Actual amount collected
+  cod_reference   String?  // GCash/payment reference
+  timestamp       DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  workspace Workspace @relation(fields: [workspace_id], references: [id])
+  delivery  Delivery  @relation(fields: [delivery_id], references: [id])
+
+  @@index([workspace_id])
+  @@index([delivery_id])
+  @@map("pod_records")
 }
 
 // ===== STAGE 11: MAINTENANCE MANAGEMENT =====
