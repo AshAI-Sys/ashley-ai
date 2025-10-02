@@ -65,7 +65,7 @@ export function ChatWidget() {
           conversation_id: conversationId,
           message: userMessage,
           workspace_id: 'demo-workspace-1', // Using demo workspace
-          user_id: 'demo-user-1', // Using demo user
+          user_id: 'cmg8yu1ke0001c81pbqgcamxu', // Using real demo user ID
         }),
       })
 
