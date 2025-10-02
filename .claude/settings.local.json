@@ -73,7 +73,9 @@
       "Bash(git remote remove:*)",
       "Bash(git rm:*)",
       "Bash(git fetch:*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(git config:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
