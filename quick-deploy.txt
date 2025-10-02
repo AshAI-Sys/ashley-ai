@@ -1,0 +1,62 @@
+========================================
+QUICK VERCEL DEPLOYMENT STEPS
+========================================
+
+You need to add environment variables first.
+
+STEP 1: Add Environment Variables
+----------------------------------
+
+Open Command Prompt or PowerShell and run these commands ONE BY ONE:
+
+cd "C:\Users\Khell\Desktop\Ashley AI\services\ash-admin"
+
+Then add each variable:
+
+1. DATABASE_URL (Get from https://neon.tech)
+   vercel env add DATABASE_URL production
+   When prompted, paste your PostgreSQL connection string
+
+2. NEXTAUTH_SECRET
+   vercel env add NEXTAUTH_SECRET production
+   Paste: 3m+lTdu21gGfqItEpZaYTBTLgVVpIJcMN1wg0fxnzJg=
+
+3. JWT_SECRET
+   vercel env add JWT_SECRET production
+   Paste: PbBXB94xaQ/ixP5TUQ586BsQJbbJLieLODw0pse1NiM=
+
+4. ENCRYPTION_KEY
+   vercel env add ENCRYPTION_KEY production
+   Paste: AwHb90Svsu0H0831cU7YvDKDBCmIIZ1y0foCXhk1Fkw=
+
+5. NODE_ENV
+   vercel env add NODE_ENV production
+   Paste: production
+
+6. NEXTAUTH_URL
+   vercel env add NEXTAUTH_URL production
+   Paste: https://ashley-ai-ash.vercel.app
+
+7. APP_URL
+   vercel env add APP_URL production
+   Paste: https://ashley-ai-ash.vercel.app
+
+STEP 2: Deploy
+--------------
+vercel --prod --yes
+
+========================================
+IMPORTANT: Get PostgreSQL Database First!
+========================================
+
+If you don't have DATABASE_URL yet:
+
+1. Go to: https://neon.tech
+2. Sign up/Login
+3. Create new project: "ashley-ai"
+4. Copy connection string (looks like):
+   postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+
+Then use that as your DATABASE_URL value.
+
+========================================
