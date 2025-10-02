@@ -1,4 +1,4 @@
-import { PrismaClient } from '@ash/database'
+import { PrismaClient } from '@ash-ai/database'
 import { NextRequest } from 'next/server'
 
 const prisma = new PrismaClient()
