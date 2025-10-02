@@ -9,7 +9,12 @@
     "start": "next start -p 3002",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf .next out dist"
+    "clean": "rm -rf .next out dist",
+    "load-test": "cd load-tests && k6 run run-all-tests.js",
+    "load-test:api": "cd load-tests && k6 run api-endpoints.test.js",
+    "load-test:db": "cd load-tests && k6 run database-queries.test.js",
+    "load-test:auth": "cd load-tests && k6 run auth-workflow.test.js",
+    "load-test:smoke": "cd load-tests && k6 run --vus 1 --duration 30s api-endpoints.test.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.9.1",
