@@ -27,7 +27,8 @@ import {
   Home,
   ChevronLeft,
   ChevronRight,
-  Landmark
+  Landmark,
+  MessageSquare
 } from 'lucide-react'
 
 const iconMap = {
@@ -50,6 +51,7 @@ const iconMap = {
   Zap,
   BarChart3,
   Landmark,
+  MessageSquare,
 }
 
 export default function Sidebar() {
@@ -77,6 +79,7 @@ export default function Sidebar() {
     { name: 'Finance', href: '/finance', icon: 'DollarSign', department: 'Finance' },
     { name: 'HR & Payroll', href: '/hr-payroll', icon: 'Users', department: 'HR' },
     { name: 'Government Reports', href: '/government', icon: 'Landmark', department: 'Finance' },
+    { name: 'SMS Notifications', href: '/sms-notifications', icon: 'MessageSquare', department: 'Management' },
     { name: 'Maintenance', href: '/maintenance', icon: 'Wrench', department: 'Maintenance' },
     { name: 'User Management', href: '/admin/users', icon: 'Users', department: 'Administration' },
     { name: 'Employee Onboarding', href: '/admin/onboarding', icon: 'UserPlus', department: 'Administration' },
