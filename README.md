@@ -187,4 +187,4 @@ This project is proprietary software. All rights reserved.
 
 ---
 
-**ASH AI Team** - Building the future of apparel manufacturing with AI
+**ASH AI Team** - Building the future of apparel manufacturing with AI# Deployment trigger
