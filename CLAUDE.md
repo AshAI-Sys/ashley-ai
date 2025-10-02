@@ -1,8 +1,8 @@
 # Ashley AI - Development Guide
 
-**Last Updated**: 2025-09-29
-**Current Status**: 14 of 14 Manufacturing Stages Implemented - FULLY TESTED & PRODUCTION READY
-**Latest Update**: Complete system testing successful - Live website operational
+**Last Updated**: 2025-10-02
+**Current Status**: 15 of 15 Manufacturing Stages Implemented - FULLY TESTED & PRODUCTION READY
+**Latest Update**: AI Chat Assistant (Stage 15) - Conversational AI chatbot integrated
 
 ## Quick Start Commands
 
@@ -175,6 +175,16 @@ Ashley AI/
 - System integration orchestration with external service connectors
 - Real-time automation dashboard with performance monitoring and activity tracking
 - Intelligent rule execution engine with retry logic and error handling
+
+### ✅ Stage 15 - AI Chat Assistant *(Completed - Oct 2, 2025)*
+- **Conversational AI chatbot** - Talk to Ashley AI like ChatGPT for manufacturing help
+- **Multi-provider support** - Works with Anthropic Claude or OpenAI GPT
+- **Real-time chat interface** - Beautiful floating chat widget on all pages
+- **Conversation management** - Save and resume chat sessions with history
+- **Context-aware responses** - AI understands your production, orders, and business data
+- **Smart suggestions** - AI provides actionable insights and recommendations
+- **Knowledge base** - Learn from interactions and provide better answers over time
+- **Message feedback** - Rate AI responses to improve quality
 
 ## Key Features
 - **QR Code System**: Track bundles throughout production
