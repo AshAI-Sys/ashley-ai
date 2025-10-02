@@ -16,23 +16,18 @@ try {
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 const csrfTokenStore = new Map<string, { token: string; expires: number }>()
 
-// Security headers configuration
-const securityHeaders = {
-  'X-DNS-Prefetch-Control': 'on',
-  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
-  'X-Frame-Options': 'SAMEORIGIN',
-  'X-Content-Type-Options': 'nosniff',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy': 
-    "default-src 'self'; " +
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'; " +
-    "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: https:; " +
-    "font-src 'self' data:; " +
-    "connect-src 'self' https:; " +
-    "frame-ancestors 'self';",
+// Security headers configuration (CSP is set dynamically with nonce)
+function getSecurityHeaders(nonce: string) {
+  return {
+    'X-DNS-Prefetch-Control': 'on',
+    'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'X-Content-Type-Options': 'nosniff',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Content-Security-Policy': createCSPHeader(nonce),
+  }
 }
 
 // CORS configuration
@@ -67,13 +62,29 @@ function getRateLimitForPath(pathname: string): number {
   return RATE_LIMIT_MAX_REQUESTS.default
 }
 
-function checkRateLimit(request: NextRequest): boolean {
+async function checkRateLimit(request: NextRequest): Promise<boolean> {
   const key = getRateLimitKey(request)
+  const maxRequests = getRateLimitForPath(request.nextUrl.pathname)
+
+  // Try Redis first, fallback to in-memory
+  if (redis) {
+    try {
+      const count = await redis.incr(key)
+
+      if (count === 1) {
+        await redis.expire(key, 60) // 60 seconds
+      }
+
+      return count <= maxRequests
+    } catch (error) {
+      console.error('Redis rate limit error:', error)
+      // Fall through to in-memory
+    }
+  }
+
+  // In-memory fallback
   const now = Date.now()
   const record = rateLimitStore.get(key)
-
-  // Determine rate limit for this path
-  const maxRequests = getRateLimitForPath(request.nextUrl.pathname)
 
   if (!record || now > record.resetTime) {
     rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
@@ -124,12 +135,29 @@ function getSessionId(request: NextRequest): string {
          'anonymous'
 }
 
-function verifyCSRFToken(request: NextRequest): boolean {
+async function verifyCSRFToken(request: NextRequest): Promise<boolean> {
   const sessionId = getSessionId(request)
   const csrfToken = request.headers.get('x-csrf-token') || request.cookies.get('csrf-token')?.value
+
+  if (!csrfToken) {
+    return false
+  }
+
+  // Try Redis first
+  if (redis) {
+    try {
+      const storedToken = await redis.get(`csrf:${sessionId}`)
+      return csrfToken === storedToken
+    } catch (error) {
+      console.error('Redis CSRF error:', error)
+      // Fall through to in-memory
+    }
+  }
+
+  // In-memory fallback
   const storedToken = csrfTokenStore.get(sessionId)
 
-  if (!csrfToken || !storedToken || csrfToken !== storedToken.token) {
+  if (!storedToken || csrfToken !== storedToken.token) {
     return false
   }
 
@@ -141,8 +169,30 @@ function verifyCSRFToken(request: NextRequest): boolean {
   return true
 }
 
-export function middleware(request: NextRequest) {
+async function storeCSRFToken(sessionId: string, token: string): Promise<void> {
+  // Try Redis first
+  if (redis) {
+    try {
+      await redis.setex(`csrf:${sessionId}`, 3600, token) // 1 hour
+      return
+    } catch (error) {
+      console.error('Redis CSRF store error:', error)
+      // Fall through to in-memory
+    }
+  }
+
+  // In-memory fallback
+  csrfTokenStore.set(sessionId, {
+    token,
+    expires: Date.now() + 3600000, // 1 hour
+  })
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Generate nonce for CSP
+  const nonce = generateNonce()
 
   // Handle preflight requests
   if (request.method === 'OPTIONS') {
@@ -151,7 +201,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Check rate limiting
-  if (!checkRateLimit(request)) {
+  if (!(await checkRateLimit(request))) {
     // Log rate limit event
     logSecurityEvent('RATE_LIMIT_EXCEEDED', request, {
       path: pathname,
@@ -196,10 +246,7 @@ export function middleware(request: NextRequest) {
     const sessionId = getSessionId(request)
     const token = generateCSRFToken()
 
-    csrfTokenStore.set(sessionId, {
-      token,
-      expires: Date.now() + 3600000, // 1 hour
-    })
+    await storeCSRFToken(sessionId, token)
 
     const response = NextResponse.next()
 
@@ -211,8 +258,12 @@ export function middleware(request: NextRequest) {
       maxAge: 3600, // 1 hour
     })
 
-    // Add security headers
-    Object.entries(securityHeaders).forEach(([key, value]) => {
+    // Set nonce in header for client-side access
+    response.headers.set('X-Nonce', nonce)
+
+    // Add security headers with nonce
+    const headers = getSecurityHeaders(nonce)
+    Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value)
     })
 
@@ -226,7 +277,7 @@ export function middleware(request: NextRequest) {
   const isWebhook = pathname.includes('/webhooks/')
 
   if (isStateChanging && isAPI && !isAuthEndpoint && !isWebhook) {
-    if (!verifyCSRFToken(request)) {
+    if (!(await verifyCSRFToken(request))) {
       // Log CSRF violation
       logSecurityEvent('CSRF_VIOLATION', request, {
         path: pathname,
@@ -249,8 +300,12 @@ export function middleware(request: NextRequest) {
   // Continue with the request and add security headers
   const response = NextResponse.next()
 
-  // Add security headers
-  Object.entries(securityHeaders).forEach(([key, value]) => {
+  // Set nonce in header
+  response.headers.set('X-Nonce', nonce)
+
+  // Add security headers with nonce
+  const headers = getSecurityHeaders(nonce)
+  Object.entries(headers).forEach(([key, value]) => {
     response.headers.set(key, value)
   })
 

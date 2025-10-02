@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
+import {
+  validateFile,
+  generateSafeFilename,
+  ALLOWED_FILE_TYPES,
+  MAX_FILE_SIZE,
+} from '@/lib/file-validator'
 
 // Configure Cloudinary
 cloudinary.config({
@@ -23,6 +29,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Determine allowed file types based on upload type
+    let allowedTypes: string[] = ALLOWED_FILE_TYPES.all
+    if (type === 'image') {
+      allowedTypes = ALLOWED_FILE_TYPES.images
+    } else if (type === 'document') {
+      allowedTypes = [
+        ...ALLOWED_FILE_TYPES.documents,
+        ...ALLOWED_FILE_TYPES.spreadsheets,
+      ]
+    }
+
+    // Validate file
+    const validation = await validateFile(file, allowedTypes, MAX_FILE_SIZE)
+
+    if (!validation.valid) {
+      return NextResponse.json(
+        {
+          error: validation.error,
+          code: 'FILE_VALIDATION_FAILED',
+        },
+        { status: 400 }
+      )
+    }
+
     // Check if Cloudinary is configured
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
       return NextResponse.json(
@@ -34,15 +64,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Generate safe filename
+    const safeFilename = generateSafeFilename(file.name, folder)
+
     // Convert file to buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary with safe filename
     const result = await new Promise<any>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: folder,
+          public_id: safeFilename.split('.')[0], // Remove extension, Cloudinary adds it
           resource_type: type === 'document' ? 'raw' : 'auto',
           transformation: type === 'image' ? [
             { quality: 'auto', fetch_format: 'auto' }
