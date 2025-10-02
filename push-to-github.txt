@@ -1,0 +1,43 @@
+========================================
+PUSH TO GITHUB - AUTHENTICATION NEEDED
+========================================
+
+The push failed because Git is using the wrong credentials (klvnmrfe instead of AshAI-Sys).
+
+SOLUTION 1: GitHub Desktop (Recommended - Easiest)
+==================================================
+1. Download: https://desktop.github.com
+2. Install and login with your AshAI-Sys account
+3. File → Add Local Repository → Select "C:\Users\Khell\Desktop\Ashley AI"
+4. Click "Publish repository" or "Push to origin"
+5. Done!
+
+SOLUTION 2: Personal Access Token
+===================================
+1. Create token: https://github.com/settings/tokens/new
+   - Note: "Ashley AI"
+   - Expiration: 90 days
+   - Scopes: ✓ repo
+   - Generate token
+   - COPY THE TOKEN (you'll only see it once!)
+
+2. Run in Command Prompt:
+   cd "C:\Users\Khell\Desktop\Ashley AI"
+   git remote remove origin
+   git remote add origin https://YOUR_TOKEN_HERE@github.com/AshAI-Sys/ashley-ai.git
+   git push -u origin master
+
+Replace YOUR_TOKEN_HERE with the actual token
+
+SOLUTION 3: Clear Windows Credentials
+=======================================
+1. Open: Control Panel → Credential Manager
+2. Click "Windows Credentials"
+3. Find any "github.com" entries
+4. Click "Remove" on all of them
+5. Try pushing again - it will prompt for login:
+   git push -u origin master
+
+========================================
+
+After successful push, proceed to Vercel deployment!
