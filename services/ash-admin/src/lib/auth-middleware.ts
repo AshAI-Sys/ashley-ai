@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, apiRateLimit } from './rate-limit'
 import { verifyToken, JWTPayload } from './jwt'
 import { Permission, Role, getAllPermissionsForRole, hasPermission, hasAnyPermission } from './rbac'
+import { validateSession } from './session-manager'
 
 export interface AuthUser {
   id: string

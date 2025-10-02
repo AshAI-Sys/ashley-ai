@@ -1338,6 +1338,24 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+model UserSession {
+  id           String   @id @default(cuid())
+  user_id      String
+  token_hash   String   @unique  // SHA-256 hash of JWT token
+  ip_address   String?
+  user_agent   String?
+  is_active    Boolean  @default(true)
+  last_activity DateTime @default(now())
+  expires_at   DateTime
+  created_at   DateTime @default(now())
+  revoked_at   DateTime?
+
+  @@index([user_id])
+  @@index([user_id, is_active])
+  @@index([expires_at])
+  @@map("user_sessions")
+}
+
 model Automation {
   id           String          @id @default(cuid())
   workspace_id String

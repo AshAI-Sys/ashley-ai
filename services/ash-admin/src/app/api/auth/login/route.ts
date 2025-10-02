@@ -3,6 +3,7 @@ import { generateToken } from '../../../../lib/jwt'
 import { prisma } from '../../../../lib/db'
 import bcrypt from 'bcryptjs'
 import { logAuthEvent } from '../../../../lib/audit-logger'
+import { createSession } from '../../../../lib/session-manager'
 
 export async function POST(request: NextRequest) {
   try {
@@ -84,6 +85,9 @@ export async function POST(request: NextRequest) {
       where: { id: user.id },
       data: { last_login_at: new Date() }
     })
+
+    // Create session for the user
+    await createSession(user.id, token, request)
 
     // Log successful login
     await logAuthEvent('LOGIN', user.workspace_id, user.id, request, {
