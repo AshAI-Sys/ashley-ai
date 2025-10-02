@@ -56,7 +56,27 @@ export function createStrictCSPHeader(nonce: string): string {
     `media-src 'self'`,
     `manifest-src 'self'`,
     `upgrade-insecure-requests`,
+    `block-all-mixed-content`,
   ]
 
   return cspDirectives.join('; ')
+}
+
+/**
+ * Additional security headers for maximum protection
+ */
+export function getMaxSecurityHeaders(): Record<string, string> {
+  return {
+    // Cross-Origin policies for maximum isolation
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Cross-Origin-Embedder-Policy': 'require-corp',
+    'Cross-Origin-Resource-Policy': 'same-origin',
+
+    // Certificate transparency
+    'Expect-CT': 'max-age=86400, enforce',
+
+    // Prevent download execution (IE)
+    'X-Download-Options': 'noopen',
+    'X-Permitted-Cross-Domain-Policies': 'none',
+  }
 }

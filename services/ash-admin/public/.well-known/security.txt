@@ -1,0 +1,62 @@
+Contact: mailto:security@ashleyai.com
+Expires: 2026-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://ashleyai.com/.well-known/security.txt
+Policy: https://ashleyai.com/security-policy
+Hiring: https://ashleyai.com/careers
+
+# Security Policy
+
+This file describes our security vulnerability disclosure process.
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability in Ashley AI, please report it to:
+- Email: security@ashleyai.com
+- Subject: [SECURITY] Brief description of issue
+- Include: Detailed description, steps to reproduce, potential impact
+
+## Response Timeline
+
+- Initial response: Within 24 hours
+- Status update: Within 7 days
+- Resolution target: 30-90 days depending on severity
+
+## Severity Levels
+
+- **CRITICAL**: Active exploitation possible, immediate fix required
+- **HIGH**: Significant security impact, fix within 7 days
+- **MEDIUM**: Moderate impact, fix within 30 days
+- **LOW**: Minor impact, fix within 90 days
+
+## Disclosure Policy
+
+We follow responsible disclosure:
+1. Report received and acknowledged
+2. Issue verified and severity assessed
+3. Fix developed and tested
+4. Security patch released
+5. Public disclosure (90 days after fix or by mutual agreement)
+
+## Rewards
+
+We appreciate security researchers and may offer:
+- Public acknowledgment (with permission)
+- Hall of Fame listing
+- Bounty rewards for critical findings (case by case)
+
+## Out of Scope
+
+The following are NOT considered security vulnerabilities:
+- Attacks requiring physical access to user devices
+- Social engineering attacks
+- Denial of service attacks
+- Reports from automated tools without proof of exploitability
+- Issues in third-party libraries (report to them directly)
+
+## Encryption
+
+For sensitive reports, use our PGP key:
+https://ashleyai.com/security-pgp-key.asc
+
+Thank you for helping keep Ashley AI secure!

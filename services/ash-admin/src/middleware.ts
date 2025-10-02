@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { logSecurityEvent, logAPIRequest } from './lib/audit-logger'
-import { generateNonce, createCSPHeader } from './lib/csp-nonce'
+import { generateNonce, createCSPHeader, getMaxSecurityHeaders } from './lib/csp-nonce'
 import { getRedisClient } from './lib/redis/client'
 
 // Initialize Redis client
@@ -264,6 +264,12 @@ export async function middleware(request: NextRequest) {
     // Add security headers with nonce
     const headers = getSecurityHeaders(nonce)
     Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+
+    // Add maximum security headers
+    const maxSecurityHeaders = getMaxSecurityHeaders()
+    Object.entries(maxSecurityHeaders).forEach(([key, value]) => {
       response.headers.set(key, value)
     })
 
