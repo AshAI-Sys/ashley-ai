@@ -2,17 +2,9 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { logSecurityEvent, logAPIRequest } from './lib/audit-logger'
 import { generateNonce, createCSPHeader, getMaxSecurityHeaders } from './lib/csp-nonce'
-import { getRedisClient } from './lib/redis/client'
 
-// Initialize Redis client
-let redis: ReturnType<typeof getRedisClient> | null = null
-try {
-  redis = getRedisClient()
-} catch (error) {
-  console.warn('Redis not available, using in-memory fallback')
-}
-
-// Fallback in-memory stores (only used if Redis is unavailable)
+// Note: Redis (ioredis) cannot be used in Edge Runtime middleware
+// Using in-memory stores for rate limiting and CSRF tokens
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 const csrfTokenStore = new Map<string, { token: string; expires: number }>()
 
@@ -66,23 +58,7 @@ async function checkRateLimit(request: NextRequest): Promise<boolean> {
   const key = getRateLimitKey(request)
   const maxRequests = getRateLimitForPath(request.nextUrl.pathname)
 
-  // Try Redis first, fallback to in-memory
-  if (redis) {
-    try {
-      const count = await redis.incr(key)
-
-      if (count === 1) {
-        await redis.expire(key, 60) // 60 seconds
-      }
-
-      return count <= maxRequests
-    } catch (error) {
-      console.error('Redis rate limit error:', error)
-      // Fall through to in-memory
-    }
-  }
-
-  // In-memory fallback
+  // In-memory rate limiting
   const now = Date.now()
   const record = rateLimitStore.get(key)
 
@@ -143,18 +119,7 @@ async function verifyCSRFToken(request: NextRequest): Promise<boolean> {
     return false
   }
 
-  // Try Redis first
-  if (redis) {
-    try {
-      const storedToken = await redis.get(`csrf:${sessionId}`)
-      return csrfToken === storedToken
-    } catch (error) {
-      console.error('Redis CSRF error:', error)
-      // Fall through to in-memory
-    }
-  }
-
-  // In-memory fallback
+  // In-memory CSRF token verification
   const storedToken = csrfTokenStore.get(sessionId)
 
   if (!storedToken || csrfToken !== storedToken.token) {
@@ -170,18 +135,7 @@ async function verifyCSRFToken(request: NextRequest): Promise<boolean> {
 }
 
 async function storeCSRFToken(sessionId: string, token: string): Promise<void> {
-  // Try Redis first
-  if (redis) {
-    try {
-      await redis.setex(`csrf:${sessionId}`, 3600, token) // 1 hour
-      return
-    } catch (error) {
-      console.error('Redis CSRF store error:', error)
-      // Fall through to in-memory
-    }
-  }
-
-  // In-memory fallback
+  // In-memory CSRF token storage
   csrfTokenStore.set(sessionId, {
     token,
     expires: Date.now() + 3600000, // 1 hour

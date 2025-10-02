@@ -2,15 +2,21 @@
  * CSP Nonce Generator
  *
  * Generates cryptographically secure nonces for Content Security Policy
+ * Uses Web Crypto API for Edge Runtime compatibility
  */
-
-import { randomBytes } from 'crypto'
 
 /**
  * Generate a secure random nonce for CSP
+ * Edge Runtime compatible using Web Crypto API
  */
 export function generateNonce(): string {
-  return randomBytes(16).toString('base64')
+  // Use Web Crypto API (available in Edge Runtime)
+  const array = new Uint8Array(16)
+  crypto.getRandomValues(array)
+
+  // Convert to base64 using btoa (Edge Runtime compatible)
+  const binaryString = String.fromCharCode(...array)
+  return btoa(binaryString)
 }
 
 /**
