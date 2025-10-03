@@ -85,6 +85,20 @@ interface PayrollRun {
 export default function HRPayrollPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false)
+  const [newEmployee, setNewEmployee] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    password: '',
+    employee_number: '',
+    position: '',
+    department: '',
+    salary_type: 'DAILY',
+    base_salary: '',
+    piece_rate: ''
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const debouncedSearch = useDebounce(searchQuery, 500)
 
@@ -189,6 +203,48 @@ export default function HRPayrollPage() {
 
   const formatCurrency = (amount: number) => {
     return `₱${amount.toLocaleString()}`
+  }
+
+  const handleAddEmployee = async () => {
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('/api/hr/employees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newEmployee,
+          base_salary: newEmployee.base_salary ? parseFloat(newEmployee.base_salary) : null,
+          piece_rate: newEmployee.piece_rate ? parseFloat(newEmployee.piece_rate) : null
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setShowAddEmployeeModal(false)
+        setNewEmployee({
+          first_name: '',
+          last_name: '',
+          email: '',
+          password: '',
+          employee_number: '',
+          position: '',
+          department: '',
+          salary_type: 'DAILY',
+          base_salary: '',
+          piece_rate: ''
+        })
+        refetchEmployees()
+        alert('Employee added successfully!')
+      } else {
+        alert(data.error || 'Failed to add employee')
+      }
+    } catch (error) {
+      console.error('Error adding employee:', error)
+      alert('Failed to add employee')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const formatDateTime = (dateString: string) => {
@@ -353,7 +409,7 @@ export default function HRPayrollPage() {
                       <Filter className="w-4 h-4 mr-2" />
                       Filter
                     </Button>
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => setShowAddEmployeeModal(true)}>
                       <Plus className="w-4 h-4 mr-2" />
                       Add Employee
                     </Button>
