@@ -101,24 +101,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static assets - cache first with network fallback
+  // Static assets - cache first with network fallback (only GET requests)
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) {
-        // Return cached version and update cache in background
-        fetch(event.request).then((response) => {
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, response);
-          });
-        });
+        // Return cached version and update cache in background (only for GET)
+        if (event.request.method === 'GET') {
+          fetch(event.request).then((response) => {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, response);
+            });
+          }).catch(() => {});
+        }
         return cached;
       }
 
       // Not in cache, fetch from network
       return fetch(event.request)
         .then((response) => {
-          // Cache successful responses
-          if (response.status === 200) {
+          // Cache successful GET responses only
+          if (response.status === 200 && event.request.method === 'GET') {
             const responseClone = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(event.request, responseClone);
