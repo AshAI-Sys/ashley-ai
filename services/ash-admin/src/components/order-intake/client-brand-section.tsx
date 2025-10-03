@@ -75,9 +75,18 @@ export function ClientBrandSection({
 
     setCreatingClient(true)
     try {
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrf-token='))
+        ?.split('=')[1]
+
       const response = await fetch('/api/clients', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || '',
+        },
         body: JSON.stringify({
           name: newClientForm.name,
           company: newClientForm.company || null,
