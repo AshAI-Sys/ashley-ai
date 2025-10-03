@@ -179,8 +179,7 @@ export default function LoginPage() {
           </div>
           
           <button
-            type="button"
-            onClick={handleSubmit}
+            type="submit"
             disabled={isLoading}
             style={{
               width: '100%',
