@@ -1,12 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { cachedQueryWithMetrics, CacheKeys, CACHE_DURATION } from '@/lib/performance/query-cache'
 
 export async function GET(request: NextRequest) {
   try {
+    const workspaceId = 'default'
     const today = new Date()
     const startOfToday = new Date(today.setHours(0, 0, 0, 0))
     const endOfToday = new Date(today.setHours(23, 59, 59, 999))
     const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+
+    // Cache key based on date
+    const cacheKey = CacheKeys.hrStats(workspaceId)
+
+    // Use cached query with 2 minute cache (stats update frequently)
+    const stats = await cachedQueryWithMetrics(
+      cacheKey,
+      async () => await calculateHRStats(workspaceId, today, startOfToday, endOfToday, thisMonth),
+      CACHE_DURATION.STATS // 1 minute cache for stats
+    )
+
+    return NextResponse.json({
+      success: true,
+      data: stats
+    })
+
+  } catch (error) {
+    console.error('Error calculating HR stats:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to calculate HR statistics' },
+      { status: 500 }
+    )
+  }
+}
+
+async function calculateHRStats(
+  workspaceId: string,
+  today: Date,
+  startOfToday: Date,
+  endOfToday: Date,
+  thisMonth: Date
+) {
 
     // Run all queries in parallel
     const [
@@ -21,13 +55,13 @@ export async function GET(request: NextRequest) {
     ] = await Promise.all([
       // Total employees
       prisma.employee.count({
-        where: { workspace_id: 'default' }
+        where: { workspace_id: workspaceId }
       }),
 
       // Active employees
       prisma.employee.count({
         where: {
-          workspace_id: 'default',
+          workspace_id: workspaceId,
           is_active: true
         }
       }),
@@ -35,7 +69,7 @@ export async function GET(request: NextRequest) {
       // Today's attendance - employees who checked in
       prisma.attendanceLog.count({
         where: {
-          workspace_id: 'default',
+          workspace_id: workspaceId,
           date: {
             gte: startOfToday,
             lte: endOfToday
@@ -48,7 +82,7 @@ export async function GET(request: NextRequest) {
       // Pending overtime requests - using attendance with overtime
       prisma.attendanceLog.count({
         where: {
-          workspace_id: 'default',
+          workspace_id: workspaceId,
           overtime_minutes: { gt: 0 },
           status: 'PENDING'
         }
@@ -60,7 +94,7 @@ export async function GET(request: NextRequest) {
       // Current month's payroll cost estimate
       prisma.payrollEarning.aggregate({
         where: {
-          workspace_id: 'default',
+          workspace_id: workspaceId,
           payroll_period: {
             period_start: {
               gte: thisMonth
@@ -75,7 +109,7 @@ export async function GET(request: NextRequest) {
       // Today's absences (active employees who didn't check in)
       prisma.employee.count({
         where: {
-          workspace_id: 'default',
+          workspace_id: workspaceId,
           is_active: true,
           attendance: {
             none: {
@@ -92,7 +126,7 @@ export async function GET(request: NextRequest) {
 
       // Last payroll period
       prisma.payrollPeriod.findFirst({
-        where: { workspace_id: 'default' },
+        where: { workspace_id: workspaceId },
         orderBy: { created_at: 'desc' },
         include: {
           _count: {
@@ -111,7 +145,7 @@ export async function GET(request: NextRequest) {
     const departmentStats = await prisma.employee.groupBy({
       by: ['department'],
       where: {
-        workspace_id: 'default',
+        workspace_id: workspaceId,
         is_active: true
       },
       _count: {
@@ -123,7 +157,7 @@ export async function GET(request: NextRequest) {
     const positionStats = await prisma.employee.groupBy({
       by: ['position'],
       where: {
-        workspace_id: 'default',
+        workspace_id: workspaceId,
         is_active: true
       },
       _count: {
@@ -135,7 +169,7 @@ export async function GET(request: NextRequest) {
     const salaryTypeStats = await prisma.employee.groupBy({
       by: ['salary_type'],
       where: {
-        workspace_id: 'default',
+        workspace_id: workspaceId,
         is_active: true
       },
       _count: {
@@ -146,7 +180,7 @@ export async function GET(request: NextRequest) {
     // Calculate average tenure
     const employeesWithTenure = await prisma.employee.findMany({
       where: {
-        workspace_id: 'default',
+        workspace_id: workspaceId,
         is_active: true,
         hire_date: { not: null }
       },
@@ -255,13 +289,5 @@ export async function GET(request: NextRequest) {
           status: lastPayrollRun.status
         } : null
       }
-    })
-
-  } catch (error) {
-    console.error('Error calculating HR stats:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to calculate HR statistics' },
-      { status: 500 }
-    )
   }
 }

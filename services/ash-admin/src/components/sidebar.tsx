@@ -31,7 +31,8 @@ import {
   MessageSquare,
   Brain,
   PackageSearch,
-  Settings
+  Settings,
+  Activity
 } from 'lucide-react'
 
 const iconMap = {
@@ -58,6 +59,7 @@ const iconMap = {
   Brain,
   PackageSearch,
   Settings,
+  Activity,
 }
 
 export default function Sidebar() {
@@ -94,6 +96,7 @@ export default function Sidebar() {
     { name: 'Advanced Analytics', href: '/admin/analytics', icon: 'BarChart3', department: 'Management' },
     { name: 'AI Features', href: '/ai-features', icon: 'Brain', department: 'Management' },
     { name: 'Inventory', href: '/inventory', icon: 'PackageSearch', department: 'Inventory' },
+    { name: 'Performance', href: '/performance', icon: 'Activity', department: 'Administration' },
     { name: 'Tenant Settings', href: '/admin/tenants', icon: 'Settings', department: 'Administration' },
   ]
 

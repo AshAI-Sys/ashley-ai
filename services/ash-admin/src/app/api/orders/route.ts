@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@ash-ai/database';
 import { z } from 'zod';
+import { prisma } from '@/lib/db';
+import { cachedQueryWithMetrics, CacheKeys, CACHE_DURATION, InvalidateCache } from '@/lib/performance/query-cache';
 
-const prisma = new PrismaClient();
 const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
 
 const OrderLineItemSchema = z.object({
@@ -57,50 +57,61 @@ export async function GET(request: NextRequest) {
       where.client_id = clientId;
     }
 
-    // Fetch orders with related data
-    const [orders, total] = await Promise.all([
-      prisma.order.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          client: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-          brand: {
-            select: {
-              id: true,
-              name: true,
-              code: true,
-            },
-          },
-          line_items: true,
-          _count: {
-            select: {
+    // Generate cache key
+    const cacheKey = CacheKeys.ordersList(page, limit, { search, status, clientId });
+
+    // Use cached query
+    const result = await cachedQueryWithMetrics(
+      cacheKey,
+      async () => {
+        const [orders, total] = await Promise.all([
+          prisma.order.findMany({
+            where,
+            skip,
+            take: limit,
+            include: {
+              client: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                },
+              },
+              brand: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
+              },
               line_items: true,
+              _count: {
+                select: {
+                  line_items: true,
+                },
+              },
             },
+            orderBy: { created_at: 'desc' },
+          }),
+          prisma.order.count({ where }),
+        ]);
+
+        return {
+          orders,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
           },
-        },
-        orderBy: { created_at: 'desc' },
-      }),
-      prisma.order.count({ where }),
-    ]);
+        };
+      },
+      CACHE_DURATION.ORDERS // 5 minutes cache
+    );
 
     return NextResponse.json({
       success: true,
-      data: {
-        orders,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        },
-      },
+      data: result,
     });
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -142,6 +153,9 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Invalidate orders cache
+    await InvalidateCache.orders();
 
     return NextResponse.json(
       {
