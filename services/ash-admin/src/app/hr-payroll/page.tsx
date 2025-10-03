@@ -714,6 +714,159 @@ export default function HRPayrollPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Add Employee Modal */}
+      {showAddEmployeeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b sticky top-0 bg-white">
+              <h2 className="text-xl font-semibold">Add New Employee</h2>
+              <p className="text-sm text-gray-600 mt-1">Create employee account with login credentials</p>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Personal Information */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">First Name *</label>
+                  <Input
+                    value={newEmployee.first_name}
+                    onChange={(e) => setNewEmployee({...newEmployee, first_name: e.target.value})}
+                    placeholder="Juan"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Last Name *</label>
+                  <Input
+                    value={newEmployee.last_name}
+                    onChange={(e) => setNewEmployee({...newEmployee, last_name: e.target.value})}
+                    placeholder="Dela Cruz"
+                  />
+                </div>
+              </div>
+
+              {/* Login Credentials */}
+              <div className="border-t pt-4">
+                <h3 className="font-medium mb-3">Login Credentials</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email *</label>
+                    <Input
+                      type="email"
+                      value={newEmployee.email}
+                      onChange={(e) => setNewEmployee({...newEmployee, email: e.target.value})}
+                      placeholder="juan.delacruz@ashley.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Password *</label>
+                    <Input
+                      type="password"
+                      value={newEmployee.password}
+                      onChange={(e) => setNewEmployee({...newEmployee, password: e.target.value})}
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Work Information */}
+              <div className="border-t pt-4">
+                <h3 className="font-medium mb-3">Work Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Employee Number</label>
+                    <Input
+                      value={newEmployee.employee_number}
+                      onChange={(e) => setNewEmployee({...newEmployee, employee_number: e.target.value})}
+                      placeholder="Auto-generated if empty"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Position *</label>
+                    <Input
+                      value={newEmployee.position}
+                      onChange={(e) => setNewEmployee({...newEmployee, position: e.target.value})}
+                      placeholder="e.g., Sewing Operator"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Department *</label>
+                    <select
+                      value={newEmployee.department}
+                      onChange={(e) => setNewEmployee({...newEmployee, department: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-md"
+                    >
+                      <option value="">Select Department</option>
+                      <option value="Cutting">Cutting</option>
+                      <option value="Printing">Printing</option>
+                      <option value="Sewing">Sewing</option>
+                      <option value="Quality Control">Quality Control</option>
+                      <option value="Finishing">Finishing</option>
+                      <option value="Warehouse">Warehouse</option>
+                      <option value="Administration">Administration</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Salary Type</label>
+                    <select
+                      value={newEmployee.salary_type}
+                      onChange={(e) => setNewEmployee({...newEmployee, salary_type: e.target.value})}
+                      className="w-full px-3 py-2 border rounded-md"
+                    >
+                      <option value="DAILY">Daily</option>
+                      <option value="HOURLY">Hourly</option>
+                      <option value="PIECE">Piece Rate</option>
+                      <option value="MONTHLY">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Salary Information */}
+              <div className="border-t pt-4">
+                <h3 className="font-medium mb-3">Salary Information</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Base Salary (₱)</label>
+                    <Input
+                      type="number"
+                      value={newEmployee.base_salary}
+                      onChange={(e) => setNewEmployee({...newEmployee, base_salary: e.target.value})}
+                      placeholder="500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Piece Rate (₱)</label>
+                    <Input
+                      type="number"
+                      value={newEmployee.piece_rate}
+                      onChange={(e) => setNewEmployee({...newEmployee, piece_rate: e.target.value})}
+                      placeholder="5.00"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t flex justify-end gap-2 sticky bottom-0 bg-white">
+              <Button
+                variant="outline"
+                onClick={() => setShowAddEmployeeModal(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddEmployee}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Creating...' : 'Create Employee'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }
