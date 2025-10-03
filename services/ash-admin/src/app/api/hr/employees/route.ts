@@ -10,6 +10,7 @@ import {
   withErrorHandling
 } from '../../../../lib/error-handling'
 import { requireAnyPermission } from '../../../../lib/auth-middleware'
+import bcrypt from 'bcryptjs'
 
 export const GET = requireAnyPermission(['hr:read'])(withErrorHandling(async (request: NextRequest, user: any) => {
     const { searchParams } = new URL(request.url)
@@ -101,6 +102,9 @@ export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (
     first_name,
     last_name,
     employee_number,
+    email,
+    password,
+    role = 'employee',
     position,
     department,
     hire_date,
@@ -110,11 +114,28 @@ export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (
     contact_info = {}
   } = data
 
-  // Validate required fields
-  const validationError = validateRequiredFields(data, ['first_name', 'last_name', 'position', 'department'])
+  // Validate required fields (including email and password)
+  const validationError = validateRequiredFields(data, ['first_name', 'last_name', 'email', 'password', 'position', 'department'])
   if (validationError) {
     throw validationError
   }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    throw new Error('Invalid email format')
+  }
+
+  // Check if email already exists
+  const existingEmployee = await prisma.employee.findUnique({
+    where: { email }
+  })
+  if (existingEmployee) {
+    throw new Error('Email already registered')
+  }
+
+  // Hash password
+  const password_hash = await bcrypt.hash(password, 10)
 
   // Validate salary type enum
   if (salary_type) {
@@ -150,6 +171,9 @@ export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (
       employee_number: employee_number || `EMP${Date.now()}`,
       first_name,
       last_name,
+      email,
+      password_hash,
+      role,
       position,
       department,
       hire_date: hire_date ? new Date(hire_date) : new Date(),
@@ -165,6 +189,8 @@ export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (
     id: employee.id,
     name: `${employee.first_name} ${employee.last_name}`,
     employee_number: employee.employee_number,
+    email: employee.email,
+    role: employee.role,
     position: employee.position,
     department: employee.department,
     hire_date: employee.hire_date.toISOString(),
