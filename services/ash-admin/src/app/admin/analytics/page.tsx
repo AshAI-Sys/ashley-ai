@@ -19,13 +19,17 @@ import {
 export default function AnalyticsPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [dashboards, setDashboards] = useState<any[]>([]);
+  const [heatmapData, setHeatmapData] = useState<any>(null);
+  const [profitData, setProfitData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'reports' | 'dashboards'>('reports');
+  const [activeTab, setActiveTab] = useState<'reports' | 'dashboards' | 'heatmap' | 'profit'>('reports');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchReports();
     fetchDashboards();
+    fetchHeatmapData();
+    fetchProfitData();
   }, []);
 
   const fetchReports = async () => {
@@ -59,6 +63,45 @@ export default function AnalyticsPage() {
       }
     } catch (error) {
       console.error('Error fetching dashboards:', error);
+    }
+  };
+
+  const fetchHeatmapData = async () => {
+    try {
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 7); // Last 7 days
+
+      const response = await fetch(
+        `/api/analytics/heatmap?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        {
+          headers: {
+            'x-workspace-id': 'default-workspace',
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setHeatmapData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching heatmap data:', error);
+    }
+  };
+
+  const fetchProfitData = async () => {
+    try {
+      const response = await fetch('/api/analytics/profit', {
+        headers: {
+          'x-workspace-id': 'default-workspace',
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        setProfitData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching profit data:', error);
     }
   };
 
@@ -184,6 +227,26 @@ export default function AnalyticsPage() {
               }`}
             >
               Executive Dashboards
+            </button>
+            <button
+              onClick={() => setActiveTab('heatmap')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'heatmap'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Production Heatmap
+            </button>
+            <button
+              onClick={() => setActiveTab('profit')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'profit'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Profit Analysis
             </button>
           </div>
         </div>
@@ -364,6 +427,225 @@ export default function AnalyticsPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Production Heatmap Tab */}
+        {activeTab === 'heatmap' && (
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Production Efficiency Heatmap</h2>
+
+            {heatmapData ? (
+              <div className="space-y-6">
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p className="text-xs text-blue-600 font-medium">Avg Efficiency</p>
+                    <p className="text-2xl font-bold text-blue-900">
+                      {heatmapData.stats?.avgEfficiency?.toFixed(1) || 0}%
+                    </p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <p className="text-xs text-green-600 font-medium">Total Output</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      {heatmapData.stats?.totalOutput?.toLocaleString() || 0}
+                    </p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <p className="text-xs text-purple-600 font-medium">Target</p>
+                    <p className="text-2xl font-bold text-purple-900">
+                      {heatmapData.stats?.totalTarget?.toLocaleString() || 0}
+                    </p>
+                  </div>
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <p className="text-xs text-red-600 font-medium">Avg Defect Rate</p>
+                    <p className="text-2xl font-bold text-red-900">
+                      {heatmapData.stats?.avgDefectRate?.toFixed(2) || 0}%
+                    </p>
+                  </div>
+                  <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <p className="text-xs text-orange-600 font-medium">Total Downtime</p>
+                    <p className="text-2xl font-bold text-orange-900">
+                      {heatmapData.stats?.totalDowntime || 0} mins
+                    </p>
+                  </div>
+                </div>
+
+                {/* Heatmap Grid */}
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Station
+                          </th>
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <th key={i} className="px-3 py-3 text-center text-xs font-medium text-gray-500">
+                              {i}:00
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {['CUTTING', 'PRINTING', 'SEWING', 'QC', 'FINISHING'].map((station) => (
+                          <tr key={station}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {station}
+                            </td>
+                            {Array.from({ length: 24 }, (_, hour) => {
+                              const dataPoint = heatmapData.heatmap?.find(
+                                (d: any) => d.station_type === station && d.hour === hour
+                              );
+                              const efficiency = dataPoint?.avg_efficiency || 0;
+                              const bgColor =
+                                efficiency >= 90
+                                  ? 'bg-green-500'
+                                  : efficiency >= 75
+                                  ? 'bg-green-300'
+                                  : efficiency >= 50
+                                  ? 'bg-yellow-300'
+                                  : efficiency > 0
+                                  ? 'bg-red-300'
+                                  : 'bg-gray-100';
+
+                              return (
+                                <td
+                                  key={hour}
+                                  className={`px-3 py-4 text-center text-xs ${bgColor}`}
+                                  title={`${station} at ${hour}:00 - ${efficiency.toFixed(1)}% efficient`}
+                                >
+                                  {efficiency > 0 ? efficiency.toFixed(0) : '-'}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-xs text-gray-600">
+                    <strong>Legend:</strong>
+                    <span className="ml-2 inline-block w-4 h-4 bg-green-500 align-middle"></span> 90-100%
+                    <span className="ml-2 inline-block w-4 h-4 bg-green-300 align-middle"></span> 75-89%
+                    <span className="ml-2 inline-block w-4 h-4 bg-yellow-300 align-middle"></span> 50-74%
+                    <span className="ml-2 inline-block w-4 h-4 bg-red-300 align-middle"></span> Below 50%
+                    <span className="ml-2 inline-block w-4 h-4 bg-gray-100 align-middle"></span> No data
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-600">No heatmap data available. Data will appear as production runs are tracked.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Profit Analysis Tab */}
+        {activeTab === 'profit' && (
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">Profit Margin Analysis</h2>
+
+            {profitData ? (
+              <div className="space-y-6">
+                {/* Summary Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <p className="text-xs text-green-600 font-medium">Total Revenue</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      ₱{profitData.stats?.totalRevenue?.toLocaleString() || 0}
+                    </p>
+                  </div>
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p className="text-xs text-blue-600 font-medium">Gross Profit</p>
+                    <p className="text-2xl font-bold text-blue-900">
+                      ₱{profitData.stats?.totalGrossProfit?.toLocaleString() || 0}
+                    </p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <p className="text-xs text-purple-600 font-medium">Avg Gross Margin</p>
+                    <p className="text-2xl font-bold text-purple-900">
+                      {profitData.stats?.avgGrossMargin?.toFixed(1) || 0}%
+                    </p>
+                  </div>
+                  <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                    <p className="text-xs text-indigo-600 font-medium">Avg Net Margin</p>
+                    <p className="text-2xl font-bold text-indigo-900">
+                      {profitData.stats?.avgNetMargin?.toFixed(1) || 0}%
+                    </p>
+                  </div>
+                </div>
+
+                {/* Client Comparison */}
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-sm font-semibold text-gray-900">Profitability by Client</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Client
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            Orders
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            Revenue
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            Profit
+                          </th>
+                          <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                            Margin
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {profitData.clientComparison?.slice(0, 10).map((client: any) => (
+                          <tr key={client.client_id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              {client.client_name}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                              {client.orders}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                              ₱{client.total_revenue.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                              ₱{client.total_profit.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  client.avg_margin >= 30
+                                    ? 'bg-green-100 text-green-800'
+                                    : client.avg_margin >= 20
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-red-100 text-red-800'
+                                }`}
+                              >
+                                {client.avg_margin.toFixed(1)}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <p className="text-gray-600">No profit analysis data available. Analyze your orders to see profitability insights.</p>
               </div>
             )}
           </div>
