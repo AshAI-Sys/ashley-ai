@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [loginType, setLoginType] = useState<'admin' | 'employee'>('admin')
   const router = useRouter()
 
   // Load saved credentials on mount (client-side only)
@@ -35,10 +36,13 @@ export default function LoginPage() {
     setIsLoading(true)
     setError('')
 
-    console.log('Login attempt:', { email, password })
+    console.log('Login attempt:', { email, password, loginType })
 
     try {
-      const response = await fetch('/api/auth/login', {
+      // Choose API endpoint based on login type
+      const apiEndpoint = loginType === 'admin' ? '/api/auth/login' : '/api/auth/employee-login'
+
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,23 +57,37 @@ export default function LoginPage() {
         console.log('Login successful:', data)
 
         if (data.success && data.access_token) {
-          localStorage.setItem('ash_token', data.access_token)
-          localStorage.setItem('ash_user', JSON.stringify(data.user))
+          // Store tokens differently for admin vs employee
+          if (loginType === 'admin') {
+            localStorage.setItem('ash_token', data.access_token)
+            localStorage.setItem('ash_user', JSON.stringify(data.user))
+            localStorage.setItem('user_type', 'admin')
+          } else {
+            localStorage.setItem('access_token', data.access_token)
+            localStorage.setItem('employee_data', JSON.stringify(data.employee))
+            localStorage.setItem('user_type', 'employee')
+          }
 
           // Save credentials if "Remember Me" is checked
           if (rememberMe) {
             localStorage.setItem('ash_remember_email', email)
             localStorage.setItem('ash_remember_password', password)
+            localStorage.setItem('ash_remember_type', loginType)
           } else {
             // Clear saved credentials if unchecked
             localStorage.removeItem('ash_remember_email')
             localStorage.removeItem('ash_remember_password')
+            localStorage.removeItem('ash_remember_type')
           }
 
-          console.log('Token stored, redirecting to dashboard')
+          console.log('Token stored, redirecting...')
 
-          // Use window.location for more reliable redirect
-          window.location.href = '/dashboard'
+          // Redirect based on login type
+          if (loginType === 'admin') {
+            window.location.href = '/dashboard'
+          } else {
+            window.location.href = '/employee'
+          }
         } else {
           setError('Login failed: Invalid response format')
         }
@@ -117,7 +135,7 @@ export default function LoginPage() {
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
           </div>
-          
+
           <h1 style={{
             fontSize: '28px',
             fontWeight: 'bold',
@@ -133,6 +151,66 @@ export default function LoginPage() {
           }}>
             Access your ASH AI Dashboard
           </p>
+        </div>
+
+        {/* Login Type Toggle */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          marginBottom: '24px'
+        }}>
+          <button
+            type="button"
+            onClick={() => setLoginType('admin')}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: loginType === 'admin' ? '2px solid #3b82f6' : '1px solid #d1d5db',
+              borderRadius: '8px',
+              backgroundColor: loginType === 'admin' ? '#eff6ff' : 'white',
+              color: loginType === 'admin' ? '#3b82f6' : '#6b7280',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            <svg style={{ width: '20px', height: '20px' }} fill="currentColor" viewBox="0 0 20 20">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+            </svg>
+            Admin Login
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setLoginType('employee')}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: loginType === 'employee' ? '2px solid #10b981' : '1px solid #d1d5db',
+              borderRadius: '8px',
+              backgroundColor: loginType === 'employee' ? '#f0fdf4' : 'white',
+              color: loginType === 'employee' ? '#10b981' : '#6b7280',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            <svg style={{ width: '20px', height: '20px' }} fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+            Employee Login
+          </button>
         </div>
 
         {error && (
@@ -164,7 +242,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@ashleyai.com"
+              placeholder={loginType === 'admin' ? 'admin@ashleyai.com' : 'employee@ashley.com'}
               required
               style={{
                 width: '100%',
@@ -192,7 +270,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="admin123"
+              placeholder={loginType === 'admin' ? 'admin123' : '••••••••'}
               required
               style={{
                 width: '100%',
@@ -236,7 +314,7 @@ export default function LoginPage() {
             disabled={isLoading}
             style={{
               width: '100%',
-              backgroundColor: isLoading ? '#9ca3af' : '#3b82f6',
+              backgroundColor: isLoading ? '#9ca3af' : (loginType === 'admin' ? '#3b82f6' : '#10b981'),
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -246,7 +324,7 @@ export default function LoginPage() {
               cursor: isLoading ? 'not-allowed' : 'pointer'
             }}
           >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+            {isLoading ? 'Signing In...' : `Sign In as ${loginType === 'admin' ? 'Admin' : 'Employee'}`}
           </button>
         </form>
         
