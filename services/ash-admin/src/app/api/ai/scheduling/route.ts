@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { smartSchedulingAI } from '@/lib/ai/smart-scheduling';
-import { prisma } from '@ash/database';
+import { prisma } from '@/lib/db';
 
 // POST /api/ai/scheduling - Generate optimized schedule
 export async function POST(req: NextRequest) {

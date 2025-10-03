@@ -119,7 +119,7 @@ export class BrandingManager {
   // Get branding configuration for workspace
   async getBranding(workspace_id: string): Promise<BrandingConfig> {
     try {
-      const { prisma } = await import('@ash/database');
+      const { prisma } = await import('@ash-ai/database');
 
       const workspace = await prisma.workspace.findUnique({
         where: { id: workspace_id },
@@ -175,7 +175,7 @@ export class BrandingManager {
     updates: Partial<Omit<BrandingConfig, 'workspace_id'>>
   ): Promise<boolean> {
     try {
-      const { prisma } = await import('@ash/database');
+      const { prisma } = await import('@ash-ai/database');
 
       const workspace = await prisma.workspace.findUnique({
         where: { id: workspace_id },

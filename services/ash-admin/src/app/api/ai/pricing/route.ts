@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dynamicPricingAI } from '@/lib/ai/dynamic-pricing';
-import { prisma } from '@ash/database';
+import { prisma } from '@/lib/db';
 
 // POST /api/ai/pricing - Get pricing recommendation
 export async function POST(req: NextRequest) {

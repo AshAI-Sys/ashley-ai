@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defectDetectionAI } from '@/lib/ai/defect-detection';
-import { prisma } from '@ash/database';
+import { prisma } from '@/lib/db';
 
 // POST /api/ai/defect-detection - Detect defects in image
 export async function POST(req: NextRequest) {

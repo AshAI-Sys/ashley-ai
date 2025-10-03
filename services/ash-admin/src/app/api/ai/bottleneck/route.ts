@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { bottleneckDetectionAI } from '@/lib/ai/bottleneck-detection';
-import { prisma } from '@ash/database';
+import { prisma } from '@/lib/db';
 
 // GET /api/ai/bottleneck - Detect bottlenecks in production system
 export async function GET(req: NextRequest) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { defectDetectionAI } from '@/lib/ai/defect-detection';
-import { prisma } from '@ash/database';
+import { prisma } from '@/lib/db';
 
 // GET /api/ai/defect-detection/patterns - Analyze defect patterns
 export async function GET(req: NextRequest) {

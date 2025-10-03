@@ -83,7 +83,7 @@ export interface MaterialCosting {
 export class InventoryManager {
   // F1: Track raw material inventory
   async addMaterial(material: Omit<Material, 'id' | 'created_at'>): Promise<Material> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     // Check if material with SKU exists
     const existing = await prisma.materialInventory.findFirst({
@@ -127,7 +127,7 @@ export class InventoryManager {
     quantity_change: number,
     transaction_type: 'PURCHASE' | 'USAGE' | 'ADJUSTMENT' | 'WASTE'
   ): Promise<void> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     const material = await prisma.materialInventory.findFirst({
       where: { id: material_id },
@@ -178,7 +178,7 @@ export class InventoryManager {
   }
 
   async createPurchaseOrder(po: Omit<PurchaseOrder, 'id' | 'po_number'>): Promise<PurchaseOrder> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     // Generate PO number
     const count = await prisma.order.count();
@@ -206,7 +206,7 @@ export class InventoryManager {
 
   // F3: Stock Alerts and Auto-Reordering
   private async checkStockAlert(material_id: string, current_level: number): Promise<void> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     const material = await prisma.materialInventory.findFirst({
       where: { id: material_id },
@@ -238,7 +238,7 @@ export class InventoryManager {
   }
 
   private async autoReorder(material_id: string): Promise<void> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     const material = await prisma.materialInventory.findFirst({
       where: { id: material_id },
@@ -274,7 +274,7 @@ export class InventoryManager {
   }
 
   async getStockAlerts(workspace_id: string): Promise<StockAlert[]> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     const materials = await prisma.materialInventory.findMany({
       where: { workspace_id },
@@ -317,7 +317,7 @@ export class InventoryManager {
 
   // F4: Material Costing and Waste Tracking
   async calculateMaterialCost(workspace_id: string): Promise<MaterialCosting[]> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     const materials = await prisma.materialInventory.findMany({
       where: { workspace_id },
@@ -367,7 +367,7 @@ export class InventoryManager {
 
   // F5: Barcode/RFID Scanning
   async scanBarcode(barcode: string): Promise<Material | null> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     // Search for material by barcode (stored in location field for now)
     const material = await prisma.materialInventory.findFirst({
@@ -422,7 +422,7 @@ export class InventoryManager {
     pending_pos: number;
     monthly_waste_cost: number;
   }> {
-    const { prisma } = await import('@ash/database');
+    const { prisma } = await import('@ash-ai/database');
 
     const materials = await prisma.materialInventory.findMany({
       where: { workspace_id },

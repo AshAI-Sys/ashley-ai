@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dynamicPricingAI } from '@/lib/ai/dynamic-pricing';
-import { prisma } from '@ash/database';
+import { prisma } from '@/lib/db';
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
 export async function GET(req: NextRequest) {
