@@ -122,6 +122,15 @@ model Workspace {
   ai_chat_suggestions  AIChatSuggestion[]
   ai_chat_knowledge    AIChatKnowledge[]
 
+  // Stage 16: Advanced Analytics & Reporting Relations
+  custom_reports       CustomReport[]
+  report_executions    ReportExecution[]
+  report_exports       ReportExport[]
+  report_shares        ReportShare[]
+  executive_dashboards ExecutiveDashboard[]
+  dashboard_widgets    DashboardWidget[]
+  analytics_events     AnalyticsEvent[]
+
   // Performance indexes
   @@index([is_active])
   @@index([created_at])
@@ -179,6 +188,14 @@ model User {
   dismissed_suggestions AIChatSuggestion[] @relation("SuggestionDismisser")
   acted_suggestions AIChatSuggestion[] @relation("SuggestionActor")
   created_knowledge AIChatKnowledge[] @relation("KnowledgeCreator")
+
+  // Stage 16: Advanced Analytics & Reporting Relations
+  created_reports CustomReport[] @relation("ReportCreator")
+  report_executions ReportExecution[] @relation("ReportExecutor")
+  report_exports ReportExport[] @relation("ReportExporter")
+  shared_reports ReportShare[] @relation("ReportSharer")
+  created_dashboards ExecutiveDashboard[] @relation("DashboardCreator")
+  analytics_events AnalyticsEvent[] @relation("AnalyticsEventUser")
 
   @@unique([workspace_id, email])
 
@@ -3844,5 +3861,220 @@ model AIChatKnowledge {
   @@index([created_at])
 
   @@map("ai_chat_knowledge")
+}
+
+// ============================================
+// STAGE 16: ADVANCED ANALYTICS & REPORTING
+// ============================================
+
+// Custom Report Builder - allows users to create custom reports
+model CustomReport {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  description     String?
+  report_type     String    // STANDARD/PIVOT/CHART/DASHBOARD/CUSTOM
+  data_source     String    // ORDERS/PRODUCTION/FINANCE/HR/INVENTORY/etc
+  query_config    String    // JSON: {tables, joins, filters, grouping, aggregations}
+  visualization   String?   // JSON: {type: bar/line/pie/table, settings}
+  columns         String    // JSON array of selected columns with formatting
+  filters         String?   // JSON array of filter conditions
+  sort_order      String?   // JSON: {column, direction}
+  schedule        String?   // MANUAL/DAILY/WEEKLY/MONTHLY/CUSTOM
+  schedule_config String?   // JSON: {frequency, time, recipients}
+  is_public       Boolean   @default(false)
+  is_favorite     Boolean   @default(false)
+  view_count      Int       @default(0)
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  creator         User      @relation("ReportCreator", fields: [created_by], references: [id])
+  executions      ReportExecution[]
+  exports         ReportExport[]
+  shares          ReportShare[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_public])
+  @@index([workspace_id, created_by])
+  @@index([report_type])
+  @@index([data_source])
+  @@index([is_favorite])
+  @@index([created_at])
+
+  @@map("custom_reports")
+}
+
+// Report Execution History - tracks when reports are run
+model ReportExecution {
+  id              String    @id @default(cuid())
+  report_id       String
+  workspace_id    String
+  executed_by     String
+  execution_time  Int       // milliseconds
+  row_count       Int
+  status          String    // SUCCESS/FAILED/TIMEOUT
+  error_message   String?
+  filters_applied String?   // JSON: snapshot of filters used
+  executed_at     DateTime  @default(now())
+
+  // Relations
+  report          CustomReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("ReportExecutor", fields: [executed_by], references: [id])
+
+  // Performance indexes
+  @@index([report_id])
+  @@index([workspace_id])
+  @@index([executed_by])
+  @@index([status])
+  @@index([executed_at])
+
+  @@map("report_executions")
+}
+
+// Report Exports - tracks exported report files
+model ReportExport {
+  id              String    @id @default(cuid())
+  report_id       String
+  workspace_id    String
+  format          String    // PDF/EXCEL/CSV/JSON
+  file_path       String?
+  file_size       Int?      // bytes
+  download_count  Int       @default(0)
+  expires_at      DateTime?
+  exported_by     String
+  exported_at     DateTime  @default(now())
+
+  // Relations
+  report          CustomReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("ReportExporter", fields: [exported_by], references: [id])
+
+  // Performance indexes
+  @@index([report_id])
+  @@index([workspace_id])
+  @@index([exported_by])
+  @@index([exported_at])
+  @@index([expires_at])
+
+  @@map("report_exports")
+}
+
+// Report Sharing - controls report access permissions
+model ReportShare {
+  id              String    @id @default(cuid())
+  report_id       String
+  workspace_id    String
+  shared_with     String    // user_id or 'PUBLIC' or 'TEAM'
+  permission      String    // VIEW/EDIT/ADMIN
+  can_export      Boolean   @default(true)
+  can_schedule    Boolean   @default(false)
+  shared_by       String
+  shared_at       DateTime  @default(now())
+  accessed_at     DateTime?
+
+  // Relations
+  report          CustomReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  sharer          User      @relation("ReportSharer", fields: [shared_by], references: [id])
+
+  // Performance indexes
+  @@index([report_id])
+  @@index([workspace_id])
+  @@index([shared_with])
+  @@index([shared_by])
+
+  @@map("report_shares")
+}
+
+// Executive Dashboard - predefined KPI dashboards
+model ExecutiveDashboard {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  description     String?
+  dashboard_type  String    // EXECUTIVE/PRODUCTION/FINANCE/SALES/HR/CUSTOM
+  layout          String    // JSON: grid layout with widget positions
+  widgets         String    // JSON array of widget configurations
+  refresh_interval Int      @default(300) // seconds
+  is_default      Boolean   @default(false)
+  is_active       Boolean   @default(true)
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  creator         User      @relation("DashboardCreator", fields: [created_by], references: [id])
+  widgets_data    DashboardWidget[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_default])
+  @@index([dashboard_type])
+  @@index([is_active])
+
+  @@map("executive_dashboards")
+}
+
+// Dashboard Widgets - individual KPI components
+model DashboardWidget {
+  id              String    @id @default(cuid())
+  dashboard_id    String
+  workspace_id    String
+  widget_type     String    // KPI_CARD/CHART/TABLE/HEATMAP/GAUGE/TREND
+  title           String
+  data_source     String    // API endpoint or report ID
+  query_params    String?   // JSON: parameters for data fetch
+  visualization   String    // JSON: chart config, colors, formatting
+  position        String    // JSON: {x, y, width, height}
+  refresh_interval Int?     // seconds, null = manual only
+  last_refreshed  DateTime?
+  is_visible      Boolean   @default(true)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  dashboard       ExecutiveDashboard @relation(fields: [dashboard_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+
+  // Performance indexes
+  @@index([dashboard_id])
+  @@index([workspace_id])
+  @@index([widget_type])
+
+  @@map("dashboard_widgets")
+}
+
+// Analytics Events - tracks user actions for insights
+model AnalyticsEvent {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  event_type      String    // PAGE_VIEW/BUTTON_CLICK/REPORT_RUN/EXPORT/etc
+  event_category  String    // PRODUCTION/FINANCE/HR/REPORTS/etc
+  event_name      String
+  event_data      String?   // JSON: additional event metadata
+  user_id         String?
+  session_id      String?
+  ip_address      String?
+  user_agent      String?
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User?     @relation("AnalyticsEventUser", fields: [user_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, event_type])
+  @@index([workspace_id, event_category])
+  @@index([user_id])
+  @@index([created_at])
+
+  @@map("analytics_events")
 }
 
