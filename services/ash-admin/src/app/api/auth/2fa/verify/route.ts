@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@ash-ai/database'
-import { verify2FA } from '@/lib/2fa'
+import { verify2FA } from '@/lib/2fa-server'
 
 const prisma = new PrismaClient()
 

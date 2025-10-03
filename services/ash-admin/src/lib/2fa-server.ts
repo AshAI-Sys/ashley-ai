@@ -1,5 +1,9 @@
+/**
+ * Server-side 2FA utilities (without QR code generation)
+ * QR code generation should be done client-side
+ */
+
 import speakeasy from 'speakeasy'
-import QRCode from 'qrcode'
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto'
 
 // Encryption for 2FA secrets (AES-256)
@@ -46,19 +50,6 @@ export function generate2FASecret(userEmail: string, appName: string = 'Ashley A
   return {
     secret: secret.base32,
     otpauth_url: secret.otpauth_url,
-  }
-}
-
-/**
- * Generate QR code as data URL for displaying to user
- */
-export async function generateQRCode(otpauthUrl: string): Promise<string> {
-  try {
-    const qrCodeDataURL = await QRCode.toDataURL(otpauthUrl)
-    return qrCodeDataURL
-  } catch (error) {
-    console.error('Error generating QR code:', error)
-    throw new Error('Failed to generate QR code')
   }
 }
 
@@ -124,13 +115,14 @@ export async function verifyBackupCode(
 }
 
 /**
- * Complete 2FA setup flow
+ * Complete 2FA setup flow (server-side only - NO QR CODE)
+ * QR code generation must be done client-side
  */
 export interface Setup2FAResult {
   secret: string
   encrypted_secret: string
   iv: string
-  qr_code: string
+  otpauth_url: string
   backup_codes: string[]
   backup_codes_hashed: string[]
 }
@@ -142,9 +134,6 @@ export async function setup2FA(userEmail: string): Promise<Setup2FAResult> {
   // Encrypt secret for storage
   const { encrypted, iv } = encryptSecret(secret)
 
-  // Generate QR code
-  const qrCode = await generateQRCode(otpauth_url!)
-
   // Generate backup codes
   const backupCodes = generateBackupCodes(8)
   const backupCodesHashed = await hashBackupCodes(backupCodes)
@@ -153,7 +142,7 @@ export async function setup2FA(userEmail: string): Promise<Setup2FAResult> {
     secret, // Return plaintext to show to user once (don't store)
     encrypted_secret: encrypted, // Store this in database
     iv, // Store this with encrypted_secret
-    qr_code: qrCode, // Show to user
+    otpauth_url: otpauth_url!, // Client will generate QR from this
     backup_codes: backupCodes, // Show to user once, then discard
     backup_codes_hashed: backupCodesHashed, // Store these in database
   }

@@ -44,13 +44,6 @@ const nextConfig = {
         tls: false,
         crypto: false,
       }
-
-      // Define 'self' for browser compatibility
-      config.plugins.push(
-        new (require('webpack').ProvidePlugin)({
-          self: 'global',
-        })
-      )
     }
 
     // Server-side externals for better performance

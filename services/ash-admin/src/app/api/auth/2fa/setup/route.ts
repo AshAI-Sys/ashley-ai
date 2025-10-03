@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@ash-ai/database'
-import { setup2FA } from '@/lib/2fa'
+import { setup2FA } from '@/lib/2fa-server'
 
 const prisma = new PrismaClient()
 
@@ -51,10 +51,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Return QR code and backup codes to user
+    // Return otpauth URL and backup codes to user
     // NOTE: This is the ONLY time backup codes are shown
+    // Client will generate QR code from otpauth_url
     return NextResponse.json({
-      qr_code: result.qr_code,
+      otpauth_url: result.otpauth_url,
       backup_codes: result.backup_codes,
       message: 'Scan QR code with Google Authenticator or similar app',
     })
