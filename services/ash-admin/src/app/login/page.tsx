@@ -1,14 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
+
+  // Load saved credentials on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('ash_remember_email')
+    const savedPassword = localStorage.getItem('ash_remember_password')
+    if (savedEmail) {
+      setEmail(savedEmail)
+      setRememberMe(true)
+    }
+    if (savedPassword) {
+      setPassword(savedPassword)
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     console.log('Form submitted - preventing default...')
@@ -38,6 +52,17 @@ export default function LoginPage() {
         if (data.success && data.access_token) {
           localStorage.setItem('ash_token', data.access_token)
           localStorage.setItem('ash_user', JSON.stringify(data.user))
+
+          // Save credentials if "Remember Me" is checked
+          if (rememberMe) {
+            localStorage.setItem('ash_remember_email', email)
+            localStorage.setItem('ash_remember_password', password)
+          } else {
+            // Clear saved credentials if unchecked
+            localStorage.removeItem('ash_remember_email')
+            localStorage.removeItem('ash_remember_password')
+          }
+
           console.log('Token stored, redirecting to dashboard')
 
           // Use window.location for more reliable redirect
@@ -150,7 +175,7 @@ export default function LoginPage() {
             />
           </div>
           
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: '16px' }}>
             <label style={{
               display: 'block',
               fontSize: '14px',
@@ -177,7 +202,32 @@ export default function LoginPage() {
               }}
             />
           </div>
-          
+
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '14px',
+              color: '#374151',
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{
+                  width: '16px',
+                  height: '16px',
+                  marginRight: '8px',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6'
+                }}
+              />
+              Remember my account
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
