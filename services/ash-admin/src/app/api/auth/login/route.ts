@@ -4,6 +4,11 @@ import { prisma } from '../../../../lib/db'
 import bcrypt from 'bcryptjs'
 import { logAuthEvent } from '../../../../lib/audit-logger'
 import { createSession } from '../../../../lib/session-manager'
+import {
+  isAccountLocked,
+  recordFailedLogin,
+  clearFailedAttempts,
+} from '../../../../lib/account-lockout'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +21,27 @@ export async function POST(request: NextRequest) {
         success: false,
         error: 'Email and password are required'
       }, { status: 400 })
+    }
+
+    // Check if account is locked
+    const lockStatus = await isAccountLocked(email)
+    if (lockStatus.isLocked) {
+      const minutesRemaining = lockStatus.canRetryAt
+        ? Math.ceil((lockStatus.canRetryAt.getTime() - Date.now()) / 60000)
+        : 30
+
+      await logAuthEvent('LOGIN_BLOCKED_LOCKED', 'system', undefined, request, {
+        email,
+        reason: 'Account locked',
+        lockoutExpiresAt: lockStatus.lockoutExpiresAt,
+      })
+
+      return NextResponse.json({
+        success: false,
+        error: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minutes.`,
+        code: 'ACCOUNT_LOCKED',
+        lockoutExpiresAt: lockStatus.lockoutExpiresAt,
+      }, { status: 423 }) // 423 Locked
     }
 
     // Find user in database
@@ -58,17 +84,32 @@ export async function POST(request: NextRequest) {
 
     const isValidPassword = await bcrypt.compare(password, user.password_hash)
     if (!isValidPassword) {
+      // Record failed login attempt
+      const lockStatus = await recordFailedLogin(email)
+
       // Log failed login attempt
       await logAuthEvent('LOGIN_FAILED', user.workspace_id, user.id, request, {
         email,
-        reason: 'Invalid password'
+        reason: 'Invalid password',
+        failedAttempts: lockStatus.failedAttempts,
+        remainingAttempts: lockStatus.remainingAttempts,
       })
+
+      // Inform user of remaining attempts
+      let errorMessage = 'Invalid email or password'
+      if (lockStatus.remainingAttempts <= 2 && lockStatus.remainingAttempts > 0) {
+        errorMessage += `. Warning: ${lockStatus.remainingAttempts} ${lockStatus.remainingAttempts === 1 ? 'attempt' : 'attempts'} remaining before account lockout.`
+      }
 
       return NextResponse.json({
         success: false,
-        error: 'Invalid email or password'
+        error: errorMessage,
+        remainingAttempts: lockStatus.remainingAttempts,
       }, { status: 401 })
     }
+
+    // Clear failed attempts on successful login
+    await clearFailedAttempts(email)
 
     // Generate JWT token with user data
     const userData = {

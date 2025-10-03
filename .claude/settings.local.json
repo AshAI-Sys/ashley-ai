@@ -77,7 +77,16 @@
       "Bash(git config:*)",
       "Bash(git log:*)",
       "Bash(git rev-parse:*)",
-      "Bash(gh:*)"
+      "Bash(gh:*)",
+      "Bash(git checkout:*)",
+      "Bash(cp:*)",
+      "Bash(ls:*)",
+      "Read(//c/tmp/**)",
+      "Bash(tee:*)",
+      "Bash(if [ -f \".next/BUILD_ID\" ])",
+      "Bash(then echo \"Build completed!\")",
+      "Bash(else echo \"Still building...\")",
+      "Bash(icacls:*)"
     ],
     "deny": [],
     "ask": []

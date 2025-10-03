@@ -18,7 +18,7 @@ generator client {
 // }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -80,7 +80,8 @@ model Workspace {
   
   // Stage 8: Delivery Relations
   deliveries       Delivery[]
-  
+  pod_records      PODRecord[]
+
   // Stage 2: Production Planning Relations
   worker_assignments WorkerAssignment[] @relation("WorkspaceWorkerAssignments")
   worker_allocations WorkerAllocation[] @relation("WorkspaceWorkerAllocations")
@@ -115,6 +116,22 @@ model Workspace {
   alerts               Alert[]
   integrations         Integration[]
   integration_sync_logs IntegrationSyncLog[]
+
+  // Stage 15: AI Chat Assistant Relations
+  ai_chat_conversations AIChatConversation[]
+  ai_chat_suggestions  AIChatSuggestion[]
+  ai_chat_knowledge    AIChatKnowledge[]
+
+  // Stage 16: Advanced Analytics & Reporting Relations
+  custom_reports       CustomReport[]
+  report_executions    ReportExecution[]
+  report_exports       ReportExport[]
+  report_shares        ReportShare[]
+  executive_dashboards ExecutiveDashboard[]
+  dashboard_widgets    DashboardWidget[]
+  analytics_events     AnalyticsEvent[]
+  production_heatmaps  ProductionHeatmap[]
+  profit_analyses      ProfitAnalysis[]
 
   // Performance indexes
   @@index([is_active])
@@ -168,6 +185,20 @@ model User {
   resolved_alerts Alert[] @relation("AlertResolver")
   created_integrations Integration[] @relation("IntegrationCreator")
 
+  // Stage 15: AI Chat Assistant Relations
+  ai_chat_conversations AIChatConversation[] @relation("AIChatUser")
+  dismissed_suggestions AIChatSuggestion[] @relation("SuggestionDismisser")
+  acted_suggestions AIChatSuggestion[] @relation("SuggestionActor")
+  created_knowledge AIChatKnowledge[] @relation("KnowledgeCreator")
+
+  // Stage 16: Advanced Analytics & Reporting Relations
+  created_reports CustomReport[] @relation("ReportCreator")
+  report_executions ReportExecution[] @relation("ReportExecutor")
+  report_exports ReportExport[] @relation("ReportExporter")
+  shared_reports ReportShare[] @relation("ReportSharer")
+  created_dashboards ExecutiveDashboard[] @relation("DashboardCreator")
+  analytics_events AnalyticsEvent[] @relation("AnalyticsEventUser")
+
   @@unique([workspace_id, email])
 
   // Performance indexes
@@ -218,6 +249,9 @@ model Client {
   // Stage 13: Merchandising AI Relations
   demand_forecasts DemandForecast[]
   product_recommendations ProductRecommendation[]
+
+  // Stage 16: Advanced Analytics Relations
+  profit_analyses ProfitAnalysis[]
 
   // Performance indexes
   @@index([workspace_id])
@@ -324,6 +358,9 @@ model Order {
 
   // Stage 12: Client Portal Relations
   client_messages ClientMessage[]
+
+  // Stage 16: Advanced Analytics Relations
+  profit_analyses ProfitAnalysis[]
 
   @@unique([workspace_id, order_number])
 
@@ -2983,6 +3020,7 @@ model Delivery {
   order            Order                    @relation(fields: [order_id], references: [id])
   shipments        ShipmentDelivery[]
   tracking_events  DeliveryTrackingEvent[]
+  pod_records      PODRecord[]
   
   // Performance indexes
   @@index([workspace_id])
@@ -3024,6 +3062,38 @@ model DeliveryTrackingEvent {
   delivery Delivery @relation(fields: [delivery_id], references: [id])
 
   @@map("delivery_tracking_events")
+}
+
+// Proof of Delivery records
+model PODRecord {
+  id              String   @id @default(cuid())
+  workspace_id    String
+  delivery_id     String
+  shipment_id     String?
+  carton_id       String?
+  recipient_name  String
+  recipient_phone String?
+  signature_url   String?  // Photo of signature
+  photo_urls      String?  // JSON array of delivery photos
+  notes           String?
+  latitude        Float?
+  longitude       Float?
+  geolocation     String?  // Human-readable address
+  delivery_status String   @default("DELIVERED") // DELIVERED/PARTIAL/FAILED
+  cod_amount      Float?   // Cash on delivery amount
+  cod_collected   Float?   // Actual amount collected
+  cod_reference   String?  // GCash/payment reference
+  timestamp       DateTime @default(now())
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  workspace Workspace @relation(fields: [workspace_id], references: [id])
+  delivery  Delivery  @relation(fields: [delivery_id], references: [id])
+
+  @@index([workspace_id])
+  @@index([delivery_id])
+  @@map("pod_records")
 }
 
 // ===== STAGE 11: MAINTENANCE MANAGEMENT =====
@@ -3666,5 +3736,439 @@ model IntegrationSyncLog {
   @@index([completed_at])
 
   @@map("integration_sync_logs")
+}
+
+// ===== STAGE 15: AI CHAT ASSISTANT (NEW) =====
+
+// AI Chat Conversations - stores chat sessions with the AI assistant
+model AIChatConversation {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  user_id         String?   // User who initiated the chat (null for anonymous)
+  title           String?   // Auto-generated or user-provided title
+  context_type    String    @default("GENERAL") // GENERAL/ORDER/PRODUCTION/FINANCE/HR/etc
+  context_id      String?   // ID of related entity (order_id, client_id, etc)
+  is_archived     Boolean   @default(false)
+  is_pinned       Boolean   @default(false)
+  last_message_at DateTime  @default(now())
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User?     @relation("AIChatUser", fields: [user_id], references: [id])
+  messages        AIChatMessage[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, user_id])
+  @@index([workspace_id, context_type])
+  @@index([user_id])
+  @@index([is_archived])
+  @@index([last_message_at])
+  @@index([created_at])
+
+  @@map("ai_chat_conversations")
+}
+
+// AI Chat Messages - individual messages in conversations
+model AIChatMessage {
+  id              String    @id @default(cuid())
+  conversation_id String
+  role            String    // USER/ASSISTANT/SYSTEM
+  content         String    // The actual message text
+  message_type    String    @default("TEXT") // TEXT/IMAGE/FILE/ACTION/ERROR
+  attachments     String?   // JSON array of attachment metadata
+  metadata        String?   // JSON for additional data (tokens used, model version, etc)
+  function_calls  String?   // JSON array of AI function calls made
+  feedback        String?   // USER_LIKED/USER_DISLIKED/null
+  feedback_reason String?   // Why user liked/disliked
+  is_edited       Boolean   @default(false)
+  edited_at       DateTime?
+  created_at      DateTime  @default(now())
+
+  // Relations
+  conversation    AIChatConversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+
+  // Performance indexes
+  @@index([conversation_id])
+  @@index([role])
+  @@index([created_at])
+
+  @@map("ai_chat_messages")
+}
+
+// AI Chat Suggested Actions - AI-recommended actions based on context
+model AIChatSuggestion {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  suggestion_type String    // AUTOMATION/INSIGHT/ACTION/REMINDER/WARNING
+  category        String    // PRODUCTION/FINANCE/QUALITY/HR/INVENTORY/etc
+  title           String
+  description     String
+  confidence      Float     // 0-1 confidence score
+  priority        String    @default("MEDIUM") // LOW/MEDIUM/HIGH/URGENT
+  action_type     String?   // NAVIGATE/CREATE/UPDATE/ALERT/EXPORT
+  action_data     String?   // JSON data for executing the action
+  is_dismissed    Boolean   @default(false)
+  is_acted_upon   Boolean   @default(false)
+  dismissed_by    String?
+  dismissed_at    DateTime?
+  acted_by        String?
+  acted_at        DateTime?
+  valid_until     DateTime? // Suggestion expiration
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  dismissed_user  User?     @relation("SuggestionDismisser", fields: [dismissed_by], references: [id])
+  acted_user      User?     @relation("SuggestionActor", fields: [acted_by], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_dismissed])
+  @@index([workspace_id, category])
+  @@index([suggestion_type])
+  @@index([priority])
+  @@index([is_dismissed])
+  @@index([is_acted_upon])
+  @@index([created_at])
+
+  @@map("ai_chat_suggestions")
+}
+
+// AI Chat Knowledge Base - stores learned information and FAQs
+model AIChatKnowledge {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  category        String    // PRODUCTION/ORDERS/FINANCE/HR/SYSTEM/etc
+  question        String    // The question or topic
+  answer          String    // The answer or explanation
+  keywords        String?   // JSON array of keywords for search
+  examples        String?   // JSON array of examples
+  related_topics  String?   // JSON array of related knowledge IDs
+  usage_count     Int       @default(0)
+  helpful_count   Int       @default(0)
+  not_helpful_count Int     @default(0)
+  is_system       Boolean   @default(false) // System knowledge vs user-added
+  is_active       Boolean   @default(true)
+  created_by      String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User?     @relation("KnowledgeCreator", fields: [created_by], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, category])
+  @@index([workspace_id, is_active])
+  @@index([category])
+  @@index([is_active])
+  @@index([created_at])
+
+  @@map("ai_chat_knowledge")
+}
+
+// ============================================
+// STAGE 16: ADVANCED ANALYTICS & REPORTING
+// ============================================
+
+// Custom Report Builder - allows users to create custom reports
+model CustomReport {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  description     String?
+  report_type     String    // STANDARD/PIVOT/CHART/DASHBOARD/CUSTOM
+  data_source     String    // ORDERS/PRODUCTION/FINANCE/HR/INVENTORY/etc
+  query_config    String    // JSON: {tables, joins, filters, grouping, aggregations}
+  visualization   String?   // JSON: {type: bar/line/pie/table, settings}
+  columns         String    // JSON array of selected columns with formatting
+  filters         String?   // JSON array of filter conditions
+  sort_order      String?   // JSON: {column, direction}
+  schedule        String?   // MANUAL/DAILY/WEEKLY/MONTHLY/CUSTOM
+  schedule_config String?   // JSON: {frequency, time, recipients}
+  is_public       Boolean   @default(false)
+  is_favorite     Boolean   @default(false)
+  view_count      Int       @default(0)
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  creator         User      @relation("ReportCreator", fields: [created_by], references: [id])
+  executions      ReportExecution[]
+  exports         ReportExport[]
+  shares          ReportShare[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_public])
+  @@index([workspace_id, created_by])
+  @@index([report_type])
+  @@index([data_source])
+  @@index([is_favorite])
+  @@index([created_at])
+
+  @@map("custom_reports")
+}
+
+// Report Execution History - tracks when reports are run
+model ReportExecution {
+  id              String    @id @default(cuid())
+  report_id       String
+  workspace_id    String
+  executed_by     String
+  execution_time  Int       // milliseconds
+  row_count       Int
+  status          String    // SUCCESS/FAILED/TIMEOUT
+  error_message   String?
+  filters_applied String?   // JSON: snapshot of filters used
+  executed_at     DateTime  @default(now())
+
+  // Relations
+  report          CustomReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("ReportExecutor", fields: [executed_by], references: [id])
+
+  // Performance indexes
+  @@index([report_id])
+  @@index([workspace_id])
+  @@index([executed_by])
+  @@index([status])
+  @@index([executed_at])
+
+  @@map("report_executions")
+}
+
+// Report Exports - tracks exported report files
+model ReportExport {
+  id              String    @id @default(cuid())
+  report_id       String
+  workspace_id    String
+  format          String    // PDF/EXCEL/CSV/JSON
+  file_path       String?
+  file_size       Int?      // bytes
+  download_count  Int       @default(0)
+  expires_at      DateTime?
+  exported_by     String
+  exported_at     DateTime  @default(now())
+
+  // Relations
+  report          CustomReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User      @relation("ReportExporter", fields: [exported_by], references: [id])
+
+  // Performance indexes
+  @@index([report_id])
+  @@index([workspace_id])
+  @@index([exported_by])
+  @@index([exported_at])
+  @@index([expires_at])
+
+  @@map("report_exports")
+}
+
+// Report Sharing - controls report access permissions
+model ReportShare {
+  id              String    @id @default(cuid())
+  report_id       String
+  workspace_id    String
+  shared_with     String    // user_id or 'PUBLIC' or 'TEAM'
+  permission      String    // VIEW/EDIT/ADMIN
+  can_export      Boolean   @default(true)
+  can_schedule    Boolean   @default(false)
+  shared_by       String
+  shared_at       DateTime  @default(now())
+  accessed_at     DateTime?
+
+  // Relations
+  report          CustomReport @relation(fields: [report_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  sharer          User      @relation("ReportSharer", fields: [shared_by], references: [id])
+
+  // Performance indexes
+  @@index([report_id])
+  @@index([workspace_id])
+  @@index([shared_with])
+  @@index([shared_by])
+
+  @@map("report_shares")
+}
+
+// Executive Dashboard - predefined KPI dashboards
+model ExecutiveDashboard {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  name            String
+  description     String?
+  dashboard_type  String    // EXECUTIVE/PRODUCTION/FINANCE/SALES/HR/CUSTOM
+  layout          String    // JSON: grid layout with widget positions
+  widgets         String    // JSON array of widget configurations
+  refresh_interval Int      @default(300) // seconds
+  is_default      Boolean   @default(false)
+  is_active       Boolean   @default(true)
+  created_by      String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  creator         User      @relation("DashboardCreator", fields: [created_by], references: [id])
+  widgets_data    DashboardWidget[]
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, is_default])
+  @@index([dashboard_type])
+  @@index([is_active])
+
+  @@map("executive_dashboards")
+}
+
+// Dashboard Widgets - individual KPI components
+model DashboardWidget {
+  id              String    @id @default(cuid())
+  dashboard_id    String
+  workspace_id    String
+  widget_type     String    // KPI_CARD/CHART/TABLE/HEATMAP/GAUGE/TREND
+  title           String
+  data_source     String    // API endpoint or report ID
+  query_params    String?   // JSON: parameters for data fetch
+  visualization   String    // JSON: chart config, colors, formatting
+  position        String    // JSON: {x, y, width, height}
+  refresh_interval Int?     // seconds, null = manual only
+  last_refreshed  DateTime?
+  is_visible      Boolean   @default(true)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  // Relations
+  dashboard       ExecutiveDashboard @relation(fields: [dashboard_id], references: [id], onDelete: Cascade)
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+
+  // Performance indexes
+  @@index([dashboard_id])
+  @@index([workspace_id])
+  @@index([widget_type])
+
+  @@map("dashboard_widgets")
+}
+
+// Analytics Events - tracks user actions for insights
+model AnalyticsEvent {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  event_type      String    // PAGE_VIEW/BUTTON_CLICK/REPORT_RUN/EXPORT/etc
+  event_category  String    // PRODUCTION/FINANCE/HR/REPORTS/etc
+  event_name      String
+  event_data      String?   // JSON: additional event metadata
+  user_id         String?
+  session_id      String?
+  ip_address      String?
+  user_agent      String?
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+  user            User?     @relation("AnalyticsEventUser", fields: [user_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, event_type])
+  @@index([workspace_id, event_category])
+  @@index([user_id])
+  @@index([created_at])
+
+  @@map("analytics_events")
+}
+
+// Production Efficiency Heatmap - tracks production performance by time/station
+model ProductionHeatmap {
+  id              String    @id @default(cuid())
+  workspace_id    String
+  date            DateTime
+  hour            Int       // 0-23
+  shift           String?   // MORNING/AFTERNOON/NIGHT
+  station_type    String    // CUTTING/PRINTING/SEWING/QC/FINISHING
+  station_id      String?   // Specific machine or workstation
+  efficiency      Float     // Percentage 0-100
+  output_units    Int       // Units produced
+  target_units    Int       // Target units
+  defect_rate     Float     // Percentage 0-100
+  downtime_mins   Int       // Minutes of downtime
+  operators_count Int       // Number of operators
+  created_at      DateTime  @default(now())
+
+  // Relations
+  workspace       Workspace @relation(fields: [workspace_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, date])
+  @@index([workspace_id, station_type])
+  @@index([workspace_id, date, hour])
+  @@index([date, station_type])
+
+  @@map("production_heatmaps")
+}
+
+// Profit Margin Analysis - detailed profit tracking per order/client
+model ProfitAnalysis {
+  id                String    @id @default(cuid())
+  workspace_id      String
+  order_id          String
+  client_id         String
+  analysis_date     DateTime  @default(now())
+
+  // Revenue
+  total_revenue     Float
+  base_price        Float
+  rush_fee          Float     @default(0)
+  design_fee        Float     @default(0)
+  shipping_fee      Float     @default(0)
+
+  // Costs
+  total_cost        Float
+  material_cost     Float
+  labor_cost        Float
+  overhead_cost     Float
+  shipping_cost     Float     @default(0)
+  wastage_cost      Float     @default(0)
+
+  // Margins
+  gross_profit      Float     // total_revenue - total_cost
+  gross_margin      Float     // (gross_profit / total_revenue) * 100
+  net_profit        Float     // gross_profit - overhead
+  net_margin        Float     // (net_profit / total_revenue) * 100
+
+  // Time tracking
+  production_days   Int
+  lead_time_days    Int
+
+  // Additional metadata
+  notes             String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  // Relations
+  workspace         Workspace @relation(fields: [workspace_id], references: [id])
+  order             Order     @relation(fields: [order_id], references: [id])
+  client            Client    @relation(fields: [client_id], references: [id])
+
+  // Performance indexes
+  @@index([workspace_id])
+  @@index([workspace_id, client_id])
+  @@index([workspace_id, order_id])
+  @@index([workspace_id, analysis_date])
+  @@index([client_id])
+  @@index([order_id])
+  @@index([gross_margin])
+  @@index([net_margin])
+
+  @@map("profit_analyses")
 }
 

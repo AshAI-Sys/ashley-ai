@@ -26,7 +26,12 @@ import {
   BarChart3,
   Home,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Landmark,
+  MessageSquare,
+  Brain,
+  PackageSearch,
+  Settings
 } from 'lucide-react'
 
 const iconMap = {
@@ -48,6 +53,11 @@ const iconMap = {
   Bot,
   Zap,
   BarChart3,
+  Landmark,
+  MessageSquare,
+  Brain,
+  PackageSearch,
+  Settings,
 }
 
 export default function Sidebar() {
@@ -74,11 +84,17 @@ export default function Sidebar() {
     { name: 'Delivery Management', href: '/delivery', icon: 'Truck', department: 'Delivery' },
     { name: 'Finance', href: '/finance', icon: 'DollarSign', department: 'Finance' },
     { name: 'HR & Payroll', href: '/hr-payroll', icon: 'Users', department: 'HR' },
+    { name: 'Government Reports', href: '/government', icon: 'Landmark', department: 'Finance' },
+    { name: 'SMS Notifications', href: '/sms-notifications', icon: 'MessageSquare', department: 'Management' },
     { name: 'Maintenance', href: '/maintenance', icon: 'Wrench', department: 'Maintenance' },
     { name: 'User Management', href: '/admin/users', icon: 'Users', department: 'Administration' },
     { name: 'Employee Onboarding', href: '/admin/onboarding', icon: 'UserPlus', department: 'Administration' },
     { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management' },
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management' },
+    { name: 'Advanced Analytics', href: '/admin/analytics', icon: 'BarChart3', department: 'Management' },
+    { name: 'AI Features', href: '/ai-features', icon: 'Brain', department: 'Management' },
+    { name: 'Inventory', href: '/inventory', icon: 'PackageSearch', department: 'Inventory' },
+    { name: 'Tenant Settings', href: '/admin/tenants', icon: 'Settings', department: 'Administration' },
   ]
 
   // Get filtered navigation based on user role and department

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@ash/database'
+import { PrismaClient } from '@ash-ai/database'
 import { hash } from './crypto'
 import { NextRequest } from 'next/server'
 

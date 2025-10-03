@@ -20,6 +20,19 @@ class ApiClient {
         if (this.authToken) {
           config.headers.Authorization = `Bearer ${this.authToken}`
         }
+
+        // Add CSRF token for state-changing requests
+        if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method?.toUpperCase() || '')) {
+          const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrf-token='))
+            ?.split('=')[1]
+
+          if (csrfToken) {
+            config.headers['X-CSRF-Token'] = csrfToken
+          }
+        }
+
         return config
       },
       (error) => {

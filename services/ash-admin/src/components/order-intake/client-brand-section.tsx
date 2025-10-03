@@ -63,7 +63,9 @@ export function ClientBrandSection({
   })
   const [creatingClient, setCreatingClient] = useState(false)
 
-  const selectedClient = clients.find(c => c.id === selectedClientId)
+  // Ensure clients is an array
+  const clientsArray = Array.isArray(clients) ? clients : []
+  const selectedClient = clientsArray.find(c => c.id === selectedClientId)
 
   const handleCreateClient = async () => {
     if (!newClientForm.name.trim()) {
@@ -73,9 +75,18 @@ export function ClientBrandSection({
 
     setCreatingClient(true)
     try {
+      // Get CSRF token from cookie
+      const csrfToken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrf-token='))
+        ?.split('=')[1]
+
       const response = await fetch('/api/clients', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken || '',
+        },
         body: JSON.stringify({
           name: newClientForm.name,
           company: newClientForm.company || null,
@@ -128,7 +139,7 @@ export function ClientBrandSection({
                   <SelectValue placeholder="Select client" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map(client => (
+                  {clientsArray.map(client => (
                     <SelectItem key={client.id} value={client.id}>
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
@@ -143,10 +154,8 @@ export function ClientBrandSection({
               </Select>
               
               <Dialog open={showNewClientDialog} onOpenChange={setShowNewClientDialog}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                  <Plus className="w-4 h-4" />
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>

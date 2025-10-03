@@ -1,7 +1,14 @@
 import { Resend } from 'resend'
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy initialize Resend client only when needed
+let resend: Resend | null = null
+
+function getResendClient() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 export interface EmailData {
   to: string | string[]
@@ -36,7 +43,12 @@ export const emailService = {
       }
 
       // Send via Resend
-      const result = await resend.emails.send({
+      const client = getResendClient()
+      if (!client) {
+        throw new Error('Resend client not initialized')
+      }
+
+      const result = await client.emails.send({
         from: data.from || 'Ashley AI <noreply@ashleyai.com>',
         to: Array.isArray(data.to) ? data.to : [data.to],
         subject: data.subject,

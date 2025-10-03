@@ -1,27 +1,25 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { logSecurityEvent, logAPIRequest } from './lib/audit-logger'
+import { generateNonce, createCSPHeader, getMaxSecurityHeaders } from './lib/csp-nonce'
 
-// Rate limiting store (in-memory, use Redis in production)
+// Note: Redis (ioredis) cannot be used in Edge Runtime middleware
+// Using in-memory stores for rate limiting and CSRF tokens
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
+const csrfTokenStore = new Map<string, { token: string; expires: number }>()
 
-// Security headers configuration
-const securityHeaders = {
-  'X-DNS-Prefetch-Control': 'on',
-  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
-  'X-Frame-Options': 'SAMEORIGIN',
-  'X-Content-Type-Options': 'nosniff',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy': 
-    "default-src 'self'; " +
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'; " +
-    "style-src 'self' 'unsafe-inline'; " +
-    "img-src 'self' data: https:; " +
-    "font-src 'self' data:; " +
-    "connect-src 'self' https:; " +
-    "frame-ancestors 'self';",
+// Security headers configuration (CSP is set dynamically with nonce)
+function getSecurityHeaders(nonce: string) {
+  return {
+    'X-DNS-Prefetch-Control': 'on',
+    'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+    'X-Frame-Options': 'SAMEORIGIN',
+    'X-Content-Type-Options': 'nosniff',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Content-Security-Policy': createCSPHeader(nonce),
+  }
 }
 
 // CORS configuration
@@ -56,13 +54,13 @@ function getRateLimitForPath(pathname: string): number {
   return RATE_LIMIT_MAX_REQUESTS.default
 }
 
-function checkRateLimit(request: NextRequest): boolean {
+async function checkRateLimit(request: NextRequest): Promise<boolean> {
   const key = getRateLimitKey(request)
+  const maxRequests = getRateLimitForPath(request.nextUrl.pathname)
+
+  // In-memory rate limiting
   const now = Date.now()
   const record = rateLimitStore.get(key)
-
-  // Determine rate limit for this path
-  const maxRequests = getRateLimitForPath(request.nextUrl.pathname)
 
   if (!record || now > record.resetTime) {
     rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
@@ -86,19 +84,69 @@ function checkIPWhitelist(request: NextRequest): boolean {
 
 function handleCORS(request: NextRequest, response: NextResponse): NextResponse {
   const origin = request.headers.get('origin') || ''
-  
+
   if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
     response.headers.set('Access-Control-Allow-Origin', origin || '*')
     response.headers.set('Access-Control-Allow-Credentials', 'true')
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token')
   }
-  
+
   return response
 }
 
-export function middleware(request: NextRequest) {
+function generateCSRFToken(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let token = ''
+  for (let i = 0; i < 32; i++) {
+    token += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return token
+}
+
+function getSessionId(request: NextRequest): string {
+  return request.cookies.get('session')?.value ||
+         request.cookies.get('next-auth.session-token')?.value ||
+         request.ip ||
+         'anonymous'
+}
+
+async function verifyCSRFToken(request: NextRequest): Promise<boolean> {
+  const sessionId = getSessionId(request)
+  const csrfToken = request.headers.get('x-csrf-token') || request.cookies.get('csrf-token')?.value
+
+  if (!csrfToken) {
+    return false
+  }
+
+  // In-memory CSRF token verification
+  const storedToken = csrfTokenStore.get(sessionId)
+
+  if (!storedToken || csrfToken !== storedToken.token) {
+    return false
+  }
+
+  if (storedToken.expires < Date.now()) {
+    csrfTokenStore.delete(sessionId)
+    return false
+  }
+
+  return true
+}
+
+async function storeCSRFToken(sessionId: string, token: string): Promise<void> {
+  // In-memory CSRF token storage
+  csrfTokenStore.set(sessionId, {
+    token,
+    expires: Date.now() + 3600000, // 1 hour
+  })
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Generate nonce for CSP
+  const nonce = generateNonce()
 
   // Handle preflight requests
   if (request.method === 'OPTIONS') {
@@ -107,7 +155,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Check rate limiting
-  if (!checkRateLimit(request)) {
+  if (!(await checkRateLimit(request))) {
     // Log rate limit event
     logSecurityEvent('RATE_LIMIT_EXCEEDED', request, {
       path: pathname,
@@ -145,16 +193,104 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // ===== CSRF PROTECTION =====
+
+  // Generate CSRF token for GET requests to pages (not API)
+  if (request.method === 'GET' && !pathname.startsWith('/api/')) {
+    const sessionId = getSessionId(request)
+    const token = generateCSRFToken()
+
+    await storeCSRFToken(sessionId, token)
+
+    const response = NextResponse.next()
+
+    // Set CSRF token in cookie
+    response.cookies.set('csrf-token', token, {
+      httpOnly: false, // Allow JavaScript to read
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600, // 1 hour
+    })
+
+    // Set nonce in header for client-side access
+    response.headers.set('X-Nonce', nonce)
+
+    // Add security headers with nonce
+    const headers = getSecurityHeaders(nonce)
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+
+    // Add maximum security headers
+    const maxSecurityHeaders = getMaxSecurityHeaders()
+    Object.entries(maxSecurityHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value)
+    })
+
+    return handleCORS(request, response)
+  }
+
+  // Verify CSRF token for state-changing requests
+  const isStateChanging = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(request.method)
+  const isAPI = pathname.startsWith('/api/')
+  const isAuthEndpoint = pathname.includes('/auth/login') || pathname.includes('/auth/register')
+  const isWebhook = pathname.includes('/webhooks/')
+
+  // Skip CSRF for development or specific endpoints
+  const skipCSRF = process.env.NODE_ENV === 'development' || isAuthEndpoint || isWebhook
+
+  if (isStateChanging && isAPI && !skipCSRF) {
+    if (!(await verifyCSRFToken(request))) {
+      // Log CSRF violation
+      logSecurityEvent('CSRF_VIOLATION', request, {
+        path: pathname,
+        method: request.method
+      }).catch(err => console.error('Failed to log CSRF violation:', err))
+
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Invalid or missing CSRF token',
+          code: 'CSRF_VALIDATION_FAILED'
+        }),
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+  }
+
   // Continue with the request and add security headers
   const response = NextResponse.next()
-  
-  // Add security headers
-  Object.entries(securityHeaders).forEach(([key, value]) => {
+
+  // Set nonce in header
+  response.headers.set('X-Nonce', nonce)
+
+  // Add security headers with nonce
+  const headers = getSecurityHeaders(nonce)
+  Object.entries(headers).forEach(([key, value]) => {
     response.headers.set(key, value)
   })
 
   // Add CORS headers
   return handleCORS(request, response)
+}
+
+// Clean up expired CSRF tokens periodically (every 5 minutes)
+if (typeof window === 'undefined') {
+  setInterval(() => {
+    const now = Date.now()
+    for (const [key, value] of csrfTokenStore.entries()) {
+      if (value.expires < now) {
+        csrfTokenStore.delete(key)
+      }
+    }
+    for (const [key, value] of rateLimitStore.entries()) {
+      if (value.resetTime < now) {
+        rateLimitStore.delete(key)
+      }
+    }
+  }, 5 * 60 * 1000)
 }
 
 // Configure which routes to run middleware on
