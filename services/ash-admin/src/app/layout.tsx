@@ -10,6 +10,19 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Ashley AI Admin',
   description: 'Ashley AI - Apparel Smart Hub with Artificial Intelligence',
+  manifest: '/manifest.json',
+  themeColor: '#3b82f6',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Ashley AI',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
   icons: {
     icon: '/favicon.png',
     shortcut: '/favicon.png',
@@ -24,6 +37,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Ashley AI" />
+      </head>
       <body className={inter.className}>
         <Providers>
           {children}
@@ -40,6 +59,21 @@ export default function RootLayout({
             }}
           />
         </Providers>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                  .then((registration) => {
+                    console.log('SW registered:', registration);
+                  })
+                  .catch((error) => {
+                    console.log('SW registration failed:', error);
+                  });
+              });
+            }
+          `
+        }} />
       </body>
     </html>
   )
