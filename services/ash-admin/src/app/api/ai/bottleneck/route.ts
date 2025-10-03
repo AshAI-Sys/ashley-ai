@@ -45,7 +45,12 @@ export async function GET(req: NextRequest) {
     // Cutting station metrics
     if (cutLays.length > 0) {
       const totalBundles = cutLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
-      const avgEfficiency = cutLays.reduce((sum, lay) => sum + (lay.efficiency_percentage || 80), 0) / cutLays.length;
+      // Calculate efficiency based on material usage (less offcuts/defects = higher efficiency)
+      const avgEfficiency = cutLays.reduce((sum, lay) => {
+        const wastePercentage = ((lay.offcuts || 0) + (lay.defects || 0)) / lay.gross_used * 100;
+        const efficiency = Math.max(0, 100 - wastePercentage);
+        return sum + efficiency;
+      }, 0) / cutLays.length;
 
       metrics.push({
         station_id: 'CUTTING_MAIN',
