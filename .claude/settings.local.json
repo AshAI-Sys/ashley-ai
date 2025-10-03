@@ -85,7 +85,8 @@
       "Bash(tee:*)",
       "Bash(if [ -f \".next/BUILD_ID\" ])",
       "Bash(then echo \"Build completed!\")",
-      "Bash(else echo \"Still building...\")"
+      "Bash(else echo \"Still building...\")",
+      "Bash(icacls:*)"
     ],
     "deny": [],
     "ask": []
