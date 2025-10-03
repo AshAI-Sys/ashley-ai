@@ -359,13 +359,354 @@ function PricingAI() {
   );
 }
 
-// Placeholder components for other AI features (we'll implement these next)
 function SchedulingAI() {
-  return <div>Smart Scheduling AI - Coming soon with API integration</div>;
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<any>(null);
+  const [schedule, setSchedule] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    start_date: new Date().toISOString().split('T')[0],
+    include_stages: ['CUTTING', 'PRINTING', 'SEWING', 'FINISHING'],
+    days: 7
+  });
+
+  useEffect(() => {
+    fetchPreview();
+  }, [formData.days]);
+
+  async function fetchPreview() {
+    try {
+      const response = await fetch(`/api/ai/scheduling?days=${formData.days}`);
+      const data = await response.json();
+      if (data.success) {
+        setPreview(data.preview);
+      }
+    } catch (error) {
+      console.error('Failed to fetch preview:', error);
+    }
+  }
+
+  async function generateSchedule() {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/ai/scheduling', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setSchedule(data.schedule);
+      }
+    } catch (error) {
+      console.error('Schedule generation failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Smart Job Scheduling</h2>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Configuration Panel */}
+        <div className="border border-gray-200 rounded-lg p-6">
+          <h3 className="font-semibold text-gray-900 mb-4">Schedule Configuration</h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <input
+                type="date"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                value={formData.start_date}
+                onChange={(e) => setFormData({...formData, start_date: e.target.value})}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Preview Days</label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                value={formData.days}
+                onChange={(e) => setFormData({...formData, days: parseInt(e.target.value)})}
+              >
+                <option value="3">3 days</option>
+                <option value="7">7 days</option>
+                <option value="14">14 days</option>
+                <option value="30">30 days</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Include Stages</label>
+              <div className="space-y-2">
+                {['CUTTING', 'PRINTING', 'SEWING', 'FINISHING'].map(stage => (
+                  <label key={stage} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.include_stages.includes(stage)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData({...formData, include_stages: [...formData.include_stages, stage]});
+                        } else {
+                          setFormData({...formData, include_stages: formData.include_stages.filter(s => s !== stage)});
+                        }
+                      }}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">{stage}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={generateSchedule}
+              disabled={loading}
+              className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loading ? 'Optimizing...' : 'Generate Optimized Schedule'}
+            </button>
+          </div>
+        </div>
+
+        {/* Preview Panel */}
+        <div className="border border-gray-200 rounded-lg p-6 bg-purple-50">
+          <h3 className="font-semibold text-gray-900 mb-4">Current Orders ({preview?.length || 0})</h3>
+
+          {preview && preview.length > 0 ? (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {preview.map((order: any, i: number) => (
+                <div key={i} className="bg-white p-3 rounded border border-gray-200">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-sm">{order.client_name}</span>
+                    <span className={`text-xs px-2 py-1 rounded ${
+                      order.urgency === 'URGENT' ? 'bg-red-100 text-red-700' :
+                      order.urgency === 'HIGH' ? 'bg-orange-100 text-orange-700' :
+                      'bg-green-100 text-green-700'
+                    }`}>
+                      {order.urgency}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    {order.garment_type} × {order.quantity} • {order.days_until_deadline} days left
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No orders to schedule</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Schedule Results */}
+      {schedule && (
+        <div className="border border-gray-200 rounded-lg p-6 bg-purple-50">
+          <h3 className="font-semibold text-gray-900 mb-4">Optimized Schedule</h3>
+
+          <div className="grid grid-cols-4 gap-4 mb-4">
+            <div className="bg-white p-3 rounded">
+              <p className="text-xs text-gray-600">Scheduled Jobs</p>
+              <p className="text-2xl font-bold text-purple-600">{schedule.scheduled_jobs}</p>
+            </div>
+            <div className="bg-white p-3 rounded">
+              <p className="text-xs text-gray-600">Optimization Score</p>
+              <p className="text-2xl font-bold text-purple-600">{schedule.optimization_score}%</p>
+            </div>
+            <div className="bg-white p-3 rounded">
+              <p className="text-xs text-gray-600">Avg Utilization</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {schedule.metrics?.avg_resource_utilization?.toFixed(1)}%
+              </p>
+            </div>
+            <div className="bg-white p-3 rounded">
+              <p className="text-xs text-gray-600">On-time Rate</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {schedule.metrics?.on_time_completion_rate?.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+
+          {schedule.recommendations && schedule.recommendations.length > 0 && (
+            <div className="bg-white p-4 rounded border border-purple-200">
+              <p className="font-semibold text-sm mb-2">AI Recommendations:</p>
+              <ul className="text-sm space-y-1">
+                {schedule.recommendations.map((rec: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <TrendingUp className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <span>{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function BottleneckAI() {
-  return <div>Bottleneck Detection AI - Coming soon with API integration</div>;
+  const [loading, setLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<any>(null);
+
+  useEffect(() => {
+    analyzeBottlenecks();
+  }, []);
+
+  async function analyzeBottlenecks() {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/ai/bottleneck');
+      const data = await response.json();
+      if (data.success) {
+        setAnalysis(data.analysis);
+      }
+    } catch (error) {
+      console.error('Bottleneck analysis failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Bottleneck Detection</h2>
+        <button
+          onClick={analyzeBottlenecks}
+          disabled={loading}
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+        >
+          {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+          {loading ? 'Analyzing...' : 'Refresh Analysis'}
+        </button>
+      </div>
+
+      {loading && !analysis ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
+        </div>
+      ) : analysis ? (
+        <div className="space-y-6">
+          {/* System Overview */}
+          <div className="grid grid-cols-4 gap-4">
+            <div className="bg-gradient-to-br from-orange-50 to-white p-4 rounded-lg border border-orange-200">
+              <p className="text-xs text-gray-600 mb-1">Overall Efficiency</p>
+              <p className="text-3xl font-bold text-orange-600">{analysis.overall_efficiency?.toFixed(1)}%</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-600 mb-1">Bottlenecks Detected</p>
+              <p className="text-3xl font-bold text-gray-900">{analysis.detected_bottlenecks?.length || 0}</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-600 mb-1">System Throughput</p>
+              <p className="text-3xl font-bold text-gray-900">{analysis.system_throughput?.toFixed(0)}</p>
+              <p className="text-xs text-gray-500">units/hour</p>
+            </div>
+            <div className="bg-white p-4 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-600 mb-1">Efficiency Loss</p>
+              <p className="text-3xl font-bold text-red-600">{analysis.efficiency_loss_percent?.toFixed(1)}%</p>
+            </div>
+          </div>
+
+          {/* Primary Bottleneck */}
+          {analysis.primary_bottleneck && (
+            <div className="bg-red-50 border-2 border-red-300 rounded-lg p-6">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-6 h-6 text-red-600 mt-1 flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-bold text-red-900 text-lg mb-2">Primary Bottleneck Detected</h3>
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <p className="text-sm text-red-800">
+                        <strong>Station:</strong> {analysis.primary_bottleneck.station_name}
+                      </p>
+                      <p className="text-sm text-red-800">
+                        <strong>Type:</strong> {analysis.primary_bottleneck.station_type}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-red-800">
+                        <strong>Severity:</strong> {analysis.primary_bottleneck.severity}
+                      </p>
+                      <p className="text-sm text-red-800">
+                        <strong>Impact:</strong> {analysis.primary_bottleneck.impact_score}/10
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-red-700 bg-white bg-opacity-50 p-3 rounded">
+                    <strong>Root Cause:</strong> {analysis.primary_bottleneck.root_cause}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* All Bottlenecks */}
+          {analysis.detected_bottlenecks && analysis.detected_bottlenecks.length > 0 && (
+            <div className="border border-gray-200 rounded-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">All Detected Bottlenecks</h3>
+              <div className="space-y-3">
+                {analysis.detected_bottlenecks.map((bottleneck: any, i: number) => (
+                  <div key={i} className={`p-4 rounded-lg border-2 ${
+                    bottleneck.severity === 'CRITICAL' ? 'bg-red-50 border-red-300' :
+                    bottleneck.severity === 'HIGH' ? 'bg-orange-50 border-orange-300' :
+                    bottleneck.severity === 'MEDIUM' ? 'bg-yellow-50 border-yellow-300' :
+                    'bg-blue-50 border-blue-300'
+                  }`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-gray-900">{bottleneck.station_name}</span>
+                      <span className={`text-xs px-2 py-1 rounded font-semibold ${
+                        bottleneck.severity === 'CRITICAL' ? 'bg-red-200 text-red-800' :
+                        bottleneck.severity === 'HIGH' ? 'bg-orange-200 text-orange-800' :
+                        bottleneck.severity === 'MEDIUM' ? 'bg-yellow-200 text-yellow-800' :
+                        'bg-blue-200 text-blue-800'
+                      }`}>
+                        {bottleneck.severity}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-sm text-gray-700">
+                      <div>Queue: {bottleneck.queue_length} items</div>
+                      <div>Wait: {bottleneck.avg_wait_time_minutes} min</div>
+                      <div>Impact: {bottleneck.impact_score}/10</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Recommendations */}
+          {analysis.recommendations && analysis.recommendations.length > 0 && (
+            <div className="border border-gray-200 rounded-lg p-6 bg-green-50">
+              <h3 className="font-semibold text-gray-900 mb-4">AI Recommendations</h3>
+              <ul className="space-y-2">
+                {analysis.recommendations.map((rec: string, i: number) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <Zap className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                    <span>{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-gray-500">
+          <AlertTriangle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p>No production data available for analysis</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function MaintenanceAI() {
