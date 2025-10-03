@@ -85,6 +85,7 @@ export default function Sidebar() {
     { name: 'Employee Onboarding', href: '/admin/onboarding', icon: 'UserPlus', department: 'Administration' },
     { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management' },
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management' },
+    { name: 'Advanced Analytics', href: '/admin/analytics', icon: 'BarChart3', department: 'Management' },
   ]
 
   // Get filtered navigation based on user role and department
