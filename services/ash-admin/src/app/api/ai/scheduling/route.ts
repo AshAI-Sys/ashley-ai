@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
       },
       include: {
         client: true,
-        cutting_runs: true,
+        line_items: true,
+        cut_lays: true,
         sewing_runs: true,
         print_runs: true,
       },
@@ -31,30 +32,32 @@ export async function POST(req: NextRequest) {
       let currentStage: 'CUTTING' | 'PRINTING' | 'SEWING' | 'FINISHING' = 'CUTTING';
       if (order.sewing_runs.length > 0) currentStage = 'FINISHING';
       else if (order.print_runs.length > 0) currentStage = 'SEWING';
-      else if (order.cutting_runs.length > 0) currentStage = 'PRINTING';
+      else if (order.cut_lays.length > 0) currentStage = 'PRINTING';
 
       // Estimate hours based on quantity and stage
+      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
       const baseHoursPerUnit = 0.05; // 3 minutes per unit
-      const estimatedHours = order.quantity * baseHoursPerUnit;
+      const estimatedHours = totalQuantity * baseHoursPerUnit;
 
       // Determine priority
-      const daysUntilDeadline = (order.deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+      const deadline = order.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const daysUntilDeadline = (deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
       let priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT' = 'MEDIUM';
       if (daysUntilDeadline < 3) priority = 'URGENT';
       else if (daysUntilDeadline < 7) priority = 'HIGH';
       else if (daysUntilDeadline > 30) priority = 'LOW';
 
       // Required skills based on garment type
-      const requiredSkills = [order.garment_type || 'GENERAL', currentStage];
+      const requiredSkills = [order.line_items?.[0]?.product_type || 'GENERAL', currentStage];
 
       return {
         id: order.id,
         order_id: order.id,
         client_name: order.client.name,
-        garment_type: order.garment_type || 'UNKNOWN',
-        quantity: order.quantity,
+        garment_type: order.line_items?.[0]?.product_type || 'UNKNOWN',
+        quantity: order.line_items?.[0]?.quantity || 0,
         priority,
-        deadline: order.deadline,
+        deadline,
         estimated_hours: estimatedHours,
         required_skills: requiredSkills,
         current_stage: currentStage,
@@ -152,13 +155,14 @@ export async function GET(req: NextRequest) {
         status: {
           in: ['PENDING', 'IN_PRODUCTION'],
         },
-        deadline: {
+        delivery_date: {
           gte: new Date(),
           lte: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
         },
       },
       include: {
         client: true,
+        line_items: true,
         sewing_runs: {
           include: {
             operator: true,
@@ -166,21 +170,23 @@ export async function GET(req: NextRequest) {
         },
       },
       orderBy: {
-        deadline: 'asc',
+        delivery_date: 'asc',
       },
     });
 
     // Format schedule preview
     const schedulePreview = orders.map(order => {
-      const daysUntilDeadline = (order.deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+      const deadline = order.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const daysUntilDeadline = (deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
       const urgency = daysUntilDeadline < 3 ? 'URGENT' : daysUntilDeadline < 7 ? 'HIGH' : 'NORMAL';
+      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
 
       return {
         order_id: order.id,
         client_name: order.client.name,
-        garment_type: order.garment_type,
-        quantity: order.quantity,
-        deadline: order.deadline,
+        garment_type: order.line_items[0]?.product_type || 'UNKNOWN',
+        quantity: totalQuantity,
+        deadline,
         days_until_deadline: Math.floor(daysUntilDeadline),
         urgency,
         status: order.status,

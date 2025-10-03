@@ -6,27 +6,36 @@ import { prisma } from '@/lib/db';
 export async function GET(req: NextRequest) {
   try {
     // Get production metrics for all active stations
-    const [cuttingRuns, sewingRuns, printRuns, qcChecks, finishingRuns] = await Promise.all([
-      prisma.cuttingRun.findMany({
-        where: { status: { in: ['PENDING', 'IN_PROGRESS'] } },
+    const [cutLays, sewingRuns, printRuns, qcInspections, finishingRuns] = await Promise.all([
+      prisma.cutLay.findMany({
+        where: {
+          created_at: {
+            gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Last 7 days
+          },
+        },
         include: { bundles: true },
+        take: 50,
       }),
       prisma.sewingRun.findMany({
         where: { status: { in: ['PENDING', 'IN_PROGRESS'] } },
         include: { operator: true },
+        take: 50,
       }),
       prisma.printRun.findMany({
         where: { status: { in: ['PENDING', 'IN_PROGRESS'] } },
+        take: 50,
       }),
-      prisma.qualityControlCheck.findMany({
+      prisma.qCInspection.findMany({
         where: {
           created_at: {
             gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
           },
         },
+        take: 50,
       }),
       prisma.finishingRun.findMany({
         where: { status: { in: ['PENDING', 'IN_PROGRESS'] } },
+        take: 50,
       }),
     ]);
 
@@ -34,9 +43,9 @@ export async function GET(req: NextRequest) {
     const metrics: any[] = [];
 
     // Cutting station metrics
-    if (cuttingRuns.length > 0) {
-      const totalBundles = cuttingRuns.reduce((sum, run) => sum + run.bundles.length, 0);
-      const avgEfficiency = cuttingRuns.reduce((sum, run) => sum + parseFloat(run.efficiency?.toString() || '80'), 0) / cuttingRuns.length;
+    if (cutLays.length > 0) {
+      const totalBundles = cutLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
+      const avgEfficiency = cutLays.reduce((sum, lay) => sum + (lay.efficiency_percentage || 80), 0) / cutLays.length;
 
       metrics.push({
         station_id: 'CUTTING_MAIN',
@@ -48,7 +57,7 @@ export async function GET(req: NextRequest) {
         avg_wait_time_minutes: totalBundles * 5, // Simplified
         utilization_rate: Math.min(avgEfficiency, 100),
         operator_count: 5,
-        active_operators: cuttingRuns.length,
+        active_operators: cutLays.length,
         defect_rate: 2, // Simplified
         timestamp: new Date(),
       });
@@ -97,9 +106,9 @@ export async function GET(req: NextRequest) {
     }
 
     // QC station metrics
-    if (qcChecks.length > 0) {
-      const failedChecks = qcChecks.filter(qc => qc.status === 'FAILED').length;
-      const defectRate = (failedChecks / qcChecks.length) * 100;
+    if (qcInspections.length > 0) {
+      const failedInspections = qcInspections.filter(qc => qc.result === 'REJECT').length;
+      const defectRate = (failedInspections / qcInspections.length) * 100;
 
       metrics.push({
         station_id: 'QC_MAIN',
@@ -107,7 +116,7 @@ export async function GET(req: NextRequest) {
         station_type: 'QC',
         current_throughput: 25,
         expected_throughput: 35,
-        queue_length: qcChecks.filter(qc => qc.status === 'PENDING').length,
+        queue_length: qcInspections.filter(qc => qc.status === 'PENDING').length,
         avg_wait_time_minutes: 30,
         utilization_rate: 70,
         operator_count: 4,
