@@ -11,23 +11,24 @@ export const metadata: Metadata = {
   title: 'Ashley AI Admin',
   description: 'Ashley AI - Apparel Smart Hub with Artificial Intelligence',
   manifest: '/manifest.json',
-  themeColor: '#3b82f6',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Ashley AI',
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
   },
   icons: {
     icon: '/favicon.png',
     shortcut: '/favicon.png',
     apple: '/ash-ai-logo.png',
   },
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: '#3b82f6',
 }
 
 export default function RootLayout({
