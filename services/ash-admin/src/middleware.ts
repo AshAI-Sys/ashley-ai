@@ -236,7 +236,10 @@ export async function middleware(request: NextRequest) {
   const isAuthEndpoint = pathname.includes('/auth/login') || pathname.includes('/auth/register')
   const isWebhook = pathname.includes('/webhooks/')
 
-  if (isStateChanging && isAPI && !isAuthEndpoint && !isWebhook) {
+  // Skip CSRF for development or specific endpoints
+  const skipCSRF = process.env.NODE_ENV === 'development' || isAuthEndpoint || isWebhook
+
+  if (isStateChanging && isAPI && !skipCSRF) {
     if (!(await verifyCSRFToken(request))) {
       // Log CSRF violation
       logSecurityEvent('CSRF_VIOLATION', request, {
