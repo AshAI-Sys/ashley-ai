@@ -130,9 +130,9 @@ function PricingAI() {
   async function fetchClients() {
     try {
       const response = await fetch('/api/clients?limit=100');
-      const data = await response.json();
-      if (data.success) {
-        setClients(data.clients);
+      const result = await response.json();
+      if (result.success) {
+        setClients(result.data.clients);
       }
     } catch (error) {
       console.error('Failed to fetch clients:', error);

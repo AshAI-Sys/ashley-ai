@@ -1,6 +1,3 @@
-// Load polyfills for SSR compatibility
-require('./polyfills')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -51,13 +48,6 @@ const nextConfig = {
 
     // Server-side: Externalize packages that cause SSR issues
     if (isServer) {
-      // Define 'self' globally for server-side rendering
-      config.plugins.push(
-        new webpack.DefinePlugin({
-          'self': 'global',
-        })
-      )
-
       // Externalize packages that cause SSR issues
       const externals = Array.isArray(config.externals) ? config.externals : [config.externals]
       config.externals = [...externals.filter(Boolean), 'canvas', 'qrcode', 'speakeasy']
