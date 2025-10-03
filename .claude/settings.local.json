@@ -80,7 +80,8 @@
       "Bash(gh:*)",
       "Bash(git checkout:*)",
       "Bash(cp:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Read(//c/tmp/**)"
     ],
     "deny": [],
     "ask": []
