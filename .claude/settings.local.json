@@ -82,7 +82,10 @@
       "Bash(cp:*)",
       "Bash(ls:*)",
       "Read(//c/tmp/**)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(if [ -f \".next/BUILD_ID\" ])",
+      "Bash(then echo \"Build completed!\")",
+      "Bash(else echo \"Still building...\")"
     ],
     "deny": [],
     "ask": []

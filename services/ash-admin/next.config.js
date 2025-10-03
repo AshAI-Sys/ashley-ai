@@ -1,3 +1,6 @@
+// Load polyfills for SSR compatibility
+require('./polyfills')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -34,7 +37,7 @@ const nextConfig = {
   },
   poweredByHeader: false,
   generateEtags: false,
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config, { isServer, dev, webpack }) => {
     // Fix "self is not defined" error for QR code libraries
     if (!isServer) {
       config.resolve.fallback = {
@@ -46,48 +49,47 @@ const nextConfig = {
       }
     }
 
-    // Server-side externals for better performance
+    // Server-side: Externalize packages that cause SSR issues
     if (isServer) {
-      config.externals = [...(config.externals || []), 'canvas', 'qrcode']
+      // Define 'self' globally for server-side rendering
+      config.plugins.push(
+        new webpack.DefinePlugin({
+          'self': 'global',
+        })
+      )
+
+      // Externalize packages that cause SSR issues
+      const externals = Array.isArray(config.externals) ? config.externals : [config.externals]
+      config.externals = [...externals.filter(Boolean), 'canvas', 'qrcode', 'speakeasy']
     }
 
     // Production optimizations
     if (!dev) {
-      // Advanced code splitting
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          // Separate vendor chunks for better caching
-          defaultVendors: {
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10,
-            reuseExistingChunk: true,
-            name(module) {
-              // Get package name from node_modules path
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1]
-              return `vendor.${packageName?.replace('@', '')}`
+      // Code splitting configuration (client-side only to avoid SSR issues)
+      if (!isServer) {
+        config.optimization.splitChunks = {
+          chunks: 'all',
+          cacheGroups: {
+            // React and React-DOM in separate chunk
+            react: {
+              test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+              name: 'react',
+              priority: 20,
+            },
+            // UI libraries
+            ui: {
+              test: /[\\/]node_modules[\\/](@radix-ui|lucide-react)[\\/]/,
+              name: 'ui',
+              priority: 15,
+            },
+            // Other vendor code
+            vendors: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: 10,
             },
           },
-          // Common components shared across pages
-          common: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true,
-            name: 'common',
-          },
-          // React and React-DOM in separate chunk
-          react: {
-            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-            name: 'react',
-            priority: 20,
-          },
-          // UI libraries
-          ui: {
-            test: /[\\/]node_modules[\\/](@radix-ui|lucide-react)[\\/]/,
-            name: 'ui',
-            priority: 15,
-          },
-        },
+        }
       }
 
       // Minification and tree shaking
