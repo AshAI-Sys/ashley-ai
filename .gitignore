@@ -141,3 +141,5 @@ secrets/
 
 # Command artifacts
 nul
+# Build outputs
+build-output*.txt
