@@ -11,16 +11,19 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const router = useRouter()
 
-  // Load saved credentials on mount
+  // Load saved credentials on mount (client-side only)
   useEffect(() => {
-    const savedEmail = localStorage.getItem('ash_remember_email')
-    const savedPassword = localStorage.getItem('ash_remember_password')
-    if (savedEmail) {
-      setEmail(savedEmail)
-      setRememberMe(true)
-    }
-    if (savedPassword) {
-      setPassword(savedPassword)
+    // Only run on client side to avoid hydration mismatch
+    if (typeof window !== 'undefined') {
+      const savedEmail = localStorage.getItem('ash_remember_email')
+      const savedPassword = localStorage.getItem('ash_remember_password')
+      if (savedEmail) {
+        setEmail(savedEmail)
+        setRememberMe(true)
+      }
+      if (savedPassword) {
+        setPassword(savedPassword)
+      }
     }
   }, [])
 
