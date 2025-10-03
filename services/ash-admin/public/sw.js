@@ -1,7 +1,7 @@
 // Service Worker for Ashley AI PWA
-// Version 1.0.0
+// Version 1.0.1
 
-const CACHE_NAME = 'ashley-ai-v1';
+const CACHE_NAME = 'ashley-ai-v1.0.1';
 const OFFLINE_URL = '/offline';
 
 // Assets to cache on install
@@ -54,32 +54,48 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // Clone the response before caching
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
+          // Only cache GET requests (Cache API doesn't support POST/PUT/DELETE)
+          if (event.request.method === 'GET') {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
           return response;
         })
         .catch(() => {
-          // Return cached version if available
-          return caches.match(event.request).then((cached) => {
-            if (cached) {
-              return cached;
-            }
-            // Return offline response for API calls
-            return new Response(
-              JSON.stringify({
-                success: false,
-                error: 'Offline - no cached data available',
-                offline: true
-              }),
-              {
-                headers: { 'Content-Type': 'application/json' },
-                status: 503,
+          // Only return cached version for GET requests
+          if (event.request.method === 'GET') {
+            return caches.match(event.request).then((cached) => {
+              if (cached) {
+                return cached;
               }
-            );
-          });
+              // Return offline response for API calls
+              return new Response(
+                JSON.stringify({
+                  success: false,
+                  error: 'Offline - no cached data available',
+                  offline: true
+                }),
+                {
+                  headers: { 'Content-Type': 'application/json' },
+                  status: 503,
+                }
+              );
+            });
+          }
+          // For non-GET requests, return error response
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: 'Network error - cannot complete request offline',
+              offline: true
+            }),
+            {
+              headers: { 'Content-Type': 'application/json' },
+              status: 503,
+            }
+          );
         })
     );
     return;

@@ -14,4 +14,10 @@ module.exports = {
   verbose: true,
   testTimeout: 30000, // 30 seconds for network requests
   maxWorkers: 1, // Run tests sequentially to avoid rate limit conflicts
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+      diagnostics: false, // Disable TypeScript type checking
+    },
+  },
 }
