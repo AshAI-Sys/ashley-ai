@@ -28,7 +28,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Landmark,
-  MessageSquare
+  MessageSquare,
+  Brain,
+  PackageSearch,
+  Settings
 } from 'lucide-react'
 
 const iconMap = {
@@ -52,6 +55,9 @@ const iconMap = {
   BarChart3,
   Landmark,
   MessageSquare,
+  Brain,
+  PackageSearch,
+  Settings,
 }
 
 export default function Sidebar() {
@@ -86,6 +92,9 @@ export default function Sidebar() {
     { name: 'Merchandising AI', href: '/merchandising', icon: 'Bot', department: 'Management' },
     { name: 'Automation Engine', href: '/automation', icon: 'Zap', department: 'Management' },
     { name: 'Advanced Analytics', href: '/admin/analytics', icon: 'BarChart3', department: 'Management' },
+    { name: 'AI Features', href: '/ai-features', icon: 'Brain', department: 'Management' },
+    { name: 'Inventory', href: '/inventory', icon: 'PackageSearch', department: 'Inventory' },
+    { name: 'Tenant Settings', href: '/admin/tenants', icon: 'Settings', department: 'Administration' },
   ]
 
   // Get filtered navigation based on user role and department
