@@ -4171,32 +4171,3 @@ model ProfitAnalysis {
 
   @@map("profit_analyses")
 }
-
-
-// ============================================
-// SUBSCRIPTION & BILLING SYSTEM
-// ============================================
-
-// Subscription Plans - Define available tiers
-model SubscriptionPlan {
-  id                String   @id @default(cuid())
-  name              String   // STARTER, PROFESSIONAL, ENTERPRISE, CUSTOM
-  display_name      String   // "Professional Plan"
-  description       String?
-  stripe_price_id   String?  @unique // Stripe Price ID
-  stripe_product_id String?  // Stripe Product ID
-  price_monthly     Float    // Monthly price in cents
-  price_annual      Float?   // Annual price in cents (with discount)
-  billing_interval  String   // MONTHLY, ANNUAL
-  currency          String   @default("USD")
-  is_active         Boolean  @default(true)
-  is_popular        Boolean  @default(false)
-
-  // Limits
-  max_orders        Int?     // null = unlimited
-  max_users         Int?
-  max_clients       Int?
-  max_storage_gb    Int?
-  max_api_calls     Int?
-
-  // Feature flags (JSON string)
