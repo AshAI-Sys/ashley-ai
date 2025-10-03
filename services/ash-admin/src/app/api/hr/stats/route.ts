@@ -241,53 +241,50 @@ async function calculateHRStats(
       nextPayrollDate.setDate(15)
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        // Basic counts
-        total_employees: totalEmployees,
-        active_employees: activeEmployees,
-        present_today: presentToday,
-        absent_today: absentToday,
+    return {
+      // Basic counts
+      total_employees: totalEmployees,
+      active_employees: activeEmployees,
+      present_today: presentToday,
+      absent_today: absentToday,
 
-        // Pending approvals
-        overtime_requests: pendingOvertimeRequests,
-        pending_leaves: pendingLeaveRequests,
+      // Pending approvals
+      overtime_requests: pendingOvertimeRequests,
+      pending_leaves: pendingLeaveRequests,
 
-        // Financial
-        total_payroll_cost: currentMonthPayroll._sum.net_pay || 0,
-        upcoming_payroll: nextPayrollDate.toISOString().split('T')[0],
+      // Financial
+      total_payroll_cost: currentMonthPayroll._sum.net_pay || 0,
+      upcoming_payroll: nextPayrollDate.toISOString().split('T')[0],
 
-        // Analytics
-        average_tenure_months: Math.round(averageTenureMonths * 10) / 10,
-        attendance_rate: activeEmployees > 0 ? (presentToday / activeEmployees) * 100 : 0,
+      // Analytics
+      average_tenure_months: Math.round(averageTenureMonths * 10) / 10,
+      attendance_rate: activeEmployees > 0 ? (presentToday / activeEmployees) * 100 : 0,
 
-        // Productivity
-        avg_sewing_efficiency: sewingProductivity._avg.efficiency_percentage || 0,
-        avg_printing_efficiency: printingProductivity._avg.efficiency_percentage || 0,
-        avg_pieces_per_hour: ((sewingProductivity._avg.pieces_per_hour || 0) +
-                               (printingProductivity._avg.pieces_per_hour || 0)) / 2,
+      // Productivity
+      avg_sewing_efficiency: sewingProductivity._avg.efficiency_percentage || 0,
+      avg_printing_efficiency: printingProductivity._avg.efficiency_percentage || 0,
+      avg_pieces_per_hour: ((sewingProductivity._avg.pieces_per_hour || 0) +
+                             (printingProductivity._avg.pieces_per_hour || 0)) / 2,
 
-        // Distributions
-        department_distribution: departmentStats.map(dept => ({
-          department: dept.department,
-          count: dept._count.id
-        })),
-        position_distribution: positionStats.map(position => ({
-          position: position.position,
-          count: position._count.id
-        })),
-        salary_type_distribution: salaryTypeStats.map(salaryType => ({
-          salary_type: salaryType.salary_type,
-          count: salaryType._count.id
-        })),
+      // Distributions
+      department_distribution: departmentStats.map(dept => ({
+        department: dept.department,
+        count: dept._count.id
+      })),
+      position_distribution: positionStats.map(position => ({
+        position: position.position,
+        count: position._count.id
+      })),
+      salary_type_distribution: salaryTypeStats.map(salaryType => ({
+        salary_type: salaryType.salary_type,
+        count: salaryType._count.id
+      })),
 
-        // Last payroll info
-        last_payroll: lastPayrollRun ? {
-          period: `${lastPayrollRun.period_start.toISOString().split('T')[0]} - ${lastPayrollRun.period_end.toISOString().split('T')[0]}`,
-          employee_count: lastPayrollRun._count.earnings,
-          status: lastPayrollRun.status
-        } : null
-      }
-  }
+      // Last payroll info
+      last_payroll: lastPayrollRun ? {
+        period: `${lastPayrollRun.period_start.toISOString().split('T')[0]} - ${lastPayrollRun.period_end.toISOString().split('T')[0]}`,
+        employee_count: lastPayrollRun._count.earnings,
+        status: lastPayrollRun.status
+      } : null
+    }
 }
