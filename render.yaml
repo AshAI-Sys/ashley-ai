@@ -1,0 +1,49 @@
+# Render Blueprint for Ashley AI Manufacturing ERP
+# This file enables Infrastructure as Code deployment on Render
+# Documentation: https://render.com/docs/infrastructure-as-code
+
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: ashley-ai-db
+    plan: free
+    region: oregon
+    databaseName: ashleyai
+    databaseUser: ashleyai
+    # Database will be automatically provisioned
+
+  # Main Admin Web Service
+  - type: web
+    name: ashley-ai-admin
+    runtime: node
+    region: oregon
+    plan: free
+    branch: master
+    rootDir: services/ash-admin
+    buildCommand: cd ../.. && pnpm install && cd packages/database && npx prisma generate && npx prisma migrate deploy && cd ../../services/ash-admin && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ashley-ai-db
+          property: connectionString
+      - key: NEXTAUTH_URL
+        value: https://ashley-ai-admin.onrender.com
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: REDIS_URL
+        value: ""
+      - key: RESEND_API_KEY
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+    autoDeploy: true
