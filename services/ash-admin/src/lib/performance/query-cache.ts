@@ -3,7 +3,11 @@
  * High-performance caching for database queries
  */
 
-import { cache as userCache, orderCache, clientCache } from '@/lib/redis'
+import { redisClient as userCache } from '@/lib/redis'
+
+// For backward compatibility, use the same client for all caches
+export const orderCache = userCache
+export const clientCache = userCache
 
 /**
  * Cache durations (in seconds)
