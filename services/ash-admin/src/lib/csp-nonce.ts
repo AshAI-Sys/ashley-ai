@@ -39,8 +39,8 @@ export function createCSPHeader(nonce: string): string {
     `object-src 'none'`,
   ] : [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}'`,
-    `style-src 'self' 'unsafe-inline' 'nonce-${nonce}'`,
+    `script-src 'self' 'unsafe-inline'`,
+    `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: https://res.cloudinary.com https:`,
     `font-src 'self' data:`,
     `connect-src 'self' https://api.anthropic.com https://api.openai.com https:`,
