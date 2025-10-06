@@ -40,7 +40,7 @@ export function createCSPHeader(nonce: string): string {
   ] : [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}'`,
-    `style-src 'self' 'nonce-${nonce}'`,
+    `style-src 'self' 'unsafe-inline' 'nonce-${nonce}'`,
     `img-src 'self' data: https://res.cloudinary.com https:`,
     `font-src 'self' data:`,
     `connect-src 'self' https://api.anthropic.com https://api.openai.com https:`,
