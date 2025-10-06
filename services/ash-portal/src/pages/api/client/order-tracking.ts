@@ -74,22 +74,8 @@ export default async function handler(
         client: { select: { name: true } },
         brand: { select: { name: true } },
         line_items: true,
-        bundles: {
-          include: {
-            cut_outputs: true,
-            print_outputs: true,
-            sewing_runs: {
-              orderBy: { created_at: 'asc' }
-            },
-            qc_inspections: {
-              orderBy: { created_at: 'desc' }
-            }
-          }
-        },
-        design_assets: {
-          where: { is_approved: true },
-          orderBy: { version: 'desc' }
-        }
+        bundles: true,
+        design_assets: true
       }
     })
 
