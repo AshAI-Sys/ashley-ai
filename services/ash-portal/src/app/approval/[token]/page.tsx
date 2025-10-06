@@ -82,10 +82,10 @@ export default function ClientApprovalPage() {
   const [imageError, setImageError] = useState(false)
 
   useEffect(() => {
-    if (params.token) {
+    if (params?.token) {
       fetchApprovalData(params.token as string)
     }
-  }, [params.token])
+  }, [params?.token])
 
   const fetchApprovalData = async (token: string) => {
     try {
@@ -142,7 +142,7 @@ export default function ClientApprovalPage() {
         formData.append(`attachment_${index}`, file)
       })
 
-      const response = await fetch(`/api/portal/approval/${params.token}/submit`, {
+      const response = await fetch(`/api/portal/approval/${params?.token}/submit`, {
         method: 'POST',
         body: formData
       })
@@ -157,7 +157,9 @@ export default function ClientApprovalPage() {
         )
         
         // Refresh the page to show updated status
-        await fetchApprovalData(params.token as string)
+        if (params?.token) {
+          await fetchApprovalData(params.token as string)
+        }
       } else {
         toast.error(result.message || 'Failed to submit decision')
       }
