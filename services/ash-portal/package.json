@@ -41,7 +41,7 @@
     "react-hook-form": "^7.45.0",
     "react-hot-toast": "^2.4.0",
     "resend": "^6.1.1",
-    "stripe": "^18.5.0",
+    "stripe": "^19.1.0",
     "tailwind-merge": "^1.14.0",
     "zod": "^3.21.0"
   },
