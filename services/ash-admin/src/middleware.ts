@@ -8,7 +8,7 @@ import { generateNonce, createCSPHeader, getMaxSecurityHeaders } from './lib/csp
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 const csrfTokenStore = new Map<string, { token: string; expires: number }>()
 
-// Security headers configuration (CSP is set dynamically with nonce)
+// Security headers configuration (CSP disabled for production compatibility)
 function getSecurityHeaders(nonce: string) {
   return {
     'X-DNS-Prefetch-Control': 'on',
@@ -18,7 +18,8 @@ function getSecurityHeaders(nonce: string) {
     'X-XSS-Protection': '1; mode=block',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Content-Security-Policy': createCSPHeader(nonce),
+    // CSP temporarily disabled for production - re-enable after converting inline styles to CSS
+    // 'Content-Security-Policy': createCSPHeader(nonce),
   }
 }
 
