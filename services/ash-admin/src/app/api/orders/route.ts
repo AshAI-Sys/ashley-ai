@@ -88,6 +88,8 @@ export async function GET(request: NextRequest) {
               _count: {
                 select: {
                   line_items: true,
+                  design_assets: true,
+                  bundles: true,
                 },
               },
             },

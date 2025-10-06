@@ -74,13 +74,17 @@ export default function OrdersPage() {
   const getStatusColor = (status: string) => {
     if (!status) return 'bg-gray-100 text-gray-800'
 
-    switch (status.toLowerCase()) {
-      case 'draft': return 'bg-gray-100 text-gray-800'
-      case 'intake': return 'bg-blue-100 text-blue-800'
-      case 'confirmed': return 'bg-green-100 text-green-800'
-      case 'in_progress': return 'bg-yellow-100 text-yellow-800'
-      case 'completed': return 'bg-emerald-100 text-emerald-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
+    switch (status.toUpperCase()) {
+      case 'DRAFT': return 'bg-gray-100 text-gray-800'
+      case 'PENDING': return 'bg-blue-100 text-blue-800'
+      case 'DESIGN': return 'bg-purple-100 text-purple-800'
+      case 'PRODUCTION': return 'bg-yellow-100 text-yellow-800'
+      case 'QC': return 'bg-orange-100 text-orange-800'
+      case 'PACKING': return 'bg-indigo-100 text-indigo-800'
+      case 'SHIPPED': return 'bg-cyan-100 text-cyan-800'
+      case 'DELIVERED': return 'bg-green-100 text-green-800'
+      case 'COMPLETED': return 'bg-emerald-100 text-emerald-800'
+      case 'CANCELLED': return 'bg-red-100 text-red-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -139,12 +143,16 @@ export default function OrdersPage() {
                 className="px-3 py-2 border border-gray-200 rounded-md text-sm"
               >
                 <option value="all">All Status</option>
-                <option value="draft">Draft</option>
-                <option value="intake">Intake</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="DRAFT">Draft</option>
+                <option value="PENDING">Pending</option>
+                <option value="DESIGN">Design</option>
+                <option value="PRODUCTION">Production</option>
+                <option value="QC">Quality Control</option>
+                <option value="PACKING">Packing</option>
+                <option value="SHIPPED">Shipped</option>
+                <option value="DELIVERED">Delivered</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
               </select>
             </div>
           </div>
