@@ -33,7 +33,8 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 interface DeliveryShipment {
   id: string
   shipment_number: string
-  order: { order_number: string }
+  order?: { order_number: string }
+  client?: { name: string }
   consignee: {
     name: string
     address: string
@@ -45,10 +46,12 @@ interface DeliveryShipment {
   total_weight: number
   cod_amount?: number
   driver?: {
-    first_name: string
-    last_name: string
-    phone: string
+    name?: string
+    first_name?: string
+    last_name?: string
+    phone?: string
   }
+  courier_service?: string
   vehicle?: {
     plate_no: string
     type: string
@@ -169,7 +172,7 @@ export default function DeliveryPage() {
   const filteredShipments = shipments.filter(shipment =>
     searchTerm === '' ||
     shipment.shipment_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    shipment.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    shipment.order?.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     shipment.consignee.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -477,7 +480,7 @@ export default function DeliveryPage() {
                             {shipment.shipment_number}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Order: {shipment.order.order_number}
+                            Order: {shipment.order?.order_number || 'N/A'}
                           </div>
                         </div>
                       </td>
@@ -502,12 +505,17 @@ export default function DeliveryPage() {
                           {getMethodBadge(shipment.method)}
                           {shipment.driver && (
                             <div className="text-sm text-gray-600">
-                              {shipment.driver.first_name} {shipment.driver.last_name}
+                              {shipment.driver.name || `${shipment.driver.first_name || ''} ${shipment.driver.last_name || ''}`.trim() || 'N/A'}
                               {shipment.vehicle && (
                                 <div className="text-xs text-gray-500">
                                   {shipment.vehicle.plate_no} ({shipment.vehicle.type})
                                 </div>
                               )}
+                            </div>
+                          )}
+                          {shipment.courier_service && !shipment.driver && (
+                            <div className="text-sm text-gray-600">
+                              {shipment.courier_service}
                             </div>
                           )}
                         </div>

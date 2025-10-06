@@ -7,6 +7,7 @@ import {
   Users,
   ClipboardCheck,
   AlertTriangle,
+  AlertCircle,
   CheckCircle,
   XCircle,
   Clock,
@@ -25,10 +26,10 @@ import { Button } from '@/components/ui/button'
 
 interface QCInspection {
   id: string
-  order: { order_number: string }
-  bundle?: { qr_code: string, size_code: string, qty: number }
-  checklist: { name: string, type: string }
-  inspector: { first_name: string, last_name: string }
+  order?: { order_number?: string } | null
+  bundle?: { qr_code?: string, size_code?: string, qty?: number } | null
+  checklist?: { name?: string, type?: string } | null
+  inspector?: { first_name?: string, last_name?: string } | null
   stage: string
   lot_size: number
   sample_size: number
@@ -36,11 +37,11 @@ interface QCInspection {
   major_found: number
   minor_found: number
   status: 'OPEN' | 'PASSED' | 'FAILED' | 'CLOSED'
-  result?: 'PASSED' | 'FAILED'
+  result?: 'PASSED' | 'FAILED' | null
   inspection_date: string
-  started_at?: string
-  completed_at?: string
-  _count: { samples: number, defects: number, capa_tasks: number }
+  started_at?: string | null
+  completed_at?: string | null
+  _count?: { samples?: number, defects?: number, capa_tasks?: number } | null
 }
 
 interface QCStats {
@@ -133,13 +134,13 @@ export default function QualityControlPage() {
   const isFetching = inspectionsFetching
 
   const filteredInspections = inspections.filter(inspection =>
-    searchTerm === '' || 
-    inspection.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    inspection.inspector.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    inspection.inspector.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+    searchTerm === '' ||
+    inspection.order?.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    inspection.inspector?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    inspection.inspector?.last_name?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const getStatusBadge = (status: string, result?: string) => {
+  const getStatusBadge = (status: string, result?: string | null) => {
     switch (status) {
       case 'PASSED':
         return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -440,18 +441,18 @@ export default function QualityControlPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">
-                          {inspection.order.order_number}
+                          {inspection.order?.order_number || 'N/A'}
                         </div>
                         {inspection.bundle && (
                           <div className="text-sm text-gray-500">
-                            Bundle: {inspection.bundle.qr_code} ({inspection.bundle.size_code})
+                            Bundle: {inspection.bundle.qr_code || 'N/A'} ({inspection.bundle.size_code || 'N/A'})
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {inspection.inspector.first_name} {inspection.inspector.last_name}
+                        {inspection.inspector?.first_name || 'N/A'} {inspection.inspector?.last_name || ''}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -464,11 +465,11 @@ export default function QualityControlPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        <span className="text-red-600 font-medium">{inspection.critical_found}C</span>
+                        <span className="text-red-600 font-medium">{inspection.critical_found || 0}C</span>
                         {' / '}
-                        <span className="text-orange-600 font-medium">{inspection.major_found}M</span>
+                        <span className="text-orange-600 font-medium">{inspection.major_found || 0}M</span>
                         {' / '}
-                        <span className="text-yellow-600 font-medium">{inspection.minor_found}m</span>
+                        <span className="text-yellow-600 font-medium">{inspection.minor_found || 0}m</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -482,7 +483,7 @@ export default function QualityControlPage() {
                         <button className="text-blue-600 hover:text-blue-900">
                           <Eye className="w-4 h-4" />
                         </button>
-                        {inspection._count.capa_tasks > 0 && (
+                        {(inspection._count?.capa_tasks ?? 0) > 0 && (
                           <button className="text-orange-600 hover:text-orange-900">
                             <FileText className="w-4 h-4" />
                           </button>

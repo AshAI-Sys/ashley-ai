@@ -25,12 +25,12 @@ interface DesignAsset {
     id: string
     order_number: string
     status: string
-  }
+  } | null
   brand: {
     id: string
     name: string
     code: string
-  }
+  } | null
   versions: Array<{
     id: string
     version: number
@@ -43,8 +43,8 @@ interface DesignAsset {
     created_at: string
     client: {
       name: string
-    }
-  }>
+    } | null
+  }> | null
   _count: {
     versions: number
     approvals: number
@@ -275,25 +275,25 @@ export default function DesignsPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground mb-3">
                       <div>
                         <span className="font-medium">Order:</span><br />
-                        {design.order.order_number}
+                        {design?.order?.order_number || 'No Order'}
                       </div>
                       <div>
                         <span className="font-medium">Brand:</span><br />
-                        {design.brand.name} ({design.brand.code})
+                        {design?.brand?.name ? `${design.brand.name} (${design?.brand?.code || 'N/A'})` : 'No Brand'}
                       </div>
                       <div>
                         <span className="font-medium">Version:</span><br />
-                        v{design.current_version}
+                        v{design?.current_version || 1}
                       </div>
                       <div>
                         <span className="font-medium">Latest Approval:</span><br />
-                        {(design.approvals || []).length > 0 ? (
+                        {design?.approvals?.length > 0 ? (
                           <>
-                            <Badge className={getStatusColor((design.approvals || [])[0]?.status)} variant="outline">
-                              {(design.approvals || [])[0]?.status}
+                            <Badge className={getStatusColor(design.approvals[0]?.status)} variant="outline">
+                              {design.approvals[0]?.status || 'Unknown'}
                             </Badge>
                             <br />
-                            <span className="text-xs">by {(design.approvals || [])[0]?.client?.name}</span>
+                            <span className="text-xs">by {design.approvals[0]?.client?.name || 'Unknown'}</span>
                           </>
                         ) : (
                           'No approvals yet'

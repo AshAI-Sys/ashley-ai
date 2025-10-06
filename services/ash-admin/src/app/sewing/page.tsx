@@ -39,19 +39,19 @@ interface SewingRun {
   status: 'CREATED' | 'IN_PROGRESS' | 'DONE'
   order: {
     order_number: string
-    brand: { name: string; code: string }
-  }
+    brand: { name: string; code: string } | null
+  } | null
   operator: {
     first_name: string
     last_name: string
     employee_number: string
-  }
+  } | null
   bundle: {
     id: string
     size_code: string
     qty: number
     qr_code: string
-  }
+  } | null
   qty_good: number
   qty_reject: number
   earned_minutes?: number
@@ -548,8 +548,8 @@ export default function SewingPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-medium">{run.order.order_number}</h3>
-                          <Badge variant="outline">{run.order.brand.code}</Badge>
+                          <h3 className="font-medium">{run.order?.order_number || 'N/A'}</h3>
+                          <Badge variant="outline">{run.order?.brand?.code || 'N/A'}</Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {run.operation_name}
@@ -574,13 +574,13 @@ export default function SewingPage() {
                   {/* Progress */}
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Progress: {run.qty_good} / {run.bundle.qty}</span>
-                      <span>{Math.round((run.qty_good / run.bundle.qty) * 100)}%</span>
+                      <span>Progress: {run.qty_good} / {run.bundle?.qty || 0}</span>
+                      <span>{run.bundle?.qty ? Math.round((run.qty_good / run.bundle.qty) * 100) : 0}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(run.qty_good / run.bundle.qty) * 100}%` }}
+                        style={{ width: `${run.bundle?.qty ? (run.qty_good / run.bundle.qty) * 100 : 0}%` }}
                       />
                     </div>
                     {run.qty_reject > 0 && (
@@ -594,11 +594,11 @@ export default function SewingPage() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
                       <span className="font-medium">Operator:</span><br />
-                      {run.operator.first_name} {run.operator.last_name}
+                      {run.operator?.first_name || 'N/A'} {run.operator?.last_name || ''}
                     </div>
                     <div>
                       <span className="font-medium">Bundle:</span><br />
-                      {run.bundle.size_code} • {run.bundle.qty} pcs
+                      {run.bundle?.size_code || 'N/A'} • {run.bundle?.qty || 0} pcs
                     </div>
                     <div>
                       <span className="font-medium">Pay:</span><br />

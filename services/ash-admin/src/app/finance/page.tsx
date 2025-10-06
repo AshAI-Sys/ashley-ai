@@ -43,8 +43,8 @@ interface FinanceMetrics {
 interface Invoice {
   id: string
   invoice_no: string
-  client: { name: string }
-  brand: { name: string }
+  client: { name: string } | null
+  brand: { name: string } | null
   total: number
   balance: number
   status: string
@@ -56,11 +56,11 @@ interface Invoice {
 interface Bill {
   id: string
   bill_no: string
-  supplier: { name: string }
+  supplier: { name: string } | null
   total: number
   status: string
   due_date: string
-  days_until_due?: number
+  days_until_due?: number | null
 }
 
 export default function FinancePage() {
@@ -398,11 +398,11 @@ export default function FinancePage() {
                           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                             <div>
                               <span className="text-gray-600">Client:</span><br />
-                              <span className="font-medium">{invoice.client.name}</span>
+                              <span className="font-medium">{invoice.client?.name || 'N/A'}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Brand:</span><br />
-                              <span className="font-medium">{invoice.brand.name}</span>
+                              <span className="font-medium">{invoice.brand?.name || 'N/A'}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Amount:</span><br />
@@ -504,7 +504,7 @@ export default function FinancePage() {
                           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                             <div>
                               <span className="text-gray-600">Supplier:</span><br />
-                              <span className="font-medium">{bill.supplier.name}</span>
+                              <span className="font-medium">{bill.supplier?.name || 'N/A'}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Amount:</span><br />

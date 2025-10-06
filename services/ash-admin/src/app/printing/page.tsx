@@ -22,17 +22,17 @@ interface PrintRun {
   status: 'CREATED' | 'IN_PROGRESS' | 'PAUSED' | 'DONE' | 'CANCELLED'
   order: {
     order_number: string
-    brand: { name: string; code: string }
-    line_items: Array<{ description: string }>
-  }
+    brand: { name: string; code: string } | null
+    line_items: Array<{ description: string }> | null
+  } | null
   machine: {
     name: string
     workcenter: string
-  }
+  } | null
   target_qty: number
-  outputs: Array<{ qty_completed: number }>
-  rejects: Array<{ qty_rejected: number }>
-  started_at?: string
+  outputs: Array<{ qty_completed: number }> | null
+  rejects: Array<{ qty_rejected: number }> | null
+  started_at?: string | null
   created_at: string
 }
 
@@ -46,13 +46,13 @@ interface Machine {
 interface Dashboard {
   active_runs: number
   todays_runs: number
-  method_breakdown: Array<{ method: string; _count: number }>
+  method_breakdown: Array<{ method: string; _count: number }> | null
   recent_rejects: Array<{
     id: string
     reason: string
     qty_rejected: number
-    run: { method: string; order: { order_number: string } }
-  }>
+    run: { method: string; order: { order_number: string } | null } | null
+  }> | null
 }
 
 const methodIcons = {
@@ -175,11 +175,11 @@ export default function PrintingPage() {
   }
 
   const getCompletedQty = (run: PrintRun) => {
-    return run.outputs.reduce((sum, output) => sum + output.qty_completed, 0)
+    return (run.outputs || []).reduce((sum, output) => sum + output.qty_completed, 0)
   }
 
   const getRejectedQty = (run: PrintRun) => {
-    return run.rejects.reduce((sum, reject) => sum + reject.qty_rejected, 0)
+    return (run.rejects || []).reduce((sum, reject) => sum + reject.qty_rejected, 0)
   }
 
   const getProgressPercentage = (run: PrintRun) => {
@@ -324,7 +324,7 @@ export default function PrintingPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">
-                {dashboard.method_breakdown.length}
+                {dashboard.method_breakdown?.length || 0}
               </div>
             </CardContent>
           </Card>
@@ -419,11 +419,11 @@ export default function PrintingPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{run.order.order_number}</h3>
-                            <Badge variant="outline">{run.order.brand.code}</Badge>
+                            <h3 className="font-medium">{run.order?.order_number || 'N/A'}</h3>
+                            <Badge variant="outline">{run.order?.brand?.code || 'N/A'}</Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            {run.order.line_items[0]?.description}
+                            {run.order?.line_items?.[0]?.description || 'No description'}
                           </p>
                         </div>
                       </div>
@@ -463,11 +463,11 @@ export default function PrintingPage() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="font-medium">Machine:</span><br />
-                        {run.machine.name}
+                        {run.machine?.name || 'N/A'}
                       </div>
                       <div>
                         <span className="font-medium">Started:</span><br />
-                        {run.started_at 
+                        {run.started_at
                           ? new Date(run.started_at).toLocaleString()
                           : 'Not started'
                         }
@@ -599,13 +599,13 @@ export default function PrintingPage() {
                   <CardTitle>Recent Rejects</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {dashboard.recent_rejects.length > 0 ? (
+                  {(dashboard?.recent_rejects || []).length > 0 ? (
                     <div className="space-y-2">
                       {(dashboard?.recent_rejects || []).map((reject) => (
                         <div key={reject.id} className="p-2 border rounded">
                           <div className="flex justify-between items-start">
                             <div>
-                              <p className="font-medium text-sm">{reject.run.order.order_number}</p>
+                              <p className="font-medium text-sm">{reject.run?.order?.order_number || 'N/A'}</p>
                               <p className="text-xs text-muted-foreground">{reject.reason}</p>
                             </div>
                             <Badge variant="destructive">{reject.qty_rejected}</Badge>
