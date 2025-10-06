@@ -3,8 +3,32 @@ import { promisify } from 'util'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 import { logError } from '../error-logger'
+import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { createReadStream, createWriteStream } from 'fs'
+import { pipeline } from 'stream/promises'
 
 const execAsync = promisify(exec)
+
+// S3 Client (lazy initialization)
+let s3Client: S3Client | null = null
+
+function getS3Client(): S3Client | null {
+  if (s3Client) return s3Client
+
+  if (!process.env.AWS_S3_BUCKET || !process.env.AWS_ACCESS_KEY_ID) {
+    return null
+  }
+
+  s3Client = new S3Client({
+    region: process.env.AWS_REGION || 'us-east-1',
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+    }
+  })
+
+  return s3Client
+}
 
 /**
  * Backup Service

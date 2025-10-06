@@ -555,9 +555,6 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.0.0
         version: 5.87.4(@tanstack/react-query@5.87.4(react@18.3.1))(react@18.3.1)
-      '@types/ioredis':
-        specifier: ^5.0.0
-        version: 5.0.0
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -592,7 +589,7 @@ importers:
         specifier: ^2.30.0
         version: 2.30.0
       ioredis:
-        specifier: ^5.7.0
+        specifier: ^5.3.0
         version: 5.7.0
       jsonwebtoken:
         specifier: ^9.0.2
@@ -3898,10 +3895,6 @@ packages:
 
   '@types/inquirer@6.5.0':
     resolution: {integrity: sha512-rjaYQ9b9y/VFGOpqBEXRavc3jh0a+e6evAbI31tMda8VlPaSy0AZJfXsvmIe3wklc7W6C3zCSfleuMXR7NOyXw==}
-
-  '@types/ioredis@5.0.0':
-    resolution: {integrity: sha512-zJbJ3FVE17CNl5KXzdeSPtdltc4tMT3TzC6fxQS0sQngkbFZ6h+0uTafsRqu+eSLIugf6Yb0Ea0SUuRr42Nk9g==}
-    deprecated: This is a stub types definition. ioredis provides its own type definitions, so you do not need this installed.
 
   '@types/istanbul-lib-coverage@2.0.6':
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
@@ -13336,12 +13329,6 @@ snapshots:
     dependencies:
       '@types/through': 0.0.33
       rxjs: 6.6.7
-
-  '@types/ioredis@5.0.0':
-    dependencies:
-      ioredis: 5.7.0
-    transitivePeerDependencies:
-      - supports-color
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 
