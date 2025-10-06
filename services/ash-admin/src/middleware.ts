@@ -145,8 +145,8 @@ async function storeCSRFToken(sessionId: string, token: string): Promise<void> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Generate nonce for CSP
-  const nonce = generateNonce()
+  // Generate nonce for CSP (only used in development)
+  const nonce = process.env.NODE_ENV === 'development' ? generateNonce() : ''
 
   // Handle preflight requests
   if (request.method === 'OPTIONS') {
