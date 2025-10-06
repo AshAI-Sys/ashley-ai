@@ -436,8 +436,8 @@ export default function HRPayrollPage() {
                     className="px-3 py-2 border border-gray-200 rounded-md text-sm"
                   >
                     <option value="all">All Status</option>
-                    <option value="active">Active Only</option>
-                    <option value="inactive">Inactive Only</option>
+                    <option value="ACTIVE">Active Only</option>
+                    <option value="INACTIVE">Inactive Only</option>
                   </select>
                 </div>
 
@@ -547,28 +547,28 @@ export default function HRPayrollPage() {
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold">{log.employee.name}</h3>
-                              <Badge className={log.time_in && !log.time_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
-                                {log.time_in && !log.time_out ? 'Present' : log.time_out ? 'Completed' : 'Not Clocked In'}
+                              <h3 className="font-semibold">{log?.employee?.name || 'Unknown Employee'}</h3>
+                              <Badge className={log?.time_in && !log?.time_out ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                                {log?.time_in && !log?.time_out ? 'Present' : log?.time_out ? 'Completed' : 'Not Clocked In'}
                               </Badge>
-                              {getStatusBadge(log.status)}
+                              {getStatusBadge(log?.status)}
                             </div>
                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                               <div>
                                 <span className="text-gray-600">Date:</span><br />
-                                <span className="font-medium">{formatDate(log.date)}</span>
+                                <span className="font-medium">{log?.date ? formatDate(log.date) : 'N/A'}</span>
                               </div>
                               <div>
                                 <span className="text-gray-600">Time In:</span><br />
-                                <span className="font-medium">{log.time_in ? formatDateTime(log.time_in) : 'Not clocked in'}</span>
+                                <span className="font-medium">{log?.time_in ? formatDateTime(log.time_in) : 'Not clocked in'}</span>
                               </div>
                               <div>
                                 <span className="text-gray-600">Time Out:</span><br />
-                                <span className="font-medium">{log.time_out ? formatDateTime(log.time_out) : 'Not clocked out'}</span>
+                                <span className="font-medium">{log?.time_out ? formatDateTime(log.time_out) : 'Not clocked out'}</span>
                               </div>
                               <div>
                                 <span className="text-gray-600">Overtime:</span><br />
-                                <span className="font-medium">{log.overtime_minutes || 0} mins</span>
+                                <span className="font-medium">{log?.overtime_minutes || 0} mins</span>
                               </div>
                             </div>
                           </div>

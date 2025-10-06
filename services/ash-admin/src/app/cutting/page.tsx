@@ -21,7 +21,7 @@ interface CutLay {
   layLengthM: number
   plies: number
   status: string
-  createdAt: string
+  created_at: string // Fixed: API returns snake_case
   grossUsed: number
   netUsed: number
   order: {
@@ -29,11 +29,11 @@ interface CutLay {
     client: {
       name: string
       company: string | null
-    }
+    } | null
     brand: {
       name: string
-    }
-  }
+    } | null
+  } | null
   outputs: Array<{
     id: string
     sizeCode: string
@@ -53,18 +53,18 @@ interface Bundle {
   quantity: number
   status: string
   qrCode: string
-  createdAt: string
+  created_at: string // Fixed: API returns snake_case
   order: {
     orderNumber: string
     client: {
       name: string
       company: string | null
-    }
-  }
+    } | null
+  } | null
   cutLay: {
     markerName: string | null
     layLengthM: number
-  }
+  } | null
 }
 
 export default function CuttingPage() {
@@ -336,28 +336,28 @@ export default function CuttingPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {cutLays.map((lay) => {
-                          const totalPieces = lay.outputs.reduce((sum, output) => sum + output.qty, 0)
-                          const efficiency = ((lay.netUsed / lay.grossUsed) * 100).toFixed(1)
+                          const totalPieces = lay?.outputs?.reduce((sum, output) => sum + output.qty, 0) || 0
+                          const efficiency = lay?.grossUsed > 0 ? ((lay.netUsed / lay.grossUsed) * 100).toFixed(1) : '0.0'
 
                           return (
                             <tr key={lay.id} className="hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">{lay.markerName || 'No Marker'}</div>
-                                  <div className="text-sm text-gray-500">ID: {lay.id.slice(0, 8)}</div>
+                                  <div className="text-sm font-medium text-gray-900">{lay?.markerName || 'No Marker'}</div>
+                                  <div className="text-sm text-gray-500">ID: {lay?.id?.slice(0, 8) || 'N/A'}</div>
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div>
-                                  <div className="text-sm font-medium text-gray-900">{lay.order.orderNumber}</div>
-                                  <div className="text-sm text-gray-500">{lay.order.client.name}</div>
-                                  <div className="text-xs text-gray-400">{lay.order.brand.name}</div>
+                                  <div className="text-sm font-medium text-gray-900">{lay?.order?.orderNumber || 'N/A'}</div>
+                                  <div className="text-sm text-gray-500">{lay?.order?.client?.name || 'No Client'}</div>
+                                  <div className="text-xs text-gray-400">{lay?.order?.brand?.name || 'No Brand'}</div>
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm text-gray-900">
-                                  <div>Length: {lay.layLengthM}m</div>
-                                  <div>Plies: {lay.plies}</div>
+                                  <div>Length: {lay?.layLengthM || 0}m</div>
+                                  <div>Plies: {lay?.plies || 0}</div>
                                   <div>Pieces: {totalPieces}</div>
                                   <div className="text-xs text-green-600">Eff: {efficiency}%</div>
                                 </div>
@@ -456,24 +456,24 @@ export default function CuttingPage() {
                           <tr key={bundle.id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">{bundle.bundleNumber}</div>
-                                <div className="text-sm text-gray-500">QR: {bundle.qrCode}</div>
+                                <div className="text-sm font-medium text-gray-900">{bundle?.bundleNumber || 'N/A'}</div>
+                                <div className="text-sm text-gray-500">QR: {bundle?.qrCode || 'N/A'}</div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">{bundle.order.orderNumber}</div>
-                                <div className="text-sm text-gray-500">{bundle.order.client.name}</div>
+                                <div className="text-sm font-medium text-gray-900">{bundle?.order?.orderNumber || 'N/A'}</div>
+                                <div className="text-sm text-gray-500">{bundle?.order?.client?.name || 'No Client'}</div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="text-sm text-gray-900">
-                                <div>Size: {bundle.sizeCode}</div>
-                                <div>Qty: {bundle.quantity} pcs</div>
+                                <div>Size: {bundle?.sizeCode || 'N/A'}</div>
+                                <div>Qty: {bundle?.quantity || 0} pcs</div>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              {getStatusBadge(bundle.status)}
+                              {getStatusBadge(bundle?.status)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                               <div className="flex items-center space-x-2">
