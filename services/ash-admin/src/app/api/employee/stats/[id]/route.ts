@@ -4,7 +4,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
   NotFoundError
-} from '../../../../../../lib/error-handling'
+} from '@/lib/error-handling'
 
 export const GET = withErrorHandling(async (
   request: NextRequest,

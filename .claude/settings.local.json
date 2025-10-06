@@ -87,7 +87,9 @@
       "Bash(then echo \"Build completed!\")",
       "Bash(else echo \"Still building...\")",
       "Bash(icacls:*)",
-      "Bash(xcopy:*)"
+      "Bash(xcopy:*)",
+      "Read(//c/Users/Khell/Desktop/Ashley AI Backup - 2025-10-03/**)",
+      "Bash(if exist \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\(mobile)\" rd /s /q \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\(mobile)\")"
     ],
     "deny": [],
     "ask": []
