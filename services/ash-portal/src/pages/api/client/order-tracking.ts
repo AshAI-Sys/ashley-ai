@@ -1,6 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from '@ash/database'
-import { logger } from '@ash/shared'
+import { db as prisma } from '@ash-ai/database'
+
+// Simple logger for portal
+const logger = {
+  error: (msg: string, error: any) => console.error(msg, error),
+  info: (msg: string, data?: any) => console.log(msg, data),
+  warn: (msg: string, data?: any) => console.warn(msg, data),
+}
 
 interface Order {
   order_number: string
