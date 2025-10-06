@@ -56,12 +56,15 @@ export default function RoleSpecificDashboard() {
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{user.position} Dashboard</h1>
-            <p className="text-sm text-gray-600">Welcome back, {user.name} • {user.department}</p>
+            <h1 className="text-2xl font-bold text-gray-900">{user.position || 'Dashboard'}</h1>
+            <p className="text-sm text-gray-600">
+              Welcome back, {user.name || user.email}
+              {user.department && ` • ${user.department}`}
+            </p>
           </div>
           <div className="flex items-center space-x-4">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-              {user.role}
+              {user.role || 'user'}
             </span>
             <button
               onClick={() => {
