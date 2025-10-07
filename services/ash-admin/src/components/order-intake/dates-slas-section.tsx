@@ -273,14 +273,9 @@ export function DatesSLAsSection({
           <Label>Target Delivery Date *</Label>
           <div className="flex gap-2">
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? format(selectedDate, 'PPP') : 'Select delivery date'}
-                </Button>
+              <PopoverTrigger className="flex h-10 w-full items-center justify-start rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                <span className="font-normal">{selectedDate ? format(selectedDate, 'PPP') : 'Select delivery date'}</span>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
