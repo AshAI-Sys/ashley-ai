@@ -387,9 +387,9 @@ export function ProductDesignSection({
                           )}
                           
                           {file.uploaded && validatingWithAshley === file.id && (
-                            <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                              <Sparkles className="w-4 h-4" />
+                            <div className="flex items-center gap-2 mt-2 text-sm text-blue-600" suppressHydrationWarning>
+                              <Loader2 className="w-4 h-4 animate-spin" suppressHydrationWarning />
+                              <Sparkles className="w-4 h-4" suppressHydrationWarning />
                               Ashley AI is validating...
                             </div>
                           )}
