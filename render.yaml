@@ -19,9 +19,9 @@ services:
     region: oregon
     plan: free
     branch: master
-    rootDir: services/ash-admin
-    buildCommand: cd ../.. && pnpm install && cd packages/database && npx prisma generate && npx prisma migrate deploy && cd ../../services/ash-admin && pnpm build
-    startCommand: pnpm start
+    rootDir: .
+    buildCommand: pnpm install && cd packages/database && npx prisma generate && cd ../.. && cd services/ash-admin && pnpm build
+    startCommand: cd services/ash-admin && pnpm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
