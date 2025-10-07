@@ -174,18 +174,20 @@ export function ProductDesignSection({
     // Simulate upload progress
     for (let progress = 0; progress <= 100; progress += 10) {
       await new Promise(resolve => setTimeout(resolve, 100))
-      
-      const updatedFiles = designFiles.map(f => 
-        f.id === file.id ? { ...f, uploadProgress: progress } : f
+
+      onDesignFilesChange(prevFiles =>
+        prevFiles.map(f =>
+          f.id === file.id ? { ...f, uploadProgress: progress } : f
+        )
       )
-      onDesignFilesChange(updatedFiles)
     }
-    
+
     // Mark as uploaded
-    const uploadedFiles = designFiles.map(f => 
-      f.id === file.id ? { ...f, uploaded: true } : f
+    onDesignFilesChange(prevFiles =>
+      prevFiles.map(f =>
+        f.id === file.id ? { ...f, uploaded: true } : f
+      )
     )
-    onDesignFilesChange(uploadedFiles)
     
     // Start Ashley AI validation
     validateWithAshley(file)
@@ -215,10 +217,11 @@ export function ProductDesignSection({
         ] : []
       }
       
-      const validatedFiles = designFiles.map(f => 
-        f.id === file.id ? { ...f, ashleyValidation: mockValidation } : f
+      onDesignFilesChange(prevFiles =>
+        prevFiles.map(f =>
+          f.id === file.id ? { ...f, ashleyValidation: mockValidation } : f
+        )
       )
-      onDesignFilesChange(validatedFiles)
       
       if (mockValidation.feasible) {
         toast.success(`Ashley AI: Design "${file.name}" looks good for ${printingMethod}!`)
