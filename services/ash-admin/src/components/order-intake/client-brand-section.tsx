@@ -89,10 +89,10 @@ export function ClientBrandSection({
         },
         body: JSON.stringify({
           name: newClientForm.name,
-          company: newClientForm.company || null,
-          email: newClientForm.email || null,
+          contact_person: newClientForm.company || null,
+          email: newClientForm.email && newClientForm.email.includes('@') ? newClientForm.email : null,
           phone: newClientForm.phone || null,
-          billing_address: newClientForm.address || null
+          address: newClientForm.address || null
         })
       })
 
