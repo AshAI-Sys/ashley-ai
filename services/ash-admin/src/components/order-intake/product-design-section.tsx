@@ -280,8 +280,7 @@ export function ProductDesignSection({
               <SelectContent>
                 {GARMENT_TYPES.map(type => (
                   <SelectItem key={type.value} value={type.value}>
-                    <span className="mr-2">{type.icon}</span>
-                    {type.label}
+                    {type.icon} {type.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -297,12 +296,7 @@ export function ProductDesignSection({
               <SelectContent>
                 {PRINTING_METHODS.map(method => (
                   <SelectItem key={method.value} value={method.value}>
-                    <div>
-                      <div className="font-medium">{method.label}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {method.description} (Min: {method.minQty})
-                      </div>
-                    </div>
+                    {method.label} - {method.description} (Min: {method.minQty})
                   </SelectItem>
                 ))}
               </SelectContent>

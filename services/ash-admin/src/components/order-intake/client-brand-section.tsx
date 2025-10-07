@@ -142,13 +142,7 @@ export function ClientBrandSection({
                 <SelectContent>
                   {clientsArray.map(client => (
                     <SelectItem key={client.id} value={client.id}>
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        <span>{client.name}</span>
-                        {client.company && (
-                          <span className="text-muted-foreground">({client.company})</span>
-                        )}
-                      </div>
+                      {client.name}{client.company ? ` (${client.company})` : ''}
                     </SelectItem>
                   ))}
                 </SelectContent>

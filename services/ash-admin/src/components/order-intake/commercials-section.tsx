@@ -334,10 +334,7 @@ export function CommercialsSection({
               <SelectContent>
                 {PAYMENT_TERMS.map(term => (
                   <SelectItem key={term.value} value={term.value}>
-                    <div>
-                      <div className="font-medium">{term.label}</div>
-                      <div className="text-sm text-muted-foreground">{term.description}</div>
-                    </div>
+                    {term.label} - {term.description}
                   </SelectItem>
                 ))}
               </SelectContent>
