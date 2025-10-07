@@ -122,17 +122,18 @@ export function ClientBrandSection({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          A. Client & Brand
-          <Badge variant="secondary">Required</Badge>
+    <Card className="border-2">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 border-b-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 text-white font-bold text-sm">A</span>
+          <span className="font-bold">Client & Brand</span>
+          <Badge variant="destructive" className="ml-auto">Required</Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="client">Client *</Label>
+      <CardContent className="space-y-6 pt-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="client" className="text-sm font-semibold text-gray-700">Client *</Label>
             <div className="flex gap-2">
               <Select value={selectedClientId} onValueChange={onClientChange}>
                 <SelectTrigger className="flex-1">
@@ -240,8 +241,8 @@ export function ClientBrandSection({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="brand">Brand *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="brand" className="text-sm font-semibold text-gray-700">Brand *</Label>
             <Select 
               value={selectedBrandId} 
               onValueChange={onBrandChange}
@@ -266,8 +267,8 @@ export function ClientBrandSection({
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="channel">Channel (Optional)</Label>
+        <div className="space-y-2">
+          <Label htmlFor="channel" className="text-sm font-semibold text-gray-700">Channel (Optional)</Label>
           <Select value={channel} onValueChange={onChannelChange}>
             <SelectTrigger>
               <SelectValue placeholder="Select channel" />
@@ -283,18 +284,21 @@ export function ClientBrandSection({
         </div>
 
         {selectedClient && (
-          <div className="bg-muted/50 rounded-lg p-3">
-            <h4 className="font-medium mb-2">Selected Client Details</h4>
-            <div className="text-sm space-y-1">
-              <p><span className="font-medium">Name:</span> {selectedClient.name}</p>
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <Building className="w-4 h-4 text-blue-600" />
+              Selected Client Details
+            </h4>
+            <div className="text-sm space-y-2">
+              <p className="flex justify-between"><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-900">{selectedClient.name}</span></p>
               {selectedClient.company && (
-                <p><span className="font-medium">Company:</span> {selectedClient.company}</p>
+                <p className="flex justify-between"><span className="font-semibold text-gray-700">Company:</span> <span className="text-gray-900">{selectedClient.company}</span></p>
               )}
               {selectedClient.email && (
-                <p><span className="font-medium">Email:</span> {selectedClient.email}</p>
+                <p className="flex justify-between"><span className="font-semibold text-gray-700">Email:</span> <span className="text-gray-900">{selectedClient.email}</span></p>
               )}
               {selectedClient.phone && (
-                <p><span className="font-medium">Phone:</span> {selectedClient.phone}</p>
+                <p className="flex justify-between"><span className="font-semibold text-gray-700">Phone:</span> <span className="text-gray-900">{selectedClient.phone}</span></p>
               )}
             </div>
           </div>
