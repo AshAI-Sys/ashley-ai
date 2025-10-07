@@ -164,8 +164,8 @@ export default function NewOrderPageContent() {
     try {
       const response = await fetch('/api/clients?include=brands')
       const data = await response.json()
-      if (data.data) {
-        setClients(data.data)
+      if (data.data && data.data.clients) {
+        setClients(data.data.clients)
       }
     } catch (error) {
       console.error('Failed to fetch clients:', error)
