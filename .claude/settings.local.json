@@ -93,7 +93,8 @@
       "Bash(openssl rand:*)",
       "Bash(set DATABASE_URL=postgresql://ashley_ai_db_fnky_user:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require)",
       "Bash(set DATABASE_URL=postgresql://ashley_ai_db_fnky_user:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr.ap-southeast-1.aws.neon.tech/neondb?sslmode=require)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(ipconfig)"
     ],
     "deny": [],
     "ask": []
