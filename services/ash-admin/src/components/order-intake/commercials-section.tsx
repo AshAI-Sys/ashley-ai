@@ -228,14 +228,15 @@ export function CommercialsSection({
   )
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          F. Commercials
-          <Badge variant="secondary">Required</Badge>
+    <Card className="border-2">
+      <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-green-600 text-white font-bold text-sm">F</span>
+          <span className="font-bold">Commercials</span>
+          <Badge variant="destructive" className="ml-auto">Required</Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pt-6">
         {/* Pricing Break Information */}
         {pricingBreak && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -276,9 +277,9 @@ export function CommercialsSection({
         )}
 
         {/* Pricing Controls */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label>Unit Price (₱) *</Label>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-gray-700">Unit Price (₱) *</Label>
             <div className="flex gap-2">
               <Input
                 type="number"
@@ -302,8 +303,8 @@ export function CommercialsSection({
             </div>
           </div>
 
-          <div>
-            <Label>Deposit Percentage (%)</Label>
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-gray-700">Deposit Percentage (%)</Label>
             <Input
               type="number"
               min="0"
@@ -317,9 +318,9 @@ export function CommercialsSection({
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label>Payment Terms</Label>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-gray-700">Payment Terms</Label>
             <Select 
               value={commercials.paymentTerms} 
               onValueChange={(value) => onCommercialsChange({
@@ -343,8 +344,8 @@ export function CommercialsSection({
             </Select>
           </div>
 
-          <div>
-            <Label>Currency</Label>
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-gray-700">Currency</Label>
             <Select 
               value={commercials.currency} 
               onValueChange={(value) => onCommercialsChange({
@@ -373,7 +374,7 @@ export function CommercialsSection({
                 taxInclusive: checked
               })}
             />
-            <Label>Tax Inclusive (12% VAT)</Label>
+            <Label className="text-sm font-semibold text-gray-700">Tax Inclusive (12% VAT)</Label>
           </div>
         </div>
 

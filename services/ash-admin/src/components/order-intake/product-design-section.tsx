@@ -261,17 +261,18 @@ export function ProductDesignSection({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          B. Product & Design
-          <Badge variant="secondary">Required</Badge>
+    <Card className="border-2">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-sm">B</span>
+          <span className="font-bold">Product & Design</span>
+          <Badge variant="destructive" className="ml-auto">Required</Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label>Garment Type *</Label>
+      <CardContent className="space-y-6 pt-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-gray-700">Garment Type *</Label>
             <Select value={garmentType} onValueChange={onGarmentTypeChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select garment type" />
@@ -287,8 +288,8 @@ export function ProductDesignSection({
             </Select>
           </div>
 
-          <div>
-            <Label>Printing Method *</Label>
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-gray-700">Printing Method *</Label>
             <Select value={printingMethod} onValueChange={onPrintingMethodChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select printing method" />
