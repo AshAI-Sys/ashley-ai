@@ -237,25 +237,39 @@ export function ClientBrandSection({
 
           <div className="space-y-2">
             <Label htmlFor="brand" className="text-sm font-semibold text-gray-700">Brand *</Label>
-            <Select 
-              value={selectedBrandId} 
-              onValueChange={onBrandChange}
-              disabled={!selectedClient?.brands.length}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select brand" />
-              </SelectTrigger>
-              <SelectContent>
-                {selectedClient?.brands.map(brand => (
-                  <SelectItem key={brand.id} value={brand.id}>
-                    {brand.name} ({brand.code})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select
+                value={selectedBrandId}
+                onValueChange={onBrandChange}
+                disabled={!selectedClientId}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Select brand" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedClient?.brands.map(brand => (
+                    <SelectItem key={brand.id} value={brand.id}>
+                      {brand.name} ({brand.code})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                disabled={!selectedClientId}
+                onClick={() => {
+                  toast.info('Add Brand feature coming soon! For now, please add brands from the Clients page.')
+                }}
+              >
+                <Plus className="w-4 h-4" suppressHydrationWarning />
+              </Button>
+            </div>
             {selectedClient && !selectedClient.brands.length && (
               <p className="text-sm text-yellow-600 mt-1">
-                No brands found for this client. Contact admin to add brands.
+                No brands found for this client. Click + to add a brand.
               </p>
             )}
           </div>
