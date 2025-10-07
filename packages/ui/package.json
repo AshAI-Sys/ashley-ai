@@ -54,6 +54,7 @@
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.1.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -71,11 +72,14 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.376.0",
     "react": "^18.2.0",
     "react-day-picker": "^9.10.0",
     "react-dom": "^18.2.0",
-    "tailwind-merge": "^2.3.0"
+    "react-hook-form": "^7.45.0",
+    "tailwind-merge": "^2.3.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@ash-ai/eslint-config": "workspace:*",
