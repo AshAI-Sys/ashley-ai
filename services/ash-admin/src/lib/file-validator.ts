@@ -209,6 +209,7 @@ export function sanitizeFilename(filename: string): string {
   let sanitized = filename.replace(/[\/\\]/g, '_')
 
   // Remove null bytes
+  // eslint-disable-next-line no-control-regex
   sanitized = sanitized.replace(/\x00/g, '')
 
   // Replace dangerous characters with underscores
