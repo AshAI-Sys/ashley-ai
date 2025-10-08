@@ -15,10 +15,10 @@ const UpdateBrandSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { clientId: string; brandId: string } }
+  { params }: { params: { id: string; brandId: string } }
 ) {
   try {
-    const { clientId, brandId } = params;
+    const { id: clientId, brandId } = params;
 
     const brand = await prisma.brand.findUnique({
       where: {
@@ -75,10 +75,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { clientId: string; brandId: string } }
+  { params }: { params: { id: string; brandId: string } }
 ) {
   try {
-    const { clientId, brandId } = params;
+    const { id: clientId, brandId } = params;
     const body = await request.json();
     const validatedData = UpdateBrandSchema.parse(body);
 
@@ -162,10 +162,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { clientId: string; brandId: string } }
+  { params }: { params: { id: string; brandId: string } }
 ) {
   try {
-    const { clientId, brandId } = params;
+    const { id: clientId, brandId } = params;
 
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
