@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
           order: {
             select: {
               id: true,
-              orderNumber: true,
+              order_number: true,
               client: {
                 select: {
                   name: true,
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
           order: {
             select: {
               id: true,
-              orderNumber: true,
+              order_number: true,
               client: {
                 select: {
                   name: true,
