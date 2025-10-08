@@ -25,6 +25,14 @@ const CreateOrderSchema = z.object({
   deliveryDate: z.string().optional().transform((str) => str ? new Date(str) : undefined),
   notes: z.string().optional(),
   lineItems: z.array(OrderLineItemSchema).optional(),
+
+  // New Order Details fields
+  po_number: z.string().optional(),
+  order_type: z.string().optional(),
+  design_name: z.string().optional(),
+  fabric_type: z.string().optional(),
+  size_distribution: z.string().optional(),
+  mockup_url: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -144,6 +152,14 @@ export async function POST(request: NextRequest) {
         currency: validatedData.currency,
         delivery_date: validatedData.deliveryDate || null,
         notes: validatedData.notes || null,
+
+        // New Order Details fields
+        po_number: validatedData.po_number || null,
+        order_type: validatedData.order_type || 'NEW',
+        design_name: validatedData.design_name || null,
+        fabric_type: validatedData.fabric_type || null,
+        size_distribution: validatedData.size_distribution || null,
+        mockup_url: validatedData.mockup_url || null,
       },
       include: {
         client: true,
