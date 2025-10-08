@@ -14,6 +14,8 @@ import { CommercialsSection } from '@/components/order-intake/commercials-sectio
 import { ProductionRouteSection } from '@/components/order-intake/production-route-section'
 import { FilesNotesSection } from '@/components/order-intake/files-notes-section'
 import { SubmitSection } from '@/components/order-intake/submit-section'
+import { OrderDetailsSection } from '@/components/order-intake/order-details-section'
+import { GraphicEditingSection } from '@/components/order-intake/graphic-editing-section'
 
 // UI Components
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -154,6 +156,19 @@ export default function NewOrderPageContent() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [specialInstructions, setSpecialInstructions] = useState('')
 
+  // Form state - New Order Details fields
+  const [poNumber, setPoNumber] = useState('')
+  const [orderType, setOrderType] = useState('NEW')
+  const [designName, setDesignName] = useState('')
+  const [fabricType, setFabricType] = useState('')
+  const [sizeDistributionType, setSizeDistributionType] = useState('')
+
+  // Form state - Graphic Editing Section
+  const [artistFilename, setArtistFilename] = useState('')
+  const [mockupImageUrl, setMockupImageUrl] = useState('')
+  const [notesRemarks, setNotesRemarks] = useState('')
+  const [printLocations, setPrintLocations] = useState<any[]>([])
+
   // Load clients on component mount
   useEffect(() => {
     fetchClients()
@@ -246,6 +261,13 @@ export default function NewOrderPageContent() {
         brand_id: selectedBrandId,
         channel,
 
+        // Order Details (NEW)
+        po_number: poNumber,
+        order_type: orderType,
+        design_name: designName,
+        fabric_type: fabricType,
+        size_distribution: JSON.stringify({ type: sizeDistributionType }),
+
         // Product & Design
         garment_type: garmentType,
         printing_method: printingMethod,
@@ -254,6 +276,12 @@ export default function NewOrderPageContent() {
           size: f.size,
           type: f.type
         })),
+
+        // Graphic Editing (NEW)
+        artist_filename: artistFilename,
+        mockup_url: mockupImageUrl,
+        notes_remarks: notesRemarks,
+        print_locations: JSON.stringify(printLocations),
 
         // Quantities & Sizes
         total_quantity: totalQuantity,
@@ -375,6 +403,20 @@ export default function NewOrderPageContent() {
             onClientCreated={handleClientCreated}
           />
 
+          {/* A2. Order Details */}
+          <OrderDetailsSection
+            poNumber={poNumber}
+            orderType={orderType}
+            designName={designName}
+            fabricType={fabricType}
+            sizeDistributionType={sizeDistributionType}
+            onPoNumberChange={setPoNumber}
+            onOrderTypeChange={setOrderType}
+            onDesignNameChange={setDesignName}
+            onFabricTypeChange={setFabricType}
+            onSizeDistributionTypeChange={setSizeDistributionType}
+          />
+
           {/* B. Product & Design */}
           <ProductDesignSection
             garmentType={garmentType}
@@ -383,6 +425,18 @@ export default function NewOrderPageContent() {
             onGarmentTypeChange={setGarmentType}
             onPrintingMethodChange={setPrintingMethod}
             onDesignFilesChange={setDesignFiles}
+          />
+
+          {/* B2. Graphic Editing Section */}
+          <GraphicEditingSection
+            artistFilename={artistFilename}
+            mockupImageUrl={mockupImageUrl}
+            notesRemarks={notesRemarks}
+            printLocations={printLocations}
+            onArtistFilenameChange={setArtistFilename}
+            onMockupImageUrlChange={setMockupImageUrl}
+            onNotesRemarksChange={setNotesRemarks}
+            onPrintLocationsChange={setPrintLocations}
           />
 
           {/* C. Quantities & Size Curve */}

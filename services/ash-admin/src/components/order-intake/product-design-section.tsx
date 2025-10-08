@@ -49,29 +49,35 @@ const GARMENT_TYPES = [
 ]
 
 const PRINTING_METHODS = [
-  { 
-    value: 'silkscreen', 
-    label: 'Silkscreen', 
+  {
+    value: 'silkscreen',
+    label: 'Silkscreen',
     description: 'Best for large quantities, solid colors',
     minQty: 50
   },
-  { 
-    value: 'sublimation', 
-    label: 'Sublimation', 
+  {
+    value: 'sublimation',
+    label: 'Sublimation',
     description: 'Full-color, polyester garments only',
     minQty: 10
   },
-  { 
-    value: 'dtf', 
-    label: 'DTF (Direct to Film)', 
+  {
+    value: 'dtf',
+    label: 'DTF (Direct to Film)',
     description: 'Any garment color, detailed designs',
     minQty: 1
   },
-  { 
-    value: 'embroidery', 
-    label: 'Embroidery', 
+  {
+    value: 'embroidery',
+    label: 'Embroidery',
     description: 'Premium finish, logos and text',
     minQty: 12
+  },
+  {
+    value: 'rubberized',
+    label: 'Rubberized Print',
+    description: 'Raised rubber texture, durable finish',
+    minQty: 25
   }
 ]
 

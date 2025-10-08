@@ -137,15 +137,6 @@ const AVAILABLE_ADDONS: AddOn[] = [
     priceType: 'per_piece',
     price: 5,
     selected: false
-  },
-  {
-    id: 'fabric-softener',
-    name: 'Fabric Softener Treatment',
-    description: 'Pre-wash softener treatment',
-    type: 'garment',
-    priceType: 'per_piece',
-    price: 4,
-    selected: false
   }
 ]
 
