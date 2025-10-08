@@ -99,7 +99,11 @@
       "Bash(do echo \"Test $i:\")",
       "Read(//c/Users/Khell/Desktop/Ashley-AI-Backup-2025-10-08-113630/**)",
       "Bash(then echo \"✅ PERFECT! Walang nul files - CLEAN BACKUP!\")",
-      "Bash(else echo \"May nul files pa\")"
+      "Bash(else echo \"May nul files pa\")",
+      "Bash(for i in {1..5})",
+      "Bash(do curl -s -w \"Response time: %{time_total}s\\n\" -o nul http://localhost:3001/orders/new)",
+      "Bash(for i in {1..10})",
+      "Bash(do curl -s -w \"Test $i: %{time_total}s\\n\" -o nul http://localhost:3001/orders/new)"
     ],
     "deny": [],
     "ask": []
