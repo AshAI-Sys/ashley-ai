@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Plus, X, Image as ImageIcon, FileImage, Shirt } from 'lucide-react'
+import { Plus, X, Image as ImageIcon, FileImage, Shirt, Download, Upload } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface PrintLocation {
@@ -60,6 +60,69 @@ export function GraphicEditingSection({
   onNotesRemarksChange,
   onPrintLocationsChange
 }: GraphicEditingSectionProps) {
+  const [imageLoading, setImageLoading] = useState(false)
+  const [imageError, setImageError] = useState(false)
+
+  const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const file = e.dataTransfer.files[0]
+    if (file && file.type.startsWith('image/')) {
+      handleImageUpload(file)
+    } else {
+      toast.error('Please drop an image file')
+    }
+  }
+
+  const handleImageUpload = (file: File) => {
+    setImageLoading(true)
+    setImageError(false)
+
+    // Create a local URL for the image
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const imageUrl = e.target?.result as string
+      onMockupImageUrlChange(imageUrl)
+      setImageLoading(false)
+      toast.success('Mockup image uploaded')
+    }
+    reader.onerror = () => {
+      setImageLoading(false)
+      setImageError(true)
+      toast.error('Failed to load image')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleImageUpload(file)
+    }
+  }
+
+  const downloadMockupImage = async () => {
+    if (!mockupImageUrl) return
+
+    try {
+      const response = await fetch(mockupImageUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `mockup_${Date.now()}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+      toast.success('Mockup image downloaded')
+    } catch (error) {
+      console.error('Download error:', error)
+      toast.error('Failed to download image')
+    }
+  }
+
   const togglePrintLocation = (locationValue: string) => {
     const exists = printLocations.find(loc => loc.location === locationValue)
 
@@ -134,29 +197,93 @@ export function GraphicEditingSection({
             <ImageIcon className="w-4 h-4" />
             Mockup Image URL
           </Label>
-          <Input
-            id="mockup-url"
-            value={mockupImageUrl}
-            onChange={(e) => onMockupImageUrlChange(e.target.value)}
-            placeholder="https://..."
-            type="url"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            Link to the mockup/preview image
-          </p>
-          {mockupImageUrl && (
-            <div className="mt-3 border rounded-lg p-2 bg-gray-50">
-              <img
-                src={mockupImageUrl}
-                alt="Mockup preview"
-                className="w-full max-w-md rounded"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                  toast.error('Failed to load mockup image')
-                }}
+
+          <div className="space-y-3">
+            {/* URL Input */}
+            <Input
+              id="mockup-url"
+              value={mockupImageUrl}
+              onChange={(e) => onMockupImageUrlChange(e.target.value)}
+              placeholder="https://... or drag & drop image below"
+              type="text"
+            />
+
+            {/* Drag & Drop Zone */}
+            <div
+              onDrop={handleImageDrop}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnter={(e) => e.preventDefault()}
+              className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50"
+            >
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileInputChange}
+                className="hidden"
+                id="mockup-file-input"
               />
+              <label htmlFor="mockup-file-input" className="cursor-pointer">
+                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600 font-medium">
+                  Drag & drop image here or click to browse
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Supports JPG, PNG, GIF (Max 10MB)
+                </p>
+              </label>
             </div>
-          )}
+
+            {/* Image Preview */}
+            {mockupImageUrl && (
+              <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-sm font-medium text-green-900">
+                    Mockup Preview
+                  </Label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={downloadMockupImage}
+                    className="h-8"
+                  >
+                    <Download className="w-4 h-4 mr-1" />
+                    Download
+                  </Button>
+                </div>
+
+                {imageLoading ? (
+                  <div className="w-full h-64 flex items-center justify-center bg-gray-100 rounded">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                      <p className="text-sm text-gray-600">Loading image...</p>
+                    </div>
+                  </div>
+                ) : imageError ? (
+                  <div className="w-full h-64 flex items-center justify-center bg-red-50 rounded border border-red-200">
+                    <div className="text-center">
+                      <X className="w-12 h-12 text-red-500 mx-auto mb-2" />
+                      <p className="text-sm text-red-600">Failed to load image</p>
+                    </div>
+                  </div>
+                ) : (
+                  <img
+                    src={mockupImageUrl}
+                    alt="Mockup preview"
+                    className="w-full max-w-2xl mx-auto rounded shadow-sm"
+                    onLoad={() => setImageError(false)}
+                    onError={() => {
+                      setImageError(true)
+                      toast.error('Failed to load mockup image')
+                    }}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-2">
+            Link to the mockup/preview image or upload directly
+          </p>
         </div>
 
         {/* Notes/Remarks */}

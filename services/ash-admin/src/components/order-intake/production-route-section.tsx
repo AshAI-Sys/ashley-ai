@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
-import { MapPin, Sparkles, Clock, Users, TrendingUp, AlertCircle, CheckCircle, Zap } from 'lucide-react'
+import { MapPin, Sparkles, Clock, Users, TrendingUp, AlertCircle, CheckCircle, Zap, Plus, Minus, Settings } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface ProductionStep {
@@ -17,6 +17,8 @@ interface ProductionStep {
   estimatedHours: number
   dependencies: string[]
   resources: string[]
+  customNotes?: string
+  customDuration?: number
 }
 
 interface ProductionRoute {
@@ -239,6 +241,8 @@ export function ProductionRouteSection({
   const [optimizing, setOptimizing] = useState(false)
   const [ashleyOptimization, setAshleyOptimization] = useState<AshleyOptimization | null>(null)
   const [routeVisualization, setRouteVisualization] = useState<boolean>(false)
+  const [customSteps, setCustomSteps] = useState<ProductionStep[]>([])
+  const [expandedStep, setExpandedStep] = useState<string | null>(null)
 
   useEffect(() => {
     if (printingMethod && totalQuantity > 0) {
@@ -320,6 +324,41 @@ export function ProductionRouteSection({
     if (efficiency >= 85) return 'text-green-600'
     if (efficiency >= 75) return 'text-blue-600'
     return 'text-amber-600'
+  }
+
+  const addCustomStep = () => {
+    const newStep: ProductionStep = {
+      id: `custom_${Date.now()}`,
+      name: 'New Custom Step',
+      department: 'Custom',
+      estimatedHours: 1,
+      dependencies: [],
+      resources: [],
+      customNotes: '',
+      customDuration: undefined
+    }
+    setCustomSteps([...customSteps, newStep])
+    toast.success('Custom step added')
+  }
+
+  const removeCustomStep = (stepId: string) => {
+    setCustomSteps(customSteps.filter(s => s.id !== stepId))
+    toast.success('Custom step removed')
+  }
+
+  const toggleStepCustomization = (stepId: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation()
+    }
+    setExpandedStep(expandedStep === stepId ? null : stepId)
+  }
+
+  const updateCustomStep = (stepId: string, field: keyof ProductionStep, value: any) => {
+    setCustomSteps(prev =>
+      prev.map(step =>
+        step.id === stepId ? { ...step, [field]: value } : step
+      )
+    )
   }
 
   const availableRoutes = getAvailableRoutes()
@@ -502,35 +541,56 @@ export function ProductionRouteSection({
         {/* Route Steps Visualization */}
         {routeVisualization && currentRoute && (
           <div>
-            <h4 className="font-medium mb-4 flex items-center gap-2">
-              <Route className="w-4 h-4" />
-              Production Steps - {currentRoute.name}
-            </h4>
-            
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-medium flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Production Steps - {currentRoute.name}
+              </h4>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addCustomStep}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Custom Step
+              </Button>
+            </div>
+
             <div className="space-y-3">
               {currentRoute.steps.map((step, index) => (
                 <div key={step.id} className="relative">
                   {index < currentRoute.steps.length - 1 && (
                     <div className="absolute left-4 top-8 bottom-0 w-0.5 bg-gray-300" />
                   )}
-                  
+
                   <div className="flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
                       {index + 1}
                     </div>
-                    
+
                     <div className="flex-1 pb-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
                           <h5 className="font-medium">{step.name}</h5>
                           <p className="text-sm text-muted-foreground">{step.department}</p>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium">{step.estimatedHours}h</div>
-                          <div className="text-xs text-muted-foreground">estimated</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <div className="text-sm font-medium">{step.estimatedHours}h</div>
+                            <div className="text-xs text-muted-foreground">estimated</div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={(e) => toggleStepCustomization(step.id, e)}
+                            title="Customize step"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-1 mb-2">
                         {step.resources.map((resource, i) => (
                           <Badge key={i} variant="outline" className="text-xs">
@@ -538,18 +598,170 @@ export function ProductionRouteSection({
                           </Badge>
                         ))}
                       </div>
-                      
+
                       {step.dependencies.length > 0 && (
                         <div className="text-xs text-muted-foreground">
-                          Depends on: {step.dependencies.map(dep => 
+                          Depends on: {step.dependencies.map(dep =>
                             currentRoute.steps.find(s => s.id === dep)?.name
                           ).filter(Boolean).join(', ')}
+                        </div>
+                      )}
+
+                      {expandedStep === step.id && (
+                        <div className="mt-3 border border-blue-200 rounded-lg p-3 bg-blue-50/50 space-y-2">
+                          <div className="flex items-center justify-between mb-2">
+                            <h6 className="font-medium text-sm flex items-center gap-2">
+                              <Settings className="w-4 h-4" />
+                              Customize Step
+                            </h6>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={(e) => toggleStepCustomization(step.id, e)}
+                            >
+                              <Minus className="w-4 h-4" />
+                            </Button>
+                          </div>
+
+                          <div>
+                            <label className="text-xs font-medium">Custom Notes</label>
+                            <input
+                              type="text"
+                              placeholder="Add special instructions for this step"
+                              className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                              onChange={(e) => {
+                                // Store in temporary state
+                                step.customNotes = e.target.value
+                              }}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-xs font-medium">Custom Duration (hours)</label>
+                            <input
+                              type="number"
+                              placeholder={`Default: ${step.estimatedHours}h`}
+                              className="w-full mt-1 px-3 py-2 border rounded-md text-sm"
+                              onChange={(e) => {
+                                step.customDuration = parseFloat(e.target.value) || undefined
+                              }}
+                            />
+                          </div>
+
+                          <div className="text-xs text-muted-foreground bg-white/50 rounded p-2">
+                            💡 Tip: Custom settings will override default values for this production run
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
               ))}
+
+              {/* Custom Steps */}
+              {customSteps.map((step, index) => {
+                const stepIndex = currentRoute.steps.length + index
+                const isExpanded = expandedStep === step.id
+
+                return (
+                  <div key={step.id} className="relative">
+                    {index < customSteps.length - 1 && (
+                      <div className="absolute left-4 top-8 bottom-0 w-0.5 bg-green-300" />
+                    )}
+
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-medium flex-shrink-0">
+                        {stepIndex + 1}
+                      </div>
+
+                      <div className="flex-1 pb-4">
+                        <div className="border-2 border-green-200 rounded-lg p-3 bg-green-50/50">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="default" className="bg-green-600 text-xs">
+                                  Custom
+                                </Badge>
+                                <input
+                                  type="text"
+                                  value={step.name}
+                                  onChange={(e) => updateCustomStep(step.id, 'name', e.target.value)}
+                                  className="font-medium bg-transparent border-b border-green-300 px-1 flex-1"
+                                  placeholder="Step name"
+                                />
+                              </div>
+                              <input
+                                type="text"
+                                value={step.department}
+                                onChange={(e) => updateCustomStep(step.id, 'department', e.target.value)}
+                                className="text-sm text-muted-foreground bg-transparent border-b border-green-200 mt-1 px-1 w-full"
+                                placeholder="Department"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-right">
+                                <input
+                                  type="number"
+                                  value={step.estimatedHours}
+                                  onChange={(e) => updateCustomStep(step.id, 'estimatedHours', parseFloat(e.target.value) || 1)}
+                                  className="text-sm font-medium bg-transparent border-b border-green-300 w-12 text-right"
+                                  min="0.5"
+                                  step="0.5"
+                                />
+                                <span className="text-sm">h</span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                                onClick={(e) => toggleStepCustomization(step.id, e)}
+                                title="Edit details"
+                              >
+                                {isExpanded ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0 text-red-600"
+                                onClick={() => removeCustomStep(step.id)}
+                                title="Remove step"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {isExpanded && (
+                            <div className="mt-3 space-y-2 border-t border-green-200 pt-3">
+                              <div>
+                                <label className="text-xs font-medium">Resources Required</label>
+                                <input
+                                  type="text"
+                                  placeholder="e.g., Machine, Operator (comma separated)"
+                                  className="w-full mt-1 px-2 py-1 border rounded text-sm"
+                                  onChange={(e) => updateCustomStep(step.id, 'resources', e.target.value.split(',').map(r => r.trim()))}
+                                />
+                              </div>
+
+                              <div>
+                                <label className="text-xs font-medium">Custom Notes</label>
+                                <input
+                                  type="text"
+                                  placeholder="Special instructions"
+                                  value={step.customNotes || ''}
+                                  onChange={(e) => updateCustomStep(step.id, 'customNotes', e.target.value)}
+                                  className="w-full mt-1 px-2 py-1 border rounded text-sm"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
             
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">

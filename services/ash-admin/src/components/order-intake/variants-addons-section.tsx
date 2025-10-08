@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
-import { Plus, Minus, Palette, Tag, Package, Calculator } from 'lucide-react'
+import { Plus, Minus, Palette, Tag, Package, Calculator, Settings } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface ColorVariant {
@@ -30,6 +30,14 @@ interface AddOn {
   price: number
   selected: boolean
   applicableToAll?: boolean
+}
+
+interface AddOnCustomization {
+  addOnId: string
+  specifications: string
+  notes: string
+  customQuantity?: number
+  customPrice?: number
 }
 
 interface VariantsAddonsSectionProps {
@@ -149,6 +157,9 @@ export function VariantsAddonsSection({
   onPricingUpdate
 }: VariantsAddonsSectionProps) {
   const [addOns, setAddOns] = useState<AddOn[]>(AVAILABLE_ADDONS)
+  const [addOnCustomizations, setAddOnCustomizations] = useState<AddOnCustomization[]>([])
+  const [expandedAddOn, setExpandedAddOn] = useState<string | null>(null)
+  const [customAddOns, setCustomAddOns] = useState<AddOn[]>([])
 
   useEffect(() => {
     calculatePricing()
@@ -253,6 +264,89 @@ export function VariantsAddonsSection({
     }
   }
 
+  const toggleCustomization = (addOnId: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation()
+    }
+
+    if (expandedAddOn === addOnId) {
+      setExpandedAddOn(null)
+    } else {
+      setExpandedAddOn(addOnId)
+
+      // Initialize customization if it doesn't exist
+      const existingCustomization = addOnCustomizations.find(c => c.addOnId === addOnId)
+      if (!existingCustomization) {
+        setAddOnCustomizations([
+          ...addOnCustomizations,
+          {
+            addOnId,
+            specifications: '',
+            notes: '',
+            customQuantity: undefined,
+            customPrice: undefined
+          }
+        ])
+      }
+    }
+  }
+
+  const updateCustomization = (addOnId: string, field: keyof AddOnCustomization, value: any) => {
+    setAddOnCustomizations(prev => {
+      const existing = prev.find(c => c.addOnId === addOnId)
+      if (existing) {
+        return prev.map(c =>
+          c.addOnId === addOnId ? { ...c, [field]: value } : c
+        )
+      } else {
+        return [
+          ...prev,
+          {
+            addOnId,
+            specifications: '',
+            notes: '',
+            customQuantity: undefined,
+            customPrice: undefined,
+            [field]: value
+          }
+        ]
+      }
+    })
+  }
+
+  const getCustomization = (addOnId: string) => {
+    return addOnCustomizations.find(c => c.addOnId === addOnId)
+  }
+
+  const addCustomAddOn = () => {
+    const newAddOn: AddOn = {
+      id: `custom_addon_${Date.now()}`,
+      name: 'New Custom Add-on',
+      description: 'Custom add-on description',
+      type: 'other',
+      priceType: 'per_piece',
+      price: 0,
+      selected: false
+    }
+    setCustomAddOns([...customAddOns, newAddOn])
+    toast.success('Custom add-on created')
+  }
+
+  const removeCustomAddOn = (addOnId: string) => {
+    setCustomAddOns(customAddOns.filter(a => a.id !== addOnId))
+    // Also remove from selected if it was selected
+    onAddOnsChange(selectedAddOns.filter(id => id !== addOnId))
+    toast.success('Custom add-on removed')
+  }
+
+  const updateCustomAddOn = (addOnId: string, field: keyof AddOn, value: any) => {
+    setCustomAddOns(prev =>
+      prev.map(addon =>
+        addon.id === addOnId ? { ...addon, [field]: value } : addon
+      )
+    )
+  }
+
   const getAddOnGroupedByType = () => {
     const grouped: { [key: string]: AddOn[] } = {}
     addOns.forEach(addOn => {
@@ -340,7 +434,7 @@ export function VariantsAddonsSection({
                   )}
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <Label>Color Name</Label>
                     <Input
@@ -376,16 +470,6 @@ export function VariantsAddonsSection({
                       max="100"
                       value={variant.percentage || ''}
                       onChange={(e) => updateColorVariant(variant.id, 'percentage', parseInt(e.target.value) || 0)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Quantity</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      value={variant.quantity || ''}
-                      onChange={(e) => updateColorVariant(variant.id, 'quantity', parseInt(e.target.value) || 0)}
                     />
                   </div>
                 </div>
@@ -446,11 +530,21 @@ export function VariantsAddonsSection({
 
         {/* Add-ons */}
         <div>
-          <div className="mb-4">
-            <Label className="text-base font-medium">Add-ons & Enhancements</Label>
-            <p className="text-sm text-muted-foreground">
-              Select additional services and enhancements
-            </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <Label className="text-base font-medium">Add-ons & Enhancements</Label>
+              <p className="text-sm text-muted-foreground">
+                Select additional services and enhancements
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={addCustomAddOn}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add Custom Add-on
+            </Button>
           </div>
 
           <div className="space-y-6">
@@ -464,49 +558,316 @@ export function VariantsAddonsSection({
                 </h4>
                 
                 <div className="grid md:grid-cols-2 gap-3">
-                  {typeAddOns.map((addOn) => (
-                    <div
-                      key={addOn.id}
-                      className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                        selectedAddOns.includes(addOn.id)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => toggleAddOn(addOn.id)}
-                    >
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          checked={selectedAddOns.includes(addOn.id)}
-                          onChange={() => toggleAddOn(addOn.id)}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <div className="flex justify-between items-start">
-                            <h5 className="font-medium">{addOn.name}</h5>
-                            <Badge variant="outline" className="text-xs">
-                              {formatPrice(addOn)}
-                            </Badge>
+                  {typeAddOns.map((addOn) => {
+                    const customization = getCustomization(addOn.id)
+                    const isExpanded = expandedAddOn === addOn.id
+
+                    return (
+                      <div key={addOn.id} className="space-y-2">
+                        <div
+                          className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                            selectedAddOns.includes(addOn.id)
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => toggleAddOn(addOn.id)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <Checkbox
+                              checked={selectedAddOns.includes(addOn.id)}
+                              onChange={() => toggleAddOn(addOn.id)}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start">
+                                <h5 className="font-medium">{addOn.name}</h5>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="text-xs">
+                                    {formatPrice(addOn)}
+                                  </Badge>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={`h-6 w-6 p-0 ${isExpanded ? 'bg-blue-100' : ''}`}
+                                    onClick={(e) => toggleCustomization(addOn.id, e)}
+                                    title="Customize"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {addOn.description}
+                              </p>
+
+                              {selectedAddOns.includes(addOn.id) && addOn.priceType !== 'percentage' && (
+                                <div className="text-xs text-blue-600 mt-2">
+                                  Total: ₱{(
+                                    addOn.priceType === 'fixed'
+                                      ? addOn.price
+                                      : addOn.price * totalQuantity
+                                  ).toLocaleString()}
+                                </div>
+                              )}
+
+                              {customization && (customization.specifications || customization.notes) && (
+                                <div className="mt-2 pt-2 border-t border-gray-200">
+                                  <div className="flex items-center gap-1 text-xs text-green-600">
+                                    <Settings className="w-3 h-3" />
+                                    <span>Customized</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {addOn.description}
-                          </p>
-                          
-                          {selectedAddOns.includes(addOn.id) && addOn.priceType !== 'percentage' && (
-                            <div className="text-xs text-blue-600 mt-2">
-                              Total: ₱{(
-                                addOn.priceType === 'fixed' 
-                                  ? addOn.price 
-                                  : addOn.price * totalQuantity
-                              ).toLocaleString()}
+                        </div>
+
+                        {/* Customization Panel */}
+                        {isExpanded && (
+                          <div className="border border-blue-200 rounded-lg p-4 bg-blue-50/50 space-y-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <h6 className="font-medium text-sm flex items-center gap-2">
+                                <Settings className="w-4 h-4" />
+                                Customize {addOn.name}
+                              </h6>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                                onClick={(e) => toggleCustomization(addOn.id, e)}
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                            </div>
+
+                            <div>
+                              <Label className="text-xs">Specifications</Label>
+                              <Input
+                                placeholder="e.g., Size: 5cm x 5cm, Material: Woven"
+                                value={customization?.specifications || ''}
+                                onChange={(e) => updateCustomization(addOn.id, 'specifications', e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-1"
+                              />
+                            </div>
+
+                            <div>
+                              <Label className="text-xs">Notes / Instructions</Label>
+                              <Input
+                                placeholder="Special instructions or requirements"
+                                value={customization?.notes || ''}
+                                onChange={(e) => updateCustomization(addOn.id, 'notes', e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="mt-1"
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-xs">Custom Quantity (Optional)</Label>
+                                <Input
+                                  type="number"
+                                  placeholder="Default: order qty"
+                                  value={customization?.customQuantity || ''}
+                                  onChange={(e) => updateCustomization(addOn.id, 'customQuantity', parseInt(e.target.value) || undefined)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-1"
+                                />
+                              </div>
+
+                              <div>
+                                <Label className="text-xs">Custom Price (Optional)</Label>
+                                <Input
+                                  type="number"
+                                  placeholder={`Default: ₱${addOn.price}`}
+                                  value={customization?.customPrice || ''}
+                                  onChange={(e) => updateCustomization(addOn.id, 'customPrice', parseFloat(e.target.value) || undefined)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="text-xs text-muted-foreground bg-white/50 rounded p-2">
+                              💡 Tip: Leave quantity/price blank to use default values
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+
+            {/* Custom Add-ons Section */}
+            {customAddOns.length > 0 && (
+              <div>
+                <h4 className="font-medium capitalize mb-3 flex items-center gap-2">
+                  <Settings className="w-4 h-4" />
+                  Custom Add-ons
+                </h4>
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  {customAddOns.map((addOn) => {
+                    const customization = getCustomization(addOn.id)
+                    const isExpanded = expandedAddOn === addOn.id
+
+                    return (
+                      <div key={addOn.id} className="space-y-2">
+                        <div className="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
+                          <div className="flex items-start gap-3">
+                            <Checkbox
+                              checked={selectedAddOns.includes(addOn.id)}
+                              onChange={() => toggleAddOn(addOn.id)}
+                              className="mt-1"
+                            />
+                            <div className="flex-1 space-y-2">
+                              {/* Editable Name */}
+                              <div className="flex items-center gap-2">
+                                <Badge variant="default" className="bg-purple-600 text-xs">
+                                  Custom
+                                </Badge>
+                                <Input
+                                  value={addOn.name}
+                                  onChange={(e) => updateCustomAddOn(addOn.id, 'name', e.target.value)}
+                                  className="font-medium h-8 flex-1"
+                                  placeholder="Add-on name"
+                                  onClick={(e) => e.stopPropagation()}
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 text-red-600"
+                                  onClick={() => removeCustomAddOn(addOn.id)}
+                                  title="Remove custom add-on"
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+
+                              {/* Editable Description */}
+                              <Input
+                                value={addOn.description}
+                                onChange={(e) => updateCustomAddOn(addOn.id, 'description', e.target.value)}
+                                className="text-sm h-8"
+                                placeholder="Description"
+                                onClick={(e) => e.stopPropagation()}
+                              />
+
+                              {/* Price Type and Price */}
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <Label className="text-xs">Price Type</Label>
+                                  <Select
+                                    value={addOn.priceType}
+                                    onValueChange={(value) => updateCustomAddOn(addOn.id, 'priceType', value)}
+                                  >
+                                    <SelectTrigger className="h-8">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="per_piece">Per Piece</SelectItem>
+                                      <SelectItem value="fixed">Fixed</SelectItem>
+                                      <SelectItem value="percentage">Percentage</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+
+                                <div>
+                                  <Label className="text-xs">
+                                    Price {addOn.priceType === 'percentage' ? '(%)' : '(₱)'}
+                                  </Label>
+                                  <Input
+                                    type="number"
+                                    value={addOn.price}
+                                    onChange={(e) => updateCustomAddOn(addOn.id, 'price', parseFloat(e.target.value) || 0)}
+                                    className="h-8"
+                                    placeholder="0"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Type Selection */}
+                              <div>
+                                <Label className="text-xs">Category</Label>
+                                <Select
+                                  value={addOn.type}
+                                  onValueChange={(value) => updateCustomAddOn(addOn.id, 'type', value)}
+                                >
+                                  <SelectTrigger className="h-8">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="print">Print</SelectItem>
+                                    <SelectItem value="garment">Garment</SelectItem>
+                                    <SelectItem value="packaging">Packaging</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {/* Show price preview */}
+                              {selectedAddOns.includes(addOn.id) && addOn.priceType !== 'percentage' && (
+                                <div className="text-xs text-purple-600 bg-purple-100 rounded p-2">
+                                  Total: ₱{(
+                                    addOn.priceType === 'fixed'
+                                      ? addOn.price
+                                      : addOn.price * totalQuantity
+                                  ).toLocaleString()}
+                                </div>
+                              )}
+
+                              {/* Expand for more details */}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 text-xs"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  toggleCustomization(addOn.id, e)
+                                }}
+                              >
+                                {isExpanded ? <Minus className="w-3 h-3 mr-1" /> : <Plus className="w-3 h-3 mr-1" />}
+                                {isExpanded ? 'Less' : 'More'} Details
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Customization Panel */}
+                          {isExpanded && (
+                            <div className="mt-3 pt-3 border-t border-purple-200 space-y-2">
+                              <div>
+                                <Label className="text-xs">Specifications</Label>
+                                <Input
+                                  placeholder="e.g., Size, Material, etc."
+                                  value={customization?.specifications || ''}
+                                  onChange={(e) => updateCustomization(addOn.id, 'specifications', e.target.value)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-1 h-8"
+                                />
+                              </div>
+
+                              <div>
+                                <Label className="text-xs">Notes / Instructions</Label>
+                                <Input
+                                  placeholder="Special instructions"
+                                  value={customization?.notes || ''}
+                                  onChange={(e) => updateCustomization(addOn.id, 'notes', e.target.value)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-1 h-8"
+                                />
+                              </div>
                             </div>
                           )}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -516,7 +877,7 @@ export function VariantsAddonsSection({
             <h4 className="font-medium text-green-900 mb-3">Selected Add-ons Summary</h4>
             <div className="space-y-2">
               {selectedAddOns.map(addOnId => {
-                const addOn = addOns.find(a => a.id === addOnId)
+                const addOn = addOns.find(a => a.id === addOnId) || customAddOns.find(a => a.id === addOnId)
                 if (!addOn) return null
 
                 let cost = 0
