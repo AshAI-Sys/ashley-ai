@@ -97,7 +97,9 @@
       "Bash(ipconfig)",
       "Bash(for i in {1..3})",
       "Bash(do echo \"Test $i:\")",
-      "Read(//c/Users/Khell/Desktop/Ashley-AI-Backup-2025-10-08-113630/**)"
+      "Read(//c/Users/Khell/Desktop/Ashley-AI-Backup-2025-10-08-113630/**)",
+      "Bash(then echo \"✅ PERFECT! Walang nul files - CLEAN BACKUP!\")",
+      "Bash(else echo \"May nul files pa\")"
     ],
     "deny": [],
     "ask": []
