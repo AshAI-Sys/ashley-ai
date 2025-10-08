@@ -9,8 +9,9 @@ const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
 
 const CreateClientSchema = z.object({
   name: z.string().min(1, 'Client name is required'),
+  company: z.string().optional(), // Accept company field from form
   contact_person: z.string().optional(),
-  email: z.string().email('Valid email is required').optional(),
+  email: z.string().email('Valid email is required').optional().or(z.literal('')),
   phone: z.string().optional(),
   address: z.union([z.string(), z.object({
     street: z.string().optional(),
@@ -119,6 +120,11 @@ export async function POST(request: NextRequest) {
       ? JSON.stringify(validatedData.address)
       : validatedData.address;
 
+    // Store company in portal_settings as metadata since there's no company field in schema
+    const portalSettings = validatedData.company
+      ? JSON.stringify({ company: validatedData.company })
+      : null;
+
     // Create new client
     const newClient = await prisma.client.create({
       data: {
@@ -132,6 +138,7 @@ export async function POST(request: NextRequest) {
         payment_terms: validatedData.payment_terms || null,
         credit_limit: validatedData.credit_limit || null,
         is_active: validatedData.is_active,
+        portal_settings: portalSettings,
       },
       include: {
         _count: {
