@@ -109,9 +109,7 @@ export function ChatWidget() {
     }
   }
 
-  if (!isConfigured) {
-    return null // Don't show widget if AI is not configured
-  }
+  // Show widget even if not configured, but with setup instructions
 
   return (
     <>
@@ -165,7 +163,52 @@ export function ChatWidget() {
             <>
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {messages.length === 0 && (
+                {messages.length === 0 && !isConfigured && (
+                  <div className="text-center text-gray-600 mt-4 p-4">
+                    <MessageCircle className="w-12 h-12 mx-auto mb-3 text-indigo-400" />
+                    <h3 className="font-semibold text-lg mb-2">AI Chat Setup Required</h3>
+                    <p className="text-sm mb-4">To enable intelligent AI responses, add an API key to your .env file:</p>
+
+                    <div className="bg-white rounded-lg p-4 text-left space-y-3 border border-gray-200 text-xs">
+                      <div className="bg-green-50 p-3 rounded border border-green-200">
+                        <p className="font-semibold text-green-700 mb-1 flex items-center gap-2">
+                          ⚡ Option 1: Groq (FREE & FASTEST!)
+                          <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded">RECOMMENDED</span>
+                        </p>
+                        <code className="bg-white px-2 py-1 rounded block border">ASH_GROQ_API_KEY=gsk_...</code>
+                        <a href="https://console.groq.com/" target="_blank" rel="noopener noreferrer"
+                           className="text-blue-600 hover:underline text-xs mt-1 block">
+                          Get FREE API key from console.groq.com →
+                        </a>
+                        <p className="text-xs text-green-700 mt-1">✅ 100% FREE • ⚡ Super Fast • 🧠 Llama 3.3 70B</p>
+                      </div>
+
+                      <div className="border-t pt-3">
+                        <p className="font-semibold text-indigo-600 mb-1">Option 2: Anthropic Claude</p>
+                        <code className="bg-gray-100 px-2 py-1 rounded block">ASH_ANTHROPIC_API_KEY=sk-ant-...</code>
+                        <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer"
+                           className="text-blue-600 hover:underline text-xs mt-1 block">
+                          Get API key from console.anthropic.com →
+                        </a>
+                        <p className="text-xs text-gray-500 mt-1">💰 Paid - $5 minimum</p>
+                      </div>
+
+                      <div className="border-t pt-3">
+                        <p className="font-semibold text-gray-600 mb-1">Option 3: OpenAI GPT</p>
+                        <code className="bg-gray-100 px-2 py-1 rounded block">ASH_OPENAI_API_KEY=sk-proj-...</code>
+                        <a href="https://platform.openai.com/" target="_blank" rel="noopener noreferrer"
+                           className="text-blue-600 hover:underline text-xs mt-1 block">
+                          Get API key from platform.openai.com →
+                        </a>
+                        <p className="text-xs text-gray-500 mt-1">💰 Paid - $5 minimum</p>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-4">After adding the API key, restart your dev server.</p>
+                  </div>
+                )}
+
+                {messages.length === 0 && isConfigured && (
                   <div className="text-center text-gray-500 mt-8">
                     <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p className="text-sm">Start a conversation with Ashley AI</p>
@@ -212,29 +255,35 @@ export function ChatWidget() {
 
               {/* Input Area */}
               <div className="p-4 border-t bg-white rounded-b-lg">
-                <div className="flex items-end gap-2">
-                  <textarea
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Type your message..."
-                    className="flex-1 resize-none border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 max-h-32"
-                    rows={1}
-                    disabled={isLoading}
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isLoading}
-                    className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg p-2 transition-colors"
-                    aria-label="Send message"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
+                {!isConfigured ? (
+                  <div className="text-center text-sm text-gray-500 py-2">
+                    <p>Configure AI API key to start chatting</p>
+                  </div>
+                ) : (
+                  <div className="flex items-end gap-2">
+                    <textarea
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Type your message..."
+                      className="flex-1 resize-none border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 max-h-32"
+                      rows={1}
+                      disabled={isLoading}
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={!inputMessage.trim() || isLoading}
+                      className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg p-2 transition-colors"
+                      aria-label="Send message"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Send className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </>
           )}

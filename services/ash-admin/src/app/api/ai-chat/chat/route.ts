@@ -14,6 +14,14 @@ const openai = process.env.ASH_OPENAI_API_KEY
   ? new OpenAI({ apiKey: process.env.ASH_OPENAI_API_KEY })
   : null
 
+// Groq API (FREE & FAST!) - Uses OpenAI SDK with custom base URL
+const groq = process.env.ASH_GROQ_API_KEY
+  ? new OpenAI({
+      apiKey: process.env.ASH_GROQ_API_KEY,
+      baseURL: 'https://api.groq.com/openai/v1',
+    })
+  : null
+
 // System prompt for Ashley AI assistant
 const SYSTEM_PROMPT = `You are Ashley, an intelligent AI assistant for the ASH AI manufacturing ERP system.
 
@@ -45,10 +53,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if any AI provider is configured
-    if (!anthropic && !openai) {
+    if (!anthropic && !openai && !groq) {
       return NextResponse.json(
         {
-          error: 'No AI provider configured. Please set ASH_ANTHROPIC_API_KEY or ASH_OPENAI_API_KEY in your .env file.',
+          error: 'No AI provider configured. Please set ASH_GROQ_API_KEY (FREE), ASH_ANTHROPIC_API_KEY, or ASH_OPENAI_API_KEY in your .env file.',
           configuration_needed: true
         },
         { status: 503 }
@@ -97,9 +105,24 @@ export async function POST(request: NextRequest) {
     }))
 
     let assistantResponse = ''
+    let modelUsed = ''
 
-    // Use Anthropic Claude if available, otherwise OpenAI
-    if (anthropic) {
+    // Priority: Groq (FREE & FAST) > Anthropic > OpenAI
+    if (groq) {
+      // Use Groq (FREE!) - Llama 3.3 70B
+      const response = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile', // FREE model, super fast!
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...messages,
+        ],
+        max_tokens: 2048,
+        temperature: 0.7,
+      })
+
+      assistantResponse = response.choices[0]?.message?.content || 'Sorry, I could not generate a response.'
+      modelUsed = 'groq-llama-3.3-70b'
+    } else if (anthropic) {
       // Use Anthropic Claude
       const response = await anthropic.messages.create({
         model: 'claude-3-5-sonnet-20241022',
@@ -111,6 +134,7 @@ export async function POST(request: NextRequest) {
       assistantResponse = response.content[0].type === 'text'
         ? response.content[0].text
         : 'Sorry, I could not generate a response.'
+      modelUsed = 'claude-3-5-sonnet'
     } else if (openai) {
       // Use OpenAI
       const response = await openai.chat.completions.create({
@@ -123,6 +147,7 @@ export async function POST(request: NextRequest) {
       })
 
       assistantResponse = response.choices[0]?.message?.content || 'Sorry, I could not generate a response.'
+      modelUsed = 'gpt-4-turbo'
     }
 
     // Save assistant message
@@ -133,7 +158,8 @@ export async function POST(request: NextRequest) {
         content: assistantResponse,
         message_type: 'TEXT',
         metadata: JSON.stringify({
-          model: anthropic ? 'claude-3-5-sonnet' : 'gpt-4-turbo',
+          model: modelUsed,
+          provider: groq ? 'groq' : anthropic ? 'anthropic' : 'openai',
           timestamp: new Date().toISOString(),
         }),
       },
@@ -170,11 +196,12 @@ export async function POST(request: NextRequest) {
 // GET /api/ai-chat/chat - Check AI configuration status
 export async function GET() {
   return NextResponse.json({
-    configured: !!(anthropic || openai),
+    configured: !!(groq || anthropic || openai),
     providers: {
+      groq: !!groq,
       anthropic: !!anthropic,
       openai: !!openai,
     },
-    active_provider: anthropic ? 'anthropic' : openai ? 'openai' : null,
+    active_provider: groq ? 'groq (FREE!)' : anthropic ? 'anthropic' : openai ? 'openai' : null,
   })
 }
