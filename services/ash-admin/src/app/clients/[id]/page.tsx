@@ -168,14 +168,8 @@ export default function ClientDetailPage() {
               Edit
             </Button>
           </Link>
-          <Link href={`/clients/${client.id}/brands`}>
-            <Button variant="outline">
-              <Building2 className="w-4 h-4 mr-2" />
-              Manage Brands
-            </Button>
-          </Link>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleDelete}
             disabled={deleting}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -301,12 +295,6 @@ export default function ClientDetailPage() {
             <CardContent>
               <div className="text-3xl font-bold mb-2">{client._count.brands}</div>
               <p className="text-sm text-muted-foreground">Total brands registered</p>
-              <Link href={`/clients/${client.id}/brands`}>
-                <Button variant="outline" size="sm" className="mt-4">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  Manage Brands
-                </Button>
-              </Link>
             </CardContent>
           </Card>
 

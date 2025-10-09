@@ -21,7 +21,10 @@ export async function GET(
             id: true,
             name: true,
             code: true,
+            is_active: true,
+            created_at: true,
           },
+          orderBy: { created_at: 'desc' },
         },
         orders: {
           select: {
