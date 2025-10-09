@@ -378,7 +378,7 @@ function PurchaseOrdersTab() {
 
 function AlertsTab() {
   const router = useRouter();
-  const alerts = [
+  const stockAlerts = [
     { material: 'Denim Fabric - Blue', type: 'LOW_STOCK', severity: 'WARNING', current: 180, threshold: 200, message: 'Below reorder point' },
     { material: 'Cotton Fabric - Red', type: 'OUT_OF_STOCK', severity: 'CRITICAL', current: 0, threshold: 150, message: 'Completely out of stock' },
     { material: 'Zipper - Metal 10"', type: 'OUT_OF_STOCK', severity: 'CRITICAL', current: 0, threshold: 500, message: 'Completely out of stock' },
@@ -393,11 +393,11 @@ function AlertsTab() {
       </div>
 
       <div className="space-y-4">
-        {alerts.map((alert, idx) => (
+        {stockAlerts.map((stockAlert, idx) => (
           <div
             key={idx}
             className={`border-l-4 rounded-lg p-4 ${
-              alert.severity === 'CRITICAL'
+              stockAlert.severity === 'CRITICAL'
                 ? 'bg-red-50 border-red-500'
                 : 'bg-yellow-50 border-yellow-500'
             }`}
@@ -405,28 +405,28 @@ function AlertsTab() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <AlertTriangle className={`w-6 h-6 ${
-                  alert.severity === 'CRITICAL' ? 'text-red-500' : 'text-yellow-500'
+                  stockAlert.severity === 'CRITICAL' ? 'text-red-500' : 'text-yellow-500'
                 }`} />
                 <div>
-                  <h3 className="font-semibold text-gray-900">{alert.material}</h3>
+                  <h3 className="font-semibold text-gray-900">{stockAlert.material}</h3>
                   <p className={`text-sm ${
-                    alert.severity === 'CRITICAL' ? 'text-red-700' : 'text-yellow-700'
+                    stockAlert.severity === 'CRITICAL' ? 'text-red-700' : 'text-yellow-700'
                   }`}>
-                    {alert.message} • Current: {alert.current} / Threshold: {alert.threshold}
+                    {stockAlert.message} • Current: {stockAlert.current} / Threshold: {stockAlert.threshold}
                   </p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => alert(`View details for ${alert.material}`)}
+                  onClick={() => window.alert(`View details for ${stockAlert.material}`)}
                   className="px-4 py-2 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50"
                 >
                   View Material
                 </button>
                 <button
-                  onClick={() => alert(`Creating auto-reorder PO for ${alert.material}`)}
+                  onClick={() => window.alert(`Creating auto-reorder PO for ${stockAlert.material}`)}
                   className={`px-4 py-2 text-sm text-white rounded ${
-                    alert.severity === 'CRITICAL' ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-600 hover:bg-yellow-700'
+                    stockAlert.severity === 'CRITICAL' ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-600 hover:bg-yellow-700'
                   }`}
                 >
                   Auto-Reorder
