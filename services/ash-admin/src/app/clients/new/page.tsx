@@ -7,10 +7,15 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { ArrowLeft, Save, Building2 } from 'lucide-react'
+import { ArrowLeft, Save, Building2, Tag, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { api } from '@/lib/api'
 import { toast } from 'react-hot-toast'
+
+interface BrandData {
+  name: string
+  code: string
+}
 
 interface ClientFormData {
   name: string
@@ -27,6 +32,7 @@ interface ClientFormData {
   tax_id: string
   payment_terms: number | null
   credit_limit: number | null
+  brands: BrandData[]
 }
 
 interface FormErrors {
@@ -64,7 +70,8 @@ export default function NewClientPage() {
     },
     tax_id: '',
     payment_terms: null,
-    credit_limit: null
+    credit_limit: null,
+    brands: []
   })
 
   const validateForm = (): boolean => {
@@ -104,7 +111,7 @@ export default function NewClientPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error('Please fix the validation errors')
       return
@@ -121,9 +128,26 @@ export default function NewClientPage() {
       }
 
       const response = await api.createClient(payload)
-      
-      if (response.success) {
-        toast.success('Client created successfully')
+
+      if (response.success && response.data) {
+        const clientId = response.data.id
+
+        // Create brands if any
+        if (formData.brands.length > 0) {
+          for (const brand of formData.brands) {
+            try {
+              await fetch(`/api/clients/${clientId}/brands`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(brand)
+              })
+            } catch (brandError) {
+              console.error('Failed to create brand:', brandError)
+            }
+          }
+        }
+
+        toast.success(`Client created successfully${formData.brands.length > 0 ? ` with ${formData.brands.length} brand(s)` : ''}`)
         router.push('/clients')
       } else {
         throw new Error(response.error || 'Failed to create client')
@@ -134,6 +158,29 @@ export default function NewClientPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleAddBrand = () => {
+    setFormData(prev => ({
+      ...prev,
+      brands: [...prev.brands, { name: '', code: '' }]
+    }))
+  }
+
+  const handleRemoveBrand = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      brands: prev.brands.filter((_, i) => i !== index)
+    }))
+  }
+
+  const handleBrandChange = (index: number, field: keyof BrandData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      brands: prev.brands.map((brand, i) =>
+        i === index ? { ...brand, [field]: value } : brand
+      )
+    }))
   }
 
   const handleInputChange = (field: keyof ClientFormData, value: any) => {
@@ -367,6 +414,71 @@ export default function NewClientPage() {
                 {errors.credit_limit && <p className="text-sm text-red-500">{errors.credit_limit}</p>}
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Brands Section */}
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Tag className="w-5 h-5" />
+                Brands (Optional)
+              </CardTitle>
+              <Button type="button" variant="outline" size="sm" onClick={handleAddBrand}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Brand
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {formData.brands.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Tag className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>No brands added yet</p>
+                <p className="text-sm">Click "Add Brand" to create brands for this client</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {formData.brands.map((brand, index) => (
+                  <div key={index} className="flex gap-4 items-start p-4 border rounded-lg bg-gray-50">
+                    <div className="flex-1 grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor={`brand-name-${index}`}>
+                          Brand Name <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id={`brand-name-${index}`}
+                          type="text"
+                          value={brand.name}
+                          onChange={(e) => handleBrandChange(index, 'name', e.target.value)}
+                          placeholder="e.g., Nike, Adidas"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`brand-code-${index}`}>Brand Code</Label>
+                        <Input
+                          id={`brand-code-${index}`}
+                          type="text"
+                          value={brand.code}
+                          onChange={(e) => handleBrandChange(index, 'code', e.target.value)}
+                          placeholder="e.g., NKE, ADS"
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveBrand(index)}
+                      className="mt-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
