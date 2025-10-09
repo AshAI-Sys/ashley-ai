@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // GET /api/ai-chat/conversations/:id - Get a specific conversation with messages
 export async function GET(

@@ -1,8 +1,8 @@
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import { hash } from './crypto'
 import { NextRequest } from 'next/server'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 /**
  * Create a new user session

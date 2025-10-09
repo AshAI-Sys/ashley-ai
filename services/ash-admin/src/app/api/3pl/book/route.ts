@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import { threePLService } from '@/lib/3pl'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // POST /api/3pl/book - Book shipment with 3PL provider
 export async function POST(request: NextRequest) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import {
   sendEmail,
   sendOrderConfirmation,
@@ -9,7 +9,7 @@ import {
   send2FASetupEmail,
 } from '@/lib/email'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // POST /api/notifications/email - Send email notification
 export async function POST(request: NextRequest) {

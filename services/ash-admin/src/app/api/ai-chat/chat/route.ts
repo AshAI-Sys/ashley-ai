@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import Anthropic from '@anthropic-ai/sdk'
 import OpenAI from 'openai'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // Initialize AI clients (will use based on env config)
 const anthropic = process.env.ASH_ANTHROPIC_API_KEY

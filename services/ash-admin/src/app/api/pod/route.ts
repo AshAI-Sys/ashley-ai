@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // POST /api/pod - Create proof of delivery record
 export async function POST(request: NextRequest) {

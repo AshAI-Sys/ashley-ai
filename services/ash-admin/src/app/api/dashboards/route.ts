@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { db } from '@ash-ai/database';;
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 // GET /api/dashboards - List all dashboards
 export async function GET(req: NextRequest) {

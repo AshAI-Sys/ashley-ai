@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { db } from '@ash-ai/database';;
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 // POST /api/mobile/qc/submit - Submit mobile QC inspection
 export async function POST(req: NextRequest) {

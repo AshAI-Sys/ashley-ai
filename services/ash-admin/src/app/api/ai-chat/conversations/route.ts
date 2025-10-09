@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // GET /api/ai-chat/conversations - Get all conversations for a user
 export async function GET(request: NextRequest) {

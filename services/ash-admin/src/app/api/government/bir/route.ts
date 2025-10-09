@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import { birService } from '@/lib/government/bir'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // POST /api/government/bir - Generate BIR reports (Sales Book, Purchase Book, 2307)
 export async function POST(request: NextRequest) {

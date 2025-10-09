@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import { verify2FA } from '@/lib/2fa-server'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // POST /api/auth/2fa/verify - Verify 2FA token and enable 2FA
 export async function POST(request: NextRequest) {

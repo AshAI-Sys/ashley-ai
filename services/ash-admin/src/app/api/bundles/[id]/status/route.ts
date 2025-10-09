@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { db } from '@ash-ai/database';;
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 // PUT /api/bundles/[id]/status - Update bundle status
 export async function PUT(

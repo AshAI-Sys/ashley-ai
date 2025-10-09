@@ -15,7 +15,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   if (seed === 'ashley-ai-2024') {
     const { PrismaClient } = await import('@prisma/client')
     const bcrypt = await import('bcryptjs')
-    const prisma = new PrismaClient()
+    const prisma = db
 
     try {
       const workspace = await prisma.workspace.upsert({

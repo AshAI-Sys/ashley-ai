@@ -1,7 +1,7 @@
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import { NextRequest } from 'next/server'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 export interface AuditLogEntry {
   workspaceId: string

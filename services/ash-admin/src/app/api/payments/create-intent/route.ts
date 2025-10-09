@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server'
 import { paymentService } from '@/lib/paymentService'
 import { createSuccessResponse, createErrorResponse } from '@/lib/error-handling'
-import { PrismaClient } from '@prisma/client'
+import { db } from '@ash-ai/database';
 
-const prisma = new PrismaClient()
+const prisma = db
 
 /**
  * Create Payment Intent

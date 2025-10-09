@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@ash-ai/database'
+import { db } from '@ash-ai/database';
 import { birService } from '@/lib/government/bir'
 import { sssService } from '@/lib/government/sss'
 import { philHealthService } from '@/lib/government/philhealth'
 import { pagIBIGService } from '@/lib/government/pagibig'
 
-const prisma = new PrismaClient()
+const prisma = db
 
 // POST /api/government/reports - Generate government remittance reports
 export async function POST(request: NextRequest) {
