@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
+const DEFAULT_WORKSPACE_ID = 'default-workspace';
+
 const CreateBrandSchema = z.object({
   name: z.string().min(1, 'Brand name is required'),
-  description: z.string().optional(),
-  logoUrl: z.string().url().optional().or(z.literal('')),
-  brandColors: z.array(z.string()).optional(),
-  defaultPricing: z.record(z.number()).optional(),
-  guidelines: z.string().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
-  metadata: z.record(z.any()).optional(),
+  code: z.string().optional(),
+  logo_url: z.string().optional(),
+  settings: z.string().optional(),
+  is_active: z.boolean().default(true),
 });
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
@@ -115,15 +114,19 @@ export async function POST(
 
     const brand = await prisma.brand.create({
       data: {
-        ...validatedData,
+        workspace_id: DEFAULT_WORKSPACE_ID,
         client_id: clientId,
+        name: validatedData.name,
+        code: validatedData.code || null,
+        logo_url: validatedData.logo_url || null,
+        settings: validatedData.settings || null,
+        is_active: validatedData.is_active,
       },
       include: {
         client: {
           select: {
             id: true,
             name: true,
-            company: true,
             email: true,
           }
         },

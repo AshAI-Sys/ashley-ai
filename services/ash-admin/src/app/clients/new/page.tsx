@@ -446,32 +446,18 @@ export default function NewClientPage() {
                       </Button>
                     </div>
 
-                    {/* Brand Name & Code */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor={`brand-name-${index}`}>
-                          Brand Name <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id={`brand-name-${index}`}
-                          type="text"
-                          value={brand.name}
-                          onChange={(e) => handleBrandChange(index, 'name', e.target.value)}
-                          placeholder="e.g., Nike, Adidas"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`brand-code-${index}`}>
-                          Brand Code <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id={`brand-code-${index}`}
-                          type="text"
-                          value={brand.code}
-                          onChange={(e) => handleBrandChange(index, 'code', e.target.value.toUpperCase())}
-                          placeholder="e.g., NIKE, ADIDAS"
-                        />
-                      </div>
+                    {/* Brand Name */}
+                    <div className="space-y-2">
+                      <Label htmlFor={`brand-name-${index}`}>
+                        Brand Name <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id={`brand-name-${index}`}
+                        type="text"
+                        value={brand.name}
+                        onChange={(e) => handleBrandChange(index, 'name', e.target.value)}
+                        placeholder="e.g., Nike, Adidas"
+                      />
                     </div>
 
                     {/* Logo URL */}
