@@ -105,7 +105,9 @@
       "Bash(for i in {1..10})",
       "Bash(do curl -s -w \"Test $i: %{time_total}s\\n\" -o nul http://localhost:3001/orders/new)",
       "Bash(git clean:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(set PORT=3002)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []
