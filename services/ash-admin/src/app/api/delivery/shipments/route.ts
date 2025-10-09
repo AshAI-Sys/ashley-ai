@@ -6,7 +6,13 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(_request: NextRequest) {
   return NextResponse.json({
     success: true,
-    data: [],
+    shipments: [],
+    pagination: {
+      page: 1,
+      limit: 50,
+      total: 0,
+      pages: 0
+    },
     message: 'Shipments temporarily disabled - Prisma model issue'
   })
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Package,
   TruckIcon,
@@ -107,6 +108,7 @@ export default function InventoryPage() {
 }
 
 function MaterialsTab() {
+  const router = useRouter();
   const materials = [
     { sku: 'FAB-001', name: 'Cotton Fabric - White', category: 'FABRIC', stock: 500, unit: 'YARDS', reorder: 200, cost: 150 },
     { sku: 'THR-001', name: 'Polyester Thread - Black', category: 'THREAD', stock: 1500, unit: 'ROLLS', reorder: 500, cost: 45 },
@@ -127,11 +129,17 @@ function MaterialsTab() {
         </div>
 
         <div className="flex gap-2">
-          <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2">
+          <button
+            onClick={() => router.push('/inventory/scan-barcode')}
+            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+          >
             <QrCode className="w-4 h-4" />
             Scan Barcode
           </button>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+          <button
+            onClick={() => router.push('/inventory/add-material')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          >
             <Plus className="w-4 h-4" />
             Add Material
           </button>
@@ -184,8 +192,18 @@ function MaterialsTab() {
                     ₱{mat.cost.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <button className="text-blue-600 hover:text-blue-800 mr-3">Adjust</button>
-                    <button className="text-green-600 hover:text-green-800">Reorder</button>
+                    <button
+                      onClick={() => alert(`Adjust stock for ${mat.name}`)}
+                      className="text-blue-600 hover:text-blue-800 mr-3"
+                    >
+                      Adjust
+                    </button>
+                    <button
+                      onClick={() => alert(`Create reorder PO for ${mat.name}`)}
+                      className="text-green-600 hover:text-green-800"
+                    >
+                      Reorder
+                    </button>
                   </td>
                 </tr>
               );
@@ -198,6 +216,7 @@ function MaterialsTab() {
 }
 
 function SuppliersTab() {
+  const router = useRouter();
   const suppliers = [
     { name: 'Fabric Suppliers Inc.', contact: 'John Doe', email: 'john@fabrics.com', phone: '+63 917 123 4567', rating: 4.5 },
     { name: 'Thread & Trim Co.', contact: 'Jane Smith', email: 'jane@thread.com', phone: '+63 917 234 5678', rating: 4.8 },
@@ -208,7 +227,10 @@ function SuppliersTab() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-900">Suppliers</h2>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+        <button
+          onClick={() => router.push('/inventory/add-supplier')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+        >
           <Plus className="w-4 h-4" />
           Add Supplier
         </button>
@@ -232,10 +254,16 @@ function SuppliersTab() {
             </div>
 
             <div className="mt-4 pt-4 border-t border-gray-200 flex gap-2">
-              <button className="flex-1 px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+              <button
+                onClick={() => alert(`View details for ${supplier.name}`)}
+                className="flex-1 px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+              >
                 View Details
               </button>
-              <button className="flex-1 px-3 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+              <button
+                onClick={() => router.push(`/inventory/create-po?supplier=${encodeURIComponent(supplier.name)}`)}
+                className="flex-1 px-3 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
+              >
                 Create PO
               </button>
             </div>
@@ -247,17 +275,35 @@ function SuppliersTab() {
 }
 
 function PurchaseOrdersTab() {
-  const orders = [
+  const router = useRouter();
+  const [orders, setOrders] = useState([
     { po: 'PO-000123', supplier: 'Fabric Suppliers Inc.', date: '2024-10-01', delivery: '2024-10-08', amount: 125000, status: 'PENDING' },
     { po: 'PO-000124', supplier: 'Thread & Trim Co.', date: '2024-10-02', delivery: '2024-10-09', amount: 45000, status: 'APPROVED' },
     { po: 'PO-000125', supplier: 'Global Textiles', date: '2024-09-28', delivery: '2024-10-05', amount: 280000, status: 'RECEIVED' },
-  ];
+  ]);
+
+  const handleApprove = (poNumber: string) => {
+    setOrders(orders.map(order =>
+      order.po === poNumber ? { ...order, status: 'APPROVED' as const } : order
+    ));
+    alert(`Purchase Order ${poNumber} approved successfully!`);
+  };
+
+  const handleMarkReceived = (poNumber: string) => {
+    setOrders(orders.map(order =>
+      order.po === poNumber ? { ...order, status: 'RECEIVED' as const } : order
+    ));
+    alert(`Purchase Order ${poNumber} marked as received!`);
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-900">Purchase Orders</h2>
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+        <button
+          onClick={() => router.push('/inventory/create-po')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+        >
           <Plus className="w-4 h-4" />
           Create PO
         </button>
@@ -305,10 +351,20 @@ function PurchaseOrdersTab() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                   {order.status === 'APPROVED' && (
-                    <button className="text-green-600 hover:text-green-800">Mark Received</button>
+                    <button
+                      onClick={() => handleMarkReceived(order.po)}
+                      className="text-green-600 hover:text-green-800"
+                    >
+                      Mark Received
+                    </button>
                   )}
                   {order.status === 'PENDING' && (
-                    <button className="text-blue-600 hover:text-blue-800">Approve</button>
+                    <button
+                      onClick={() => handleApprove(order.po)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Approve
+                    </button>
                   )}
                 </td>
               </tr>
@@ -321,6 +377,7 @@ function PurchaseOrdersTab() {
 }
 
 function AlertsTab() {
+  const router = useRouter();
   const alerts = [
     { material: 'Denim Fabric - Blue', type: 'LOW_STOCK', severity: 'WARNING', current: 180, threshold: 200, message: 'Below reorder point' },
     { material: 'Cotton Fabric - Red', type: 'OUT_OF_STOCK', severity: 'CRITICAL', current: 0, threshold: 150, message: 'Completely out of stock' },
@@ -360,12 +417,18 @@ function AlertsTab() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="px-4 py-2 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50">
+                <button
+                  onClick={() => alert(`View details for ${alert.material}`)}
+                  className="px-4 py-2 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50"
+                >
                   View Material
                 </button>
-                <button className={`px-4 py-2 text-sm text-white rounded ${
-                  alert.severity === 'CRITICAL' ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-600 hover:bg-yellow-700'
-                }`}>
+                <button
+                  onClick={() => alert(`Creating auto-reorder PO for ${alert.material}`)}
+                  className={`px-4 py-2 text-sm text-white rounded ${
+                    alert.severity === 'CRITICAL' ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-600 hover:bg-yellow-700'
+                  }`}
+                >
                   Auto-Reorder
                 </button>
               </div>
@@ -381,7 +444,10 @@ function AlertsTab() {
         </p>
         <div className="flex items-center justify-between">
           <span className="text-sm text-blue-700">Auto-reorder enabled for 8 materials</span>
-          <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+          <button
+            onClick={() => router.push('/inventory/auto-reorder-settings')}
+            className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
             Configure Auto-Reorder
           </button>
         </div>
