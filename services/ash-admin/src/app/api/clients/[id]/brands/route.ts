@@ -35,25 +35,24 @@ export async function GET(
     }
 
     const brands = await prisma.brand.findMany({
-      where: { clientId },
+      where: { client_id: clientId },
       include: {
         client: {
           select: {
             id: true,
             name: true,
-            company: true,
             email: true,
           }
         },
         orders: {
           select: {
             id: true,
-            orderNumber: true,
+            order_number: true,
             status: true,
-            totalAmount: true,
-            createdAt: true,
+            total_amount: true,
+            created_at: true,
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { created_at: 'desc' },
           take: 5,
         },
         _count: {
@@ -62,7 +61,7 @@ export async function GET(
           }
         }
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { created_at: 'desc' },
     });
 
     return NextResponse.json({
@@ -103,7 +102,7 @@ export async function POST(
     const existingBrand = await prisma.brand.findFirst({
       where: {
         name: validatedData.name,
-        clientId: clientId,
+        client_id: clientId,
       }
     });
 
@@ -117,7 +116,7 @@ export async function POST(
     const brand = await prisma.brand.create({
       data: {
         ...validatedData,
-        clientId,
+        client_id: clientId,
       },
       include: {
         client: {

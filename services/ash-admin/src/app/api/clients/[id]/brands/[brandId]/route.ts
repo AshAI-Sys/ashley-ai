@@ -23,7 +23,7 @@ export async function GET(
     const brand = await prisma.brand.findUnique({
       where: {
         id: brandId,
-        clientId: clientId,
+        client_id: clientId,
       },
       include: {
         client: {
@@ -37,12 +37,12 @@ export async function GET(
         orders: {
           select: {
             id: true,
-            orderNumber: true,
+            order_number: true,
             status: true,
-            totalAmount: true,
-            createdAt: true,
+            total_amount: true,
+            created_at: true,
           },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { created_at: 'desc' },
           take: 10,
         },
         _count: {
@@ -94,7 +94,7 @@ export async function PUT(
       );
     }
 
-    if (existingBrand.clientId !== clientId) {
+    if (existingBrand.client_id !== clientId) {
       return NextResponse.json(
         { success: false, error: 'Brand does not belong to this client' },
         { status: 403 }
@@ -106,7 +106,7 @@ export async function PUT(
       const nameExists = await prisma.brand.findFirst({
         where: {
           name: validatedData.name,
-          clientId: clientId,
+          client_id: clientId,
           id: { not: brandId }
         }
       });
@@ -186,7 +186,7 @@ export async function DELETE(
       );
     }
 
-    if (existingBrand.clientId !== clientId) {
+    if (existingBrand.client_id !== clientId) {
       return NextResponse.json(
         { success: false, error: 'Brand does not belong to this client' },
         { status: 403 }
