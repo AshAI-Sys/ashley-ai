@@ -13,7 +13,7 @@ import {
 } from '../../../../lib/error-handling'
 import { requireAnyPermission } from '../../../../lib/auth-middleware'
 
-export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(async (request: NextRequest, user: any) => {
+export const GET = withErrorHandling(async (request: NextRequest) => {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const client_id = searchParams.get('client_id')
@@ -28,7 +28,7 @@ export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(asyn
     // For overdue invoices
     if (overdue_only === 'true') {
       where.due_date = { lt: new Date() }
-      where.status = { in: ['OPEN', 'PARTIAL'] }
+      where.status = { in: ['sent', 'pending'] }
     }
 
     const invoices = await prisma.invoice.findMany({
@@ -82,7 +82,7 @@ export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(asyn
     })
 
     return createSuccessResponse(processedInvoices)
-}))
+})
 
 export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()

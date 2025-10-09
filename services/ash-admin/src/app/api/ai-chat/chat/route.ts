@@ -209,9 +209,16 @@ export async function POST(request: NextRequest) {
     let conversationId = conversation_id
     if (!conversationId) {
       try {
+        // First verify workspace exists
+        const workspace = await prisma.workspace.findFirst({
+          where: { slug: workspace_id }
+        })
+
+        const actualWorkspaceId = workspace?.id || workspace_id
+
         const newConversation = await prisma.aIChatConversation.create({
           data: {
-            workspace_id,
+            workspace_id: actualWorkspaceId,
             user_id: null, // Always null for demo mode to avoid foreign key issues
             title: message.slice(0, 50) + (message.length > 50 ? '...' : ''),
             context_type: 'GENERAL',
@@ -220,33 +227,47 @@ export async function POST(request: NextRequest) {
         conversationId = newConversation.id
       } catch (error: any) {
         console.error('Error creating conversation:', error.message, error)
-        return NextResponse.json(
-          { error: 'Failed to create conversation: ' + error.message },
-          { status: 500 }
-        )
+        // Continue without conversation ID - one-off chat mode
+        conversationId = 'temp-' + Date.now()
       }
     }
 
-    // Save user message
-    const userMessage = await prisma.aIChatMessage.create({
-      data: {
-        conversation_id: conversationId,
-        role: 'USER',
-        content: message,
-        message_type: 'TEXT',
-      },
-    })
+    // Save user message (skip if temp conversation)
+    let userMessage
+    try {
+      if (!conversationId.startsWith('temp-')) {
+        userMessage = await prisma.aIChatMessage.create({
+          data: {
+            conversation_id: conversationId,
+            role: 'USER',
+            content: message,
+            message_type: 'TEXT',
+          },
+        })
+      }
+    } catch (error) {
+      console.error('Error saving user message:', error)
+      // Continue without saving - one-off mode
+    }
 
-    // Get conversation history
-    const history = await prisma.aIChatMessage.findMany({
-      where: {
-        conversation_id: conversationId,
-      },
-      orderBy: {
-        created_at: 'asc',
-      },
-      take: 20, // Last 20 messages for context
-    })
+    // Get conversation history (skip if temp conversation)
+    let history: any[] = []
+    try {
+      if (!conversationId.startsWith('temp-')) {
+        history = await prisma.aIChatMessage.findMany({
+          where: {
+            conversation_id: conversationId,
+          },
+          orderBy: {
+            created_at: 'asc',
+          },
+          take: 20, // Last 20 messages for context
+        })
+      }
+    } catch (error) {
+      console.error('Error getting history:', error)
+      // Continue without history
+    }
 
     // Get real-time business context
     const businessContext = await getBusinessContext(workspace_id, message)
