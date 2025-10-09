@@ -204,25 +204,12 @@ export default function ClientsPage() {
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
-                        <span className="font-medium text-muted-foreground">Brands:</span><br />
-                        <span className="font-semibold">{client._count.brands}</span>
-                      </div>
-                      <div>
                         <span className="font-medium text-muted-foreground">Orders:</span><br />
                         <span className="font-semibold">{client._count.orders}</span>
                       </div>
-                      <div>
-                        <span className="font-medium text-muted-foreground">Payment Terms:</span><br />
-                        <span className="font-semibold">{client.payment_terms ? `${client.payment_terms} days` : 'Not set'}</span>
-                      </div>
-                      <div>
-                        <span className="font-medium text-muted-foreground">Credit Limit:</span><br />
-                        <span className="font-semibold">{formatCurrency(client.credit_limit)}</span>
-                      </div>
                     </div>
-                    
+
                     <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-                      {client.tax_id && <span>Tax ID: {client.tax_id}</span>}
                       <span>Created {new Date(client.created_at).toLocaleDateString()}</span>
                       <span>Updated {new Date(client.updated_at).toLocaleDateString()}</span>
                     </div>
@@ -239,12 +226,6 @@ export default function ClientsPage() {
                       <Button variant="outline" size="sm">
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
-                      </Button>
-                    </Link>
-                    <Link href={`/clients/${client.id}/brands`}>
-                      <Button variant="outline" size="sm">
-                        <Building2 className="w-4 h-4 mr-1" />
-                        Brands
                       </Button>
                     </Link>
                   </div>
