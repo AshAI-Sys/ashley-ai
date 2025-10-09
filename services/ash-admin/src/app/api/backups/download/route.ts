@@ -19,7 +19,10 @@ export async function GET(request: NextRequest) {
 
     const fileBuffer = await backupService.downloadBackup(backupId)
 
-    return new NextResponse(fileBuffer, {
+    // Convert Buffer to Uint8Array for NextResponse
+    const uint8Array = new Uint8Array(fileBuffer)
+
+    return new NextResponse(uint8Array, {
       headers: {
         'Content-Type': backup.compressed ? 'application/gzip' : 'text/plain',
         'Content-Disposition': `attachment; filename="${backup.filename}"`,

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { paymentService } from '@/lib/paymentService'
-import { createSuccessResponse, createErrorResponse } from '@/lib/error-handling'
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/error-handling'
 import { db } from '@ash-ai/database';
 
 const prisma = db
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const { invoiceId } = body
 
     if (!invoiceId) {
-      return createErrorResponse('Invoice ID is required', 400)
+      return createErrorResponse(new ValidationError('Invoice ID is required'))
     }
 
     // Get invoice details
@@ -29,11 +29,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!invoice) {
-      return createErrorResponse('Invoice not found', 404)
+      return createErrorResponse(new NotFoundError('Invoice not found'))
     }
 
     if (invoice.status === 'PAID') {
-      return createErrorResponse('Invoice is already paid', 400)
+      return createErrorResponse(new ValidationError('Invoice is already paid'))
     }
 
     // Calculate remaining amount
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const remainingAmount = parseFloat(invoice.total_amount.toString()) - parseFloat(paidAmount.toString())
 
     if (remainingAmount <= 0) {
-      return createErrorResponse('Invoice has no remaining balance', 400)
+      return createErrorResponse(new ValidationError('Invoice has no remaining balance'))
     }
 
     // Create checkout session
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!result.success) {
-      return createErrorResponse(result.error || 'Failed to create checkout session', 500)
+      return createErrorResponse(new ValidationError(result.error || 'Failed to create checkout session'))
     }
 
     return createSuccessResponse({
