@@ -164,7 +164,7 @@ export function OrderDetailsSection({
         {/* Design Name & Fabric Type */}
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="design-name" className="flex items-center gap-2">
+            <Label htmlFor="design-name" className="flex items-center gap-2 mb-2">
               <Type className="w-4 h-4" />
               Design Name
             </Label>
