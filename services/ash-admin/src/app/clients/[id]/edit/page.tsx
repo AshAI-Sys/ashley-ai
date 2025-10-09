@@ -14,7 +14,6 @@ import { toast } from 'react-hot-toast'
 interface BrandData {
   id?: string
   name: string
-  code: string
   logo_url: string
   settings: {
     notes: string
@@ -118,7 +117,6 @@ export default function EditClientPage() {
           return {
             id: brand.id,
             name: brand.name,
-            code: brand.code || '',
             logo_url: brand.logo_url || '',
             settings,
             is_active: brand.is_active
@@ -220,7 +218,6 @@ export default function EditClientPage() {
       formData.brands.forEach(brand => {
         const brandPayload = {
           name: brand.name,
-          code: brand.code,
           logo_url: brand.logo_url || undefined,
           settings: JSON.stringify(brand.settings),
           is_active: brand.is_active
@@ -279,7 +276,6 @@ export default function EditClientPage() {
         ...prev.brands,
         {
           name: '',
-          code: '',
           logo_url: '',
           settings: { notes: '' },
           is_active: true
