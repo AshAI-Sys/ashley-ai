@@ -40,7 +40,11 @@ const DEFAULT_FABRIC_TYPES = [
   { value: 'dri-fit', label: 'Dri-Fit/Performance' },
   { value: 'jersey', label: 'Jersey' },
   { value: 'pique', label: 'Pique' },
-  { value: 'fleece', label: 'Fleece' }
+  { value: 'fleece', label: 'Fleece' },
+  { value: '20tc-direct', label: '20TC Direct' },
+  { value: '20tc-reactive', label: '20TC Reactive' },
+  { value: '20cvc-direct', label: '20CVC Direct' },
+  { value: '20cvc-reactive', label: '20CVC Reactive' }
 ]
 
 export function OrderDetailsSection({
@@ -60,6 +64,13 @@ export function OrderDetailsSection({
   const [showFabricDialog, setShowFabricDialog] = useState(false)
   const [newFabricName, setNewFabricName] = useState('')
   const [editingFabricIndex, setEditingFabricIndex] = useState<number | null>(null)
+
+  // State for size distribution management
+  const [sizeDistributionTypes, setSizeDistributionTypes] = useState(SIZE_DISTRIBUTION_TYPES)
+  const [showSizeDialog, setShowSizeDialog] = useState(false)
+  const [newSizeLabel, setNewSizeLabel] = useState('')
+  const [newSizeDescription, setNewSizeDescription] = useState('')
+  const [editingSizeIndex, setEditingSizeIndex] = useState<number | null>(null)
 
   // Auto-generate PO number on component mount
   React.useEffect(() => {
@@ -106,6 +117,48 @@ export function OrderDetailsSection({
     // If the deleted fabric was selected, clear the selection
     if (fabricTypes[index].value === fabricType) {
       onFabricTypeChange('')
+    }
+  }
+
+  const handleAddSizeType = () => {
+    if (!newSizeLabel.trim()) return
+
+    const value = newSizeLabel.toUpperCase().replace(/\s+/g, '_')
+    const newSize = {
+      value,
+      label: newSizeLabel.trim(),
+      description: newSizeDescription.trim()
+    }
+
+    if (editingSizeIndex !== null) {
+      // Edit existing
+      const updated = [...sizeDistributionTypes]
+      updated[editingSizeIndex] = newSize
+      setSizeDistributionTypes(updated)
+      setEditingSizeIndex(null)
+    } else {
+      // Add new
+      setSizeDistributionTypes([...sizeDistributionTypes, newSize])
+    }
+
+    setNewSizeLabel('')
+    setNewSizeDescription('')
+    setShowSizeDialog(false)
+  }
+
+  const handleEditSizeType = (index: number) => {
+    setEditingSizeIndex(index)
+    setNewSizeLabel(sizeDistributionTypes[index].label)
+    setNewSizeDescription(sizeDistributionTypes[index].description)
+    setShowSizeDialog(true)
+  }
+
+  const handleDeleteSizeType = (index: number) => {
+    const updated = sizeDistributionTypes.filter((_, i) => i !== index)
+    setSizeDistributionTypes(updated)
+    // If the deleted size was selected, clear the selection
+    if (sizeDistributionTypes[index].value === sizeDistributionType) {
+      onSizeDistributionTypeChange('')
     }
   }
 
@@ -268,16 +321,97 @@ export function OrderDetailsSection({
 
         {/* Size Distribution Type */}
         <div>
-          <Label htmlFor="size-distribution" className="flex items-center gap-2">
-            <Package className="w-4 h-4" />
-            Size Distribution Type
-          </Label>
+          <div className="flex items-center justify-between mb-2">
+            <Label htmlFor="size-distribution" className="flex items-center gap-2">
+              <Package className="w-4 h-4" />
+              Size Distribution Type
+            </Label>
+            <Dialog open={showSizeDialog} onOpenChange={(open) => {
+              setShowSizeDialog(open)
+              if (!open) {
+                setNewSizeLabel('')
+                setNewSizeDescription('')
+                setEditingSizeIndex(null)
+              }
+            }}>
+              <DialogTrigger asChild>
+                <Button type="button" variant="outline" size="sm">
+                  <Plus className="w-3 h-3 mr-1" />
+                  Manage Types
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Manage Size Distribution Types</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  {/* Add/Edit Form */}
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Type Name</Label>
+                      <Input
+                        value={newSizeLabel}
+                        onChange={(e) => setNewSizeLabel(e.target.value)}
+                        placeholder="e.g., Slim Fit, Regular Fit"
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddSizeType()}
+                      />
+                    </div>
+                    <div>
+                      <Label>Description</Label>
+                      <Input
+                        value={newSizeDescription}
+                        onChange={(e) => setNewSizeDescription(e.target.value)}
+                        placeholder="e.g., Fitted through body and sleeves"
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddSizeType()}
+                      />
+                    </div>
+                    <Button onClick={handleAddSizeType} className="w-full">
+                      {editingSizeIndex !== null ? 'Update' : 'Add'}
+                    </Button>
+                  </div>
+
+                  {/* Size Types List */}
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {sizeDistributionTypes.map((size, index) => (
+                      <div
+                        key={size.value}
+                        className="flex items-start justify-between p-3 border rounded hover:bg-gray-50"
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium">{size.label}</div>
+                          <div className="text-xs text-muted-foreground">{size.description}</div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditSizeType(index)}
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSizeType(index)}
+                          >
+                            <Trash2 className="w-3 h-3 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <Select value={sizeDistributionType} onValueChange={onSizeDistributionTypeChange}>
             <SelectTrigger id="size-distribution">
               <SelectValue placeholder="Select size distribution type" />
             </SelectTrigger>
             <SelectContent>
-              {SIZE_DISTRIBUTION_TYPES.map((type) => (
+              {sizeDistributionTypes.map((type) => (
                 <SelectItem key={type.value} value={type.value}>
                   <div className="flex flex-col">
                     <span>{type.label}</span>
