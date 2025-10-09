@@ -4,15 +4,15 @@ import { UserID, WorkspaceID, BrandID } from './common'
 export type Role = 'Admin' | 'Manager' | 'CSR' | 'Worker' | 'Client'
 
 // Permissions
-export type Permission = 
+export type Permission =
   // Orders
   | 'orders:create' | 'orders:read' | 'orders:update' | 'orders:delete'
   // Production
   | 'production:read' | 'production:update' | 'production:manage'
   // Finance
-  | 'finance:read' | 'finance:update' | 'finance:manage'
+  | 'finance:read' | 'finance:write' | 'finance:update' | 'finance:manage'
   // HR
-  | 'hr:read' | 'hr:update' | 'hr:manage'
+  | 'hr:read' | 'hr:write' | 'hr:update' | 'hr:manage'
   // Admin
   | 'admin:users' | 'admin:settings' | 'admin:audit'
   // Reports
@@ -87,16 +87,16 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   Admin: [
     'orders:create', 'orders:read', 'orders:update', 'orders:delete',
     'production:read', 'production:update', 'production:manage',
-    'finance:read', 'finance:update', 'finance:manage',
-    'hr:read', 'hr:update', 'hr:manage',
+    'finance:read', 'finance:write', 'finance:update', 'finance:manage',
+    'hr:read', 'hr:write', 'hr:update', 'hr:manage',
     'admin:users', 'admin:settings', 'admin:audit',
     'reports:view', 'reports:export'
   ],
   Manager: [
     'orders:create', 'orders:read', 'orders:update',
     'production:read', 'production:update', 'production:manage',
-    'finance:read', 'finance:update',
-    'hr:read', 'hr:update',
+    'finance:read', 'finance:write', 'finance:update',
+    'hr:read', 'hr:write', 'hr:update',
     'reports:view', 'reports:export'
   ],
   CSR: [
