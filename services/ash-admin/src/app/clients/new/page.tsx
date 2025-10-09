@@ -14,11 +14,8 @@ import { toast } from 'react-hot-toast'
 
 interface BrandData {
   name: string
-  code: string
   logo_url: string
   settings: {
-    color_primary: string
-    color_secondary: string
     notes: string
   }
   is_active: boolean
@@ -177,11 +174,8 @@ export default function NewClientPage() {
       ...prev,
       brands: [...prev.brands, {
         name: '',
-        code: '',
         logo_url: '',
         settings: {
-          color_primary: '#000000',
-          color_secondary: '#ffffff',
           notes: ''
         },
         is_active: true
