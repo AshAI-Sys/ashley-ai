@@ -35,33 +35,48 @@ export const GET = requireAnyPermission(['finance:read'])(withErrorHandling(asyn
       where,
       include: {
         client: { select: { name: true } },
-        brand: { select: { name: true } },
         order: { select: { order_number: true } },
-        invoice_lines: true,
-        payment_allocations: {
-          include: {
-            payment: { select: { amount: true, source: true, received_at: true } }
+        invoice_items: true,
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            payment_method: true,
+            payment_date: true,
+            reference_number: true
           }
         }
       },
-      orderBy: { date_issued: 'desc' }
+      orderBy: { issue_date: 'desc' }
     })
 
     // Calculate days overdue and other metrics
     const processedInvoices = (invoices || []).map(invoice => {
       const today = new Date()
-      const dueDate = new Date(invoice.due_date)
-      const daysOverdue = invoice.status !== 'PAID' && dueDate < today
+      const dueDate = invoice.due_date ? new Date(invoice.due_date) : null
+      const daysOverdue = dueDate && invoice.status !== 'paid' && dueDate < today
         ? Math.ceil((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))
         : null
 
+      // Calculate balance from payments
+      const totalPaid = invoice.payments.reduce((sum, payment) => sum + payment.amount, 0)
+      const balance = invoice.total_amount - totalPaid
+
       return {
-        ...invoice,
+        id: invoice.id,
+        invoice_no: invoice.invoice_number,
+        client: invoice.client,
+        brand: null, // No brand relation in current schema
+        total: invoice.total_amount,
+        balance: balance,
+        status: dueDate && dueDate < today && balance > 0 ? 'OVERDUE' : (balance === 0 ? 'PAID' : invoice.status.toUpperCase()),
+        date_issued: invoice.issue_date,
+        due_date: invoice.due_date,
         days_overdue: daysOverdue,
-        payment_history: (invoice.payment_allocations || []).map(allocation => ({
-          amount: allocation.amount,
-          source: allocation.payment.source,
-          date: allocation.payment.received_at
+        payment_history: invoice.payments.map(payment => ({
+          amount: payment.amount,
+          source: payment.payment_method,
+          date: payment.payment_date
         }))
       }
     })
