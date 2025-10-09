@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'next/navigation'
 import DashboardLayout from '@/components/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -68,6 +69,7 @@ interface Bundle {
 }
 
 export default function CuttingPage() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('lays')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
@@ -160,11 +162,11 @@ export default function CuttingPage() {
               <RefreshCw className={`w-4 h-4 mr-2 ${(laysFetching || bundlesFetching) ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button onClick={() => {}}>
+            <Button onClick={() => router.push('/cutting/create-lay')}>
               <Plus className="w-4 h-4 mr-2" />
               New Lay
             </Button>
-            <Button variant="outline" onClick={() => {}}>
+            <Button variant="outline" onClick={() => router.push('/cutting/scan-bundle')}>
               <QrCode className="w-4 h-4 mr-2" />
               Scan Bundle
             </Button>
