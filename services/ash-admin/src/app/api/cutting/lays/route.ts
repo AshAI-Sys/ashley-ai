@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
           outputs: {
             select: {
               id: true,
-              sizeCode: true,
+              size_code: true,
               qty: true,
             }
           },

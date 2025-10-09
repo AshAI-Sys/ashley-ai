@@ -63,17 +63,17 @@ export async function GET(request: NextRequest) {
               }
             }
           },
-          cutLay: {
+          lay: {
             select: {
               id: true,
-              markerName: true,
-              layLengthM: true,
+              marker_name: true,
+              lay_length_m: true,
               plies: true,
             }
           },
           _count: {
             select: {
-              sewingRuns: true,
+              sewing_runs: true,
             }
           }
         },
@@ -173,11 +173,11 @@ export async function POST(request: NextRequest) {
                   }
                 }
               },
-              cutLay: {
+              lay: {
                 select: {
                   id: true,
-                  markerName: true,
-                  layLengthM: true,
+                  marker_name: true,
+                  lay_length_m: true,
                   plies: true,
                 }
               }
@@ -265,11 +265,11 @@ export async function PUT(request: NextRequest) {
             }
           }
         },
-        cutLay: {
+        lay: {
           select: {
             id: true,
-            markerName: true,
-            layLengthM: true,
+            marker_name: true,
+            lay_length_m: true,
             plies: true,
           }
         }
