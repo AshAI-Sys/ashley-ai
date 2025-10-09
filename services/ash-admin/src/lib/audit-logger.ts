@@ -43,7 +43,7 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
  * Log authentication events (login, logout, failed attempts)
  */
 export async function logAuthEvent(
-  action: 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'TOKEN_REFRESH' | '2FA_ENABLED' | '2FA_DISABLED',
+  action: 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'LOGIN_BLOCKED_LOCKED' | 'TOKEN_REFRESH' | '2FA_ENABLED' | '2FA_DISABLED' | 'REGISTER' | 'REGISTER_FAILED',
   workspaceId: string,
   userId?: string,
   request?: NextRequest,
