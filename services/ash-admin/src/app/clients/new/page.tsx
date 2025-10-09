@@ -15,6 +15,13 @@ import { toast } from 'react-hot-toast'
 interface BrandData {
   name: string
   code: string
+  logo_url: string
+  settings: {
+    color_primary: string
+    color_secondary: string
+    notes: string
+  }
+  is_active: boolean
 }
 
 interface ClientFormData {
@@ -136,10 +143,15 @@ export default function NewClientPage() {
         if (formData.brands.length > 0) {
           for (const brand of formData.brands) {
             try {
+              const brandPayload = {
+                ...brand,
+                settings: JSON.stringify(brand.settings),
+                logo_url: brand.logo_url || undefined
+              }
               await fetch(`/api/clients/${clientId}/brands`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(brand)
+                body: JSON.stringify(brandPayload)
               })
             } catch (brandError) {
               console.error('Failed to create brand:', brandError)
@@ -163,7 +175,17 @@ export default function NewClientPage() {
   const handleAddBrand = () => {
     setFormData(prev => ({
       ...prev,
-      brands: [...prev.brands, { name: '', code: '' }]
+      brands: [...prev.brands, {
+        name: '',
+        code: '',
+        logo_url: '',
+        settings: {
+          color_primary: '#000000',
+          color_secondary: '#ffffff',
+          notes: ''
+        },
+        is_active: true
+      }]
     }))
   }
 
@@ -174,12 +196,25 @@ export default function NewClientPage() {
     }))
   }
 
-  const handleBrandChange = (index: number, field: keyof BrandData, value: string) => {
+  const handleBrandChange = (index: number, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
-      brands: prev.brands.map((brand, i) =>
-        i === index ? { ...brand, [field]: value } : brand
-      )
+      brands: prev.brands.map((brand, i) => {
+        if (i !== index) return brand
+
+        if (field.startsWith('settings.')) {
+          const settingKey = field.split('.')[1]
+          return {
+            ...brand,
+            settings: {
+              ...brand.settings,
+              [settingKey]: value
+            }
+          }
+        }
+
+        return { ...brand, [field]: value }
+      })
     }))
   }
 
@@ -370,50 +405,6 @@ export default function NewClientPage() {
                 </div>
               </div>
             </div>
-
-            {/* Business Information */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="tax_id">Tax ID</Label>
-                <Input
-                  id="tax_id"
-                  type="text"
-                  value={formData.tax_id}
-                  onChange={(e) => handleInputChange('tax_id', e.target.value)}
-                  placeholder="Enter tax ID"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="payment_terms">Payment Terms (Days)</Label>
-                <Input
-                  id="payment_terms"
-                  type="number"
-                  min="0"
-                  max="365"
-                  value={formData.payment_terms || ''}
-                  onChange={(e) => handleInputChange('payment_terms', e.target.value ? parseInt(e.target.value) : null)}
-                  placeholder="e.g. 30"
-                  className={errors.payment_terms ? 'border-red-500' : ''}
-                />
-                {errors.payment_terms && <p className="text-sm text-red-500">{errors.payment_terms}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="credit_limit">Credit Limit (₱)</Label>
-                <Input
-                  id="credit_limit"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.credit_limit || ''}
-                  onChange={(e) => handleInputChange('credit_limit', e.target.value ? parseFloat(e.target.value) : null)}
-                  placeholder="e.g. 100000"
-                  className={errors.credit_limit ? 'border-red-500' : ''}
-                />
-                {errors.credit_limit && <p className="text-sm text-red-500">{errors.credit_limit}</p>}
-              </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -441,8 +432,22 @@ export default function NewClientPage() {
             ) : (
               <div className="space-y-4">
                 {formData.brands.map((brand, index) => (
-                  <div key={index} className="flex gap-4 items-start p-4 border rounded-lg bg-gray-50">
-                    <div className="flex-1 grid grid-cols-2 gap-4">
+                  <div key={index} className="p-4 border rounded-lg bg-gray-50 space-y-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-sm">Brand #{index + 1}</h4>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRemoveBrand(index)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Brand Name & Code */}
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor={`brand-name-${index}`}>
                           Brand Name <span className="text-red-500">*</span>
@@ -456,25 +461,42 @@ export default function NewClientPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor={`brand-code-${index}`}>Brand Code</Label>
+                        <Label htmlFor={`brand-code-${index}`}>
+                          Brand Code <span className="text-red-500">*</span>
+                        </Label>
                         <Input
                           id={`brand-code-${index}`}
                           type="text"
                           value={brand.code}
-                          onChange={(e) => handleBrandChange(index, 'code', e.target.value)}
-                          placeholder="e.g., NKE, ADS"
+                          onChange={(e) => handleBrandChange(index, 'code', e.target.value.toUpperCase())}
+                          placeholder="e.g., NIKE, ADIDAS"
                         />
                       </div>
                     </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveBrand(index)}
-                      className="mt-8 text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+
+                    {/* Logo URL */}
+                    <div className="space-y-2">
+                      <Label htmlFor={`brand-logo-${index}`}>Logo URL</Label>
+                      <Input
+                        id={`brand-logo-${index}`}
+                        type="url"
+                        value={brand.logo_url}
+                        onChange={(e) => handleBrandChange(index, 'logo_url', e.target.value)}
+                        placeholder="https://example.com/logo.png"
+                      />
+                    </div>
+
+                    {/* Notes */}
+                    <div className="space-y-2">
+                      <Label htmlFor={`brand-notes-${index}`}>Notes</Label>
+                      <Input
+                        id={`brand-notes-${index}`}
+                        type="text"
+                        value={brand.settings.notes}
+                        onChange={(e) => handleBrandChange(index, 'settings.notes', e.target.value)}
+                        placeholder="Additional notes about this brand"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
