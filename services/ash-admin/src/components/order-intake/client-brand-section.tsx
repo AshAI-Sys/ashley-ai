@@ -105,7 +105,9 @@ export function ClientBrandSection({
                 size="icon"
                 disabled={!selectedClientId}
                 onClick={() => {
-                  toast.info('Add Brand feature coming soon! For now, please add brands from the Clients page.')
+                  toast('Add Brand feature coming soon! For now, please add brands from the Clients page.', {
+                    icon: 'ℹ️'
+                  })
                 }}
               >
                 <Plus className="w-4 h-4" suppressHydrationWarning />

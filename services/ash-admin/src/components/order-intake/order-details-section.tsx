@@ -1,12 +1,14 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { FileText, Package, Shirt, Type } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { FileText, Package, Shirt, Type, Plus, Pencil, Trash2 } from 'lucide-react'
 
 interface OrderDetailsSectionProps {
   poNumber: string
@@ -31,15 +33,14 @@ const SIZE_DISTRIBUTION_TYPES = [
   { value: 'OVERSIZED', label: 'Oversized', description: 'Loose/relaxed fit' }
 ]
 
-const FABRIC_TYPES = [
+const DEFAULT_FABRIC_TYPES = [
   { value: 'cotton', label: 'Cotton' },
   { value: 'polyester', label: 'Polyester' },
   { value: 'cotton-poly', label: 'Cotton/Poly Blend' },
   { value: 'dri-fit', label: 'Dri-Fit/Performance' },
   { value: 'jersey', label: 'Jersey' },
   { value: 'pique', label: 'Pique' },
-  { value: 'fleece', label: 'Fleece' },
-  { value: 'custom', label: 'Custom' }
+  { value: 'fleece', label: 'Fleece' }
 ]
 
 export function OrderDetailsSection({
@@ -54,6 +55,60 @@ export function OrderDetailsSection({
   onFabricTypeChange,
   onSizeDistributionTypeChange
 }: OrderDetailsSectionProps) {
+  // State for fabric type management
+  const [fabricTypes, setFabricTypes] = useState(DEFAULT_FABRIC_TYPES)
+  const [showFabricDialog, setShowFabricDialog] = useState(false)
+  const [newFabricName, setNewFabricName] = useState('')
+  const [editingFabricIndex, setEditingFabricIndex] = useState<number | null>(null)
+
+  // Auto-generate PO number on component mount
+  React.useEffect(() => {
+    if (!poNumber) {
+      const date = new Date()
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+      const generatedPO = `PO-${year}${month}-${random}`
+      onPoNumberChange(generatedPO)
+    }
+  }, [])
+
+  const handleAddFabricType = () => {
+    if (!newFabricName.trim()) return
+
+    const value = newFabricName.toLowerCase().replace(/\s+/g, '-')
+    const newFabric = { value, label: newFabricName.trim() }
+
+    if (editingFabricIndex !== null) {
+      // Edit existing
+      const updated = [...fabricTypes]
+      updated[editingFabricIndex] = newFabric
+      setFabricTypes(updated)
+      setEditingFabricIndex(null)
+    } else {
+      // Add new
+      setFabricTypes([...fabricTypes, newFabric])
+    }
+
+    setNewFabricName('')
+    setShowFabricDialog(false)
+  }
+
+  const handleEditFabricType = (index: number) => {
+    setEditingFabricIndex(index)
+    setNewFabricName(fabricTypes[index].label)
+    setShowFabricDialog(true)
+  }
+
+  const handleDeleteFabricType = (index: number) => {
+    const updated = fabricTypes.filter((_, i) => i !== index)
+    setFabricTypes(updated)
+    // If the deleted fabric was selected, clear the selection
+    if (fabricTypes[index].value === fabricType) {
+      onFabricTypeChange('')
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -68,16 +123,17 @@ export function OrderDetailsSection({
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="po-number">
-              P.O. Number
+              P.O. Number <Badge variant="secondary" className="ml-2">Auto-generated</Badge>
             </Label>
             <Input
               id="po-number"
               value={poNumber}
-              onChange={(e) => onPoNumberChange(e.target.value)}
-              placeholder="e.g., PO-2024-001"
+              readOnly
+              disabled
+              className="bg-gray-50 cursor-not-allowed"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Purchase order reference number
+              Automatically generated purchase order number
             </p>
           </div>
 
@@ -124,16 +180,81 @@ export function OrderDetailsSection({
           </div>
 
           <div>
-            <Label htmlFor="fabric-type" className="flex items-center gap-2">
-              <Shirt className="w-4 h-4" />
-              Fabric Type
-            </Label>
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="fabric-type" className="flex items-center gap-2">
+                <Shirt className="w-4 h-4" />
+                Fabric Type
+              </Label>
+              <Dialog open={showFabricDialog} onOpenChange={(open) => {
+                setShowFabricDialog(open)
+                if (!open) {
+                  setNewFabricName('')
+                  setEditingFabricIndex(null)
+                }
+              }}>
+                <DialogTrigger asChild>
+                  <Button type="button" variant="outline" size="sm">
+                    <Plus className="w-3 h-3 mr-1" />
+                    Manage Types
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Manage Fabric Types</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    {/* Add/Edit Form */}
+                    <div className="flex gap-2">
+                      <Input
+                        value={newFabricName}
+                        onChange={(e) => setNewFabricName(e.target.value)}
+                        placeholder="Enter fabric type name"
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddFabricType()}
+                      />
+                      <Button onClick={handleAddFabricType}>
+                        {editingFabricIndex !== null ? 'Update' : 'Add'}
+                      </Button>
+                    </div>
+
+                    {/* Fabric Types List */}
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {fabricTypes.map((fabric, index) => (
+                        <div
+                          key={fabric.value}
+                          className="flex items-center justify-between p-2 border rounded hover:bg-gray-50"
+                        >
+                          <span>{fabric.label}</span>
+                          <div className="flex gap-1">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditFabricType(index)}
+                            >
+                              <Pencil className="w-3 h-3" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteFabricType(index)}
+                            >
+                              <Trash2 className="w-3 h-3 text-red-500" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
             <Select value={fabricType} onValueChange={onFabricTypeChange}>
               <SelectTrigger id="fabric-type">
                 <SelectValue placeholder="Select fabric type" />
               </SelectTrigger>
               <SelectContent>
-                {FABRIC_TYPES.map((fabric) => (
+                {fabricTypes.map((fabric) => (
                   <SelectItem key={fabric.value} value={fabric.value}>
                     {fabric.label}
                   </SelectItem>
