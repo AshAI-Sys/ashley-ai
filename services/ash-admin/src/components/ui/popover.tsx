@@ -24,10 +24,22 @@ const Popover: React.FC<PopoverProps> = ({ open = false, onOpenChange, children 
 
 const PopoverTrigger = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, children, ...props }, ref) => {
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
+>(({ className, children, asChild, ...props }, ref) => {
   const context = React.useContext(PopoverContext)
-  
+
+  // If asChild is true, clone the child element instead of wrapping in button
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      ref,
+      onClick: (e: React.MouseEvent) => {
+        context?.onOpenChange(!context.open)
+        const originalOnClick = (children as any).props?.onClick
+        if (originalOnClick) originalOnClick(e)
+      }
+    })
+  }
+
   return (
     <button
       ref={ref}

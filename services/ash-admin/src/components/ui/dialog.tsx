@@ -25,10 +25,22 @@ const Dialog: React.FC<DialogProps> = ({ open = false, onOpenChange, children })
 
 const DialogTrigger = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, children, ...props }, ref) => {
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
+>(({ className, children, asChild, ...props }, ref) => {
   const context = React.useContext(DialogContext)
-  
+
+  // If asChild is true, clone the child element instead of wrapping in button
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      ref,
+      onClick: (e: React.MouseEvent) => {
+        context?.onOpenChange(true)
+        const originalOnClick = (children as any).props?.onClick
+        if (originalOnClick) originalOnClick(e)
+      }
+    })
+  }
+
   return (
     <button
       ref={ref}
