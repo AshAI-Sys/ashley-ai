@@ -115,7 +115,11 @@ export async function POST(
     // Ensure workspace exists before creating brand
     await prisma.workspace.upsert({
       where: { id: client.workspace_id },
-      create: { id: client.workspace_id, name: 'Default Workspace' },
+      create: {
+        id: client.workspace_id,
+        name: 'Default Workspace',
+        slug: client.workspace_id
+      },
       update: {},
     });
 
