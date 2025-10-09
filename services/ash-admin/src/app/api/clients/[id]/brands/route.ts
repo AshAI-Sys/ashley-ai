@@ -112,9 +112,17 @@ export async function POST(
       );
     }
 
+    // Ensure workspace exists before creating brand
+    await prisma.workspace.upsert({
+      where: { id: client.workspace_id },
+      create: { id: client.workspace_id, name: 'Default Workspace' },
+      update: {},
+    });
+
+    // Use client's workspace_id
     const brand = await prisma.brand.create({
       data: {
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: client.workspace_id,
         client_id: clientId,
         name: validatedData.name,
         code: validatedData.code || null,
