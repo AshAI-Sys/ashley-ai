@@ -3,15 +3,12 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 const UpdateBrandSchema = z.object({
-  name: z.string().min(1, 'Brand name is required'),
-  description: z.string().optional(),
-  logoUrl: z.string().url().optional().or(z.literal('')),
-  brandColors: z.array(z.string()).optional(),
-  defaultPricing: z.record(z.number()).optional(),
-  guidelines: z.string().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
-  metadata: z.record(z.any()).optional(),
-}).partial();
+  name: z.string().min(1, 'Brand name is required').optional(),
+  code: z.string().optional(),
+  logo_url: z.string().optional(),
+  settings: z.string().optional(),
+  is_active: z.boolean().optional(),
+});
 
 export async function GET(
   request: NextRequest,
@@ -121,13 +118,18 @@ export async function PUT(
 
     const brand = await prisma.brand.update({
       where: { id: brandId },
-      data: validatedData,
+      data: {
+        name: validatedData.name,
+        code: validatedData.code,
+        logo_url: validatedData.logo_url,
+        settings: validatedData.settings,
+        is_active: validatedData.is_active,
+      },
       include: {
         client: {
           select: {
             id: true,
             name: true,
-            company: true,
             email: true,
           }
         },
@@ -193,16 +195,12 @@ export async function DELETE(
       );
     }
 
-    // Check if brand has orders (prevent deletion if they do)
-    if (existingBrand._count.orders > 0) {
-      return NextResponse.json(
-        { success: false, error: 'Cannot delete brand with existing orders' },
-        { status: 400 }
-      );
-    }
-
-    await prisma.brand.delete({
-      where: { id: brandId }
+    // Soft delete by setting deleted_at
+    await prisma.brand.update({
+      where: { id: brandId },
+      data: {
+        deleted_at: new Date(),
+      }
     });
 
     return NextResponse.json({
