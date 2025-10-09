@@ -243,17 +243,25 @@ export default function EditClientPage() {
 
   return (
     <div className="container mx-auto py-6 max-w-2xl">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href={`/clients/${clientId}`}>
-          <Button variant="outline" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Client
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <Link href={`/clients/${clientId}`}>
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Client
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold">Edit Client</h1>
+            <p className="text-muted-foreground">Update client information</p>
+          </div>
+        </div>
+        <Link href={`/clients/${clientId}/brands`}>
+          <Button variant="outline">
+            <Building2 className="w-4 h-4 mr-2" />
+            Manage Brands
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold">Edit Client</h1>
-          <p className="text-muted-foreground">Update client information</p>
-        </div>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -420,49 +428,6 @@ export default function EditClientPage() {
               </div>
             </div>
 
-            {/* Business Information */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="tax_id">Tax ID</Label>
-                <Input
-                  id="tax_id"
-                  type="text"
-                  value={formData.tax_id}
-                  onChange={(e) => handleInputChange('tax_id', e.target.value)}
-                  placeholder="Enter tax ID"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="payment_terms">Payment Terms (Days)</Label>
-                <Input
-                  id="payment_terms"
-                  type="number"
-                  min="0"
-                  max="365"
-                  value={formData.payment_terms || ''}
-                  onChange={(e) => handleInputChange('payment_terms', e.target.value ? parseInt(e.target.value) : null)}
-                  placeholder="e.g. 30"
-                  className={errors.payment_terms ? 'border-red-500' : ''}
-                />
-                {errors.payment_terms && <p className="text-sm text-red-500">{errors.payment_terms}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="credit_limit">Credit Limit (₱)</Label>
-                <Input
-                  id="credit_limit"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.credit_limit || ''}
-                  onChange={(e) => handleInputChange('credit_limit', e.target.value ? parseFloat(e.target.value) : null)}
-                  placeholder="e.g. 100000"
-                  className={errors.credit_limit ? 'border-red-500' : ''}
-                />
-                {errors.credit_limit && <p className="text-sm text-red-500">{errors.credit_limit}</p>}
-              </div>
-            </div>
           </CardContent>
         </Card>
 
