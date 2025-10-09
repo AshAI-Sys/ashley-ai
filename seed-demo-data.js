@@ -69,10 +69,17 @@ async function main() {
   // 3. Create Demo Clients
   console.log('\n🏢 Creating demo clients...')
 
-  const client1 = await prisma.client.upsert({
-    where: { email: 'john@abcmfg.com' },
-    update: {},
-    create: {
+  // Delete existing clients first (for clean reseed)
+  await prisma.client.deleteMany({
+    where: {
+      email: {
+        in: ['john@abcmfg.com', 'maria@xyzltd.com']
+      }
+    }
+  })
+
+  const client1 = await prisma.client.create({
+    data: {
       workspace_id: workspace.id,
       name: 'ABC Manufacturing Inc.',
       contact_person: 'John Doe',
@@ -92,10 +99,8 @@ async function main() {
     }
   })
 
-  const client2 = await prisma.client.upsert({
-    where: { email: 'maria@xyzltd.com' },
-    update: {},
-    create: {
+  const client2 = await prisma.client.create({
+    data: {
       workspace_id: workspace.id,
       name: 'XYZ Apparel Ltd.',
       contact_person: 'Maria Santos',
