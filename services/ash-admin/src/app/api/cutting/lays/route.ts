@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
               client: {
                 select: {
                   name: true,
-                  company: true,
                 }
               },
               brand: {
@@ -144,7 +143,6 @@ export async function POST(request: NextRequest) {
               client: {
                 select: {
                   name: true,
-                  company: true,
                 }
               },
               brand: {
