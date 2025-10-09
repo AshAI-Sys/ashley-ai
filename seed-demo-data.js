@@ -3,7 +3,7 @@
  * Creates demo admin user and sample data for testing
  */
 
-const { PrismaClient } = require('@prisma/client')
+const { PrismaClient } = require('./node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/@prisma/client')
 const bcrypt = require('bcryptjs')
 
 const prisma = new PrismaClient()
@@ -35,7 +35,12 @@ async function main() {
   const passwordHash = await bcrypt.hash('password123', 10)
 
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@ashleyai.com' },
+    where: {
+      workspace_id_email: {
+        workspace_id: workspace.id,
+        email: 'admin@ashleyai.com'
+      }
+    },
     update: {
       password_hash: passwordHash,
       is_active: true
