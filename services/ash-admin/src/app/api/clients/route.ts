@@ -115,6 +115,31 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
 
+    // Ensure workspace exists (create if needed for demo mode)
+    try {
+      const workspaceExists = await prisma.workspace.findUnique({
+        where: { id: DEFAULT_WORKSPACE_ID }
+      })
+
+      if (!workspaceExists) {
+        console.log('Creating workspace:', DEFAULT_WORKSPACE_ID)
+        await prisma.workspace.create({
+          data: {
+            id: DEFAULT_WORKSPACE_ID,
+            name: 'Demo Workspace',
+            slug: DEFAULT_WORKSPACE_ID,
+          }
+        })
+        console.log('Workspace created successfully')
+      }
+    } catch (error: any) {
+      console.error('Error with workspace:', error.message)
+      return NextResponse.json(
+        { success: false, error: 'Failed to setup workspace: ' + error.message },
+        { status: 500 }
+      )
+    }
+
     // Convert address object to JSON string if it's an object
     const addressData = typeof validatedData.address === 'object'
       ? JSON.stringify(validatedData.address)

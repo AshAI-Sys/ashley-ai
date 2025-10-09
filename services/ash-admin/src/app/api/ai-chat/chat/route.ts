@@ -63,18 +63,53 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Ensure workspace exists (create if needed for demo mode)
+    try {
+      const workspaceExists = await prisma.workspace.findUnique({
+        where: { id: workspace_id }
+      })
+
+      if (!workspaceExists) {
+        console.log('Creating workspace:', workspace_id)
+        // Create demo workspace if it doesn't exist
+        await prisma.workspace.create({
+          data: {
+            id: workspace_id,
+            name: 'Demo Workspace',
+            slug: workspace_id,
+          }
+        })
+        console.log('Workspace created successfully')
+      }
+    } catch (error: any) {
+      console.error('Error with workspace:', error.message)
+      // If workspace creation fails, return error
+      return NextResponse.json(
+        { error: 'Failed to setup workspace: ' + error.message },
+        { status: 500 }
+      )
+    }
+
     // Get or create conversation
     let conversationId = conversation_id
     if (!conversationId) {
-      const newConversation = await prisma.aIChatConversation.create({
-        data: {
-          workspace_id,
-          user_id: user_id || null,
-          title: message.slice(0, 50) + (message.length > 50 ? '...' : ''),
-          context_type: 'GENERAL',
-        },
-      })
-      conversationId = newConversation.id
+      try {
+        const newConversation = await prisma.aIChatConversation.create({
+          data: {
+            workspace_id,
+            user_id: null, // Always null for demo mode to avoid foreign key issues
+            title: message.slice(0, 50) + (message.length > 50 ? '...' : ''),
+            context_type: 'GENERAL',
+          },
+        })
+        conversationId = newConversation.id
+      } catch (error: any) {
+        console.error('Error creating conversation:', error.message, error)
+        return NextResponse.json(
+          { error: 'Failed to create conversation: ' + error.message },
+          { status: 500 }
+        )
+      }
     }
 
     // Save user message
