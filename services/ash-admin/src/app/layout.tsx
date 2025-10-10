@@ -3,7 +3,12 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/providers'
 import { Toaster } from 'react-hot-toast'
-import { ChatWidget } from '@/components/ai-chat/ChatWidget'
+import dynamic from 'next/dynamic'
+
+// Load ChatWidget only on client side to prevent hydration issues
+const ChatWidget = dynamic(() => import('@/components/ai-chat/ChatWidget').then(mod => ({ default: mod.ChatWidget })), {
+  ssr: false,
+})
 
 const inter = Inter({ subsets: ['latin'] })
 
