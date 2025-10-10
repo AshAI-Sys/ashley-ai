@@ -43,7 +43,10 @@ const PopoverTrigger = React.forwardRef<
   return (
     <button
       ref={ref}
+      type="button"
       onClick={() => context?.onOpenChange(!context.open)}
+      aria-expanded={context?.open}
+      aria-haspopup="dialog"
       className={className}
       {...props}
     >
@@ -61,25 +64,45 @@ interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
 const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
   ({ className, align = "center", sideOffset = 4, children, ...props }, ref) => {
     const context = React.useContext(PopoverContext)
-    
+    const [position, setPosition] = React.useState({ top: 0, left: 0 })
+    const triggerRef = React.useRef<HTMLElement | null>(null)
+
+    React.useEffect(() => {
+      if (context?.open) {
+        // Find the trigger button
+        const trigger = document.querySelector('[aria-expanded="true"][aria-haspopup="dialog"]') as HTMLElement
+        if (trigger) {
+          triggerRef.current = trigger
+          const rect = trigger.getBoundingClientRect()
+          setPosition({
+            top: rect.bottom + sideOffset,
+            left: align === 'start' ? rect.left : align === 'end' ? rect.right - 288 : rect.left + rect.width / 2 - 144
+          })
+        }
+      }
+    }, [context?.open, align, sideOffset])
+
     if (!context?.open) return null
-    
+
     return (
       <>
         {/* Backdrop */}
-        <div 
-          className="fixed inset-0 z-40"
+        <div
+          className="fixed inset-0 z-40 bg-black/10"
           onClick={() => context.onOpenChange(false)}
         />
-        
+
         {/* Content */}
         <div
           ref={ref}
           className={cn(
-            "z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
-            "absolute top-full mt-1", // Simple positioning
+            "fixed z-50 w-72 rounded-md border bg-white p-0 shadow-lg outline-none",
             className
           )}
+          style={{
+            top: `${position.top}px`,
+            left: `${position.left}px`,
+          }}
           {...props}
         >
           {children}
