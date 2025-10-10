@@ -391,17 +391,31 @@ export function ProductionRouteSection({
             </Button>
           </div>
 
-          <div className="grid gap-3">
-            {availableRoutes.map((route) => (
-              <div
-                key={route.id}
-                className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                  selectedRoute === route.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-                onClick={() => onRouteChange(route.id)}
-              >
+          {!printingMethod ? (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+              <AlertCircle className="w-6 h-6 text-amber-600 mx-auto mb-2" />
+              <p className="text-amber-900 font-medium">Please select a printing method first</p>
+              <p className="text-sm text-amber-700 mt-1">
+                Production routes will appear once you choose a printing method in Section B above.
+              </p>
+            </div>
+          ) : availableRoutes.length === 0 ? (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+              <AlertCircle className="w-6 h-6 text-gray-400 mx-auto mb-2" />
+              <p className="text-gray-600">No production routes available for {printingMethod}</p>
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {availableRoutes.map((route) => (
+                <div
+                  key={route.id}
+                  className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                    selectedRoute === route.id
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => onRouteChange(route.id)}
+                >
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <div className="flex items-center gap-2">
@@ -445,7 +459,8 @@ export function ProductionRouteSection({
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Ashley AI Route Optimization */}
