@@ -172,7 +172,108 @@ export default function NewOrderPageContent() {
   // Load clients on component mount
   useEffect(() => {
     fetchClients()
+    loadDraft()
   }, [])
+
+  // Auto-save draft every time form data changes
+  useEffect(() => {
+    const draftData = {
+      selectedClientId,
+      selectedBrandId,
+      channel,
+      garmentType,
+      printingMethod,
+      totalQuantity,
+      sizeCurve,
+      colorVariants,
+      selectedAddOns,
+      deliveryDate,
+      selectedRoute,
+      specialInstructions,
+      poNumber,
+      orderType,
+      designName,
+      fabricType,
+      sizeDistributionType,
+      artistFilename,
+      mockupImageUrl,
+      notesRemarks,
+      commercials,
+      timestamp: new Date().toISOString()
+    }
+
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('orderFormDraft', JSON.stringify(draftData))
+    }
+  }, [
+    selectedClientId,
+    selectedBrandId,
+    channel,
+    garmentType,
+    printingMethod,
+    totalQuantity,
+    sizeCurve,
+    colorVariants,
+    selectedAddOns,
+    deliveryDate,
+    selectedRoute,
+    specialInstructions,
+    poNumber,
+    orderType,
+    designName,
+    fabricType,
+    sizeDistributionType,
+    artistFilename,
+    mockupImageUrl,
+    notesRemarks,
+    commercials
+  ])
+
+  const loadDraft = () => {
+    if (typeof window === 'undefined') return
+
+    try {
+      const savedDraft = localStorage.getItem('orderFormDraft')
+      if (savedDraft) {
+        const draft = JSON.parse(savedDraft)
+
+        // Restore all form fields
+        if (draft.selectedClientId) setSelectedClientId(draft.selectedClientId)
+        if (draft.selectedBrandId) setSelectedBrandId(draft.selectedBrandId)
+        if (draft.channel) setChannel(draft.channel)
+        if (draft.garmentType) setGarmentType(draft.garmentType)
+        if (draft.printingMethod) setPrintingMethod(draft.printingMethod)
+        if (draft.totalQuantity) setTotalQuantity(draft.totalQuantity)
+        if (draft.sizeCurve) setSizeCurve(draft.sizeCurve)
+        if (draft.colorVariants) setColorVariants(draft.colorVariants)
+        if (draft.selectedAddOns) setSelectedAddOns(draft.selectedAddOns)
+        if (draft.deliveryDate) setDeliveryDate(draft.deliveryDate)
+        if (draft.selectedRoute) setSelectedRoute(draft.selectedRoute)
+        if (draft.specialInstructions) setSpecialInstructions(draft.specialInstructions)
+        if (draft.poNumber) setPoNumber(draft.poNumber)
+        if (draft.orderType) setOrderType(draft.orderType)
+        if (draft.designName) setDesignName(draft.designName)
+        if (draft.fabricType) setFabricType(draft.fabricType)
+        if (draft.sizeDistributionType) setSizeDistributionType(draft.sizeDistributionType)
+        if (draft.artistFilename) setArtistFilename(draft.artistFilename)
+        if (draft.mockupImageUrl) setMockupImageUrl(draft.mockupImageUrl)
+        if (draft.notesRemarks) setNotesRemarks(draft.notesRemarks)
+        if (draft.commercials) setCommercials(draft.commercials)
+
+        toast.success('Draft restored! Continue where you left off.')
+      }
+    } catch (error) {
+      console.error('Failed to load draft:', error)
+    }
+  }
+
+  const clearDraft = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('orderFormDraft')
+      toast.success('Draft cleared')
+    }
+  }
 
   const fetchClients = async () => {
     setLoading(true)
@@ -330,6 +431,8 @@ export default function NewOrderPageContent() {
 
       if (response.ok) {
         toast.success(`Order ${action === 'draft' ? 'saved as draft' : 'submitted for processing'}`)
+        // Clear draft on successful submission
+        clearDraft()
         router.push(`/orders/${result.id}`)
       } else {
         toast.error(result.message || 'Failed to create order')
@@ -370,12 +473,39 @@ export default function NewOrderPageContent() {
     )
   }
 
+  const hasDraft = typeof window !== 'undefined' && localStorage.getItem('orderFormDraft')
+
   return (
     <div className="container mx-auto py-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">New Production Order</h1>
-        <p className="text-muted-foreground">Create a comprehensive production order with Ashley AI assistance</p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold">New Production Order</h1>
+            <p className="text-muted-foreground">Create a comprehensive production order with Ashley AI assistance</p>
+          </div>
+
+          {hasDraft && (
+            <button
+              onClick={clearDraft}
+              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
+              Clear Draft
+            </button>
+          )}
+        </div>
+
+        {/* Draft Indicator */}
+        {hasDraft && (
+          <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span className="text-sm text-blue-900 font-medium">
+              Draft auto-saved • Your progress is preserved even if you navigate away
+            </span>
+          </div>
+        )}
 
         {/* Progress Bar */}
         <div className="mt-4">
