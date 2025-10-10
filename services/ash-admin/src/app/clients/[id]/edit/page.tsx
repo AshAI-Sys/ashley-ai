@@ -111,7 +111,10 @@ export default function EditClientPage() {
           if (brand.settings) {
             try {
               settings = JSON.parse(brand.settings)
-            } catch {}
+            } catch (e) {
+              // Invalid JSON, use default settings
+              console.warn('Failed to parse brand settings:', e)
+            }
           }
 
           return {
