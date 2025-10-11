@@ -64,7 +64,7 @@ interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
 const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
   ({ className, align = "center", sideOffset = 4, children, ...props }, ref) => {
     const context = React.useContext(PopoverContext)
-    const [position, setPosition] = React.useState({ top: 0, left: 0 })
+    const [position, setPosition] = React.useState<{ top: number; left: number } | null>(null)
     const triggerRef = React.useRef<HTMLElement | null>(null)
 
     React.useEffect(() => {
@@ -74,15 +74,25 @@ const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
         if (trigger) {
           triggerRef.current = trigger
           const rect = trigger.getBoundingClientRect()
-          setPosition({
-            top: rect.bottom + sideOffset,
-            left: align === 'start' ? rect.left : align === 'end' ? rect.right - 288 : rect.left + rect.width / 2 - 144
-          })
+
+          // Calculate position with scroll offset
+          const top = rect.bottom + window.scrollY + sideOffset
+          const left = align === 'start'
+            ? rect.left + window.scrollX
+            : align === 'end'
+            ? rect.right + window.scrollX - 288
+            : rect.left + window.scrollX + rect.width / 2 - 144
+
+          setPosition({ top, left })
         }
+      } else {
+        // Reset position when closed
+        setPosition(null)
       }
     }, [context?.open, align, sideOffset])
 
-    if (!context?.open) return null
+    // Don't render until we have a valid position
+    if (!context?.open || !position) return null
 
     return (
       <>

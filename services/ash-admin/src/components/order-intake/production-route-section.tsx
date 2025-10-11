@@ -240,7 +240,6 @@ export function ProductionRouteSection({
 }: ProductionRouteSectionProps) {
   const [optimizing, setOptimizing] = useState(false)
   const [ashleyOptimization, setAshleyOptimization] = useState<AshleyOptimization | null>(null)
-  const [routeVisualization, setRouteVisualization] = useState<boolean>(false)
   const [customSteps, setCustomSteps] = useState<ProductionStep[]>([])
   const [expandedStep, setExpandedStep] = useState<string | null>(null)
 
