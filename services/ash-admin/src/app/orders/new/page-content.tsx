@@ -358,8 +358,8 @@ export default function NewOrderPageContent() {
     try {
       const orderData = {
         // Client & Brand
-        client_id: selectedClientId,
-        brand_id: selectedBrandId,
+        clientId: selectedClientId,
+        brandId: selectedBrandId,
         channel,
 
         // Order Details (NEW)
@@ -395,12 +395,12 @@ export default function NewOrderPageContent() {
         color_variants_cost: colorVariantsCost,
 
         // Dates & SLAs
-        delivery_date: deliveryDate,
+        deliveryDate: deliveryDate,
         rush_surcharge_percent: rushSurchargePercent,
 
         // Commercials
-        unit_price: commercials.unitPrice,
-        total_amount: commercials.finalTotal,
+        unitPrice: commercials.unitPrice,
+        totalAmount: commercials.finalTotal,
         deposit_percentage: commercials.depositPercentage,
         payment_terms: commercials.paymentTerms,
         tax_inclusive: commercials.taxInclusive,
@@ -418,7 +418,7 @@ export default function NewOrderPageContent() {
         special_instructions: specialInstructions,
 
         // Status
-        status: action === 'draft' ? 'draft' : 'intake'
+        status: action === 'draft' ? 'DRAFT' : 'PENDING_APPROVAL'
       }
 
       const response = await fetch('/api/orders', {
