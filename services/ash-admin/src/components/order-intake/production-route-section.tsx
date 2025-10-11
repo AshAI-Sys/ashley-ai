@@ -227,6 +227,191 @@ const PRODUCTION_ROUTES: ProductionRoute[] = [
         resources: ['QC Station', 'QC Inspector']
       }
     ]
+  },
+  {
+    id: 'embroidery_standard',
+    name: 'Standard Embroidery Route',
+    description: 'Traditional embroidery production flow',
+    printingMethod: 'embroidery',
+    efficiency: 80,
+    estimatedDays: 6,
+    isRecommended: true,
+    steps: [
+      {
+        id: 'design_digitizing',
+        name: 'Design Digitizing',
+        department: 'Pre-Production',
+        estimatedHours: 3,
+        dependencies: [],
+        resources: ['Digitizing Software', 'Digitizer']
+      },
+      {
+        id: 'sample_embroidery',
+        name: 'Sample Embroidery',
+        department: 'Pre-Production',
+        estimatedHours: 1,
+        dependencies: ['design_digitizing'],
+        resources: ['Embroidery Machine', 'Sample Operator']
+      },
+      {
+        id: 'thread_preparation',
+        name: 'Thread Preparation',
+        department: 'Production',
+        estimatedHours: 0.5,
+        dependencies: ['sample_embroidery'],
+        resources: ['Thread Stock', 'Operator']
+      },
+      {
+        id: 'embroidery_production',
+        name: 'Embroidery Production',
+        department: 'Production',
+        estimatedHours: 12,
+        dependencies: ['thread_preparation'],
+        resources: ['Embroidery Machine', 'Machine Operator']
+      },
+      {
+        id: 'trimming',
+        name: 'Thread Trimming',
+        department: 'Production',
+        estimatedHours: 4,
+        dependencies: ['embroidery_production'],
+        resources: ['Trimming Station', 'Trimmer']
+      },
+      {
+        id: 'qc_finishing_embroidery',
+        name: 'Quality Check & Finishing',
+        department: 'Quality Control',
+        estimatedHours: 3,
+        dependencies: ['trimming'],
+        resources: ['QC Station', 'QC Inspector']
+      },
+      {
+        id: 'packaging_embroidery',
+        name: 'Packaging',
+        department: 'Finishing',
+        estimatedHours: 2,
+        dependencies: ['qc_finishing_embroidery'],
+        resources: ['Pack Station', 'Packer']
+      }
+    ]
+  },
+  {
+    id: 'sublimation_standard',
+    name: 'Standard Sublimation Route',
+    description: 'Dye sublimation printing flow',
+    printingMethod: 'sublimation',
+    efficiency: 88,
+    estimatedDays: 5,
+    isRecommended: true,
+    steps: [
+      {
+        id: 'design_prep_sub',
+        name: 'Design Preparation',
+        department: 'Pre-Production',
+        estimatedHours: 1.5,
+        dependencies: [],
+        resources: ['Design Software', 'Designer']
+      },
+      {
+        id: 'sublimation_printing',
+        name: 'Sublimation Printing',
+        department: 'Production',
+        estimatedHours: 3,
+        dependencies: ['design_prep_sub'],
+        resources: ['Sublimation Printer', 'Printer Operator']
+      },
+      {
+        id: 'heat_transfer',
+        name: 'Heat Transfer',
+        department: 'Production',
+        estimatedHours: 6,
+        dependencies: ['sublimation_printing'],
+        resources: ['Heat Press', 'Press Operator']
+      },
+      {
+        id: 'cooling',
+        name: 'Cooling & Inspection',
+        department: 'Production',
+        estimatedHours: 2,
+        dependencies: ['heat_transfer'],
+        resources: ['Cooling Station', 'Operator']
+      },
+      {
+        id: 'qc_finishing_sub',
+        name: 'Quality Check & Finishing',
+        department: 'Quality Control',
+        estimatedHours: 3,
+        dependencies: ['cooling'],
+        resources: ['QC Station', 'QC Inspector']
+      },
+      {
+        id: 'packaging_sub',
+        name: 'Packaging',
+        department: 'Finishing',
+        estimatedHours: 2,
+        dependencies: ['qc_finishing_sub'],
+        resources: ['Pack Station', 'Packer']
+      }
+    ]
+  },
+  {
+    id: 'rubberized_standard',
+    name: 'Standard Rubberized Route',
+    description: 'Rubberized print production flow',
+    printingMethod: 'rubberized',
+    efficiency: 82,
+    estimatedDays: 6,
+    isRecommended: true,
+    steps: [
+      {
+        id: 'design_prep_rubber',
+        name: 'Design Preparation',
+        department: 'Pre-Production',
+        estimatedHours: 2,
+        dependencies: [],
+        resources: ['Design Software', 'Designer']
+      },
+      {
+        id: 'rubber_mixing',
+        name: 'Rubber Ink Mixing',
+        department: 'Production',
+        estimatedHours: 1,
+        dependencies: ['design_prep_rubber'],
+        resources: ['Mixing Station', 'Color Matcher']
+      },
+      {
+        id: 'rubber_printing',
+        name: 'Rubberized Printing',
+        department: 'Production',
+        estimatedHours: 8,
+        dependencies: ['rubber_mixing'],
+        resources: ['Print Station', 'Printer Operator']
+      },
+      {
+        id: 'curing_rubber',
+        name: 'Curing',
+        department: 'Production',
+        estimatedHours: 3,
+        dependencies: ['rubber_printing'],
+        resources: ['Curing Oven', 'Machine Operator']
+      },
+      {
+        id: 'qc_finishing_rubber',
+        name: 'Quality Check & Finishing',
+        department: 'Quality Control',
+        estimatedHours: 3,
+        dependencies: ['curing_rubber'],
+        resources: ['QC Station', 'QC Inspector']
+      },
+      {
+        id: 'packaging_rubber',
+        name: 'Packaging',
+        department: 'Finishing',
+        estimatedHours: 2,
+        dependencies: ['qc_finishing_rubber'],
+        resources: ['Pack Station', 'Packer']
+      }
+    ]
   }
 ]
 
