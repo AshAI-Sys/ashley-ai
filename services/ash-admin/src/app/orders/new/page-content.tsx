@@ -421,6 +421,7 @@ export default function NewOrderPageContent() {
         status: action === 'draft' ? 'DRAFT' : 'PENDING_APPROVAL'
       }
 
+      console.log("Order data being sent:", orderData)
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
