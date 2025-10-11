@@ -59,6 +59,7 @@ const PopoverTrigger = React.forwardRef<
       'aria-expanded': context?.open,
       'aria-haspopup': 'dialog',
       onClick: (e: React.MouseEvent) => {
+        e.preventDefault()
         context?.onOpenChange(!context.open)
         const originalOnClick = (children as any).props?.onClick
         if (originalOnClick) originalOnClick(e)
@@ -82,7 +83,10 @@ const PopoverTrigger = React.forwardRef<
         }
       }}
       type="button"
-      onClick={() => context?.onOpenChange(!context.open)}
+      onClick={(e) => {
+        e.preventDefault()
+        context?.onOpenChange(!context.open)
+      }}
       aria-expanded={context?.open}
       aria-haspopup="dialog"
       className={className}
@@ -100,56 +104,93 @@ interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
-  ({ className, align = "start", sideOffset = 4, children, ...props }, ref) => {
+  ({ className, align = "start", sideOffset = 8, children, ...props }, ref) => {
     const context = React.useContext(PopoverContext)
     const [position, setPosition] = React.useState<{ top: number; left: number } | null>(null)
+    const contentRef = React.useRef<HTMLDivElement>(null)
 
     React.useEffect(() => {
       if (context?.open && context?.triggerRef?.current) {
-        const trigger = context.triggerRef.current
-        const rect = trigger.getBoundingClientRect()
+        // Small delay to ensure DOM is ready
+        requestAnimationFrame(() => {
+          const trigger = context.triggerRef!.current!
+          const triggerRect = trigger.getBoundingClientRect()
 
-        // Calculate position with scroll offset
-        const top = rect.bottom + window.scrollY + sideOffset
-        const left = align === 'start'
-          ? rect.left + window.scrollX
-          : align === 'end'
-          ? rect.right + window.scrollX - 288
-          : rect.left + window.scrollX + rect.width / 2 - 144
+          // Get viewport dimensions
+          const viewportWidth = window.innerWidth
+          const viewportHeight = window.innerHeight
 
-        setPosition({ top, left })
+          // Calculate initial position below the trigger
+          let top = triggerRect.bottom + sideOffset
+          let left = triggerRect.left
+
+          // Adjust for alignment
+          if (align === 'center') {
+            left = triggerRect.left + (triggerRect.width / 2) - 144 // Assume 288px width calendar
+          } else if (align === 'end') {
+            left = triggerRect.right - 288
+          }
+
+          // Ensure calendar stays within viewport
+          // Prevent going off right edge
+          if (left + 350 > viewportWidth) {
+            left = viewportWidth - 360
+          }
+
+          // Prevent going off left edge
+          if (left < 10) {
+            left = 10
+          }
+
+          // Prevent going off bottom edge
+          if (top + 400 > viewportHeight) {
+            // Show above trigger instead
+            top = triggerRect.top - 400 - sideOffset
+          }
+
+          // Ensure minimum top position
+          if (top < 10) {
+            top = 10
+          }
+
+          console.log('Calendar position:', { top, left, triggerRect, viewportWidth, viewportHeight })
+
+          setPosition({ top, left })
+        })
       } else {
-        // Reset position when closed
         setPosition(null)
       }
     }, [context?.open, context?.triggerRef, align, sideOffset])
 
-    // Don't render until we have a valid position
-    if (!context?.open || !position) return null
+    if (!context?.open) return null
 
     return (
       <>
         {/* Backdrop */}
         <div
-          className="fixed inset-0 z-40 bg-black/10"
+          className="fixed inset-0 z-40 bg-black/20"
           onClick={() => context.onOpenChange(false)}
         />
 
-        {/* Content */}
-        <div
-          ref={ref}
-          className={cn(
-            "fixed z-50 w-auto rounded-md border bg-white p-0 shadow-lg outline-none",
-            className
-          )}
-          style={{
-            top: `${position.top}px`,
-            left: `${position.left}px`,
-          }}
-          {...props}
-        >
-          {children}
-        </div>
+        {/* Content - render even without position to help debug */}
+        {position && (
+          <div
+            ref={contentRef}
+            className={cn(
+              "fixed z-50 rounded-md border border-gray-300 bg-white shadow-2xl outline-none",
+              className
+            )}
+            style={{
+              top: `${position.top}px`,
+              left: `${position.left}px`,
+              maxHeight: '400px',
+              overflow: 'auto'
+            }}
+            {...props}
+          >
+            {children}
+          </div>
+        )}
       </>
     )
   }
