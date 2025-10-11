@@ -10,13 +10,16 @@ interface PopoverProps {
 interface PopoverContextValue {
   open: boolean
   onOpenChange: (open: boolean) => void
+  triggerRef?: React.RefObject<HTMLElement>
 }
 
 const PopoverContext = React.createContext<PopoverContextValue | undefined>(undefined)
 
 const Popover: React.FC<PopoverProps> = ({ open = false, onOpenChange, children }) => {
+  const triggerRef = React.useRef<HTMLElement>(null)
+
   return (
-    <PopoverContext.Provider value={{ open, onOpenChange: onOpenChange || (() => {}) }}>
+    <PopoverContext.Provider value={{ open, onOpenChange: onOpenChange || (() => {}), triggerRef }}>
       {children}
     </PopoverContext.Provider>
   )
@@ -25,13 +28,36 @@ const Popover: React.FC<PopoverProps> = ({ open = false, onOpenChange, children 
 const PopoverTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
->(({ className, children, asChild, ...props }, ref) => {
+>(({ className, children, asChild, ...props }, forwardedRef) => {
   const context = React.useContext(PopoverContext)
+  const localRef = React.useRef<HTMLButtonElement>(null)
+
+  // Merge refs
+  React.useEffect(() => {
+    const element = localRef.current
+    if (element && context?.triggerRef) {
+      (context.triggerRef as React.MutableRefObject<HTMLElement>).current = element
+    }
+  }, [context])
 
   // If asChild is true, clone the child element instead of wrapping in button
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children as React.ReactElement<any>, {
-      ref,
+      ref: (node: HTMLElement) => {
+        (localRef as React.MutableRefObject<any>).current = node
+        if (context?.triggerRef) {
+          (context.triggerRef as React.MutableRefObject<HTMLElement>).current = node
+        }
+        if (forwardedRef) {
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(node)
+          } else {
+            (forwardedRef as React.MutableRefObject<any>).current = node
+          }
+        }
+      },
+      'aria-expanded': context?.open,
+      'aria-haspopup': 'dialog',
       onClick: (e: React.MouseEvent) => {
         context?.onOpenChange(!context.open)
         const originalOnClick = (children as any).props?.onClick
@@ -42,7 +68,19 @@ const PopoverTrigger = React.forwardRef<
 
   return (
     <button
-      ref={ref}
+      ref={(node) => {
+        (localRef as React.MutableRefObject<any>).current = node
+        if (context?.triggerRef) {
+          (context.triggerRef as React.MutableRefObject<HTMLElement | null>).current = node
+        }
+        if (forwardedRef) {
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(node)
+          } else {
+            (forwardedRef as React.MutableRefObject<any>).current = node
+          }
+        }
+      }}
       type="button"
       onClick={() => context?.onOpenChange(!context.open)}
       aria-expanded={context?.open}
@@ -62,34 +100,29 @@ interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
-  ({ className, align = "center", sideOffset = 4, children, ...props }, ref) => {
+  ({ className, align = "start", sideOffset = 4, children, ...props }, ref) => {
     const context = React.useContext(PopoverContext)
     const [position, setPosition] = React.useState<{ top: number; left: number } | null>(null)
-    const triggerRef = React.useRef<HTMLElement | null>(null)
 
     React.useEffect(() => {
-      if (context?.open) {
-        // Find the trigger button
-        const trigger = document.querySelector('[aria-expanded="true"][aria-haspopup="dialog"]') as HTMLElement
-        if (trigger) {
-          triggerRef.current = trigger
-          const rect = trigger.getBoundingClientRect()
+      if (context?.open && context?.triggerRef?.current) {
+        const trigger = context.triggerRef.current
+        const rect = trigger.getBoundingClientRect()
 
-          // Calculate position with scroll offset
-          const top = rect.bottom + window.scrollY + sideOffset
-          const left = align === 'start'
-            ? rect.left + window.scrollX
-            : align === 'end'
-            ? rect.right + window.scrollX - 288
-            : rect.left + window.scrollX + rect.width / 2 - 144
+        // Calculate position with scroll offset
+        const top = rect.bottom + window.scrollY + sideOffset
+        const left = align === 'start'
+          ? rect.left + window.scrollX
+          : align === 'end'
+          ? rect.right + window.scrollX - 288
+          : rect.left + window.scrollX + rect.width / 2 - 144
 
-          setPosition({ top, left })
-        }
+        setPosition({ top, left })
       } else {
         // Reset position when closed
         setPosition(null)
       }
-    }, [context?.open, align, sideOffset])
+    }, [context?.open, context?.triggerRef, align, sideOffset])
 
     // Don't render until we have a valid position
     if (!context?.open || !position) return null
@@ -106,7 +139,7 @@ const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
         <div
           ref={ref}
           className={cn(
-            "fixed z-50 w-72 rounded-md border bg-white p-0 shadow-lg outline-none",
+            "fixed z-50 w-auto rounded-md border bg-white p-0 shadow-lg outline-none",
             className
           )}
           style={{
