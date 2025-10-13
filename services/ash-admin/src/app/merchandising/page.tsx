@@ -89,18 +89,6 @@ export default function MerchandisingAI() {
     try {
       setLoading(true)
 
-      // Fetch AI metrics - mock data since endpoint doesn't exist yet
-      setMetrics({
-        total_forecasts: 156,
-        avg_forecast_accuracy: 87.3,
-        active_recommendations: 42,
-        high_confidence_trends: 8,
-        customer_segments: 12,
-        inventory_optimizations: 23,
-        revenue_impact: 125400,
-        cost_savings: 67800
-      })
-
       // Required workspace parameter for API calls
       const workspaceId = 'demo-workspace-1'
 
@@ -125,11 +113,31 @@ export default function MerchandisingAI() {
         setMarketTrends(trendsData.trends || [])
       }
 
+      // Calculate metrics from actual data
+      const totalForecasts = demandForecasts.length
+      const avgAccuracy = demandForecasts.length > 0
+        ? demandForecasts.reduce((sum, f) => sum + (f.confidence_score * 100), 0) / demandForecasts.length
+        : 0
+      const activeRecs = recommendations.filter(r => r.confidence_score > 0.7).length
+      const highConfidenceTrends = marketTrends.filter(t => t.confidence_level === 'HIGH').length
+
+      setMetrics({
+        total_forecasts: totalForecasts,
+        avg_forecast_accuracy: Math.round(avgAccuracy * 10) / 10,
+        active_recommendations: activeRecs,
+        high_confidence_trends: highConfidenceTrends,
+        customer_segments: 0,
+        inventory_optimizations: 0,
+        revenue_impact: 0,
+        cost_savings: 0
+      })
+
     } catch (error) {
       console.error('Error fetching merchandising data:', error)
       setDemandForecasts([])
       setRecommendations([])
       setMarketTrends([])
+      setMetrics(null)
     } finally {
       setLoading(false)
     }
