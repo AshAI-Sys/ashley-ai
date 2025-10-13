@@ -172,8 +172,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Invalidate orders cache
-    await InvalidateCache.orders();
+    // Invalidate orders cache (non-blocking)
+    try {
+      await InvalidateCache.orders();
+    } catch (cacheError) {
+      console.warn('Failed to invalidate cache:', cacheError);
+      // Don't fail the request if cache invalidation fails
+    }
 
     return NextResponse.json(
       {

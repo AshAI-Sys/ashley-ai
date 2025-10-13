@@ -198,6 +198,50 @@ export const redisClient = {
   },
 
   /**
+   * Delete keys matching a pattern
+   */
+  async deletePattern(pattern: string): Promise<void> {
+    try {
+      const client = getRedisClient()
+      if (client && isRedisAvailable) {
+        const keys = await client.keys(pattern)
+        if (keys.length > 0) {
+          await client.del(...keys)
+        }
+        return
+      }
+    } catch (error) {
+      console.warn('Redis DELETEPATTERN failed, using in-memory fallback:', error)
+    }
+
+    // In-memory fallback - delete keys matching pattern
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$')
+    for (const key of inMemoryStore.keys()) {
+      if (regex.test(key)) {
+        inMemoryStore.delete(key)
+      }
+    }
+  },
+
+  /**
+   * Flush all keys
+   */
+  async flushall(): Promise<void> {
+    try {
+      const client = getRedisClient()
+      if (client && isRedisAvailable) {
+        await client.flushall()
+        return
+      }
+    } catch (error) {
+      console.warn('Redis FLUSHALL failed, using in-memory fallback:', error)
+    }
+
+    // In-memory fallback
+    inMemoryStore.clear()
+  },
+
+  /**
    * Check if Redis is connected
    */
   isConnected(): boolean {
