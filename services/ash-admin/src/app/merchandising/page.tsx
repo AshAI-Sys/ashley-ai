@@ -101,31 +101,25 @@ export default function MerchandisingAI() {
         cost_savings: 67800
       })
 
-      // Set up auth headers for API calls
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer demo-jwt-token-12345'
-      }
-
       // Required workspace parameter for API calls
       const workspaceId = 'demo-workspace-1'
 
       // Fetch demand forecasts
-      const forecastResponse = await fetch(`/api/merchandising/demand-forecast?workspaceId=${workspaceId}`, { headers })
+      const forecastResponse = await fetch(`/api/merchandising/demand-forecast?workspaceId=${workspaceId}`)
       if (forecastResponse.ok) {
         const forecastData = await forecastResponse.json()
         setDemandForecasts(forecastData.forecasts || [])
       }
 
       // Fetch recommendations
-      const recommendationResponse = await fetch(`/api/merchandising/recommendations?workspaceId=${workspaceId}`, { headers })
+      const recommendationResponse = await fetch(`/api/merchandising/recommendations?workspaceId=${workspaceId}`)
       if (recommendationResponse.ok) {
         const recommendationData = await recommendationResponse.json()
         setRecommendations(recommendationData.recommendations || [])
       }
 
       // Fetch market trends
-      const trendsResponse = await fetch(`/api/merchandising/market-trends?workspaceId=${workspaceId}`, { headers })
+      const trendsResponse = await fetch(`/api/merchandising/market-trends?workspaceId=${workspaceId}`)
       if (trendsResponse.ok) {
         const trendsData = await trendsResponse.json()
         setMarketTrends(trendsData.trends || [])

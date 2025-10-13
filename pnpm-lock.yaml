@@ -132,7 +132,7 @@ importers:
     dependencies:
       '@auth/prisma-adapter':
         specifier: ^2.0.0
-        version: 2.10.0(@prisma/client@6.17.1(prisma@6.17.1(typescript@5.9.2))(typescript@5.9.2))(nodemailer@7.0.9)
+        version: 2.10.0(@prisma/client@6.17.1(prisma@5.22.0)(typescript@5.9.2))(nodemailer@7.0.9)
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -200,7 +200,7 @@ importers:
         version: 0.8.0
       prisma-erd-generator:
         specifier: ^2.1.0
-        version: 2.1.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@prisma/client@5.22.0(prisma@5.22.0))(@types/react@19.2.2)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
+        version: 2.1.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@prisma/client@5.22.0(prisma@5.22.0))(@types/react@18.3.24)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
       tsx:
         specifier: ^4.7.0
         version: 4.20.5
@@ -571,7 +571,7 @@ importers:
         specifier: ^10.17.0
         version: 10.17.0(@opentelemetry/context-async-hooks@2.1.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.1.0(@opentelemetry/api@1.9.0))(next@14.2.32(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.102.1)
       '@tanstack/react-query':
-        specifier: ^5.0.0
+        specifier: ^5.87.4
         version: 5.87.4(react@18.3.1)
       '@tanstack/react-query-devtools':
         specifier: ^5.0.0
@@ -729,7 +729,7 @@ importers:
         version: 3.10.0(react-hook-form@7.62.0(react@18.3.1))
       '@prisma/client':
         specifier: ^5.22.0
-        version: 5.22.0(prisma@6.17.1(typescript@5.9.2))
+        version: 5.22.0(prisma@5.22.0)
       '@radix-ui/react-dialog':
         specifier: ^1.0.0
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2880,9 +2880,6 @@ packages:
       typescript:
         optional: true
 
-  '@prisma/config@6.17.1':
-    resolution: {integrity: sha512-fs8wY6DsvOCzuiyWVckrVs1LOcbY4LZNz8ki4uUIQ28jCCzojTGqdLhN2Jl5lDnC1yI8/gNIKpsWDM8pLhOdwA==}
-
   '@prisma/debug@4.16.2':
     resolution: {integrity: sha512-7L7WbG0qNNZYgLpsVB8rCHCXEyHFyIycRlRDNwkVfjQmACC2OW6AWCYCbfdjQhkF/t7+S3njj8wAWAocSs+Brw==}
 
@@ -2892,17 +2889,11 @@ packages:
   '@prisma/debug@6.16.0':
     resolution: {integrity: sha512-bxzro5vbVqAPkWyDs2A6GpQtRZunD8tyrLmSAchx9u0b+gWCDY6eV+oh5A0YtYT9245dIxQBswckayHuJG4u3w==}
 
-  '@prisma/debug@6.17.1':
-    resolution: {integrity: sha512-Vf7Tt5Wh9XcndpbmeotuqOMLWPTjEKCsgojxXP2oxE1/xYe7PtnP76hsouG9vis6fctX+TxgmwxTuYi/+xc7dQ==}
-
   '@prisma/dmmf@6.16.0':
     resolution: {integrity: sha512-bOSbPchrXJ6GVs572PIu8EB2hEpDhdUJ1VhiYwQ6PtDIKkm6rxNFtNuyyGVK5EpcZMsE5jAmTewSxJCL/9MDvg==}
 
   '@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2':
     resolution: {integrity: sha512-2PTmxFR2yHW/eB3uqWtcgRcgAbG1rwG9ZriSvQw+nnb7c4uCr3RAcGMb6/zfE88SKlC1Nj2ziUvc96Z379mHgQ==}
-
-  '@prisma/engines-version@6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac':
-    resolution: {integrity: sha512-17140E3huOuD9lMdJ9+SF/juOf3WR3sTJMVyyenzqUPbuH+89nPhSWcrY+Mf7tmSs6HvaO+7S+HkELinn6bhdg==}
 
   '@prisma/engines@4.16.2':
     resolution: {integrity: sha512-vx1nxVvN4QeT/cepQce68deh/Turxy5Mr+4L4zClFuK1GlxN3+ivxfuv+ej/gvidWn1cE1uAhW7ALLNlYbRUAw==}
@@ -2910,17 +2901,11 @@ packages:
   '@prisma/engines@5.22.0':
     resolution: {integrity: sha512-UNjfslWhAt06kVL3CjkuYpHAWSO6L4kDCVPegV6itt7nD1kSJavd3vhgAEhjglLJJKEdJ7oIqDJ+yHk6qO8gPA==}
 
-  '@prisma/engines@6.17.1':
-    resolution: {integrity: sha512-D95Ik3GYZkqZ8lSR4EyFOJ/tR33FcYRP8kK61o+WMsyD10UfJwd7+YielflHfKwiGodcqKqoraWw8ElAgMDbPw==}
-
   '@prisma/fetch-engine@4.16.2':
     resolution: {integrity: sha512-lnCnHcOaNn0kw8qTJbVcNhyfIf5Lus2GFXbj3qpkdKEIB9xLgqkkuTP+35q1xFaqwQ0vy4HFpdRUpFP7njE15g==}
 
   '@prisma/fetch-engine@5.22.0':
     resolution: {integrity: sha512-bkrD/Mc2fSvkQBV5EpoFcZ87AvOgDxbG99488a5cexp5Ccny+UM6MAe/UFkUC0wLYD9+9befNOqGiIJhhq+HbA==}
-
-  '@prisma/fetch-engine@6.17.1':
-    resolution: {integrity: sha512-AYZiHOs184qkDMiTeshyJCtyL4yERkjfTkJiSJdYuSfc24m94lTNL5+GFinZ6vVz+ktX4NJzHKn1zIFzGTWrWg==}
 
   '@prisma/generator-helper@4.16.2':
     resolution: {integrity: sha512-bMOH7y73Ui7gpQrioFeavMQA+Tf8ksaVf8Nhs9rQNzuSg8SSV6E9baczob0L5KGZTSgYoqnrRxuo03kVJYrnIg==}
@@ -2936,9 +2921,6 @@ packages:
 
   '@prisma/get-platform@5.22.0':
     resolution: {integrity: sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q==}
-
-  '@prisma/get-platform@6.17.1':
-    resolution: {integrity: sha512-AKEn6fsfz0r482S5KRDFlIGEaq9wLNcgalD1adL+fPcFFblIKs1sD81kY/utrHdqKuVC6E1XSRpegDK3ZLL4Qg==}
 
   '@prisma/instrumentation@6.15.0':
     resolution: {integrity: sha512-6TXaH6OmDkMOQvOxwLZ8XS51hU2v4A3vmE2pSijCIiGRJYyNeMcL6nMHQMyYdZRD8wl7LF3Wzc+AMPMV/9Oo7A==}
@@ -5182,14 +5164,6 @@ packages:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
 
-  c12@3.1.0:
-    resolution: {integrity: sha512-uWoS8OU1MEIsOv8p/5a82c3H31LsWVR5qiyXVfBNOzfffjUWtPnhAb4BYI2uG2HfGmZmFjCtui5XNWaps+iFuw==}
-    peerDependencies:
-      magicast: ^0.3.5
-    peerDependenciesMeta:
-      magicast:
-        optional: true
-
   cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
     engines: {node: '>=8'}
@@ -5302,9 +5276,6 @@ packages:
   ci-info@3.9.0:
     resolution: {integrity: sha512-NIxF55hv4nSqQswkAeiOi1r83xy8JldOFDTWiug55KBu9Jnblncd2U6ViHmYgHf01TPZS77NJBhBMKdWj9HQMQ==}
     engines: {node: '>=8'}
-
-  citty@0.1.6:
-    resolution: {integrity: sha512-tskPPKEs8D2KPafUypv2gxwJP8h/OaJmC82QQGGDQcHvXX43xF2VDACcJVmZ0EuSxkpO9Kc4MlrA3q0+FG58AQ==}
 
   cjs-module-lexer@1.4.3:
     resolution: {integrity: sha512-9z8TZaGM1pfswYeXrUpzPrkx8UnWYdhJclsiYMm6x/w5+nN+8Tf/LnAgfLGQCm59qAOxU8WwHEq2vNwF6i4j+Q==}
@@ -5830,10 +5801,6 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
-  deepmerge-ts@7.1.5:
-    resolution: {integrity: sha512-HOJkrhaYsweh+W+e74Yn7YStZOilkoPb6fycpwNLKzSPtruFs48nYis0zy5yJz1+ktUhHxoRDJ27RQAWLIJVJw==}
-    engines: {node: '>=16.0.0'}
-
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
@@ -5848,9 +5815,6 @@ packages:
   define-properties@1.2.1:
     resolution: {integrity: sha512-8QmQKqEASLd5nx0U1B1okLElbUuuttJ/AnYmRXbbbGDWh6uS208EjD4Xqq/I9wK7u0v6O08XhTWnt5XtEbR6Dg==}
     engines: {node: '>= 0.4'}
-
-  defu@6.1.4:
-    resolution: {integrity: sha512-mEQCMmwJu317oSz8CwdIOdwf3xMif1ttiM8LTufzc3g6kR+9Pe236twL8j3IYT1F7GfRgGcW6MWxzZjLIkuHIg==}
 
   degenerator@5.0.1:
     resolution: {integrity: sha512-TllpMR/t0M5sqCXfj85i4XaAzxmS5tVA16dqvdkMwGmzI+dXLXnw3J+3Vdv7VKw+ThlTMboK6i9rnZ6Nntj5CQ==}
@@ -5882,9 +5846,6 @@ packages:
   dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
     engines: {node: '>=6'}
-
-  destr@2.0.5:
-    resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
 
   destroy@1.2.0:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
@@ -5984,9 +5945,6 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.16.12:
-    resolution: {integrity: sha512-N39iBk0K71F9nb442TLbTkjl24FLUzuvx2i1I2RsEAQsdAdUTuUoW0vlfUXgkMTUOnYqKnWcFfqw4hK4Pw27hg==}
-
   electron-to-chromium@1.5.217:
     resolution: {integrity: sha512-Pludfu5iBxp9XzNl0qq2G87hdD17ZV7h5T4n6rQXDi3nCyloBV3jreE9+8GC6g4X/5yxqVgXEURpcLtM0WS4jA==}
 
@@ -6002,10 +5960,6 @@ packages:
 
   emoji-regex@9.2.2:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
-
-  empathic@2.0.0:
-    resolution: {integrity: sha512-i6UzDscO/XfAcNYD75CfICkmfLedpyPDdozrLMmQc5ORaQcdMoc21OnlEylMIqI7U8eniKrPMxxtj8k0vhmJhA==}
-    engines: {node: '>=14'}
 
   enabled@2.0.0:
     resolution: {integrity: sha512-AKrN98kuwOzMIdAizXGI86UFBoo26CL21UM763y1h/GMSJ4/OHU9k2YlsmBpyScFo/wbLzWQJBMCW4+IO3/+OQ==}
@@ -6307,10 +6261,6 @@ packages:
     engines: {node: '>= 10.17.0'}
     hasBin: true
 
-  fast-check@3.23.2:
-    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
-    engines: {node: '>=8.0.0'}
-
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -6535,10 +6485,6 @@ packages:
   get-uri@6.0.5:
     resolution: {integrity: sha512-b1O07XYq8eRuVzBNgJLstU6FYc1tS6wnMtF1I1D9lE8LxZSOGZ7LhxN54yPP6mGw5f2CkXY2BQUL9Fx41qvcIg==}
     engines: {node: '>= 14'}
-
-  giget@2.0.0:
-    resolution: {integrity: sha512-L5bGsVkxJbJgdnwyuheIunkGatUF/zssUoxxjACCseZYAVbaqdh9Tsmmlkl8vYan09H7sbvKt4pS8GqKLBrEzA==}
-    hasBin: true
 
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -7749,9 +7695,6 @@ packages:
     engines: {node: '>=10.5.0'}
     deprecated: Use your platform's native DOMException instead
 
-  node-fetch-native@1.6.7:
-    resolution: {integrity: sha512-g9yhqoedzIUm0nTnTqAQvueMPVOuIY16bqgAJJC8XOOubYFNwz6IER9qs0Gq2Xd0+CecCKFjtdDTMA4u4xG06Q==}
-
   node-fetch@2.6.11:
     resolution: {integrity: sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==}
     engines: {node: 4.x || >=6.0.0}
@@ -7822,11 +7765,6 @@ packages:
   nwsapi@2.2.22:
     resolution: {integrity: sha512-ujSMe1OWVn55euT1ihwCI1ZcAaAU3nxUiDwfDQldc51ZXaB9m2AyOn6/jh1BLe2t/G8xd6uKG1UBF2aZJeg2SQ==}
 
-  nypm@0.6.2:
-    resolution: {integrity: sha512-7eM+hpOtrKrBDCh7Ypu2lJ9Z7PNZBdi/8AT3AX8xoCj43BBVHD0hPSTEvMtkMpfs8FCqBGhxB+uToIQimA111g==}
-    engines: {node: ^14.16.0 || >=16.10.0}
-    hasBin: true
-
   oauth4webapi@3.8.1:
     resolution: {integrity: sha512-olkZDELNycOWQf9LrsELFq8n05LwJgV8UkrS0cburk6FOwf8GvLam+YB+Uj5Qvryee+vwWOfQVeI5Vm0MVg7SA==}
 
@@ -7879,9 +7817,6 @@ packages:
   object.values@1.2.1:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
-
-  ohash@2.0.11:
-    resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
 
   oidc-token-hash@5.1.1:
     resolution: {integrity: sha512-D7EmwxJV6DsEB6vOFLrBM2OzsVgQzgPWyHlV2OOAVj772n+WTXpudC9e9u5BVKQnYwaD30Ivhi9b+4UeBcGu9g==}
@@ -8068,9 +8003,6 @@ packages:
 
   pend@1.2.0:
     resolution: {integrity: sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==}
-
-  perfect-debounce@1.0.0:
-    resolution: {integrity: sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==}
 
   pg-cloudflare@1.2.7:
     resolution: {integrity: sha512-YgCtzMH0ptvZJslLM1ffsY4EuGaU0cx4XSdXLRFae8bPP4dS5xL1tNB3k2o/N64cHJpwU7dxKli/nZ2lUa5fLg==}
@@ -8297,16 +8229,6 @@ packages:
     engines: {node: '>=16.13'}
     hasBin: true
 
-  prisma@6.17.1:
-    resolution: {integrity: sha512-ac6h0sM1Tg3zu8NInY+qhP/S9KhENVaw9n1BrGKQVFu05JT5yT5Qqqmb8tMRIE3ZXvVj4xcRA5yfrsy4X7Yy5g==}
-    engines: {node: '>=18.18'}
-    hasBin: true
-    peerDependencies:
-      typescript: '>=5.1.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   prismjs@1.30.0:
     resolution: {integrity: sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw==}
     engines: {node: '>=6'}
@@ -8420,9 +8342,6 @@ packages:
   raw-body@2.5.2:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
     engines: {node: '>= 0.8'}
-
-  rc9@2.1.2:
-    resolution: {integrity: sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==}
 
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
@@ -9985,10 +9904,10 @@ snapshots:
       nodemailer: 7.0.9
     optional: true
 
-  '@auth/prisma-adapter@2.10.0(@prisma/client@6.17.1(prisma@6.17.1(typescript@5.9.2))(typescript@5.9.2))(nodemailer@7.0.9)':
+  '@auth/prisma-adapter@2.10.0(@prisma/client@6.17.1(prisma@5.22.0)(typescript@5.9.2))(nodemailer@7.0.9)':
     dependencies:
       '@auth/core': 0.40.0(nodemailer@7.0.9)
-      '@prisma/client': 6.17.1(prisma@6.17.1(typescript@5.9.2))(typescript@5.9.2)
+      '@prisma/client': 6.17.1(prisma@5.22.0)(typescript@5.9.2)
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -11978,9 +11897,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@mermaid-js/mermaid-cli@11.9.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))':
+  '@mermaid-js/mermaid-cli@11.9.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))':
     dependencies:
-      '@mermaid-js/mermaid-zenuml': 0.2.2(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(mermaid@11.11.0)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
+      '@mermaid-js/mermaid-zenuml': 0.2.2(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(mermaid@11.11.0)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
       chalk: 5.6.2
       commander: 14.0.0
       import-meta-resolve: 4.2.0
@@ -11993,9 +11912,9 @@ snapshots:
       - supports-color
       - ts-node
 
-  '@mermaid-js/mermaid-zenuml@0.2.2(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(mermaid@11.11.0)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))':
+  '@mermaid-js/mermaid-zenuml@0.2.2(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(mermaid@11.11.0)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))':
     dependencies:
-      '@zenuml/core': 3.40.1(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
+      '@zenuml/core': 3.40.1(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
       mermaid: 11.11.0
     transitivePeerDependencies:
       - '@babel/core'
@@ -12387,24 +12306,10 @@ snapshots:
     optionalDependencies:
       prisma: 5.22.0
 
-  '@prisma/client@5.22.0(prisma@6.17.1(typescript@5.9.2))':
+  '@prisma/client@6.17.1(prisma@5.22.0)(typescript@5.9.2)':
     optionalDependencies:
-      prisma: 6.17.1(typescript@5.9.2)
-
-  '@prisma/client@6.17.1(prisma@6.17.1(typescript@5.9.2))(typescript@5.9.2)':
-    optionalDependencies:
-      prisma: 6.17.1(typescript@5.9.2)
+      prisma: 5.22.0
       typescript: 5.9.2
-
-  '@prisma/config@6.17.1':
-    dependencies:
-      c12: 3.1.0
-      deepmerge-ts: 7.1.5
-      effect: 3.16.12
-      empathic: 2.0.0
-    transitivePeerDependencies:
-      - magicast
-    optional: true
 
   '@prisma/debug@4.16.2':
     dependencies:
@@ -12418,15 +12323,9 @@ snapshots:
 
   '@prisma/debug@6.16.0': {}
 
-  '@prisma/debug@6.17.1':
-    optional: true
-
   '@prisma/dmmf@6.16.0': {}
 
   '@prisma/engines-version@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2': {}
-
-  '@prisma/engines-version@6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac':
-    optional: true
 
   '@prisma/engines@4.16.2': {}
 
@@ -12436,14 +12335,6 @@ snapshots:
       '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       '@prisma/fetch-engine': 5.22.0
       '@prisma/get-platform': 5.22.0
-
-  '@prisma/engines@6.17.1':
-    dependencies:
-      '@prisma/debug': 6.17.1
-      '@prisma/engines-version': 6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac
-      '@prisma/fetch-engine': 6.17.1
-      '@prisma/get-platform': 6.17.1
-    optional: true
 
   '@prisma/fetch-engine@4.16.2':
     dependencies:
@@ -12473,13 +12364,6 @@ snapshots:
       '@prisma/debug': 5.22.0
       '@prisma/engines-version': 5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2
       '@prisma/get-platform': 5.22.0
-
-  '@prisma/fetch-engine@6.17.1':
-    dependencies:
-      '@prisma/debug': 6.17.1
-      '@prisma/engines-version': 6.17.1-1.272a37d34178c2894197e17273bf937f25acdeac
-      '@prisma/get-platform': 6.17.1
-    optional: true
 
   '@prisma/generator-helper@4.16.2':
     dependencies:
@@ -12516,11 +12400,6 @@ snapshots:
   '@prisma/get-platform@5.22.0':
     dependencies:
       '@prisma/debug': 5.22.0
-
-  '@prisma/get-platform@6.17.1':
-    dependencies:
-      '@prisma/debug': 6.17.1
-    optional: true
 
   '@prisma/instrumentation@6.15.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -14312,7 +14191,7 @@ snapshots:
 
   '@types/yauzl@2.10.3':
     dependencies:
-      '@types/node': 24.7.2
+      '@types/node': 20.19.21
     optional: true
 
   '@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.2))(eslint@8.57.1)(typescript@5.9.2)':
@@ -14716,7 +14595,7 @@ snapshots:
 
   '@xtuc/long@4.2.2': {}
 
-  '@zenuml/core@3.40.1(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))':
+  '@zenuml/core@3.40.1(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))':
     dependencies:
       '@floating-ui/react': 0.27.16(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@headlessui/react': 2.2.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -14729,7 +14608,7 @@ snapshots:
       highlight.js: 10.7.3
       html-to-image: 1.11.13
       immer: 10.1.3
-      jotai: 2.14.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(react@19.1.1)
+      jotai: 2.14.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(react@19.1.1)
       lodash: 4.17.21
       marked: 4.3.0
       pako: 2.1.0
@@ -15275,22 +15154,6 @@ snapshots:
 
   bytes@3.1.2: {}
 
-  c12@3.1.0:
-    dependencies:
-      chokidar: 4.0.3
-      confbox: 0.2.2
-      defu: 6.1.4
-      dotenv: 16.6.1
-      exsolve: 1.0.7
-      giget: 2.0.0
-      jiti: 2.6.1
-      ohash: 2.0.11
-      pathe: 2.0.3
-      perfect-debounce: 1.0.0
-      pkg-types: 2.3.0
-      rc9: 2.1.2
-    optional: true
-
   cac@6.7.14: {}
 
   call-bind-apply-helpers@1.0.2:
@@ -15433,11 +15296,6 @@ snapshots:
   ci-info@3.8.0: {}
 
   ci-info@3.9.0: {}
-
-  citty@0.1.6:
-    dependencies:
-      consola: 3.4.2
-    optional: true
 
   cjs-module-lexer@1.4.3: {}
 
@@ -15956,9 +15814,6 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge-ts@7.1.5:
-    optional: true
-
   deepmerge@4.3.1: {}
 
   defaults@1.0.4:
@@ -15976,9 +15831,6 @@ snapshots:
       define-data-property: 1.1.4
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
-
-  defu@6.1.4:
-    optional: true
 
   degenerator@5.0.1:
     dependencies:
@@ -16019,9 +15871,6 @@ snapshots:
   depd@2.0.0: {}
 
   dequal@2.0.3: {}
-
-  destr@2.0.5:
-    optional: true
 
   destroy@1.2.0: {}
 
@@ -16107,12 +15956,6 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.16.12:
-    dependencies:
-      '@standard-schema/spec': 1.0.0
-      fast-check: 3.23.2
-    optional: true
-
   electron-to-chromium@1.5.217: {}
 
   electron-to-chromium@1.5.234: {}
@@ -16122,9 +15965,6 @@ snapshots:
   emoji-regex@8.0.0: {}
 
   emoji-regex@9.2.2: {}
-
-  empathic@2.0.0:
-    optional: true
 
   enabled@2.0.0: {}
 
@@ -16671,11 +16511,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  fast-check@3.23.2:
-    dependencies:
-      pure-rand: 6.1.0
-    optional: true
-
   fast-deep-equal@3.1.3: {}
 
   fast-equals@5.2.2: {}
@@ -16913,16 +16748,6 @@ snapshots:
       debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
-
-  giget@2.0.0:
-    dependencies:
-      citty: 0.1.6
-      consola: 3.4.2
-      defu: 6.1.4
-      node-fetch-native: 1.6.7
-      nypm: 0.6.2
-      pathe: 2.0.3
-    optional: true
 
   glob-parent@5.1.2:
     dependencies:
@@ -17844,11 +17669,11 @@ snapshots:
 
   jose@6.1.0: {}
 
-  jotai@2.14.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(react@19.1.1):
+  jotai@2.14.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(react@19.1.1):
     optionalDependencies:
       '@babel/core': 7.28.4
       '@babel/template': 7.27.2
-      '@types/react': 19.2.2
+      '@types/react': 18.3.24
       react: 19.1.1
 
   joycon@3.1.1: {}
@@ -18380,9 +18205,6 @@ snapshots:
 
   node-domexception@1.0.0: {}
 
-  node-fetch-native@1.6.7:
-    optional: true
-
   node-fetch@2.6.11:
     dependencies:
       whatwg-url: 5.0.0
@@ -18451,15 +18273,6 @@ snapshots:
 
   nwsapi@2.2.22: {}
 
-  nypm@0.6.2:
-    dependencies:
-      citty: 0.1.6
-      consola: 3.4.2
-      pathe: 2.0.3
-      pkg-types: 2.3.0
-      tinyexec: 1.0.1
-    optional: true
-
   oauth4webapi@3.8.1: {}
 
   oauth4webapi@3.8.2:
@@ -18517,9 +18330,6 @@ snapshots:
       call-bound: 1.0.4
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
-
-  ohash@2.0.11:
-    optional: true
 
   oidc-token-hash@5.1.1: {}
 
@@ -18737,9 +18547,6 @@ snapshots:
 
   pend@1.2.0: {}
 
-  perfect-debounce@1.0.0:
-    optional: true
-
   pg-cloudflare@1.2.7:
     optional: true
 
@@ -18954,9 +18761,9 @@ snapshots:
       - encoding
       - supports-color
 
-  prisma-erd-generator@2.1.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@prisma/client@5.22.0(prisma@5.22.0))(@types/react@19.2.2)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2)):
+  prisma-erd-generator@2.1.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@prisma/client@5.22.0(prisma@5.22.0))(@types/react@18.3.24)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2)):
     dependencies:
-      '@mermaid-js/mermaid-cli': 11.9.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@19.2.2)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
+      '@mermaid-js/mermaid-cli': 11.9.0(@babel/core@7.28.4)(@babel/template@7.27.2)(@types/react@18.3.24)(puppeteer@24.24.0(typescript@5.9.2))(ts-node@10.9.2(@types/node@24.7.2)(typescript@5.9.2))
       '@prisma/client': 5.22.0(prisma@5.22.0)
       '@prisma/generator-helper': 6.16.0
       dotenv: 16.6.1
@@ -18973,16 +18780,6 @@ snapshots:
       '@prisma/engines': 5.22.0
     optionalDependencies:
       fsevents: 2.3.3
-
-  prisma@6.17.1(typescript@5.9.2):
-    dependencies:
-      '@prisma/config': 6.17.1
-      '@prisma/engines': 6.17.1
-    optionalDependencies:
-      typescript: 5.9.2
-    transitivePeerDependencies:
-      - magicast
-    optional: true
 
   prismjs@1.30.0: {}
 
@@ -19114,12 +18911,6 @@ snapshots:
       http-errors: 2.0.0
       iconv-lite: 0.4.24
       unpipe: 1.0.0
-
-  rc9@2.1.2:
-    dependencies:
-      defu: 6.1.4
-      destr: 2.0.5
-    optional: true
 
   rc@1.2.8:
     dependencies:
