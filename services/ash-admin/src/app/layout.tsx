@@ -46,7 +46,8 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
           {children}
-          <ChatWidget />
+          {/* ChatWidget temporarily disabled for faster page load */}
+          {/* <ChatWidget /> */}
           <Toaster
             position="top-right"
             toastOptions={{

@@ -4,6 +4,7 @@ import {
   ValidationError,
   withErrorHandling
 } from '../../../lib/error-handling'
+import { prisma as db } from '../../../lib/db'
 
 // Simple health check endpoint to test error handling system
 export const GET = withErrorHandling(async (request: NextRequest) => {
