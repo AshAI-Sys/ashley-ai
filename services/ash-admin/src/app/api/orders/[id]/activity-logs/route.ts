@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
-
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
+import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 
 const ActivityLogSchema = z.object({
   event_type: z.string().min(1, 'Event type is required'),
@@ -49,13 +48,14 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const orderId = params.id;
     const body = await request.json();
     const validatedData = ActivityLogSchema.parse(body);
 
     const activityLog = await prisma.orderActivityLog.create({
       data: {
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: workspaceId,
         order_id: orderId,
         event_type: validatedData.event_type,
         title: validatedData.title,

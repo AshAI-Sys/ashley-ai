@@ -1,23 +1,28 @@
 import { NextResponse } from 'next/server'
+import type {
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  ApiResponse,
+  PaginatedResponse,
+} from './types/api'
 
 /**
  * Standard API Response Formats
  * All API endpoints should use these helper functions for consistent responses
+ *
+ * @see {@link ./types/api.ts} for complete type definitions
  */
 
-export interface ApiSuccessResponse<T = any> {
-  success: true
-  data: T
-  message?: string
+// Re-export types for backward compatibility
+export type {
+  ApiSuccessResponse,
+  ApiErrorResponse,
+  ApiResponse,
+  PaginatedResponse,
 }
 
-export interface ApiErrorResponse {
-  success: false
-  error: string
-  details?: any
-}
-
-export type ApiResponse<T = any> = ApiSuccessResponse<T> | ApiErrorResponse
+// Re-export type guards
+export { isApiSuccess, isApiError, isPaginatedResponse } from './types/api'
 
 /**
  * Success Response - Standard format
@@ -50,17 +55,6 @@ export function apiError(error: string, details?: any, status: number = 400): Ne
 /**
  * Paginated Response - Standard format
  */
-export interface PaginatedData<T> {
-  items: T[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-    hasMore: boolean
-  }
-}
-
 export function apiSuccessPaginated<T>(
   items: T[],
   page: number,
@@ -70,7 +64,7 @@ export function apiSuccessPaginated<T>(
 ): NextResponse {
   const totalPages = Math.ceil(total / limit)
 
-  return apiSuccess<PaginatedData<T>>(
+  return apiSuccess<PaginatedResponse<T>>(
     {
       items,
       pagination: {

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@ash-ai/database';
+import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 
 const prisma = db
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
 
 // GET /api/clients/[id] - Get single client
 export async function GET(
@@ -10,10 +10,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const client = await prisma.client.findFirst({
       where: {
         id: params.id,
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: workspaceId,
       },
       include: {
         brands: {

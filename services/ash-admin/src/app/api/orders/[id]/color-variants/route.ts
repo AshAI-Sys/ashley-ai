@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
-
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
+import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 
 const ColorVariantSchema = z.object({
   line_item_id: z.string().min(1, 'Line item ID is required'),

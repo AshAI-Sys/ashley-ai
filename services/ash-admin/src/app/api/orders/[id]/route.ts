@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@ash-ai/database';
+import { getWorkspaceIdFromRequest } from '@/lib/workspace';
+import { apiSuccess, apiNotFound, apiServerError } from '@/lib/api-response';
+import { logError } from '@/lib/logger';
 
 const prisma = db
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
 
 // GET /api/orders/[id] - Get single order
 export async function GET(
@@ -10,10 +12,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const order = await prisma.order.findFirst({
       where: {
         id: params.id,
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: workspaceId,
       },
       include: {
         client: true,
@@ -43,22 +46,13 @@ export async function GET(
     })
 
     if (!order) {
-      return NextResponse.json(
-        { success: false, error: 'Order not found' },
-        { status: 404 }
-      )
+      return apiNotFound('Order')
     }
 
-    return NextResponse.json({
-      success: true,
-      data: order,
-    })
+    return apiSuccess(order)
   } catch (error) {
-    console.error('Failed to fetch order:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch order' },
-      { status: 500 }
-    )
+    logError('Failed to fetch order', error, { orderId: params.id })
+    return apiServerError(error)
   }
 }
 
@@ -68,6 +62,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const body = await request.json()
 
     const order = await prisma.order.update({
@@ -93,17 +88,10 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json({
-      success: true,
-      data: order,
-      message: 'Order updated successfully',
-    })
+    return apiSuccess(order, 'Order updated successfully')
   } catch (error) {
-    console.error('Failed to update order:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to update order' },
-      { status: 500 }
-    )
+    logError('Failed to update order', error, { orderId: params.id })
+    return apiServerError(error)
   }
 }
 
@@ -113,19 +101,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     await prisma.order.delete({
       where: { id: params.id },
     })
 
-    return NextResponse.json({
-      success: true,
-      message: 'Order deleted successfully',
-    })
+    return apiSuccess({ id: params.id }, 'Order deleted successfully')
   } catch (error) {
-    console.error('Failed to delete order:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete order' },
-      { status: 500 }
-    )
+    logError('Failed to delete order', error, { orderId: params.id })
+    return apiServerError(error)
   }
 }
