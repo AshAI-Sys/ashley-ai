@@ -434,7 +434,9 @@ export default function NewOrderPageContent() {
         toast.success(`Order ${action === 'draft' ? 'saved as draft' : 'submitted for processing'}`)
         // Clear draft on successful submission
         clearDraft()
-        router.push(`/orders/${result.id}`)
+        // API returns { success: true, data: { order: { id: ... } } }
+        const orderId = result.data?.order?.id || result.id
+        router.push(`/orders/${orderId}`)
       } else {
         toast.error(result.message || 'Failed to create order')
       }
