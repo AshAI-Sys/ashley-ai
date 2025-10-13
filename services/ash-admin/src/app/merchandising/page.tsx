@@ -89,8 +89,9 @@ export default function MerchandisingAI() {
     try {
       setLoading(true)
 
-      // Required workspace parameter for API calls
-      const workspaceId = 'demo-workspace-1'
+      // Workspace ID is automatically handled by cookies/headers in API routes
+      // No need to pass it explicitly - the backend will extract it
+      const workspaceId = 'demo-workspace-1' // Fallback for URL params
 
       // Fetch demand forecasts
       const forecastResponse = await fetch(`/api/merchandising/demand-forecast?workspaceId=${workspaceId}`)

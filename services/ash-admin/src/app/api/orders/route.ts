@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { cachedQueryWithMetrics, CacheKeys, CACHE_DURATION, InvalidateCache } from '@/lib/performance/query-cache';
-
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
+import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 
 const OrderLineItemSchema = z.object({
   productType: z.string().min(1, 'Product type is required'),
@@ -37,6 +36,7 @@ const CreateOrderSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
 
     // Build where clause
     const where: any = {
-      workspace_id: DEFAULT_WORKSPACE_ID,
+      workspace_id: workspaceId,
     };
 
     if (search) {
@@ -134,6 +134,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const body = await request.json();
     const validatedData = CreateOrderSchema.parse(body);
 
@@ -143,7 +144,7 @@ export async function POST(request: NextRequest) {
     // Create new order
     const newOrder = await prisma.order.create({
       data: {
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: workspaceId,
         order_number: orderNumber,
         client_id: validatedData.clientId,
         brand_id: validatedData.brandId || null,

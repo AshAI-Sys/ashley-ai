@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@ash-ai/database';
 import { z } from 'zod';
+import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 
 const prisma = db;
-
-// Default workspace for demo
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1';
 
 const CreateClientSchema = z.object({
   name: z.string().min(1, 'Client name is required'),
@@ -28,6 +26,7 @@ const CreateClientSchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -38,7 +37,7 @@ export async function GET(request: NextRequest) {
 
     // Build where clause
     const where: any = {
-      workspace_id: DEFAULT_WORKSPACE_ID,
+      workspace_id: workspaceId,
     };
 
     if (search) {
@@ -112,22 +111,23 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const workspaceId = getWorkspaceIdFromRequest(request);
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
 
     // Ensure workspace exists (create if needed for demo mode)
     try {
       const workspaceExists = await prisma.workspace.findUnique({
-        where: { id: DEFAULT_WORKSPACE_ID }
+        where: { id: workspaceId }
       })
 
       if (!workspaceExists) {
-        console.log('Creating workspace:', DEFAULT_WORKSPACE_ID)
+        console.log('Creating workspace:', workspaceId)
         await prisma.workspace.create({
           data: {
-            id: DEFAULT_WORKSPACE_ID,
+            id: workspaceId,
             name: 'Demo Workspace',
-            slug: DEFAULT_WORKSPACE_ID,
+            slug: workspaceId,
           }
         })
         console.log('Workspace created successfully')
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     // Create new client
     const newClient = await prisma.client.create({
       data: {
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: workspaceId,
         name: validatedData.name,
         contact_person: validatedData.contact_person || '',
         email: validatedData.email || '',
