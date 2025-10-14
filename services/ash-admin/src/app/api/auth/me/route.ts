@@ -1,32 +1,62 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { requireAuth } from '../../../../lib/auth-guards'
+import { apiSuccess, apiServerError } from '../../../../lib/api-response'
+import { authLogger } from '../../../../lib/logger'
+import { prisma } from '../../../../lib/db'
 
+/**
+ * GET /api/auth/me
+ * Get current authenticated user information
+ */
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization')
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({
-        success: false,
-        message: 'No authorization token provided'
-      }, { status: 401 })
+    // Use auth guard to verify authentication
+    const userOrResponse = await requireAuth(request)
+    if (userOrResponse instanceof Response) {
+      return userOrResponse
     }
 
-    // For demo purposes, accept any bearer token
-    return NextResponse.json({
-      success: true,
-      user: {
-        id: 'demo-user-1',
-        email: 'demo@ashleyai.com',
-        name: 'Demo User',
-        role: 'admin'
+    const authUser = userOrResponse
+
+    // Fetch full user details from database
+    const user = await prisma.user.findUnique({
+      where: { id: authUser.id },
+      select: {
+        id: true,
+        email: true,
+        first_name: true,
+        last_name: true,
+        role: true,
+        position: true,
+        department: true,
+        workspace_id: true,
+        is_active: true,
+        created_at: true,
+        last_login_at: true,
       }
-    }, { status: 200 })
+    })
+
+    if (!user) {
+      authLogger.warn('User not found in database', { userId: authUser.id })
+      return apiServerError('User not found')
+    }
+
+    authLogger.debug('User authenticated successfully', { userId: user.id })
+
+    return apiSuccess({
+      id: user.id,
+      email: user.email,
+      name: `${user.first_name} ${user.last_name}`,
+      role: user.role,
+      position: user.position,
+      department: user.department,
+      workspaceId: user.workspace_id,
+      isActive: user.is_active,
+      lastLoginAt: user.last_login_at,
+    })
 
   } catch (error) {
-    console.error('Auth verification error:', error)
-    return NextResponse.json({
-      success: false,
-      message: 'Server error'
-    }, { status: 500 })
+    authLogger.error('Auth verification error', error)
+    return apiServerError(error)
   }
 }
