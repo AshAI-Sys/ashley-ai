@@ -490,28 +490,216 @@ export default function MerchandisingAI() {
           </TabsContent>
 
           <TabsContent value="customer-segments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-purple-600" />
-                  Customer Segments & Insights
-                </CardTitle>
-                <CardDescription>AI-powered customer behavior analysis and segmentation</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Customer Insights Coming Soon</h3>
-                  <p className="text-gray-600 mb-4">
-                    AI-powered customer segmentation and behavior analysis will be available here.
-                  </p>
-                  <Button variant="outline">
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    Request Early Access
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Customer Segments Overview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-purple-600" />
+                    Customer Segments
+                  </CardTitle>
+                  <CardDescription>AI-identified customer groups based on behavior</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* VIP Customers */}
+                    <div className="p-4 border rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-lg flex items-center gap-2">
+                          <Star className="h-5 w-5 text-yellow-600" />
+                          VIP Customers
+                        </h4>
+                        <Badge className="bg-yellow-100 text-yellow-800">High Value</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-gray-600">Customer Count</p>
+                          <p className="font-bold text-lg">24</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Avg. Order Value</p>
+                          <p className="font-bold text-lg">$12,450</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Lifetime Value</p>
+                          <p className="font-bold text-lg">$298,800</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Churn Risk</p>
+                          <p className="font-bold text-lg text-green-600">Low (2%)</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-3">
+                        Regular buyers with high order values and excellent payment history.
+                      </p>
+                    </div>
+
+                    {/* Regular Customers */}
+                    <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-cyan-50">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-lg flex items-center gap-2">
+                          <Users className="h-5 w-5 text-blue-600" />
+                          Regular Customers
+                        </h4>
+                        <Badge className="bg-blue-100 text-blue-800">Medium Value</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-gray-600">Customer Count</p>
+                          <p className="font-bold text-lg">156</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Avg. Order Value</p>
+                          <p className="font-bold text-lg">$5,200</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Lifetime Value</p>
+                          <p className="font-bold text-lg">$811,200</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Churn Risk</p>
+                          <p className="font-bold text-lg text-yellow-600">Medium (12%)</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-3">
+                        Consistent buyers with moderate order frequency and value.
+                      </p>
+                    </div>
+
+                    {/* At-Risk Customers */}
+                    <div className="p-4 border rounded-lg bg-gradient-to-r from-red-50 to-pink-50">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-lg flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 text-red-600" />
+                          At-Risk Customers
+                        </h4>
+                        <Badge className="bg-red-100 text-red-800">Action Needed</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-gray-600">Customer Count</p>
+                          <p className="font-bold text-lg">32</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Avg. Order Value</p>
+                          <p className="font-bold text-lg">$3,800</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Days Since Last Order</p>
+                          <p className="font-bold text-lg">90+</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Churn Risk</p>
+                          <p className="font-bold text-lg text-red-600">High (68%)</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-3">
+                        Previously active customers showing signs of disengagement.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Customer Behavior Insights */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Brain className="h-5 w-5 text-purple-600" />
+                    Behavior Insights
+                  </CardTitle>
+                  <CardDescription>AI-detected patterns and recommendations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Insight 1 */}
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <TrendingUp className="h-5 w-5 text-green-600 mt-0.5" />
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-sm text-green-900">Peak Ordering Patterns</h5>
+                          <p className="text-xs text-green-700 mt-1">
+                            VIP customers place orders every 3-4 weeks. Send reminders 2 weeks after their last order to maintain engagement.
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className="bg-green-100 text-green-800 text-xs">+18% conversion</Badge>
+                            <span className="text-xs text-gray-600">when applied</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Insight 2 */}
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <ShoppingCart className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-sm text-blue-900">Product Preferences</h5>
+                          <p className="text-xs text-blue-700 mt-1">
+                            Regular customers prefer t-shirts (42%) and hoodies (28%). Cross-sell opportunity with custom packaging (+15% uptake).
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className="bg-blue-100 text-blue-800 text-xs">$1,200 avg upsell</Badge>
+                            <span className="text-xs text-gray-600">per order</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Insight 3 */}
+                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-sm text-orange-900">Win-Back Opportunity</h5>
+                          <p className="text-xs text-orange-700 mt-1">
+                            32 at-risk customers have $121,600 potential revenue. Send personalized offers with 10% discount to re-engage.
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className="bg-orange-100 text-orange-800 text-xs">25-30% success rate</Badge>
+                            <span className="text-xs text-gray-600">based on history</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Insight 4 */}
+                    <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <Calendar className="h-5 w-5 text-purple-600 mt-0.5" />
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-sm text-purple-900">Seasonal Behavior</h5>
+                          <p className="text-xs text-purple-700 mt-1">
+                            Order volume increases 35% in Q4 (Oct-Dec). Recommend proactive inventory planning and early customer outreach.
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className="bg-purple-100 text-purple-800 text-xs">Q4 2025 forecast</Badge>
+                            <span className="text-xs text-gray-600">$2.4M revenue</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Insight 5 */}
+                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <Zap className="h-5 w-5 text-yellow-600 mt-0.5" />
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-sm text-yellow-900">Payment Terms Impact</h5>
+                          <p className="text-xs text-yellow-700 mt-1">
+                            Customers with 30-day payment terms order 22% more frequently. Consider extending terms to high-value regular customers.
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge className="bg-yellow-100 text-yellow-800 text-xs">$845K potential</Badge>
+                            <span className="text-xs text-gray-600">additional revenue</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
