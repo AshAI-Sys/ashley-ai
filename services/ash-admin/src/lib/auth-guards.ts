@@ -137,51 +137,60 @@ export interface AuthUser {
 }
 
 /**
- * Extract user from request (mock implementation)
- * TODO: Replace with actual JWT token verification
+ * Extract user from request with JWT verification
  */
 export async function getUserFromRequest(request: NextRequest): Promise<AuthUser | null> {
   try {
+    // Import JWT utilities
+    const { verifyAccessToken, extractTokenFromHeader } = await import('./jwt')
+
     // Check for Authorization header
     const authHeader = request.headers.get('Authorization')
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7)
-
-      // TODO: Verify JWT token and extract user
-      // For now, return a mock user for demo purposes
-      if (token === 'demo-token') {
-        return {
-          id: 'demo-user-1',
-          email: 'admin@ashleyai.com',
-          role: UserRole.ADMIN,
-          workspace_id: 'demo-workspace-1',
+    if (authHeader) {
+      const token = extractTokenFromHeader(authHeader)
+      if (token) {
+        const payload = verifyAccessToken(token)
+        if (payload) {
+          authLogger.debug('User authenticated via JWT token', { userId: payload.userId })
+          return {
+            id: payload.userId,
+            email: payload.email,
+            role: payload.role,
+            workspace_id: payload.workspaceId,
+          }
+        } else {
+          authLogger.warn('Invalid or expired JWT token')
         }
       }
     }
 
-    // Check for session cookie
-    const sessionCookie = request.cookies.get('session')
-    if (sessionCookie) {
-      // TODO: Verify session and extract user
-      // For now, return a demo user if session exists
-      return {
-        id: 'demo-user-1',
-        email: 'admin@ashleyai.com',
-        role: UserRole.ADMIN,
-        workspace_id: 'demo-workspace-1',
+    // Check for session cookie with JWT
+    const sessionCookie = request.cookies.get('auth_token')
+    if (sessionCookie?.value) {
+      const payload = verifyAccessToken(sessionCookie.value)
+      if (payload) {
+        authLogger.debug('User authenticated via session cookie', { userId: payload.userId })
+        return {
+          id: payload.userId,
+          email: payload.email,
+          role: payload.role,
+          workspace_id: payload.workspaceId,
+        }
       }
     }
 
-    // In demo mode, allow unauthenticated requests
+    // In demo mode, allow unauthenticated requests with demo user
     if (process.env.DEMO_MODE === 'true') {
+      authLogger.debug('Demo mode enabled - returning demo user')
       return {
         id: 'demo-user-1',
         email: 'admin@ashleyai.com',
         role: UserRole.ADMIN,
-        workspace_id: 'demo-workspace-1',
+        workspace_id: process.env.DEFAULT_WORKSPACE_ID || 'demo-workspace-1',
       }
     }
 
+    authLogger.debug('No valid authentication found')
     return null
   } catch (error) {
     authLogger.error('Failed to extract user from request', error)

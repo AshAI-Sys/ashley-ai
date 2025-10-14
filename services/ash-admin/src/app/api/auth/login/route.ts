@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { generateToken } from '../../../../lib/jwt'
+import { generateTokenPair } from '../../../../lib/jwt'
 import { prisma } from '../../../../lib/db'
 import bcrypt from 'bcryptjs'
 import { logAuthEvent } from '../../../../lib/audit-logger'
@@ -9,6 +9,7 @@ import {
   recordFailedLogin,
   clearFailedAttempts,
 } from '../../../../lib/account-lockout'
+import { authLogger } from '../../../../lib/logger'
 
 export async function POST(request: NextRequest) {
   try {
@@ -111,15 +112,13 @@ export async function POST(request: NextRequest) {
     // Clear failed attempts on successful login
     await clearFailedAttempts(email)
 
-    // Generate JWT token with user data
-    const userData = {
-      userId: user.id,
+    // Generate JWT token pair (access + refresh tokens)
+    const tokenPair = generateTokenPair({
+      id: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as any,
       workspaceId: user.workspace_id
-    }
-
-    const token = generateToken(userData)
+    })
 
     // Update last login timestamp
     await prisma.user.update({
@@ -127,8 +126,8 @@ export async function POST(request: NextRequest) {
       data: { last_login_at: new Date() }
     })
 
-    // Create session for the user
-    await createSession(user.id, token, request)
+    // Create session for the user with access token
+    await createSession(user.id, tokenPair.accessToken, request)
 
     // Log successful login
     await logAuthEvent('LOGIN', user.workspace_id, user.id, request, {
@@ -136,10 +135,18 @@ export async function POST(request: NextRequest) {
       role: user.role
     })
 
-    // Return success response with token and user data
-    return NextResponse.json({
+    authLogger.info('User logged in successfully', {
+      userId: user.id,
+      email: user.email,
+      workspaceId: user.workspace_id
+    })
+
+    // Set HTTP-only cookie with access token
+    const response = NextResponse.json({
       success: true,
-      access_token: token,
+      access_token: tokenPair.accessToken,
+      refresh_token: tokenPair.refreshToken,
+      expires_in: tokenPair.expiresIn,
       user: {
         id: user.id,
         email: user.email,
@@ -151,8 +158,28 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    // Set secure HTTP-only cookie for auth token
+    response.cookies.set('auth_token', tokenPair.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: tokenPair.expiresIn, // 15 minutes
+      path: '/'
+    })
+
+    // Set refresh token as HTTP-only cookie (7 days)
+    response.cookies.set('refresh_token', tokenPair.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+      path: '/'
+    })
+
+    return response
+
   } catch (error: any) {
-    console.error('Login error:', error)
+    authLogger.error('Login error', error)
     return NextResponse.json({
       success: false,
       error: error.message || 'Internal server error'
