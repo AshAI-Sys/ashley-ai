@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { cachedQueryWithMetrics, CacheKeys, CACHE_DURATION } from '@/lib/performance/query-cache'
 
+// Fixed: Prisma groupBy nullable field issues - using manual grouping instead
+
 export async function GET(request: NextRequest) {
   try {
     const workspaceId = 'default'
@@ -141,53 +143,69 @@ async function calculateHRStats(
     const presentToday = todayAttendance
     const absentToday = todayAbsences
 
-    // Calculate department distribution
-    const departmentStats = await prisma.employee.groupBy({
-      by: ['department'],
+    // Calculate department distribution - using findMany and manual grouping
+    const allEmployees = await prisma.employee.findMany({
       where: {
         workspace_id: workspaceId,
         is_active: true
       },
-      _count: {
-        id: true
+      select: {
+        id: true,
+        department: true,
+        position: true,
+        salary_type: true
       }
     })
 
-    // Calculate position distribution
-    const positionStats = await prisma.employee.groupBy({
-      by: ['position'],
+    // Manual grouping to avoid Prisma groupBy issues with nullable fields
+    const departmentMap = new Map<string, number>()
+    const positionMap = new Map<string, number>()
+    const salaryTypeMap = new Map<string, number>()
+
+    allEmployees.forEach(emp => {
+      // Count departments
+      if (emp.department) {
+        departmentMap.set(emp.department, (departmentMap.get(emp.department) || 0) + 1)
+      }
+      // Count positions
+      if (emp.position) {
+        positionMap.set(emp.position, (positionMap.get(emp.position) || 0) + 1)
+      }
+      // Count salary types
+      if (emp.salary_type) {
+        salaryTypeMap.set(emp.salary_type, (salaryTypeMap.get(emp.salary_type) || 0) + 1)
+      }
+    })
+
+    // Convert maps to arrays
+    const departmentStats = Array.from(departmentMap.entries()).map(([department, count]) => ({
+      department,
+      _count: { id: count }
+    }))
+
+    const positionStats = Array.from(positionMap.entries()).map(([position, count]) => ({
+      position,
+      _count: { id: count }
+    }))
+
+    const salaryTypeStats = Array.from(salaryTypeMap.entries()).map(([salary_type, count]) => ({
+      salary_type,
+      _count: { id: count }
+    }))
+
+    // Calculate average tenure - filter out employees without hire_date manually
+    const allEmployeesForTenure = await prisma.employee.findMany({
       where: {
         workspace_id: workspaceId,
         is_active: true
-      },
-      _count: {
-        id: true
-      }
-    })
-
-    // Calculate salary type distribution
-    const salaryTypeStats = await prisma.employee.groupBy({
-      by: ['salary_type'],
-      where: {
-        workspace_id: workspaceId,
-        is_active: true
-      },
-      _count: {
-        id: true
-      }
-    })
-
-    // Calculate average tenure
-    const employeesWithTenure = await prisma.employee.findMany({
-      where: {
-        workspace_id: workspaceId,
-        is_active: true,
-        hire_date: { not: null }
       },
       select: {
         hire_date: true
       }
     })
+
+    // Filter out null hire_dates
+    const employeesWithTenure = allEmployeesForTenure.filter(emp => emp.hire_date !== null)
 
     let averageTenureMonths = 0
     if (employeesWithTenure.length > 0) {

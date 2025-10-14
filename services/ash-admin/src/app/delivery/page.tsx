@@ -240,11 +240,18 @@ export default function DeliveryPage() {
               <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => {
+                alert('Dispatch Reports feature coming soon! This will show reports of all deliveries.')
+              }}
+            >
               <Printer className="w-4 h-4 mr-2" />
               Dispatch Reports
             </Button>
-            <Button>
+            <Button onClick={() => {
+              alert('New Shipment form will open here. This will allow you to create a new delivery shipment.')
+            }}>
               <Plus className="w-4 h-4 mr-2" />
               New Shipment
             </Button>
