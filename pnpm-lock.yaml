@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@types/bcryptjs':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -45,6 +42,9 @@ importers:
       '@turbo/gen':
         specifier: ^2.0.0
         version: 2.5.6(@types/node@20.19.13)(typescript@5.9.2)
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/jest':
         specifier: ^29.5.0
         version: 29.5.14
@@ -571,7 +571,7 @@ importers:
         specifier: ^10.17.0
         version: 10.17.0(@opentelemetry/context-async-hooks@2.1.0(@opentelemetry/api@1.9.0))(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@2.1.0(@opentelemetry/api@1.9.0))(next@14.2.32(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.102.1)
       '@tanstack/react-query':
-        specifier: ^5.87.4
+        specifier: ^5.0.0
         version: 5.87.4(react@18.3.1)
       '@tanstack/react-query-devtools':
         specifier: ^5.0.0
