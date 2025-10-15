@@ -130,15 +130,15 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <Card key={i}>
+            <Card key={i} className="dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="p-6">
                 <div className="animate-pulse space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
                 </div>
               </CardContent>
             </Card>
@@ -151,12 +151,12 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="p-6">
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="text-center">
-              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <p className="text-gray-600 mb-4">Failed to load dashboard data</p>
-              <Button onClick={() => refetch()}>Retry</Button>
+              <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mx-auto mb-4" />
+              <p className="text-gray-600 dark:text-gray-400 mb-4">Failed to load dashboard data</p>
+              <Button onClick={() => refetch()} className="dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white">Retry</Button>
             </div>
           </CardContent>
         </Card>
@@ -178,6 +178,7 @@ export default function AdminDashboard() {
           variant="outline"
           onClick={() => refetch()}
           disabled={isFetching}
+          className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
           {isFetching ? 'Refreshing...' : 'Refresh'}
@@ -261,41 +262,41 @@ export default function AdminDashboard() {
 
       {/* Alerts & Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-l-4 border-yellow-500">
+        <Card className="border-l-4 border-yellow-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-yellow-500">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Pending Approvals</p>
-                <p className="text-3xl font-bold text-yellow-600">{stats?.pendingApprovals || 0}</p>
-                <p className="text-sm text-gray-500 mt-2">Orders awaiting approval</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Pending Approvals</p>
+                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{stats?.pendingApprovals || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Orders awaiting approval</p>
               </div>
-              <AlertCircle className="w-8 h-8 text-yellow-500" />
+              <AlertCircle className="w-8 h-8 text-yellow-500 dark:text-yellow-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-purple-500">
+        <Card className="border-l-4 border-purple-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-purple-500">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">In Production</p>
-                <p className="text-3xl font-bold text-purple-600">{stats?.ordersInProduction || 0}</p>
-                <p className="text-sm text-gray-500 mt-2">Active production runs</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">In Production</p>
+                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stats?.ordersInProduction || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Active production runs</p>
               </div>
-              <Clock className="w-8 h-8 text-purple-500" />
+              <Clock className="w-8 h-8 text-purple-500 dark:text-purple-400" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-green-500">
+        <Card className="border-l-4 border-green-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-green-500">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-green-600">{stats?.completedThisMonth || 0}</p>
-                <p className="text-sm text-gray-500 mt-2">Orders this month</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Completed</p>
+                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{stats?.completedThisMonth || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Orders this month</p>
               </div>
-              <CheckCircle className="w-8 h-8 text-green-500" />
+              <CheckCircle className="w-8 h-8 text-green-500 dark:text-green-400" />
             </div>
           </CardContent>
         </Card>
@@ -304,32 +305,33 @@ export default function AdminDashboard() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders by Status */}
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Orders by Status</CardTitle>
-            <CardDescription>Current order distribution across all stages</CardDescription>
+            <CardTitle className="dark:text-white">Orders by Status</CardTitle>
+            <CardDescription className="dark:text-gray-400">Current order distribution across all stages</CardDescription>
           </CardHeader>
           <CardContent>
             {stats?.ordersByStatus && stats.ordersByStatus.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.ordersByStatus}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="status" tick={{ fontSize: 12 }} />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="status" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
+                  <YAxis tick={{ fill: '#9CA3AF' }} />
                   <Tooltip
                     formatter={(value: any, name: string) => {
                       if (name === 'count') return [value, 'Orders']
                       if (name === 'amount') return [formatCurrency(value), 'Revenue']
                       return [value, name]
                     }}
+                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', color: '#F3F4F6' }}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ color: '#9CA3AF' }} />
                   <Bar dataKey="count" fill="#3B82F6" name="Orders" />
                   <Bar dataKey="amount" fill="#10B981" name="Revenue (₱)" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-400">
+              <div className="h-[300px] flex items-center justify-center text-gray-400 dark:text-gray-500">
                 No order data available
               </div>
             )}
@@ -337,10 +339,10 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Employees by Department */}
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Workforce Distribution</CardTitle>
-            <CardDescription>Employees across all departments</CardDescription>
+            <CardTitle className="dark:text-white">Workforce Distribution</CardTitle>
+            <CardDescription className="dark:text-gray-400">Employees across all departments</CardDescription>
           </CardHeader>
           <CardContent>
             {stats?.employeesByDepartment && stats.employeesByDepartment.length > 0 ? (
@@ -360,11 +362,11 @@ export default function AdminDashboard() {
                       <Cell key={`cell-${index}`} fill={Object.values(STATUS_COLORS)[index % Object.values(STATUS_COLORS).length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', color: '#F3F4F6' }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-400">
+              <div className="h-[300px] flex items-center justify-center text-gray-400 dark:text-gray-500">
                 No employee data available
               </div>
             )}
@@ -373,57 +375,57 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="dark:bg-gray-800 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Navigate to key sections of the system</CardDescription>
+          <CardTitle className="dark:text-white">Quick Actions</CardTitle>
+          <CardDescription className="dark:text-gray-400">Navigate to key sections of the system</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/orders">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <Package className="w-6 h-6" />
                 <span>View Orders</span>
               </Button>
             </Link>
             <Link href="/clients">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <Building2 className="w-6 h-6" />
                 <span>Manage Clients</span>
               </Button>
             </Link>
             <Link href="/hr-payroll">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <Users className="w-6 h-6" />
                 <span>HR & Payroll</span>
               </Button>
             </Link>
             <Link href="/finance">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <DollarSign className="w-6 h-6" />
                 <span>Finance</span>
               </Button>
             </Link>
             <Link href="/cutting">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <Scissors className="w-6 h-6" />
                 <span>Cutting</span>
               </Button>
             </Link>
             <Link href="/printing">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <Printer className="w-6 h-6" />
                 <span>Printing</span>
               </Button>
             </Link>
             <Link href="/quality-control">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <BadgeCheck className="w-6 h-6" />
                 <span>Quality Control</span>
               </Button>
             </Link>
             <Link href="/analytics">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
+              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                 <TrendingUp className="w-6 h-6" />
                 <span>Analytics</span>
               </Button>
@@ -433,10 +435,10 @@ export default function AdminDashboard() {
       </Card>
 
       {/* Manufacturing Stages Overview */}
-      <Card>
+      <Card className="dark:bg-gray-800 dark:border-gray-700">
         <CardHeader>
-          <CardTitle>Manufacturing Stages</CardTitle>
-          <CardDescription>Quick access to all 14 production stages</CardDescription>
+          <CardTitle className="dark:text-white">Manufacturing Stages</CardTitle>
+          <CardDescription className="dark:text-gray-400">Quick access to all 14 production stages</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -451,10 +453,10 @@ export default function AdminDashboard() {
               { name: 'Delivery', icon: Clock, href: '/delivery', color: 'pink' },
             ].map((stage) => (
               <Link key={stage.name} href={stage.href}>
-                <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                  <stage.icon className={`w-6 h-6 text-${stage.color}-600 mb-2`} />
-                  <h3 className="font-medium text-gray-900">{stage.name}</h3>
-                  <ArrowRight className="w-4 h-4 text-gray-400 mt-2" />
+                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-750 cursor-pointer transition-colors">
+                  <stage.icon className={`w-6 h-6 text-${stage.color}-600 dark:text-${stage.color}-400 mb-2`} />
+                  <h3 className="font-medium text-gray-900 dark:text-white">{stage.name}</h3>
+                  <ArrowRight className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-2" />
                 </div>
               </Link>
             ))}

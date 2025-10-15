@@ -116,17 +116,42 @@ export async function GET(request: NextRequest) {
       prisma.sewingRun.count({ where }),
     ]);
 
+    // Transform data to match frontend expectations
+    const transformedRuns = sewingRuns.map(run => ({
+      id: run.id,
+      operation_name: run.operationName,
+      status: run.status === 'PENDING' ? 'CREATED' : run.status,
+      order: run.order ? {
+        order_number: run.order.orderNumber,
+        brand: { name: run.order.client?.name || '', code: run.order.client?.company || '' }
+      } : null,
+      operator: run.operator ? {
+        first_name: run.operator.firstName,
+        last_name: run.operator.lastName,
+        employee_number: run.operator.employeeId || ''
+      } : null,
+      bundle: run.bundle ? {
+        id: run.bundle.id,
+        size_code: run.bundle.bundleNumber.split('-')[1] || 'M',
+        qty: run.plannedQuantity,
+        qr_code: run.bundle.qrCode
+      } : null,
+      qty_good: run.actualQuantity || 0,
+      qty_reject: 0,
+      earned_minutes: run.standardTime * (run.actualQuantity || 0),
+      actual_minutes: run.startTime && run.endTime
+        ? (run.endTime.getTime() - run.startTime.getTime()) / (1000 * 60)
+        : undefined,
+      efficiency_pct: run.actualEfficiency ? Math.round(run.actualEfficiency) : undefined,
+      piece_rate_pay: run.pieceRate * (run.actualQuantity || 0),
+      started_at: run.startTime?.toISOString(),
+      ended_at: run.endTime?.toISOString(),
+      created_at: run.createdAt.toISOString()
+    }))
+
     return NextResponse.json({
       success: true,
-      data: {
-        sewingRuns,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
-        }
-      }
+      data: transformedRuns
     });
   } catch (error) {
     console.error('Error fetching sewing runs:', error);
