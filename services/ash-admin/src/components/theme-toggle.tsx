@@ -10,10 +10,10 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true)
     // Get initial theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem('ash_theme') as 'light' | 'dark'
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
+    const savedTheme = (localStorage.getItem('ash_theme') as 'light' | 'dark') || 'dark'
+    setTheme(savedTheme)
+    // Apply theme class immediately
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark')
   }, [])
 
   const toggleTheme = () => {
