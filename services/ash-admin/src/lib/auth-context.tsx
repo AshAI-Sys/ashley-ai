@@ -12,6 +12,9 @@ interface User {
   permissions?: string[]
   first_name?: string
   last_name?: string
+  is_active?: boolean
+  requires_2fa?: boolean
+  two_factor_enabled?: boolean
 }
 
 interface AuthContextType {

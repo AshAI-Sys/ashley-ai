@@ -4,13 +4,16 @@ import { UserRole } from './auth-guards'
 
 // CRITICAL: JWT_SECRET must be set in environment variables
 // Never use a fallback in production!
-const JWT_SECRET = process.env.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET || ''
 const JWT_ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m'
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d'
 
 if (!JWT_SECRET) {
   throw new Error('CRITICAL SECURITY ERROR: JWT_SECRET environment variable is not set!')
 }
+
+// Type-safe secret (guaranteed to be non-empty after the check above)
+const SECRET: string = JWT_SECRET
 
 export interface JWTPayload {
   userId: string
@@ -35,7 +38,7 @@ export function generateAccessToken(payload: Omit<JWTPayload, 'type' | 'iat' | '
   try {
     const token = jwt.sign(
       { ...payload, type: 'access' },
-      JWT_SECRET,
+      SECRET,
       {
         expiresIn: JWT_ACCESS_EXPIRES_IN,
         algorithm: 'HS256'
@@ -56,7 +59,7 @@ export function generateRefreshToken(payload: Omit<JWTPayload, 'type' | 'iat' | 
   try {
     const token = jwt.sign(
       { ...payload, type: 'refresh' },
-      JWT_SECRET,
+      SECRET,
       {
         expiresIn: JWT_REFRESH_EXPIRES_IN,
         algorithm: 'HS256'
@@ -112,7 +115,7 @@ export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string 
  */
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, {
+    const decoded = jwt.verify(token, SECRET, {
       algorithms: ['HS256']
     }) as JWTPayload
 

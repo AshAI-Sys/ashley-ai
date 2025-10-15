@@ -68,7 +68,7 @@ export async function logAuthEvent(
  * Log security events (rate limit, IP block, suspicious activity)
  */
 export async function logSecurityEvent(
-  action: 'RATE_LIMIT_EXCEEDED' | 'IP_BLOCKED' | 'INVALID_TOKEN' | 'SUSPICIOUS_ACTIVITY',
+  action: 'RATE_LIMIT_EXCEEDED' | 'IP_BLOCKED' | 'INVALID_TOKEN' | 'SUSPICIOUS_ACTIVITY' | 'CSRF_VIOLATION',
   request: NextRequest,
   metadata?: Record<string, any>
 ): Promise<void> {

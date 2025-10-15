@@ -239,11 +239,20 @@ export function addErrorBreadcrumb(
 
 /**
  * Track custom metric
+ * Note: Sentry.metrics API is deprecated. Using captureMessage for metric tracking instead.
  */
 export function trackMetric(name: string, value: number, unit?: string, tags?: Record<string, string>) {
-  Sentry.metrics.gauge(name, value, {
-    unit,
-    tags,
+  // Metrics API is deprecated - log as breadcrumb instead
+  Sentry.addBreadcrumb({
+    category: 'metric',
+    message: `${name}: ${value}${unit ? ' ' + unit : ''}`,
+    level: 'info',
+    data: {
+      metric_name: name,
+      metric_value: value,
+      unit,
+      ...tags,
+    },
   })
 }
 

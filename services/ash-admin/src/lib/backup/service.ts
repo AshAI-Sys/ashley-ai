@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import * as fs from 'fs/promises'
 import * as path from 'path'
-import { logError } from '../error-logger'
+import { logError, ErrorCategory } from '../error-logger'
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { createReadStream, createWriteStream } from 'fs'
 import { pipeline } from 'stream/promises'
@@ -121,7 +121,7 @@ export class BackupService {
       await fs.mkdir(this.backupDir, { recursive: true })
     } catch (error) {
       logError(error as Error, {
-        category: 'database',
+        category: ErrorCategory.Database,
         operation: 'ensure-backup-dir',
       })
       throw error
@@ -211,7 +211,7 @@ export class BackupService {
       return backupInfo
     } catch (error) {
       logError(error as Error, {
-        category: 'database',
+        category: ErrorCategory.Database,
         operation: 'create-backup',
         metadata: { filename, options },
       })
@@ -250,7 +250,7 @@ export class BackupService {
       return backups.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
     } catch (error) {
       logError(error as Error, {
-        category: 'database',
+        category: ErrorCategory.Database,
         operation: 'list-backups',
       })
       return []
@@ -307,7 +307,7 @@ export class BackupService {
       console.log(`✅ Backup restored: ${backup.filename}`)
     } catch (error) {
       logError(error as Error, {
-        category: 'database',
+        category: ErrorCategory.Database,
         operation: 'restore-backup',
         metadata: { backupId },
       })
@@ -351,7 +351,7 @@ export class BackupService {
       console.log(`🗑️  Deleted backup: ${backup.filename}`)
     } catch (error) {
       logError(error as Error, {
-        category: 'database',
+        category: ErrorCategory.Database,
         operation: 'delete-backup',
         metadata: { backupId },
       })
@@ -404,7 +404,7 @@ export class BackupService {
       }
     } catch (error) {
       logError(error as Error, {
-        category: 'database',
+        category: ErrorCategory.Database,
         operation: 'upload-backup',
         metadata: { filename },
       })

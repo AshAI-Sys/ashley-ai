@@ -1,5 +1,23 @@
 import axios, { AxiosInstance } from 'axios'
-import { LoginResponse } from '@ash/types'
+
+// Define LoginResponse locally to avoid missing @ash/types dependency
+interface LoginResponse {
+  token: string
+  user: {
+    id: string
+    workspace_id: string
+    email: string
+    first_name: string
+    last_name: string
+    role: string
+    is_active: boolean
+  }
+  workspace: {
+    id: string
+    name: string
+    slug: string
+  }
+}
 
 class ApiClient {
   private client: AxiosInstance

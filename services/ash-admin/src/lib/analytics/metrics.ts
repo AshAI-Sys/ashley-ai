@@ -279,7 +279,9 @@ export async function getQualityMetrics(workspace_id: string): Promise<QualityMe
       where: { workspace_id },
       select: {
         result: true,
-        defects_found: true
+        critical_found: true,
+        major_found: true,
+        minor_found: true
       }
     }),
     prisma.cAPATask.findMany({
@@ -289,13 +291,14 @@ export async function getQualityMetrics(workspace_id: string): Promise<QualityMe
   ])
 
   const totalInspections = inspections.length
-  const passedInspections = inspections.filter(i => i.result === 'PASS').length
-  const failedInspections = inspections.filter(i => i.result === 'FAIL').length
+  const passedInspections = inspections.filter(i => i.result === 'PASSED').length
+  const failedInspections = inspections.filter(i => i.result === 'FAILED').length
 
   const passRate = totalInspections > 0 ? (passedInspections / totalInspections) * 100 : 0
 
-  // Calculate defect rate
-  const totalDefects = inspections.reduce((sum, i) => sum + (i.defects_found || 0), 0)
+  // Calculate defect rate from critical + major + minor defects
+  const totalDefects = inspections.reduce((sum, i) =>
+    sum + (i.critical_found || 0) + (i.major_found || 0) + (i.minor_found || 0), 0)
   const defectRate = totalInspections > 0 ? (totalDefects / totalInspections) : 0
 
   // CAPA statistics

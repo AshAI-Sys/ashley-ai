@@ -19,7 +19,7 @@ interface EmailOptions {
   html: string
   text?: string
   from?: string
-  reply_to?: string
+  replyTo?: string
 }
 
 interface EmailResult {
@@ -53,7 +53,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
       subject: options.subject,
       html: options.html,
       text: options.text,
-      reply_to: options.reply_to,
+      reply_to: options.replyTo,
     })
 
     if (result.error) {

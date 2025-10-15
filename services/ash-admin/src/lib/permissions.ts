@@ -1,7 +1,8 @@
 // Role-based access control utilities
-import { Role, Permission, canAccessPage, hasAnyPermission, NAVIGATION_PERMISSIONS } from './rbac'
+import { Role, Permission, canAccessPage, hasAnyPermission, NAVIGATION_PERMISSIONS, type Permission as RBACPermission } from './rbac'
 
 export type UserRole = Role
+export type { Permission } from './rbac'
 
 export interface User {
   id: string
