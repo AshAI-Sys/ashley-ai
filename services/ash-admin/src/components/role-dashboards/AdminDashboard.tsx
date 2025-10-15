@@ -167,12 +167,12 @@ export default function AdminDashboard() {
   const formatCurrency = (amount: number) => `₱${amount.toLocaleString()}`
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header with Refresh */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Complete system overview and analytics</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400">Complete system overview and analytics</p>
         </div>
         <Button
           variant="outline"
@@ -186,73 +186,73 @@ export default function AdminDashboard() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats?.totalRevenue || 0)}</p>
-                <p className="text-sm text-green-600 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Revenue</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats?.totalRevenue || 0)}</p>
+                <p className="text-sm text-green-600 dark:text-green-400 mt-1">
                   <TrendingUp className="w-4 h-4 inline mr-1" />
                   {stats?.totalOrders || 0} orders
                 </p>
               </div>
-              <div className="bg-green-100 p-3 rounded-full">
-                <DollarSign className="w-6 h-6 text-green-600" />
+              <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full">
+                <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Active Orders</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.totalOrders || 0}</p>
-                <p className="text-sm text-blue-600 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Orders</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalOrders || 0}</p>
+                <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
                   <Package className="w-4 h-4 inline mr-1" />
                   {stats?.ordersInProduction || 0} in production
                 </p>
               </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Package className="w-6 h-6 text-blue-600" />
+              <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full">
+                <Package className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Total Clients</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.totalClients || 0}</p>
-                <p className="text-sm text-purple-600 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Clients</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalClients || 0}</p>
+                <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
                   <Building2 className="w-4 h-4 inline mr-1" />
                   Active partnerships
                 </p>
               </div>
-              <div className="bg-purple-100 p-3 rounded-full">
-                <Building2 className="w-6 h-6 text-purple-600" />
+              <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-full">
+                <Building2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Employees</p>
-                <p className="text-2xl font-bold text-gray-900">{stats?.activeEmployees || 0}</p>
-                <p className="text-sm text-orange-600 mt-1">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Employees</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.activeEmployees || 0}</p>
+                <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
                   <Users className="w-4 h-4 inline mr-1" />
                   Active workforce
                 </p>
               </div>
-              <div className="bg-orange-100 p-3 rounded-full">
-                <Users className="w-6 h-6 text-orange-600" />
+              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-full">
+                <Users className="w-6 h-6 text-orange-600 dark:text-orange-400" />
               </div>
             </div>
           </CardContent>

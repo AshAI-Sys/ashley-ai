@@ -1,70 +1,33 @@
 'use client'
 
+import Link from 'next/link'
+
 export default function HomePage() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f8fafc',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: 'system-ui, sans-serif'
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        padding: '40px',
-        borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-        maxWidth: '400px'
-      }}>
-        <div style={{ marginBottom: '24px' }}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center font-sans transition-colors">
+      <div className="bg-white dark:bg-gray-800 p-10 rounded-xl shadow-lg text-center max-w-md border border-gray-200 dark:border-gray-700">
+        <div className="mb-6">
           <img
             src="/ash-ai-logo.png"
             alt="Ashley AI Logo"
-            style={{
-              width: '80px',
-              height: '80px',
-              margin: '0 auto',
-              display: 'block'
-            }}
+            className="w-20 h-20 mx-auto block"
           />
         </div>
 
-        <h1 style={{
-          fontSize: '32px',
-          fontWeight: 'bold',
-          color: '#1f2937',
-          marginBottom: '16px'
-        }}>
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           Ashley AI Admin
         </h1>
 
-        <p style={{
-          color: '#6b7280',
-          marginBottom: '32px'
-        }}>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">
           Apparel Smart Hub - Artificial Intelligence
         </p>
 
-        <a
+        <Link
           href="/login"
-          style={{
-            display: 'inline-block',
-            width: '100%',
-            padding: '12px 24px',
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '8px',
-            fontWeight: '500',
-            transition: 'background-color 0.2s'
-          }}
-          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#3b82f6'}
+          className="inline-block w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
         >
           Access Production System
-        </a>
+        </Link>
       </div>
     </div>
   )
