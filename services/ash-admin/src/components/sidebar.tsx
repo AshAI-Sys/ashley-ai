@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '../lib/auth-context'
 import { getAccessibleNavigation, hasAccess, User } from '../lib/permissions'
 import HydrationSafeIcon from './hydration-safe-icon'
+import ThemeToggle from './theme-toggle'
 import {
   Building2,
   ShoppingCart,
@@ -138,9 +139,9 @@ export default function Sidebar() {
   }, [user])
 
   return (
-    <div className={`bg-gray-900 text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} min-h-screen flex flex-col`}>
+    <div className={`bg-gray-900 dark:bg-gray-950 text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} min-h-screen flex flex-col border-r border-gray-800 dark:border-gray-900`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700">
+      <div className="p-4 border-b border-gray-700 dark:border-gray-800">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
@@ -153,19 +154,22 @@ export default function Sidebar() {
               </div>
               <div>
                 <h1 className="font-bold text-lg">Ashley AI</h1>
-                <p className="text-xs text-gray-400">Apparel Smart Hub</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Apparel Smart Hub</p>
               </div>
             </div>
           )}
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-md hover:bg-gray-700 transition-colors"
-          >
-            <HydrationSafeIcon
-              Icon={collapsed ? ChevronRight : ChevronLeft}
-              className="w-4 h-4"
-            />
-          </button>
+          <div className="flex items-center gap-1">
+            {!collapsed && <ThemeToggle />}
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-1.5 rounded-md hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors"
+            >
+              <HydrationSafeIcon
+                Icon={collapsed ? ChevronRight : ChevronLeft}
+                className="w-4 h-4"
+              />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -182,8 +186,8 @@ export default function Sidebar() {
               className={`
                 flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
                 ${isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  ? 'bg-blue-600 dark:bg-blue-700 text-white'
+                  : 'text-gray-300 dark:text-gray-400 hover:bg-gray-700 dark:hover:bg-gray-800 hover:text-white'
                 }
               `}
               title={collapsed ? item.name : undefined}
@@ -199,16 +203,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-gray-700 dark:border-gray-800">
         {!collapsed && user && (
-          <div className="text-xs text-gray-400 mb-3">
-            <p className="font-medium text-gray-300">{user.name}</p>
+          <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+            <p className="font-medium text-gray-300 dark:text-gray-400">{user.name}</p>
             <p>{user.position}</p>
             <p>{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
-          <div className="text-xs text-gray-400">
+          <div className="text-xs text-gray-400 dark:text-gray-500">
             <p>Ashley AI v1.0</p>
             <p>Manufacturing ERP System</p>
           </div>
