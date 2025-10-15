@@ -10,6 +10,7 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "noImplicitAny": false,
+    "types": [],
     "target": "es2015",
     "downlevelIteration": true,
     "noEmit": true,

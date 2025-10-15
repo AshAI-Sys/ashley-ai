@@ -109,7 +109,8 @@
       "Bash(set PORT=3002)",
       "Bash(git reset:*)",
       "Bash(del srcmiddleware.js)",
-      "Read(//c/**)"
+      "Read(//c/**)",
+      "Bash(cut:*)"
     ],
     "deny": [],
     "ask": []

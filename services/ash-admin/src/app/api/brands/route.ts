@@ -4,11 +4,11 @@ import { z } from 'zod';
 
 const CreateBrandSchema = z.object({
   name: z.string().min(1, 'Brand name is required'),
-  clientId: z.string().min(1, 'Client ID is required'),
+  client_id: z.string().min(1, 'Client ID is required'),
   description: z.string().optional(),
-  logoUrl: z.string().url().optional().or(z.literal('')),
-  brandColors: z.array(z.string()).optional(),
-  defaultPricing: z.record(z.number()).optional(),
+  logo_url: z.string().url().optional().or(z.literal('')),
+  brand_colors: z.array(z.string()).optional(),
+  default_pricing: z.record(z.number()).optional(),
   guidelines: z.string().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
   metadata: z.record(z.any()).optional(),
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const search = searchParams.get('search') || '';
-    const clientId = searchParams.get('clientId') || '';
+    const client_id = searchParams.get('client_id') || '';
     const status = searchParams.get('status') || '';
 
     const skip = (page - 1) * limit;
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
             { client: { name: { contains: search, mode: 'insensitive' } } },
           ]
         } : {},
-        clientId ? { clientId } : {},
+        client_id ? { client_id } : {},
         status ? { status } : {},
       ]
     };
@@ -51,19 +51,18 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               name: true,
-              company: true,
               email: true,
             }
           },
           orders: {
             select: {
               id: true,
-              orderNumber: true,
+              order_number: true,
               status: true,
-              totalAmount: true,
-              createdAt: true,
+              total_amount: true,
+              created_at: true,
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy: { created_at: 'desc' },
             take: 5,
           },
           _count: {
@@ -72,7 +71,7 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { created_at: 'desc' },
       }),
       prisma.brand.count({ where }),
     ]);
@@ -105,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Check if client exists
     const client = await prisma.client.findUnique({
-      where: { id: validatedData.clientId }
+      where: { id: validatedData.client_id }
     });
 
     if (!client) {
@@ -119,7 +118,7 @@ export async function POST(request: NextRequest) {
     const existingBrand = await prisma.brand.findFirst({
       where: {
         name: validatedData.name,
-        clientId: validatedData.clientId,
+        client_id: validatedData.client_id,
       }
     });
 
@@ -137,7 +136,6 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            company: true,
             email: true,
           }
         },
@@ -202,7 +200,7 @@ export async function PUT(request: NextRequest) {
       const nameExists = await prisma.brand.findFirst({
         where: {
           name: validatedData.name,
-          clientId: validatedData.clientId || existingBrand.clientId,
+          client_id: validatedData.client_id || existingBrand.client_id,
           id: { not: id }
         }
       });
@@ -223,7 +221,6 @@ export async function PUT(request: NextRequest) {
           select: {
             id: true,
             name: true,
-            company: true,
             email: true,
           }
         },

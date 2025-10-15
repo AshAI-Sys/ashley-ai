@@ -52,29 +52,13 @@ Sentry.init({
 
   // Integrations
   integrations: [
-    new Sentry.BrowserTracing({
-      // Set sampling rate for performance monitoring
-      tracePropagationTargets: [
-        'localhost',
-        /^https:\/\/ashleyai\.vercel\.app/,
-        /^https:\/\/.*\.ashleyai\.com/,
-      ],
-    }),
-    new Sentry.Replay({
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration({
       // Mask all text content for privacy
       maskAllText: true,
       blockAllMedia: true,
     }),
   ],
-
-  // Breadcrumbs (tracks user actions leading to error)
-  breadcrumbs: {
-    console: true, // Log console messages
-    dom: true, // Log DOM interactions
-    fetch: true, // Log fetch/XHR requests
-    history: true, // Log navigation
-    sentry: true, // Log Sentry SDK events
-  },
 
   // Tag all events with user info
   initialScope: {

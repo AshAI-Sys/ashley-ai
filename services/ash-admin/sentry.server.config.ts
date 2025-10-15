@@ -37,8 +37,8 @@ Sentry.init({
 
   // Integrations
   integrations: [
-    new Sentry.Integrations.Http({ tracing: true }),
-    new Sentry.Integrations.Prisma({ client: undefined }), // Will be set dynamically
+    Sentry.httpIntegration(),
+    Sentry.prismaIntegration(),
   ],
 
   // Tag all events
@@ -88,29 +88,22 @@ export function logExternalServiceError(
   })
 }
 
-// Performance monitoring
-export function startTransaction(name: string, op: string) {
-  return Sentry.startTransaction({
-    name,
-    op,
-  })
-}
-
 // Custom performance tracking
 export async function trackPerformance<T>(
   name: string,
   operation: () => Promise<T>
 ): Promise<T> {
-  const transaction = startTransaction(name, 'function')
-
-  try {
-    const result = await operation()
-    transaction.setStatus('ok')
-    return result
-  } catch (error) {
-    transaction.setStatus('internal_error')
-    throw error
-  } finally {
-    transaction.finish()
-  }
+  return await Sentry.startSpan(
+    {
+      name,
+      op: 'function',
+    },
+    async () => {
+      try {
+        return await operation()
+      } catch (error) {
+        throw error
+      }
+    }
+  )
 }

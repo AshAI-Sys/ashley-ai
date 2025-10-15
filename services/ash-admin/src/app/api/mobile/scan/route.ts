@@ -29,22 +29,18 @@ export async function POST(request: NextRequest) {
       const bundle = await prisma.bundle.findFirst({
         where: {
           OR: [
-            { bundle_number: code },
             { qr_code: code },
+            { id: code },
           ],
         },
         include: {
           lay: {
             include: {
-              cutting_run: {
-                include: {
-                  order: {
-                    select: {
-                      order_number: true,
-                      client: {
-                        select: { name: true },
-                      },
-                    },
+              order: {
+                select: {
+                  order_number: true,
+                  client: {
+                    select: { name: true },
                   },
                 },
               },

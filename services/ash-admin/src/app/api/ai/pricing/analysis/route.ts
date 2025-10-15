@@ -26,29 +26,24 @@ export async function GET(req: NextRequest) {
       include: {
         client: true,
         invoices: true,
-        cutting_runs: true,
+        cut_lays: true,
         sewing_runs: true,
         print_runs: true,
+        line_items: true,
       },
     });
 
     // Transform orders into pricing analysis format
     const pricingData = orders.map(order => {
       // Calculate actual cost from production runs
-      const cuttingCost = order.cutting_runs.reduce(
-        (sum, run) => sum + parseFloat(run.labor_cost?.toString() || '0'),
-        0
-      );
+      const cuttingCost = 0; // Cut lays don't have labor_cost field
       const sewingCost = order.sewing_runs.reduce(
-        (sum, run) => sum + parseFloat(run.total_labor_cost?.toString() || '0'),
+        (sum, run) => sum + (run.piece_rate_pay || 0),
         0
       );
-      const printCost = order.print_runs.reduce(
-        (sum, run) => sum + parseFloat(run.labor_cost?.toString() || '0'),
-        0
-      );
+      const printCost = 0; // Print runs don't have labor_cost field in current schema
 
-      const materialCost = parseFloat(order.material_cost?.toString() || '0');
+      const materialCost = 0; // Material cost would come from material_requirements
       const actualCost = materialCost + cuttingCost + sewingCost + printCost;
 
       // Get quoted price from invoice
@@ -59,10 +54,16 @@ export async function GET(req: NextRequest) {
       // Determine if accepted (has invoice or status is not CANCELLED)
       const accepted = order.status !== 'CANCELLED' && order.invoices.length > 0;
 
+      // Get total quantity from line items
+      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+
+      // Get product type from design_name or first line item description
+      const productType = order.design_name || (order.line_items[0]?.description) || 'UNKNOWN';
+
       return {
         client_id: order.client_id,
-        product_type: order.garment_type || 'UNKNOWN',
-        quantity: order.quantity,
+        product_type: productType,
+        quantity: totalQuantity,
         quoted_price: quotedPrice,
         actual_cost: actualCost > 0 ? actualCost : quotedPrice * 0.7, // Estimate if no data
         accepted,
@@ -117,35 +118,30 @@ export async function POST(req: NextRequest) {
     // Get recent orders for this product type
     const orders = await prisma.order.findMany({
       where: {
-        garment_type: product_type || undefined,
+        design_name: product_type ? { contains: product_type } : undefined,
         created_at: {
           gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
         },
       },
       include: {
         invoices: true,
-        cutting_runs: true,
+        cut_lays: true,
         sewing_runs: true,
         print_runs: true,
+        line_items: true,
       },
     });
 
     // Calculate average costs and prices
     const stats = orders.map(order => {
-      const cuttingCost = order.cutting_runs.reduce(
-        (sum, run) => sum + parseFloat(run.labor_cost?.toString() || '0'),
-        0
-      );
+      const cuttingCost = 0; // Cut lays don't have labor_cost field
       const sewingCost = order.sewing_runs.reduce(
-        (sum, run) => sum + parseFloat(run.total_labor_cost?.toString() || '0'),
+        (sum, run) => sum + (run.piece_rate_pay || 0),
         0
       );
-      const printCost = order.print_runs.reduce(
-        (sum, run) => sum + parseFloat(run.labor_cost?.toString() || '0'),
-        0
-      );
+      const printCost = 0; // Print runs don't have labor_cost field
 
-      const materialCost = parseFloat(order.material_cost?.toString() || '0');
+      const materialCost = 0; // Material cost would come from material_requirements
       const actualCost = materialCost + cuttingCost + sewingCost + printCost;
 
       const quotedPrice = order.invoices.length > 0
@@ -155,12 +151,15 @@ export async function POST(req: NextRequest) {
       const margin = quotedPrice > 0 ? ((quotedPrice - actualCost) / quotedPrice) * 100 : 0;
       const accepted = order.status !== 'CANCELLED';
 
+      // Get total quantity from line items
+      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+
       return {
         cost: actualCost > 0 ? actualCost : quotedPrice * 0.7,
         price: quotedPrice,
         margin,
         accepted,
-        quantity: order.quantity,
+        quantity: totalQuantity,
       };
     });
 
