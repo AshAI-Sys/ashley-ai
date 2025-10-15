@@ -16,8 +16,8 @@ export async function GET(request: NextRequest) {
     // Count completed runs today
     const todaysCompleted = await prisma.sewingRun.count({
       where: {
-        status: 'COMPLETED',
-        createdAt: {
+        status: 'DONE',
+        created_at: {
           gte: today
         }
       }
@@ -27,36 +27,36 @@ export async function GET(request: NextRequest) {
     const operatorsWorkingResult = await prisma.sewingRun.findMany({
       where: {
         status: {
-          in: ['IN_PROGRESS', 'COMPLETED']
+          in: ['IN_PROGRESS', 'DONE']
         },
-        createdAt: {
+        created_at: {
           gte: today
         }
       },
       select: {
-        operatorId: true
+        operator_id: true
       },
-      distinct: ['operatorId']
+      distinct: ['operator_id']
     })
     const operatorsWorking = operatorsWorkingResult.length
 
     // Calculate average efficiency
     const runsWithEfficiency = await prisma.sewingRun.findMany({
       where: {
-        actualEfficiency: {
+        efficiency_pct: {
           not: null
         },
-        createdAt: {
+        created_at: {
           gte: today
         }
       },
       select: {
-        actualEfficiency: true
+        efficiency_pct: true
       }
     })
 
     const avgEfficiency = runsWithEfficiency.length > 0
-      ? Math.round(runsWithEfficiency.reduce((sum, run) => sum + (run.actualEfficiency || 0), 0) / runsWithEfficiency.length)
+      ? Math.round(runsWithEfficiency.reduce((sum, run) => sum + (run.efficiency_pct || 0), 0) / runsWithEfficiency.length)
       : 0
 
     // Count pending bundles (runs not started yet)
@@ -69,17 +69,17 @@ export async function GET(request: NextRequest) {
     // Calculate total pieces completed today
     const completedRuns = await prisma.sewingRun.findMany({
       where: {
-        status: 'COMPLETED',
-        createdAt: {
+        status: 'DONE',
+        created_at: {
           gte: today
         }
       },
       select: {
-        actualQuantity: true
+        qty_good: true
       }
     })
 
-    const totalPiecesToday = completedRuns.reduce((sum, run) => sum + (run.actualQuantity || 0), 0)
+    const totalPiecesToday = completedRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0)
 
     return NextResponse.json({
       success: true,

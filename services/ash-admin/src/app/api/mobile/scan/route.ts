@@ -119,23 +119,24 @@ export async function POST(request: NextRequest) {
         where: {
           OR: [
             { sku: code },
-            { qr_code: code },
+            { id: code },
           ],
         },
         include: {
-          finishing_run: {
-            include: {
-              order: {
-                select: {
-                  order_number: true,
-                },
-              },
+          order: {
+            select: {
+              order_number: true,
             },
           },
-          carton: {
-            select: {
-              id: true,
-              carton_number: true,
+          carton_contents: {
+            take: 1,
+            include: {
+              carton: {
+                select: {
+                  id: true,
+                  carton_no: true,
+                },
+              },
             },
           },
         },
@@ -148,12 +149,12 @@ export async function POST(request: NextRequest) {
           data: {
             id: finishedUnit.id,
             sku: finishedUnit.sku,
-            quantity: finishedUnit.quantity,
-            warehouse_location: finishedUnit.warehouse_location,
-            order_number: finishedUnit.finishing_run?.order?.order_number,
-            carton: finishedUnit.carton,
+            quantity: 1, // FinishedUnit doesn't have quantity field
+            warehouse_location: finishedUnit.packed ? 'PACKED' : 'UNPACKED',
+            order_number: finishedUnit.order?.order_number,
+            carton: finishedUnit.carton_contents[0]?.carton,
           },
-          message: `Finished Unit ${finishedUnit.sku} - ${finishedUnit.quantity} pieces`,
+          message: `Finished Unit ${finishedUnit.sku} - 1 piece`,
         })
       }
     }
@@ -163,26 +164,22 @@ export async function POST(request: NextRequest) {
       const carton = await prisma.carton.findFirst({
         where: {
           OR: [
-            { carton_number: code },
             { qr_code: code },
+            { id: code },
           ],
         },
         include: {
-          finishing_run: {
-            include: {
-              order: {
-                select: {
-                  order_number: true,
-                  client: {
-                    select: { name: true },
-                  },
-                },
+          order: {
+            select: {
+              order_number: true,
+              client: {
+                select: { name: true },
               },
             },
           },
           _count: {
             select: {
-              finished_units: true,
+              contents: true,
             },
           },
         },
@@ -194,18 +191,18 @@ export async function POST(request: NextRequest) {
           type: 'carton',
           data: {
             id: carton.id,
-            carton_number: carton.carton_number,
-            weight_kg: carton.weight_kg,
+            carton_number: String(carton.carton_no),
+            weight_kg: carton.actual_weight_kg,
             length_cm: carton.length_cm,
             width_cm: carton.width_cm,
             height_cm: carton.height_cm,
-            order_number: carton.finishing_run?.order?.order_number,
-            client_name: carton.finishing_run?.order?.client?.name,
+            order_number: carton.order?.order_number,
+            client_name: carton.order?.client?.name,
             _count: {
-              finished_units: carton._count.finished_units,
+              finished_units: carton._count.contents,
             },
           },
-          message: `Carton ${carton.carton_number} - ${carton._count.finished_units} units`,
+          message: `Carton ${carton.carton_no} - ${carton._count.contents} units`,
         })
       }
     }
@@ -256,7 +253,7 @@ export async function POST(request: NextRequest) {
         data: {
           id: finishedUnit.id,
           sku: finishedUnit.sku,
-          quantity: finishedUnit.quantity,
+          quantity: 1,
         },
         message: `Finished Unit ${finishedUnit.sku} found`,
       })
@@ -268,9 +265,9 @@ export async function POST(request: NextRequest) {
         type: 'carton',
         data: {
           id: carton.id,
-          carton_number: carton.carton_number,
+          carton_number: String(carton.carton_no),
         },
-        message: `Carton ${carton.carton_number} found`,
+        message: `Carton ${carton.carton_no} found`,
       })
     }
 

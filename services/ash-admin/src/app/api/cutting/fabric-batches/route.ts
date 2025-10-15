@@ -3,17 +3,13 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 const CreateFabricBatchSchema = z.object({
-  lotNo: z.string().min(1, 'Lot number is required'),
-  brandId: z.string().min(1, 'Brand ID is required'),
-  fabricType: z.string().min(1, 'Fabric type is required'),
-  color: z.string().min(1, 'Color is required'),
-  gsm: z.number().positive('GSM must be positive'),
-  widthCm: z.number().positive('Width must be positive'),
-  qtyOnHand: z.number().positive('Quantity on hand must be positive'),
-  uom: z.enum(['KG', 'M', 'YD']),
-  estimatedYield: z.number().positive('Estimated yield must be positive').optional(),
-  receivedAt: z.string().transform((str) => new Date(str)),
-  supplierInfo: z.string().optional(),
+  lot_no: z.string().min(1, 'Lot number is required'),
+  brand_id: z.string().min(1, 'Brand ID is required'),
+  gsm: z.number().int().positive('GSM must be positive').optional(),
+  width_cm: z.number().int().positive('Width must be positive').optional(),
+  qty_on_hand: z.number().positive('Quantity on hand must be positive'),
+  uom: z.enum(['KG', 'M']),
+  received_at: z.string().transform((str) => new Date(str)).optional(),
 });
 
 const UpdateFabricBatchSchema = CreateFabricBatchSchema.partial();
@@ -34,15 +30,13 @@ export async function GET(request: NextRequest) {
       AND: [
         search ? {
           OR: [
-            { lotNo: { contains: search, mode: 'insensitive' } },
-            { fabricType: { contains: search, mode: 'insensitive' } },
-            { color: { contains: search, mode: 'insensitive' } },
+            { lot_no: { contains: search, mode: 'insensitive' } },
             { brand: { name: { contains: search, mode: 'insensitive' } } },
           ]
         } : {},
-        brandId ? { brandId } : {},
+        brandId ? { brand_id: brandId } : {},
         uom ? { uom } : {},
-        minQty ? { qtyOnHand: { gte: parseFloat(minQty) } } : {},
+        minQty ? { qty_on_hand: { gte: parseFloat(minQty) } } : {},
       ]
     };
 
@@ -60,11 +54,11 @@ export async function GET(request: NextRequest) {
           },
           _count: {
             select: {
-              fabricIssues: true,
+              cut_issues: true,
             }
           }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { created_at: 'desc' },
       }),
       prisma.fabricBatch.count({ where }),
     ]);
@@ -97,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     // Check if brand exists
     const brand = await prisma.brand.findUnique({
-      where: { id: validatedData.brandId }
+      where: { id: validatedData.brand_id }
     });
 
     if (!brand) {
@@ -107,26 +101,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if fabric batch with same lot number already exists
-    const existingBatch = await prisma.fabricBatch.findFirst({
-      where: { lotNo: validatedData.lotNo }
-    });
-
-    if (existingBatch) {
-      return NextResponse.json(
-        { success: false, error: 'Fabric batch with this lot number already exists' },
-        { status: 400 }
-      );
-    }
-
     const fabricBatch = await prisma.fabricBatch.create({
       data: {
-        ...validatedData,
-        estimatedYield: validatedData.estimatedYield || calculateEstimatedYield(
-          validatedData.uom,
-          validatedData.gsm,
-          validatedData.widthCm
-        ),
+        workspace_id: brand.workspace_id,
+        brand_id: validatedData.brand_id,
+        lot_no: validatedData.lot_no,
+        uom: validatedData.uom,
+        qty_on_hand: validatedData.qty_on_hand,
+        gsm: validatedData.gsm,
+        width_cm: validatedData.width_cm,
+        received_at: validatedData.received_at,
       },
       include: {
         brand: {
@@ -137,7 +121,7 @@ export async function POST(request: NextRequest) {
         },
         _count: {
           select: {
-            fabricIssues: true,
+            cut_issues: true,
           }
         }
       }
@@ -203,7 +187,7 @@ export async function PUT(request: NextRequest) {
         },
         _count: {
           select: {
-            fabricIssues: true,
+            cut_issues: true,
           }
         }
       }
@@ -248,7 +232,7 @@ export async function DELETE(request: NextRequest) {
       include: {
         _count: {
           select: {
-            fabricIssues: true,
+            cut_issues: true,
           }
         }
       }
@@ -262,7 +246,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if fabric batch has issues (prevent deletion if they do)
-    if (existingBatch._count.fabricIssues > 0) {
+    if (existingBatch._count.cut_issues > 0) {
       return NextResponse.json(
         { success: false, error: 'Cannot delete fabric batch with existing fabric issues' },
         { status: 400 }
@@ -286,16 +270,3 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-function calculateEstimatedYield(uom: string, gsm: number, widthCm: number): number {
-  const averageGarmentArea = 2500; // cm² for medium garment
-
-  if (uom === 'KG') {
-    // kg to pieces conversion
-    const areaPerKg = (1000 * 10000) / gsm; // cm² per kg
-    return Math.round((areaPerKg / averageGarmentArea) * 100) / 100;
-  } else {
-    // M/YD to pieces conversion
-    const areaPerUnit = widthCm * (uom === 'YD' ? 91.44 : 100); // cm² per unit
-    return Math.round((areaPerUnit / averageGarmentArea) * 100) / 100;
-  }
-}

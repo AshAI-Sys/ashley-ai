@@ -61,7 +61,7 @@ export const GET = withErrorHandling(async (
 
   } else if (employee.department === 'Quality Control') {
     // Count QC inspections
-    const qcInspections = await prisma.qualityControlCheck.findMany({
+    const qcInspections = await prisma.qCInspection.findMany({
       where: { inspector_id: employeeId }
     })
 
@@ -77,57 +77,66 @@ export const GET = withErrorHandling(async (
     )
     weekPieces = weekInspections.length
 
-    tasksCompleted = qcInspections.filter(check => check.status === 'COMPLETED').length
+    tasksCompleted = qcInspections.filter(check => check.status === 'CLOSED').length
 
   } else if (employee.department === 'Cutting') {
-    // Count cutting runs
-    const cuttingRuns = await prisma.cuttingRun.findMany({
+    // Count cut lays (no cutter tracking in schema)
+    const cutLays = await prisma.cutLay.findMany({
       where: {
-        OR: [
-          { cutter_1_id: employeeId },
-          { cutter_2_id: employeeId }
-        ]
+        created_by: employeeId
+      },
+      include: {
+        bundles: true,
+        outputs: true,
       }
     })
 
-    totalPieces = cuttingRuns.reduce((sum, run) => sum + (run.total_bundles || 0), 0)
+    totalPieces = cutLays.reduce((sum, lay) => sum + lay.bundles.length, 0)
 
-    const todayRuns = cuttingRuns.filter(run =>
-      run.created_at >= today && run.created_at < tomorrow
+    const todayLays = cutLays.filter(lay =>
+      lay.created_at >= today && lay.created_at < tomorrow
     )
-    todayPieces = todayRuns.reduce((sum, run) => sum + (run.total_bundles || 0), 0)
+    todayPieces = todayLays.reduce((sum, lay) => sum + lay.bundles.length, 0)
 
-    const weekRuns = cuttingRuns.filter(run =>
-      run.created_at >= weekStart && run.created_at < weekEnd
+    const weekLays = cutLays.filter(lay =>
+      lay.created_at >= weekStart && lay.created_at < weekEnd
     )
-    weekPieces = weekRuns.reduce((sum, run) => sum + (run.total_bundles || 0), 0)
+    weekPieces = weekLays.reduce((sum, lay) => sum + lay.bundles.length, 0)
 
-    tasksCompleted = cuttingRuns.filter(run => run.status === 'COMPLETED').length
+    tasksCompleted = cutLays.filter(lay =>
+      lay.bundles.every(b => b.status === 'DONE')
+    ).length
 
   } else if (employee.department === 'Printing') {
-    // Count print runs
+    // Count print runs (no printer tracking in schema, use created_by)
     const printRuns = await prisma.printRun.findMany({
       where: {
-        OR: [
-          { printer_1_id: employeeId },
-          { printer_2_id: employeeId }
-        ]
+        created_by: employeeId
+      },
+      include: {
+        outputs: true,
       }
     })
 
-    totalPieces = printRuns.reduce((sum, run) => sum + (run.quantity || 0), 0)
+    totalPieces = printRuns.reduce((sum, run) =>
+      sum + run.outputs.reduce((s, o) => s + o.qty_good, 0), 0
+    )
 
     const todayRuns = printRuns.filter(run =>
       run.created_at >= today && run.created_at < tomorrow
     )
-    todayPieces = todayRuns.reduce((sum, run) => sum + (run.quantity || 0), 0)
+    todayPieces = todayRuns.reduce((sum, run) =>
+      sum + run.outputs.reduce((s, o) => s + o.qty_good, 0), 0
+    )
 
     const weekRuns = printRuns.filter(run =>
       run.created_at >= weekStart && run.created_at < weekEnd
     )
-    weekPieces = weekRuns.reduce((sum, run) => sum + (run.quantity || 0), 0)
+    weekPieces = weekRuns.reduce((sum, run) =>
+      sum + run.outputs.reduce((s, o) => s + o.qty_good, 0), 0
+    )
 
-    tasksCompleted = printRuns.filter(run => run.status === 'COMPLETED').length
+    tasksCompleted = printRuns.filter(run => run.status === 'DONE').length
   }
 
   // Calculate efficiency rate (simplified - can be enhanced based on targets)
@@ -140,7 +149,7 @@ export const GET = withErrorHandling(async (
   let qualityScore = 95 // Default quality score
 
   if (employee.department === 'Sewing' || employee.department === 'Cutting') {
-    const recentInspections = await prisma.qualityControlCheck.findMany({
+    const recentInspections = await prisma.qCInspection.findMany({
       where: {
         created_at: {
           gte: weekStart
@@ -150,7 +159,7 @@ export const GET = withErrorHandling(async (
     })
 
     if (recentInspections.length > 0) {
-      const passedInspections = recentInspections.filter(check => check.result === 'PASS').length
+      const passedInspections = recentInspections.filter(check => check.result === 'PASSED').length
       qualityScore = Math.round((passedInspections / recentInspections.length) * 100)
     }
   }

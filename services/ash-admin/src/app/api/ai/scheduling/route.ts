@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
       },
       include: {
         client: true,
-        line_items: true,
-        cut_lays: true,
+        lays: true,
         sewing_runs: true,
         print_runs: true,
       },
@@ -32,10 +31,10 @@ export async function POST(req: NextRequest) {
       let currentStage: 'CUTTING' | 'PRINTING' | 'SEWING' | 'FINISHING' = 'CUTTING';
       if (order.sewing_runs.length > 0) currentStage = 'FINISHING';
       else if (order.print_runs.length > 0) currentStage = 'SEWING';
-      else if (order.cut_lays.length > 0) currentStage = 'PRINTING';
+      else if (order.lays.length > 0) currentStage = 'PRINTING';
 
       // Estimate hours based on quantity and stage
-      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalQuantity = order.total_units || 1000;
       const baseHoursPerUnit = 0.05; // 3 minutes per unit
       const estimatedHours = totalQuantity * baseHoursPerUnit;
 
@@ -48,14 +47,14 @@ export async function POST(req: NextRequest) {
       else if (daysUntilDeadline > 30) priority = 'LOW';
 
       // Required skills based on garment type
-      const requiredSkills = [order.line_items?.[0]?.product_type || 'GENERAL', currentStage];
+      const requiredSkills = ['GENERAL', currentStage];
 
       return {
         id: order.id,
         order_id: order.id,
         client_name: order.client.name,
-        garment_type: order.line_items?.[0]?.product_type || 'UNKNOWN',
-        quantity: order.line_items?.[0]?.quantity || 0,
+        garment_type: 'UNKNOWN',
+        quantity: order.total_units || 0,
         priority,
         deadline,
         estimated_hours: estimatedHours,
@@ -68,13 +67,13 @@ export async function POST(req: NextRequest) {
     // Get available resources (operators and machines)
     const employees = await prisma.employee.findMany({
       where: {
-        status: 'ACTIVE',
+        is_active: true,
       },
     });
 
     const resources = employees.map(emp => ({
       id: emp.id,
-      name: emp.name,
+      name: `${emp.first_name} ${emp.last_name}`,
       type: 'OPERATOR' as const,
       skills: [emp.position || 'GENERAL'],
       capacity_hours_per_day: 8,
@@ -162,7 +161,6 @@ export async function GET(req: NextRequest) {
       },
       include: {
         client: true,
-        line_items: true,
         sewing_runs: {
           include: {
             operator: true,
@@ -179,18 +177,18 @@ export async function GET(req: NextRequest) {
       const deadline = order.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const daysUntilDeadline = (deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
       const urgency = daysUntilDeadline < 3 ? 'URGENT' : daysUntilDeadline < 7 ? 'HIGH' : 'NORMAL';
-      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalQuantity = order.quantity || 0;
 
       return {
         order_id: order.id,
         client_name: order.client.name,
-        garment_type: order.line_items[0]?.product_type || 'UNKNOWN',
+        garment_type: 'UNKNOWN',
         quantity: totalQuantity,
         deadline,
         days_until_deadline: Math.floor(daysUntilDeadline),
         urgency,
         status: order.status,
-        assigned_operators: order.sewing_runs.map(run => run.operator?.name).filter(Boolean),
+        assigned_operators: order.sewing_runs.map(run => `${run.operator?.first_name} ${run.operator?.last_name}`).filter(Boolean),
       };
     });
 

@@ -85,16 +85,16 @@ export class InventoryManager {
   async addMaterial(material: Omit<Material, 'id' | 'created_at'>): Promise<Material> {
     const { prisma } = await import('@ash-ai/database');
 
-    // Check if material with SKU exists
+    // Check if material with name exists
     const existing = await prisma.materialInventory.findFirst({
       where: {
         workspace_id: material.workspace_id,
-        sku: material.sku,
+        material_name: material.name,
       },
     });
 
     if (existing) {
-      throw new Error(`Material with SKU ${material.sku} already exists`);
+      throw new Error(`Material with name ${material.name} already exists`);
     }
 
     const newMaterial: Material = {
@@ -109,12 +109,15 @@ export class InventoryManager {
         workspace_id: newMaterial.workspace_id,
         material_name: newMaterial.name,
         material_type: newMaterial.category,
-        quantity: newMaterial.current_stock,
+        current_stock: newMaterial.current_stock,
+        reserved_stock: 0,
+        available_stock: newMaterial.current_stock,
         unit: newMaterial.unit_of_measure,
-        unit_cost: newMaterial.unit_cost,
+        cost_per_unit: newMaterial.unit_cost,
         supplier: material.supplier_id || 'UNKNOWN',
         location: newMaterial.location || 'WAREHOUSE',
         reorder_point: newMaterial.reorder_point,
+        minimum_stock: newMaterial.reorder_point,
         last_updated: new Date(),
       },
     });
@@ -137,12 +140,14 @@ export class InventoryManager {
       throw new Error('Material not found');
     }
 
-    const newQuantity = material.quantity + quantity_change;
+    const newQuantity = material.current_stock + quantity_change;
+    const newAvailable = newQuantity - material.reserved_stock;
 
     await prisma.materialInventory.update({
       where: { id: material_id },
       data: {
-        quantity: newQuantity,
+        current_stock: newQuantity,
+        available_stock: newAvailable,
         last_updated: new Date(),
       },
     });
@@ -152,13 +157,11 @@ export class InventoryManager {
       data: {
         workspace_id: material.workspace_id,
         material_inventory_id: material_id,
-        transaction_type,
+        transaction_type: quantity_change > 0 ? 'IN' : 'OUT',
         quantity: Math.abs(quantity_change),
-        is_addition: quantity_change > 0,
-        unit_cost: material.unit_cost,
-        total_cost: Math.abs(quantity_change) * parseFloat(material.unit_cost.toString()),
-        transaction_date: new Date(),
+        unit_cost: material.cost_per_unit || 0,
         notes: `${transaction_type} transaction`,
+        created_by: 'system',
       },
     });
 
@@ -218,14 +221,16 @@ export class InventoryManager {
     let severity: StockAlert['severity'] = 'INFO';
     let message = '';
 
+    const reorderPoint = material.reorder_point || 0;
+
     if (current_level === 0) {
       alertType = 'OUT_OF_STOCK';
       severity = 'CRITICAL';
       message = `${material.material_name} is out of stock!`;
-    } else if (current_level <= material.reorder_point) {
+    } else if (current_level <= reorderPoint) {
       alertType = 'LOW_STOCK';
       severity = 'WARNING';
-      message = `${material.material_name} is below reorder point (${current_level}/${material.reorder_point})`;
+      message = `${material.material_name} is below reorder point (${current_level}/${reorderPoint})`;
     }
 
     if (alertType) {
@@ -247,23 +252,26 @@ export class InventoryManager {
     if (!material) return;
 
     // Calculate reorder quantity (simple logic)
-    const reorderQty = material.reorder_point * 2 - material.quantity;
+    const reorderPoint = material.reorder_point || 0;
+    const currentStock = material.current_stock || 0;
+    const reorderQty = reorderPoint * 2 - currentStock;
 
     if (reorderQty > 0) {
       // Create automatic purchase order
+      const unitCost = material.cost_per_unit || 0;
       const po = await this.createPurchaseOrder({
         workspace_id: material.workspace_id,
-        supplier_id: material.supplier,
+        supplier_id: material.supplier || 'UNKNOWN',
         status: 'DRAFT',
         order_date: new Date(),
         expected_delivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-        total_amount: reorderQty * parseFloat(material.unit_cost.toString()),
+        total_amount: reorderQty * unitCost,
         items: [
           {
             material_id,
             quantity: reorderQty,
-            unit_price: parseFloat(material.unit_cost.toString()),
-            total_price: reorderQty * parseFloat(material.unit_cost.toString()),
+            unit_price: unitCost,
+            total_price: reorderQty * unitCost,
           },
         ],
         notes: 'Auto-generated purchase order',
@@ -283,28 +291,31 @@ export class InventoryManager {
     const alerts: StockAlert[] = [];
 
     for (const material of materials) {
-      if (material.quantity === 0) {
+      const currentStock = material.current_stock || 0;
+      const reorderPoint = material.reorder_point || 0;
+
+      if (currentStock === 0) {
         alerts.push({
           id: `alert_${material.id}`,
           material_id: material.id,
           material_name: material.material_name,
           alert_type: 'OUT_OF_STOCK',
           severity: 'CRITICAL',
-          current_level: material.quantity,
-          threshold: material.reorder_point,
+          current_level: currentStock,
+          threshold: reorderPoint,
           message: `${material.material_name} is out of stock`,
           created_at: new Date(),
           resolved: false,
         });
-      } else if (material.quantity <= material.reorder_point) {
+      } else if (currentStock <= reorderPoint) {
         alerts.push({
           id: `alert_${material.id}`,
           material_id: material.id,
           material_name: material.material_name,
           alert_type: 'LOW_STOCK',
           severity: 'WARNING',
-          current_level: material.quantity,
-          threshold: material.reorder_point,
+          current_level: currentStock,
+          threshold: reorderPoint,
           message: `${material.material_name} is below reorder point`,
           created_at: new Date(),
           resolved: false,
@@ -333,7 +344,9 @@ export class InventoryManager {
     });
 
     const costings: MaterialCosting[] = materials.map(material => {
-      const stockValue = material.quantity * parseFloat(material.unit_cost.toString());
+      const currentStock = material.current_stock || 0;
+      const unitCost = material.cost_per_unit || 0;
+      const stockValue = currentStock * unitCost;
 
       // Calculate waste
       const wasteTransactions = material.transactions.filter(
@@ -341,20 +354,20 @@ export class InventoryManager {
       );
       const totalWaste = wasteTransactions.reduce((sum: number, t: any) => sum + t.quantity, 0);
       const totalUsage = material.transactions
-        .filter((t: any) => t.transaction_type === 'USAGE')
+        .filter((t: any) => t.transaction_type === 'OUT')
         .reduce((sum: number, t: any) => sum + t.quantity, 0);
 
       const wastePercentage = totalUsage > 0 ? (totalWaste / totalUsage) * 100 : 0;
-      const wasteCost = totalWaste * parseFloat(material.unit_cost.toString());
+      const wasteCost = totalWaste * unitCost;
 
       const usage30Days = totalUsage;
-      const projectedCostMonthly = usage30Days * parseFloat(material.unit_cost.toString());
+      const projectedCostMonthly = usage30Days * unitCost;
 
       return {
         material_id: material.id,
         material_name: material.material_name,
         total_stock_value: stockValue,
-        avg_unit_cost: parseFloat(material.unit_cost.toString()),
+        avg_unit_cost: unitCost,
         waste_percentage: wastePercentage,
         waste_cost: wasteCost,
         usage_last_30_days: usage30Days,
@@ -369,12 +382,12 @@ export class InventoryManager {
   async scanBarcode(barcode: string): Promise<Material | null> {
     const { prisma } = await import('@ash-ai/database');
 
-    // Search for material by barcode (stored in location field for now)
+    // Search for material by barcode (stored in location or batch_number field)
     const material = await prisma.materialInventory.findFirst({
       where: {
         OR: [
           { location: { contains: barcode } },
-          { sku: barcode },
+          { batch_number: barcode },
         ],
       },
     });
@@ -384,16 +397,16 @@ export class InventoryManager {
     return {
       id: material.id,
       workspace_id: material.workspace_id,
-      sku: material.sku || 'UNKNOWN',
+      sku: material.batch_number || 'UNKNOWN',
       name: material.material_name,
       category: material.material_type as any || 'OTHER',
       unit_of_measure: material.unit as any || 'PIECES',
-      current_stock: material.quantity,
-      reorder_point: material.reorder_point,
-      max_stock_level: material.reorder_point * 3,
-      unit_cost: parseFloat(material.unit_cost.toString()),
-      supplier_id: material.supplier,
-      location: material.location,
+      current_stock: material.current_stock || 0,
+      reorder_point: material.reorder_point || 0,
+      max_stock_level: (material.reorder_point || 0) * 3,
+      unit_cost: material.cost_per_unit || 0,
+      supplier_id: material.supplier || undefined,
+      location: material.location || undefined,
       barcode,
       rfid_tag: undefined,
       last_restocked: material.last_updated,
@@ -430,11 +443,15 @@ export class InventoryManager {
 
     const totalMaterials = materials.length;
     const totalValue = materials.reduce(
-      (sum, m) => sum + m.quantity * parseFloat(m.unit_cost.toString()),
+      (sum, m) => sum + (m.current_stock || 0) * (m.cost_per_unit || 0),
       0
     );
-    const lowStockCount = materials.filter(m => m.quantity <= m.reorder_point && m.quantity > 0).length;
-    const outOfStockCount = materials.filter(m => m.quantity === 0).length;
+    const lowStockCount = materials.filter(m => {
+      const stock = m.current_stock || 0;
+      const reorder = m.reorder_point || 0;
+      return stock <= reorder && stock > 0;
+    }).length;
+    const outOfStockCount = materials.filter(m => (m.current_stock || 0) === 0).length;
 
     const costings = await this.calculateMaterialCost(workspace_id);
     const monthlyWasteCost = costings.reduce((sum, c) => sum + c.waste_cost, 0);

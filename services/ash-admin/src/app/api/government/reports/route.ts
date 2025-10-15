@@ -25,16 +25,15 @@ export async function POST(request: NextRequest) {
       where: {
         workspace_id,
         ...(employee_ids && employee_ids.length > 0 ? { id: { in: employee_ids } } : {}),
-        status: 'ACTIVE',
+        is_active: true,
       },
       select: {
         id: true,
         first_name: true,
         last_name: true,
-        sss_number: true,
-        philhealth_number: true,
-        pagibig_number: true,
-        salary: true,
+        contact_info: true, // Contains SSS, PhilHealth, Pag-IBIG numbers
+        base_salary: true,
+        piece_rate: true,
         salary_type: true,
       },
     })
@@ -45,15 +44,35 @@ export async function POST(request: NextRequest) {
 
     let report: any = null
 
+    // Parse contact_info JSON to extract government IDs
+    const employeesWithGovIds = employees.map(emp => {
+      let contactInfo: any = {}
+      try {
+        contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {}
+      } catch (e) {
+        // If parsing fails, use empty object
+      }
+
+      const monthlySalary = emp.base_salary || emp.piece_rate || 0
+
+      return {
+        ...emp,
+        sss_number: contactInfo.sss_number || null,
+        philhealth_number: contactInfo.philhealth_number || null,
+        pagibig_number: contactInfo.pagibig_number || null,
+        monthly_salary: monthlySalary,
+      }
+    })
+
     switch (agency.toUpperCase()) {
       case 'SSS':
-        const sssEmployees = employees
+        const sssEmployees = employeesWithGovIds
           .filter((emp) => emp.sss_number)
           .map((emp) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             sss_number: emp.sss_number!,
-            monthly_salary: emp.salary || 0,
+            monthly_salary: emp.monthly_salary,
           }))
 
         report = await sssService.generateRemittanceReport(
@@ -68,13 +87,13 @@ export async function POST(request: NextRequest) {
         break
 
       case 'PHILHEALTH':
-        const philhealthEmployees = employees
+        const philhealthEmployees = employeesWithGovIds
           .filter((emp) => emp.philhealth_number)
           .map((emp) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             philhealth_number: emp.philhealth_number!,
-            monthly_salary: emp.salary || 0,
+            monthly_salary: emp.monthly_salary,
           }))
 
         report = await philHealthService.generateRemittanceReport(
@@ -89,13 +108,13 @@ export async function POST(request: NextRequest) {
         break
 
       case 'PAGIBIG':
-        const pagibigEmployees = employees
+        const pagibigEmployees = employeesWithGovIds
           .filter((emp) => emp.pagibig_number)
           .map((emp) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             pagibig_number: emp.pagibig_number!,
-            monthly_salary: emp.salary || 0,
+            monthly_salary: emp.monthly_salary,
           }))
 
         report = await pagIBIGService.generateRemittanceReport(
@@ -154,17 +173,33 @@ export async function GET(request: NextRequest) {
     // Get employee details if ID provided
     let employee = null
     if (employee_id) {
-      employee = await prisma.employee.findUnique({
+      const emp = await prisma.employee.findUnique({
         where: { id: employee_id },
         select: {
           id: true,
           first_name: true,
           last_name: true,
-          sss_number: true,
-          philhealth_number: true,
-          pagibig_number: true,
+          contact_info: true,
         },
       })
+
+      if (emp) {
+        let contactInfo: any = {}
+        try {
+          contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {}
+        } catch (e) {
+          // If parsing fails, use empty object
+        }
+
+        employee = {
+          id: emp.id,
+          first_name: emp.first_name,
+          last_name: emp.last_name,
+          sss_number: contactInfo.sss_number || null,
+          philhealth_number: contactInfo.philhealth_number || null,
+          pagibig_number: contactInfo.pagibig_number || null,
+        }
+      }
     }
 
     return NextResponse.json({

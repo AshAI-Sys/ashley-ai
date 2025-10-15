@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
     // Run all queries in parallel
     const [
       attendance,
-      sewingOperatorStats,
-      printOperatorStats,
+      sewingStats,
+      printStats,
     ] = await Promise.all([
       // Today's attendance
       prisma.attendanceLog.findFirst({
@@ -55,55 +55,44 @@ export async function GET(request: NextRequest) {
       }),
 
       // Sewing production stats
-      prisma.sewingRunOperator.aggregate({
+      prisma.sewingRun.aggregate({
         where: {
-          employee_id: employee.id,
-          sewing_run: {
-            start_time: {
-              gte: startOfToday,
-              lte: endOfToday,
-            },
+          operator_id: employee.id,
+          started_at: {
+            gte: startOfToday,
+            lte: endOfToday,
           },
         },
         _sum: {
-          pieces_completed: true,
+          qty_good: true,
         },
         _avg: {
-          efficiency_percentage: true,
+          efficiency_pct: true,
         },
       }),
 
-      // Print production stats
-      prisma.printRunOperator.aggregate({
+      // Print production stats (count print runs)
+      prisma.printRun.count({
         where: {
-          employee_id: employee.id,
-          print_run: {
-            start_time: {
-              gte: startOfToday,
-              lte: endOfToday,
-            },
+          created_by: employee.id,
+          started_at: {
+            gte: startOfToday,
+            lte: endOfToday,
           },
-        },
-        _sum: {
-          pieces_completed: true,
-        },
-        _avg: {
-          efficiency_percentage: true,
+          status: {
+            in: ['DONE', 'IN_PROGRESS']
+          }
         },
       }),
     ])
 
     // Calculate total pieces produced today
-    const sewingPieces = sewingOperatorStats._sum.pieces_completed || 0
-    const printPieces = printOperatorStats._sum.pieces_completed || 0
-    const totalPieces = sewingPieces + printPieces
+    const sewingPieces = sewingStats._sum.qty_good || 0
+    const printPieces = printStats || 0
+    const totalPieces = sewingPieces
 
     // Calculate average efficiency
-    const sewingEfficiency = sewingOperatorStats._avg.efficiency_percentage || 0
-    const printEfficiency = printOperatorStats._avg.efficiency_percentage || 0
-    const avgEfficiency = sewingPieces > 0 || printPieces > 0
-      ? ((sewingEfficiency * sewingPieces) + (printEfficiency * printPieces)) / totalPieces
-      : 0
+    const avgEfficiency = sewingStats._avg.efficiency_pct || 0
 
     // Calculate hours worked today
     let hoursWorked = 0
@@ -130,23 +119,19 @@ export async function GET(request: NextRequest) {
 
     // Count pending tasks
     const [pendingSewingTasks, pendingPrintTasks] = await Promise.all([
-      prisma.sewingRunOperator.count({
+      prisma.sewingRun.count({
         where: {
-          employee_id: employee.id,
-          sewing_run: {
-            status: {
-              in: ['in_progress', 'pending'],
-            },
+          operator_id: employee.id,
+          status: {
+            in: ['IN_PROGRESS', 'CREATED'],
           },
         },
       }),
-      prisma.printRunOperator.count({
+      prisma.printRun.count({
         where: {
-          employee_id: employee.id,
-          print_run: {
-            status: {
-              in: ['in_progress', 'pending'],
-            },
+          created_by: employee.id,
+          status: {
+            in: ['IN_PROGRESS', 'CREATED'],
           },
         },
       }),
@@ -156,27 +141,23 @@ export async function GET(request: NextRequest) {
 
     // Count completed tasks today
     const [completedSewingTasks, completedPrintTasks] = await Promise.all([
-      prisma.sewingRunOperator.count({
+      prisma.sewingRun.count({
         where: {
-          employee_id: employee.id,
-          sewing_run: {
-            status: 'completed',
-            end_time: {
-              gte: startOfToday,
-              lte: endOfToday,
-            },
+          operator_id: employee.id,
+          status: 'DONE',
+          ended_at: {
+            gte: startOfToday,
+            lte: endOfToday,
           },
         },
       }),
-      prisma.printRunOperator.count({
+      prisma.printRun.count({
         where: {
-          employee_id: employee.id,
-          print_run: {
-            status: 'completed',
-            end_time: {
-              gte: startOfToday,
-              lte: endOfToday,
-            },
+          created_by: employee.id,
+          status: 'DONE',
+          ended_at: {
+            gte: startOfToday,
+            lte: endOfToday,
           },
         },
       }),
@@ -187,8 +168,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        employee_name: employee.name,
-        employee_id: employee.employee_id,
+        employee_name: `${employee.first_name} ${employee.last_name}`,
+        employee_id: employee.employee_number,
         department: employee.department,
         position: employee.position,
         tasks_pending: tasksPending,

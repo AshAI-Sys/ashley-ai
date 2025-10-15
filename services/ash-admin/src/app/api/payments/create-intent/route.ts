@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
       where: { id: invoiceId },
       include: {
         client: true,
-        order: true,
       },
     })
 
@@ -33,7 +32,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('Invoice not found', 404)
     }
 
-    if (invoice.status === 'PAID') {
+    if (invoice.status === 'paid') {
       return createErrorResponse('Invoice is already paid', 400)
     }
 
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
     const payments = await prisma.payment.aggregate({
       where: {
         invoice_id: invoiceId,
-        status: 'COMPLETED',
+        status: 'completed',
       },
       _sum: { amount: true },
     })
@@ -59,12 +58,12 @@ export async function POST(request: NextRequest) {
         amount: paymentService.toSmallestUnit(remainingAmount, invoice.currency),
         currency: invoice.currency,
         description: `Payment for Invoice ${invoice.invoice_number}`,
-        customerEmail: invoice.client?.email || undefined,
+        customerEmail: invoice.client.email || undefined,
         invoiceId: invoice.id,
         metadata: {
           invoice_number: invoice.invoice_number,
           order_id: invoice.order_id || '',
-          client_name: invoice.client?.name || '',
+          client_name: invoice.client.name,
         },
       })
 
@@ -93,8 +92,8 @@ export async function POST(request: NextRequest) {
         amount: paymentService.toSmallestUnit(remainingAmount, 'PHP'),
         description: `Invoice ${invoice.invoice_number}`,
         referenceNumber: invoice.invoice_number,
-        customerName: invoice.client?.name,
-        customerEmail: invoice.client?.email || undefined,
+        customerName: invoice.client.name,
+        customerEmail: undefined,
         successUrl: `${baseUrl}/payments/success?invoice=${invoice.id}`,
         failureUrl: `${baseUrl}/payments/failed?invoice=${invoice.id}`,
       })

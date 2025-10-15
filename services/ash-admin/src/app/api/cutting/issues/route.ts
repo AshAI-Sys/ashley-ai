@@ -3,10 +3,11 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 const CreateFabricIssueSchema = z.object({
-  orderId: z.string().min(1, 'Order ID is required'),
-  fabricBatchId: z.string().min(1, 'Fabric batch ID is required'),
-  qtyIssued: z.number().positive('Quantity issued must be positive'),
-  notes: z.string().optional(),
+  order_id: z.string().min(1, 'Order ID is required'),
+  batch_id: z.string().min(1, 'Fabric batch ID is required'),
+  qty_issued: z.number().positive('Quantity issued must be positive'),
+  uom: z.string().min(1, 'Unit of measure is required'),
+  issued_by: z.string().min(1, 'Issued by is required'),
 });
 
 const UpdateFabricIssueSchema = CreateFabricIssueSchema.partial();
@@ -25,15 +26,15 @@ export async function GET(request: NextRequest) {
 
     const where = {
       AND: [
-        orderId ? { orderId } : {},
-        fabricBatchId ? { fabricBatchId } : {},
-        startDate ? { createdAt: { gte: new Date(startDate) } } : {},
-        endDate ? { createdAt: { lte: new Date(endDate) } } : {},
+        orderId ? { order_id: orderId } : {},
+        fabricBatchId ? { batch_id: fabricBatchId } : {},
+        startDate ? { created_at: { gte: new Date(startDate) } } : {},
+        endDate ? { created_at: { lte: new Date(endDate) } } : {},
       ]
     };
 
     const [fabricIssues, total] = await Promise.all([
-      prisma.fabricIssue.findMany({
+      prisma.cutIssue.findMany({
         where,
         skip,
         take: limit,
@@ -41,36 +42,28 @@ export async function GET(request: NextRequest) {
           order: {
             select: {
               id: true,
-              orderNumber: true,
+              order_number: true,
               client: {
                 select: {
                   name: true,
-                  company: true,
                 }
               },
-              brand: {
-                select: {
-                  name: true,
-                }
-              }
             }
           },
-          fabricBatch: {
+          batch: {
             select: {
               id: true,
-              lotNo: true,
-              fabricType: true,
-              color: true,
-              gsm: true,
-              widthCm: true,
+              lot_no: true,
               uom: true,
-              qtyOnHand: true,
+              qty_on_hand: true,
+              gsm: true,
+              width_cm: true,
             }
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { created_at: 'desc' },
       }),
-      prisma.fabricIssue.count({ where }),
+      prisma.cutIssue.count({ where }),
     ]);
 
     return NextResponse.json({
@@ -101,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     // Check if order exists
     const order = await prisma.order.findUnique({
-      where: { id: validatedData.orderId }
+      where: { id: validatedData.order_id }
     });
 
     if (!order) {
@@ -113,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     // Check if fabric batch exists and has sufficient quantity
     const fabricBatch = await prisma.fabricBatch.findUnique({
-      where: { id: validatedData.fabricBatchId }
+      where: { id: validatedData.batch_id }
     });
 
     if (!fabricBatch) {
@@ -123,11 +116,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (fabricBatch.qtyOnHand < validatedData.qtyIssued) {
+    if (fabricBatch.qty_on_hand < validatedData.qty_issued) {
       return NextResponse.json(
         {
           success: false,
-          error: `Insufficient fabric quantity. Available: ${fabricBatch.qtyOnHand} ${fabricBatch.uom}`
+          error: `Insufficient fabric quantity. Available: ${fabricBatch.qty_on_hand} ${fabricBatch.uom}`
         },
         { status: 400 }
       );
@@ -136,36 +129,31 @@ export async function POST(request: NextRequest) {
     // Create fabric issue and update batch quantity in a transaction
     const fabricIssue = await prisma.$transaction(async (tx) => {
       // Create the fabric issue
-      const newFabricIssue = await tx.fabricIssue.create({
-        data: validatedData,
+      const newFabricIssue = await tx.cutIssue.create({
+        data: {
+          ...validatedData,
+          workspace_id: order.workspace_id,
+        },
         include: {
           order: {
             select: {
               id: true,
-              orderNumber: true,
+              order_number: true,
               client: {
                 select: {
                   name: true,
-                  company: true,
                 }
               },
-              brand: {
-                select: {
-                  name: true,
-                }
-              }
             }
           },
-          fabricBatch: {
+          batch: {
             select: {
               id: true,
-              lotNo: true,
-              fabricType: true,
-              color: true,
-              gsm: true,
-              widthCm: true,
+              lot_no: true,
               uom: true,
-              qtyOnHand: true,
+              qty_on_hand: true,
+              gsm: true,
+              width_cm: true,
             }
           }
         }
@@ -173,10 +161,10 @@ export async function POST(request: NextRequest) {
 
       // Update fabric batch quantity
       await tx.fabricBatch.update({
-        where: { id: validatedData.fabricBatchId },
+        where: { id: validatedData.batch_id },
         data: {
-          qtyOnHand: {
-            decrement: validatedData.qtyIssued
+          qty_on_hand: {
+            decrement: validatedData.qty_issued
           }
         }
       });
@@ -221,7 +209,7 @@ export async function PUT(request: NextRequest) {
     const validatedData = UpdateFabricIssueSchema.parse(body);
 
     // Check if fabric issue exists
-    const existingIssue = await prisma.fabricIssue.findUnique({
+    const existingIssue = await prisma.cutIssue.findUnique({
       where: { id }
     });
 
@@ -232,37 +220,29 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const fabricIssue = await prisma.fabricIssue.update({
+    const fabricIssue = await prisma.cutIssue.update({
       where: { id },
       data: validatedData,
       include: {
         order: {
           select: {
             id: true,
-            orderNumber: true,
+            order_number: true,
             client: {
               select: {
                 name: true,
-                company: true,
               }
             },
-            brand: {
-              select: {
-                name: true,
-              }
-            }
           }
         },
-        fabricBatch: {
+        batch: {
           select: {
             id: true,
-            lotNo: true,
-            fabricType: true,
-            color: true,
-            gsm: true,
-            widthCm: true,
+            lot_no: true,
             uom: true,
-            qtyOnHand: true,
+            qty_on_hand: true,
+            gsm: true,
+            width_cm: true,
           }
         }
       }
@@ -302,10 +282,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if fabric issue exists
-    const existingIssue = await prisma.fabricIssue.findUnique({
+    const existingIssue = await prisma.cutIssue.findUnique({
       where: { id },
       include: {
-        fabricBatch: true
+        batch: true
       }
     });
 
@@ -319,16 +299,16 @@ export async function DELETE(request: NextRequest) {
     // Delete fabric issue and restore batch quantity in a transaction
     await prisma.$transaction(async (tx) => {
       // Delete the fabric issue
-      await tx.fabricIssue.delete({
+      await tx.cutIssue.delete({
         where: { id }
       });
 
       // Restore fabric batch quantity
       await tx.fabricBatch.update({
-        where: { id: existingIssue.fabricBatchId },
+        where: { id: existingIssue.batch_id },
         data: {
-          qtyOnHand: {
-            increment: existingIssue.qtyIssued
+          qty_on_hand: {
+            increment: existingIssue.qty_issued
           }
         }
       });

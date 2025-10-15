@@ -4,28 +4,21 @@ import { z } from 'zod';
 
 const CreateSewingRunSchema = z.object({
   order_id: z.string().min(1, 'Order ID is required'),
-  bundle_id: z.string().optional(),
+  bundle_id: z.string().min(1, 'Bundle ID is required'),
+  routing_step_id: z.string().min(1, 'Routing step ID is required'),
   operation_name: z.string().min(1, 'Operation name is required'),
-  machine_id: z.string().optional(),
+  sewing_type: z.string().optional(),
   operator_id: z.string().min(1, 'Operator ID is required'),
-  planned_quantity: z.number().int().positive('Planned quantity must be positive'),
-  target_efficiency: z.number().min(0).max(200).default(85),
-  piece_rate: z.number().positive('Piece rate must be positive'),
-  standard_time: z.number().positive('Standard time must be positive'),
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']).default('MEDIUM'),
-  scheduled_start: z.string().transform((str) => new Date(str)),
-  scheduled_end: z.string().transform((str) => new Date(str)),
-  instructions: z.string().optional(),
-  quality_requirements: z.record(z.any()).optional(),
 });
 
-const UpdateSewingRunSchema = CreateSewingRunSchema.partial().extend({
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'PAUSED', 'COMPLETED', 'CANCELLED']).optional(),
-  actual_quantity: z.number().int().min(0).optional(),
-  actual_efficiency: z.number().min(0).max(200).optional(),
-  start_time: z.string().transform((str) => new Date(str)).optional(),
-  end_time: z.string().transform((str) => new Date(str)).optional(),
-  notes: z.string().optional(),
+const UpdateSewingRunSchema = z.object({
+  status: z.enum(['CREATED', 'IN_PROGRESS', 'DONE']).optional(),
+  qty_good: z.number().int().min(0).optional(),
+  qty_reject: z.number().int().min(0).optional(),
+  started_at: z.string().transform((str) => new Date(str)).optional(),
+  ended_at: z.string().transform((str) => new Date(str)).optional(),
+  reject_reason: z.string().optional(),
+  reject_photo_url: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -70,7 +63,6 @@ export async function GET(request: NextRequest) {
               client: {
                 select: {
                   name: true,
-                  company: true,
                 }
               }
             }
@@ -78,15 +70,9 @@ export async function GET(request: NextRequest) {
           bundle: {
             select: {
               id: true,
-              bundle_number: true,
               qr_code: true,
-            }
-          },
-          machine: {
-            select: {
-              id: true,
-              name: true,
-              status: true,
+              size_code: true,
+              qty: true,
             }
           },
           operator: {
@@ -94,20 +80,7 @@ export async function GET(request: NextRequest) {
               id: true,
               first_name: true,
               last_name: true,
-              employee_id: true,
-            }
-          },
-          sewing_operations: {
-            select: {
-              id: true,
-              operation_type: true,
-              completed_quantity: true,
-              status: true,
-            }
-          },
-          _count: {
-            select: {
-              sewing_operations: true,
+              employee_number: true,
             }
           }
         },
@@ -120,32 +93,30 @@ export async function GET(request: NextRequest) {
     const transformedRuns = sewingRuns.map(run => ({
       id: run.id,
       operation_name: run.operation_name,
-      status: run.status === 'PENDING' ? 'CREATED' : run.status,
+      status: run.status,
       order: run.order ? {
         order_number: run.order.order_number,
-        brand: { name: run.order.client?.name || '', code: run.order.client?.company || '' }
+        brand: { name: run.order.client?.name || '', code: '' }
       } : null,
       operator: run.operator ? {
         first_name: run.operator.first_name,
         last_name: run.operator.last_name,
-        employee_number: run.operator.employee_id || ''
+        employee_number: run.operator.employee_number || ''
       } : null,
       bundle: run.bundle ? {
         id: run.bundle.id,
-        size_code: run.bundle.bundle_number.split('-')[1] || 'M',
-        qty: run.planned_quantity,
+        size_code: run.bundle.size_code,
+        qty: run.bundle.qty,
         qr_code: run.bundle.qr_code
       } : null,
-      qty_good: run.actual_quantity || 0,
-      qty_reject: 0,
-      earned_minutes: run.standard_time * (run.actual_quantity || 0),
-      actual_minutes: run.start_time && run.end_time
-        ? (run.end_time.getTime() - run.start_time.getTime()) / (1000 * 60)
-        : undefined,
-      efficiency_pct: run.actual_efficiency ? Math.round(run.actual_efficiency) : undefined,
-      piece_rate_pay: run.piece_rate * (run.actual_quantity || 0),
-      started_at: run.start_time?.toISOString(),
-      ended_at: run.end_time?.toISOString(),
+      qty_good: run.qty_good || 0,
+      qty_reject: run.qty_reject || 0,
+      earned_minutes: run.earned_minutes || 0,
+      actual_minutes: run.actual_minutes || undefined,
+      efficiency_pct: run.efficiency_pct ? Math.round(run.efficiency_pct) : undefined,
+      piece_rate_pay: run.piece_rate_pay || 0,
+      started_at: run.started_at?.toISOString(),
+      ended_at: run.ended_at?.toISOString(),
       created_at: run.created_at.toISOString()
     }))
 
@@ -191,38 +162,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if machine exists (if provided)
-    if (validatedData.machine_id) {
-      const machine = await prisma.machine.findUnique({
-        where: { id: validatedData.machine_id }
-      });
+    // Check if bundle exists
+    const bundle = await prisma.bundle.findUnique({
+      where: { id: validatedData.bundle_id }
+    });
 
-      if (!machine) {
-        return NextResponse.json(
-          { success: false, error: 'Machine not found' },
-          { status: 404 }
-        );
-      }
+    if (!bundle) {
+      return NextResponse.json(
+        { success: false, error: 'Bundle not found' },
+        { status: 404 }
+      );
     }
 
-    // Check if bundle exists (if provided)
-    if (validatedData.bundle_id) {
-      const bundle = await prisma.bundle.findUnique({
-        where: { id: validatedData.bundle_id }
-      });
+    // Check if routing step exists
+    const routingStep = await prisma.routingStep.findUnique({
+      where: { id: validatedData.routing_step_id }
+    });
 
-      if (!bundle) {
-        return NextResponse.json(
-          { success: false, error: 'Bundle not found' },
-          { status: 404 }
-        );
-      }
+    if (!routingStep) {
+      return NextResponse.json(
+        { success: false, error: 'Routing step not found' },
+        { status: 404 }
+      );
     }
 
     const sewingRun = await prisma.sewingRun.create({
       data: {
         ...validatedData,
-        status: 'PENDING',
+        status: 'CREATED',
       },
       include: {
         order: {
@@ -232,7 +199,6 @@ export async function POST(request: NextRequest) {
             client: {
               select: {
                 name: true,
-                company: true,
               }
             }
           }
@@ -240,15 +206,7 @@ export async function POST(request: NextRequest) {
         bundle: {
           select: {
             id: true,
-            bundle_number: true,
             qr_code: true,
-          }
-        },
-        machine: {
-          select: {
-            id: true,
-            name: true,
-            status: true,
           }
         },
         operator: {
@@ -256,7 +214,7 @@ export async function POST(request: NextRequest) {
             id: true,
             first_name: true,
             last_name: true,
-            employee_id: true,
+            employee_number: true,
           }
         },
       }
@@ -310,20 +268,25 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Calculate actual efficiency if actual_quantity and times are provided
-    let calculatedEfficiency = validatedData.actual_efficiency;
-    if (validatedData.actual_quantity && validatedData.start_time && validatedData.end_time) {
-      const totalTimeMinutes = (validatedData.end_time.getTime() - validatedData.start_time.getTime()) / (1000 * 60);
-      const standardTimeTotal = existingSewingRun.standard_time * validatedData.actual_quantity;
-      calculatedEfficiency = (standardTimeTotal / totalTimeMinutes) * 100;
+    // Calculate efficiency and metrics if times are provided
+    let updateData: any = { ...validatedData };
+
+    if (validatedData.started_at && validatedData.ended_at) {
+      const actualMinutes = (validatedData.ended_at.getTime() - validatedData.started_at.getTime()) / (1000 * 60);
+      updateData.actual_minutes = actualMinutes;
+
+      // Calculate efficiency if qty_good is provided
+      if (validatedData.qty_good) {
+        // Simplified efficiency calculation - would normally use SMV from routing step
+        const earnedMinutes = validatedData.qty_good * 0.5; // placeholder SMV
+        updateData.earned_minutes = earnedMinutes;
+        updateData.efficiency_pct = actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
+      }
     }
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
-      data: {
-        ...validatedData,
-        actual_efficiency: calculatedEfficiency,
-      },
+      data: updateData,
       include: {
         order: {
           select: {
@@ -332,7 +295,6 @@ export async function PUT(request: NextRequest) {
             client: {
               select: {
                 name: true,
-                company: true,
               }
             }
           }
@@ -340,15 +302,7 @@ export async function PUT(request: NextRequest) {
         bundle: {
           select: {
             id: true,
-            bundle_number: true,
             qr_code: true,
-          }
-        },
-        machine: {
-          select: {
-            id: true,
-            name: true,
-            status: true,
           }
         },
         operator: {
@@ -356,7 +310,7 @@ export async function PUT(request: NextRequest) {
             id: true,
             first_name: true,
             last_name: true,
-            employee_id: true,
+            employee_number: true,
           }
         },
       }
@@ -408,7 +362,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if sewing run is completed (prevent deletion)
-    if (existingSewingRun.status === 'COMPLETED') {
+    if (existingSewingRun.status === 'DONE') {
       return NextResponse.json(
         { success: false, error: 'Cannot delete completed sewing run' },
         { status: 400 }

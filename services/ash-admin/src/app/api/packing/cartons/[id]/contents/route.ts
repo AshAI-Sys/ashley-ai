@@ -25,7 +25,7 @@ export async function POST(
     }
 
     // Check capacity constraints
-    const currentUnits = carton.contents.reduce((sum, content) => sum + content.quantity, 0)
+    const currentUnits = carton.contents.reduce((sum, content) => sum + content.qty, 0)
     const maxCapacity = data.max_capacity || 50 // Default max units per carton
 
     if (currentUnits + data.quantity > maxCapacity) {
@@ -39,12 +39,11 @@ export async function POST(
       data: {
         carton_id: params.id,
         finished_unit_id: data.finished_unit_id,
-        quantity: data.quantity,
-        packed_at: new Date()
+        qty: data.quantity
       },
       include: {
         finished_unit: {
-          select: { sku: true, size_code: true, color: true, unit_serial: true }
+          select: { sku: true, size_code: true, color: true, serial: true }
         }
       }
     })
@@ -52,7 +51,7 @@ export async function POST(
     // Update finished unit status
     await prisma.finishedUnit.updateMany({
       where: { id: data.finished_unit_id },
-      data: { status: 'PACKED' }
+      data: { packed: true }
     })
 
     return NextResponse.json(cartonContent, { status: 201 })
@@ -75,12 +74,12 @@ export async function GET(
             sku: true,
             size_code: true,
             color: true,
-            unit_serial: true,
+            serial: true,
             order: { select: { order_number: true } }
           }
         }
       },
-      orderBy: { packed_at: 'asc' }
+      orderBy: { created_at: 'asc' }
     })
 
     return NextResponse.json(contents)
@@ -120,7 +119,7 @@ export async function DELETE(
     // Update finished unit status back to FINISHED
     await prisma.finishedUnit.update({
       where: { id: content.finished_unit_id },
-      data: { status: 'FINISHED' }
+      data: { packed: false }
     })
 
     return NextResponse.json({ message: 'Content removed from carton' })

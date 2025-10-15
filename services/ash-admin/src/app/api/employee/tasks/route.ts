@@ -22,24 +22,24 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   // Get department-specific tasks
   switch (department) {
     case 'Cutting':
-      // Get pending cutting runs
-      const cuttingRuns = await prisma.cuttingRun.findMany({
+      // Get pending cut lays
+      const cutLays = await prisma.cutLay.findMany({
         where: {
-          status: {
-            in: ['PENDING', 'IN_PROGRESS']
-          }
+          workspace_id: department,
         },
         include: {
-          lay: {
-            include: {
-              order: {
-                select: {
-                  order_number: true,
-                  client: {
-                    select: { name: true }
-                  }
-                }
+          order: {
+            select: {
+              order_number: true,
+              client: {
+                select: { name: true }
               }
+            }
+          },
+          bundles: {
+            select: {
+              id: true,
+              status: true,
             }
           }
         },
@@ -47,15 +47,15 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20
       })
 
-      tasks = cuttingRuns.map(run => ({
-        id: run.id,
+      tasks = cutLays.map(lay => ({
+        id: lay.id,
         type: 'CUTTING',
-        title: `Cutting Run - ${run.lay.order.client.name}`,
-        description: `Cut ${run.total_bundles || 0} bundles for Order ${run.lay.order.order_number}`,
-        status: run.status,
-        priority: run.total_bundles && run.total_bundles > 50 ? 'HIGH' : 'MEDIUM',
+        title: `Cut Lay - ${lay.order.client.name}`,
+        description: `${lay.bundles.length} bundles for Order ${lay.order.order_number}`,
+        status: lay.bundles.every(b => b.status === 'DONE') ? 'COMPLETED' : 'IN_PROGRESS',
+        priority: lay.bundles.length > 50 ? 'HIGH' : 'MEDIUM',
         due_date: null,
-        created_at: run.created_at.toISOString()
+        created_at: lay.created_at.toISOString()
       }))
       break
 
@@ -64,7 +64,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       const printRuns = await prisma.printRun.findMany({
         where: {
           status: {
-            in: ['PENDING', 'IN_PROGRESS']
+            in: ['CREATED', 'IN_PROGRESS']
           }
         },
         include: {
@@ -84,10 +84,10 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       tasks = printRuns.map(run => ({
         id: run.id,
         type: 'PRINTING',
-        title: `${run.print_method} - ${run.order.client.name}`,
-        description: `Print ${run.quantity} units for Order ${run.order.order_number}`,
+        title: `${run.method} - ${run.order.client.name}`,
+        description: `Print for Order ${run.order.order_number}`,
         status: run.status,
-        priority: run.quantity && run.quantity > 100 ? 'HIGH' : 'MEDIUM',
+        priority: 'MEDIUM',
         due_date: null,
         created_at: run.created_at.toISOString()
       }))
@@ -98,7 +98,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       const sewingRuns = await prisma.sewingRun.findMany({
         where: {
           status: {
-            in: ['PENDING', 'IN_PROGRESS']
+            in: ['CREATED', 'IN_PROGRESS']
           }
         },
         include: {
@@ -119,20 +119,20 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         id: run.id,
         type: 'SEWING',
         title: `Sewing - ${run.order.client.name}`,
-        description: `Sew ${run.pieces_to_complete} pieces for Order ${run.order.order_number}`,
+        description: `Sew ${run.qty_good + run.qty_reject} pieces for Order ${run.order.order_number}`,
         status: run.status,
-        priority: run.pieces_to_complete && run.pieces_to_complete > 200 ? 'HIGH' : 'MEDIUM',
+        priority: (run.qty_good + run.qty_reject) > 200 ? 'HIGH' : 'MEDIUM',
         due_date: null,
         created_at: run.created_at.toISOString()
       }))
       break
 
     case 'Quality Control':
-      // Get pending QC checks
-      const qcChecks = await prisma.qualityControlCheck.findMany({
+      // Get pending QC inspections
+      const qcInspections = await prisma.qCInspection.findMany({
         where: {
           status: {
-            in: ['PENDING', 'IN_PROGRESS']
+            in: ['OPEN', 'PASSED']
           }
         },
         include: {
@@ -149,13 +149,13 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20
       })
 
-      tasks = qcChecks.map(check => ({
+      tasks = qcInspections.map(check => ({
         id: check.id,
         type: 'QC',
         title: `QC Inspection - ${check.order.client.name}`,
         description: `Inspect ${check.lot_size} units for Order ${check.order.order_number}`,
-        status: check.status,
-        priority: check.result === 'FAIL' ? 'HIGH' : 'MEDIUM',
+        status: check.status === 'OPEN' ? 'IN_PROGRESS' : 'COMPLETED',
+        priority: check.result === 'FAILED' ? 'HIGH' : 'MEDIUM',
         due_date: null,
         created_at: check.created_at.toISOString()
       }))
@@ -187,9 +187,9 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         id: run.id,
         type: 'FINISHING',
         title: `Finishing - ${run.order.client.name}`,
-        description: `Finish ${run.quantity} units for Order ${run.order.order_number}`,
+        description: `Finish for Order ${run.order.order_number}`,
         status: run.status,
-        priority: run.quantity && run.quantity > 100 ? 'HIGH' : 'MEDIUM',
+        priority: 'MEDIUM',
         due_date: null,
         created_at: run.created_at.toISOString()
       }))
@@ -200,7 +200,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       const shipments = await prisma.shipment.findMany({
         where: {
           status: {
-            in: ['PENDING', 'PREPARING']
+            in: ['READY_FOR_PICKUP']
           }
         },
         include: {
@@ -222,8 +222,8 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         type: 'WAREHOUSE',
         title: `Shipment - ${shipment.order.client.name}`,
         description: `Prepare shipment for Order ${shipment.order.order_number}`,
-        status: shipment.status === 'PENDING' ? 'PENDING' : 'IN_PROGRESS',
-        priority: shipment.status === 'URGENT' ? 'HIGH' : 'MEDIUM',
+        status: 'PENDING',
+        priority: 'MEDIUM',
         due_date: null,
         created_at: shipment.created_at.toISOString()
       }))

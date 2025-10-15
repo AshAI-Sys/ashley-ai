@@ -4,38 +4,33 @@ import { prisma } from '@/lib/db'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const client_id = searchParams.get('client_id')
-    const source = searchParams.get('source')
+    const invoice_id = searchParams.get('invoice_id')
+    const payment_method = searchParams.get('payment_method')
     const date_from = searchParams.get('date_from')
     const date_to = searchParams.get('date_to')
 
     const where: any = {}
-    if (client_id) where.client_id = client_id
-    if (source && source !== 'all') where.source = source
+    if (invoice_id) where.invoice_id = invoice_id
+    if (payment_method && payment_method !== 'all') where.payment_method = payment_method
 
     if (date_from || date_to) {
-      where.received_at = {}
-      if (date_from) where.received_at.gte = new Date(date_from)
-      if (date_to) where.received_at.lte = new Date(date_to)
+      where.payment_date = {}
+      if (date_from) where.payment_date.gte = new Date(date_from)
+      if (date_to) where.payment_date.lte = new Date(date_to)
     }
 
     const payments = await prisma.payment.findMany({
       where,
       include: {
-        client: { select: { name: true } },
-        payment_allocations: {
-          include: {
-            invoice: {
-              select: {
-                invoice_no: true,
-                total: true,
-                brand: { select: { name: true } }
-              }
-            }
+        invoice: {
+          select: {
+            invoice_number: true,
+            total_amount: true,
+            client: { select: { name: true } }
           }
         }
       },
-      orderBy: { received_at: 'desc' }
+      orderBy: { payment_date: 'desc' }
     })
 
     return NextResponse.json({
@@ -55,75 +50,87 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
     const {
-      client_id,
-      source,
+      invoice_id,
+      payment_method,
       amount,
-      ref_no,
-      received_at,
-      invoice_allocations = []
+      reference,
+      payment_date
     } = data
 
-    // Validate total allocation doesn't exceed payment amount
-    const totalAllocated = invoice_allocations.reduce((sum: number, allocation: any) => sum + allocation.amount, 0)
-    if (totalAllocated > amount) {
+    if (!invoice_id) {
       return NextResponse.json(
-        { success: false, error: 'Total allocation exceeds payment amount' },
+        { success: false, error: 'Invoice ID is required' },
         { status: 400 }
+      )
+    }
+
+    // Get invoice to verify
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoice_id },
+      select: {
+        total_amount: true,
+        status: true,
+        workspace_id: true,
+        invoice_number: true
+      }
+    })
+
+    if (!invoice) {
+      return NextResponse.json(
+        { success: false, error: 'Invoice not found' },
+        { status: 404 }
       )
     }
 
     // Start transaction
     const result = await prisma.$transaction(async (tx) => {
+      // Generate payment number
+      const paymentCount = await tx.payment.count({
+        where: { workspace_id: invoice.workspace_id }
+      })
+      const payment_number = `PAY-${String(paymentCount + 1).padStart(6, '0')}`
+
       // Create payment record
       const payment = await tx.payment.create({
         data: {
-          workspace_id: 'default',
-          payer_type: 'CLIENT',
-          client_id,
-          source,
+          workspace_id: invoice.workspace_id,
+          invoice_id,
+          payment_number,
           amount,
-          ref_no,
-          received_at: new Date(received_at || Date.now())
+          payment_method,
+          reference,
+          payment_date: new Date(payment_date || Date.now()),
+          status: 'completed',
+          processed_at: new Date()
         }
       })
 
-      // Create payment allocations and update invoice balances
-      for (const allocation of invoice_allocations) {
-        await tx.paymentAllocation.create({
-          data: {
-            payment_id: payment.id,
-            invoice_id: allocation.invoice_id,
-            amount: allocation.amount
-          }
-        })
+      // Calculate total paid for this invoice
+      const totalPaid = await tx.payment.aggregate({
+        where: {
+          invoice_id,
+          status: 'completed'
+        },
+        _sum: { amount: true }
+      })
 
-        // Update invoice balance
-        const invoice = await tx.invoice.findUnique({
-          where: { id: allocation.invoice_id },
-          select: { balance: true, total: true }
-        })
+      const paidAmount = totalPaid._sum.amount || 0
+      let newStatus = 'pending'
 
-        if (!invoice) {
-          throw new Error(`Invoice ${allocation.invoice_id} not found`)
-        }
-
-        const newBalance = invoice.balance - allocation.amount
-        let newStatus = 'OPEN'
-
-        if (newBalance <= 0) {
-          newStatus = 'PAID'
-        } else if (newBalance < invoice.total) {
-          newStatus = 'PARTIAL'
-        }
-
-        await tx.invoice.update({
-          where: { id: allocation.invoice_id },
-          data: {
-            balance: Math.max(0, newBalance),
-            status: newStatus
-          }
-        })
+      if (paidAmount >= invoice.total_amount) {
+        newStatus = 'paid'
+      } else if (paidAmount > 0) {
+        newStatus = 'sent'
       }
+
+      // Update invoice status
+      await tx.invoice.update({
+        where: { id: invoice_id },
+        data: {
+          status: newStatus,
+          paid_at: newStatus === 'paid' ? new Date() : null
+        }
+      })
 
       return payment
     })
@@ -132,16 +139,11 @@ export async function POST(request: NextRequest) {
     const paymentWithDetails = await prisma.payment.findUnique({
       where: { id: result.id },
       include: {
-        client: { select: { name: true } },
-        payment_allocations: {
-          include: {
-            invoice: {
-              select: {
-                invoice_no: true,
-                total: true,
-                brand: { select: { name: true } }
-              }
-            }
+        invoice: {
+          select: {
+            invoice_number: true,
+            total_amount: true,
+            client: { select: { name: true } }
           }
         }
       }

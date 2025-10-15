@@ -37,12 +37,6 @@ export async function GET(req: NextRequest) {
             },
           },
         },
-        line_item: {
-          select: {
-            description: true,
-            sku: true,
-          },
-        },
       },
     });
 
@@ -53,30 +47,18 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Log scan event
-    await prisma.bundleScanLog.create({
-      data: {
-        workspace_id: workspaceId,
-        bundle_id: bundle.id,
-        scan_type: 'MOBILE_SCANNER',
-        scanned_at: new Date(),
-        location: 'Production Floor',
-      },
-    }).catch(() => {
-      // Ignore if BundleScanLog table doesn't exist yet
-      console.log('Bundle scan logging skipped - table may not exist');
-    });
+    // Log scan event would go here if BundleScanLog model existed
+    console.log(`Bundle ${bundle.qr_code} scanned at Production Floor`);
 
     return NextResponse.json({
       success: true,
       bundle: {
         id: bundle.id,
-        bundle_number: bundle.bundle_number,
         qr_code: bundle.qr_code,
-        quantity: bundle.quantity,
+        quantity: bundle.qty,
         status: bundle.status,
         order: bundle.order,
-        line_item: bundle.line_item,
+        size_code: bundle.size_code,
         created_at: bundle.created_at,
       },
     });
