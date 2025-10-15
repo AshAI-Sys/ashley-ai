@@ -1,18 +1,31 @@
 'use client'
 
 import { useAuth } from '../../lib/auth-context'
-import AdminDashboard from './AdminDashboard'
-import ManagerDashboard from './ManagerDashboard'
-import DesignerDashboard from './DesignerDashboard'
-import CuttingOperatorDashboard from './CuttingOperatorDashboard'
-import PrintingOperatorDashboard from './PrintingOperatorDashboard'
-import SewingOperatorDashboard from './SewingOperatorDashboard'
-import QCInspectorDashboard from './QCInspectorDashboard'
-import WarehouseDashboard from './WarehouseDashboard'
-import HRDashboard from './HRDashboard'
-import FinanceDashboard from './FinanceDashboard'
-import CSRDashboard from './CSRDashboard'
-import DeliveryCoordinatorDashboard from './DeliveryCoordinatorDashboard'
+import { Suspense, lazy } from 'react'
+
+// Lazy load dashboard components for better performance
+const AdminDashboard = lazy(() => import('./AdminDashboard'))
+const ManagerDashboard = lazy(() => import('./ManagerDashboard'))
+const DesignerDashboard = lazy(() => import('./DesignerDashboard'))
+const CuttingOperatorDashboard = lazy(() => import('./CuttingOperatorDashboard'))
+const PrintingOperatorDashboard = lazy(() => import('./PrintingOperatorDashboard'))
+const SewingOperatorDashboard = lazy(() => import('./SewingOperatorDashboard'))
+const QCInspectorDashboard = lazy(() => import('./QCInspectorDashboard'))
+const WarehouseDashboard = lazy(() => import('./WarehouseDashboard'))
+const HRDashboard = lazy(() => import('./HRDashboard'))
+const FinanceDashboard = lazy(() => import('./FinanceDashboard'))
+const CSRDashboard = lazy(() => import('./CSRDashboard'))
+const DeliveryCoordinatorDashboard = lazy(() => import('./DeliveryCoordinatorDashboard'))
+
+// Loading component
+const DashboardLoader = () => (
+  <div className="min-h-[400px] flex items-center justify-center">
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
+      <p className="text-gray-600">Loading dashboard content...</p>
+    </div>
+  </div>
+)
 
 export default function RoleSpecificDashboard() {
   const { user } = useAuth()
@@ -80,9 +93,11 @@ export default function RoleSpecificDashboard() {
         </div>
       </header>
 
-      {/* Role-specific content */}
+      {/* Role-specific content with Suspense for lazy loading */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {DashboardComponent}
+        <Suspense fallback={<DashboardLoader />}>
+          {DashboardComponent}
+        </Suspense>
       </main>
     </div>
   )

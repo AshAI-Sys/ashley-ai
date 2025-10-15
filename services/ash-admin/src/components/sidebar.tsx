@@ -67,11 +67,6 @@ export default function Sidebar() {
   const pathname = usePathname()
   const { user } = useAuth()
 
-  // Debug logging
-  console.log('🔍 Sidebar - User object:', user)
-  console.log('🔍 Sidebar - User role type:', typeof user?.role, user?.role)
-  console.log('🔍 Sidebar - User department:', user?.department)
-
   // All navigation items
   const allNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: 'Home', department: '*' },
