@@ -29,6 +29,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 interface DeliveryShipment {
   id: string
@@ -81,6 +84,8 @@ export default function DeliveryPage() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterMethod, setFilterMethod] = useState('all')
   const [selectedView, setSelectedView] = useState<'list' | 'map'>('list')
+  const [showNewShipmentDialog, setShowNewShipmentDialog] = useState(false)
+  const [showDispatchReportDialog, setShowDispatchReportDialog] = useState(false)
 
   // Fetch delivery stats
   const {
@@ -242,16 +247,12 @@ export default function DeliveryPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => {
-                alert('Dispatch Reports feature coming soon! This will show reports of all deliveries.')
-              }}
+              onClick={() => setShowDispatchReportDialog(true)}
             >
               <Printer className="w-4 h-4 mr-2" />
               Dispatch Reports
             </Button>
-            <Button onClick={() => {
-              alert('New Shipment form will open here. This will allow you to create a new delivery shipment.')
-            }}>
+            <Button onClick={() => setShowNewShipmentDialog(true)}>
               <Plus className="w-4 h-4 mr-2" />
               New Shipment
             </Button>
@@ -598,6 +599,181 @@ export default function DeliveryPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* New Shipment Dialog */}
+        <Dialog open={showNewShipmentDialog} onOpenChange={setShowNewShipmentDialog}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create New Shipment</DialogTitle>
+              <DialogDescription>
+                Fill in the shipment details to create a new delivery.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="order">Order Number</Label>
+                  <Input id="order" placeholder="Select order..." />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="method">Delivery Method</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DRIVER">Own Driver</SelectItem>
+                      <SelectItem value="LALAMOVE">Lalamove</SelectItem>
+                      <SelectItem value="GRAB">Grab</SelectItem>
+                      <SelectItem value="JNT">J&T Express</SelectItem>
+                      <SelectItem value="LBC">LBC</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="consignee-name">Consignee Name</Label>
+                <Input id="consignee-name" placeholder="Recipient name" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="consignee-address">Delivery Address</Label>
+                <Textarea
+                  id="consignee-address"
+                  placeholder="Complete delivery address"
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="consignee-phone">Contact Number</Label>
+                  <Input id="consignee-phone" placeholder="09XX XXX XXXX" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cod-amount">COD Amount (Optional)</Label>
+                  <Input id="cod-amount" type="number" placeholder="0.00" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cartons">Number of Cartons</Label>
+                  <Input id="cartons" type="number" placeholder="0" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weight">Total Weight (kg)</Label>
+                  <Input id="weight" type="number" step="0.1" placeholder="0.0" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Special Instructions (Optional)</Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Any special handling or delivery instructions"
+                  rows={2}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowNewShipmentDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                // TODO: Implement create shipment API call
+                alert('Shipment creation will be implemented soon!')
+                setShowNewShipmentDialog(false)
+              }}>
+                Create Shipment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dispatch Reports Dialog */}
+        <Dialog open={showDispatchReportDialog} onOpenChange={setShowDispatchReportDialog}>
+          <DialogContent className="max-w-xl">
+            <DialogHeader>
+              <DialogTitle>Generate Dispatch Report</DialogTitle>
+              <DialogDescription>
+                Select report parameters to generate delivery dispatch reports.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="report-type">Report Type</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select report type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Daily Dispatch Report</SelectItem>
+                    <SelectItem value="weekly">Weekly Summary</SelectItem>
+                    <SelectItem value="monthly">Monthly Summary</SelectItem>
+                    <SelectItem value="driver">By Driver Performance</SelectItem>
+                    <SelectItem value="method">By Delivery Method</SelectItem>
+                    <SelectItem value="client">By Client</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date-from">Date From</Label>
+                  <Input id="date-from" type="date" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="date-to">Date To</Label>
+                  <Input id="date-to" type="date" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status-filter">Status Filter (Optional)</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="DELIVERED">Delivered Only</SelectItem>
+                    <SelectItem value="FAILED">Failed Only</SelectItem>
+                    <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="format">Export Format</Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select format" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="excel">Excel (XLSX)</SelectItem>
+                    <SelectItem value="csv">CSV</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDispatchReportDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                // TODO: Implement report generation API call
+                alert('Report generation will be implemented soon!')
+                setShowDispatchReportDialog(false)
+              }}>
+                <Printer className="w-4 h-4 mr-2" />
+                Generate Report
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   )
