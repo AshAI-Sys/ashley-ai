@@ -318,11 +318,18 @@ export default function RoleActivities({ user }: RoleActivitiesProps) {
         return 'System Activities'
       case 'manager':
         return `${user.department} Department Activity`
-      case 'supervisor':
+      case 'designer':
+      case 'qc_inspector':
         return 'Team Activities'
-      case 'operator':
+      case 'cutting_operator':
+      case 'printing_operator':
+      case 'sewing_operator':
+      case 'finishing_operator':
         return 'My Recent Tasks'
-      case 'employee':
+      case 'warehouse_staff':
+      case 'finance_staff':
+      case 'hr_staff':
+      case 'maintenance_tech':
         return 'Recent Activities'
       default:
         return 'Recent Activities'
@@ -335,11 +342,18 @@ export default function RoleActivities({ user }: RoleActivitiesProps) {
         return <AdminActivities />
       case 'manager':
         return <ManagerActivities user={user} />
-      case 'supervisor':
+      case 'designer':
+      case 'qc_inspector':
         return <SupervisorActivities user={user} />
-      case 'operator':
+      case 'cutting_operator':
+      case 'printing_operator':
+      case 'sewing_operator':
+      case 'finishing_operator':
         return <OperatorActivities user={user} />
-      case 'employee':
+      case 'warehouse_staff':
+      case 'finance_staff':
+      case 'hr_staff':
+      case 'maintenance_tech':
         return <EmployeeActivities user={user} />
       default:
         return <EmployeeActivities user={user} />

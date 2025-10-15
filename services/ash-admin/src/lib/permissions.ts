@@ -73,7 +73,7 @@ export function getAccessibleNavigation(user: User) {
 
   // Admin users with '*' permissions get access to ALL navigation items
   console.log('🔍 Checking permissions:', user.permissions)
-  if (user.permissions && (user.permissions.includes('*') || user.permissions.includes('all'))) {
+  if (user.permissions && (user.permissions.includes('*' as Permission) || user.permissions.includes('all' as Permission))) {
     console.log('✅ User has all permissions - returning all navigation')
     return allNavigation
   }
@@ -85,11 +85,11 @@ export function getAccessibleNavigation(user: User) {
     if (item.href === '/dashboard') return true
 
     // Check specific permission or wildcard for department
-    const requiredPermission = item.permission
+    const requiredPermission = item.permission as Permission
     const departmentWildcard = requiredPermission.split('.')[0] + '.*'
 
     return userPermissions.includes(requiredPermission) ||
-           userPermissions.includes(departmentWildcard)
+           userPermissions.includes(departmentWildcard as Permission)
   })
 }
 

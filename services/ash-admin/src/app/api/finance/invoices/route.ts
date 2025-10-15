@@ -43,7 +43,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
             amount: true,
             payment_method: true,
             payment_date: true,
-            reference_number: true
+            created_at: true
           }
         }
       },
@@ -84,7 +84,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     return createSuccessResponse(processedInvoices)
 })
 
-export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
+export const POST = requireAnyPermission(['finance:create'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()
   const {
     brand_id,
@@ -218,7 +218,7 @@ export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(as
           quantity: line.qty,
           unit_price: line.unit_price,
           tax_rate: 0.12,
-          amount: line.line_total
+          line_total: line.line_total
         }))
       }
     },

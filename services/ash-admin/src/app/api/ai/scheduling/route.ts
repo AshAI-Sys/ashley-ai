@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       },
       include: {
         client: true,
-        cutting_runs: true,
+        cut_lays: true,
         sewing_runs: true,
         print_runs: true,
       },
@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
     const jobs = orders.map(order => {
       // Determine current stage
       let currentStage: 'CUTTING' | 'PRINTING' | 'SEWING' | 'FINISHING' = 'CUTTING';
-      if (order.sewing_runs.length > 0) currentStage = 'FINISHING';
-      else if (order.print_runs.length > 0) currentStage = 'SEWING';
-      else if (order.cutting_runs && order.cutting_runs.length > 0) currentStage = 'PRINTING';
+      if (order.sewing_runs && order.sewing_runs.length > 0) currentStage = 'FINISHING';
+      else if (order.print_runs && order.print_runs.length > 0) currentStage = 'SEWING';
+      else if (order.cut_lays && order.cut_lays.length > 0) currentStage = 'PRINTING';
 
       // Estimate hours based on quantity and stage
       const totalQuantity = Math.round(order.total_amount) || 1000;
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
         estimated_hours: estimatedHours,
         required_skills: requiredSkills,
         current_stage: currentStage,
-        status: order.status === 'pending' ? 'PENDING' : 'IN_PROGRESS',
+        status: (order.status === 'pending' ? 'PENDING' : 'IN_PROGRESS') as 'PENDING' | 'IN_PROGRESS' | 'SCHEDULED' | 'COMPLETED',
       };
     }).filter(job => stages.includes(job.current_stage));
 

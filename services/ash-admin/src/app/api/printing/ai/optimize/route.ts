@@ -21,11 +21,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get machine data for optimization
-    const machine = machine_id ? await prisma.printMachine.findUnique({
+    // Get machine data for optimization (using print_runs instead of printMachine)
+    const machine = machine_id ? await prisma.machine.findUnique({
       where: { id: machine_id },
       include: {
-        PrintRun: {
+        print_runs: {
           where: {
             status: { in: ['IN_PROGRESS', 'PAUSED'] }
           },
@@ -38,16 +38,12 @@ export async function POST(request: NextRequest) {
     // Get historical performance data
     const historicalRuns = await prisma.printRun.findMany({
       where: {
-        print_method,
-        status: 'COMPLETED',
-        quantity: {
-          gte: quantity * 0.8,
-          lte: quantity * 1.2
-        }
+        method: print_method,
+        status: 'COMPLETED'
       },
       include: {
-        QualityControl: true,
-        PrintRunMaterial: true
+        qc_inspections: true,
+        materials: true
       },
       take: 20,
       orderBy: { created_at: 'desc' }
@@ -63,23 +59,30 @@ export async function POST(request: NextRequest) {
       rush_order
     })
 
-    // Store AI analysis
-    const aiAnalysis = await prisma.printRunAIAnalysis.create({
+    // Store AI analysis (using aIAnalysis instead of printRunAIAnalysis)
+    const aiAnalysis = await prisma.aIAnalysis.create({
       data: {
-        print_method,
-        order_id,
+        workspace_id: 'default',
+        entity: 'PRINT_RUN',
+        entity_id: order_id,
+        stage: 'PRINTING',
         analysis_type: 'OPTIMIZATION',
-        ai_recommendations: optimization.recommendations,
-        confidence_score: optimization.confidence_score,
-        estimated_completion_time: optimization.estimated_completion_time,
-        cost_prediction: optimization.cost_prediction,
-        quality_prediction: optimization.quality_prediction,
-        material_efficiency: optimization.material_efficiency,
-        ai_metadata: {
+        risk: 'LOW',
+        confidence: optimization.confidence_score,
+        issues: JSON.stringify(optimization.recommendations),
+        recommendations: JSON.stringify(optimization.recommendations),
+        metadata: JSON.stringify({
+          print_method,
           optimization_factors: optimization.factors,
           historical_data_points: historicalRuns.length,
-          machine_utilization: machine?.utilization_rate || 0
-        }
+          machine_utilization: machine?.utilization_rate || 0,
+          estimated_completion_time: optimization.estimated_completion_time,
+          cost_prediction: optimization.cost_prediction,
+          quality_prediction: optimization.quality_prediction,
+          material_efficiency: optimization.material_efficiency
+        }),
+        result: 'SUCCESS',
+        created_by: 'system'
       }
     })
 
@@ -182,15 +185,15 @@ function calculateMachineEfficiency(machine: any) {
 
 function calculateHistoricalPerformance(runs: any[]) {
   if (runs.length === 0) return 0.8
-  
+
   const qualityScores = runs.map(run => {
-    if (!run.QualityControl || run.QualityControl.length === 0) return 0.85
-    
-    const qc = run.QualityControl[0]
-    const defectRate = (qc.defect_count || 0) / (qc.sample_size || 1)
+    if (!run.qc_inspections || run.qc_inspections.length === 0) return 0.85
+
+    const qc = run.qc_inspections[0]
+    const defectRate = ((qc.failed_quantity || 0) / (qc.sample_size || 1))
     return Math.max(0.5, 1 - defectRate)
   })
-  
+
   return qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length
 }
 

@@ -25,8 +25,7 @@ export async function GET(request: NextRequest) {
             {
               qc_inspections: {
                 some: {
-                  result: 'ACCEPT',
-                  inspection_type: 'FINAL'
+                  result: 'ACCEPT'
                 }
               }
             },
@@ -50,7 +49,7 @@ export async function GET(request: NextRequest) {
       prisma.finishingRun.count({
         where: {
           status: 'COMPLETED',
-          completed_at: {
+          ended_at: {
             gte: today,
             lt: tomorrow
           }
@@ -127,10 +126,10 @@ async function getPackingEfficiency() {
     const cartons = await prisma.carton.findMany({
       where: {
         status: 'CLOSED',
-        fill_percentage: { not: null }
+        fill_percent: { not: null }
       },
       select: {
-        fill_percentage: true,
+        fill_percent: true,
         actual_weight_kg: true,
         dimensional_weight_kg: true
       },
@@ -141,7 +140,7 @@ async function getPackingEfficiency() {
     if (cartons.length === 0) return 0
 
     const avgFillPercentage = cartons.reduce((sum, carton) =>
-      sum + (carton.fill_percentage || 0), 0) / cartons.length
+      sum + (carton.fill_percent || 0), 0) / cartons.length
 
     return Math.round(avgFillPercentage * 10) / 10
   } catch (error) {

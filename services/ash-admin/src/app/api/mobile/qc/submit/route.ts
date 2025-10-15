@@ -41,22 +41,16 @@ export async function POST(req: NextRequest) {
       data: {
         workspace_id: workspaceId,
         order_id,
-        inspection_number: `QC-${Date.now()}`,
-        inspection_type: 'FINAL',
-        inspection_level: 'II',
-        aql: 2.5,
+        inspection_date: new Date(),
         sample_size,
-        inspected_quantity: inspected,
         passed_quantity: passed,
         failed_quantity: failed,
         defect_rate: defectRate,
         result: aqlResult,
         inspector_id: userId,
-        inspector_name: inspector_name || 'Mobile Inspector',
         notes,
-        photos: photos ? JSON.stringify(photos) : null,
-        inspected_at: new Date(),
         created_at: new Date(),
+        updated_at: new Date(),
       },
     });
 
@@ -70,12 +64,12 @@ export async function POST(req: NextRequest) {
               inspection_id: inspection.id,
               defect_type_id: defect.defect_type_id,
               defect_code: defect.defect_code,
-              defect_name: defect.defect_name,
               severity: defect.severity,
               quantity: defect.quantity || 1,
               location: 'Production Floor',
-              description: `Detected via mobile QC at ${new Date(defect.timestamp).toLocaleString()}`,
+              notes: `Detected via mobile QC at ${new Date(defect.timestamp).toLocaleString()}`,
               created_at: new Date(),
+              updated_at: new Date(),
             },
           })
         )
@@ -99,7 +93,7 @@ export async function POST(req: NextRequest) {
           order_id,
           capa_number: `CAPA-${Date.now()}`,
           title: `QC Failure - Bundle ${bundle_id}`,
-          description: `QC inspection failed with ${defectRate.toFixed(2)}% defect rate. ${failed} out of ${inspected} units failed inspection.`,
+          issue_description: `QC inspection failed with ${defectRate.toFixed(2)}% defect rate. ${failed} out of ${inspected} units failed inspection.`,
           type: 'CORRECTIVE',
           priority: defectRate > 10 ? 'HIGH' : 'MEDIUM',
           status: 'OPEN',
@@ -107,6 +101,7 @@ export async function POST(req: NextRequest) {
           corrective_action: 'Pending investigation',
           created_by: userId,
           created_at: new Date(),
+          updated_at: new Date(),
         },
       }).catch(() => {
         console.log('CAPA task creation skipped');
@@ -117,7 +112,6 @@ export async function POST(req: NextRequest) {
       success: true,
       inspection: {
         id: inspection.id,
-        inspection_number: inspection.inspection_number,
         result: aqlResult,
         defect_rate: defectRate,
       },

@@ -178,6 +178,8 @@ describe('Password Complexity Validation', () => {
 })
 
 describe('Password Strength Scoring', () => {
+  const generateEmail = () => `test-${Date.now()}-${Math.random()}@example.com`
+
   it('should provide password strength feedback in validation errors', async () => {
     const weakPassword = 'Weak1!'
 
@@ -206,6 +208,8 @@ describe('Password Strength Scoring', () => {
 })
 
 describe('Password Edge Cases', () => {
+  const generateEmail = () => `test-${Date.now()}-${Math.random()}@example.com`
+
   it('should handle passwords with unicode characters', async () => {
     const response = await fetch(`${API_BASE}/api/auth/register`, {
       method: 'POST',

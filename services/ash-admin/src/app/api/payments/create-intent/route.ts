@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { paymentService } from '@/lib/paymentService'
-import { createSuccessResponse, createErrorResponse } from '@/lib/error-handling'
+import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AppError, ErrorCode, handleApiError } from '@/lib/error-handling'
 import { db } from '@ash-ai/database';
 
 const prisma = db
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const { invoiceId, provider = 'stripe' } = body
 
     if (!invoiceId) {
-      return createErrorResponse('Invoice ID is required', 400)
+      return createErrorResponse(new ValidationError('Invoice ID is required'))
     }
 
     // Get invoice details
@@ -29,11 +29,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!invoice) {
-      return createErrorResponse('Invoice not found', 404)
+      return createErrorResponse(new NotFoundError('Invoice'))
     }
 
     if (invoice.status === 'paid') {
-      return createErrorResponse('Invoice is already paid', 400)
+      return createErrorResponse(new ValidationError('Invoice is already paid'))
     }
 
     // Calculate remaining amount
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const remainingAmount = parseFloat(invoice.total_amount.toString()) - parseFloat(paidAmount.toString())
 
     if (remainingAmount <= 0) {
-      return createErrorResponse('Invoice has no remaining balance', 400)
+      return createErrorResponse(new ValidationError('Invoice has no remaining balance'))
     }
 
     // Create payment based on provider
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (!result.success) {
-        return createErrorResponse(result.error || 'Failed to create payment intent', 500)
+        return createErrorResponse(new AppError(ErrorCode.EXTERNAL_SERVICE_ERROR, result.error || 'Failed to create payment intent', 500))
       }
 
       return createSuccessResponse({
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (!result.success) {
-        return createErrorResponse(result.error || 'Failed to create GCash payment', 500)
+        return createErrorResponse(new AppError(ErrorCode.EXTERNAL_SERVICE_ERROR, result.error || 'Failed to create GCash payment', 500))
       }
 
       return createSuccessResponse({
@@ -116,13 +116,10 @@ export async function POST(request: NextRequest) {
         },
       })
     } else {
-      return createErrorResponse('Unsupported payment provider', 400)
+      return createErrorResponse(new ValidationError('Unsupported payment provider'))
     }
   } catch (error) {
     console.error('Error creating payment intent:', error)
-    return createErrorResponse(
-      error instanceof Error ? error.message : 'Failed to create payment intent',
-      500
-    )
+    return handleApiError(error)
   }
 }
