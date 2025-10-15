@@ -14,12 +14,12 @@ export async function POST(req: NextRequest) {
     const orders = await prisma.order.findMany({
       where: {
         status: {
-          in: ['PENDING', 'IN_PRODUCTION'],
+          in: ['pending', 'in_production'],
         },
       },
       include: {
         client: true,
-        lays: true,
+        cutting_runs: true,
         sewing_runs: true,
         print_runs: true,
       },
@@ -31,10 +31,10 @@ export async function POST(req: NextRequest) {
       let currentStage: 'CUTTING' | 'PRINTING' | 'SEWING' | 'FINISHING' = 'CUTTING';
       if (order.sewing_runs.length > 0) currentStage = 'FINISHING';
       else if (order.print_runs.length > 0) currentStage = 'SEWING';
-      else if (order.lays.length > 0) currentStage = 'PRINTING';
+      else if (order.cutting_runs && order.cutting_runs.length > 0) currentStage = 'PRINTING';
 
       // Estimate hours based on quantity and stage
-      const totalQuantity = order.total_units || 1000;
+      const totalQuantity = Math.round(order.total_amount) || 1000;
       const baseHoursPerUnit = 0.05; // 3 minutes per unit
       const estimatedHours = totalQuantity * baseHoursPerUnit;
 
@@ -54,13 +54,13 @@ export async function POST(req: NextRequest) {
         order_id: order.id,
         client_name: order.client.name,
         garment_type: 'UNKNOWN',
-        quantity: order.total_units || 0,
+        quantity: Math.round(order.total_amount) || 0,
         priority,
         deadline,
         estimated_hours: estimatedHours,
         required_skills: requiredSkills,
         current_stage: currentStage,
-        status: order.status === 'PENDING' ? 'PENDING' : 'IN_PROGRESS',
+        status: order.status === 'pending' ? 'PENDING' : 'IN_PROGRESS',
       };
     }).filter(job => stages.includes(job.current_stage));
 
@@ -152,7 +152,7 @@ export async function GET(req: NextRequest) {
     const orders = await prisma.order.findMany({
       where: {
         status: {
-          in: ['PENDING', 'IN_PRODUCTION'],
+          in: ['pending', 'in_production'],
         },
         delivery_date: {
           gte: new Date(),
@@ -177,7 +177,7 @@ export async function GET(req: NextRequest) {
       const deadline = order.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const daysUntilDeadline = (deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
       const urgency = daysUntilDeadline < 3 ? 'URGENT' : daysUntilDeadline < 7 ? 'HIGH' : 'NORMAL';
-      const totalQuantity = order.quantity || 0;
+      const totalQuantity = Math.round(order.total_amount) || 0;
 
       return {
         order_id: order.id,

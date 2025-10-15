@@ -3,17 +3,17 @@ import { prisma } from '@/lib/db';
 import { z } from 'zod';
 
 const CreateCutLaySchema = z.object({
-  orderId: z.string().min(1, 'Order ID is required'),
-  markerName: z.string().optional(),
-  markerWidthCm: z.number().positive().optional(),
-  layLengthM: z.number().positive('Lay length must be positive'),
+  order_id: z.string().min(1, 'Order ID is required'),
+  marker_name: z.string().optional(),
+  marker_width_cm: z.number().positive().optional(),
+  lay_length_m: z.number().positive('Lay length must be positive'),
   plies: z.number().int().positive('Number of plies must be positive'),
-  grossUsed: z.number().positive('Gross fabric used must be positive'),
+  gross_used: z.number().positive('Gross fabric used must be positive'),
   offcuts: z.number().min(0).default(0),
   defects: z.number().min(0).default(0),
   uom: z.enum(['KG', 'M']),
   outputs: z.array(z.object({
-    sizeCode: z.string().min(1, 'Size code is required'),
+    size_code: z.string().min(1, 'Size code is required'),
     qty: z.number().int().positive('Quantity must be positive'),
   })).min(1, 'At least one size output is required'),
 });
@@ -32,16 +32,15 @@ export async function GET(request: NextRequest) {
 
     const where = {
       AND: [
-        orderId ? { orderId } : {},
-        status ? { status } : {},
-        startDate ? { createdAt: { gte: new Date(startDate) } } : {},
-        endDate ? { createdAt: { lte: new Date(endDate) } } : {},
-      ]
+        orderId ? { order_id: orderId } : {},
+        startDate ? { created_at: { gte: new Date(startDate) } } : {},
+        endDate ? { created_at: { lte: new Date(endDate) } } : {},
+      ].filter(condition => Object.keys(condition).length > 0)
     };
 
     const [cutLays, total] = await Promise.all([
       prisma.cutLay.findMany({
-        where,
+        where: Object.keys(where.AND).length > 0 ? where : {},
         skip,
         take: limit,
         include: {
@@ -50,11 +49,6 @@ export async function GET(request: NextRequest) {
               id: true,
               order_number: true,
               client: {
-                select: {
-                  name: true,
-                }
-              },
-              brand: {
                 select: {
                   name: true,
                 }
@@ -76,7 +70,7 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { created_at: 'desc' },
       }),
-      prisma.cutLay.count({ where }),
+      prisma.cutLay.count({ where: Object.keys(where.AND).length > 0 ? where : {} }),
     ]);
 
     return NextResponse.json({
@@ -110,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Check if order exists
     const order = await prisma.order.findUnique({
-      where: { id: validatedData.orderId }
+      where: { id: validatedData.order_id }
     });
 
     if (!order) {
@@ -124,16 +118,17 @@ export async function POST(request: NextRequest) {
     const cutLay = await prisma.$transaction(async (tx) => {
       const newCutLay = await tx.cutLay.create({
         data: {
-          orderId: validatedData.orderId,
-          markerName: validatedData.markerName,
-          markerWidthCm: validatedData.markerWidthCm,
-          layLengthM: validatedData.layLengthM,
+          workspace_id: 'default',
+          order_id: validatedData.order_id,
+          marker_name: validatedData.marker_name,
+          marker_width_cm: validatedData.marker_width_cm,
+          lay_length_m: validatedData.lay_length_m,
           plies: validatedData.plies,
-          grossUsed: validatedData.grossUsed,
+          gross_used: validatedData.gross_used,
           offcuts: validatedData.offcuts,
           defects: validatedData.defects,
           uom: validatedData.uom,
-          status: 'COMPLETED',
+          created_by: 'system'
         },
         include: {
           order: {
@@ -141,11 +136,6 @@ export async function POST(request: NextRequest) {
               id: true,
               order_number: true,
               client: {
-                select: {
-                  name: true,
-                }
-              },
-              brand: {
                 select: {
                   name: true,
                 }
@@ -158,15 +148,16 @@ export async function POST(request: NextRequest) {
       // Create cut outputs
       const cutOutputs = await tx.cutOutput.createMany({
         data: validatedData.outputs.map(output => ({
-          cutLayId: newCutLay.id,
-          sizeCode: output.sizeCode,
+          workspace_id: 'default',
+          cut_lay_id: newCutLay.id,
+          size_code: output.size_code,
           qty: output.qty,
         }))
       });
 
       // Fetch the created outputs
       const outputs = await tx.cutOutput.findMany({
-        where: { cutLayId: newCutLay.id }
+        where: { cut_lay_id: newCutLay.id }
       });
 
       return { ...newCutLay, outputs };

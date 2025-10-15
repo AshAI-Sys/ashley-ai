@@ -74,9 +74,9 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         due_date: invoice.due_date,
         days_overdue: daysOverdue,
         payment_history: invoice.payments.map(payment => ({
-          amount: payment.amount,
-          source: payment.payment_method,
-          date: payment.payment_date
+          amount: Number(payment.amount),
+          source: payment.payment_method || 'UNKNOWN',
+          date: payment.created_at
         }))
       }
     })
@@ -145,12 +145,6 @@ export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(as
     }
   }
 
-  // Verify brand exists
-  const brand = await prisma.brand.findUnique({ where: { id: brand_id } })
-  if (!brand) {
-    throw new NotFoundError('Brand')
-  }
-
   // Verify client exists
   const client = await prisma.client.findUnique({ where: { id: client_id } })
   if (!client) {
@@ -169,14 +163,14 @@ export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(as
   const year = new Date().getFullYear()
   const invoiceCount = await prisma.invoice.count({
     where: {
-      brand_id,
-      date_issued: {
+      workspace_id: 'default',
+      issue_date: {
         gte: new Date(year, 0, 1),
         lt: new Date(year + 1, 0, 1)
       }
     }
   })
-  const invoiceNo = `${brand.name.toUpperCase()}-${year}-${String(invoiceCount + 1).padStart(5, '0')}`
+  const invoiceNo = `INV-${year}-${String(invoiceCount + 1).padStart(5, '0')}`
 
   // Calculate totals
   let subtotal = 0
@@ -207,26 +201,30 @@ export const POST = requireAnyPermission(['finance:write'])(withErrorHandling(as
   const invoice = await prisma.invoice.create({
     data: {
       workspace_id: 'default',
-      brand_id,
       client_id,
       order_id,
-      invoice_no: invoiceNo,
-      date_issued: new Date(),
+      invoice_number: invoiceNo,
+      issue_date: new Date(),
       due_date: due_date ? new Date(due_date) : null,
-      tax_mode,
+      status: 'draft',
       subtotal,
-      discount: discountAmount,
-      vat_amount: vatAmount,
-      total,
-      balance: total,
-      invoice_lines: {
-        create: processedLines
+      discount_amount: discountAmount,
+      tax_amount: vatAmount,
+      total_amount: total,
+      currency: 'PHP',
+      invoice_items: {
+        create: processedLines.map((line: any) => ({
+          description: line.description,
+          quantity: line.qty,
+          unit_price: line.unit_price,
+          tax_rate: 0.12,
+          amount: line.line_total
+        }))
       }
     },
     include: {
       client: { select: { name: true } },
-      brand: { select: { name: true } },
-      invoice_lines: true
+      invoice_items: true
     }
   })
 

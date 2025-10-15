@@ -41,8 +41,8 @@ export async function POST(request: NextRequest) {
           return {
             date: inv.issue_date.toISOString().split('T')[0],
             invoice_number: inv.invoice_number,
-            customer_name: inv.client.company_name,
-            tin: inv.client.tin || '',
+            customer_name: inv.client.name,
+            tin: inv.client.tax_id || '',
             address: inv.client.address || '',
             amount: vat.net,
             vat_amount: vat.vat,

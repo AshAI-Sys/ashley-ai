@@ -102,20 +102,20 @@ export async function getProductionMetrics(workspace_id: string): Promise<Produc
     prisma.order.count({
       where: {
         workspace_id,
-        status: { in: ['PRODUCTION', 'QC', 'PACKING'] }
+        status: { in: ['production', 'qc', 'packing'] }
       }
     }),
     prisma.order.count({
       where: {
         workspace_id,
-        status: 'COMPLETED',
+        status: 'completed',
         updated_at: { gte: today }
       }
     }),
     prisma.order.count({
       where: {
         workspace_id,
-        status: 'COMPLETED',
+        status: 'completed',
         updated_at: { gte: thisMonth }
       }
     }),
@@ -138,7 +138,7 @@ export async function getProductionMetrics(workspace_id: string): Promise<Produc
     .reduce((sum, order) => sum + (order.total_amount || 0), 0)
 
   // Calculate average production time
-  const completedOrders = allOrders.filter(o => o.status === 'COMPLETED')
+  const completedOrders = allOrders.filter(o => o.status === 'completed')
   const avgProductionTime = completedOrders.length > 0
     ? completedOrders.reduce((sum, order) => {
         const hours = (order.updated_at.getTime() - order.created_at.getTime()) / (1000 * 60 * 60)
@@ -224,8 +224,8 @@ export async function getFinancialMetrics(workspace_id: string): Promise<Financi
     .reduce((sum, p) => sum + p.amount, 0)
 
   // Invoice statistics
-  const paidInvoices = invoices.filter(i => i.status === 'PAID')
-  const outstandingInvoices = invoices.filter(i => i.status === 'SENT' || i.status === 'OVERDUE')
+  const paidInvoices = invoices.filter(i => i.status === 'paid')
+  const outstandingInvoices = invoices.filter(i => i.status === 'sent' || i.status === 'overdue')
 
   const paidAmount = paidInvoices.reduce((sum, i) => sum + i.total_amount, 0)
   const outstandingAmount = outstandingInvoices.reduce((sum, i) => sum + i.total_amount, 0)
@@ -275,14 +275,14 @@ export async function getQualityMetrics(workspace_id: string): Promise<QualityMe
   }
 
   const [inspections, capa] = await Promise.all([
-    prisma.qualityControlCheck.findMany({
+    prisma.qCInspection.findMany({
       where: { workspace_id },
       select: {
         result: true,
         defects_found: true
       }
     }),
-    prisma.cAPA.findMany({
+    prisma.cAPATask.findMany({
       where: { workspace_id },
       select: { status: true }
     })
@@ -299,8 +299,8 @@ export async function getQualityMetrics(workspace_id: string): Promise<QualityMe
   const defectRate = totalInspections > 0 ? (totalDefects / totalInspections) : 0
 
   // CAPA statistics
-  const capaOpen = capa.filter(c => c.status === 'OPEN' || c.status === 'IN_PROGRESS').length
-  const capaClosed = capa.filter(c => c.status === 'CLOSED').length
+  const capaOpen = capa.filter(c => c.status === 'open' || c.status === 'in_progress').length
+  const capaClosed = capa.filter(c => c.status === 'closed').length
 
   const metrics: QualityMetrics = {
     total_inspections: totalInspections,
@@ -339,9 +339,10 @@ export async function getEmployeeMetrics(workspace_id: string): Promise<Employee
       where: { workspace_id },
       select: {
         id: true,
-        name: true,
+        first_name: true,
+        last_name: true,
         department: true,
-        status: true
+        is_active: true
       }
     }),
     prisma.attendanceLog.findMany({
@@ -358,7 +359,7 @@ export async function getEmployeeMetrics(workspace_id: string): Promise<Employee
   ])
 
   const totalEmployees = employees.length
-  const activeEmployees = employees.filter(e => e.status === 'ACTIVE').length
+  const activeEmployees = employees.filter(e => e.is_active === true).length
 
   // Calculate attendance rate
   const workingDays = Math.floor((Date.now() - thisMonth.getTime()) / (1000 * 60 * 60 * 24))

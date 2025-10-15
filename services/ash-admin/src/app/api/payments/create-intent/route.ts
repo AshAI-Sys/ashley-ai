@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
     // Create payment based on provider
     if (provider === 'stripe') {
       const result = await paymentService.createStripePaymentIntent({
-        amount: paymentService.toSmallestUnit(remainingAmount, invoice.currency),
-        currency: invoice.currency,
+        amount: paymentService.toSmallestUnit(remainingAmount, invoice.currency || 'PHP'),
+        currency: invoice.currency || 'PHP',
         description: `Payment for Invoice ${invoice.invoice_number}`,
         customerEmail: invoice.client.email || undefined,
         invoiceId: invoice.id,

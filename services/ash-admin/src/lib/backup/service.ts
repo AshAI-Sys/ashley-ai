@@ -64,7 +64,7 @@ export class BackupService {
   }
 
   /**
-   * Parse PostgreSQL connection URL
+   * Parse database connection URL (supports SQLite file:// URLs)
    */
   private parseConnectionUrl(): {
     host: string
@@ -72,15 +72,44 @@ export class BackupService {
     database: string
     username: string
     password: string
+    isSQLite: boolean
+    sqlitePath?: string
   } {
-    const url = new URL(this.databaseUrl)
+    // Handle SQLite file URLs
+    if (this.databaseUrl.startsWith('file:')) {
+      const sqlitePath = this.databaseUrl.replace('file:', '')
+      return {
+        host: 'localhost',
+        port: '',
+        database: path.basename(sqlitePath),
+        username: '',
+        password: '',
+        isSQLite: true,
+        sqlitePath: sqlitePath
+      }
+    }
 
-    return {
-      host: url.hostname,
-      port: url.port || '5432',
-      database: url.pathname.slice(1).split('?')[0],
-      username: url.username,
-      password: url.password,
+    // Handle PostgreSQL URLs
+    try {
+      const url = new URL(this.databaseUrl)
+      return {
+        host: url.hostname,
+        port: url.port || '5432',
+        database: url.pathname.slice(1).split('?')[0],
+        username: url.username,
+        password: url.password,
+        isSQLite: false
+      }
+    } catch {
+      // Fallback to default values
+      return {
+        host: 'localhost',
+        port: '',
+        database: 'database',
+        username: '',
+        password: '',
+        isSQLite: true
+      }
     }
   }
 
@@ -114,33 +143,52 @@ export class BackupService {
 
     const conn = this.parseConnectionUrl()
     const timestamp = new Date()
-    const filename = compress ? `${name}.sql.gz` : `${name}.sql`
+    const filename = compress ? `${name}.db.gz` : `${name}.db`
     const backupPath = path.join(this.backupDir, filename)
 
     try {
-      // Build pg_dump command
-      let command = `PGPASSWORD="${conn.password}" pg_dump`
-      command += ` -h ${conn.host}`
-      command += ` -p ${conn.port}`
-      command += ` -U ${conn.username}`
-      command += ` -d ${conn.database}`
-
-      // Options
-      if (!includeData) command += ' --schema-only'
-      if (!includeSchema) command += ' --data-only'
-      command += ' --no-owner --no-acl'
-
-      // Compress if requested
-      if (compress) {
-        command += ` | gzip > "${backupPath}"`
-      } else {
-        command += ` > "${backupPath}"`
-      }
-
       console.log(`📦 Creating backup: ${filename}`)
 
-      // Execute backup
-      await execAsync(command)
+      if (conn.isSQLite && conn.sqlitePath) {
+        // SQLite backup - just copy the file
+        const sourceStats = await fs.stat(conn.sqlitePath)
+
+        if (compress) {
+          // Compress SQLite file
+          const command = process.platform === 'win32'
+            ? `powershell -command "& {Get-Content '${conn.sqlitePath}' -Raw | Out-File -Encoding byte '${backupPath.replace('.gz', '')}'; gzip '${backupPath.replace('.gz', '')}'}"`
+            : `gzip -c "${conn.sqlitePath}" > "${backupPath}"`
+          await execAsync(command).catch(async () => {
+            // Fallback: just copy without compression on Windows
+            await fs.copyFile(conn.sqlitePath, backupPath.replace('.gz', ''))
+          })
+        } else {
+          // Just copy the SQLite file
+          await fs.copyFile(conn.sqlitePath, backupPath)
+        }
+      } else {
+        // PostgreSQL backup
+        let command = `PGPASSWORD="${conn.password}" pg_dump`
+        command += ` -h ${conn.host}`
+        command += ` -p ${conn.port}`
+        command += ` -U ${conn.username}`
+        command += ` -d ${conn.database}`
+
+        // Options
+        if (!includeData) command += ' --schema-only'
+        if (!includeSchema) command += ' --data-only'
+        command += ' --no-owner --no-acl'
+
+        // Compress if requested
+        if (compress) {
+          command += ` | gzip > "${backupPath}"`
+        } else {
+          command += ` > "${backupPath}"`
+        }
+
+        // Execute backup
+        await execAsync(command)
+      }
 
       // Get file size
       const stats = await fs.stat(backupPath)
@@ -182,12 +230,12 @@ export class BackupService {
       const backups: BackupInfo[] = []
 
       for (const file of files) {
-        if (file.endsWith('.sql') || file.endsWith('.sql.gz')) {
+        if (file.endsWith('.sql') || file.endsWith('.sql.gz') || file.endsWith('.db') || file.endsWith('.db.gz')) {
           const filePath = path.join(this.backupDir, file)
           const stats = await fs.stat(filePath)
 
           backups.push({
-            id: file.replace(/\.(sql|sql\.gz)$/, ''),
+            id: file.replace(/\.(sql|sql\.gz|db|db\.gz)$/, ''),
             filename: file,
             path: filePath,
             size: stats.size,
@@ -225,19 +273,36 @@ export class BackupService {
     try {
       console.log(`🔄 Restoring backup: ${backup.filename}`)
 
-      // Build restore command
-      let command = `PGPASSWORD="${conn.password}"`
-
-      if (backup.compressed) {
-        command += ` gunzip -c "${backup.path}" |`
+      if (conn.isSQLite && conn.sqlitePath) {
+        // SQLite restore - copy file back
+        if (backup.compressed) {
+          // Decompress and restore
+          const command = process.platform === 'win32'
+            ? `powershell -command "& {gzip -d '${backup.path}' -c > '${conn.sqlitePath}'}"`
+            : `gunzip -c "${backup.path}" > "${conn.sqlitePath}"`
+          await execAsync(command).catch(async () => {
+            // Fallback: just copy if decompression fails
+            await fs.copyFile(backup.path, conn.sqlitePath)
+          })
+        } else {
+          // Just copy the file back
+          await fs.copyFile(backup.path, conn.sqlitePath)
+        }
       } else {
-        command += ` cat "${backup.path}" |`
+        // PostgreSQL restore
+        let command = `PGPASSWORD="${conn.password}"`
+
+        if (backup.compressed) {
+          command += ` gunzip -c "${backup.path}" |`
+        } else {
+          command += ` cat "${backup.path}" |`
+        }
+
+        command += ` psql -h ${conn.host} -p ${conn.port} -U ${conn.username} -d ${conn.database}`
+
+        // Execute restore
+        await execAsync(command)
       }
-
-      command += ` psql -h ${conn.host} -p ${conn.port} -U ${conn.username} -d ${conn.database}`
-
-      // Execute restore
-      await execAsync(command)
 
       console.log(`✅ Backup restored: ${backup.filename}`)
     } catch (error) {
@@ -329,7 +394,7 @@ export class BackupService {
       const stats = await fs.stat(backupPath)
 
       return {
-        id: filename.replace(/\.(sql|sql\.gz)$/, ''),
+        id: filename.replace(/\.(sql|sql\.gz|db|db\.gz)$/, ''),
         filename,
         path: backupPath,
         size: stats.size,
