@@ -55,15 +55,15 @@ export async function POST(request: NextRequest) {
           type: 'bundle',
           data: {
             id: bundle.id,
-            bundle_number: bundle.bundle_number,
-            size: bundle.size,
-            quantity: bundle.quantity,
+            bundle_number: bundle.qr_code,
+            size: bundle.size_code,
+            quantity: bundle.qty,
             status: bundle.status,
-            lay_number: bundle.lay?.lay_number,
-            order_number: bundle.lay?.cutting_run?.order?.order_number,
-            client_name: bundle.lay?.cutting_run?.order?.client?.name,
+            lay_number: bundle.lay?.marker_name,
+            order_number: bundle.lay?.order?.order_number,
+            client_name: bundle.lay?.order?.client?.name,
           },
-          message: `Bundle ${bundle.bundle_number} found - ${bundle.quantity} pieces`,
+          message: `Bundle ${bundle.qr_code} found - ${bundle.qty} pieces`,
         })
       }
     }
@@ -227,12 +227,12 @@ export async function POST(request: NextRequest) {
         type: 'bundle',
         data: {
           id: bundle.id,
-          bundle_number: bundle.bundle_number,
-          size: bundle.size,
-          quantity: bundle.quantity,
+          bundle_number: bundle.qr_code,
+          size: bundle.size_code,
+          quantity: bundle.qty,
           status: bundle.status,
         },
-        message: `Bundle ${bundle.bundle_number} found`,
+        message: `Bundle ${bundle.qr_code} found`,
       })
     }
 
