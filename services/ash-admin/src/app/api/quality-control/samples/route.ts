@@ -10,10 +10,11 @@ export async function POST(request: NextRequest) {
         workspace_id: data.workspace_id || 'default',
         inspection_id: data.inspection_id,
         sample_no: data.sample_no,
-        bundle_ref: data.bundle_ref,
+        sampled_from: data.sampled_from || data.bundle_ref, // Support both field names
+        unit_ref: data.unit_ref,
         qty_sampled: data.qty_sampled,
         defects_found: data.defects_found || 0,
-        pass_fail: data.pass_fail,
+        result: data.result || data.pass_fail || 'OK', // Changed from pass_fail to result
         sample_data: data.sample_data ? JSON.stringify(data.sample_data) : null,
         sampled_at: new Date()
       }

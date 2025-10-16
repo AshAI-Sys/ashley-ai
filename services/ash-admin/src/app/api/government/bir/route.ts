@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
               gte: new Date(period.from),
               lte: new Date(period.to),
             },
-            status: 'APPROVED',
+            approved: true,
           },
         })
 
@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
           const vat = birService.calculateVAT(exp.amount)
           return {
             date: exp.expense_date.toISOString().split('T')[0],
-            reference_number: exp.reference_number || exp.id,
-            supplier_name: exp.vendor_name || 'N/A',
+            reference_number: exp.payment_ref || exp.id,
+            supplier_name: exp.supplier || 'N/A',
             tin: '000-000-000-000', // Should be stored in supplier/vendor table
             address: '',
             amount: vat.net,

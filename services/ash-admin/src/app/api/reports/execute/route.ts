@@ -207,11 +207,11 @@ async function executeHRQuery(workspaceId: string, config: any, filters: any[], 
   const employees = await prisma.employee.findMany({
     where,
     include: {
-      attendance_logs: {
+      attendance: {
         take: 10,
         orderBy: { date: 'desc' },
       },
-      payroll_earnings: {
+      earnings: {
         take: 10,
         orderBy: { created_at: 'desc' },
       },

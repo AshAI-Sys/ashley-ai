@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
 
     // Process cartons to calculate metrics
     const processedCartons = cartons.map(carton => {
-      const unitsCount = carton.contents.reduce((sum, content) => sum + content.quantity, 0)
+      const unitsCount = carton.contents.reduce((sum, content) => sum + content.qty, 0)
 
       return {
         ...carton,
@@ -121,7 +121,7 @@ export async function PUT(request: NextRequest) {
       if (cartonWithContents) {
         // Calculate actual weight and fill percentage
         const unitWeight = 0.15 // kg per unit (average)
-        const totalUnits = cartonWithContents.contents.reduce((sum, c) => sum + c.quantity, 0)
+        const totalUnits = cartonWithContents.contents.reduce((sum, c) => sum + c.qty, 0)
         const actualWeight = (cartonWithContents.tare_weight_kg || 0.5) + (totalUnits * unitWeight)
 
         // Calculate volume utilization

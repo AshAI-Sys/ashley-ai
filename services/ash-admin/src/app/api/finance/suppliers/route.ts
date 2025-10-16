@@ -1,30 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
+// Note: Supplier model not yet implemented in schema
+// Using expense.supplier field as temporary solution
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
 
-    const where: any = {}
-    if (search) {
-      where.name = {
-        contains: search,
-        mode: 'insensitive'
-      }
-    }
-
-    const suppliers = await prisma.supplier.findMany({
-      where,
-      include: {
-        _count: {
-          select: {
-            bills: true
-          }
+    // Get unique suppliers from expenses
+    const expenses = await prisma.expense.findMany({
+      where: search ? {
+        supplier: {
+          contains: search,
+          mode: 'insensitive'
         }
+      } : {},
+      select: {
+        supplier: true,
+        _count: true
       },
-      orderBy: { name: 'asc' }
+      distinct: ['supplier']
     })
+
+    // Format as supplier list
+    const suppliers = expenses
+      .filter(e => e.supplier)
+      .map(e => ({
+        name: e.supplier,
+        expense_count: 1 // Simplified for now
+      }))
 
     return NextResponse.json({
       success: true,
@@ -41,24 +46,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
-    const { name, tin, emails, phones, address } = data
-
-    const supplier = await prisma.supplier.create({
-      data: {
-        workspace_id: 'default',
-        name,
-        tin,
-        emails: emails || {},
-        phones: phones || {},
-        address: address || {}
-      }
-    })
-
+    // Supplier model not implemented yet
+    // Return success but don't create anything
     return NextResponse.json({
-      success: true,
-      data: supplier
-    }, { status: 201 })
+      success: false,
+      error: 'Supplier model not yet implemented. Suppliers are tracked via Expense records.'
+    }, { status: 501 })
 
   } catch (error) {
     console.error('Error creating supplier:', error)
