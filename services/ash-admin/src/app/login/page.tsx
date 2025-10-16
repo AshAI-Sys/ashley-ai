@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loginType, setLoginType] = useState<'admin' | 'employee'>('admin')
   const [showPassword, setShowPassword] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -38,6 +39,8 @@ export default function LoginPage() {
     try {
       const apiEndpoint = loginType === 'admin' ? '/api/auth/login' : '/api/auth/employee-login'
 
+      console.log('[LOGIN] Attempting login as', loginType, 'to', apiEndpoint)
+
       const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
@@ -46,52 +49,107 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
 
+      console.log('[LOGIN] Response status:', response.status)
+
       if (response.ok) {
         const data = await response.json()
+        console.log('[LOGIN] Response data received:', { success: data.success, hasToken: !!data.access_token })
 
         if (data.success && data.access_token) {
-          if (loginType === 'admin') {
-            localStorage.setItem('ash_token', data.access_token)
-            localStorage.setItem('ash_user', JSON.stringify(data.user))
-            localStorage.setItem('user_type', 'admin')
-          } else {
-            localStorage.setItem('access_token', data.access_token)
-            localStorage.setItem('employee_data', JSON.stringify(data.employee))
-            localStorage.setItem('user_type', 'employee')
+          // Store authentication data
+          try {
+            if (loginType === 'admin') {
+              localStorage.setItem('ash_token', data.access_token)
+              localStorage.setItem('ash_user', JSON.stringify(data.user))
+              localStorage.setItem('user_type', 'admin')
+              console.log('[LOGIN] Admin data stored in localStorage')
+            } else {
+              localStorage.setItem('access_token', data.access_token)
+              localStorage.setItem('employee_data', JSON.stringify(data.employee))
+              localStorage.setItem('user_type', 'employee')
+              console.log('[LOGIN] Employee data stored in localStorage')
+            }
+
+            if (rememberMe) {
+              localStorage.setItem('ash_remember_email', email)
+              localStorage.setItem('ash_remember_password', password)
+              localStorage.setItem('ash_remember_type', loginType)
+            } else {
+              localStorage.removeItem('ash_remember_email')
+              localStorage.removeItem('ash_remember_password')
+              localStorage.removeItem('ash_remember_type')
+            }
+          } catch (storageError) {
+            console.error('[LOGIN] localStorage error:', storageError)
+            setError('Failed to store login data. Please check browser storage settings.')
+            setIsLoading(false)
+            return
           }
 
-          if (rememberMe) {
-            localStorage.setItem('ash_remember_email', email)
-            localStorage.setItem('ash_remember_password', password)
-            localStorage.setItem('ash_remember_type', loginType)
-          } else {
-            localStorage.removeItem('ash_remember_email')
-            localStorage.removeItem('ash_remember_password')
-            localStorage.removeItem('ash_remember_type')
-          }
+          // Show redirecting state
+          setRedirecting(true)
 
-          if (loginType === 'admin') {
-            window.location.href = '/dashboard'
-          } else {
-            window.location.href = '/employee'
+          // Redirect with multiple fallback methods
+          const redirectPath = loginType === 'admin' ? '/dashboard' : '/employee'
+          console.log('[LOGIN] Attempting redirect to:', redirectPath)
+
+          // Method 1: Try Next.js router first
+          try {
+            await router.push(redirectPath)
+            console.log('[LOGIN] Router.push called')
+
+            // Wait a bit, then try fallback if still on login page
+            setTimeout(() => {
+              if (window.location.pathname === '/login') {
+                console.log('[LOGIN] Router redirect failed, trying window.location')
+                window.location.href = redirectPath
+              }
+            }, 500)
+          } catch (routerError) {
+            console.error('[LOGIN] Router error:', routerError)
+            // Method 2: Fallback to window.location
+            window.location.href = redirectPath
           }
         } else {
+          console.error('[LOGIN] Invalid response format:', data)
           setError('Login failed: Invalid response format')
+          setIsLoading(false)
         }
       } else {
         const errorData = await response.json().catch(() => ({}))
+        console.error('[LOGIN] Login failed:', errorData)
         setError(errorData.error || 'Invalid credentials. Please try again.')
+        setIsLoading(false)
       }
     } catch (err) {
-      console.error('Login error:', err)
+      console.error('[LOGIN] Exception:', err)
       setError('Login failed. Please check your connection and try again.')
-    } finally {
       setIsLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-950 dark:to-blue-950 flex items-center justify-center p-4 font-sans">
+      {/* Redirecting Overlay */}
+      {redirecting && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center border border-gray-200 dark:border-gray-800">
+            <div className="w-16 h-16 bg-blue-600 dark:bg-blue-700 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <svg className="w-8 h-8 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Redirecting...
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Taking you to your dashboard
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Theme Toggle - Top Right */}
       <div className="absolute top-4 right-4">
         <ThemeToggle />
