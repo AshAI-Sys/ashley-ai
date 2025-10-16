@@ -195,51 +195,58 @@ export default function OrdersPage() {
           {orders.map((order) => (
             <Card key={order.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg">{order?.order_number || 'Unknown Order'}</h3>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                      <h3 className="font-semibold text-lg truncate">{order?.order_number || 'Unknown Order'}</h3>
                       <Badge className={getStatusColor(order?.status)}>
                         {order?.status ? order.status.replace('_', ' ').toUpperCase() : 'UNKNOWN'}
                       </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                      <div>
-                        <span className="font-medium">Client:</span><br />
-                        {order?.client?.name || 'No Client'}
+
+                    {/* Details Grid - Optimized for mobile */}
+                    <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground">Client</span>
+                        <span className="font-medium mt-0.5 truncate">{order?.client?.name || 'No Client'}</span>
                       </div>
-                      <div>
-                        <span className="font-medium">Brand:</span><br />
-                        {order?.brand?.name || 'No Brand'}
+                      <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground">Brand</span>
+                        <span className="font-medium mt-0.5 truncate">{order?.brand?.name || 'No Brand'}</span>
                       </div>
-                      <div>
-                        <span className="font-medium">Amount:</span><br />
-                        ₱{(order?.total_amount || 0).toLocaleString()}
+                      <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground">Amount</span>
+                        <span className="font-medium mt-0.5">₱{(order?.total_amount || 0).toLocaleString()}</span>
                       </div>
-                      <div>
-                        <span className="font-medium">Delivery:</span><br />
-                        {order?.delivery_date ? new Date(order.delivery_date).toLocaleDateString() : 'TBD'}
+                      <div className="flex flex-col">
+                        <span className="text-xs font-medium text-muted-foreground">Delivery</span>
+                        <span className="font-medium mt-0.5">{order?.delivery_date ? new Date(order.delivery_date).toLocaleDateString() : 'TBD'}</span>
                       </div>
                     </div>
-                    
-                    <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
-                      <span>{order?._count?.line_items || 0} items</span>
+
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Package className="w-3 h-3" />
+                        {order?._count?.line_items || 0} items
+                      </span>
                       <span>{order?._count?.design_assets || 0} designs</span>
                       <span>{order?._count?.bundles || 0} bundles</span>
-                      <span>Created {order?.created_at ? new Date(order.created_at).toLocaleDateString() : 'Unknown'}</span>
+                      <span className="hidden sm:inline">Created {order?.created_at ? new Date(order.created_at).toLocaleDateString() : 'Unknown'}</span>
                     </div>
                   </div>
-                  
-                  <div className="flex gap-2 flex-shrink-0">
-                    <Link href={`/orders/${order?.id || ''}`}>
-                      <Button variant="outline" size="sm" className="h-9 px-3">
+
+                  {/* Actions */}
+                  <div className="flex sm:flex-col gap-2 flex-shrink-0">
+                    <Link href={`/orders/${order?.id || ''}`} className="flex-1 sm:flex-none">
+                      <Button variant="outline" size="sm" className="h-9 px-3 w-full">
                         <Eye className="w-4 h-4 sm:mr-1" />
                         <span className="hidden sm:inline">View</span>
                       </Button>
                     </Link>
-                    <Link href={`/orders/${order?.id || ''}/edit`}>
-                      <Button variant="outline" size="sm" className="h-9 px-3">
+                    <Link href={`/orders/${order?.id || ''}/edit`} className="flex-1 sm:flex-none">
+                      <Button variant="outline" size="sm" className="h-9 px-3 w-full">
                         <Edit className="w-4 h-4 sm:mr-1" />
                         <span className="hidden sm:inline">Edit</span>
                       </Button>

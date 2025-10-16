@@ -381,49 +381,56 @@ export default function FinancePage() {
                 ) : (
                   <div className="space-y-4">
                     {invoices.map((invoice) => (
-                    <div key={invoice.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">{invoice.invoice_no}</h3>
+                    <div key={invoice.id} className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          {/* Header */}
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                            <h3 className="font-semibold truncate">{invoice.invoice_no}</h3>
                             {getStatusBadge(invoice.status)}
                             {invoice.days_overdue && (
-                              <Badge className="bg-red-100 text-red-800">
-                                {invoice.days_overdue} days overdue
+                              <Badge className="bg-red-100 text-red-800 w-fit">
+                                {invoice.days_overdue}d overdue
                               </Badge>
                             )}
                           </div>
-                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <span className="text-gray-600">Client:</span><br />
-                              <span className="font-medium">{invoice.client?.name || 'N/A'}</span>
+
+                          {/* Details Grid - Optimized for mobile */}
+                          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Client</span>
+                              <span className="font-medium mt-0.5 truncate">{invoice.client?.name || 'N/A'}</span>
                             </div>
-                            <div>
-                              <span className="text-gray-600">Brand:</span><br />
-                              <span className="font-medium">{invoice.brand?.name || 'N/A'}</span>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Brand</span>
+                              <span className="font-medium mt-0.5 truncate">{invoice.brand?.name || 'N/A'}</span>
                             </div>
-                            <div>
-                              <span className="text-gray-600">Amount:</span><br />
-                              <span className="font-medium">{formatCurrency(invoice.total)}</span>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Amount</span>
+                              <span className="font-medium mt-0.5">{formatCurrency(invoice.total)}</span>
                             </div>
-                            <div>
-                              <span className="text-gray-600">Balance:</span><br />
-                              <span className="font-medium text-red-600">{formatCurrency(invoice.balance)}</span>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Balance</span>
+                              <span className="font-medium mt-0.5 text-red-600">{formatCurrency(invoice.balance)}</span>
                             </div>
                           </div>
-                          <div className="flex gap-4 mt-2 text-xs text-gray-500">
+
+                          {/* Dates */}
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-gray-500">
                             <span>Issued: {formatDate(invoice.date_issued)}</span>
                             <span>Due: {formatDate(invoice.due_date)}</span>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
+
+                        {/* Actions */}
+                        <div className="flex sm:flex-col gap-2 flex-shrink-0">
+                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                            <Eye className="w-4 h-4 sm:mr-1" />
+                            <span className="hidden sm:inline">View</span>
                           </Button>
-                          <Button variant="outline" size="sm">
-                            <CreditCard className="w-4 h-4 mr-1" />
-                            Payment
+                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                            <CreditCard className="w-4 h-4 sm:mr-1" />
+                            <span className="hidden sm:inline">Payment</span>
                           </Button>
                         </div>
                       </div>
@@ -476,41 +483,46 @@ export default function FinancePage() {
                 ) : (
                   <div className="space-y-4">
                     {bills.map((bill) => (
-                    <div key={bill.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold">{bill.bill_no}</h3>
+                    <div key={bill.id} className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          {/* Header */}
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                            <h3 className="font-semibold truncate">{bill.bill_no}</h3>
                             {getStatusBadge(bill.status)}
                             {bill.days_until_due && (
-                              <Badge className="bg-yellow-100 text-yellow-800">
-                                Due in {bill.days_until_due} days
+                              <Badge className="bg-yellow-100 text-yellow-800 w-fit">
+                                Due in {bill.days_until_due}d
                               </Badge>
                             )}
                           </div>
-                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                            <div>
-                              <span className="text-gray-600">Supplier:</span><br />
-                              <span className="font-medium">{bill.supplier?.name || 'N/A'}</span>
+
+                          {/* Details Grid - Optimized for mobile */}
+                          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Supplier</span>
+                              <span className="font-medium mt-0.5 truncate">{bill.supplier?.name || 'N/A'}</span>
                             </div>
-                            <div>
-                              <span className="text-gray-600">Amount:</span><br />
-                              <span className="font-medium">{formatCurrency(bill.total)}</span>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Amount</span>
+                              <span className="font-medium mt-0.5">{formatCurrency(bill.total)}</span>
                             </div>
-                            <div>
-                              <span className="text-gray-600">Due Date:</span><br />
-                              <span className="font-medium">{formatDate(bill.due_date)}</span>
+                            <div className="flex flex-col">
+                              <span className="text-xs font-medium text-gray-500">Due Date</span>
+                              <span className="font-medium mt-0.5">{formatDate(bill.due_date)}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
+
+                        {/* Actions */}
+                        <div className="flex sm:flex-col gap-2 flex-shrink-0">
+                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                            <Eye className="w-4 h-4 sm:mr-1" />
+                            <span className="hidden sm:inline">View</span>
                           </Button>
-                          <Button variant="outline" size="sm">
-                            <CreditCard className="w-4 h-4 mr-1" />
-                            Pay
+                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                            <CreditCard className="w-4 h-4 sm:mr-1" />
+                            <span className="hidden sm:inline">Pay</span>
                           </Button>
                         </div>
                       </div>

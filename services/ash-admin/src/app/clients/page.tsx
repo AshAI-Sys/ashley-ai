@@ -85,23 +85,25 @@ export default function ClientsPage() {
   return (
     <DashboardLayout>
       <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
+      {/* Page Header - Responsive */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Clients</h1>
-          <p className="text-muted-foreground">Manage your clients and their information</p>
+          <h1 className="text-2xl lg:text-3xl font-bold">Clients</h1>
+          <p className="text-sm lg:text-base text-muted-foreground">Manage your clients and their information</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="gap-2"
+            className="gap-2 flex-1 sm:flex-none"
+            size="sm"
           >
             <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
-            {isFetching ? 'Refreshing...' : 'Refresh'}
+            <span className="hidden sm:inline">{isFetching ? 'Refreshing...' : 'Refresh'}</span>
           </Button>
-          <Link href="/clients/new">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+          <Link href="/clients/new" className="flex-1 sm:flex-none">
+            <Button className="bg-blue-600 hover:bg-blue-700 w-full" size="sm">
               <Plus className="w-4 h-4 mr-2" />
               New Client
             </Button>
@@ -109,23 +111,23 @@ export default function ClientsPage() {
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters - Responsive */}
       <Card className="mb-6">
         <CardContent className="py-4">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 max-w-sm">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+            <div className="flex-1">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
                 <Input
                   placeholder="Search clients..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 h-10"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Filter className="w-4 h-4 text-muted-foreground" />
               <select
                 value={statusFilter}
@@ -133,7 +135,7 @@ export default function ClientsPage() {
                   setStatusFilter(e.target.value)
                   setCurrentPage(1) // Reset to first page on filter change
                 }}
-                className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+                className="px-3 py-2 border border-gray-200 rounded-md text-sm h-10 flex-1 sm:flex-none min-w-0"
               >
                 <option value="all">All Clients</option>
                 <option value="active">Active Only</option>
@@ -167,65 +169,76 @@ export default function ClientsPage() {
           {clients.map((client) => (
             <Card key={client.id} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Building2 className="w-5 h-5 text-blue-600" />
-                      <h3 className="font-semibold text-lg">{client.name}</h3>
-                      <Badge className={client.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                        <h3 className="font-semibold text-lg truncate">{client.name}</h3>
+                      </div>
+                      <Badge className={client.is_active ? 'bg-green-100 text-green-800 w-fit' : 'bg-red-100 text-red-800 w-fit'}>
                         {client.is_active ? 'Active' : 'Inactive'}
                       </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-muted-foreground mb-3">
+
+                    {/* Contact Info Grid - Optimized for mobile */}
+                    <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 text-sm text-muted-foreground mb-3">
                       {client.contact_person && (
                         <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4" />
-                          <span>{client.contact_person}</span>
+                          <Users className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{client.contact_person}</span>
                         </div>
                       )}
                       {client.email && (
                         <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4" />
-                          <span>{client.email}</span>
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{client.email}</span>
                         </div>
                       )}
                       {client.phone && (
                         <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4" />
-                          <span>{client.phone}</span>
+                          <Phone className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{client.phone}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{formatAddress(client.address)}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-muted-foreground">Orders:</span><br />
-                        <span className="font-semibold">{client._count.orders}</span>
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{formatAddress(client.address)}</span>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
+                    {/* Stats - Compact for mobile */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                      <div>
+                        <span className="font-medium text-muted-foreground">Orders: </span>
+                        <span className="font-semibold">{client._count.orders}</span>
+                      </div>
+                      <div>
+                        <span className="font-medium text-muted-foreground">Brands: </span>
+                        <span className="font-semibold">{client._count.brands}</span>
+                      </div>
+                    </div>
+
+                    {/* Timestamps - Hidden on mobile */}
+                    <div className="hidden sm:flex gap-4 mt-3 text-xs text-muted-foreground">
                       <span>Created {new Date(client.created_at).toLocaleDateString()}</span>
                       <span>Updated {new Date(client.updated_at).toLocaleDateString()}</span>
                     </div>
                   </div>
-                  
-                  <div className="flex gap-2">
-                    <Link href={`/clients/${client.id}`}>
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-1" />
-                        View
+
+                  {/* Actions */}
+                  <div className="flex sm:flex-col gap-2 flex-shrink-0">
+                    <Link href={`/clients/${client.id}`} className="flex-1 sm:flex-none">
+                      <Button variant="outline" size="sm" className="h-9 px-3 w-full">
+                        <Eye className="w-4 h-4 sm:mr-1" />
+                        <span className="hidden sm:inline">View</span>
                       </Button>
                     </Link>
-                    <Link href={`/clients/${client.id}/edit`}>
-                      <Button variant="outline" size="sm">
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
+                    <Link href={`/clients/${client.id}/edit`} className="flex-1 sm:flex-none">
+                      <Button variant="outline" size="sm" className="h-9 px-3 w-full">
+                        <Edit className="w-4 h-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Edit</span>
                       </Button>
                     </Link>
                   </div>
