@@ -17,22 +17,23 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Look up bundle by QR code or bundle number
+    // Look up bundle by QR code
     const bundle = await prisma.bundle.findFirst({
       where: {
         workspace_id: workspaceId,
-        OR: [
-          { qr_code: code },
-          { bundle_number: code },
-        ],
+        qr_code: code,
       },
       include: {
-        order: {
-          select: {
-            order_number: true,
-            client: {
+        lay: {
+          include: {
+            order: {
               select: {
-                name: true,
+                order_number: true,
+                client: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
         qr_code: bundle.qr_code,
         quantity: bundle.qty,
         status: bundle.status,
-        order: bundle.order,
+        order: bundle.lay?.order,
         size_code: bundle.size_code,
         created_at: bundle.created_at,
       },

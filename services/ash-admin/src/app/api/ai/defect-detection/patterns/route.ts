@@ -18,18 +18,14 @@ export async function GET(req: NextRequest) {
     };
 
     // Get QC checks
-    const qcChecks = await prisma.qualityControlCheck.findMany({
-      where: whereClause,
+    const qcChecks = await prisma.qCInspection.findMany({
+      where: {
+        ...whereClause,
+        workspace_id: 'default',
+      },
       include: {
-        bundle: {
-          include: {
-            sewing_run: {
-              include: {
-                operator: true,
-              },
-            },
-          },
-        },
+        order: true,
+        inspector: true,
       },
       orderBy: {
         created_at: 'desc',
@@ -55,9 +51,12 @@ export async function GET(req: NextRequest) {
       // Parse defects from notes or create simulated defects
       const defects: any[] = [];
 
-      // If we have defects_found, simulate defect data
-      if (qc.defects_found && qc.defects_found > 0) {
-        for (let i = 0; i < qc.defects_found; i++) {
+      // Calculate total defects from critical + major + minor
+      const totalDefects = (qc.critical_found || 0) + (qc.major_found || 0) + (qc.minor_found || 0);
+
+      // If we have defects, simulate defect data
+      if (totalDefects > 0) {
+        for (let i = 0; i < totalDefects; i++) {
           defects.push({
             type: 'UNKNOWN',
             severity: qc.status === 'FAILED' ? 'MAJOR' : 'MINOR',
@@ -70,8 +69,8 @@ export async function GET(req: NextRequest) {
 
       return {
         date: qc.created_at,
-        operator_id: qc.bundle?.sewing_run?.operator_id,
-        station: qc.check_type || 'UNKNOWN',
+        operator_id: qc.inspector_id,
+        station: qc.stage || 'UNKNOWN',
         defects,
       };
     });
@@ -110,23 +109,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Get QC checks with AI results
-    const qcChecks = await prisma.qualityControlCheck.findMany({
+    const qcChecks = await prisma.qCInspection.findMany({
       where: {
         created_at: {
           gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         },
-        check_type: 'AI_VISION',
+        workspace_id: 'default',
       },
       include: {
-        bundle: {
-          include: {
-            sewing_run: {
-              include: {
-                operator: true,
-              },
-            },
-          },
-        },
+        order: true,
+        inspector: true,
       },
     });
 
@@ -146,20 +138,23 @@ export async function POST(req: NextRequest) {
       let entityName: string;
 
       if (entity_type === 'operator') {
-        entityId = qc.bundle?.sewing_run?.operator_id || 'UNKNOWN';
-        entityName = qc.bundle?.sewing_run?.operator?.name || 'Unknown Operator';
+        entityId = qc.inspector_id || 'UNKNOWN';
+        entityName = qc.inspector?.name || 'Unknown Operator';
       } else {
-        entityId = qc.check_type || 'UNKNOWN';
-        entityName = qc.check_type || 'Unknown Station';
+        entityId = qc.stage || 'UNKNOWN';
+        entityName = qc.stage || 'Unknown Station';
       }
 
       if (!entityGroups[entityId]) {
         entityGroups[entityId] = [];
       }
 
+      // Calculate total defects from critical + major + minor
+      const totalDefects = (qc.critical_found || 0) + (qc.major_found || 0) + (qc.minor_found || 0);
+
       // Create simulated defect detection result
       const result = {
-        defects_found: qc.defects_found || 0,
+        defects_found: totalDefects,
         quality_score: qc.status === 'PASSED' ? 95 : 70,
         detected_defects: [],
         confidence: 90,

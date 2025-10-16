@@ -25,29 +25,44 @@ export async function POST(req: NextRequest) {
     // Optionally save results to database if bundle_id provided
     if (bundle_id && result.defects_found > 0) {
       // Create QC check record
-      const qcCheck = await prisma.qualityControlCheck.create({
+      const qcCheck = await prisma.qCInspection.create({
         data: {
-          bundle_id,
+          workspace_id: 'default',
+          order_id: 'unknown', // TODO: Get from bundle if available
           inspector_id: 'AI-SYSTEM',
-          check_type: 'AI_VISION',
+          stage: 'FINAL',
+          inspection_level: 'GII',
+          aql: 2.5,
+          lot_size: 1,
+          sample_size: 1,
+          acceptance: 0,
+          rejection: 1,
+          inspection_date: new Date(),
           status: result.pass_fail === 'PASS' ? 'PASSED' : 'FAILED',
-          defects_found: result.defects_found,
+          result: result.pass_fail === 'PASS' ? 'PASSED' : 'FAILED',
+          critical_found: 0,
+          major_found: result.defects_found,
+          minor_found: 0,
           notes: `AI detected ${result.defects_found} defect(s). Quality score: ${result.quality_score}%. Confidence: ${result.confidence}%`,
-          photos: image_url ? [image_url] : [],
         },
       });
 
       // Create defect records
       for (const defect of result.detected_defects) {
-        await prisma.defectCode.upsert({
-          where: { code: defect.type },
+        await prisma.qCDefectType.upsert({
+          where: {
+            workspace_id_code: {
+              workspace_id: 'default',
+              code: defect.type
+            }
+          },
           update: {},
           create: {
+            workspace_id: 'default',
             code: defect.type,
-            description: defect.description,
+            name: defect.description,
             severity: defect.severity,
             category: defect.type.includes('PRINT') ? 'PRINT' : defect.type.includes('STITCH') || defect.type.includes('SEAM') ? 'SEWING' : 'FABRIC',
-            workspace_id: 'default',
           },
         });
       }
@@ -82,17 +97,12 @@ export async function GET(req: NextRequest) {
     const bundleIds = bundleIdsParam.split(',');
 
     // Get QC checks with photos for these bundles
-    const qcChecks = await prisma.qualityControlCheck.findMany({
+    const qcChecks = await prisma.qCInspection.findMany({
       where: {
-        bundle_id: {
-          in: bundleIds,
-        },
-        photos: {
-          isEmpty: false,
-        },
+        workspace_id: 'default',
       },
       include: {
-        bundle: true,
+        order: true,
       },
     });
 

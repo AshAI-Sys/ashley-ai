@@ -23,8 +23,8 @@ export async function GET(req: NextRequest) {
       endOfDay.setHours(23, 59, 59, 999);
 
       // Get production data for this day
-      const [cuttingRuns, sewingRuns, printRuns, qcChecks] = await Promise.all([
-        prisma.cuttingRun.findMany({
+      const [cutLays, sewingRuns, printRuns, qcChecks] = await Promise.all([
+        prisma.cutLay.findMany({
           where: {
             created_at: { gte: startOfDay, lte: endOfDay },
           },
@@ -40,9 +40,10 @@ export async function GET(req: NextRequest) {
             created_at: { gte: startOfDay, lte: endOfDay },
           },
         }),
-        prisma.qualityControlCheck.findMany({
+        prisma.qCInspection.findMany({
           where: {
             created_at: { gte: startOfDay, lte: endOfDay },
+            workspace_id: 'default',
           },
         }),
       ]);
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
       const dayMetrics: any[] = [];
 
       // Cutting
-      if (cuttingRuns.length > 0 || i === 0) {
+      if (cutLays.length > 0 || i === 0) {
         const efficiency = 75 + Math.random() * 20;
         dayMetrics.push({
           station_id: 'CUTTING_MAIN',

@@ -45,17 +45,17 @@ export const GET = withErrorHandling(async (
       where: { operator_id: employeeId }
     })
 
-    totalPieces = sewingRuns.reduce((sum, run) => sum + (run.pieces_completed || 0), 0)
+    totalPieces = sewingRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0)
 
     const todayRuns = sewingRuns.filter(run =>
       run.created_at >= today && run.created_at < tomorrow
     )
-    todayPieces = todayRuns.reduce((sum, run) => sum + (run.pieces_completed || 0), 0)
+    todayPieces = todayRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0)
 
     const weekRuns = sewingRuns.filter(run =>
       run.created_at >= weekStart && run.created_at < weekEnd
     )
-    weekPieces = weekRuns.reduce((sum, run) => sum + (run.pieces_completed || 0), 0)
+    weekPieces = weekRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0)
 
     tasksCompleted = sewingRuns.filter(run => run.status === 'COMPLETED').length
 

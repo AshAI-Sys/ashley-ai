@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
         data: {
           method: provider,
           carrier_ref: booking.booking_id,
-          tracking_number: booking.tracking_number,
+          tracking_code: booking.tracking_number, // Changed from tracking_number to tracking_code
           status: 'BOOKED',
         },
       })
