@@ -10,30 +10,66 @@ const ChatWidget = dynamic(() => import('@/components/ai-chat/ChatWidget').then(
   ssr: false,
 })
 
+// Load PWA components only on client side
+const PWAInstallPrompt = dynamic(() => import('@/components/pwa-install-prompt'), {
+  ssr: false,
+})
+const PWARegister = dynamic(() => import('@/components/pwa-register'), {
+  ssr: false,
+})
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Ashley AI Admin',
-  description: 'Ashley AI - Apparel Smart Hub with Artificial Intelligence',
+  title: 'Ashley AI - Manufacturing ERP',
+  description: 'Complete Manufacturing ERP System with AI-powered optimization for apparel production',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Ashley AI',
+    startupImage: '/icons/icon-512x512.png',
+  },
+  applicationName: 'Ashley AI',
+  keywords: ['manufacturing', 'erp', 'apparel', 'production', 'ai', 'automation'],
+  authors: [{ name: 'Ashley AI Team' }],
+  creator: 'Ashley AI',
+  publisher: 'Ashley AI',
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    title: 'Ashley AI - Manufacturing ERP',
+    description: 'Complete Manufacturing ERP System with AI-powered optimization',
+    siteName: 'Ashley AI',
   },
   icons: {
-    icon: '/favicon.png',
-    shortcut: '/favicon.png',
-    apple: '/ash-ai-logo.png',
+    icon: [
+      { url: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+      { url: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/icons/icon-72x72.png',
+    apple: [
+      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+    ],
   },
 }
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: '#3b82f6',
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
+  ],
 }
 
 export default function RootLayout({
@@ -64,6 +100,11 @@ export default function RootLayout({
           {children}
           {/* ChatWidget temporarily disabled for faster page load */}
           {/* <ChatWidget /> */}
+
+          {/* PWA Components */}
+          <PWARegister />
+          <PWAInstallPrompt />
+
           <Toaster
             position="top-right"
             toastOptions={{
