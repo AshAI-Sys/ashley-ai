@@ -54,7 +54,7 @@ const EVENT_TYPE_CONFIG: Record<string, { icon: any; color: string; bgColor: str
   },
   COMMENT_ADDED: {
     icon: Info,
-    color: 'text-gray-600',
+    color: 'text-gray-300',
     bgColor: 'bg-gray-100'
   },
   FILE_UPLOADED: {
@@ -64,7 +64,7 @@ const EVENT_TYPE_CONFIG: Record<string, { icon: any; color: string; bgColor: str
   },
   DEFAULT: {
     icon: Info,
-    color: 'text-gray-600',
+    color: 'text-gray-300',
     bgColor: 'bg-gray-100'
   }
 }
@@ -158,7 +158,7 @@ export function ActivityTimeline({ activities, loading = false }: ActivityTimeli
                     </div>
 
                     {activity.description && (
-                      <p className="text-sm text-gray-600 mb-3">{activity.description}</p>
+                      <p className="text-sm text-gray-300 mb-3">{activity.description}</p>
                     )}
 
                     <div className="flex items-center gap-4 text-xs text-gray-500">

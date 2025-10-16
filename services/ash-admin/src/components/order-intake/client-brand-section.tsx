@@ -59,7 +59,7 @@ export function ClientBrandSection({
       <CardContent className="space-y-6 pt-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="client" className="text-sm font-semibold text-gray-700">Client *</Label>
+            <Label htmlFor="client" className="text-sm font-semibold">Client *</Label>
             <Select value={selectedClientId} onValueChange={onClientChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select client" />
@@ -80,7 +80,7 @@ export function ClientBrandSection({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="brand" className="text-sm font-semibold text-gray-700">Brand *</Label>
+            <Label htmlFor="brand" className="text-sm font-semibold">Brand *</Label>
             <Select
               value={selectedBrandId}
               onValueChange={onBrandChange}
@@ -106,7 +106,7 @@ export function ClientBrandSection({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="channel" className="text-sm font-semibold text-gray-700">Channel (Optional)</Label>
+          <Label htmlFor="channel" className="text-sm font-semibold">Channel (Optional)</Label>
           <Select value={channel} onValueChange={onChannelChange}>
             <SelectTrigger>
               <SelectValue placeholder="Select channel" />

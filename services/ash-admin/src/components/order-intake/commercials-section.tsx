@@ -279,7 +279,7 @@ export function CommercialsSection({
         {/* Pricing Controls */}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Unit Price (₱) *</Label>
+            <Label className="text-sm font-semibold ">Unit Price (₱) *</Label>
             <div className="flex gap-2">
               <Input
                 type="number"
@@ -304,7 +304,7 @@ export function CommercialsSection({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Deposit Percentage (%)</Label>
+            <Label className="text-sm font-semibold ">Deposit Percentage (%)</Label>
             <Input
               type="number"
               min="0"
@@ -320,7 +320,7 @@ export function CommercialsSection({
 
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Payment Terms</Label>
+            <Label className="text-sm font-semibold ">Payment Terms</Label>
             <Select 
               value={commercials.paymentTerms} 
               onValueChange={(value) => onCommercialsChange({
@@ -342,7 +342,7 @@ export function CommercialsSection({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Currency</Label>
+            <Label className="text-sm font-semibold ">Currency</Label>
             <Select 
               value={commercials.currency} 
               onValueChange={(value) => onCommercialsChange({
@@ -371,7 +371,7 @@ export function CommercialsSection({
                 taxInclusive: checked
               })}
             />
-            <Label className="text-sm font-semibold text-gray-700">Tax Inclusive (12% VAT)</Label>
+            <Label className="text-sm font-semibold ">Tax Inclusive (12% VAT)</Label>
           </div>
         </div>
 
@@ -453,7 +453,7 @@ export function CommercialsSection({
             )}
             
             {!commercials.taxInclusive && (
-              <div className="flex justify-between items-center text-gray-600">
+              <div className="flex justify-between items-center text-gray-300">
                 <span>VAT (12%)</span>
                 <span>₱{((commercials.finalTotal / 1.12) * 0.12).toLocaleString()}</span>
               </div>
@@ -502,10 +502,10 @@ export function CommercialsSection({
         {commercials.unitPrice > 0 && (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-2">
-              <AlertCircle className="w-4 h-4 text-gray-600" />
+              <AlertCircle className="w-4 h-4 text-gray-300" />
               <span className="font-medium text-gray-900">Estimated Margin</span>
             </div>
-            <div className="text-sm text-gray-700">
+            <div className="text-sm ">
               Based on estimated production cost of ₱80/piece:
               <span className="font-medium ml-2">
                 {Math.round(((commercials.unitPrice - 80) / commercials.unitPrice) * 100)}% margin

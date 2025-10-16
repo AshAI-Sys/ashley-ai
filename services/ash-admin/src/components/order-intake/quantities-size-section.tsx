@@ -329,7 +329,7 @@ export function QuantitiesSizeSection({
                         )}
                       </div>
                       {percentage < 10 && sizeCurve[size] > 0 && (
-                        <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs font-medium text-gray-700">
+                        <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs font-medium text-white">
                           {sizeCurve[size]}
                         </span>
                       )}

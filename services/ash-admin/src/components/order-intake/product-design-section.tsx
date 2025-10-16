@@ -281,7 +281,7 @@ export function ProductDesignSection({
       <CardContent className="space-y-6 pt-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Garment Type *</Label>
+            <Label className="text-sm font-semibold ">Garment Type *</Label>
             <Select value={garmentType} onValueChange={onGarmentTypeChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select garment type" />
@@ -297,7 +297,7 @@ export function ProductDesignSection({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-gray-700">Printing Method *</Label>
+            <Label className="text-sm font-semibold ">Printing Method *</Label>
             <Select value={printingMethod} onValueChange={onPrintingMethodChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select printing method" />

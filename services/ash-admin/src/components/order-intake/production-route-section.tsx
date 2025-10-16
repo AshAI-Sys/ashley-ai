@@ -587,7 +587,7 @@ export function ProductionRouteSection({
           ) : availableRoutes.length === 0 ? (
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
               <AlertCircle className="w-6 h-6 text-gray-400 mx-auto mb-2" />
-              <p className="text-gray-600">No production routes available for {printingMethod}</p>
+              <p className="text-gray-300">No production routes available for {printingMethod}</p>
             </div>
           ) : (
             <div className="grid gap-3">

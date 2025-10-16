@@ -224,7 +224,7 @@ export function GraphicEditingSection({
               />
               <label htmlFor="mockup-file-input" className="cursor-pointer">
                 <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600 font-medium">
+                <p className="text-sm text-gray-300 font-medium">
                   Drag & drop image here or click to browse
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
@@ -255,7 +255,7 @@ export function GraphicEditingSection({
                   <div className="w-full h-64 flex items-center justify-center bg-gray-100 rounded">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                      <p className="text-sm text-gray-600">Loading image...</p>
+                      <p className="text-sm text-gray-300">Loading image...</p>
                     </div>
                   </div>
                 ) : imageError ? (
@@ -324,7 +324,7 @@ export function GraphicEditingSection({
                     px-3 py-2 rounded-lg border-2 text-sm font-medium transition-all
                     ${isSelected
                       ? 'border-blue-500 bg-blue-50 text-blue-900'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      : 'border-gray-200 hover:border-gray-300 text-white'
                     }
                   `}
                 >

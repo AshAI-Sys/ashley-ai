@@ -169,7 +169,7 @@ export function SubmitSection({
       case 'low': return 'text-green-600 bg-green-50 border-green-200'
       case 'medium': return 'text-amber-600 bg-amber-50 border-amber-200'
       case 'high': return 'text-red-600 bg-red-50 border-red-200'
-      default: return 'text-gray-600 bg-gray-50 border-gray-200'
+      default: return 'text-gray-300 bg-gray-50 border-gray-200'
     }
   }
 
@@ -381,7 +381,7 @@ export function SubmitSection({
               {/* Business Insights */}
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h4 className="font-medium text-gray-900 mb-3">Business Insights</h4>
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-white">
                   <p><strong>Market Position:</strong> {ashleyValidation.businessInsights.marketPosition}</p>
                   <p className="mt-1">
                     <strong>Profitability:</strong> {ashleyValidation.businessInsights.profitability}% estimated margin with {ashleyValidation.businessInsights.riskLevel} risk level
