@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
+    // Fixed: Changed createdAt to created_at
     const { searchParams } = new URL(request.url)
     const department = searchParams.get('department')
     const status = searchParams.get('status')
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
         take: limit,
         skip,
         orderBy: {
-          createdAt: 'desc'
+          created_at: 'desc'
         }
       }),
       prisma.employee.count({ where })
