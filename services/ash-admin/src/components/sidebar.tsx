@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '../lib/auth-context'
@@ -33,7 +33,9 @@ import {
   Brain,
   PackageSearch,
   Settings,
-  Activity
+  Activity,
+  Menu,
+  X
 } from 'lucide-react'
 
 const iconMap = {
@@ -61,12 +63,32 @@ const iconMap = {
   PackageSearch,
   Settings,
   Activity,
+  Menu,
+  X
 }
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
   const { user } = useAuth()
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileOpen(false)
+  }, [pathname])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [mobileOpen])
 
   // All navigation items
   const allNavigation = [
@@ -139,7 +161,34 @@ export default function Sidebar() {
   }, [user])
 
   return (
-    <div className={`bg-gray-900 dark:bg-gray-950 text-white transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'} min-h-screen flex flex-col border-r border-gray-800 dark:border-gray-900`}>
+    <>
+      {/* Mobile Menu Button - Fixed top-left */}
+      <button
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-900 text-white hover:bg-gray-800 transition-colors shadow-lg"
+        aria-label="Toggle menu"
+      >
+        <HydrationSafeIcon Icon={mobileOpen ? X : Menu} className="w-6 h-6" />
+      </button>
+
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Hidden on mobile by default, slide-in when open */}
+      <div className={`
+        bg-gray-900 dark:bg-gray-950 text-white transition-all duration-300
+        ${collapsed ? 'w-16' : 'w-64'}
+        min-h-screen flex flex-col border-r border-gray-800 dark:border-gray-900
+
+        /* Mobile styles */
+        fixed lg:relative z-40 lg:z-auto
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
       {/* Header */}
       <div className="p-4 border-b border-gray-700 dark:border-gray-800">
         <div className="flex items-center justify-between">
@@ -219,5 +268,6 @@ export default function Sidebar() {
         )}
       </div>
     </div>
+    </>
   )
 }

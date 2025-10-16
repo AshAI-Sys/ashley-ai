@@ -93,56 +93,59 @@ export default function OrdersPage() {
   return (
     <DashboardLayout>
       <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
+      {/* Page Header - Responsive */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Production Orders</h1>
-          <p className="text-muted-foreground">Manage your production orders and track their progress</p>
+          <h1 className="text-2xl lg:text-3xl font-bold">Production Orders</h1>
+          <p className="text-sm lg:text-base text-muted-foreground">Manage your production orders and track their progress</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             onClick={() => exportOrders(orders, 'excel')}
             disabled={orders.length === 0}
-            className="gap-2"
+            className="gap-2 flex-1 sm:flex-none"
+            size="sm"
           >
             <Download className="w-4 h-4" />
-            Export
+            <span className="hidden sm:inline">Export</span>
           </Button>
           <Button
             variant="outline"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="gap-2"
+            className="gap-2 flex-1 sm:flex-none"
+            size="sm"
           >
             <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
-            {isFetching ? 'Refreshing...' : 'Refresh'}
+            <span className="hidden sm:inline">{isFetching ? 'Refreshing...' : 'Refresh'}</span>
           </Button>
-          <Link href="/orders/new">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+          <Link href="/orders/new" className="flex-1 sm:flex-none">
+            <Button className="bg-blue-600 hover:bg-blue-700 w-full" size="sm">
               <Plus className="w-4 h-4 mr-2" />
-              New Production Order
+              New Order
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Filters */}
+      {/* Filters - Responsive */}
       <Card className="mb-6">
         <CardContent className="py-4">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 max-w-sm">
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+            <div className="flex-1">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
                 <Input
                   placeholder="Search orders..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 h-10"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Filter className="w-4 h-4 text-muted-foreground" />
               <select
                 value={statusFilter}
@@ -150,7 +153,7 @@ export default function OrdersPage() {
                   setStatusFilter(e.target.value)
                   setCurrentPage(1) // Reset to first page on filter change
                 }}
-                className="px-3 py-2 border border-gray-200 rounded-md text-sm"
+                className="px-3 py-2 border border-gray-200 rounded-md text-sm h-10 flex-1 sm:flex-none min-w-0"
               >
                 <option value="all">All Status</option>
                 <option value="DRAFT">Draft</option>
@@ -228,17 +231,17 @@ export default function OrdersPage() {
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-shrink-0">
                     <Link href={`/orders/${order?.id || ''}`}>
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4 mr-1" />
-                        View
+                      <Button variant="outline" size="sm" className="h-9 px-3">
+                        <Eye className="w-4 h-4 sm:mr-1" />
+                        <span className="hidden sm:inline">View</span>
                       </Button>
                     </Link>
                     <Link href={`/orders/${order?.id || ''}/edit`}>
-                      <Button variant="outline" size="sm">
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
+                      <Button variant="outline" size="sm" className="h-9 px-3">
+                        <Edit className="w-4 h-4 sm:mr-1" />
+                        <span className="hidden sm:inline">Edit</span>
                       </Button>
                     </Link>
                   </div>

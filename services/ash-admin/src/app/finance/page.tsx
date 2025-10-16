@@ -176,30 +176,34 @@ export default function FinancePage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
+        {/* Header - Responsive */}
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Finance Management</h1>
-            <p className="text-gray-600">Manage invoices, payments, bills, and financial reporting</p>
+            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Finance Management</h1>
+            <p className="text-sm lg:text-base text-gray-600">Manage invoices, payments, bills, and financial reporting</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               onClick={handleRefreshAll}
               disabled={isFetching}
+              size="sm"
+              className="flex-1 sm:flex-none"
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
-              {isFetching ? 'Refreshing...' : 'Refresh'}
+              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline ml-2">{isFetching ? 'Refreshing...' : 'Refresh'}</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => exportInvoices(invoices, 'excel')}
               disabled={invoices.length === 0}
+              size="sm"
+              className="flex-1 sm:flex-none"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export Invoices
+              <Download className="w-4 h-4" />
+              <span className="hidden sm:inline ml-2">Export</span>
             </Button>
-            <Button>
+            <Button size="sm" className="flex-1 sm:flex-none">
               <Plus className="w-4 h-4 mr-2" />
               New Invoice
             </Button>
