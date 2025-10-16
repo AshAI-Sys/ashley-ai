@@ -61,17 +61,19 @@ export default function RoleSpecificDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{user.position || 'Dashboard'}</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+      {/* Header - Responsive */}
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
+              {user.position || 'Dashboard'}
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
               Welcome back, {user.name || user.email}
-              {user.department && ` • ${user.department}`}
+              {user.department && <span className="hidden sm:inline"> • {user.department}</span>}
             </p>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
               {user.role || 'user'}
             </span>
@@ -81,7 +83,7 @@ export default function RoleSpecificDashboard() {
                 localStorage.removeItem('ash_user')
                 window.location.href = '/login'
               }}
-              className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 transition-colors"
+              className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 transition-colors"
             >
               Logout
             </button>
@@ -90,7 +92,7 @@ export default function RoleSpecificDashboard() {
       </header>
 
       {/* Role-specific content with Suspense for lazy loading */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Suspense fallback={<DashboardLoader />}>
           {DashboardComponent}
         </Suspense>

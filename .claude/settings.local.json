@@ -111,7 +111,10 @@
       "Bash(del srcmiddleware.js)",
       "Read(//c/**)",
       "Bash(cut:*)",
-      "Bash(if exist .next rd /s /q .next)"
+      "Bash(if exist .next rd /s /q .next)",
+      "Bash(k6 version:*)",
+      "Bash(chmod:*)",
+      "Bash(bash:*)"
     ],
     "deny": [],
     "ask": []
