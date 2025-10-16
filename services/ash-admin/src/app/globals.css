@@ -67,7 +67,7 @@
     line-height: 1.2;
   }
 
-  p, span, div, label, button {
+  p, span, div, button {
     @apply text-foreground;
     line-height: 1.5;
   }
@@ -85,8 +85,7 @@
 
   /* Force readable text colors */
   .text-sm, .text-xs {
-    color: hsl(var(--foreground));
-    opacity: 0.9;
+    opacity: 1;
   }
 
   /* Improve table readability */
