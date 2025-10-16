@@ -160,6 +160,7 @@ async function getGeographicDistribution() {
           gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
         }
       },
+      take: 100, // Limit to last 100 shipments
       select: { consignee_address: true }
     })
 

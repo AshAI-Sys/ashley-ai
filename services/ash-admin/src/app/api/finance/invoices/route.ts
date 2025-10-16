@@ -33,6 +33,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
 
     const invoices = await prisma.invoice.findMany({
       where,
+      take: 100, // Limit to 100 invoices
       include: {
         client: { select: { name: true } },
         order: { select: { order_number: true } },

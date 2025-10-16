@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
       // Machine utilization
       prisma.machine.findMany({
         where: { is_active: true },
+        take: 50, // Limit to 50 machines
         include: {
           print_runs: {
             where: {
@@ -85,6 +86,7 @@ export async function GET(request: NextRequest) {
           lt: tomorrow
         }
       },
+      take: 100, // Limit to 100 runs for efficiency calculation
       include: {
         outputs: true,
         rejects: true

@@ -125,10 +125,7 @@ async function getPackingEfficiency() {
   try {
     const cartons = await prisma.carton.findMany({
       where: {
-        status: 'CLOSED',
-        NOT: {
-          fill_percent: null
-        }
+        status: 'CLOSED'
       },
       select: {
         fill_percent: true,
@@ -140,8 +137,12 @@ async function getPackingEfficiency() {
 
     if (cartons.length === 0) return 0
 
-    const avgFillPercentage = cartons.reduce((sum, carton) =>
-      sum + (carton.fill_percent || 0), 0) / cartons.length
+    // Filter out null fill_percent values and calculate average
+    const validCartons = cartons.filter(c => c.fill_percent !== null && c.fill_percent !== undefined)
+    if (validCartons.length === 0) return 0
+
+    const avgFillPercentage = validCartons.reduce((sum, carton) =>
+      sum + (carton.fill_percent || 0), 0) / validCartons.length
 
     return Math.round(avgFillPercentage * 10) / 10
   } catch (error) {

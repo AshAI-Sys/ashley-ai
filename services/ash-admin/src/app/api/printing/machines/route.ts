@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
 
     const machines = await prisma.machine.findMany({
       where,
+      take: 100, // Limit to 100 machines
       orderBy: [
         { workcenter: 'asc' },
         { name: 'asc' }

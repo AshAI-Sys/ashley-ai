@@ -149,6 +149,7 @@ async function calculateHRStats(
         workspace_id: workspaceId,
         is_active: true
       },
+      take: 500, // Limit to 500 active employees
       select: {
         id: true,
         department: true,
@@ -199,6 +200,7 @@ async function calculateHRStats(
         workspace_id: workspaceId,
         is_active: true
       },
+      take: 500, // Limit to 500 active employees
       select: {
         hire_date: true
       }
@@ -226,6 +228,7 @@ async function calculateHRStats(
         },
         status: 'DONE'
       },
+      take: 100, // Limit to last 100 completed runs
       select: {
         qty_good: true,
         qty_reject: true,

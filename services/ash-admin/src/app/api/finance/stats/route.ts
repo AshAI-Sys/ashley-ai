@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
     const clientIds = topClients.map(client => client.client_id)
     const clients = await prisma.client.findMany({
       where: { id: { in: clientIds } },
+      take: 10, // Limit to 10 clients (should match clientIds length from topClients)
       select: { id: true, name: true }
     })
 
