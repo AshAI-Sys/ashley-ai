@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import DashboardLayout from '@/components/dashboard-layout'
-import { SkeletonTable } from '@/components/ui/skeleton'
+import { DashboardStatsSkeleton, DataTableSkeleton } from '@/components/ui/loading-skeletons'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ErrorAlert } from '@/components/ui/error-alert'
 import { useDebounce } from '@/hooks/useDebounce'
+import { exportEmployees } from '@/lib/export'
 import {
   Users,
   Clock,
@@ -282,9 +283,13 @@ export default function HRPayrollPage() {
               <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
               {isFetching ? 'Refreshing...' : 'Refresh'}
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => exportEmployees(employees, 'excel')}
+              disabled={employees.length === 0}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export Reports
+              Export Employees
             </Button>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -295,19 +300,7 @@ export default function HRPayrollPage() {
 
         {/* HR Metrics */}
         {metricsLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <DashboardStatsSkeleton />
         ) : metricsError ? (
           <ErrorAlert message="Failed to load HR metrics" retry={refetchMetrics} />
         ) : (
@@ -446,7 +439,7 @@ export default function HRPayrollPage() {
                 )}
 
                 {employeesLoading ? (
-                  <SkeletonTable />
+                  <DataTableSkeleton rows={5} />
                 ) : employees.length === 0 ? (
                   <EmptyState
                     icon={Users}
@@ -533,7 +526,7 @@ export default function HRPayrollPage() {
                 )}
 
                 {attendanceLoading ? (
-                  <SkeletonTable />
+                  <DataTableSkeleton rows={5} />
                 ) : attendanceLogs.length === 0 ? (
                   <EmptyState
                     icon={Clock}
@@ -622,7 +615,7 @@ export default function HRPayrollPage() {
                 )}
 
                 {payrollLoading ? (
-                  <SkeletonTable />
+                  <DataTableSkeleton rows={3} />
                 ) : payrollRuns.length === 0 ? (
                   <EmptyState
                     icon={DollarSign}

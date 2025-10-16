@@ -6,13 +6,14 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Filter, Eye, Edit, Package, RefreshCw } from 'lucide-react'
+import { Plus, Search, Filter, Eye, Edit, Package, RefreshCw, Download } from 'lucide-react'
 import Link from 'next/link'
 import DashboardLayout from '@/components/dashboard-layout'
-import { SkeletonTable } from '@/components/ui/skeleton'
+import { DataTableSkeleton } from '@/components/ui/loading-skeletons'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ErrorAlert } from '@/components/ui/error-alert'
 import { useDebounce } from '@/hooks/useDebounce'
+import { exportOrders } from '@/lib/export'
 
 interface Order {
   id: string
@@ -100,6 +101,15 @@ export default function OrdersPage() {
         <div className="flex gap-2">
           <Button
             variant="outline"
+            onClick={() => exportOrders(orders, 'excel')}
+            disabled={orders.length === 0}
+            className="gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Export
+          </Button>
+          <Button
+            variant="outline"
             onClick={() => refetch()}
             disabled={isFetching}
             className="gap-2"
@@ -176,7 +186,7 @@ export default function OrdersPage() {
 
       {/* Orders List */}
       {isLoading ? (
-        <SkeletonTable />
+        <DataTableSkeleton rows={10} />
       ) : (
         <div className="grid gap-4">
           {orders.map((order) => (

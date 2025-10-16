@@ -7,9 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
+import { DataTableSkeleton } from '@/components/ui/loading-skeletons'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ErrorAlert } from '@/components/ui/error-alert'
 import DashboardLayout from '@/components/dashboard-layout'
+import { exportInvoices } from '@/lib/export'
 import {
   DollarSign,
   Receipt,
@@ -189,9 +191,13 @@ export default function FinancePage() {
               <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
               {isFetching ? 'Refreshing...' : 'Refresh'}
             </Button>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              onClick={() => exportInvoices(invoices, 'excel')}
+              disabled={invoices.length === 0}
+            >
               <Download className="w-4 h-4 mr-2" />
-              Export Reports
+              Export Invoices
             </Button>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
@@ -357,19 +363,7 @@ export default function FinancePage() {
               </CardHeader>
               <CardContent>
                 {invoicesLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(3)].map((_, i) => (
-                      <div key={i} className="border rounded-lg p-4">
-                        <Skeleton className="h-6 w-48 mb-4" />
-                        <div className="grid grid-cols-4 gap-4">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <DataTableSkeleton rows={5} />
                 ) : invoices.length === 0 ? (
                   <EmptyState
                     icon={Receipt}
@@ -464,18 +458,7 @@ export default function FinancePage() {
               </CardHeader>
               <CardContent>
                 {billsLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(2)].map((_, i) => (
-                      <div key={i} className="border rounded-lg p-4">
-                        <Skeleton className="h-6 w-48 mb-4" />
-                        <div className="grid grid-cols-3 gap-4">
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                          <Skeleton className="h-4 w-full" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <DataTableSkeleton rows={3} />
                 ) : bills.length === 0 ? (
                   <EmptyState
                     icon={FileText}

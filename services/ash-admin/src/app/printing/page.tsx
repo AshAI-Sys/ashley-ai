@@ -14,6 +14,7 @@ import { Play, Pause, Square, Eye, Package2, Printer, Zap, Shirt, Palette, Brain
 import Link from 'next/link'
 import AIInsightsDashboard from '@/components/printing/AIInsightsDashboard'
 import { Skeleton } from '@/components/ui/skeleton'
+import { DashboardStatsSkeleton, DataTableSkeleton } from '@/components/ui/loading-skeletons'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 
 interface PrintRun {
@@ -280,9 +281,7 @@ export default function PrintingPage() {
 
       {/* Dashboard Cards */}
       {dashboardLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[...Array(4)].map((_, i) => <StatCardSkeleton key={i} />)}
-        </div>
+        <DashboardStatsSkeleton />
       ) : dashboard ? (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
@@ -402,7 +401,7 @@ export default function PrintingPage() {
           {/* Print Runs List */}
           <div className="space-y-4">
             {runsLoading ? (
-              [...Array(3)].map((_, i) => <PrintRunCardSkeleton key={i} />)
+              <DataTableSkeleton rows={5} />
             ) : (printRuns || []).map((run) => {
               const MethodIcon = methodIcons[run.method]
               const completed = getCompletedQty(run)

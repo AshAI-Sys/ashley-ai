@@ -2,6 +2,7 @@
 
 import { useAuth } from '../../lib/auth-context'
 import { Suspense, lazy } from 'react'
+import { DashboardStatsSkeleton } from '@/components/ui/loading-skeletons'
 
 // Lazy load dashboard components for better performance
 const AdminDashboard = lazy(() => import('./AdminDashboard'))
@@ -17,14 +18,9 @@ const FinanceDashboard = lazy(() => import('./FinanceDashboard'))
 const CSRDashboard = lazy(() => import('./CSRDashboard'))
 const DeliveryCoordinatorDashboard = lazy(() => import('./DeliveryCoordinatorDashboard'))
 
-// Loading component
+// Professional loading component
 const DashboardLoader = () => (
-  <div className="min-h-[400px] flex items-center justify-center">
-    <div className="text-center">
-      <div className="w-12 h-12 border-4 border-gray-200 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mx-auto mb-4" />
-      <p className="text-gray-600 dark:text-gray-400">Loading dashboard content...</p>
-    </div>
-  </div>
+  <DashboardStatsSkeleton />
 )
 
 export default function RoleSpecificDashboard() {
