@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         status: 'COMPLETED'
       },
       include: {
-        qc_inspections: true,
+        outputs: true,
         materials: true
       },
       take: 20,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           print_method,
           optimization_factors: optimization.factors,
           historical_data_points: historicalRuns.length,
-          machine_utilization: machine?.utilization_rate || 0,
+          machine_id: machine?.id || null,
           estimated_completion_time: optimization.estimated_completion_time,
           cost_prediction: optimization.cost_prediction,
           quality_prediction: optimization.quality_prediction,
@@ -176,10 +176,11 @@ function calculateMaterialOptimization(materials: any[], method: string) {
 }
 
 function calculateMachineEfficiency(machine: any) {
-  const baseEfficiency = machine.utilization_rate || 0.85
-  const maintenanceBonus = machine.last_maintenance ? 0.05 : -0.1
-  const agefactor = machine.install_date ? Math.max(0.7, 1 - ((Date.now() - new Date(machine.install_date).getTime()) / (1000 * 60 * 60 * 24 * 365 * 5))) : 0.85
-  
+  const baseEfficiency = 0.85 // Default efficiency
+  const maintenanceBonus = machine.last_maintenance_date ? 0.05 : -0.1
+  const installDate = machine.install_date ? new Date(machine.install_date) : null
+  const agefactor = installDate ? Math.max(0.7, 1 - ((Date.now() - installDate.getTime()) / (1000 * 60 * 60 * 24 * 365 * 5))) : 0.85
+
   return Math.min(0.98, Math.max(0.6, baseEfficiency + maintenanceBonus) * agefactor)
 }
 
@@ -187,10 +188,14 @@ function calculateHistoricalPerformance(runs: any[]) {
   if (runs.length === 0) return 0.8
 
   const qualityScores = runs.map(run => {
-    if (!run.qc_inspections || run.qc_inspections.length === 0) return 0.85
+    // Use output quality metrics instead of QC inspections
+    if (!run.outputs || run.outputs.length === 0) return 0.85
 
-    const qc = run.qc_inspections[0]
-    const defectRate = ((qc.failed_quantity || 0) / (qc.sample_size || 1))
+    const output = run.outputs[0]
+    const totalQty = (output.qty_good || 0) + (output.qty_reject || 0)
+    if (totalQty === 0) return 0.85
+
+    const defectRate = (output.qty_reject || 0) / totalQty
     return Math.max(0.5, 1 - defectRate)
   })
 

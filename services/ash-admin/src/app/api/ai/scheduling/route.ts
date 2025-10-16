@@ -71,7 +71,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const resources = employees.map(emp => ({
+    const resources: Array<{
+      id: string;
+      name: string;
+      type: 'MACHINE' | 'OPERATOR' | 'STATION';
+      skills: string[];
+      capacity_hours_per_day: number;
+      current_utilization: number;
+      efficiency_rating: number;
+    }> = employees.map(emp => ({
       id: emp.id,
       name: `${emp.first_name} ${emp.last_name}`,
       type: 'OPERATOR' as const,

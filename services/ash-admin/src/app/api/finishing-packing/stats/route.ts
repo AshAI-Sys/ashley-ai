@@ -130,8 +130,7 @@ async function getPackingEfficiency() {
       },
       select: {
         fill_percent: true,
-        actual_weight_kg: true,
-        dimensional_weight_kg: true
+        actual_weight_kg: true
       },
       take: 100, // Last 100 cartons
       orderBy: { updated_at: 'desc' }

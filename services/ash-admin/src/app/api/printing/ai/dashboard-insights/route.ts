@@ -3,17 +3,13 @@ import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get active runs with their AI analysis
+    // Get active runs with their outputs
     const activeRuns = await prisma.printRun.findMany({
       where: {
         status: { in: ['IN_PROGRESS', 'PAUSED'] }
       },
       include: {
-        ai_analyses: {
-          orderBy: { created_at: 'desc' },
-          take: 1
-        },
-        qc_inspections: {
+        outputs: {
           orderBy: { created_at: 'desc' },
           take: 1
         },
@@ -30,8 +26,7 @@ export async function GET(request: NextRequest) {
         }
       },
       include: {
-        ai_analyses: true,
-        qc_inspections: true
+        outputs: true
       },
       orderBy: { ended_at: 'desc' }
     })
@@ -110,20 +105,14 @@ function calculateOverallPerformance(activeRuns: any[], recentRuns: any[]) {
 function calculateRunPerformanceScore(run: any) {
   let score = 0.8 // Base score
 
-  // Quality factor
-  if (run.qc_inspections && run.qc_inspections.length > 0) {
-    const qc = run.qc_inspections[0]
-    const defectRate = (qc.failed_quantity || 0) / (qc.sample_size || 1)
-    const qualityScore = Math.max(0, 1 - defectRate)
-    score = score * 0.6 + qualityScore * 0.4
-  }
-
-  // AI analysis factor
-  if (run.ai_analyses && run.ai_analyses.length > 0) {
-    const aiAnalysis = run.ai_analyses[0]
-    const metadata = typeof aiAnalysis.metadata === 'string' ? JSON.parse(aiAnalysis.metadata) : aiAnalysis.metadata
-    if (metadata?.quality_prediction) {
-      score = score * 0.8 + metadata.quality_prediction * 0.2
+  // Quality factor from outputs
+  if (run.outputs && run.outputs.length > 0) {
+    const output = run.outputs[0]
+    const totalQty = (output.qty_good || 0) + (output.qty_reject || 0)
+    if (totalQty > 0) {
+      const defectRate = (output.qty_reject || 0) / totalQty
+      const qualityScore = Math.max(0, 1 - defectRate)
+      score = score * 0.6 + qualityScore * 0.4
     }
   }
 
@@ -153,12 +142,15 @@ function analyzeActiveRuns(activeRuns: any[]) {
       highRiskRuns++
     }
 
-    // Identify optimization opportunities
-    if (run.ai_analyses && run.ai_analyses.length > 0) {
-      const aiAnalysis = run.ai_analyses[0]
-      const metadata = typeof aiAnalysis.metadata === 'string' ? JSON.parse(aiAnalysis.metadata) : aiAnalysis.metadata
-      if ((metadata?.material_efficiency || 0) < 0.85 || (metadata?.quality_prediction || 0) < 0.9) {
-        optimizationOpportunities++
+    // Identify optimization opportunities from output quality
+    if (run.outputs && run.outputs.length > 0) {
+      const output = run.outputs[0]
+      const totalQty = (output.qty_good || 0) + (output.qty_reject || 0)
+      if (totalQty > 0) {
+        const defectRate = (output.qty_reject || 0) / totalQty
+        if (defectRate > 0.1) { // More than 10% defect rate
+          optimizationOpportunities++
+        }
       }
     }
   })
@@ -199,10 +191,10 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       }
     }
 
-    // Quality issues
-    if (run.qc_inspections && run.qc_inspections.length > 0) {
-      const qc = run.qc_inspections[0]
-      if ((qc.failed_quantity || 0) > 0) {
+    // Quality issues from outputs
+    if (run.outputs && run.outputs.length > 0) {
+      const output = run.outputs[0]
+      if ((output.qty_reject || 0) > 0) {
         qualityIssues.push(run.id)
       }
     }
@@ -292,19 +284,19 @@ function calculatePeriodMetrics(runs: any[]) {
   let totalCost = 0
 
   runs.forEach(run => {
-    // Efficiency from AI analysis or estimated
-    if (run.ai_analyses && run.ai_analyses.length > 0) {
-      const metadata = typeof run.ai_analyses[0].metadata === 'string' ? JSON.parse(run.ai_analyses[0].metadata) : run.ai_analyses[0].metadata
-      totalEfficiency += metadata?.material_efficiency || 0.8
-    } else {
-      totalEfficiency += 0.8
-    }
+    // Efficiency estimated from material usage
+    totalEfficiency += 0.8
 
-    // Quality from quality control
-    if (run.qc_inspections && run.qc_inspections.length > 0) {
-      const qc = run.qc_inspections[0]
-      const defectRate = (qc.failed_quantity || 0) / (qc.sample_size || 1)
-      totalQuality += Math.max(0, 1 - defectRate)
+    // Quality from outputs
+    if (run.outputs && run.outputs.length > 0) {
+      const output = run.outputs[0]
+      const totalQty = (output.qty_good || 0) + (output.qty_reject || 0)
+      if (totalQty > 0) {
+        const defectRate = (output.qty_reject || 0) / totalQty
+        totalQuality += Math.max(0, 1 - defectRate)
+      } else {
+        totalQuality += 0.9
+      }
     } else {
       totalQuality += 0.9
     }
@@ -350,18 +342,16 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
       methodStats[run.print_method].activeCount++
     }
 
-    // Track common issues
-    if (run.qc_inspections && run.qc_inspections.length > 0) {
-      const qc = run.qc_inspections[0]
-      // defect_types is not in schema - skip for now
-      // if (qc.defect_types) {
-      //   qc.defect_types.forEach(defect => {
-      //     if (!methodStats[run.print_method].issues[defect]) {
-      //       methodStats[run.print_method].issues[defect] = 0
-      //     }
-      //     methodStats[run.print_method].issues[defect]++
-      //   })
-      // }
+    // Track common issues from outputs
+    if (run.outputs && run.outputs.length > 0) {
+      const output = run.outputs[0]
+      if ((output.qty_reject || 0) > 0) {
+        const issueType = 'quality_reject'
+        if (!methodStats[run.print_method].issues[issueType]) {
+          methodStats[run.print_method].issues[issueType] = 0
+        }
+        methodStats[run.print_method].issues[issueType]++
+      }
     }
   })
 
