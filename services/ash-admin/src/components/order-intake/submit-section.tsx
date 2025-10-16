@@ -159,7 +159,7 @@ export function SubmitSection({
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600'
-    if (score >= 75) return 'text-blue-600'
+    if (score >= 75) return 'text-gray-900'
     if (score >= 60) return 'text-amber-600'
     return 'text-red-600'
   }
@@ -337,13 +337,13 @@ export function SubmitSection({
                                 ) : issue.severity === 'warning' ? (
                                   <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5" />
                                 ) : (
-                                  <CheckCircle className="w-4 h-4 text-blue-500 mt-0.5" />
+                                  <CheckCircle className="w-4 h-4 text-gray-700 mt-0.5" />
                                 )}
                                 <div>
                                   <div className={
                                     issue.severity === 'error' ? 'text-red-700' :
                                     issue.severity === 'warning' ? 'text-amber-700' :
-                                    'text-blue-700'
+                                    'text-gray-900'
                                   }>
                                     {issue.message}
                                   </div>
@@ -366,11 +366,11 @@ export function SubmitSection({
               {/* Recommendations */}
               {ashleyValidation.recommendations.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-medium text-blue-900 mb-3">Ashley AI Recommendations</h4>
+                  <h4 className="font-medium text-gray-900 mb-3">Ashley AI Recommendations</h4>
                   <ul className="space-y-2">
                     {ashleyValidation.recommendations.map((rec, i) => (
-                      <li key={i} className="text-sm text-blue-800 flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <li key={i} className="text-sm text-gray-900 flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-gray-900 mt-0.5 flex-shrink-0" />
                         {rec}
                       </li>
                     ))}
