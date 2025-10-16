@@ -181,16 +181,16 @@ export default function Sidebar() {
 
       {/* Sidebar - Hidden on mobile by default, slide-in when open */}
       <div className={`
-        bg-gray-900 dark:bg-gray-950 text-white transition-all duration-300
+        bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
-        min-h-screen flex flex-col border-r border-gray-800 dark:border-gray-900
+        min-h-screen flex flex-col border-r border-gray-200 dark:border-gray-800
 
         /* Mobile styles */
         fixed lg:relative z-40 lg:z-auto
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 dark:border-gray-800">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
@@ -203,7 +203,7 @@ export default function Sidebar() {
               </div>
               <div>
                 <h1 className="font-bold text-lg">Ashley AI</h1>
-                <p className="text-xs text-gray-300 dark:text-gray-500">Apparel Smart Hub</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Apparel Smart Hub</p>
               </div>
             </div>
           )}
@@ -211,7 +211,7 @@ export default function Sidebar() {
             {!collapsed && <ThemeToggle />}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-md hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors"
+              className="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <HydrationSafeIcon
                 Icon={collapsed ? ChevronRight : ChevronLeft}
@@ -235,8 +235,8 @@ export default function Sidebar() {
               className={`
                 flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
                 ${isActive
-                  ? 'bg-blue-600 dark:bg-blue-700 text-white'
-                  : 'text-gray-200 dark:text-gray-400 hover:bg-gray-700 dark:hover:bg-gray-800 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                 }
               `}
               title={collapsed ? item.name : undefined}
@@ -252,16 +252,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-700 dark:border-gray-800">
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         {!collapsed && user && (
-          <div className="text-xs text-gray-300 dark:text-gray-500 mb-3">
-            <p className="font-medium text-gray-200 dark:text-gray-400">{user.name}</p>
+          <div className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+            <p className="font-medium text-gray-700 dark:text-gray-300">{user.name}</p>
             <p>{user.position}</p>
             <p>{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
-          <div className="text-xs text-gray-300 dark:text-gray-500">
+          <div className="text-xs text-gray-600 dark:text-gray-400">
             <p>Ashley AI v1.0</p>
             <p>Manufacturing ERP System</p>
           </div>
