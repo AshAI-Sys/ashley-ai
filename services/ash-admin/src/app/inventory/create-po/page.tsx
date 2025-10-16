@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react';
+
+// Force dynamic rendering to avoid build-time errors
+export const dynamic = 'force-dynamic';
 
 interface POLineItem {
   id: string;
@@ -12,7 +15,7 @@ interface POLineItem {
   total: number;
 }
 
-export default function CreatePOPage() {
+function CreatePOForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supplierParam = searchParams?.get('supplier') || '';
@@ -288,5 +291,13 @@ export default function CreatePOPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CreatePOPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 p-6"><div className="max-w-6xl mx-auto"><p>Loading...</p></div></div>}>
+      <CreatePOForm />
+    </Suspense>
   );
 }
