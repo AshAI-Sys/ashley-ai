@@ -109,6 +109,41 @@
   }
 
   /* ============================================
+     COMPREHENSIVE TEXT READABILITY FIX
+     Override ALL dark text colors to be readable
+     ============================================ */
+
+  /* Override all dark gray text colors */
+  .text-gray-900,
+  .text-gray-800,
+  .text-black {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Override all blue text colors */
+  .text-blue-900,
+  .text-blue-800,
+  .text-blue-700,
+  .text-blue-600,
+  .text-blue-500 {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Special case: Cards with light backgrounds should keep dark text */
+  .bg-white .text-gray-900,
+  .bg-white .text-gray-800,
+  .bg-white .text-black,
+  .bg-gray-50 .text-gray-900,
+  .bg-gray-50 .text-gray-800,
+  .bg-blue-50 .text-gray-900,
+  .bg-blue-50 .text-gray-800,
+  .bg-green-50 .text-gray-900,
+  .bg-amber-50 .text-gray-900,
+  .bg-red-50 .text-gray-900 {
+    color: rgb(17 24 39) !important; /* text-gray-900 */
+  }
+
+  /* ============================================
      DROPDOWN & SELECT DARK THEME COMPATIBILITY
      ============================================ */
 
