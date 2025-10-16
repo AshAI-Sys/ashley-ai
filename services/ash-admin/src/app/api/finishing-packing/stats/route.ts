@@ -126,7 +126,9 @@ async function getPackingEfficiency() {
     const cartons = await prisma.carton.findMany({
       where: {
         status: 'CLOSED',
-        fill_percent: { not: null }
+        NOT: {
+          fill_percent: null
+        }
       },
       select: {
         fill_percent: true,

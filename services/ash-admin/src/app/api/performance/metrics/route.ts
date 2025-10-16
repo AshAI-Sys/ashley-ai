@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getQueryMetrics } from '@/lib/performance/query-cache'
-import { isRedisAvailable, getRedisInfo } from '@/lib/redis'
+import { checkRedisAvailable, getRedisInfo } from '@/lib/redis'
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const queryMetrics = getQueryMetrics()
 
     // Get Redis status
-    const redisAvailable = await isRedisAvailable()
+    const redisAvailable = await checkRedisAvailable()
     const redisInfo = redisAvailable ? await getRedisInfo() : null
 
     // Parse Redis info if available

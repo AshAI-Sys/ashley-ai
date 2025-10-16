@@ -260,4 +260,36 @@ export const redisClient = {
   }
 }
 
+/**
+ * Check if Redis is available
+ */
+export async function checkRedisAvailable(): Promise<boolean> {
+  try {
+    const client = getRedisClient()
+    if (client && isRedisAvailable) {
+      await client.ping()
+      return true
+    }
+    return false
+  } catch (error) {
+    return false
+  }
+}
+
+/**
+ * Get Redis info
+ */
+export async function getRedisInfo(): Promise<string | null> {
+  try {
+    const client = getRedisClient()
+    if (client && isRedisAvailable) {
+      return await client.info()
+    }
+    return null
+  } catch (error) {
+    console.error('Failed to get Redis info:', error)
+    return null
+  }
+}
+
 export default redisClient
