@@ -40,7 +40,7 @@ const nextConfig = {
   },
   // Production optimizations
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Disabled - requires 'critters' package
     scrollRestoration: true,
   },
   compiler: {
