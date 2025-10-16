@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
       data: {
         workspace_id: data.workspace_id || 'default',
         name: data.name,
-        product_type: data.product_type,
-        method: data.method,
+        type: data.type || 'FINAL', // Changed from product_type/method to type
+        category: data.category || 'VISUAL', // Added category field
         items: JSON.stringify(data.items)
       }
     })

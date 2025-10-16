@@ -11,10 +11,10 @@ export async function GET(req: NextRequest) {
     const defectTypes = await prisma.qCDefectType.findMany({
       where: {
         workspace_id: workspaceId,
-        is_active: true,
+        // QCDefectType doesn't have is_active field - removed
       },
       orderBy: {
-        code: 'asc',
+        name: 'asc',  // Changed from 'code' to 'name' (code doesn't exist)
       },
     });
 

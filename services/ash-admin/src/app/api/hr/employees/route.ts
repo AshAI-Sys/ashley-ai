@@ -96,7 +96,7 @@ export const GET = requireAnyPermission(['hr:read'])(withErrorHandling(async (re
     return createSuccessResponse(processedEmployees)
 }))
 
-export const POST = requireAnyPermission(['hr:write'])(withErrorHandling(async (request: NextRequest, user: any) => {
+export const POST = requireAnyPermission(['hr:create'])(withErrorHandling(async (request: NextRequest, user: any) => {
   const data = await request.json()
   const {
     first_name,
@@ -240,10 +240,8 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {
 
   const employee = await prisma.employee.update({
     where: { id },
-    data: updateData,
-    include: {
-      brands: { select: { name: true } }
-    }
+    data: updateData
+    // Employee model doesn't have brands relation - removed
   })
 
   return createSuccessResponse(employee)

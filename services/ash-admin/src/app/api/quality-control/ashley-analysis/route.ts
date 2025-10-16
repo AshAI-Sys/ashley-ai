@@ -84,7 +84,7 @@ async function performDefectTrendAnalysis(inspection: any) {
   const historicalData = await prisma.qCInspection.findMany({
     where: {
       workspace_id: inspection.workspace_id,
-      inspection_type: inspection.inspection_type,
+      stage: inspection.stage,  // Changed from inspection_type to stage
       inspection_date: {
         gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
       }
@@ -278,7 +278,7 @@ async function performQualityRiskAssessment(inspection: any) {
   }
 
   // Factor 4: Inspection timing
-  const inspectionType = inspection.inspection_type
+  const inspectionType = inspection.stage  // Changed from inspection_type to stage
   if (inspectionType === 'FINAL' && (inspection.major_found > 0 || inspection.critical_found > 0)) {
     riskFactors.push({
       factor: 'Late-stage defect detection',
@@ -313,7 +313,7 @@ async function performProcessControlAnalysis(inspection: any) {
   const historicalInspections = await prisma.qCInspection.findMany({
     where: {
       workspace_id: inspection.workspace_id,
-      inspection_type: inspection.inspection_type,
+      stage: inspection.stage,  // Changed from inspection_type to stage
       inspection_date: {
         gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       }

@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         order: { select: { order_number: true } },
-        inspection: { select: { inspection_type: true, result: true } },
+        inspection: { select: { stage: true, result: true } }, // Changed from inspection_type to stage
         defect: { select: { severity: true, description: true } },
         assignee: { select: { first_name: true, last_name: true } },
         creator: { select: { first_name: true, last_name: true } },

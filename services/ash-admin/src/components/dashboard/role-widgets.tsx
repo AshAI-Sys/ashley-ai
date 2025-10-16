@@ -385,11 +385,18 @@ export default function RoleWidgets({ user }: RoleWidgetsProps) {
       return <AdminWidgets />
     case 'manager':
       return <ManagerWidgets user={user} />
-    case 'supervisor':
+    case 'designer':
       return <SupervisorWidgets user={user} />
-    case 'operator':
+    case 'sewing_operator':
+    case 'cutting_operator':
+    case 'printing_operator':
+    case 'finishing_operator':
       return <OperatorWidgets user={user} />
-    case 'employee':
+    case 'qc_inspector':
+    case 'warehouse_staff':
+    case 'finance_staff':
+    case 'hr_staff':
+    case 'maintenance_tech':
       return <EmployeeWidgets user={user} />
     default:
       return <EmployeeWidgets user={user} />

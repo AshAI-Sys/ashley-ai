@@ -34,7 +34,7 @@ interface ProductDesignSectionProps {
   designFiles: DesignFile[]
   onGarmentTypeChange: (type: string) => void
   onPrintingMethodChange: (method: string) => void
-  onDesignFilesChange: (files: DesignFile[]) => void
+  onDesignFilesChange: (files: DesignFile[] | ((prevFiles: DesignFile[]) => DesignFile[])) => void
 }
 
 const GARMENT_TYPES = [

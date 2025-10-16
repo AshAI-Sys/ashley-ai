@@ -408,10 +408,10 @@ export function ThreadedComments({
                       </div>
                       <div className="flex items-center gap-2">
                         {getStatusIcon(comment.status)}
-                        <Badge variant="outline" size="sm" className={getPriorityColor(comment.priority)}>
+                        <Badge variant="outline" className={getPriorityColor(comment.priority)}>
                           {comment.priority}
                         </Badge>
-                        <Badge variant="outline" size="sm">
+                        <Badge variant="outline">
                           {comment.comment_type.replace('_', ' ')}
                         </Badge>
                       </div>

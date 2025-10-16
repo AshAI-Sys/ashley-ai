@@ -148,12 +148,11 @@ export async function POST(request: NextRequest) {
 
           const bundle = await tx.bundle.create({
             data: {
-              orderId: validatedData.orderId,
-              cutLayId: validatedData.cutLayId,
-              bundleNumber,
-              sizeCode: config.sizeCode,
+              workspace_id: order.workspace_id,
+              lay_id: validatedData.cutLayId,
+              size_code: config.sizeCode,
               qty: currentBundlePieces,
-              qrCode,
+              qr_code: qrCode,
               status: 'CREATED',
             },
             include: {
@@ -246,7 +245,7 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: {
         status: validatedData.status,
-        notes: validatedData.notes,
+        // notes field doesn't exist in Bundle model - removed
       },
       include: {
         order: {

@@ -262,13 +262,11 @@ export default function NewSewingRunPage() {
       <Card>
         <CardContent className="py-4">
           <div className="flex items-center gap-4">
-            <div className={`flex items-center gap-2 ${step === 'scan' ? 'text-blue-600' : step !== 'scan' ? 'text-green-600' : 'text-muted-foreground'}`}>
+            <div className={`flex items-center gap-2 ${step === 'scan' ? 'text-blue-600' : 'text-green-600'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                step === 'scan' ? 'bg-blue-100 border-2 border-blue-600' : 
-                step !== 'scan' ? 'bg-green-100 border-2 border-green-600' : 
-                'bg-gray-100 border-2 border-gray-300'
+                step === 'scan' ? 'bg-blue-100 border-2 border-blue-600' : 'bg-green-100 border-2 border-green-600'
               }`}>
-                {step !== 'scan' ? <CheckCircle className="w-4 h-4" /> : <QrCode className="w-4 h-4" />}
+                {step === 'scan' ? <QrCode className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
               </div>
               <span className="font-medium">Scan Bundle</span>
             </div>

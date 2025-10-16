@@ -108,4 +108,212 @@
   a:hover {
     text-decoration: underline;
   }
+
+  /* ============================================
+     DROPDOWN & SELECT DARK THEME COMPATIBILITY
+     ============================================ */
+
+  /* All select elements and dropdowns */
+  select,
+  [role="combobox"],
+  [role="listbox"],
+  [role="menu"],
+  [data-radix-select-content],
+  [data-radix-dropdown-menu-content],
+  [data-radix-popover-content] {
+    @apply bg-popover text-popover-foreground;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+  }
+
+  /* Select dropdown items */
+  [data-radix-select-item],
+  [data-radix-dropdown-menu-item],
+  [role="option"],
+  .dropdown-item {
+    @apply bg-popover text-popover-foreground;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  /* Hover states for dropdown items */
+  [data-radix-select-item]:hover,
+  [data-radix-dropdown-menu-item]:hover,
+  [role="option"]:hover,
+  .dropdown-item:hover,
+  [data-radix-select-item][data-highlighted],
+  [data-radix-dropdown-menu-item][data-highlighted] {
+    @apply bg-accent text-accent-foreground;
+    outline: none;
+  }
+
+  /* Selected/Active state */
+  [data-radix-select-item][data-state="checked"],
+  [role="option"][aria-selected="true"],
+  .dropdown-item.active {
+    @apply bg-primary text-primary-foreground;
+    font-weight: 500;
+  }
+
+  /* Native select elements */
+  select {
+    @apply bg-background text-foreground;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.375rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 12px;
+  }
+
+  .dark select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  }
+
+  select:focus {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  select option {
+    @apply bg-popover text-popover-foreground;
+    padding: 0.5rem;
+  }
+
+  /* Filter dropdowns and status selectors */
+  .filter-dropdown,
+  .status-filter,
+  [class*="filter"] select,
+  [class*="status"] select {
+    @apply bg-card text-card-foreground;
+    min-width: 120px;
+  }
+
+  /* Dropdown content containers */
+  [data-radix-select-viewport],
+  [data-radix-dropdown-menu-viewport] {
+    padding: 0.25rem;
+  }
+
+  /* Input fields in dark mode */
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="tel"],
+  textarea {
+    @apply bg-background text-foreground;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-color: hsl(var(--ring));
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+    opacity: 0.6;
+  }
+
+  /* Buttons in dropdowns */
+  button[role="option"],
+  button[role="menuitem"] {
+    @apply bg-transparent text-foreground;
+    width: 100%;
+    text-align: left;
+    border: none;
+    padding: 0.5rem 0.75rem;
+  }
+
+  button[role="option"]:hover,
+  button[role="menuitem"]:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  /* Scrollbar styling for dropdowns */
+  [data-radix-select-viewport]::-webkit-scrollbar,
+  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar,
+  select::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  [data-radix-select-viewport]::-webkit-scrollbar-track,
+  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar-track,
+  select::-webkit-scrollbar-track {
+    @apply bg-muted;
+    border-radius: 4px;
+  }
+
+  [data-radix-select-viewport]::-webkit-scrollbar-thumb,
+  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar-thumb,
+  select::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground;
+    border-radius: 4px;
+  }
+
+  [data-radix-select-viewport]::-webkit-scrollbar-thumb:hover,
+  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar-thumb:hover,
+  select::-webkit-scrollbar-thumb:hover {
+    @apply bg-foreground;
+  }
+
+  /* Separator in dropdowns */
+  [data-radix-dropdown-menu-separator],
+  .dropdown-divider {
+    height: 1px;
+    @apply bg-border;
+    margin: 0.25rem 0;
+  }
+
+  /* Disabled states */
+  select:disabled,
+  [data-radix-select-item][data-disabled],
+  [data-radix-dropdown-menu-item][data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* Focus visible for accessibility */
+  select:focus-visible,
+  [data-radix-select-trigger]:focus-visible,
+  [data-radix-dropdown-menu-trigger]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Ensure proper z-index for dropdowns */
+  [data-radix-select-content],
+  [data-radix-dropdown-menu-content],
+  [data-radix-popover-content] {
+    z-index: 50;
+  }
+
+  /* Animation for dropdown appearance */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  [data-radix-select-content],
+  [data-radix-dropdown-menu-content] {
+    animation: slideDown 0.15s ease-out;
+  }
 }

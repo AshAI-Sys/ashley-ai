@@ -9,7 +9,8 @@ export interface EmailOptions {
   html?: string
   text?: string
   from?: string
-  reply_to?: string
+  replyTo?: string
+  reply_to?: string  // Deprecated alias for replyTo
   cc?: string | string[]
   bcc?: string | string[]
   attachments?: Array<{
@@ -24,10 +25,16 @@ export interface EmailTemplate {
   variables: Record<string, any>
 }
 
+export interface EmailResult {
+  success: boolean
+  id?: string
+  error?: string
+}
+
 /**
  * Send email using Resend
  */
-export async function sendEmail(options: EmailOptions): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   try {
     if (!process.env.RESEND_API_KEY) {
       throw new Error('RESEND_API_KEY not configured')
@@ -41,7 +48,7 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
       subject: options.subject,
       html: options.html,
       text: options.text,
-      reply_to: options.reply_to,
+      reply_to: options.replyTo || options.reply_to,
       cc: options.cc,
       bcc: options.bcc,
     })
