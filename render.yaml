@@ -4,8 +4,9 @@ services:
     env: node
     plan: free
     region: singapore
-    buildCommand: pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
-    startCommand: cd services/ash-admin && pnpm start
+    rootDir: services/ash-admin
+    buildCommand: cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
+    startCommand: pnpm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
