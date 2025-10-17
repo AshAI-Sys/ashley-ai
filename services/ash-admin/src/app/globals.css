@@ -319,6 +319,37 @@
     pointer-events: none;
   }
 
+  /* ============================================
+     LOGIN PAGE INPUT FIELDS - ENHANCED CONTRAST
+     Ensure perfect readability in dark mode
+     ============================================ */
+
+  /* Force proper styling for login input fields in dark mode */
+  .dark input[type="email"],
+  .dark input[type="password"],
+  .dark input[type="text"] {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+  }
+
+  /* Placeholder text in dark mode */
+  .dark input::placeholder {
+    color: rgb(156 163 175) !important; /* gray-400 */
+    opacity: 0.7 !important;
+  }
+
+  /* Focus state for inputs in dark mode */
+  .dark input[type="email"]:focus,
+  .dark input[type="password"]:focus,
+  .dark input[type="text"]:focus {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+    color: rgb(255 255 255) !important; /* white */
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    outline: 2px solid rgb(59 130 246) !important;
+    outline-offset: 2px;
+  }
+
   /* Focus visible for accessibility */
   select:focus-visible,
   [data-radix-select-trigger]:focus-visible,

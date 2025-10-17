@@ -235,7 +235,7 @@ export default function Sidebar() {
               className={`
                 flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
                 ${isActive
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-blue-600 text-black dark:text-white'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                 }
               `}
