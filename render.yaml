@@ -1,26 +1,20 @@
-# Render Blueprint for Ashley AI Manufacturing ERP
-# This file enables Infrastructure as Code deployment on Render
-# Documentation: https://render.com/docs/infrastructure-as-code
-
 services:
   # PostgreSQL Database
   - type: pserv
     name: ashley-ai-db
+    env: docker
     plan: free
-    region: oregon
-    databaseName: ashleyai
-    databaseUser: ashleyai
-    # Database will be automatically provisioned
+    databases:
+      - name: ashley_ai_production
+        user: ashley_ai_user
 
-  # Main Admin Web Service
+  # Main Admin Interface
   - type: web
     name: ashley-ai-admin
-    runtime: node
-    region: oregon
+    env: node
     plan: free
-    branch: master
-    rootDir: .
-    buildCommand: pnpm install && cd packages/database && npx prisma generate && cd ../.. && cd services/ash-admin && pnpm build
+    region: singapore
+    buildCommand: pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
     startCommand: cd services/ash-admin && pnpm start
     healthCheckPath: /api/health
     envVars:
@@ -30,20 +24,21 @@ services:
         fromDatabase:
           name: ashley-ai-db
           property: connectionString
-      - key: NEXTAUTH_URL
-        value: https://ashley-ai-admin.onrender.com
       - key: NEXTAUTH_SECRET
         generateValue: true
-      - key: REDIS_URL
-        value: ""
-      - key: RESEND_API_KEY
-        sync: false
-      - key: AWS_ACCESS_KEY_ID
-        sync: false
-      - key: AWS_SECRET_ACCESS_KEY
-        sync: false
-      - key: AWS_REGION
-        sync: false
-      - key: AWS_S3_BUCKET
-        sync: false
-    autoDeploy: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: NEXTAUTH_URL
+        fromService:
+          type: web
+          name: ashley-ai-admin
+          property: host
+      - key: APP_URL
+        fromService:
+          type: web
+          name: ashley-ai-admin
+          property: host
+      - key: DEMO_MODE
+        value: "false"
