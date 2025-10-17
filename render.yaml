@@ -2,11 +2,9 @@ services:
   # PostgreSQL Database
   - type: pserv
     name: ashley-ai-db
-    env: docker
+    databaseName: ashley_ai_production
+    databaseUser: ashley_ai_user
     plan: free
-    databases:
-      - name: ashley_ai_production
-        user: ashley_ai_user
 
   # Main Admin Interface
   - type: web
