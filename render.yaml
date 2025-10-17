@@ -1,15 +1,13 @@
-services:
-  # PostgreSQL Database
-  - type: pserv
-    name: ashley-ai-db
+databases:
+  - name: ashley-ai-db
     databaseName: ashley_ai_production
-    databaseUser: ashley_ai_user
+    user: ashley_ai_user
     plan: free
 
-  # Main Admin Interface
+services:
   - type: web
     name: ashley-ai-admin
-    env: node
+    runtime: node
     plan: free
     region: singapore
     buildCommand: pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
@@ -29,14 +27,8 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: NEXTAUTH_URL
-        fromService:
-          type: web
-          name: ashley-ai-admin
-          property: host
+        sync: false
       - key: APP_URL
-        fromService:
-          type: web
-          name: ashley-ai-admin
-          property: host
+        sync: false
       - key: DEMO_MODE
-        value: "false"
+        value: false
