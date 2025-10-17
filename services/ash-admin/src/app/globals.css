@@ -372,4 +372,42 @@
     word-break: break-word;
     overflow-wrap: break-word;
   }
+
+  /* ============================================
+     COLOR CONTRAST FIX FOR ALL BADGES & COLORED ELEMENTS
+     Ensure readability in both light and dark themes
+     ============================================ */
+
+  /* Fix ALL colored badge backgrounds to be brighter and more visible */
+  .bg-purple-600, .bg-purple-500,
+  .bg-blue-600, .bg-blue-500,
+  .bg-green-600, .bg-green-500,
+  .bg-red-600, .bg-red-500,
+  .bg-yellow-600, .bg-yellow-500,
+  .bg-orange-600, .bg-orange-500,
+  .bg-indigo-600, .bg-indigo-500,
+  .bg-pink-600, .bg-pink-500,
+  .bg-teal-600, .bg-teal-500 {
+    /* Ensure white text is visible on colored backgrounds */
+    color: white !important;
+    font-weight: 700 !important;
+    /* Add subtle border for better definition in dark theme */
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Specific fix for section letter badges (rounded-full) */
+  .rounded-full.text-white {
+    color: white !important;
+    font-weight: 700 !important;
+    /* Ensure badges pop in dark theme */
+    filter: brightness(1.2) saturate(1.1);
+  }
+
+  /* Make sure any badge/label elements are readable */
+  [class*="badge"],
+  .badge,
+  [class*="label"],
+  .label {
+    font-weight: 600 !important;
+  }
 }
