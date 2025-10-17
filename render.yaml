@@ -11,7 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://ashley_ai_user:password@ashley-ai-db/ashley_ai_production
+        value: postgresql://ashley_ai_user:xESNHZnFjCqnXqZMwE3vPEwAPhWBmQwh@dpg-d3p5049r0fns73e2g25g-a.oregon-postgres.render.com/ashley_ai_production_jnsm
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: JWT_SECRET
