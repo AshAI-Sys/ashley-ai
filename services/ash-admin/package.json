@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "vercel-build": "cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && next build",
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "start": "next start -p ${PORT:-3001}",
     "lint": "next lint",
