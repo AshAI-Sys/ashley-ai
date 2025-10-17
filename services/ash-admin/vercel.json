@@ -1,6 +1,3 @@
 {
-  "buildCommand": "cd ../.. && pnpm install --no-frozen-lockfile && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build",
-  "installCommand": "echo 'Skipping install - will be done in buildCommand'",
-  "framework": "nextjs",
-  "outputDirectory": ".next"
+  "framework": "nextjs"
 }
