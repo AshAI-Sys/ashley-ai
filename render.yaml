@@ -1,13 +1,7 @@
-databases:
-  - name: ashley-ai-db
-    databaseName: ashley_ai_production
-    user: ashley_ai_user
-    plan: free
-
 services:
   - type: web
     name: ashley-ai-admin
-    runtime: node
+    env: node
     plan: free
     region: singapore
     buildCommand: pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
@@ -17,9 +11,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: ashley-ai-db
-          property: connectionString
+        value: postgresql://ashley_ai_user:password@ashley-ai-db/ashley_ai_production
       - key: NEXTAUTH_SECRET
         generateValue: true
       - key: JWT_SECRET
@@ -27,8 +19,14 @@ services:
       - key: ENCRYPTION_KEY
         generateValue: true
       - key: NEXTAUTH_URL
-        sync: false
+        value: https://ashley-ai-admin.onrender.com
       - key: APP_URL
-        sync: false
+        value: https://ashley-ai-admin.onrender.com
       - key: DEMO_MODE
         value: false
+
+databases:
+  - name: ashley-ai-db
+    databaseName: ashley_ai_production
+    user: ashley_ai_user
+    plan: free
