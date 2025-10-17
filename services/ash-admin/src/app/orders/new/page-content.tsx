@@ -483,9 +483,22 @@ export default function NewOrderPageContent() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold">New Production Order</h1>
-            <p className="text-muted-foreground">Create a comprehensive production order with Ashley AI assistance</p>
+          <div className="flex items-start gap-4">
+            {/* Back Button */}
+            <button
+              onClick={() => router.push('/orders')}
+              className="mt-1 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              title="Back to Orders"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+
+            <div>
+              <h1 className="text-3xl font-bold">New Production Order</h1>
+              <p className="text-muted-foreground">Create a comprehensive production order with Ashley AI assistance</p>
+            </div>
           </div>
 
           {hasDraft && (

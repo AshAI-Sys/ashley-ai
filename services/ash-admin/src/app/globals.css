@@ -352,44 +352,24 @@
   }
 
   /* ============================================
-     GLOBAL TEXT OVERFLOW FIX
-     Prevent text overlap and ensure readability
+     GLOBAL TEXT OVERFLOW FIX (SAFE VERSION)
+     Prevent text overlap without breaking styling
      ============================================ */
 
-  /* Prevent text overflow everywhere */
-  * {
+  /* Only apply word-wrap to text elements, not everything */
+  p, span:not([class*="icon"]), label, a {
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
 
-  /* Ensure flex containers don't cause text overflow */
-  .flex, [class*="flex"] {
-    min-width: 0;
-  }
-
-  /* Make sure all text elements can break properly */
-  span, p, div, label, button {
-    word-break: break-word;
-    hyphens: auto;
-  }
-
-  /* Specific fix for long words or URLs */
-  span[class*="text-"] {
-    display: inline-block;
-    max-width: 100%;
-    word-break: break-word;
-  }
-
-  /* Fix for flex items with text */
-  .flex > span,
-  .flex > p,
-  .flex > div {
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-
-  /* Ensure icons don't shrink */
-  svg {
+  /* Ensure icons don't shrink in flex containers */
+  svg, [class*="icon"] {
     flex-shrink: 0;
+  }
+
+  /* Fix for very long words in specific elements */
+  .break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 }
