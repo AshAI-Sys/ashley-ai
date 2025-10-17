@@ -1,12 +1,13 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Building } from 'lucide-react'
+import { Plus, Building, X, Check } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface Client {
@@ -47,9 +48,110 @@ export function ClientBrandSection({
   const clientsArray = Array.isArray(clients) ? clients : []
   const selectedClient = clientsArray.find(c => c.id === selectedClientId)
 
+  // Client creation state
+  const [showClientForm, setShowClientForm] = useState(false)
+  const [creatingClient, setCreatingClient] = useState(false)
+  const [newClient, setNewClient] = useState({
+    name: '',
+    company: '',
+    email: '',
+    phone: '',
+    address: ''
+  })
+
+  // Brand creation state
+  const [showBrandForm, setShowBrandForm] = useState(false)
+  const [creatingBrand, setCreatingBrand] = useState(false)
+  const [newBrand, setNewBrand] = useState({
+    name: '',
+    code: ''
+  })
+
+  const handleCreateClient = async () => {
+    if (!newClient.name || !newClient.email) {
+      toast.error('Client name and email are required')
+      return
+    }
+
+    setCreatingClient(true)
+    try {
+      const response = await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newClient)
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        const createdClient = result.data
+        toast.success('Client created successfully!')
+        onClientCreated(createdClient)
+        onClientChange(createdClient.id)
+        setShowClientForm(false)
+        setNewClient({ name: '', company: '', email: '', phone: '', address: '' })
+      } else {
+        toast.error(result.error || 'Failed to create client')
+      }
+    } catch (error) {
+      console.error('Error creating client:', error)
+      toast.error('Failed to create client')
+    } finally {
+      setCreatingClient(false)
+    }
+  }
+
+  const handleCreateBrand = async () => {
+    if (!newBrand.name || !newBrand.code) {
+      toast.error('Brand name and code are required')
+      return
+    }
+
+    if (!selectedClientId) {
+      toast.error('Please select a client first')
+      return
+    }
+
+    setCreatingBrand(true)
+    try {
+      const response = await fetch('/api/brands', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newBrand,
+          clientId: selectedClientId
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        const createdBrand = result.data
+        toast.success('Brand created successfully!')
+
+        // Update the client in the list with the new brand
+        const updatedClient = {
+          ...selectedClient!,
+          brands: [...(selectedClient?.brands || []), createdBrand]
+        }
+        onClientCreated(updatedClient)
+        onBrandChange(createdBrand.id)
+        setShowBrandForm(false)
+        setNewBrand({ name: '', code: '' })
+      } else {
+        toast.error(result.error || 'Failed to create brand')
+      }
+    } catch (error) {
+      console.error('Error creating brand:', error)
+      toast.error('Failed to create brand')
+    } finally {
+      setCreatingBrand(false)
+    }
+  }
+
   return (
     <Card className="border-2">
-      <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 border-b-2">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 border-b-2 dark:border-gray-700">
         <CardTitle className="flex items-center gap-2 text-lg">
           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 text-white font-bold text-sm">A</span>
           <span className="font-bold">Client & Brand</span>
@@ -59,7 +161,19 @@ export function ClientBrandSection({
       <CardContent className="space-y-6 pt-6">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="client" className="text-sm font-semibold">Client *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="client" className="text-sm font-semibold">Client *</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowClientForm(!showClientForm)}
+                className="h-7 text-xs"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                New Client
+              </Button>
+            </div>
             <Select value={selectedClientId} onValueChange={onClientChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select client" />
@@ -72,15 +186,23 @@ export function ClientBrandSection({
                 ))}
               </SelectContent>
             </Select>
-            {clientsArray.length === 0 && (
-              <p className="text-sm text-yellow-600 mt-1">
-                No clients found. Please add clients from the Clients page first.
-              </p>
-            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="brand" className="text-sm font-semibold">Brand *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="brand" className="text-sm font-semibold">Brand *</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowBrandForm(!showBrandForm)}
+                disabled={!selectedClientId}
+                className="h-7 text-xs"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                New Brand
+              </Button>
+            </div>
             <Select
               value={selectedBrandId}
               onValueChange={onBrandChange}
@@ -97,13 +219,155 @@ export function ClientBrandSection({
                 ))}
               </SelectContent>
             </Select>
-            {selectedClient && !selectedClient.brands.length && (
-              <p className="text-sm text-yellow-600 mt-1">
-                No brands found for this client. Please add brands from the Clients page.
-              </p>
-            )}
           </div>
         </div>
+
+        {/* New Client Form */}
+        {showClientForm && (
+          <div className="border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4 bg-blue-50 dark:bg-blue-950/30 space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-semibold text-gray-900 dark:text-white">Create New Client</h4>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowClientForm(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="newClientName" className="text-sm">Name *</Label>
+                <Input
+                  id="newClientName"
+                  value={newClient.name}
+                  onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+                  placeholder="Client name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newClientCompany" className="text-sm">Company</Label>
+                <Input
+                  id="newClientCompany"
+                  value={newClient.company}
+                  onChange={(e) => setNewClient({ ...newClient, company: e.target.value })}
+                  placeholder="Company name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newClientEmail" className="text-sm">Email *</Label>
+                <Input
+                  id="newClientEmail"
+                  type="email"
+                  value={newClient.email}
+                  onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                  placeholder="email@example.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newClientPhone" className="text-sm">Phone</Label>
+                <Input
+                  id="newClientPhone"
+                  value={newClient.phone}
+                  onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                  placeholder="+63 912 345 6789"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newClientAddress" className="text-sm">Address</Label>
+              <Input
+                id="newClientAddress"
+                value={newClient.address}
+                onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+                placeholder="Full address"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowClientForm(false)}
+                disabled={creatingClient}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCreateClient}
+                disabled={creatingClient}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Check className="w-4 h-4 mr-1" />
+                {creatingClient ? 'Creating...' : 'Create Client'}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* New Brand Form */}
+        {showBrandForm && (
+          <div className="border-2 border-green-200 dark:border-green-800 rounded-lg p-4 bg-green-50 dark:bg-green-950/30 space-y-4">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-semibold text-gray-900 dark:text-white">Create New Brand</h4>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowBrandForm(false)}
+                className="h-6 w-6 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="newBrandName" className="text-sm">Brand Name *</Label>
+                <Input
+                  id="newBrandName"
+                  value={newBrand.name}
+                  onChange={(e) => setNewBrand({ ...newBrand, name: e.target.value })}
+                  placeholder="e.g., Nike, Adidas"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newBrandCode" className="text-sm">Brand Code *</Label>
+                <Input
+                  id="newBrandCode"
+                  value={newBrand.code}
+                  onChange={(e) => setNewBrand({ ...newBrand, code: e.target.value.toUpperCase() })}
+                  placeholder="e.g., NIKE, ADID"
+                  maxLength={10}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowBrandForm(false)}
+                disabled={creatingBrand}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleCreateBrand}
+                disabled={creatingBrand}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                <Check className="w-4 h-4 mr-1" />
+                {creatingBrand ? 'Creating...' : 'Create Brand'}
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="channel" className="text-sm font-semibold">Channel (Optional)</Label>
