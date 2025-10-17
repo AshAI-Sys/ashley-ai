@@ -1,7 +1,6 @@
 [build]
-  base = "services/ash-admin"
-  command = "cd ../.. && pnpm install && pnpm --filter @ash/database prisma generate && pnpm --filter @ash/admin run build"
-  publish = ".next"
+  command = "pnpm install && pnpm --filter @ash/database prisma generate && cd services/ash-admin && pnpm run build"
+  publish = "services/ash-admin/.next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
