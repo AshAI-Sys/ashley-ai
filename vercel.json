@@ -1,6 +1,0 @@
-{
-  "buildCommand": "pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "rootDirectory": "services/ash-admin"
-}
