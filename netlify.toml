@@ -1,6 +1,6 @@
 [build]
   base = "services/ash-admin"
-  command = "cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm install && pnpm run build"
+  command = "cd ../.. && pnpm install --frozen-lockfile && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build"
   publish = ".next"
 
 [[plugins]]
