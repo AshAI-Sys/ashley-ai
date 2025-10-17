@@ -1,3 +1,5 @@
+const path = require('path')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
@@ -49,6 +51,12 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: false,
   webpack: (config, { isServer, dev, webpack }) => {
+    // Fix path aliases for deployment builds
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+    }
+
     // Fix "self is not defined" error for QR code libraries
     if (!isServer) {
       config.resolve.fallback = {

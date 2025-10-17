@@ -1,6 +1,7 @@
 [build]
-  command = "pnpm install && pnpm --filter @ash/database prisma generate && cd services/ash-admin && pnpm run build"
-  publish = "services/ash-admin/.next"
+  base = "services/ash-admin"
+  command = "cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm install && pnpm run build"
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -8,8 +9,4 @@
 [build.environment]
   NODE_VERSION = "22"
   NPM_FLAGS = "--legacy-peer-deps"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  NODE_ENV = "production"
