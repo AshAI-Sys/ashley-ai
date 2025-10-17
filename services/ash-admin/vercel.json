@@ -1,7 +1,6 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
-  "installCommand": "cd ../.. && pnpm install",
+  "buildCommand": "cd ../.. && pnpm install && cd services/ash-admin && npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
   "outputDirectory": ".next"
 }
