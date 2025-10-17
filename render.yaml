@@ -1,12 +1,12 @@
 services:
   - type: web
     name: ashley-ai-admin
-    runtime: node
+    env: node
     plan: free
     region: singapore
-    buildCommand: cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
-    startCommand: cd services/ash-admin && pnpm start
-    healthCheckPath: /api/health
+    rootDirectory: services/ash-admin
+    buildCommand: pnpm install --filter @ash/admin && cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
+    startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
