@@ -531,15 +531,6 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.9.1
         version: 0.9.1
-      '@ash-ai/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      '@ash-ai/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@ash/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@aws-sdk/client-s3':
         specifier: ^3.899.0
         version: 3.911.0
