@@ -1,0 +1,21 @@
+# Vercel Deployment Trigger
+# This file triggers automatic deployment to Vercel
+# Last deployment: 2025-10-17
+
+Deployment triggered with all environment variables configured:
+- DATABASE_URL: Configured (Neon PostgreSQL)
+- NEXTAUTH_SECRET: Configured
+- JWT_SECRET: Configured
+- ENCRYPTION_KEY: Configured
+- NEXTAUTH_URL: https://ash-admin-ash-ais-projects.vercel.app
+- APP_URL: https://ash-admin-ash-ais-projects.vercel.app
+- NODE_ENV: production
+- DEMO_MODE: false
+
+Build configuration:
+- Root Directory: services/ash-admin
+- Build Command: cd ../.. && pnpm --filter @ash/admin build
+- Install Command: pnpm install --frozen-lockfile
+- Node.js Version: 20.x
+
+Ready for production deployment! 🚀
