@@ -1,8 +1,8 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter @ash/admin build",
+  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && pnpm exec prisma generate --schema=packages/database/prisma/schema.prisma && pnpm --filter @ash/admin build",
   "devCommand": "pnpm dev",
   "outputDirectory": ".next",
   "cleanUrls": true,
