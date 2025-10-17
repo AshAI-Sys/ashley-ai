@@ -124,7 +124,8 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_5YeIhqZxSlQ0@ep-cold-tooth-a15l7pq9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" npx prisma db seed:*)",
       "Bash(set:*)",
       "Bash(del pnpm-lock.yaml)",
-      "Bash(railway:*)"
+      "Bash(railway:*)",
+      "Bash(where:*)"
     ],
     "deny": [],
     "ask": []
