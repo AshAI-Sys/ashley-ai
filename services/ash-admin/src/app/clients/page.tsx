@@ -102,12 +102,6 @@ export default function ClientsPage() {
             <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">{isFetching ? 'Refreshing...' : 'Refresh'}</span>
           </Button>
-          <Link href="/clients/new" className="flex-1 sm:flex-none">
-            <Button className="bg-blue-600 hover:bg-blue-700 w-full" size="sm">
-              <Plus className="w-4 h-4 mr-2" />
-              New Client
-            </Button>
-          </Link>
         </div>
       </div>
 
@@ -251,11 +245,7 @@ export default function ClientsPage() {
             <EmptyState
               icon={Building2}
               title="No clients found"
-              description={search ? `No clients match "${search}"` : "Get started by creating your first client"}
-              action={{
-                label: "Create Client",
-                href: "/clients/new"
-              }}
+              description={search ? `No clients match "${search}"` : "Create clients from the order page"}
             />
           )}
         </div>
