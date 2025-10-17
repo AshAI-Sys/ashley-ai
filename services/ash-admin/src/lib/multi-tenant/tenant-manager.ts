@@ -1,7 +1,7 @@
 // Multi-Tenant Management System
 // Handles workspace creation, isolation, and tenant-specific configurations
 
-import { prisma } from '@ash-ai/database';
+import { prisma } from '@/lib/database';
 
 export interface TenantConfig {
   workspace_id: string;

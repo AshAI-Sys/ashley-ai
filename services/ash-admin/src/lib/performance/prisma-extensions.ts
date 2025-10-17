@@ -3,7 +3,7 @@
  * Add caching, logging, and optimization to Prisma queries
  */
 
-import { Prisma } from '@ash-ai/database'
+import { Prisma } from '@/lib/database'
 
 /**
  * Query performance logging extension

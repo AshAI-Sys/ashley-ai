@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@ash-ai/database';
+import { db } from '@/lib/database';
 import Anthropic from '@anthropic-ai/sdk'
 import OpenAI from 'openai'
 

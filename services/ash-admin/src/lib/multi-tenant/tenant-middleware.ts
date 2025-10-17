@@ -61,7 +61,7 @@ export async function validateTenantMiddleware(
       const workspace = await tenantManager.getTenantConfig(workspaceIdentifier);
       if (!workspace) {
         // Try to find by slug
-        const { prisma } = await import('@ash-ai/database');
+        const { prisma } = await import('@/lib/database');
         const workspaceBySlug = await prisma.workspace.findUnique({
           where: { slug: workspaceIdentifier },
         });

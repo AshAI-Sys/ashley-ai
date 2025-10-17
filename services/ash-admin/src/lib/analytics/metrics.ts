@@ -1,4 +1,4 @@
-import { db } from '@ash-ai/database'
+import { db } from '@/lib/database'
 import { redisClient } from '@/lib/redis'
 
 const prisma = db

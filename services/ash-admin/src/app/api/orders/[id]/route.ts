@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@ash-ai/database';
+import { db } from '@/lib/database';
 import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 import { apiSuccess, apiNotFound, apiServerError } from '@/lib/api-response';
 import { logError } from '@/lib/logger';

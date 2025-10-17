@@ -1,4 +1,4 @@
-import { db } from '@ash-ai/database'
+import { db } from '@/lib/database'
 import { performanceExtension, queryLoggingExtension, autoPaginationExtension } from './performance/prisma-extensions'
 
 // Extended Prisma client with performance monitoring

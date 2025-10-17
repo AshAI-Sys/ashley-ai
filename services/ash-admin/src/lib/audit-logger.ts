@@ -1,4 +1,4 @@
-import { db } from '@ash-ai/database';
+import { db } from '@/lib/database';
 import { NextRequest } from 'next/server'
 
 const prisma = db

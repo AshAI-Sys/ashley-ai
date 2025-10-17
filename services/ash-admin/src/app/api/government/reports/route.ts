@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@ash-ai/database';
+import { db } from '@/lib/database';
 import { birService } from '@/lib/government/bir'
 import { sssService } from '@/lib/government/sss'
 import { philHealthService } from '@/lib/government/philhealth'

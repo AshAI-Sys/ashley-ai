@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { paymentService } from '@/lib/paymentService'
 import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError, AppError, ErrorCode, handleApiError } from '@/lib/error-handling'
-import { db } from '@ash-ai/database';
+import { db } from '@/lib/database';
 
 const prisma = db
 

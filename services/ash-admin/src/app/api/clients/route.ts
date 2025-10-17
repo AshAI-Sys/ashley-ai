@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@ash-ai/database';
+import { db } from '@/lib/database';
 import { z } from 'zod';
 import { getWorkspaceIdFromRequest } from '@/lib/workspace';
 
