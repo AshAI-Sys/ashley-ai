@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd packages/database && npx prisma generate && cd ../.. && pnpm --filter @ash/admin build",
-  "outputDirectory": "services/ash-admin/.next",
+  "buildCommand": "pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build",
+  "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "pnpm install --no-frozen-lockfile"
+  "rootDirectory": "services/ash-admin"
 }
