@@ -4,8 +4,8 @@
   "description": "ASH AI Admin Interface - Backoffice Management UI",
   "private": true,
   "scripts": {
-    "build": "cd ../../packages/database && pnpm exec prisma generate && cd ../../services/ash-admin && next build",
-    "vercel-build": "cd ../../packages/database && pnpm exec prisma generate && cd ../../services/ash-admin && next build",
+    "build": "next build",
+    "vercel-build": "next build",
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "start": "next start -p ${PORT:-3001}",
     "lint": "next lint",

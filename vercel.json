@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "buildCommand": "cd packages/database && npx prisma generate && cd ../../services/ash-admin && npm run build",
+  "installCommand": "npm install -g pnpm@9.0.0 && pnpm install --frozen-lockfile",
+  "framework": null,
+  "outputDirectory": "services/ash-admin/.next"
+}
