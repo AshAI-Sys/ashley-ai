@@ -73,27 +73,23 @@ export function validatePassword(password: string): PasswordValidationResult {
     score += Math.min(15, specialCount * 5) // Bonus points for special chars
   }
 
-  // Common passwords check
+  // Common passwords check (warning only, not blocking)
   if (COMMON_PASSWORDS.includes(password.toLowerCase())) {
-    errors.push('Password is too common and easily guessable')
     score = Math.min(score, 20) // Cap score at 20 for common passwords
   }
 
-  // Sequential characters check
+  // Sequential characters check (warning only, not blocking)
   if (hasSequentialCharacters(password)) {
-    errors.push('Password contains sequential characters (e.g., 123, abc)')
     score -= 10
   }
 
-  // Repeated characters check
+  // Repeated characters check (warning only, not blocking)
   if (hasRepeatedCharacters(password)) {
-    errors.push('Password contains too many repeated characters')
     score -= 10
   }
 
-  // Dictionary words check (basic)
+  // Dictionary words check (warning only, not blocking)
   if (containsDictionaryWords(password)) {
-    errors.push('Password contains common dictionary words')
     score -= 15
   }
 
