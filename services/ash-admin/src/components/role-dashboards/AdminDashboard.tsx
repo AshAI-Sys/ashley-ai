@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Animated, StaggeredAnimation } from '@/components/ui/animated'
 import {
   TrendingUp,
   TrendingDown,
@@ -185,9 +186,9 @@ export default function AdminDashboard() {
         </Button>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+      {/* Key Metrics with Smooth Staggered Animation */}
+      <StaggeredAnimation staggerDelay={100} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -205,7 +206,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -223,7 +224,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -241,7 +242,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
+        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -258,10 +259,11 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </StaggeredAnimation>
 
-      {/* Alerts & Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Alerts & Quick Stats with Slide Animation */}
+      <Animated animation="slide-in-from-bottom" delay={400}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="border-l-4 border-yellow-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-yellow-500">
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
@@ -300,10 +302,12 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </Animated>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Section with Fade In Animation */}
+      <Animated animation="fade-in" delay={600}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders by Status */}
         <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardHeader>
@@ -372,10 +376,12 @@ export default function AdminDashboard() {
             )}
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </Animated>
 
-      {/* Quick Actions */}
-      <Card className="dark:bg-gray-800 dark:border-gray-700">
+      {/* Quick Actions with Slide Animation */}
+      <Animated animation="slide-in-from-bottom" delay={800}>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
         <CardHeader>
           <CardTitle className="dark:text-white">Quick Actions</CardTitle>
           <CardDescription className="dark:text-gray-400">Navigate to key sections of the system</CardDescription>
@@ -432,7 +438,8 @@ export default function AdminDashboard() {
             </Link>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </Animated>
 
       {/* Manufacturing Stages Overview */}
       <Card className="dark:bg-gray-800 dark:border-gray-700">
