@@ -6,17 +6,26 @@ const prisma = db
 
 export async function GET(request: NextRequest) {
   try {
-    // Security check - only allow in production if secret token is provided
+    // PRODUCTION SECURITY: Disable seed endpoint in production
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({
+        error: 'Forbidden - Seed endpoint disabled in production',
+        message: 'Use the production database initialization script instead: pnpm init-db',
+        documentation: 'See PRODUCTION-SETUP.md for details'
+      }, { status: 403 })
+    }
+
+    // DEVELOPMENT ONLY: Security check with token
     const { searchParams } = new URL(request.url)
     const token = searchParams.get('token')
 
-    // Simple security token (change this to something secret in production)
+    // Simple security token for development
     const SEED_TOKEN = process.env.SEED_TOKEN || 'ashley-ai-seed-2024'
 
     if (token !== SEED_TOKEN) {
       return NextResponse.json({
         error: 'Unauthorized - Invalid token',
-        hint: 'Add ?token=ashley-ai-seed-2024 to the URL'
+        hint: 'Development only: Add ?token=ashley-ai-seed-2024 to the URL'
       }, { status: 401 })
     }
 
