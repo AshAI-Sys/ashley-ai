@@ -115,6 +115,12 @@ const nextConfig = {
   // Compression and caching
   compress: true,
   productionBrowserSourceMaps: false,
+
+  // Disable source maps in development to prevent 404 errors
+  devIndicators: {
+    buildActivity: true,
+    buildActivityPosition: 'bottom-right',
+  },
 }
 
 module.exports = nextConfig

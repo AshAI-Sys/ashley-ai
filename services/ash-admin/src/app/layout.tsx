@@ -27,10 +27,12 @@ export const metadata: Metadata = {
   description: 'Complete Manufacturing ERP System with AI-powered optimization for apparel production',
   manifest: '/manifest.json',
   appleWebApp: {
-    capable: true,
     statusBarStyle: 'default',
     title: 'Ashley AI',
     startupImage: '/icons/icon-512x512.png',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
   },
   applicationName: 'Ashley AI',
   keywords: ['manufacturing', 'erp', 'apparel', 'production', 'ai', 'automation'],
