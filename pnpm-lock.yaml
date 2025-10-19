@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@types/bcryptjs':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -60,6 +57,9 @@ importers:
       '@turbo/gen':
         specifier: ^2.0.0
         version: 2.5.8(@types/node@20.19.22)(typescript@5.9.3)
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/jest':
         specifier: ^29.5.0
         version: 29.5.14

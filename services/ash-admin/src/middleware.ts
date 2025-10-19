@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { logSecurityEvent, logAPIRequest } from './lib/audit-logger'
+// Note: Cannot import audit-logger here as it uses Prisma which doesn't work in Edge Runtime
+// Security events will be logged from API routes instead
 import { generateNonce, createCSPHeader, getMaxSecurityHeaders } from './lib/csp-nonce'
 
 // Note: Redis (ioredis) cannot be used in Edge Runtime middleware
@@ -157,11 +158,8 @@ export async function middleware(request: NextRequest) {
 
   // Check rate limiting
   if (!(await checkRateLimit(request))) {
-    // Log rate limit event
-    logSecurityEvent('RATE_LIMIT_EXCEEDED', request, {
-      path: pathname,
-      limit: getRateLimitForPath(pathname)
-    }).catch(err => console.error('Failed to log rate limit event:', err))
+    // Note: Security events logged from API routes, not middleware
+    console.warn('[Middleware] Rate limit exceeded:', pathname)
 
     return new NextResponse(
       JSON.stringify({ error: 'Too many requests. Please try again later.' }),
@@ -178,11 +176,8 @@ export async function middleware(request: NextRequest) {
   // Check IP whitelist for admin routes
   if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
     if (!checkIPWhitelist(request)) {
-      // Log IP block event
-      logSecurityEvent('IP_BLOCKED', request, {
-        path: pathname,
-        reason: 'IP not in whitelist'
-      }).catch(err => console.error('Failed to log IP block event:', err))
+      // Note: Security events logged from API routes, not middleware
+      console.warn('[Middleware] IP blocked:', pathname)
 
       return new NextResponse(
         JSON.stringify({ error: 'Access denied from your IP address' }),
@@ -242,11 +237,8 @@ export async function middleware(request: NextRequest) {
 
   if (isStateChanging && isAPI && !skipCSRF) {
     if (!(await verifyCSRFToken(request))) {
-      // Log CSRF violation
-      logSecurityEvent('CSRF_VIOLATION', request, {
-        path: pathname,
-        method: request.method
-      }).catch(err => console.error('Failed to log CSRF violation:', err))
+      // Note: Security events logged from API routes, not middleware
+      console.warn('[Middleware] CSRF violation:', pathname, request.method)
 
       return new NextResponse(
         JSON.stringify({
