@@ -126,7 +126,9 @@
       "Bash(del pnpm-lock.yaml)",
       "Bash(railway:*)",
       "Bash(where:*)",
-      "Bash(\"C:\\Users\\Khell\\Desktop\\create-backup.bat\")"
+      "Bash(\"C:\\Users\\Khell\\Desktop\\create-backup.bat\")",
+      "Bash(netsh advfirewall firewall delete rule name=\"Node.js Server\" protocol=TCP localport=3001)",
+      "Bash(netsh advfirewall firewall add rule name=\"Node.js Server\" dir=in action=allow protocol=TCP localport=3001)"
     ],
     "deny": [],
     "ask": []
