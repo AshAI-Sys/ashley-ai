@@ -109,6 +109,22 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
+    // Check if email is verified
+    if (!user.email_verified) {
+      await logAuthEvent('LOGIN_BLOCKED_UNVERIFIED', user.workspace_id, user.id, request, {
+        email: user.email,
+        reason: 'Email not verified',
+      })
+
+      return NextResponse.json({
+        success: false,
+        error: 'Please verify your email address before logging in. Check your inbox for the verification link.',
+        code: 'EMAIL_NOT_VERIFIED',
+        requiresVerification: true,
+        email: user.email,
+      }, { status: 403 }) // 403 Forbidden
+    }
+
     // Clear failed attempts on successful login
     await clearFailedAttempts(email)
 
