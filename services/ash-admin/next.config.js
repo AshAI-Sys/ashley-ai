@@ -73,6 +73,14 @@ const nextConfig = {
       // Externalize packages that cause SSR issues
       const externals = Array.isArray(config.externals) ? config.externals : [config.externals]
       config.externals = [...externals.filter(Boolean), 'canvas', 'qrcode', 'speakeasy']
+
+      // CRITICAL: Fix Prisma Client query engine loading issue
+      // Tell webpack to treat @prisma/client as external (don't bundle it)
+      config.externals.push('@prisma/client')
+
+      // Set Prisma environment variables for query engine location
+      process.env.PRISMA_QUERY_ENGINE_LIBRARY = path.resolve(__dirname, '../../node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/.prisma/client/query_engine-windows.dll.node')
+      process.env.PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = '1'
     }
 
     // Production optimizations
