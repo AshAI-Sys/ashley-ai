@@ -2,7 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/providers'
-import { Toaster } from 'react-hot-toast'
+import { ToastProvider } from '@/components/ui/toast-provider'
+import { ErrorBoundary } from '@/components/ui/error-boundary'
+import { GlobalKeyboardShortcutsProvider } from '@/components/keyboard-shortcuts-dialog'
 import dynamic from 'next/dynamic'
 
 // Load ChatWidget only on client side to prevent hydration issues
@@ -96,27 +98,22 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className} suppressHydrationWarning>
-        <Providers>
-          {children}
-          {/* ChatWidget temporarily disabled for faster page load */}
-          {/* <ChatWidget /> */}
+        <ErrorBoundary>
+          <Providers>
+            <GlobalKeyboardShortcutsProvider>
+              {children}
+              {/* ChatWidget temporarily disabled for faster page load */}
+              {/* <ChatWidget /> */}
 
-          {/* PWA Components */}
-          <PWARegister />
-          <PWAInstallPrompt />
+              {/* PWA Components */}
+              <PWARegister />
+              <PWAInstallPrompt />
 
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: 'hsl(var(--card))',
-                color: 'hsl(var(--card-foreground))',
-                border: '1px solid hsl(var(--border))',
-              },
-            }}
-          />
-        </Providers>
+              {/* Enhanced Toast Provider */}
+              <ToastProvider />
+            </GlobalKeyboardShortcutsProvider>
+          </Providers>
+        </ErrorBoundary>
       </body>
     </html>
   )
