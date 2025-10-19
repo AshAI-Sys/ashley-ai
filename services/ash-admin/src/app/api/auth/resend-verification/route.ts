@@ -1,0 +1,111 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '../../../../lib/db'
+import { logAuthEvent } from '../../../../lib/audit-logger'
+import crypto from 'crypto'
+import { z } from 'zod'
+
+const ResendSchema = z.object({
+  email: z.string().email('Invalid email address'),
+})
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+
+    // Validate request
+    const validation = ResendSchema.safeParse(body)
+    if (!validation.success) {
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid email address',
+      }, { status: 400 })
+    }
+
+    const { email } = validation.data
+
+    // Find user
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email.toLowerCase(),
+      },
+      include: {
+        workspace: true,
+      },
+    })
+
+    if (!user) {
+      // Don't reveal if user exists or not for security
+      return NextResponse.json({
+        success: true,
+        message: 'If an account exists with this email, a verification link has been sent.',
+      }, { status: 200 })
+    }
+
+    // Check if already verified
+    if (user.email_verified) {
+      return NextResponse.json({
+        success: false,
+        error: 'Email is already verified. You can log in.',
+      }, { status: 400 })
+    }
+
+    // Check rate limiting - don't allow resending within 2 minutes
+    if (user.email_verification_sent_at) {
+      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
+      if (user.email_verification_sent_at > twoMinutesAgo) {
+        const waitSeconds = Math.ceil((user.email_verification_sent_at.getTime() - twoMinutesAgo.getTime()) / 1000)
+        return NextResponse.json({
+          success: false,
+          error: `Please wait ${waitSeconds} seconds before requesting another verification email`,
+        }, { status: 429 })
+      }
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex')
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+    // Update user with new token
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email_verification_token: verificationToken,
+        email_verification_expires: verificationExpires,
+        email_verification_sent_at: new Date(),
+      },
+    })
+
+    // Create verification URL
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
+    const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
+
+    // TODO: Send email with verification link
+    // For now, we'll just log it to console (in production, use Resend, SendGrid, etc.)
+    console.log('📧 Verification email for:', user.email)
+    console.log('🔗 Verification URL:', verificationUrl)
+    console.log('⏰ Expires:', verificationExpires)
+
+    // Log event
+    await logAuthEvent('VERIFICATION_RESENT', user.workspace_id, user.id, request, {
+      email: user.email,
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Verification email sent! Please check your inbox.',
+      // Only return URL in development for testing
+      ...(process.env.NODE_ENV === 'development' && {
+        verificationUrl,
+        expiresAt: verificationExpires,
+      }),
+    }, { status: 200 })
+
+  } catch (error: any) {
+    console.error('Resend verification error:', error)
+    return NextResponse.json({
+      success: false,
+      error: 'Failed to send verification email',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    }, { status: 500 })
+  }
+}

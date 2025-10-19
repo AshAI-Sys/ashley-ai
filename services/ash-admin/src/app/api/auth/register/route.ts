@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../../lib/db'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import { logAuthEvent } from '../../../../lib/audit-logger'
 import { validatePassword } from '../../../../lib/password-validator'
 import { z } from 'zod'
@@ -94,6 +95,10 @@ export async function POST(request: NextRequest) {
 
     // Hash password with bcrypt (12 rounds)
     const password_hash = await bcrypt.hash(password, 12)
+
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex')
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
     // Create workspace and admin user in a transaction
     const result = await prisma.$transaction(async (tx) => {
