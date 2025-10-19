@@ -1,0 +1,99 @@
+================================================================================
+                    RAILWAY DEPLOYMENT - FIXED STEPS
+================================================================================
+
+PROBLEM: Railway CLI can't create projects in "Personal" workspace
+
+SOLUTION: Create project in Railway dashboard first, then deploy via CLI
+
+================================================================================
+                         STEP-BY-STEP GUIDE
+================================================================================
+
+STEP 1: Open Railway Dashboard
+-------------------------------
+Run this command:
+
+    railway open
+
+OR visit: https://railway.app/dashboard
+
+
+STEP 2: Create New Project
+---------------------------
+1. Click "New Project" button
+2. Select "Empty Project"
+3. Name it: Ashley-AI
+4. Click "Create"
+
+
+STEP 3: Add PostgreSQL Database
+--------------------------------
+1. In your new project, click "New"
+2. Select "Database"
+3. Click "Add PostgreSQL"
+4. Wait 30 seconds for database to provision
+
+
+STEP 4: Deploy from Your Computer
+----------------------------------
+Come back to PowerShell and run:
+
+    .\deploy-after-dashboard-setup.ps1
+
+This will:
+- Link to the project you just created
+- Set environment variables
+- Deploy your code
+
+
+STEP 5: Get Your Live URL
+--------------------------
+After deployment succeeds, run:
+
+    railway domain
+
+Visit the URL and login:
+    Email: admin@ashleyai.com
+    Password: password123
+
+
+================================================================================
+                         QUICK COMMANDS
+================================================================================
+
+Open Railway dashboard:
+    railway open
+
+Deploy script (after dashboard setup):
+    .\deploy-after-dashboard-setup.ps1
+
+Get live URL:
+    railway domain
+
+Check logs:
+    railway logs
+
+View deployment status:
+    railway status
+
+
+================================================================================
+                         TROUBLESHOOTING
+================================================================================
+
+If "railway link" shows no projects:
+- Make sure you created the project in Railway dashboard first
+- Refresh: railway logout, then railway login
+
+If deployment fails:
+- Check logs: railway logs
+- Verify database exists in Railway dashboard
+- Check environment variables: railway variables
+
+
+================================================================================
+
+READY? Follow the steps above starting from STEP 1!
+
+================================================================================
