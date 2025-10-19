@@ -246,7 +246,8 @@ export default function RegisterPage() {
                   onChange={(e) => setFormData(prev => ({ ...prev, workspaceSlug: e.target.value }))}
                   placeholder="acme-manufacturing"
                   required
-                  pattern="[a-z0-9-]+"
+                  pattern="^[a-z0-9-]+$"
+                  title="Lowercase letters, numbers, and hyphens only"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
