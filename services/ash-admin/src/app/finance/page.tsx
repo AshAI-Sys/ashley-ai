@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -66,6 +67,7 @@ interface Bill {
 }
 
 export default function FinancePage() {
+  const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<string>('all')
 
   // Fetch finance metrics
@@ -354,7 +356,7 @@ export default function FinancePage() {
                       <option value="PAID">Paid</option>
                       <option value="OVERDUE">Overdue</option>
                     </select>
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => router.push('/finance/invoices/new')}>
                       <Plus className="w-4 h-4 mr-2" />
                       New Invoice
                     </Button>
@@ -456,7 +458,7 @@ export default function FinancePage() {
                     <CardDescription>Manage supplier bills and payments</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm">
+                    <Button size="sm" onClick={() => router.push('/finance/bills/new')}>
                       <Plus className="w-4 h-4 mr-2" />
                       New Bill
                     </Button>
@@ -473,7 +475,7 @@ export default function FinancePage() {
                     description="No pending bills in the system"
                     action={{
                       label: "Create Bill",
-                      onClick: () => console.log('Create bill')
+                      onClick: () => router.push('/finance/bills/new')
                     }}
                   />
                 ) : (
