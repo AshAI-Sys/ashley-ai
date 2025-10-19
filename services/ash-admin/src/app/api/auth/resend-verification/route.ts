@@ -4,6 +4,9 @@ import { logAuthEvent } from '../../../../lib/audit-logger'
 import crypto from 'crypto'
 import { z } from 'zod'
 
+// Force Node.js runtime (Prisma doesn't support Edge)
+export const runtime = 'nodejs'
+
 const ResendSchema = z.object({
   email: z.string().email('Invalid email address'),
 })

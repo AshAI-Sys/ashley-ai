@@ -6,6 +6,9 @@ import { logAuthEvent } from '../../../../lib/audit-logger'
 import { validatePassword } from '../../../../lib/password-validator'
 import { z } from 'zod'
 
+// Force Node.js runtime (Prisma doesn't support Edge)
+export const runtime = 'nodejs'
+
 // Validation schema with Zod
 const RegisterSchema = z.object({
   // Workspace info

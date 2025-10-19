@@ -3,6 +3,11 @@ import { NextRequest } from 'next/server'
 
 const prisma = db
 
+// Check if running in Edge runtime (middleware, edge routes)
+const isEdgeRuntime = () => {
+  return typeof EdgeRuntime !== 'undefined' || process.env.NEXT_RUNTIME === 'edge'
+}
+
 export interface AuditLogEntry {
   workspaceId: string
   userId?: string
