@@ -12,11 +12,11 @@ export interface PasswordValidationResult {
 }
 
 // Minimum requirements
-const MIN_LENGTH = 12
+const MIN_LENGTH = 8
 const MIN_UPPERCASE = 1
 const MIN_LOWERCASE = 1
 const MIN_NUMBERS = 1
-const MIN_SPECIAL = 1
+const MIN_SPECIAL = 0 // Special character not required
 
 // Common passwords list (top 100 most common passwords)
 const COMMON_PASSWORDS = [
@@ -67,12 +67,10 @@ export function validatePassword(password: string): PasswordValidationResult {
     score += Math.min(15, numberCount * 5) // Max 15 points
   }
 
-  // Special character check
+  // Special character check (optional but recommended)
   const specialCount = (password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length
-  if (specialCount < MIN_SPECIAL) {
-    errors.push('Password must contain at least one special character (!@#$%^&*...)')
-  } else {
-    score += Math.min(15, specialCount * 5) // Max 15 points
+  if (specialCount >= 1) {
+    score += Math.min(15, specialCount * 5) // Bonus points for special chars
   }
 
   // Common passwords check

@@ -50,7 +50,7 @@ export default function RegisterPage() {
     if (!/[a-z]/.test(password)) errors.push('one lowercase letter')
     if (!/[A-Z]/.test(password)) errors.push('one uppercase letter')
     if (!/[0-9]/.test(password)) errors.push('one number')
-    if (!/[^a-zA-Z0-9]/.test(password)) errors.push('one special character')
+    // Special character is now optional
     return errors
   }
 
@@ -358,7 +358,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Password must have: 8+ chars, uppercase, lowercase, number, special character
+              Password must have: 8+ chars, uppercase, lowercase, number
             </div>
           </div>
 
