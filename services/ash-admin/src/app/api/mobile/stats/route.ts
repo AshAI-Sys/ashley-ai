@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
+import { requireAuth } from '@/lib/auth-middleware'
 
 /**
  * Mobile Dashboard Stats API
  * Returns personalized stats for the current production worker
  */
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    // In production, get employee_id from session/auth
-    // For now, using demo employee or first employee
+    // Get employee from authenticated user's workspace
     const employee = await prisma.employee.findFirst({
       where: {
-        workspace_id: DEFAULT_WORKSPACE_ID,
+        workspace_id: user.workspaceId,
         is_active: true,
+        // You can add user_id relation in future to link user to employee
       },
       orderBy: { created_at: 'asc' },
     })
@@ -191,4 +190,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

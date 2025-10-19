@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
+import { requireAuth } from '@/lib/auth-middleware'
 
 /**
  * Mobile Scan API
  * Processes QR/barcode scans and identifies the entity type
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const { code, format } = await request.json()
 

@@ -9,10 +9,9 @@ import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 
 /**
- * Default workspace ID for demo/development purposes
- * In production, this should come from user session or JWT token
+ * No default workspace in production
+ * Workspace ID must come from authenticated user session
  */
-const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
 
 /**
  * Get workspace ID from various sources
@@ -20,9 +19,10 @@ const DEFAULT_WORKSPACE_ID = 'demo-workspace-1'
  * 1. Request headers (X-Workspace-ID)
  * 2. Cookies (workspace_id)
  * 3. Query parameters (?workspaceId=...)
- * 4. Default workspace ID
+ *
+ * IMPORTANT: Returns null if no workspace found - requires authentication
  */
-export async function getWorkspaceId(request?: NextRequest): Promise<string> {
+export async function getWorkspaceId(request?: NextRequest): Promise<string | null> {
   // Try to get from request headers
   if (request) {
     const headerWorkspaceId = request.headers.get('X-Workspace-ID')
@@ -56,14 +56,15 @@ export async function getWorkspaceId(request?: NextRequest): Promise<string> {
     console.warn('Failed to read workspace cookie:', error)
   }
 
-  // Fall back to default workspace
-  return DEFAULT_WORKSPACE_ID
+  // No workspace found - user must authenticate
+  return null
 }
 
 /**
  * Get workspace ID from request (synchronous version for API routes)
+ * Returns null if no workspace found - requires authentication
  */
-export function getWorkspaceIdFromRequest(request: NextRequest): string {
+export function getWorkspaceIdFromRequest(request: NextRequest): string | null {
   // Try request headers first
   const headerWorkspaceId = request.headers.get('X-Workspace-ID')
   if (headerWorkspaceId) {
@@ -83,8 +84,8 @@ export function getWorkspaceIdFromRequest(request: NextRequest): string {
     return cookieWorkspaceId
   }
 
-  // Fall back to default
-  return DEFAULT_WORKSPACE_ID
+  // No workspace found - user must authenticate
+  return null
 }
 
 /**
@@ -133,11 +134,15 @@ export interface WorkspaceContext {
 
 /**
  * Get full workspace context with metadata
+ * Returns null if no workspace found
  */
-export async function getWorkspaceContext(request?: NextRequest): Promise<WorkspaceContext> {
+export async function getWorkspaceContext(request?: NextRequest): Promise<WorkspaceContext | null> {
   const workspaceId = await getWorkspaceId(request)
+  if (!workspaceId) {
+    return null
+  }
   return {
     workspaceId,
-    isDefault: workspaceId === DEFAULT_WORKSPACE_ID,
+    isDefault: false, // No default workspace in production
   }
 }

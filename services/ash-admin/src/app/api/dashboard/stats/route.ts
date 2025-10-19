@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { startOfDay, endOfDay, subDays, format } from 'date-fns'
+import { requireAuth } from '@/lib/auth-middleware'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url)
     const timeRange = searchParams.get('timeRange') || '30d'
     const includeCharts = searchParams.get('includeCharts') !== 'false'
-    const workspaceId = 'demo-workspace-1' // TODO: Get from auth context
+    const workspaceId = user.workspaceId // From authenticated user
 
     // Calculate date range
     const days = parseInt(timeRange.replace('d', ''))
@@ -252,4 +253,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
