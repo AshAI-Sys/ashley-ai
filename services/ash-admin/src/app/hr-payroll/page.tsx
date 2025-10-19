@@ -295,7 +295,11 @@ export default function HRPayrollPage() {
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline ml-2">Export</span>
             </Button>
-            <Button size="sm" className="flex-1 sm:flex-none">
+            <Button
+              size="sm"
+              className="flex-1 sm:flex-none"
+              onClick={() => setShowAddEmployeeModal(true)}
+            >
               <Plus className="w-4 h-4 mr-2" />
               New Employee
             </Button>
@@ -400,16 +404,6 @@ export default function HRPayrollPage() {
                   <div>
                     <CardTitle>Employee Management</CardTitle>
                     <CardDescription>Manage employee information and assignments</CardDescription>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <Filter className="w-4 h-4 mr-2" />
-                      Filter
-                    </Button>
-                    <Button size="sm" onClick={() => setShowAddEmployeeModal(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Employee
-                    </Button>
                   </div>
                 </div>
               </CardHeader>

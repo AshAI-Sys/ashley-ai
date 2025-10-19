@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -148,6 +149,11 @@ interface MaintenanceSchedule {
 }
 
 export default function MaintenancePage() {
+  const router = useRouter()
+  const [showWorkOrderModal, setShowWorkOrderModal] = useState(false)
+  const [showAssetModal, setShowAssetModal] = useState(false)
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
+
   // React Query: Stats
   const {
     data: stats,
@@ -307,7 +313,7 @@ export default function MaintenancePage() {
               <RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button>
+            <Button onClick={() => setShowWorkOrderModal(true)}>
               <Plus className="mr-2 h-4 w-4" />
               New Work Order
             </Button>
@@ -527,7 +533,7 @@ export default function MaintenancePage() {
                   <Filter className="mr-2 h-4 w-4" />
                   Filter
                 </Button>
-                <Button>
+                <Button onClick={() => setShowAssetModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Asset
                 </Button>
@@ -610,7 +616,7 @@ export default function MaintenancePage() {
                   <Filter className="mr-2 h-4 w-4" />
                   Filter
                 </Button>
-                <Button>
+                <Button onClick={() => setShowWorkOrderModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Work Order
                 </Button>
@@ -692,7 +698,7 @@ export default function MaintenancePage() {
                   <Filter className="mr-2 h-4 w-4" />
                   Filter
                 </Button>
-                <Button>
+                <Button onClick={() => setShowScheduleModal(true)}>
                   <Plus className="mr-2 h-4 w-4" />
                   Create Schedule
                 </Button>
@@ -757,6 +763,32 @@ export default function MaintenancePage() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Placeholder Modals */}
+        {showWorkOrderModal && (
+          <Alert className="fixed bottom-4 right-4 w-96 bg-blue-50 border-blue-200">
+            <AlertDescription>
+              Work Order creation modal - Under development
+              <Button variant="outline" size="sm" onClick={() => setShowWorkOrderModal(false)} className="ml-2">Close</Button>
+            </AlertDescription>
+          </Alert>
+        )}
+        {showAssetModal && (
+          <Alert className="fixed bottom-4 right-4 w-96 bg-blue-50 border-blue-200">
+            <AlertDescription>
+              Asset creation modal - Under development
+              <Button variant="outline" size="sm" onClick={() => setShowAssetModal(false)} className="ml-2">Close</Button>
+            </AlertDescription>
+          </Alert>
+        )}
+        {showScheduleModal && (
+          <Alert className="fixed bottom-4 right-4 w-96 bg-blue-50 border-blue-200">
+            <AlertDescription>
+              Schedule creation modal - Under development
+              <Button variant="outline" size="sm" onClick={() => setShowScheduleModal(false)} className="ml-2">Close</Button>
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </DashboardLayout>
   )

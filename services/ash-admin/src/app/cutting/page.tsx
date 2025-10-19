@@ -311,7 +311,7 @@ export default function CuttingPage() {
                     description={statusFilter !== 'all' ? `No lays with status "${statusFilter}"` : "No cut lays in the system yet"}
                     action={{
                       label: "Create Lay",
-                      onClick: () => console.log('Create lay')
+                      onClick: () => router.push('/cutting/create-lay')
                     }}
                   />
                 ) : (
@@ -427,8 +427,8 @@ export default function CuttingPage() {
                     title="No bundles found"
                     description="No bundles have been generated yet"
                     action={{
-                      label: "Generate Bundles",
-                      onClick: () => console.log('Generate bundles')
+                      label: "Create Lay First",
+                      onClick: () => router.push('/cutting/create-lay')
                     }}
                   />
                 ) : (

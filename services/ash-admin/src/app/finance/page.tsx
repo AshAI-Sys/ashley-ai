@@ -373,7 +373,7 @@ export default function FinancePage() {
                     description={statusFilter !== 'all' ? `No invoices with status "${statusFilter}"` : "No invoices in the system yet"}
                     action={{
                       label: "Create Invoice",
-                      onClick: () => console.log('Create invoice')
+                      onClick: () => router.push('/finance/invoices/new')
                     }}
                   />
                 ) : (
