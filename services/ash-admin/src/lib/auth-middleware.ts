@@ -14,23 +14,7 @@ export interface AuthUser {
 
 export async function authenticateRequest(request: NextRequest): Promise<AuthUser | null> {
   try {
-    // DEMO MODE: Allow access without auth in development
-    if (process.env.NODE_ENV === 'development') {
-      const authHeader = request.headers.get('authorization')
-
-      // If no auth header, provide demo user
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        console.log('🔓 DEMO MODE: Providing demo user for development')
-        return {
-          id: 'demo-user-1',
-          email: 'admin@ashleyai.com',
-          role: 'admin' as Role,
-          workspaceId: 'demo-workspace-1',
-          permissions: getAllPermissionsForRole('admin' as Role)
-        }
-      }
-    }
-
+    // PRODUCTION MODE: Require valid authentication token
     const authHeader = request.headers.get('authorization')
     if (!authHeader?.startsWith('Bearer ')) {
       return null
@@ -127,11 +111,6 @@ export function requireAdmin() {
 }
 
 export function validateWorkspaceAccess(userWorkspaceId: string, requestedWorkspaceId: string): boolean {
-  // For demo, allow access to demo workspace
-  if (userWorkspaceId === 'demo-workspace-1' && requestedWorkspaceId === 'demo-workspace-1') {
-    return true
-  }
-
-  // In production, implement proper workspace access control
+  // Production workspace access control
   return userWorkspaceId === requestedWorkspaceId
 }

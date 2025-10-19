@@ -52,28 +52,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(userData)
           } catch (error) {
             console.error('❌ Error parsing stored user data:', error)
-            // Fallback to demo user
-            setUser({
-              id: 'demo-user-1',
-              email: 'admin@ashleyai.com',
-              name: 'Demo Admin',
-              role: 'admin',
-              position: 'System Administrator',
-              department: 'Administration',
-              permissions: ['*']
-            })
+            // Clear invalid token and user data
+            localStorage.removeItem('ash_token')
+            localStorage.removeItem('ash_user')
+            setToken(null)
+            setUser(null)
           }
         } else {
-          // Fallback to demo user if no stored user data
-          setUser({
-            id: 'demo-user-1',
-            email: 'admin@ashleyai.com',
-            name: 'Demo Admin',
-            role: 'admin',
-            position: 'System Administrator',
-            department: 'Administration',
-            permissions: ['*']
-          })
+          // No user data - clear token and require re-login
+          localStorage.removeItem('ash_token')
+          setToken(null)
+          setUser(null)
         }
       }
     }
