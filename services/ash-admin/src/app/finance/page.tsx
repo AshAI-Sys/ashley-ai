@@ -203,10 +203,6 @@ export default function FinancePage() {
               <Download className="w-4 h-4" />
               <span className="hidden sm:inline ml-2">Export</span>
             </Button>
-            <Button size="sm" className="flex-1 sm:flex-none">
-              <Plus className="w-4 h-4 mr-2" />
-              New Invoice
-            </Button>
           </div>
         </div>
 
@@ -346,11 +342,11 @@ export default function FinancePage() {
                     <CardTitle>Outstanding Invoices</CardTitle>
                     <CardDescription>Manage customer invoices and payments</CardDescription>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-4">
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm min-w-[140px]"
                     >
                       <option value="all">All Status</option>
                       <option value="OPEN">Open</option>
