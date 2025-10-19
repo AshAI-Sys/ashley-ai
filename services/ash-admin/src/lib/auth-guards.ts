@@ -179,17 +179,7 @@ export async function getUserFromRequest(request: NextRequest): Promise<AuthUser
       }
     }
 
-    // In demo mode, allow unauthenticated requests with demo user
-    if (process.env.DEMO_MODE === 'true') {
-      authLogger.debug('Demo mode enabled - returning demo user')
-      return {
-        id: 'demo-user-1',
-        email: 'admin@ashleyai.com',
-        role: UserRole.ADMIN,
-        workspace_id: process.env.DEFAULT_WORKSPACE_ID || 'demo-workspace-1',
-      }
-    }
-
+    // Production mode: require valid authentication
     authLogger.debug('No valid authentication found')
     return null
   } catch (error) {
