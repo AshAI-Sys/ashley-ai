@@ -166,6 +166,13 @@ model User {
   phone_number            String?
   avatar_url              String?
   last_login_at           DateTime?
+
+  // Email verification fields
+  email_verified              Boolean   @default(false)
+  email_verification_token    String?   @unique
+  email_verification_expires  DateTime?
+  email_verification_sent_at  DateTime?
+
   created_at              DateTime  @default(now())
   updated_at              DateTime  @updatedAt
   deleted_at              DateTime?

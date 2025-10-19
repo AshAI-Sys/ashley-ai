@@ -13,6 +13,7 @@
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next out dist",
     "init-db": "npx tsx scripts/init-production-db.ts",
+    "clear-demo": "npx tsx scripts/clear-demo-data.ts",
     "load-test": "cd load-tests && k6 run run-all-tests.js",
     "load-test:api": "cd load-tests && k6 run api-endpoints.test.js",
     "load-test:db": "cd load-tests && k6 run database-queries.test.js",
