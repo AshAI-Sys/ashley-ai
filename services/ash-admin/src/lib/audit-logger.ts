@@ -24,6 +24,12 @@ export interface AuditLogEntry {
  * Log an audit event to the database
  */
 export async function logAudit(entry: AuditLogEntry): Promise<void> {
+  // Skip logging in Edge runtime (Prisma not supported)
+  if (isEdgeRuntime()) {
+    console.log('[Edge Runtime] Skipping audit log:', entry.action)
+    return
+  }
+
   try {
     await prisma.auditLog.create({
       data: {

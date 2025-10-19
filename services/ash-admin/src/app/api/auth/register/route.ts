@@ -56,7 +56,10 @@ export async function POST(request: NextRequest) {
     // Validate password strength
     const passwordValidation = validatePassword(password)
 
+    console.log('Password validation result:', passwordValidation)
+
     if (!passwordValidation.valid) {
+      console.log('Password validation failed:', passwordValidation.errors)
       return NextResponse.json({
         success: false,
         error: 'Password does not meet security requirements',
