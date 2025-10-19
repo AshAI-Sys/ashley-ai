@@ -9,7 +9,7 @@ const inMemoryStore = new Map<string, { value: string; expiry: number }>()
 /**
  * Initialize Redis client with graceful fallback
  */
-function getRedisClient(): Redis | null {
+export function getRedisClient(): Redis | null {
   if (redis) return redis
 
   try {

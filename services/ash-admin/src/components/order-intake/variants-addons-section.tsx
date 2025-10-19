@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
-import { Plus, Minus, Palette, Tag, Package, Calculator, Settings } from 'lucide-react'
+import { Plus, Minus, Palette, Tag, Package, Calculator, Settings, X } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 interface ColorVariant {
