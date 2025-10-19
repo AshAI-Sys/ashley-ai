@@ -7,12 +7,20 @@ import { z } from 'zod'
 
 // Validation schema with Zod
 const RegisterSchema = z.object({
+  // Workspace info
+  workspaceName: z.string().min(1, 'Workspace name is required').max(100),
+  workspaceSlug: z.string().regex(/^[a-z0-9-]+$/, 'Workspace slug must be lowercase alphanumeric with hyphens'),
+
+  // User info
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
-  first_name: z.string().min(1, 'First name is required').max(100),
-  last_name: z.string().min(1, 'Last name is required').max(100),
-  position: z.string().optional(),
-  department: z.string().optional(),
+  confirmPassword: z.string().optional(),
+  firstName: z.string().min(1, 'First name is required').max(100),
+  lastName: z.string().min(1, 'Last name is required').max(100),
+
+  // Optional
+  companyAddress: z.string().optional(),
+  companyPhone: z.string().optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -30,7 +38,16 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const { email, password, first_name, last_name, position, department } = validation.data
+    const {
+      workspaceName,
+      workspaceSlug,
+      email,
+      password,
+      firstName,
+      lastName,
+      companyAddress,
+      companyPhone
+    } = validation.data
 
     // Validate password strength
     const passwordValidation = validatePassword(password)
@@ -44,7 +61,19 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Check if user already exists
+    // Check if workspace slug already exists
+    const existingWorkspace = await prisma.workspace.findUnique({
+      where: { slug: workspaceSlug },
+    })
+
+    if (existingWorkspace) {
+      return NextResponse.json({
+        success: false,
+        error: 'Workspace slug already taken. Please choose another.',
+      }, { status: 409 })
+    }
+
+    // Check if user email already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         email: email.toLowerCase(),
@@ -60,41 +89,51 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: false,
         error: 'An account with this email already exists',
-      }, { status: 409 }) // 409 Conflict
-    }
-
-    // Get or create default workspace
-    let workspace = await prisma.workspace.findFirst({
-      where: { slug: 'default' },
-    })
-
-    if (!workspace) {
-      workspace = await prisma.workspace.create({
-        data: {
-          name: 'Default Workspace',
-          slug: 'default',
-          is_active: true,
-        },
-      })
+      }, { status: 409 })
     }
 
     // Hash password with bcrypt (12 rounds)
     const password_hash = await bcrypt.hash(password, 12)
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email: email.toLowerCase(),
-        password_hash,
-        first_name,
-        last_name,
-        position,
-        department,
-        role: 'USER', // Default role
-        workspace_id: workspace.id,
-        is_active: true,
-      },
+    // Create workspace and admin user in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create workspace
+      const workspace = await tx.workspace.create({
+        data: {
+          name: workspaceName,
+          slug: workspaceSlug,
+          is_active: true,
+          settings: JSON.stringify({
+            timezone: 'Asia/Manila',
+            currency: 'PHP',
+            date_format: 'YYYY-MM-DD',
+            time_format: '24h',
+            companyAddress: companyAddress || null,
+            companyPhone: companyPhone || null,
+          }),
+        },
+      })
+
+      // Create admin user
+      const user = await tx.user.create({
+        data: {
+          email: email.toLowerCase(),
+          password_hash,
+          first_name: firstName,
+          last_name: lastName,
+          role: 'admin', // Admin role for first user
+          position: 'Administrator',
+          department: 'Management',
+          workspace_id: workspace.id,
+          is_active: true,
+          permissions: JSON.stringify(['*']), // Full permissions
+        },
+      })
+
+      return { workspace, user }
     })
+
+    const { workspace, user } = result
 
     // Log successful registration
     await logAuthEvent('REGISTER', workspace.id, user.id, request, {
@@ -102,9 +141,21 @@ export async function POST(request: NextRequest) {
       role: user.role,
     })
 
+    console.log('✅ New admin account created:', {
+      workspaceId: workspace.id,
+      workspaceName: workspace.name,
+      userId: user.id,
+      email: user.email,
+    })
+
     return NextResponse.json({
       success: true,
       message: 'Account created successfully',
+      workspace: {
+        id: workspace.id,
+        name: workspace.name,
+        slug: workspace.slug,
+      },
       user: {
         id: user.id,
         email: user.email,

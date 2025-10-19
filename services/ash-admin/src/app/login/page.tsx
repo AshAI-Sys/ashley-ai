@@ -284,13 +284,26 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-gray-200 dark:border-gray-800 text-center">
-          <a
-            href="/"
-            className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 text-sm transition-colors"
-          >
-            ← Back to Home
-          </a>
+        <div className="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+          <div className="text-center">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <a
+                href="/register"
+                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+              >
+                Create Admin Account
+              </a>
+            </p>
+          </div>
+          <div className="text-center">
+            <a
+              href="/"
+              className="text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-200 text-sm transition-colors"
+            >
+              ← Back to Home
+            </a>
+          </div>
         </div>
       </div>
     </div>
