@@ -125,7 +125,8 @@
       "Bash(set:*)",
       "Bash(del pnpm-lock.yaml)",
       "Bash(railway:*)",
-      "Bash(where:*)"
+      "Bash(where:*)",
+      "Bash(\"C:\\Users\\Khell\\Desktop\\create-backup.bat\")"
     ],
     "deny": [],
     "ask": []

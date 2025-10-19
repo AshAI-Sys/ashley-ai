@@ -1,5 +1,23 @@
 // Jest setup for Ashley AI Test Suite
 import '@testing-library/jest-dom'
+import fetch, { Headers, Request, Response } from 'node-fetch'
+
+// Set up environment variables for tests
+process.env.JWT_SECRET = 'test_jwt_secret_for_testing_only_minimum_32_characters'
+process.env.JWT_ACCESS_EXPIRES_IN = '15m'
+process.env.JWT_REFRESH_EXPIRES_IN = '7d'
+process.env.NODE_ENV = 'test'
+
+// Polyfill fetch for Node.js environment
+import { TextEncoder, TextDecoder } from 'util'
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+
+// Add fetch to global scope for tests that need real HTTP calls
+global.fetch = fetch
+global.Headers = Headers
+global.Request = Request
+global.Response = Response
 
 // Global test configuration
 global.console = {
