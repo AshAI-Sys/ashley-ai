@@ -132,18 +132,16 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <Card key={i} className="dark:bg-gray-800 dark:border-gray-700">
-              <CardContent className="p-6">
-                <div className="animate-pulse space-y-3">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-                </div>
-              </CardContent>
-            </Card>
+            <div key={i} className="corporate-card p-6">
+              <div className="animate-pulse space-y-3">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -152,16 +150,14 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mx-auto mb-4" />
-              <p className="text-gray-600 dark:text-gray-400 mb-4">Failed to load dashboard data</p>
-              <Button onClick={() => refetch()} className="dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white">Retry</Button>
-            </div>
-          </CardContent>
-        </Card>
+      <div>
+        <div className="corporate-card p-6">
+          <div className="text-center">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <p className="text-base font-medium text-gray-700 mb-4">Failed to load dashboard data</p>
+            <Button onClick={() => refetch()} className="corporate-button">Retry</Button>
+          </div>
+        </div>
       </div>
     )
   }
@@ -169,153 +165,139 @@ export default function AdminDashboard() {
   const formatCurrency = (amount: number) => `₱${amount.toLocaleString()}`
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header with Refresh */}
-      <div className="flex justify-between items-center">
+    <div className="space-y-6">
+      {/* Professional Header with Refresh */}
+      <div className="flex justify-between items-center mb-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
-          <p className="text-gray-600 dark:text-gray-400">Complete system overview and analytics</p>
+          <h2 className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>Admin Dashboard</h2>
+          <p className="text-base font-medium text-gray-600 mt-1">Complete system overview and analytics</p>
         </div>
         <Button
           variant="outline"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+          className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-semibold px-4 py-2.5 rounded-lg transition-all"
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
           {isFetching ? 'Refreshing...' : 'Refresh'}
         </Button>
       </div>
 
-      {/* Key Metrics with Smooth Staggered Animation */}
+      {/* Key Metrics - Professional Stats Cards */}
       <StaggeredAnimation staggerDelay={100} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Revenue</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats?.totalRevenue || 0)}</p>
-                <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-                  <TrendingUp className="w-4 h-4 inline mr-1" />
-                  {stats?.totalOrders || 0} orders
-                </p>
-              </div>
-              <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-full">
-                <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
+        <div className="stats-card group hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-600 mb-1.5">Total Revenue</p>
+              <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{formatCurrency(stats?.totalRevenue || 0)}</p>
+              <p className="text-sm font-medium text-green-600 mt-2 flex items-center">
+                <TrendingUp className="w-4 h-4 mr-1.5" />
+                {stats?.totalOrders || 0} orders
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="bg-green-50 p-3.5 rounded-xl">
+              <DollarSign className="w-7 h-7 text-green-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Orders</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalOrders || 0}</p>
-                <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                  <Package className="w-4 h-4 inline mr-1" />
-                  {stats?.ordersInProduction || 0} in production
-                </p>
-              </div>
-              <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-full">
-                <Package className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
+        <div className="stats-card group hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-600 mb-1.5">Active Orders</p>
+              <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.totalOrders || 0}</p>
+              <p className="text-sm font-medium text-blue-600 mt-2 flex items-center">
+                <Package className="w-4 h-4 mr-1.5" />
+                {stats?.ordersInProduction || 0} in production
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="bg-blue-50 p-3.5 rounded-xl">
+              <Package className="w-7 h-7 text-blue-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Clients</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.totalClients || 0}</p>
-                <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
-                  <Building2 className="w-4 h-4 inline mr-1" />
-                  Active partnerships
-                </p>
-              </div>
-              <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-full">
-                <Building2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
+        <div className="stats-card group hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-600 mb-1.5">Total Clients</p>
+              <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.totalClients || 0}</p>
+              <p className="text-sm font-medium text-purple-600 mt-2 flex items-center">
+                <Building2 className="w-4 h-4 mr-1.5" />
+                Active partnerships
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="bg-purple-50 p-3.5 rounded-xl">
+              <Building2 className="w-7 h-7 text-purple-600" />
+            </div>
+          </div>
+        </div>
 
-        <Card className="dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Employees</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.activeEmployees || 0}</p>
-                <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-                  <Users className="w-4 h-4 inline mr-1" />
-                  Active workforce
-                </p>
-              </div>
-              <div className="bg-orange-100 dark:bg-orange-900/30 p-3 rounded-full">
-                <Users className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-              </div>
+        <div className="stats-card group hover:shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-600 mb-1.5">Employees</p>
+              <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.activeEmployees || 0}</p>
+              <p className="text-sm font-medium text-orange-600 mt-2 flex items-center">
+                <Users className="w-4 h-4 mr-1.5" />
+                Active workforce
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <div className="bg-orange-50 p-3.5 rounded-xl">
+              <Users className="w-7 h-7 text-orange-600" />
+            </div>
+          </div>
+        </div>
       </StaggeredAnimation>
 
-      {/* Alerts & Quick Stats with Slide Animation */}
+      {/* Alert Cards - Professional Design */}
       <Animated animation="slide-in-from-bottom" delay={400}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-l-4 border-yellow-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-yellow-500">
-          <CardContent className="p-6">
+          <div className="corporate-card border-l-4 border-yellow-500 p-6 hover:shadow-lg transition-all">
             <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Pending Approvals</p>
-                <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{stats?.pendingApprovals || 0}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Orders awaiting approval</p>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-600 mb-1.5">Pending Approvals</p>
+                <p className="text-4xl font-bold text-yellow-600" style={{ letterSpacing: '-0.02em' }}>{stats?.pendingApprovals || 0}</p>
+                <p className="text-sm font-medium text-gray-600 mt-2.5">Orders awaiting approval</p>
               </div>
-              <AlertCircle className="w-8 h-8 text-yellow-500 dark:text-yellow-400" />
+              <AlertCircle className="w-9 h-9 text-yellow-500" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="border-l-4 border-purple-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-purple-500">
-          <CardContent className="p-6">
+          <div className="corporate-card border-l-4 border-purple-500 p-6 hover:shadow-lg transition-all">
             <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">In Production</p>
-                <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stats?.ordersInProduction || 0}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Active production runs</p>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-600 mb-1.5">In Production</p>
+                <p className="text-4xl font-bold text-purple-600" style={{ letterSpacing: '-0.02em' }}>{stats?.ordersInProduction || 0}</p>
+                <p className="text-sm font-medium text-gray-600 mt-2.5">Active production runs</p>
               </div>
-              <Clock className="w-8 h-8 text-purple-500 dark:text-purple-400" />
+              <Clock className="w-9 h-9 text-purple-500" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="border-l-4 border-green-500 dark:bg-gray-800 dark:border-gray-700 dark:border-l-green-500">
-          <CardContent className="p-6">
+          <div className="corporate-card border-l-4 border-green-500 p-6 hover:shadow-lg transition-all">
             <div className="flex items-start justify-between">
-              <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Completed</p>
-                <p className="text-3xl font-bold text-green-600 dark:text-green-400">{stats?.completedThisMonth || 0}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Orders this month</p>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-600 mb-1.5">Completed</p>
+                <p className="text-4xl font-bold text-green-600" style={{ letterSpacing: '-0.02em' }}>{stats?.completedThisMonth || 0}</p>
+                <p className="text-sm font-medium text-gray-600 mt-2.5">Orders this month</p>
               </div>
-              <CheckCircle className="w-8 h-8 text-green-500 dark:text-green-400" />
+              <CheckCircle className="w-9 h-9 text-green-500" />
             </div>
-          </CardContent>
-        </Card>
+          </div>
         </div>
       </Animated>
 
-      {/* Charts Section with Fade In Animation */}
+      {/* Charts Section - Professional Cards */}
       <Animated animation="fade-in" delay={600}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders by Status */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
-          <CardHeader>
-            <CardTitle className="dark:text-white">Orders by Status</CardTitle>
-            <CardDescription className="dark:text-gray-400">Current order distribution across all stages</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="corporate-card">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-bold text-gray-900">Orders by Status</h3>
+            <p className="text-sm font-medium text-gray-600 mt-1">Current order distribution across all stages</p>
+          </div>
+          <div className="p-6">
             {stats?.ordersByStatus && stats.ordersByStatus.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.ordersByStatus}>
@@ -336,20 +318,20 @@ export default function AdminDashboard() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+              <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">
                 No order data available
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Employees by Department */}
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
-          <CardHeader>
-            <CardTitle className="dark:text-white">Workforce Distribution</CardTitle>
-            <CardDescription className="dark:text-gray-400">Employees across all departments</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="corporate-card">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-bold text-gray-900">Workforce Distribution</h3>
+            <p className="text-sm font-medium text-gray-600 mt-1">Employees across all departments</p>
+          </div>
+          <div className="p-6">
             {stats?.employeesByDepartment && stats.employeesByDepartment.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -371,106 +353,106 @@ export default function AdminDashboard() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+              <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">
                 No employee data available
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
         </div>
       </Animated>
 
-      {/* Quick Actions with Slide Animation */}
+      {/* Quick Actions - Professional Grid */}
       <Animated animation="slide-in-from-bottom" delay={800}>
-        <Card className="dark:bg-gray-800 dark:border-gray-700">
-        <CardHeader>
-          <CardTitle className="dark:text-white">Quick Actions</CardTitle>
-          <CardDescription className="dark:text-gray-400">Navigate to key sections of the system</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/orders">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <Package className="w-6 h-6" />
-                <span>View Orders</span>
-              </Button>
-            </Link>
-            <Link href="/clients">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <Building2 className="w-6 h-6" />
-                <span>Manage Clients</span>
-              </Button>
-            </Link>
-            <Link href="/hr-payroll">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <Users className="w-6 h-6" />
-                <span>HR & Payroll</span>
-              </Button>
-            </Link>
-            <Link href="/finance">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <DollarSign className="w-6 h-6" />
-                <span>Finance</span>
-              </Button>
-            </Link>
-            <Link href="/cutting">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <Scissors className="w-6 h-6" />
-                <span>Cutting</span>
-              </Button>
-            </Link>
-            <Link href="/printing">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <Printer className="w-6 h-6" />
-                <span>Printing</span>
-              </Button>
-            </Link>
-            <Link href="/quality-control">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <BadgeCheck className="w-6 h-6" />
-                <span>Quality Control</span>
-              </Button>
-            </Link>
-            <Link href="/analytics">
-              <Button variant="outline" className="w-full h-20 flex flex-col gap-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
-                <TrendingUp className="w-6 h-6" />
-                <span>Analytics</span>
-              </Button>
-            </Link>
+        <div className="corporate-card">
+          <div className="p-6 border-b border-gray-200">
+            <h3 className="text-lg font-bold text-gray-900">Quick Actions</h3>
+            <p className="text-sm font-medium text-gray-600 mt-1">Navigate to key sections of the system</p>
           </div>
-        </CardContent>
-        </Card>
+          <div className="p-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link href="/orders">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <Package className="w-6 h-6" />
+                  <span className="text-sm">View Orders</span>
+                </button>
+              </Link>
+              <Link href="/clients">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <Building2 className="w-6 h-6" />
+                  <span className="text-sm">Manage Clients</span>
+                </button>
+              </Link>
+              <Link href="/hr-payroll">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <Users className="w-6 h-6" />
+                  <span className="text-sm">HR & Payroll</span>
+                </button>
+              </Link>
+              <Link href="/finance">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <DollarSign className="w-6 h-6" />
+                  <span className="text-sm">Finance</span>
+                </button>
+              </Link>
+              <Link href="/cutting">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <Scissors className="w-6 h-6" />
+                  <span className="text-sm">Cutting</span>
+                </button>
+              </Link>
+              <Link href="/printing">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <Printer className="w-6 h-6" />
+                  <span className="text-sm">Printing</span>
+                </button>
+              </Link>
+              <Link href="/quality-control">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <BadgeCheck className="w-6 h-6" />
+                  <span className="text-sm">Quality Control</span>
+                </button>
+              </Link>
+              <Link href="/analytics">
+                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                  <TrendingUp className="w-6 h-6" />
+                  <span className="text-sm">Analytics</span>
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </Animated>
 
-      {/* Manufacturing Stages Overview */}
-      <Card className="dark:bg-gray-800 dark:border-gray-700">
-        <CardHeader>
-          <CardTitle className="dark:text-white">Manufacturing Stages</CardTitle>
-          <CardDescription className="dark:text-gray-400">Quick access to all 14 production stages</CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Manufacturing Stages Overview - Professional Grid */}
+      <div className="corporate-card">
+        <div className="p-6 border-b border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900">Manufacturing Stages</h3>
+          <p className="text-sm font-medium text-gray-600 mt-1">Quick access to all production stages</p>
+        </div>
+        <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { name: 'Order Intake', icon: Package, href: '/orders', color: 'blue' },
-              { name: 'Design & Approval', icon: AlertCircle, href: '/designs', color: 'purple' },
-              { name: 'Cutting', icon: Scissors, href: '/cutting', color: 'orange' },
-              { name: 'Printing', icon: Printer, href: '/printing', color: 'green' },
-              { name: 'Sewing', icon: Users, href: '/sewing', color: 'yellow' },
-              { name: 'Quality Control', icon: BadgeCheck, href: '/quality-control', color: 'red' },
-              { name: 'Finishing & Packing', icon: Package, href: '/finishing-packing', color: 'indigo' },
-              { name: 'Delivery', icon: Clock, href: '/delivery', color: 'pink' },
+              { name: 'Order Intake', icon: Package, href: '/orders', color: '#2563EB' },
+              { name: 'Design & Approval', icon: AlertCircle, href: '/designs', color: '#9333EA' },
+              { name: 'Cutting', icon: Scissors, href: '/cutting', color: '#EA580C' },
+              { name: 'Printing', icon: Printer, href: '/printing', color: '#16A34A' },
+              { name: 'Sewing', icon: Users, href: '/sewing', color: '#CA8A04' },
+              { name: 'Quality Control', icon: BadgeCheck, href: '/quality-control', color: '#DC2626' },
+              { name: 'Finishing & Packing', icon: Package, href: '/finishing-packing', color: '#6366F1' },
+              { name: 'Delivery', icon: Clock, href: '/delivery', color: '#DB2777' },
             ].map((stage) => (
               <Link key={stage.name} href={stage.href}>
-                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-750 cursor-pointer transition-colors">
-                  <stage.icon className={`w-6 h-6 text-${stage.color}-600 dark:text-${stage.color}-400 mb-2`} />
-                  <h3 className="font-medium text-gray-900 dark:text-white">{stage.name}</h3>
-                  <ArrowRight className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-2" />
+                <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-corporate-blue hover:bg-blue-50 cursor-pointer transition-all group">
+                  <stage.icon className="w-7 h-7 mb-3 text-gray-600 group-hover:text-corporate-blue transition-colors" style={{ color: stage.color }} />
+                  <h4 className="font-semibold text-gray-900 text-sm mb-1">{stage.name}</h4>
+                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-corporate-blue group-hover:translate-x-1 transition-all" />
                 </div>
               </Link>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

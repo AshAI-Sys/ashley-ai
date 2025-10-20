@@ -28,10 +28,10 @@ export default function RoleSpecificDashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8FAFC' }}>
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-gray-200 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-400 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-corporate-blue rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-base font-medium text-gray-700">Loading dashboard...</p>
         </div>
       </div>
     )
@@ -60,39 +60,29 @@ export default function RoleSpecificDashboard() {
   const DashboardComponent = roleDashboardMap[user.role] || <AdminDashboard />
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header - Responsive */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4">
+    <div className="min-h-screen" style={{ backgroundColor: '#F8FAFC' }}>
+      {/* Professional Header */}
+      <header className="bg-white border-b border-gray-200 shadow-sm px-6 py-5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate" style={{ letterSpacing: '-0.02em' }}>
               {user.position || 'Dashboard'}
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+            <p className="text-sm sm:text-base font-medium text-gray-600 truncate mt-1">
               Welcome back, {user.name || user.email}
               {user.department && <span className="hidden sm:inline"> • {user.department}</span>}
             </p>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400">
+          <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-sm" style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>
               {user.role || 'user'}
             </span>
-            <button
-              onClick={() => {
-                localStorage.removeItem('ash_token')
-                localStorage.removeItem('ash_user')
-                window.location.href = '/login'
-              }}
-              className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 transition-colors"
-            >
-              Logout
-            </button>
           </div>
         </div>
       </header>
 
       {/* Role-specific content with Suspense for lazy loading */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="max-w-7xl mx-auto px-6 py-6">
         <Suspense fallback={<DashboardLoader />}>
           {DashboardComponent}
         </Suspense>
