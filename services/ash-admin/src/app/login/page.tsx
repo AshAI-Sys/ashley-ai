@@ -16,6 +16,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      // FORCE LIGHT MODE - Remove any dark class from document
+      document.documentElement.classList.remove('dark')
+      document.body.classList.remove('dark')
+
+      // Set color scheme to light
+      document.documentElement.style.colorScheme = 'light'
+
       const savedEmail = localStorage.getItem('ash_remember_email')
       const savedPassword = localStorage.getItem('ash_remember_password')
       if (savedEmail) {
@@ -128,8 +135,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-corporate-bg flex items-center justify-center p-4 font-sans">
-      {/* Redirecting Overlay */}
+    <div className="min-h-screen flex items-center justify-center p-4 font-sans" style={{ backgroundColor: '#F8FAFC' }}>
+        {/* Redirecting Overlay */}
       {redirecting && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center">
           <div className="corporate-card w-full max-w-sm mx-4 p-8 text-center">
@@ -157,10 +164,10 @@ export default function LoginPage() {
             </svg>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold mb-2" style={{ color: '#000000' }}>
             Sign In
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-base font-semibold" style={{ color: '#374151' }}>
             Access your Ashley AI Dashboard
           </p>
         </div>
@@ -199,14 +206,14 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-red-700 text-sm">
+          <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-4 text-red-800 font-semibold text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-bold mb-2" style={{ color: '#000000' }}>
               Email
             </label>
             <input
@@ -215,12 +222,13 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               required
-              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-corporate-blue focus:border-transparent transition-all"
+              className="w-full px-4 py-3.5 bg-white border-2 border-gray-300 rounded-lg text-base font-medium placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-corporate-blue focus:border-corporate-blue transition-all"
+              style={{ backgroundColor: '#FFFFFF', color: '#000000' }}
             />
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-bold mb-2" style={{ color: '#000000' }}>
               Password
             </label>
             <div className="relative">
@@ -230,12 +238,13 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
                 required
-                className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-corporate-blue focus:border-transparent transition-all"
+                className="w-full px-4 py-3.5 pr-12 bg-white border-2 border-gray-300 rounded-lg text-base font-medium placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-corporate-blue focus:border-corporate-blue transition-all"
+                style={{ backgroundColor: '#FFFFFF', color: '#000000' }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-600 hover:text-gray-900 transition-colors"
               >
                 {showPassword ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,7 +261,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mb-6">
-            <label className="flex items-center text-sm text-gray-700 cursor-pointer select-none hover:text-gray-900 transition-colors">
+            <label className="flex items-center text-sm font-semibold cursor-pointer select-none transition-colors" style={{ color: '#000000' }}>
               <input
                 type="checkbox"
                 checked={rememberMe}
@@ -278,11 +287,11 @@ export default function LoginPage() {
 
         <div className="pt-4 border-t border-gray-200 space-y-2">
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm font-semibold" style={{ color: '#000000' }}>
               Don't have an account?{' '}
               <a
                 href="/register"
-                className="text-corporate-blue hover:text-blue-700 font-medium transition-colors"
+                className="text-corporate-blue hover:text-blue-700 font-bold transition-colors"
               >
                 Create Admin Account
               </a>
@@ -291,7 +300,8 @@ export default function LoginPage() {
           <div className="text-center">
             <a
               href="/"
-              className="text-gray-500 hover:text-gray-700 text-sm transition-colors"
+              className="text-sm font-semibold transition-colors"
+              style={{ color: '#374151' }}
             >
               ← Back to Home
             </a>

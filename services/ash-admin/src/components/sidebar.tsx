@@ -179,7 +179,7 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar - Hidden on mobile by default, slide-in when open */}
+      {/* Sidebar - Professional Navy Design */}
       <div className={`
         corporate-sidebar text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
@@ -189,26 +189,26 @@ export default function Sidebar() {
         fixed lg:relative z-40 lg:z-auto
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-      {/* Header */}
-      <div className="p-4 border-b border-white/10">
+      {/* Header - Improved spacing */}
+      <div className="p-5 border-b border-white/10">
         <div className="flex items-center justify-between">
           {!collapsed && (
-            <div className="flex items-center">
-              <div className="w-10 h-10 mr-3 bg-white rounded-lg flex items-center justify-center shadow-lg">
-                <svg className="w-6 h-6 text-corporate-navy" fill="currentColor" viewBox="0 0 20 20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-[#1E293B]" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                 </svg>
               </div>
               <div>
-                <h1 className="font-bold text-lg text-white">Ashley AI</h1>
-                <p className="text-xs text-blue-200">Apparel Smart Hub</p>
+                <h1 className="font-bold text-base text-white leading-tight">Ashley AI</h1>
+                <p className="text-xs text-blue-300/80 leading-tight">Apparel Smart Hub</p>
               </div>
             </div>
           )}
           <div className="flex items-center gap-1">
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-md hover:bg-white/10 transition-all"
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               <HydrationSafeIcon
                 Icon={collapsed ? ChevronRight : ChevronLeft}
@@ -219,8 +219,8 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
+      {/* Navigation - Professional spacing and hover effects */}
+      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href
           const Icon = iconMap[item.icon as keyof typeof iconMap] || Home
@@ -230,19 +230,19 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={`
-                flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all
                 ${isActive
-                  ? 'bg-blue-600 text-white border-l-4 border-blue-400'
-                  : 'text-blue-100 hover:bg-blue-800/50'
+                  ? 'bg-blue-600/90 text-white shadow-lg shadow-blue-900/20'
+                  : 'text-blue-100 hover:bg-white/10 hover:text-white'
                 }
               `}
               title={collapsed ? item.name : undefined}
             >
               <HydrationSafeIcon
                 Icon={Icon}
-                className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0`}
+                className={`${collapsed ? 'w-5 h-5' : 'w-5 h-5 mr-3'} flex-shrink-0`}
               />
-              {!collapsed && <span>{item.name}</span>}
+              {!collapsed && <span className="text-sm">{item.name}</span>}
             </Link>
           )
         })}
