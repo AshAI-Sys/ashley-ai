@@ -405,6 +405,55 @@
   }
 
   /* ============================================
+     COMPREHENSIVE DARK MODE TEXT FIXES - 2025-10-20
+     Force ALL text to be readable in dark mode
+     ============================================ */
+
+  /* Force ALL headings to use white text in dark mode */
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: rgb(255 255 255) !important; /* white */
+  }
+
+  /* Force ALL labels to be readable in dark mode */
+  .dark label {
+    color: rgb(209 213 219) !important; /* gray-300 */
+  }
+
+  /* Force ALL paragraphs and divs with text classes */
+  .dark .text-gray-900,
+  .dark .text-gray-800,
+  .dark .text-gray-700,
+  .dark .text-gray-600 {
+    color: rgb(255 255 255) !important; /* white */
+  }
+
+  .dark .text-gray-500 {
+    color: rgb(156 163 175) !important; /* gray-400 - lighter */
+  }
+
+  .dark .text-gray-400 {
+    color: rgb(156 163 175) !important; /* gray-400 */
+  }
+
+  /* Ensure all font-semibold and font-bold are white in dark mode */
+  .dark .font-semibold,
+  .dark .font-bold,
+  .dark .font-medium {
+    color: rgb(255 255 255) !important; /* white */
+  }
+
+  /* Fix for small text and helper text */
+  .dark .text-sm,
+  .dark .text-xs {
+    color: rgb(209 213 219) !important; /* gray-300 */
+  }
+
+  /* ============================================
      COLOR CONTRAST FIX FOR ALL BADGES & COLORED ELEMENTS
      Ensure readability in both light and dark themes
      ============================================ */

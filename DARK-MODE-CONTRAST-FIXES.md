@@ -1,7 +1,8 @@
 # Dark Mode Contrast Fixes - Ashley AI
 
 **Date**: 2025-10-20
-**Status**: ✅ COMPLETED
+**Status**: ✅ COMPLETED - ALL TEXT READABLE
+**Last Update**: Fixed all headers and titles with !important flag
 
 ## 🎯 Problem
 
@@ -12,9 +13,13 @@ Ang placeholder text at ibang text elements ay hindi mabasa sa dark mode dahil s
 ### 1. Registration Page (`/register`)
 
 **Fixed Elements:**
-- ✅ Input field backgrounds: `dark:bg-gray-700` → `dark:bg-gray-800`
-- ✅ Input text color: `dark:text-gray-100` → `dark:text-white`
-- ✅ Placeholder text: `dark:placeholder-gray-500` → `dark:placeholder-gray-400`
+- ✅ **Page Title**: `dark:text-white` → `dark:!text-white` (forced with !important)
+- ✅ **Subtitle**: `dark:text-gray-400` → `dark:!text-gray-300` (lighter gray)
+- ✅ **Section Headers**: `text-sm font-semibold` → `text-base font-bold dark:!text-white`
+- ✅ **Header Icons**: Added `text-blue-600 dark:text-blue-400` for better visibility
+- ✅ **Input backgrounds**: `dark:bg-gray-700` → `dark:bg-gray-800`
+- ✅ **Input text**: `dark:text-gray-100` → `dark:text-white`
+- ✅ **Placeholder text**: `dark:placeholder-gray-500` → `dark:placeholder-gray-400`
 
 **Before:**
 ```tsx
@@ -28,14 +33,22 @@ className="... dark:bg-gray-700 dark:text-gray-100 placeholder-gray-400 dark:pla
 className="... dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
 ```
 
-**Affected Input Fields:**
-- Company/Workspace Name
-- Workspace Slug
-- First Name
-- Last Name
-- Email Address
-- Password
-- Confirm Password
+**Affected Elements (Registration Page):**
+
+**Headers & Titles:**
+- ✅ "Create Admin Account" (h1) - `dark:!text-white` with !important
+- ✅ "Set up your workspace..." (subtitle) - `dark:!text-gray-300`
+- ✅ "Workspace Information" (section header) - `dark:!text-white`, larger font
+- ✅ "Admin User Information" (section header) - `dark:!text-white`, larger font
+
+**Input Fields:**
+- ✅ Company/Workspace Name
+- ✅ Workspace Slug
+- ✅ First Name
+- ✅ Last Name
+- ✅ Email Address
+- ✅ Password
+- ✅ Confirm Password
 
 ### 2. Login Page (`/login`)
 

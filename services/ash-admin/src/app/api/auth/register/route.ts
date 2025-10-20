@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
           is_active: true,
           permissions: JSON.stringify(['*']), // Full permissions
 
-          // Email verification
-          email_verified: false,
+          // Email verification (auto-verify in development, require in production)
+          email_verified: process.env.NODE_ENV === 'development' ? true : false,
           email_verification_token: verificationToken,
           email_verification_expires: verificationExpires,
           email_verification_sent_at: new Date(),
