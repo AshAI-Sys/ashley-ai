@@ -147,7 +147,8 @@
       "Bash(do echo \"--- $file ---\")",
       "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\add-back-buttons.js\")",
       "Bash(del \"c:\\Users\\Khell\\Desktop\\Ashley AI\\create-admin.js\")",
-      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\lib\\fetch-interceptor.ts\")"
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\lib\\fetch-interceptor.ts\")",
+      "Bash(for file in password/page.tsx security/page.tsx workspace/page.tsx appearance/page.tsx notifications/page.tsx sessions/page.tsx audit-logs/page.tsx)"
     ],
     "deny": [],
     "ask": []

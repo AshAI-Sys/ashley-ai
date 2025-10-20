@@ -191,6 +191,18 @@ export default function AuditLogsPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Header with Back Button */}
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/settings')}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Settings</span>
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Logs</h2>
