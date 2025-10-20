@@ -9,17 +9,17 @@ import {
   NotFoundError,
   withErrorHandling
 } from '../../../../lib/error-handling'
-import { requireAnyPermission } from '../../../../lib/auth-middleware'
+import { requireAuth, requireAnyPermission } from '../../../../lib/auth-middleware'
 import bcrypt from 'bcryptjs'
 
-export const GET = requireAnyPermission(['hr:read'])(withErrorHandling(async (request: NextRequest, user: any) => {
+export const GET = requireAuth(withErrorHandling(async (request: NextRequest, user: any) => {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const position = searchParams.get('position')
     const department = searchParams.get('department')
     const search = searchParams.get('search')
 
-    const where: any = { workspace_id: 'default' }
+    const where: any = { workspace_id: user.workspaceId }
     if (status && status !== 'all') {
       if (status === 'ACTIVE') where.is_active = true
       if (status === 'INACTIVE') where.is_active = false

@@ -24,8 +24,7 @@ const CreateClientSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-export async function GET(request: NextRequest) {
-  return requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
     try {
       const workspaceId = user.workspaceId;
       const { searchParams } = new URL(request.url);
@@ -108,11 +107,9 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
-  })
-}
+})
 
-export async function POST(request: NextRequest) {
-  return requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
     try {
       const workspaceId = user.workspaceId;
       const body = await request.json();
@@ -178,25 +175,25 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: newClient,
-        message: 'Client created successfully',
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
-          success: false,
-          error: 'Validation failed',
-          details: error.errors,
+          success: true,
+          data: newClient,
+          message: 'Client created successfully',
         },
-        { status: 400 }
+        { status: 201 }
       );
-    }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Validation failed',
+            details: error.errors,
+          },
+          { status: 400 }
+        );
+      }
 
       console.error('Error creating client:', error);
       return NextResponse.json(
@@ -204,5 +201,4 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-  })
-}
+})
