@@ -16,19 +16,19 @@ export default function TenantsPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'branding' | 'permissions' | 'i18n'>('overview');
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Building2 className="w-8 h-8 text-indigo-600" />
-          <h1 className="text-3xl font-bold text-gray-900">Tenant Management</h1>
+          <Building2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Tenant Management</h1>
         </div>
-        <p className="text-gray-600">Multi-tenant configuration and white-label settings</p>
+        <p className="text-gray-600 dark:text-gray-400">Multi-tenant configuration and white-label settings</p>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg shadow mb-6">
-        <div className="border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex -mb-px">
             {[
               { id: 'overview', label: 'Overview', icon: Building2 },
@@ -43,8 +43,8 @@ export default function TenantsPage() {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                      ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
                   <Icon className="w-5 h-5 inline-block mr-2" />
@@ -88,55 +88,55 @@ function OverviewTab() {
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Tenant Info */}
-        <div className="border border-gray-200 rounded-lg p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">Workspace Information</h3>
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Workspace Information</h3>
 
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">Workspace ID:</span>
-              <span className="font-mono text-gray-900">cl9x8y7z6...</span>
+              <span className="text-gray-600 dark:text-gray-400">Workspace ID:</span>
+              <span className="font-mono text-gray-900 dark:text-white">cl9x8y7z6...</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Name:</span>
-              <span className="font-medium text-gray-900">Ashley AI Manufacturing</span>
+              <span className="text-gray-600 dark:text-gray-400">Name:</span>
+              <span className="font-medium text-gray-900 dark:text-white">Ashley AI Manufacturing</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Slug:</span>
-              <span className="font-mono text-gray-900">ashley-ai</span>
+              <span className="text-gray-600 dark:text-gray-400">Slug:</span>
+              <span className="font-mono text-gray-900 dark:text-white">ashley-ai</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Created:</span>
-              <span className="text-gray-900">127 days ago</span>
+              <span className="text-gray-600 dark:text-gray-400">Created:</span>
+              <span className="text-gray-900 dark:text-white">127 days ago</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Status:</span>
-              <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">ACTIVE</span>
+              <span className="text-gray-600 dark:text-gray-400">Status:</span>
+              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-medium">ACTIVE</span>
             </div>
           </div>
         </div>
 
         {/* Subscription */}
-        <div className="border border-gray-200 rounded-lg p-6 bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20">
           <div className="flex items-center gap-2 mb-4">
-            <Crown className="w-6 h-6 text-indigo-600" />
-            <h3 className="font-semibold text-gray-900">Subscription Plan</h3>
+            <Crown className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+            <h3 className="font-semibold text-gray-900 dark:text-white">Subscription Plan</h3>
           </div>
 
           <div className="mb-4">
-            <div className="inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg font-semibold">
+            <div className="inline-block px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg font-semibold">
               {subscription.tier}
             </div>
           </div>
 
           <div className="space-y-2 text-sm">
-            <p className="text-gray-700">• Up to {subscription.max_users} users</p>
-            <p className="text-gray-700">• {subscription.max_orders_per_month} orders/month</p>
-            <p className="text-gray-700">• {subscription.storage_quota_gb}GB storage</p>
-            <p className="text-gray-700">• All AI features included</p>
-            <p className="text-gray-700">• Priority support</p>
+            <p className="text-gray-700 dark:text-gray-300">• Up to {subscription.max_users} users</p>
+            <p className="text-gray-700 dark:text-gray-300">• {subscription.max_orders_per_month} orders/month</p>
+            <p className="text-gray-700 dark:text-gray-300">• {subscription.storage_quota_gb}GB storage</p>
+            <p className="text-gray-700 dark:text-gray-300">• All AI features included</p>
+            <p className="text-gray-700 dark:text-gray-300">• Priority support</p>
           </div>
 
-          <button className="mt-4 w-full bg-white text-indigo-600 border border-indigo-600 py-2 rounded-lg hover:bg-indigo-50 font-medium">
+          <button className="mt-4 w-full bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border border-indigo-600 dark:border-indigo-400 py-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-medium">
             Upgrade Plan
           </button>
         </div>
@@ -144,57 +144,57 @@ function OverviewTab() {
 
       {/* Usage Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="border border-gray-200 rounded-lg p-6">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">User Usage</p>
-            <Users className="w-5 h-5 text-gray-400" />
+            <p className="text-sm text-gray-600 dark:text-gray-400">User Usage</p>
+            <Users className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {tenantStats.active_users}/{subscription.max_users}
           </p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+          <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-indigo-600 h-2 rounded-full"
+              className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded-full"
               style={{ width: `${(tenantStats.active_users / subscription.max_users) * 100}%` }}
             ></div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {subscription.max_users - tenantStats.active_users} users available
           </p>
         </div>
 
-        <div className="border border-gray-200 rounded-lg p-6">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Order Capacity</p>
-            <TrendingUp className="w-5 h-5 text-gray-400" />
+            <p className="text-sm text-gray-600 dark:text-gray-400">Order Capacity</p>
+            <TrendingUp className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {tenantStats.total_orders}/{subscription.max_orders_per_month}
           </p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+          <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-green-600 h-2 rounded-full"
+              className="bg-green-600 dark:bg-green-500 h-2 rounded-full"
               style={{ width: `${(tenantStats.total_orders / subscription.max_orders_per_month) * 100}%` }}
             ></div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">This month</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This month</p>
         </div>
 
-        <div className="border border-gray-200 rounded-lg p-6">
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Storage Used</p>
-            <Settings className="w-5 h-5 text-gray-400" />
+            <p className="text-sm text-gray-600 dark:text-gray-400">Storage Used</p>
+            <Settings className="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </div>
-          <p className="text-2xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {tenantStats.storage_used_gb}GB/{subscription.storage_quota_gb}GB
           </p>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+          <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-purple-600 h-2 rounded-full"
+              className="bg-purple-600 dark:bg-purple-500 h-2 rounded-full"
               style={{ width: `${(tenantStats.storage_used_gb / subscription.storage_quota_gb) * 100}%` }}
             ></div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             {subscription.storage_quota_gb - tenantStats.storage_used_gb}GB available
           </p>
         </div>
