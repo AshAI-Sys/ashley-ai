@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,6 +12,7 @@ import DashboardLayout from '@/components/dashboard-layout'
 import { DashboardStatsSkeleton, DataTableSkeleton } from '@/components/ui/loading-skeletons'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ErrorAlert } from '@/components/ui/error-alert'
+import { ProfilePictureUpload } from '@/components/profile-picture-upload'
 import { useDebounce } from '@/hooks/useDebounce'
 import { exportEmployees } from '@/lib/export'
 import {
@@ -32,7 +34,9 @@ import {
   Download,
   Filter,
   RefreshCw,
-  Search
+  Search,
+  User,
+  Camera
 } from 'lucide-react'
 
 interface HRMetrics {
@@ -58,6 +62,7 @@ interface Employee {
   salary_type: string
   base_salary: number
   piece_rate: number
+  profile_picture: string | null
 }
 
 interface AttendanceLog {
@@ -87,6 +92,8 @@ export default function HRPayrollPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false)
+  const [showProfilePictureModal, setShowProfilePictureModal] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [newEmployee, setNewEmployee] = useState({
     first_name: '',
     last_name: '',
@@ -448,7 +455,25 @@ export default function HRPayrollPage() {
                   <div className="space-y-4">
                     {employees.map((employee) => (
                       <div key={employee.id} className="border rounded-lg p-4 hover:bg-gray-50">
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start gap-4">
+                          {/* Profile Picture */}
+                          <div className="flex-shrink-0">
+                            <div className="w-16 h-16 relative rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+                              {employee.profile_picture ? (
+                                <Image
+                                  src={employee.profile_picture}
+                                  alt={`${employee.first_name} ${employee.last_name}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <User className="w-8 h-8 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                               <h3 className="font-semibold">{employee.first_name} {employee.last_name}</h3>
@@ -479,6 +504,17 @@ export default function HRPayrollPage() {
                             </div>
                           </div>
                           <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedEmployee(employee)
+                                setShowProfilePictureModal(true)
+                              }}
+                            >
+                              <Camera className="w-4 h-4 mr-1" />
+                              Photo
+                            </Button>
                             <Button variant="outline" size="sm">
                               <Eye className="w-4 h-4 mr-1" />
                               View
@@ -853,6 +889,60 @@ export default function HRPayrollPage() {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Creating...' : 'Create Employee'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Picture Upload Modal */}
+      {showProfilePictureModal && selectedEmployee && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-lg font-semibold">Update Profile Picture</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {selectedEmployee.first_name} {selectedEmployee.last_name}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowProfilePictureModal(false)
+                  setSelectedEmployee(null)
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex justify-center">
+              <ProfilePictureUpload
+                currentPicture={selectedEmployee.profile_picture}
+                employeeId={selectedEmployee.id}
+                employeeName={`${selectedEmployee.first_name} ${selectedEmployee.last_name}`}
+                size="lg"
+                onUploadSuccess={(url) => {
+                  // Refetch employees to show updated picture
+                  refetchEmployees()
+                }}
+                onDeleteSuccess={() => {
+                  // Refetch employees to show removed picture
+                  refetchEmployees()
+                }}
+              />
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowProfilePictureModal(false)
+                  setSelectedEmployee(null)
+                }}
+              >
+                Close
               </Button>
             </div>
           </div>

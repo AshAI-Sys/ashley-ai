@@ -814,6 +814,7 @@ model Employee {
   is_active       Boolean   @default(true)
   contact_info    String? // JSON as string
   permissions     String? // JSON as string for role-based permissions
+  profile_picture String? // URL to profile picture
   last_login      DateTime?
   created_at      DateTime  @default(now())
   updated_at      DateTime  @updatedAt
