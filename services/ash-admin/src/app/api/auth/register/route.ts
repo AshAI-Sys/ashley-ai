@@ -139,8 +139,8 @@ export async function POST(request: NextRequest) {
           is_active: true,
           permissions: JSON.stringify(['*']), // Full permissions
 
-          // Email verification (auto-verify in development, require in production)
-          email_verified: process.env.NODE_ENV === 'development' ? true : false,
+          // Email verification - ALWAYS REQUIRE VERIFICATION (Real Website)
+          email_verified: false, // Never auto-verify - require email confirmation
           email_verification_token: verificationToken,
           email_verification_expires: verificationExpires,
           email_verification_sent_at: new Date(),
@@ -156,21 +156,17 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
 
-    // Send welcome email with verification link
-    if (process.env.NODE_ENV === 'production') {
-      try {
-        const { sendWelcomeEmail } = await import('../../../../lib/email')
-        await sendWelcomeEmail(user.email, {
-          user_name: `${user.first_name} ${user.last_name}`,
-          verification_link: verificationUrl,
-        })
-        console.log('✅ Welcome email sent to:', user.email)
-      } catch (emailError) {
-        console.error('❌ Failed to send welcome email:', emailError)
-        // Don't fail registration if email fails - log it for admin to resend
-      }
-    } else {
-      // Development mode - log to console
+    // Send welcome email with verification link - ALWAYS TRY TO SEND
+    try {
+      const { sendWelcomeEmail } = await import('../../../../lib/email')
+      await sendWelcomeEmail(user.email, {
+        user_name: `${user.first_name} ${user.last_name}`,
+        verification_link: verificationUrl,
+      })
+      console.log('✅ Welcome email sent to:', user.email)
+    } catch (emailError) {
+      console.error('❌ Failed to send welcome email:', emailError)
+      // Don't fail registration if email fails - show verification URL instead
       console.log('📧 Verification email for:', user.email)
       console.log('🔗 Verification URL:', verificationUrl)
       console.log('⏰ Expires:', verificationExpires)
@@ -189,16 +185,10 @@ export async function POST(request: NextRequest) {
       email: user.email,
     })
 
-    // Different messages for dev vs production
-    const isDevelopment = process.env.NODE_ENV === 'development'
-    const message = isDevelopment
-      ? 'Account created successfully! You can now login immediately (email auto-verified in development).'
-      : 'Account created successfully! Please check your email to verify your account.'
-
     return NextResponse.json({
       success: true,
-      message,
-      requiresVerification: !isDevelopment,
+      message: 'Account created successfully! Please check your email to verify your account.',
+      requiresVerification: true, // ALWAYS require verification
       workspace: {
         id: workspace.id,
         name: workspace.name,
@@ -210,12 +200,9 @@ export async function POST(request: NextRequest) {
         name: `${user.first_name} ${user.last_name}`,
         role: user.role,
       },
-      // Only return verification URL in development for testing
-      ...(isDevelopment && {
-        verificationUrl,
-        expiresAt: verificationExpires,
-        autoVerified: true,
-      }),
+      // Return verification URL for easy access (can click from console/success message)
+      verificationUrl,
+      expiresAt: verificationExpires,
     }, { status: 201 })
 
   } catch (error: any) {

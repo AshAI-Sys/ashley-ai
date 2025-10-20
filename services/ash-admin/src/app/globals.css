@@ -27,26 +27,30 @@
     --radius: 0.75rem; /* Rounded corners */
   }
 
+  /* ============================================
+     DARK MODE DISABLED - LIGHT MODE ONLY
+     All dark mode styles are disabled globally
+     ============================================ */
   .dark {
-    /* Dark mode - minimal changes for consistency */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-    --card: 217 33% 18%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 40% 98%;
+    /* Dark mode is disabled - use light mode variables instead */
+    --background: 215 25% 97%;
+    --foreground: 215 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
     --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 18%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 18%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 51%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 28%;
-    --input: 217 33% 18%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 95%;
+    --secondary-foreground: 215 25% 15%;
+    --muted: 214 32% 95%;
+    --muted-foreground: 215 16% 50%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 0 0% 100%;
     --ring: 217 91% 60%;
   }
 }
@@ -763,6 +767,144 @@ body {
   font-size: 14px;
 }
 
+/* Dark mode disabled - use light mode background instead */
 .dark body {
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
+  background: #F8FAFC !important;
+}
+
+/* ============================================
+   FORCE LIGHT MODE ON LOGIN PAGE
+   Prevent dark mode from ever showing on login
+   ============================================ */
+
+/* Force light mode background and text on login page */
+body:has([class*="login"]),
+.light,
+[data-page="login"] {
+  background: #F8FAFC !important;
+  color: #000000 !important;
+  color-scheme: light !important;
+}
+
+/* Force all login page children to use light colors */
+.light *,
+.light h1,
+.light h2,
+.light h3,
+.light p,
+.light label,
+.light span,
+.light div {
+  color: inherit !important;
+}
+
+/* Override any dark mode classes on login page */
+.light .text-gray-900,
+.light .text-gray-800,
+.light .text-gray-700,
+.light .text-gray-600 {
+  color: #000000 !important;
+}
+
+/* Force input fields on login page to be white with black text */
+.light input {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-color: #D1D5DB !important;
+}
+
+/* ============================================
+   GLOBAL LIGHT MODE ENFORCEMENT
+   Disable dark mode across entire application
+   ============================================ */
+
+/* FORCE REMOVE DARK CLASS FROM HTML AND BODY */
+html.dark,
+body.dark,
+html:has(.dark),
+body:has(.dark) {
+  background: #F8FAFC !important;
+  color: #1E293B !important;
+  color-scheme: light !important;
+}
+
+/* DISABLE ALL DARK MODE TAILWIND UTILITIES */
+.dark\:bg-gray-800,
+.dark\:bg-gray-900,
+.dark\:bg-gray-700,
+.dark\:bg-blue-900,
+.dark\:bg-slate-800,
+.dark\:bg-slate-900 {
+  background-color: transparent !important;
+}
+
+.dark\:text-white,
+.dark\:text-gray-100,
+.dark\:text-gray-200,
+.dark\:text-gray-300 {
+  color: inherit !important;
+}
+
+.dark\:border-gray-700,
+.dark\:border-gray-600,
+.dark\:border-gray-800 {
+  border-color: #E2E8F0 !important;
+}
+
+/* FORCE LIGHT MODE ON ALL PAGES */
+html, body, #__next, main {
+  background: #F8FAFC !important;
+  color-scheme: light !important;
+}
+
+/* ENSURE ALL TEXT IS VISIBLE IN LIGHT MODE */
+* {
+  color-scheme: light !important;
+}
+
+/* PREVENT ANY DARK MODE BACKGROUND COLORS */
+.dark * {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+/* PROFESSIONAL LIGHT MODE COLORS FOR ALL COMPONENTS */
+.dark .corporate-card,
+.dark [class*="card"] {
+  background: white !important;
+  color: #1E293B !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* ENSURE BUTTONS REMAIN VISIBLE */
+.dark button {
+  color: inherit !important;
+}
+
+/* OVERRIDE ANY DARK MODE STYLES ON NAVIGATION */
+.dark nav,
+.dark aside,
+.dark header {
+  background: inherit !important;
+  color: inherit !important;
+}
+
+/* ENSURE FORM ELEMENTS ARE VISIBLE */
+.dark input,
+.dark textarea,
+.dark select {
+  background: white !important;
+  color: #1E293B !important;
+  border-color: #D1D5DB !important;
+}
+
+/* DISABLE DARK MODE HOVER STATES */
+.dark\:hover\:bg-gray-700:hover,
+.dark\:hover\:bg-gray-800:hover {
+  background-color: #F1F5F9 !important;
+}
+
+/* FINAL OVERRIDE - FORCE LIGHT MODE ON EVERYTHING */
+*:not(.corporate-blue):not([class*="bg-blue"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-yellow"]) {
+  color-scheme: light !important;
 }

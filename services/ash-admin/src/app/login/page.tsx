@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -135,7 +136,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 font-sans" style={{ backgroundColor: '#F8FAFC' }}>
+    <div className="min-h-screen flex items-center justify-center p-4 font-sans light" style={{ backgroundColor: '#F8FAFC', colorScheme: 'light' }}>
         {/* Redirecting Overlay */}
       {redirecting && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center">
@@ -285,26 +286,32 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="pt-4 border-t border-gray-200 space-y-2">
-          <div className="text-center">
-            <p className="text-sm font-semibold" style={{ color: '#000000' }}>
-              Don't have an account?{' '}
-              <a
-                href="/register"
-                className="text-corporate-blue hover:text-blue-700 font-bold transition-colors"
-              >
-                Create Admin Account
-              </a>
+        <div className="pt-6 border-t border-gray-200 space-y-4">
+          <div className="text-center bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+            <p className="text-sm font-bold mb-2" style={{ color: '#1E40AF' }}>
+              🎉 New to Ashley AI?
             </p>
+            <p className="text-xs mb-3" style={{ color: '#374151' }}>
+              Create your workspace and start managing your manufacturing operations
+            </p>
+            <Link
+              href="/register"
+              className="inline-block w-full py-2.5 bg-corporate-blue text-white rounded-lg font-semibold text-sm hover:bg-blue-700 shadow-corporate hover:shadow-corporate-hover transition-all"
+            >
+              Register Your Company
+            </Link>
           </div>
           <div className="text-center">
-            <a
+            <Link
               href="/"
-              className="text-sm font-semibold transition-colors"
+              className="text-sm font-semibold transition-colors inline-flex items-center gap-1"
               style={{ color: '#374151' }}
             >
-              ← Back to Home
-            </a>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Home
+            </Link>
           </div>
         </div>
       </div>

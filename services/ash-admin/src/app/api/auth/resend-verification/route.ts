@@ -82,11 +82,21 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
 
-    // TODO: Send email with verification link
-    // For now, we'll just log it to console (in production, use Resend, SendGrid, etc.)
-    console.log('📧 Verification email for:', user.email)
-    console.log('🔗 Verification URL:', verificationUrl)
-    console.log('⏰ Expires:', verificationExpires)
+    // Send verification email - ALWAYS TRY TO SEND
+    try {
+      const { sendEmailVerification } = await import('../../../../lib/email')
+      await sendEmailVerification(user.email, {
+        user_name: `${user.first_name} ${user.last_name}`,
+        verification_link: verificationUrl,
+      })
+      console.log('✅ Verification email sent to:', user.email)
+    } catch (emailError) {
+      console.error('❌ Failed to send verification email:', emailError)
+      // Don't fail the request - show verification URL in console instead
+      console.log('📧 Verification email for:', user.email)
+      console.log('🔗 Verification URL:', verificationUrl)
+      console.log('⏰ Expires:', verificationExpires)
+    }
 
     // Log event
     await logAuthEvent('VERIFICATION_RESENT', user.workspace_id, user.id, request, {
@@ -96,11 +106,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Verification email sent! Please check your inbox.',
-      // Only return URL in development for testing
-      ...(process.env.NODE_ENV === 'development' && {
-        verificationUrl,
-        expiresAt: verificationExpires,
-      }),
+      // Return URL for easy access (can be shown in UI or clicked from console)
+      verificationUrl,
+      expiresAt: verificationExpires,
     }, { status: 200 })
 
   } catch (error: any) {

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'light' | 'dark'
+type Theme = 'light'
 
 type ThemeContextType = {
   theme: Theme
@@ -13,31 +13,24 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark')
+  const [theme] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    // Check localStorage for saved theme preference
-    const savedTheme = localStorage.getItem('ash_theme') as Theme
-    if (savedTheme) {
-      setThemeState(savedTheme)
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark')
-    } else {
-      // Default to dark theme
-      document.documentElement.classList.add('dark')
-    }
+    // FORCE LIGHT MODE ONLY - Remove any dark mode classes
+    document.documentElement.classList.remove('dark')
+    document.body.classList.remove('dark')
+    document.documentElement.style.colorScheme = 'light'
+    localStorage.setItem('ash_theme', 'light')
   }, [])
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme)
-    localStorage.setItem('ash_theme', newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
+  const setTheme = () => {
+    // Light mode only - do nothing
   }
 
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
+    // Light mode only - do nothing
   }
 
   // Always provide the context, even before mounting

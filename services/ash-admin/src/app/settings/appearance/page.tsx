@@ -2,24 +2,29 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Palette, Sun, Moon, Monitor, Check, ArrowLeft } from 'lucide-react'
+import { Save, Palette, Sun, Check, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import toast from 'react-hot-toast'
 
-type Theme = 'light' | 'dark' | 'system'
+type Theme = 'light'
 type ColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'red'
 
 export default function AppearanceSettingsPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [theme, setTheme] = useState<Theme>('system')
+  const [theme] = useState<Theme>('light')
   const [colorScheme, setColorScheme] = useState<ColorScheme>('blue')
   const [compactMode, setCompactMode] = useState(false)
   const [showAvatars, setShowAvatars] = useState(true)
   const [fontSize, setFontSize] = useState('medium')
 
   useEffect(() => {
+    // FORCE LIGHT MODE
+    document.documentElement.classList.remove('dark')
+    document.body.classList.remove('dark')
+    document.documentElement.style.colorScheme = 'light'
+
     fetchAppearanceSettings()
   }, [])
 
@@ -28,7 +33,6 @@ export default function AppearanceSettingsPage() {
       const response = await fetch('/api/settings/appearance')
       if (response.ok) {
         const data = await response.json()
-        setTheme(data.theme || 'system')
         setColorScheme(data.color_scheme || 'blue')
         setCompactMode(data.compact_mode || false)
         setShowAvatars(data.show_avatars !== false)
@@ -36,24 +40,6 @@ export default function AppearanceSettingsPage() {
       }
     } catch (error) {
       console.error('Failed to fetch appearance settings:', error)
-    }
-  }
-
-  const applyTheme = (newTheme: Theme) => {
-    setTheme(newTheme)
-
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark')
-    } else if (newTheme === 'light') {
-      document.documentElement.classList.remove('dark')
-    } else {
-      // System preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      if (prefersDark) {
-        document.documentElement.classList.add('dark')
-      } else {
-        document.documentElement.classList.remove('dark')
-      }
     }
   }
 
@@ -68,7 +54,7 @@ export default function AppearanceSettingsPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          theme,
+          theme: 'light',
           color_scheme: colorScheme,
           compact_mode: compactMode,
           show_avatars: showAvatars,
@@ -80,7 +66,6 @@ export default function AppearanceSettingsPage() {
         throw new Error('Failed to update appearance settings')
       }
 
-      applyTheme(theme)
       toast.success('Appearance settings updated successfully!')
     } catch (error) {
       toast.error('Failed to update appearance settings')
@@ -110,101 +95,30 @@ export default function AppearanceSettingsPage() {
       </Button>
 
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Appearance Settings</h2>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <h2 className="text-2xl font-bold text-gray-900">Appearance Settings</h2>
+        <p className="text-gray-500 mt-1">
           Customize how Ashley AI looks and feels
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Theme Selection */}
+        {/* Theme Mode - Light Only */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900">
             <Palette className="w-5 h-5" />
             <span>Theme Mode</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button
-              type="button"
-              onClick={() => applyTheme('light')}
-              className={`
-                relative p-6 rounded-lg border-2 transition-all
-                ${theme === 'light'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
-                }
-              `}
-            >
-              {theme === 'light' && (
-                <div className="absolute top-3 right-3">
-                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-              )}
-              <Sun className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
-              <div className="text-center">
-                <div className="font-medium text-gray-900 dark:text-white">Light</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Always use light theme
-                </div>
+          <div className="bg-blue-50 border-2 border-blue-600 rounded-lg p-6">
+            <div className="flex items-center justify-center mb-3">
+              <Sun className="w-12 h-12 text-yellow-500" />
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-gray-900 text-lg mb-1">Light Mode</div>
+              <div className="text-sm text-gray-600">
+                Ashley AI uses a professional light theme for optimal readability
               </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => applyTheme('dark')}
-              className={`
-                relative p-6 rounded-lg border-2 transition-all
-                ${theme === 'dark'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
-                }
-              `}
-            >
-              {theme === 'dark' && (
-                <div className="absolute top-3 right-3">
-                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-              )}
-              <Moon className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-              <div className="text-center">
-                <div className="font-medium text-gray-900 dark:text-white">Dark</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Always use dark theme
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => applyTheme('system')}
-              className={`
-                relative p-6 rounded-lg border-2 transition-all
-                ${theme === 'system'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
-                }
-              `}
-            >
-              {theme === 'system' && (
-                <div className="absolute top-3 right-3">
-                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                </div>
-              )}
-              <Monitor className="w-8 h-8 text-gray-600 dark:text-gray-400 mx-auto mb-3" />
-              <div className="text-center">
-                <div className="font-medium text-gray-900 dark:text-white">System</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Use system preference
-                </div>
-              </div>
-            </button>
+            </div>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import Sidebar from './sidebar'
 import TopNavbar from './top-navbar'
 
@@ -8,8 +9,17 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  // FORCE LIGHT MODE - Remove any dark mode classes on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.classList.remove('dark')
+      document.body.classList.remove('dark')
+      document.documentElement.style.colorScheme = 'light'
+    }
+  }, [])
+
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#F8FAFC' }}>
+    <div className="flex min-h-screen" style={{ backgroundColor: '#F8FAFC', colorScheme: 'light' }}>
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopNavbar />

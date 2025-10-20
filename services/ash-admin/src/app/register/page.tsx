@@ -1,11 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import ThemeToggle from '@/components/theme-toggle'
 
 export default function RegisterPage() {
+  // Force light mode on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.classList.remove('dark')
+      document.body.classList.remove('dark')
+      document.documentElement.style.colorScheme = 'light'
+    }
+  }, [])
+
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -87,15 +95,13 @@ export default function RegisterPage() {
       // Success!
       setSuccess(true)
 
-      // Store verification URL if in development
+      // Store verification URL - ALWAYS show it for easy access
       if (data.verificationUrl) {
         setVerificationUrl(data.verificationUrl)
       }
 
-      // Check if auto-verified
-      if (data.autoVerified) {
-        setAutoVerified(true)
-      }
+      // Real website - never auto-verified
+      setAutoVerified(false)
 
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.')
@@ -174,18 +180,24 @@ export default function RegisterPage() {
               </>
             )}
 
-            {/* Development Mode: Show Verification Link */}
-            {verificationUrl && !autoVerified && (
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-                <p className="text-xs font-medium text-yellow-900 dark:!text-yellow-100 mb-2">
-                  🔧 Development Mode - Quick Verify
+            {/* Show Verification Link - Always available for easy access */}
+            {verificationUrl && (
+              <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4 mb-6">
+                <p className="text-sm font-bold text-green-900 mb-3">
+                  ✅ Quick Verification Link
+                </p>
+                <p className="text-xs text-gray-700 mb-3">
+                  Click the button below to verify your email instantly:
                 </p>
                 <a
                   href={verificationUrl}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline break-all"
+                  className="inline-block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors text-center"
                 >
-                  Click here to verify email instantly
+                  Verify Email Now
                 </a>
+                <p className="text-xs text-gray-600 mt-3">
+                  Or check your email inbox for the verification link.
+                </p>
               </div>
             )}
 

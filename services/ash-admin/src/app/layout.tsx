@@ -75,10 +75,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#1f2937' },
-  ],
+  themeColor: '#ffffff',
 }
 
 export default function RootLayout({
@@ -95,13 +92,12 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
+              // FORCE LIGHT MODE - Remove any dark mode classes
               try {
-                const theme = localStorage.getItem('ash_theme') || 'dark';
-                if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
+                document.documentElement.classList.remove('dark');
+                document.body.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+                localStorage.setItem('ash_theme', 'light');
               } catch (e) {}
             `,
           }}

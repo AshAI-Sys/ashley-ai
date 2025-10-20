@@ -2,68 +2,32 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'light' | 'dark' | 'system'
+type Theme = 'light'
 
 interface ThemeContextType {
   theme: Theme
   setTheme: (theme: Theme) => void
-  effectiveTheme: 'light' | 'dark'
+  effectiveTheme: 'light'
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('system')
-  const [effectiveTheme, setEffectiveTheme] = useState<'light' | 'dark'>('light')
+  const [theme] = useState<Theme>('light')
+  const [effectiveTheme] = useState<'light'>('light')
 
   useEffect(() => {
-    // Load theme from localStorage
-    const savedTheme = localStorage.getItem('ashley-ai-theme') as Theme
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
+    // FORCE LIGHT MODE ONLY - Remove any dark mode classes
+    document.documentElement.classList.remove('dark')
+    document.body.classList.remove('dark')
+    document.documentElement.style.colorScheme = 'light'
+    localStorage.setItem('ashley-ai-theme', 'light')
+    localStorage.setItem('ash_theme', 'light')
   }, [])
 
-  useEffect(() => {
-    // Determine effective theme
-    let effective: 'light' | 'dark' = 'light'
-
-    if (theme === 'system') {
-      // Check system preference
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      effective = isDark ? 'dark' : 'light'
-    } else {
-      effective = theme
-    }
-
-    setEffectiveTheme(effective)
-
-    // Apply theme to document
-    const root = document.documentElement
-    root.classList.remove('light', 'dark')
-    root.classList.add(effective)
-
-    // Save to localStorage
-    localStorage.setItem('ashley-ai-theme', theme)
-  }, [theme])
-
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-    const handleChange = () => {
-      if (theme === 'system') {
-        const isDark = mediaQuery.matches
-        setEffectiveTheme(isDark ? 'dark' : 'light')
-        const root = document.documentElement
-        root.classList.remove('light', 'dark')
-        root.classList.add(isDark ? 'dark' : 'light')
-      }
-    }
-
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme])
+  const setTheme = () => {
+    // Light mode only - do nothing
+  }
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, effectiveTheme }}>

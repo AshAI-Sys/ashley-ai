@@ -1,10 +1,20 @@
 'use client'
 
+import { useEffect } from 'react'
 import Link from 'next/link'
 
 export default function HomePage() {
+  useEffect(() => {
+    // FORCE LIGHT MODE - Remove any dark class
+    if (typeof window !== 'undefined') {
+      document.documentElement.classList.remove('dark')
+      document.body.classList.remove('dark')
+      document.documentElement.style.colorScheme = 'light'
+    }
+  }, [])
+
   return (
-    <div className="min-h-screen flex items-center justify-center font-sans p-4" style={{ backgroundColor: '#F8FAFC' }}>
+    <div className="min-h-screen flex items-center justify-center font-sans p-4 light" style={{ backgroundColor: '#F8FAFC', colorScheme: 'light' }}>
       <div className="corporate-card p-12 text-center max-w-lg">
         {/* Professional Logo */}
         <div className="mb-8">
