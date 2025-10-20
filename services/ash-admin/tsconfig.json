@@ -21,7 +21,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "types": [],
     "target": "es2015",
     "downlevelIteration": true,
     "noEmit": true,
