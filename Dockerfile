@@ -1,5 +1,5 @@
 # ASH AI - Multi-stage Docker build for production deployment
-FROM node:20-alpine AS base
+FROM node:25-alpine AS base
 
 # Install system dependencies and security updates
 RUN apk update && apk upgrade && apk add --no-cache \
