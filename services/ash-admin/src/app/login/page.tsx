@@ -149,11 +149,6 @@ export default function LoginPage() {
         </div>
       )}
 
-      {/* Theme Toggle - Top Right */}
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-
       <div className="bg-white p-10 rounded-xl shadow-lg w-full max-w-md border border-gray-200 ">
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
@@ -177,8 +172,8 @@ export default function LoginPage() {
             onClick={() => setLoginType('admin')}
             className={`w-full p-3 rounded-lg border-2 text-sm font-medium transition-all flex items-center justify-center gap-2 ${
               loginType === 'admin'
-                ? 'border-blue-600 bg-blue-50 text-blue-600 
-                : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 
+                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
             }`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -192,8 +187,8 @@ export default function LoginPage() {
             onClick={() => setLoginType('employee')}
             className={`w-full p-3 rounded-lg border-2 text-sm font-medium transition-all flex items-center justify-center gap-2 ${
               loginType === 'employee'
-                ? 'border-green-600 bg-green-50 text-green-600 
-                : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 
+                ? 'border-green-600 bg-green-50 text-green-600'
+                : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
             }`}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -275,8 +270,8 @@ export default function LoginPage() {
               isLoading
                 ? 'bg-gray-400 cursor-not-allowed'
                 : loginType === 'admin'
-                ? 'bg-blue-600 hover:bg-blue-700 
-                : 'bg-green-600 hover:bg-green-700 
+                ? 'bg-blue-600 hover:bg-blue-700'
+                : 'bg-green-600 hover:bg-green-700'
             } text-white`}
           >
             {isLoading ? 'Signing In...' : `Sign In as ${loginType === 'admin' ? 'Admin' : 'Employee'}`}
