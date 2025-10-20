@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [verificationUrl, setVerificationUrl] = useState('')
+  const [autoVerified, setAutoVerified] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
@@ -91,6 +92,11 @@ export default function RegisterPage() {
         setVerificationUrl(data.verificationUrl)
       }
 
+      // Check if auto-verified
+      if (data.autoVerified) {
+        setAutoVerified(true)
+      }
+
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.')
     } finally {
@@ -112,38 +118,66 @@ export default function RegisterPage() {
           </div>
 
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+            <h2 className="text-3xl font-bold text-gray-900 dark:!text-white mb-3">
               Account Created Successfully!
             </h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              Please check your email to verify your account before logging in.
-            </p>
 
-            {/* Email Verification Notice */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-                <div className="text-left">
-                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
-                    Verification Email Sent
-                  </p>
-                  <p className="text-xs text-blue-800 dark:text-blue-300">
-                    We've sent a verification link to your email address. Please click the link to activate your account.
-                  </p>
-                  <p className="text-xs text-blue-700 dark:text-blue-400 mt-2">
-                    The link will expire in 24 hours.
-                  </p>
+            {autoVerified ? (
+              <>
+                <p className="text-gray-700 dark:!text-gray-300 mb-6">
+                  Your account is ready! You can login immediately.
+                </p>
+
+                {/* Auto-Verified Notice (Development) */}
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-green-900 dark:!text-green-100 mb-1">
+                        Email Auto-Verified (Development Mode)
+                      </p>
+                      <p className="text-xs text-green-800 dark:!text-green-300">
+                        Your email has been automatically verified. No verification email needed!
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-700 dark:!text-gray-300 mb-6">
+                  Please check your email to verify your account before logging in.
+                </p>
+
+                {/* Email Verification Notice */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-blue-900 dark:!text-blue-100 mb-1">
+                        Verification Email Sent
+                      </p>
+                      <p className="text-xs text-blue-800 dark:!text-blue-300">
+                        We've sent a verification link to your email address. Please click the link to activate your account.
+                      </p>
+                      <p className="text-xs text-blue-700 dark:!text-blue-400 mt-2">
+                        The link will expire in 24 hours.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Development Mode: Show Verification Link */}
-            {verificationUrl && (
+            {verificationUrl && !autoVerified && (
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-                <p className="text-xs font-medium text-yellow-900 dark:text-yellow-100 mb-2">
+                <p className="text-xs font-medium text-yellow-900 dark:!text-yellow-100 mb-2">
                   🔧 Development Mode - Quick Verify
                 </p>
                 <a
@@ -163,13 +197,15 @@ export default function RegisterPage() {
               Go to Login Page
             </button>
 
-            {/* Didn't receive email? */}
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-              Didn't receive the email?{' '}
-              <a href="/verify-email" className="text-blue-600 dark:text-blue-400 hover:underline">
-                Resend verification link
-              </a>
-            </p>
+            {/* Didn't receive email? (Only show if not auto-verified) */}
+            {!autoVerified && (
+              <p className="text-sm text-gray-600 dark:!text-gray-400 mt-4">
+                Didn't receive the email?{' '}
+                <a href="/verify-email" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  Resend verification link
+                </a>
+              </p>
+            )}
           </div>
         </div>
       </div>

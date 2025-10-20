@@ -175,10 +175,16 @@ export async function POST(request: NextRequest) {
       email: user.email,
     })
 
+    // Different messages for dev vs production
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const message = isDevelopment
+      ? 'Account created successfully! You can now login immediately (email auto-verified in development).'
+      : 'Account created successfully! Please check your email to verify your account.'
+
     return NextResponse.json({
       success: true,
-      message: 'Account created successfully! Please check your email to verify your account.',
-      requiresVerification: true,
+      message,
+      requiresVerification: !isDevelopment,
       workspace: {
         id: workspace.id,
         name: workspace.name,
@@ -191,9 +197,10 @@ export async function POST(request: NextRequest) {
         role: user.role,
       },
       // Only return verification URL in development for testing
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(isDevelopment && {
         verificationUrl,
         expiresAt: verificationExpires,
+        autoVerified: true,
       }),
     }, { status: 201 })
 
