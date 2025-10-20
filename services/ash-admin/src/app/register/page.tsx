@@ -214,8 +214,8 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit}>
           {/* Workspace Information */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <h3 className="text-base font-bold text-gray-900 dark:!text-white mb-3 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
               </svg>
               Workspace Information
@@ -259,8 +259,8 @@ export default function RegisterPage() {
 
           {/* Admin User Information */}
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
-              <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <h3 className="text-base font-bold text-gray-900 dark:!text-white mb-3 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
               Admin User Information

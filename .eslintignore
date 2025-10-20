@@ -4,3 +4,7 @@ fix-schema-directly.js
 fix-user.js
 reset-and-create-account.js
 add-column.sql
+clear-lockout.js
+reset-password.js
+unlock-admin-account.js
+verify-password.js
