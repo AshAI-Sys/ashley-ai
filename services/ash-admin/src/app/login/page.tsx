@@ -261,7 +261,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <label className="flex items-center text-sm font-semibold cursor-pointer select-none transition-colors" style={{ color: '#000000' }}>
               <input
                 type="checkbox"
@@ -271,6 +271,12 @@ export default function LoginPage() {
               />
               Remember my account
             </label>
+            <Link
+              href="/forgot-password"
+              className="text-sm font-semibold text-corporate-blue hover:text-blue-700 transition-colors"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button

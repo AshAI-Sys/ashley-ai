@@ -149,7 +149,8 @@
       "Bash(del \"c:\\Users\\Khell\\Desktop\\Ashley AI\\create-admin.js\")",
       "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\lib\\fetch-interceptor.ts\")",
       "Bash(for file in password/page.tsx security/page.tsx workspace/page.tsx appearance/page.tsx notifications/page.tsx sessions/page.tsx audit-logs/page.tsx)",
-      "Bash(pnpx tsx create-admin.js)"
+      "Bash(pnpx tsx create-admin.js)",
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\workspace\\logo\\route.ts\")"
     ],
     "deny": [],
     "ask": []

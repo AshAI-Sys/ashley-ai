@@ -28,6 +28,7 @@ model Workspace {
   id         String   @id @default(cuid())
   name       String
   slug       String   @unique
+  logo_url   String? // Company logo URL
   settings   String? // JSON as string for SQLite
   is_active  Boolean  @default(true)
   created_at DateTime @default(now())
@@ -172,6 +173,11 @@ model User {
   email_verification_token    String?   @unique
   email_verification_expires  DateTime?
   email_verification_sent_at  DateTime?
+
+  // Password reset fields
+  password_reset_token        String?   @unique
+  password_reset_expires      DateTime?
+  password_reset_sent_at      DateTime?
 
   created_at              DateTime  @default(now())
   updated_at              DateTime  @updatedAt
