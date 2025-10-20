@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth-middleware'
 // TODO: Implement real audit log tracking
 
 export async function GET(request: NextRequest) {
-  return requireAuth(request, async (userId, workspaceId) => {
+  return requireAuth(async (request: NextRequest, user) => {
     try {
       // Return mock audit logs
       const logs = [
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
           action: 'Login Successful',
           category: 'authentication',
           resource_type: 'user',
-          resource_id: userId,
+          resource_id: user.id,
           ip_address: '192.168.1.100',
           user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0',
           status: 'success' as const,
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
           action: 'Password Changed',
           category: 'security',
           resource_type: 'user',
-          resource_id: userId,
+          resource_id: user.id,
           ip_address: '192.168.1.100',
           user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0',
           status: 'success' as const,
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
           action: 'Failed Login Attempt',
           category: 'authentication',
           resource_type: 'user',
-          resource_id: userId,
+          resource_id: user.id,
           ip_address: '192.168.1.101',
           user_agent: 'Mozilla/5.0 (iPhone; iOS 17) Safari/17.0',
           status: 'failure' as const,
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
           action: 'Account Settings Updated',
           category: 'account',
           resource_type: 'user',
-          resource_id: userId,
+          resource_id: user.id,
           ip_address: '192.168.1.100',
           user_agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0',
           status: 'success' as const,

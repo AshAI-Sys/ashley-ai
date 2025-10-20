@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth-middleware'
 // TODO: Implement database storage for notification preferences
 
 export async function GET(request: NextRequest) {
-  return requireAuth(request, async (userId, workspaceId) => {
+  return requireAuth(async (request: NextRequest, user) => {
     try {
       // Return default notification settings
       const settings = {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  return requireAuth(request, async (userId, workspaceId) => {
+  return requireAuth(async (request: NextRequest, user) => {
     try {
       const body = await request.json()
       // TODO: Save to database

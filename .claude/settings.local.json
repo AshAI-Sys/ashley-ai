@@ -142,7 +142,9 @@
       "Bash(for file in general/route.ts password/route.ts account/route.ts avatar/route.ts workspace/route.ts workspace/logo/route.ts)",
       "Bash(if [ -f \"$file\" ])",
       "Bash(then)",
-      "Bash(echo \"Fixing $file...\")"
+      "Bash(echo \"Fixing $file...\")",
+      "Bash(for file in audit-logs/route.ts appearance/route.ts sessions/route.ts notifications/route.ts general/route.ts)",
+      "Bash(do echo \"--- $file ---\")"
     ],
     "deny": [],
     "ask": []

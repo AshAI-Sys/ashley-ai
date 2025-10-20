@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth-middleware'
 // TODO: Implement real audit log export
 
 export async function POST(request: NextRequest) {
-  return requireAuth(request, async (userId, workspaceId) => {
+  return requireAuth(async (request: NextRequest, user) => {
     try {
       const body = await request.json()
 

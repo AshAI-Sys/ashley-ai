@@ -5,7 +5,7 @@ import { requireAuth } from '@/lib/auth-middleware'
 // TODO: Implement real session tracking with Redis or database
 
 export async function GET(request: NextRequest) {
-  return requireAuth(request, async (userId, workspaceId) => {
+  return requireAuth(async (request: NextRequest, user) => {
     try {
       // Return mock sessions
       const sessions = [
