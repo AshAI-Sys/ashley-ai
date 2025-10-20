@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   FileText,
   Filter,
@@ -16,7 +17,7 @@ import {
   XCircle,
   Info,
   Clock
-} from 'lucide-react'
+, ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -38,6 +39,7 @@ interface AuditLog {
 }
 
 export default function AuditLogsPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [filteredLogs, setFilteredLogs] = useState<AuditLog[]>([])

@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Save, Building2, Upload, Trash2, Globe, MapPin, Phone, Mail } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Save, Building2, Upload, Trash2, Globe, MapPin, Phone, Mail , ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import toast from 'react-hot-toast'
 
 export default function WorkspaceSettingsPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -168,7 +170,17 @@ export default function WorkspaceSettingsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
+            {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
+<div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Workspace Settings</h2>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           Manage your workspace information and branding

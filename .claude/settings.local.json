@@ -144,7 +144,8 @@
       "Bash(then)",
       "Bash(echo \"Fixing $file...\")",
       "Bash(for file in audit-logs/route.ts appearance/route.ts sessions/route.ts notifications/route.ts general/route.ts)",
-      "Bash(do echo \"--- $file ---\")"
+      "Bash(do echo \"--- $file ---\")",
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\add-back-buttons.js\")"
     ],
     "deny": [],
     "ask": []

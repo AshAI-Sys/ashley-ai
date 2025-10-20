@@ -1,14 +1,16 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Save, User, Mail, Upload, Camera, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Save, User, Mail, Upload, Camera, Trash2, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert } from '@/components/ui/alert'
 import toast from 'react-hot-toast'
 
 export default function AccountSettingsPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
@@ -170,6 +172,16 @@ export default function AccountSettingsPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-2xl">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Account Settings</h2>
         <p className="text-gray-500 dark:text-gray-400 mt-1">

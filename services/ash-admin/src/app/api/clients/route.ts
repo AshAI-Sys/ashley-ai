@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/database';
 import { z } from 'zod';
-import { getWorkspaceIdFromRequest } from '@/lib/workspace';
+import { requireAuth } from '@/lib/auth-middleware';
 
 const prisma = db;
 
@@ -25,13 +25,14 @@ const CreateClientSchema = z.object({
 });
 
 export async function GET(request: NextRequest) {
-  try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
-    const search = searchParams.get('search') || '';
-    const is_active = searchParams.get('is_active');
+  return requireAuth(async (request: NextRequest, user) => {
+    try {
+      const workspaceId = user.workspaceId;
+      const { searchParams } = new URL(request.url);
+      const page = parseInt(searchParams.get('page') || '1');
+      const limit = parseInt(searchParams.get('limit') || '20');
+      const search = searchParams.get('search') || '';
+      const is_active = searchParams.get('is_active');
 
     const skip = (page - 1) * limit;
 
@@ -88,32 +89,34 @@ export async function GET(request: NextRequest) {
       prisma.client.count({ where }),
     ]);
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        clients,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
+      return NextResponse.json({
+        success: true,
+        data: {
+          clients,
+          pagination: {
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
+          },
         },
-      },
-    });
-  } catch (error) {
-    console.error('Error fetching clients:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch clients' },
-      { status: 500 }
-    );
-  }
+      });
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+      return NextResponse.json(
+        { success: false, error: 'Failed to fetch clients' },
+        { status: 500 }
+      );
+    }
+  })
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
-    const body = await request.json();
-    const validatedData = CreateClientSchema.parse(body);
+  return requireAuth(async (request: NextRequest, user) => {
+    try {
+      const workspaceId = user.workspaceId;
+      const body = await request.json();
+      const validatedData = CreateClientSchema.parse(body);
 
     // Ensure workspace exists (create if needed for demo mode)
     try {
@@ -195,10 +198,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error('Error creating client:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create client' },
-      { status: 500 }
-    );
-  }
+      console.error('Error creating client:', error);
+      return NextResponse.json(
+        { success: false, error: 'Failed to create client' },
+        { status: 500 }
+      );
+    }
+  })
 }

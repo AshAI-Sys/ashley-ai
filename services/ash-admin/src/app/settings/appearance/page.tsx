@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Palette, Sun, Moon, Monitor, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Save, Palette, Sun, Moon, Monitor, Check, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import toast from 'react-hot-toast'
@@ -10,6 +11,7 @@ type Theme = 'light' | 'dark' | 'system'
 type ColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'red'
 
 export default function AppearanceSettingsPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [theme, setTheme] = useState<Theme>('system')
   const [colorScheme, setColorScheme] = useState<ColorScheme>('blue')
@@ -97,6 +99,16 @@ export default function AppearanceSettingsPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Appearance Settings</h2>
         <p className="text-gray-500 dark:text-gray-400 mt-1">

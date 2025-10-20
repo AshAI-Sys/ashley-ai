@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Lock, Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Lock, Eye, EyeOff, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import toast from 'react-hot-toast'
 
 export default function PasswordSettingsPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
@@ -115,6 +117,16 @@ export default function PasswordSettingsPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-2xl">
+      {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Change Password</h2>
         <p className="text-gray-500 dark:text-gray-400 mt-1">

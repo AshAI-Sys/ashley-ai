@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Shield, Key, Download, Smartphone, AlertCircle, CheckCircle2, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Shield, Key, Download, Smartphone, AlertCircle, CheckCircle2, X , ArrowLeft} from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import toast from 'react-hot-toast'
 
 export default function SecuritySettingsPage() {
+  const router = useRouter()
   const [show2FASetup, setShow2FASetup] = useState(false)
   const [qrCode, setQrCode] = useState('')
   const [backupCodes, setBackupCodes] = useState<string[]>([])
@@ -123,7 +125,17 @@ export default function SecuritySettingsPage() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto space-y-6">
-      <div>
+            {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
+<div>
         <h1 className="text-3xl font-bold text-gray-900">Security Settings</h1>
         <p className="text-gray-500 mt-2">Manage your account security and authentication</p>
       </div>

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Bell, Mail, Smartphone, MessageSquare } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Save, Bell, Mail, Smartphone, MessageSquare , ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import toast from 'react-hot-toast'
@@ -25,6 +26,7 @@ interface NotificationSettings {
 }
 
 export default function NotificationPreferencesPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [settings, setSettings] = useState<NotificationSettings>({
     orders: { email: true, sms: false, push: true, in_app: true },
@@ -111,7 +113,17 @@ export default function NotificationPreferencesPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
+            {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
+<div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Notification Preferences</h2>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           Choose how you want to be notified about different events

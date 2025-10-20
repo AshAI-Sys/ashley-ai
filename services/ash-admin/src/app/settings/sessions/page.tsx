@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Monitor, Smartphone, Tablet, LogOut, MapPin, Clock, AlertCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Monitor, Smartphone, Tablet, LogOut, MapPin, Clock, AlertCircle , ArrowLeft} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import toast from 'react-hot-toast'
@@ -20,6 +21,7 @@ interface Session {
 }
 
 export default function SessionManagementPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [sessions, setSessions] = useState<Session[]>([])
   const [revoking, setRevoking] = useState<string | null>(null)
@@ -127,7 +129,17 @@ export default function SessionManagementPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
+            {/* Back Button */}
+      <Button
+        variant="ghost"
+        onClick={() => router.push('/settings')}
+        className="mb-4"
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Back to Settings
+      </Button>
+
+<div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Session Management</h2>
         <p className="text-gray-500 dark:text-gray-400 mt-1">
           Manage your active sessions and sign out from devices
