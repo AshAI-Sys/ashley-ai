@@ -159,10 +159,12 @@ export default function LoginPage() {
 
       <div className="corporate-card p-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-corporate-blue rounded-xl flex items-center justify-center mx-auto mb-4 shadow-corporate">
-            <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-            </svg>
+          <div className="w-20 h-20 mx-auto mb-4">
+            <img
+              src="/ash-ai-logo.png"
+              alt="Ashley AI Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
 
           <h1 className="text-3xl font-bold mb-2" style={{ color: '#000000' }}>
@@ -292,21 +294,19 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="pt-6 border-t border-gray-200 space-y-4">
-          <div className="text-center bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
-            <p className="text-sm font-bold mb-2" style={{ color: '#1E40AF' }}>
-              🎉 New to Ashley AI?
-            </p>
-            <p className="text-xs mb-3" style={{ color: '#374151' }}>
-              Create your workspace and start managing your manufacturing operations
-            </p>
+        {/* Create New Account - Only show for Admin */}
+        {loginType === 'admin' && (
+          <div className="mt-6">
             <Link
               href="/register"
-              className="inline-block w-full py-2.5 bg-corporate-blue text-white rounded-lg font-semibold text-sm hover:bg-blue-700 shadow-corporate hover:shadow-corporate-hover transition-all"
+              className="block w-full py-3 rounded-lg text-sm font-semibold text-center transition-all bg-white border-2 border-corporate-blue text-corporate-blue hover:bg-blue-50"
             >
-              Register Your Company
+              Create New Account
             </Link>
           </div>
+        )}
+
+        <div className="pt-6 border-t border-gray-200">
           <div className="text-center">
             <Link
               href="/"
