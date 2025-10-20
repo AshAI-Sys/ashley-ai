@@ -17,7 +17,16 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+      },
       colors: {
+        // Elegant Corporate Dashboard Theme
+        'corporate-navy': '#1E3A8A',
+        'corporate-blue': '#2563EB',
+        'corporate-bg': '#F8FAFC',
+        'corporate-card': '#FFFFFF',
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -56,6 +65,10 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        'corporate': '0 2px 10px rgba(0, 0, 0, 0.08)',
+        'corporate-hover': '0 4px 16px rgba(0, 0, 0, 0.12)',
       },
       keyframes: {
         "accordion-down": {

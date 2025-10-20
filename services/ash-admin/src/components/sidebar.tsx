@@ -165,7 +165,7 @@ export default function Sidebar() {
       {/* Mobile Menu Button - Fixed top-left */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md glass-button glow-border text-white hover:bg-blue-500/30 transition-all shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-corporate-blue text-white hover:bg-blue-700 transition-all shadow-corporate"
         aria-label="Toggle menu"
       >
         <HydrationSafeIcon Icon={mobileOpen ? X : Menu} className="w-6 h-6" />
@@ -181,7 +181,7 @@ export default function Sidebar() {
 
       {/* Sidebar - Hidden on mobile by default, slide-in when open */}
       <div className={`
-        glass-sidebar text-white transition-all duration-300
+        corporate-sidebar text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
         min-h-screen flex flex-col
 
@@ -194,21 +194,21 @@ export default function Sidebar() {
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
-              <div className="w-10 h-10 mr-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/50">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <div className="w-10 h-10 mr-3 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-corporate-navy" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
                 </svg>
               </div>
               <div>
                 <h1 className="font-bold text-lg text-white">Ashley AI</h1>
-                <p className="text-xs text-gray-300">Apparel Smart Hub</p>
+                <p className="text-xs text-blue-200">Apparel Smart Hub</p>
               </div>
             </div>
           )}
           <div className="flex items-center gap-1">
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-md glass-button hover:bg-white/20 transition-all"
+              className="p-1.5 rounded-md hover:bg-white/10 transition-all"
             >
               <HydrationSafeIcon
                 Icon={collapsed ? ChevronRight : ChevronLeft}
@@ -230,19 +230,19 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={`
-                flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all text-white
+                flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all
                 ${isActive
-                  ? 'nav-item-active'
-                  : 'glass-button hover:bg-white/10'
+                  ? 'bg-blue-600 text-white border-l-4 border-blue-400'
+                  : 'text-blue-100 hover:bg-blue-800/50'
                 }
               `}
               title={collapsed ? item.name : undefined}
             >
               <HydrationSafeIcon
                 Icon={Icon}
-                className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0 ${isActive ? 'text-blue-400' : 'text-white'}`}
+                className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0`}
               />
-              {!collapsed && <span className={isActive ? 'text-blue-400' : 'text-white'}>{item.name}</span>}
+              {!collapsed && <span>{item.name}</span>}
             </Link>
           )
         })}
@@ -251,16 +251,16 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="p-4 border-t border-white/10">
         {!collapsed && user && (
-          <div className="text-xs text-white mb-3 glass-dark p-2 rounded-md">
-            <p className="font-medium text-white">{user.name}</p>
-            <p className="text-gray-300">{user.position}</p>
-            <p className="text-gray-400">{user.department} • {user.role}</p>
+          <div className="text-xs text-white mb-3 bg-blue-900/50 p-3 rounded-lg">
+            <p className="font-semibold text-white">{user.name}</p>
+            <p className="text-blue-200">{user.position}</p>
+            <p className="text-blue-300 text-[10px] mt-1">{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
-          <div className="text-xs text-gray-400">
-            <p className="text-white font-medium">Ashley AI v1.0</p>
-            <p className="text-gray-300">Manufacturing ERP System</p>
+          <div className="text-xs">
+            <p className="text-white font-semibold">Ashley AI v1.0</p>
+            <p className="text-blue-200">Manufacturing ERP System</p>
           </div>
         )}
       </div>
