@@ -234,6 +234,105 @@ export async function sendInvoiceEmail(
 }
 
 /**
+ * Send welcome email with email verification
+ */
+export async function sendWelcomeEmail(
+  to: string,
+  data: {
+    user_name: string
+    verification_link: string
+  }
+): Promise<EmailResult> {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+    .content { background: #fff; padding: 30px; border: 1px solid #e5e5e5; }
+    .button { display: inline-block; padding: 16px 32px; background: #1e3a8a; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 Welcome to Ashley AI!</h1>
+      <p>Manufacturing ERP System</p>
+    </div>
+    <div class="content">
+      <p>Hi <strong>${data.user_name}</strong>,</p>
+      <p>Welcome to Ashley AI! Your account has been created successfully.</p>
+      <p>Please verify your email address by clicking the button below:</p>
+      <div style="text-align: center;">
+        <a href="${data.verification_link}" class="button">Verify Email Address</a>
+      </div>
+      <p>Or copy and paste this link into your browser:</p>
+      <p style="background: #f3f4f6; padding: 12px; border-radius: 6px; word-break: break-all; font-size: 12px;">${data.verification_link}</p>
+      <p>This verification link will expire in 24 hours.</p>
+      <p>If you didn't create this account, you can safely ignore this email.</p>
+    </div>
+  </div>
+</body>
+</html>`
+
+  return sendEmail({
+    to,
+    subject: 'Welcome to Ashley AI - Verify Your Email',
+    html,
+  })
+}
+
+/**
+ * Send email verification only
+ */
+export async function sendEmailVerification(
+  to: string,
+  data: {
+    user_name: string
+    verification_link: string
+  }
+): Promise<EmailResult> {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+    .content { background: #fff; padding: 30px; border: 1px solid #e5e5e5; }
+    .button { display: inline-block; padding: 16px 32px; background: #1e3a8a; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📧 Verify Your Email</h1>
+    </div>
+    <div class="content">
+      <p>Hi <strong>${data.user_name}</strong>,</p>
+      <p>Please verify your email address to activate your Ashley AI account:</p>
+      <div style="text-align: center;">
+        <a href="${data.verification_link}" class="button">Verify Email Address</a>
+      </div>
+      <p>Or copy and paste this link into your browser:</p>
+      <p style="background: #f3f4f6; padding: 12px; border-radius: 6px; word-break: break-all; font-size: 12px;">${data.verification_link}</p>
+      <p>This verification link will expire in 24 hours.</p>
+    </div>
+  </div>
+</body>
+</html>`
+
+  return sendEmail({
+    to,
+    subject: 'Verify Your Email - Ashley AI',
+    html,
+  })
+}
+
+/**
  * Send password reset email
  */
 export async function sendPasswordResetEmail(

@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 import { useAuth } from '../lib/auth-context'
 import { getAccessibleNavigation, hasAccess, User } from '../lib/permissions'
 import HydrationSafeIcon from './hydration-safe-icon'
-import ThemeToggle from './theme-toggle'
 import {
   Building2,
   ShoppingCart,
@@ -182,16 +181,16 @@ export default function Sidebar() {
 
       {/* Sidebar - Hidden on mobile by default, slide-in when open */}
       <div className={`
-        bg-blue-950 dark:bg-gray-950 text-white transition-all duration-300
+        bg-blue-950 text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
-        min-h-screen flex flex-col border-r border-blue-900 dark:border-gray-800
+        min-h-screen flex flex-col border-r border-blue-900
 
         /* Mobile styles */
         fixed lg:relative z-40 lg:z-auto
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
       {/* Header */}
-      <div className="p-4 border-b border-blue-900 dark:border-gray-700">
+      <div className="p-4 border-b border-blue-900">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
@@ -204,19 +203,18 @@ export default function Sidebar() {
               </div>
               <div>
                 <h1 className="font-bold text-lg text-white">Ashley AI</h1>
-                <p className="text-xs text-white dark:text-gray-400">Apparel Smart Hub</p>
+                <p className="text-xs text-white">Apparel Smart Hub</p>
               </div>
             </div>
           )}
           <div className="flex items-center gap-1">
-            {!collapsed && <ThemeToggle />}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-md hover:bg-blue-900 dark:hover:bg-gray-700 transition-colors"
+              className="p-1.5 rounded-md hover:bg-blue-900 transition-colors"
             >
               <HydrationSafeIcon
                 Icon={collapsed ? ChevronRight : ChevronLeft}
-                className="w-4 h-4"
+                className="w-4 h-4 text-white"
               />
             </button>
           </div>
@@ -234,37 +232,37 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={`
-                flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
+                flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors text-white
                 ${isActive
-                  ? 'bg-blue-800 text-white dark:bg-blue-800 dark:text-white'
-                  : 'text-white dark:text-gray-300 hover:bg-blue-900 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white'
+                  ? 'bg-blue-800'
+                  : 'hover:bg-blue-900'
                 }
               `}
               title={collapsed ? item.name : undefined}
             >
               <HydrationSafeIcon
                 Icon={Icon}
-                className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0`}
+                className={`${collapsed ? 'w-5 h-5' : 'w-4 h-4 mr-3'} flex-shrink-0 text-white`}
               />
-              {!collapsed && <span>{item.name}</span>}
+              {!collapsed && <span className="text-white">{item.name}</span>}
             </Link>
           )
         })}
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-blue-900 dark:border-gray-700">
+      <div className="p-4 border-t border-blue-900">
         {!collapsed && user && (
-          <div className="text-xs text-white dark:text-gray-400 mb-3">
-            <p className="font-medium text-white dark:text-gray-300">{user.name}</p>
-            <p>{user.position}</p>
-            <p>{user.department} • {user.role}</p>
+          <div className="text-xs text-white mb-3">
+            <p className="font-medium text-white">{user.name}</p>
+            <p className="text-white">{user.position}</p>
+            <p className="text-white">{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
-          <div className="text-xs text-white dark:text-gray-400">
-            <p>Ashley AI v1.0</p>
-            <p>Manufacturing ERP System</p>
+          <div className="text-xs text-white">
+            <p className="text-white">Ashley AI v1.0</p>
+            <p className="text-white">Manufacturing ERP System</p>
           </div>
         )}
       </div>

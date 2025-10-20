@@ -156,11 +156,25 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
 
-    // TODO: Send email with verification link
-    // For now, we'll just log it to console (in production, use Resend, SendGrid, etc.)
-    console.log('📧 Verification email for:', user.email)
-    console.log('🔗 Verification URL:', verificationUrl)
-    console.log('⏰ Expires:', verificationExpires)
+    // Send welcome email with verification link
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        const { sendWelcomeEmail } = await import('../../../../lib/email')
+        await sendWelcomeEmail(user.email, {
+          user_name: `${user.first_name} ${user.last_name}`,
+          verification_link: verificationUrl,
+        })
+        console.log('✅ Welcome email sent to:', user.email)
+      } catch (emailError) {
+        console.error('❌ Failed to send welcome email:', emailError)
+        // Don't fail registration if email fails - log it for admin to resend
+      }
+    } else {
+      // Development mode - log to console
+      console.log('📧 Verification email for:', user.email)
+      console.log('🔗 Verification URL:', verificationUrl)
+      console.log('⏰ Expires:', verificationExpires)
+    }
 
     // Log successful registration
     await logAuthEvent('REGISTER', workspace.id, user.id, request, {

@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm install && pnpm build",
+  "outputDirectory": "services/ash-admin/.next",
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "services/ash-admin/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/services/ash-admin/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/services/ash-admin/$1"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@database-url",
+    "JWT_SECRET": "@jwt-secret",
+    "JWT_REFRESH_SECRET": "@jwt-refresh-secret",
+    "RESEND_API_KEY": "@resend-api-key",
+    "NEXT_PUBLIC_APP_URL": "@app-url",
+    "NODE_ENV": "production"
+  }
+}
