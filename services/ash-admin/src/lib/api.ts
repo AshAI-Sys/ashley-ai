@@ -46,6 +46,14 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
+        // Check for token in localStorage if not set in memory
+        if (!this.authToken && typeof window !== 'undefined') {
+          const storedToken = localStorage.getItem('ash_token')
+          if (storedToken) {
+            this.authToken = storedToken
+          }
+        }
+
         if (this.authToken) {
           config.headers.Authorization = `Bearer ${this.authToken}`
         }

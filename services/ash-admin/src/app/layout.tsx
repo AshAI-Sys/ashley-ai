@@ -5,6 +5,7 @@ import { Providers } from '@/components/providers'
 import { ToastProvider } from '@/components/ui/toast-provider'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 import { GlobalKeyboardShortcutsProvider } from '@/components/keyboard-shortcuts-dialog'
+import { FetchInterceptorInit } from '@/components/fetch-interceptor-init'
 import dynamic from 'next/dynamic'
 
 // Load ChatWidget only on client side to prevent hydration issues
@@ -102,6 +103,9 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <ErrorBoundary>
           <Providers>
+            {/* Initialize fetch interceptor to add auth headers */}
+            <FetchInterceptorInit />
+
             <GlobalKeyboardShortcutsProvider>
               {children}
               {/* ChatWidget temporarily disabled for faster page load */}

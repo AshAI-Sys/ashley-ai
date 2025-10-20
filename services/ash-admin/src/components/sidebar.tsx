@@ -166,7 +166,7 @@ export default function Sidebar() {
       {/* Mobile Menu Button - Fixed top-left */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-blue-950 text-white hover:bg-blue-900 transition-colors shadow-lg"
         aria-label="Toggle menu"
       >
         <HydrationSafeIcon Icon={mobileOpen ? X : Menu} className="w-6 h-6" />
@@ -182,16 +182,16 @@ export default function Sidebar() {
 
       {/* Sidebar - Hidden on mobile by default, slide-in when open */}
       <div className={`
-        bg-blue-600 dark:bg-gray-900 text-white transition-all duration-300
+        bg-blue-950 dark:bg-gray-950 text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
-        min-h-screen flex flex-col border-r border-blue-700 dark:border-gray-800
+        min-h-screen flex flex-col border-r border-blue-900 dark:border-gray-800
 
         /* Mobile styles */
         fixed lg:relative z-40 lg:z-auto
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
       {/* Header */}
-      <div className="p-4 border-b border-blue-700 dark:border-gray-700">
+      <div className="p-4 border-b border-blue-900 dark:border-gray-700">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
@@ -204,7 +204,7 @@ export default function Sidebar() {
               </div>
               <div>
                 <h1 className="font-bold text-lg text-white">Ashley AI</h1>
-                <p className="text-xs text-blue-100 dark:text-gray-400">Apparel Smart Hub</p>
+                <p className="text-xs text-white dark:text-gray-400">Apparel Smart Hub</p>
               </div>
             </div>
           )}
@@ -212,7 +212,7 @@ export default function Sidebar() {
             {!collapsed && <ThemeToggle />}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-md hover:bg-blue-700 dark:hover:bg-gray-700 transition-colors"
+              className="p-1.5 rounded-md hover:bg-blue-900 dark:hover:bg-gray-700 transition-colors"
             >
               <HydrationSafeIcon
                 Icon={collapsed ? ChevronRight : ChevronLeft}
@@ -236,8 +236,8 @@ export default function Sidebar() {
               className={`
                 flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
                 ${isActive
-                  ? 'bg-blue-700 text-white dark:bg-blue-600 dark:text-white'
-                  : 'text-blue-100 dark:text-gray-300 hover:bg-blue-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white'
+                  ? 'bg-blue-800 text-white dark:bg-blue-800 dark:text-white'
+                  : 'text-white dark:text-gray-300 hover:bg-blue-900 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white'
                 }
               `}
               title={collapsed ? item.name : undefined}
@@ -253,16 +253,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-blue-700 dark:border-gray-700">
+      <div className="p-4 border-t border-blue-900 dark:border-gray-700">
         {!collapsed && user && (
-          <div className="text-xs text-blue-100 dark:text-gray-400 mb-3">
+          <div className="text-xs text-white dark:text-gray-400 mb-3">
             <p className="font-medium text-white dark:text-gray-300">{user.name}</p>
             <p>{user.position}</p>
             <p>{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
-          <div className="text-xs text-blue-100 dark:text-gray-400">
+          <div className="text-xs text-white dark:text-gray-400">
             <p>Ashley AI v1.0</p>
             <p>Manufacturing ERP System</p>
           </div>

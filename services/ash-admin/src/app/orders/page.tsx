@@ -14,6 +14,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { ErrorAlert } from '@/components/ui/error-alert'
 import { useDebounce } from '@/hooks/useDebounce'
 import { exportOrders } from '@/lib/export'
+import { api } from '@/lib/api'
 
 interface Order {
   id: string
@@ -49,14 +50,12 @@ export default function OrdersPage() {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery({
     queryKey: ['orders', debouncedSearch, statusFilter, currentPage],
     queryFn: async () => {
-      const params = new URLSearchParams()
-      params.append('page', currentPage.toString())
-      params.append('limit', '10')
-      if (debouncedSearch) params.append('search', debouncedSearch)
-      if (statusFilter !== 'all') params.append('status', statusFilter)
-
-      const response = await fetch(`/api/orders?${params}`)
-      const result = await response.json()
+      const result = await api.getOrders({
+        page: currentPage,
+        limit: 10,
+        search: debouncedSearch || undefined,
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+      })
 
       if (!result.success) {
         throw new Error(result.error || 'Failed to fetch orders')

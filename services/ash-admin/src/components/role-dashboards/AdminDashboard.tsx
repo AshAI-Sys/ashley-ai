@@ -36,6 +36,7 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts'
+import { api } from '@/lib/api'
 
 interface DashboardStats {
   totalClients: number
@@ -65,15 +66,15 @@ export default function AdminDashboard() {
   const { data: stats, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: async () => {
-      const [clientsRes, ordersRes, employeesRes] = await Promise.all([
-        fetch('/api/clients?limit=1'),
-        fetch('/api/orders?limit=100'),
-        fetch('/api/hr/employees?limit=100').catch(() => null)
+      const [clientsData, ordersData, employeesData] = await Promise.all([
+        api.getClients({ limit: 1 }),
+        api.getOrders({ limit: 100 }),
+        fetch('/api/hr/employees?limit=100', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('ash_token')}`
+          }
+        }).then(res => res.json()).catch(() => ({ success: false, data: [] }))
       ])
-
-      const clientsData = await clientsRes.json()
-      const ordersData = await ordersRes.json()
-      const employeesData = employeesRes ? await employeesRes.json() : { success: false, data: [] }
 
       const orders = ordersData.data?.orders || []
       const employees = employeesData.success ? (employeesData.data || []) : []

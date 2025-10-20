@@ -77,7 +77,7 @@ export function exportOrders(orders: any[], format: 'csv' | 'excel' = 'csv') {
     { header: 'Order Number', key: 'order_number', width: 15 },
     { header: 'Client', key: 'client_name', width: 20 },
     { header: 'Brand', key: 'brand_name', width: 20 },
-    { header: 'Quantity', key: 'qty', width: 10 },
+    { header: 'Line Items', key: 'line_items_count', width: 10 },
     { header: 'Status', key: 'status', width: 15 },
     { header: 'Total Amount', key: 'total_amount', width: 15, format: (v) => `₱${v?.toLocaleString() || '0'}` },
     { header: 'Delivery Date', key: 'delivery_date', width: 15, format: (v) => v ? new Date(v).toLocaleDateString() : '' },
@@ -91,7 +91,8 @@ export function exportOrders(orders: any[], format: 'csv' | 'excel' = 'csv') {
     data: orders.map(order => ({
       ...order,
       client_name: order.client?.name || '',
-      brand_name: order.brand?.name || ''
+      brand_name: order.brand?.name || '',
+      line_items_count: order._count?.line_items || 0
     }))
   }
 

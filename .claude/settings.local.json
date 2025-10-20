@@ -146,7 +146,8 @@
       "Bash(for file in audit-logs/route.ts appearance/route.ts sessions/route.ts notifications/route.ts general/route.ts)",
       "Bash(do echo \"--- $file ---\")",
       "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\add-back-buttons.js\")",
-      "Bash(del \"c:\\Users\\Khell\\Desktop\\Ashley AI\\create-admin.js\")"
+      "Bash(del \"c:\\Users\\Khell\\Desktop\\Ashley AI\\create-admin.js\")",
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\lib\\fetch-interceptor.ts\")"
     ],
     "deny": [],
     "ask": []
