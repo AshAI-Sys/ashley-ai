@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/../../packages/database'
+import { PrismaClient } from '@prisma/client'
 import { requireAuth } from '@/lib/auth-middleware'
 import bcrypt from 'bcrypt'
 

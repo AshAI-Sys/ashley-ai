@@ -115,6 +115,7 @@ export default function Sidebar() {
     { name: 'AI Features', href: '/ai-features', icon: 'Brain', department: 'Management' },
     { name: 'Inventory', href: '/inventory', icon: 'PackageSearch', department: 'Inventory' },
     { name: 'Performance', href: '/performance', icon: 'Activity', department: 'Administration' },
+    { name: 'Settings', href: '/settings', icon: 'Settings', department: '*' },
     { name: 'Tenant Settings', href: '/admin/tenants', icon: 'Settings', department: 'Administration' },
   ]
 
@@ -165,7 +166,7 @@ export default function Sidebar() {
       {/* Mobile Menu Button - Fixed top-left */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-900 text-white hover:bg-gray-800 transition-colors shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-lg"
         aria-label="Toggle menu"
       >
         <HydrationSafeIcon Icon={mobileOpen ? X : Menu} className="w-6 h-6" />
@@ -181,16 +182,16 @@ export default function Sidebar() {
 
       {/* Sidebar - Hidden on mobile by default, slide-in when open */}
       <div className={`
-        bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-all duration-300
+        bg-blue-600 dark:bg-gray-900 text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
-        min-h-screen flex flex-col border-r border-gray-200 dark:border-gray-800
+        min-h-screen flex flex-col border-r border-blue-700 dark:border-gray-800
 
         /* Mobile styles */
         fixed lg:relative z-40 lg:z-auto
         ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-blue-700 dark:border-gray-700">
         <div className="flex items-center justify-between">
           {!collapsed && (
             <div className="flex items-center">
@@ -202,8 +203,8 @@ export default function Sidebar() {
                 />
               </div>
               <div>
-                <h1 className="font-bold text-lg">Ashley AI</h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Apparel Smart Hub</p>
+                <h1 className="font-bold text-lg text-white">Ashley AI</h1>
+                <p className="text-xs text-blue-100 dark:text-gray-400">Apparel Smart Hub</p>
               </div>
             </div>
           )}
@@ -211,7 +212,7 @@ export default function Sidebar() {
             {!collapsed && <ThemeToggle />}
             <button
               onClick={() => setCollapsed(!collapsed)}
-              className="p-1.5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="p-1.5 rounded-md hover:bg-blue-700 dark:hover:bg-gray-700 transition-colors"
             >
               <HydrationSafeIcon
                 Icon={collapsed ? ChevronRight : ChevronLeft}
@@ -235,8 +236,8 @@ export default function Sidebar() {
               className={`
                 flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors
                 ${isActive
-                  ? 'bg-blue-600 text-black dark:text-white'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+                  ? 'bg-blue-700 text-white dark:bg-blue-600 dark:text-white'
+                  : 'text-blue-100 dark:text-gray-300 hover:bg-blue-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white'
                 }
               `}
               title={collapsed ? item.name : undefined}
@@ -252,16 +253,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-t border-blue-700 dark:border-gray-700">
         {!collapsed && user && (
-          <div className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-            <p className="font-medium text-gray-700 dark:text-gray-300">{user.name}</p>
+          <div className="text-xs text-blue-100 dark:text-gray-400 mb-3">
+            <p className="font-medium text-white dark:text-gray-300">{user.name}</p>
             <p>{user.position}</p>
             <p>{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
-          <div className="text-xs text-gray-600 dark:text-gray-400">
+          <div className="text-xs text-blue-100 dark:text-gray-400">
             <p>Ashley AI v1.0</p>
             <p>Manufacturing ERP System</p>
           </div>

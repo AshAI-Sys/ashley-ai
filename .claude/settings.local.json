@@ -138,7 +138,11 @@
       "Bash(do echo \"=== $file ===\")",
       "Bash(for dir in analytics audit onboarding reports users)",
       "Bash(do)",
-      "Bash(echo \"Fixing $dir/page.tsx...\")"
+      "Bash(echo \"Fixing $dir/page.tsx...\")",
+      "Bash(for file in general/route.ts password/route.ts account/route.ts avatar/route.ts workspace/route.ts workspace/logo/route.ts)",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then)",
+      "Bash(echo \"Fixing $file...\")"
     ],
     "deny": [],
     "ask": []
