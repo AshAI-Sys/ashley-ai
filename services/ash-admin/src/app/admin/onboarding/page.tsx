@@ -173,21 +173,21 @@ export default function OnboardingManagementPage() {
         <div className="text-center">
           <UserPlus className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You need HR or Admin privileges to access Employee Onboarding.</p>
+          <p className="text-gray-600 dark:text-gray-400">You need HR or Admin privileges to access Employee Onboarding.</p>
         </div>
       </div>
     }>
       <DashboardLayout>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                  <UserPlus className="w-8 h-8 mr-3 text-green-600" />
+                  <UserPlus className="w-8 h-8 mr-3 text-green-600 dark:text-green-400" />
                   Employee Onboarding
                 </h1>
-                <p className="text-sm text-gray-600">Manage new employee onboarding processes</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Manage new employee onboarding processes</p>
               </div>
               <PermissionGate permissions={['admin:create', 'hr:create']}>
                 <button
@@ -208,8 +208,8 @@ export default function OnboardingManagementPage() {
                 <div className="flex items-center">
                   <Users className="w-8 h-8 text-blue-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.total}</p>
-                    <p className="text-sm text-gray-600">Total Processes</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Processes</p>
                   </div>
                 </div>
               </div>
@@ -218,8 +218,8 @@ export default function OnboardingManagementPage() {
                 <div className="flex items-center">
                   <Clock className="w-8 h-8 text-yellow-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.pending}</p>
-                    <p className="text-sm text-gray-600">Pending</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.pending}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
                   </div>
                 </div>
               </div>
@@ -228,8 +228,8 @@ export default function OnboardingManagementPage() {
                 <div className="flex items-center">
                   <Play className="w-8 h-8 text-blue-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.in_progress}</p>
-                    <p className="text-sm text-gray-600">In Progress</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.in_progress}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">In Progress</p>
                   </div>
                 </div>
               </div>
@@ -238,8 +238,8 @@ export default function OnboardingManagementPage() {
                 <div className="flex items-center">
                   <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.completed}</p>
-                    <p className="text-sm text-gray-600">Completed</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.completed}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
                   </div>
                 </div>
               </div>
@@ -248,8 +248,8 @@ export default function OnboardingManagementPage() {
                 <div className="flex items-center">
                   <AlertCircle className="w-8 h-8 text-red-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.overdue}</p>
-                    <p className="text-sm text-gray-600">Overdue</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.overdue}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Overdue</p>
                   </div>
                 </div>
               </div>
@@ -305,13 +305,13 @@ export default function OnboardingManagementPage() {
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="w-8 h-8 border-4 border-gray-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-600">Loading onboarding processes...</p>
+                  <p className="text-gray-600 dark:text-gray-400">Loading onboarding processes...</p>
                 </div>
               ) : (
                 <>
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b border-gray-200">
+                      <thead className="bg-gray-50 border-b border-gray-200 dark:border-gray-700">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -324,13 +324,13 @@ export default function OnboardingManagementPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {onboardingProcesses.map((process) => (
-                          <tr key={process.id} className="hover:bg-gray-50">
+                          <tr key={process.id} className="hover:bg-gray-50 dark:bg-gray-800">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-gray-900 dark:text-white">
                                   {process.employee.first_name} {process.employee.last_name}
                                 </div>
-                                <div className="text-sm text-gray-500">{process.employee.email}</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">{process.employee.email}</div>
                                 <div className="text-xs text-gray-400">{process.employee.position}</div>
                               </div>
                             </td>
@@ -350,7 +350,7 @@ export default function OnboardingManagementPage() {
                                     style={{ width: `${process.progress_percentage}%` }}
                                   ></div>
                                 </div>
-                                <span className="text-sm text-gray-600">{process.progress_percentage}%</span>
+                                <span className="text-sm text-gray-600 dark:text-gray-400">{process.progress_percentage}%</span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -382,7 +382,7 @@ export default function OnboardingManagementPage() {
                                 </button>
                                 <PermissionGate permissions={['admin:update', 'hr:update']}>
                                   <button
-                                    className="text-blue-600 hover:text-blue-900"
+                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-100"
                                     title="Edit process"
                                   >
                                     <Settings className="w-4 h-4" />
@@ -400,21 +400,21 @@ export default function OnboardingManagementPage() {
                   {totalPages > 1 && (
                     <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
                           Page {page} of {totalPages}
                         </div>
                         <div className="flex space-x-2">
                           <button
                             onClick={() => setPage(page - 1)}
                             disabled={page === 1}
-                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-800"
                           >
                             Previous
                           </button>
                           <button
                             onClick={() => setPage(page + 1)}
                             disabled={page === totalPages}
-                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-800"
                           >
                             Next
                           </button>

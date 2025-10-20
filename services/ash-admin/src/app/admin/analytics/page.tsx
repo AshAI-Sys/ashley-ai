@@ -151,7 +151,7 @@ export default function AnalyticsPage() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Advanced Analytics</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Advanced Analytics</h1>
         <p className="text-gray-600 mt-1">
           Create custom reports and executive dashboards with real-time data
         </p>
@@ -159,47 +159,47 @@ export default function AnalyticsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Reports</p>
-              <p className="text-2xl font-bold text-gray-900">{reports.length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Reports</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{reports.length}</p>
             </div>
             <BarChart3 className="h-8 w-8 text-blue-600" />
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Dashboards</p>
-              <p className="text-2xl font-bold text-gray-900">{dashboards.length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Dashboards</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{dashboards.length}</p>
             </div>
             <PieChart className="h-8 w-8 text-purple-600" />
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Favorites</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Favorites</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {reports.filter(r => r.is_favorite).length}
               </p>
             </div>
-            <Star className="h-8 w-8 text-yellow-600" />
+            <Star className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Public Reports</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Public Reports</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {reports.filter(r => r.is_public).length}
               </p>
             </div>
-            <Share2 className="h-8 w-8 text-green-600" />
+            <Share2 className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
         </div>
       </div>
@@ -256,11 +256,11 @@ export default function AnalyticsPage() {
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
               <div className="flex space-x-3">
-                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800">
                   <Filter className="h-4 w-4" />
                   <span>Filter</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-800">
                   <Calendar className="h-4 w-4" />
                   <span>Date Range</span>
                 </button>
@@ -303,8 +303,8 @@ export default function AnalyticsPage() {
                           {getReportIcon(report.report_type)}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">{report.name}</h3>
-                          <p className="text-xs text-gray-500">{report.report_type}</p>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">{report.name}</h3>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{report.report_type}</p>
                         </div>
                       </div>
                       {report.is_favorite && (
@@ -326,13 +326,13 @@ export default function AnalyticsPage() {
                       >
                         {report.data_source}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
                         {report.view_count} views
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                      <span className="text-xs text-gray-500">
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
                         by {report.creator?.first_name} {report.creator?.last_name}
                       </span>
                       <div className="flex space-x-2">
@@ -368,7 +368,7 @@ export default function AnalyticsPage() {
         {activeTab === 'dashboards' && (
           <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Executive Dashboards</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Executive Dashboards</h2>
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -412,12 +412,12 @@ export default function AnalyticsPage() {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex items-center space-x-4">
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                           {dashboard.widgets_data?.length || 0} widgets
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
                           {dashboard.dashboard_type}
                         </span>
                       </div>
@@ -441,13 +441,13 @@ export default function AnalyticsPage() {
               <div className="space-y-6">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-xs text-blue-600 font-medium">Avg Efficiency</p>
-                    <p className="text-2xl font-bold text-blue-900">
+                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                       {heatmapData.stats?.avgEfficiency?.toFixed(1) || 0}%
                     </p>
                   </div>
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200 dark:border-green-800">
                     <p className="text-xs text-green-600 font-medium">Total Output</p>
                     <p className="text-2xl font-bold text-green-900">
                       {heatmapData.stats?.totalOutput?.toLocaleString() || 0}
@@ -477,13 +477,13 @@ export default function AnalyticsPage() {
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-50 dark:bg-gray-800">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             Station
                           </th>
                           {Array.from({ length: 24 }, (_, i) => (
-                            <th key={i} className="px-3 py-3 text-center text-xs font-medium text-gray-500">
+                            <th key={i} className="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400">
                               {i}:00
                             </th>
                           ))}
@@ -492,7 +492,7 @@ export default function AnalyticsPage() {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {['CUTTING', 'PRINTING', 'SEWING', 'QC', 'FINISHING'].map((station) => (
                           <tr key={station}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                               {station}
                             </td>
                             {Array.from({ length: 24 }, (_, hour) => {
@@ -529,7 +529,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-xs text-gray-600">
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
                     <strong>Legend:</strong>
                     <span className="ml-2 inline-block w-4 h-4 bg-green-500 align-middle"></span> 90-100%
                     <span className="ml-2 inline-block w-4 h-4 bg-green-300 align-middle"></span> 75-89%
@@ -541,7 +541,7 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-600">No heatmap data available. Data will appear as production runs are tracked.</p>
+                <p className="text-gray-600 dark:text-gray-400">No heatmap data available. Data will appear as production runs are tracked.</p>
               </div>
             )}
           </div>
@@ -556,15 +556,15 @@ export default function AnalyticsPage() {
               <div className="space-y-6">
                 {/* Summary Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200 dark:border-green-800">
                     <p className="text-xs text-green-600 font-medium">Total Revenue</p>
                     <p className="text-2xl font-bold text-green-900">
                       ₱{profitData.stats?.totalRevenue?.toLocaleString() || 0}
                     </p>
                   </div>
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-xs text-blue-600 font-medium">Gross Profit</p>
-                    <p className="text-2xl font-bold text-blue-900">
+                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                       ₱{profitData.stats?.totalGrossProfit?.toLocaleString() || 0}
                     </p>
                   </div>
@@ -584,12 +584,12 @@ export default function AnalyticsPage() {
 
                 {/* Client Comparison */}
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-sm font-semibold text-gray-900">Profitability by Client</h3>
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 dark:bg-gray-800">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Profitability by Client</h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
+                      <thead className="bg-gray-50 dark:bg-gray-800">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             Client
@@ -610,17 +610,17 @@ export default function AnalyticsPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {profitData.clientComparison?.slice(0, 10).map((client: any) => (
-                          <tr key={client.client_id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <tr key={client.client_id} className="hover:bg-gray-50 dark:bg-gray-800">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                               {client.client_name}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                               {client.orders}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                               ₱{client.total_revenue.toLocaleString()}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900 dark:text-white">
                               ₱{client.total_profit.toLocaleString()}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
@@ -645,7 +645,7 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-600">No profit analysis data available. Analyze your orders to see profitability insights.</p>
+                <p className="text-gray-600 dark:text-gray-400">No profit analysis data available. Analyze your orders to see profitability insights.</p>
               </div>
             )}
           </div>

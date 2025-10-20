@@ -133,7 +133,12 @@
       "Bash(for dir in events shared design production quality)",
       "Bash(do echo \"=== $dir ===\")",
       "Bash(if exist \"C:\\Users\\Khell\\Desktop\\Ashley AI\\packages\\database\\prisma\\dev.db\" del /f \"C:\\Users\\Khell\\Desktop\\Ashley AI\\packages\\database\\prisma\\dev.db\")",
-      "Bash(pnpx tsx check-account.js)"
+      "Bash(pnpx tsx check-account.js)",
+      "Bash(for file in services/ash-admin/src/app/admin/{analytics,audit,onboarding,reports,users}/page.tsx)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(for dir in analytics audit onboarding reports users)",
+      "Bash(do)",
+      "Bash(echo \"Fixing $dir/page.tsx...\")"
     ],
     "deny": [],
     "ask": []

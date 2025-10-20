@@ -175,12 +175,12 @@ export default function ReportsPage() {
         <div className="text-center">
           <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You need Administrator privileges to access Reports.</p>
+          <p className="text-gray-600 dark:text-gray-400">You need Administrator privileges to access Reports.</p>
         </div>
       </div>
     }>
       <DashboardLayout>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -189,7 +189,7 @@ export default function ReportsPage() {
                   <BarChart3 className="w-8 h-8 mr-3 text-blue-600" />
                   Reports & Analytics
                 </h1>
-                <p className="text-sm text-gray-600">Generate comprehensive reports and analytics</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Generate comprehensive reports and analytics</p>
               </div>
               <button
                 onClick={fetchReports}
@@ -208,8 +208,8 @@ export default function ReportsPage() {
                 <div className="flex items-center">
                   <FileText className="w-8 h-8 text-blue-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{availableReports.length}</p>
-                    <p className="text-sm text-gray-600">Available Reports</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{availableReports.length}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Available Reports</p>
                   </div>
                 </div>
               </div>
@@ -218,8 +218,8 @@ export default function ReportsPage() {
                 <div className="flex items-center">
                   <Clock className="w-8 h-8 text-green-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{recentReports.length}</p>
-                    <p className="text-sm text-gray-600">Recent Reports</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{recentReports.length}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Recent Reports</p>
                   </div>
                 </div>
               </div>
@@ -228,8 +228,8 @@ export default function ReportsPage() {
                 <div className="flex items-center">
                   <PieChart className="w-8 h-8 text-purple-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{categories.length}</p>
-                    <p className="text-sm text-gray-600">Categories</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{categories.length}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Categories</p>
                   </div>
                 </div>
               </div>
@@ -238,8 +238,8 @@ export default function ReportsPage() {
                 <div className="flex items-center">
                   <TrendingUp className="w-8 h-8 text-orange-600 mr-3" />
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{departments.length}</p>
-                    <p className="text-sm text-gray-600">Departments</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{departments.length}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Departments</p>
                   </div>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function ReportsPage() {
               <div className="flex flex-wrap gap-4 items-center">
                 <div className="flex items-center">
                   <Filter className="w-4 h-4 text-gray-400 mr-2" />
-                  <span className="text-sm font-medium text-gray-700">Filters:</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters:</span>
                 </div>
 
                 <select
@@ -281,14 +281,14 @@ export default function ReportsPage() {
               {/* Available Reports */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">Available Reports</h2>
+                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Available Reports</h2>
                   </div>
 
                   {loading ? (
                     <div className="p-8 text-center">
                       <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-                      <p className="text-gray-600">Loading reports...</p>
+                      <p className="text-gray-600 dark:text-gray-400">Loading reports...</p>
                     </div>
                   ) : (
                     <div className="p-6">
@@ -350,22 +350,22 @@ export default function ReportsPage() {
               {/* Recent Reports */}
               <div>
                 <div className="bg-white rounded-lg shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold text-gray-900">Recent Reports</h2>
+                  <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Recent Reports</h2>
                   </div>
 
                   <div className="p-6">
                     {recentReports.length === 0 ? (
                       <div className="text-center py-8">
                         <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500">No recent reports</p>
+                        <p className="text-gray-500 dark:text-gray-400">No recent reports</p>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         {recentReports.map((report) => (
                           <div key={report.id} className="border border-gray-200 rounded-lg p-3">
                             <div className="flex items-center justify-between mb-2">
-                              <h4 className="text-sm font-medium text-gray-900">{report.name}</h4>
+                              <h4 className="text-sm font-medium text-gray-900 dark:text-white">{report.name}</h4>
                               <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                                 report.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                               }`}>
@@ -465,7 +465,7 @@ function ReportDataModal({ reportType, data, onClose }: any) {
               <Download className="w-4 h-4 mr-1" />
               CSV
             </button>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400">
               ✕
             </button>
           </div>
@@ -477,20 +477,20 @@ function ReportDataModal({ reportType, data, onClose }: any) {
             <h4 className="font-medium text-gray-900 mb-3">Report Summary</h4>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <span className="text-gray-600">Report ID:</span>
+                <span className="text-gray-600 dark:text-gray-400">Report ID:</span>
                 <p className="font-medium">{data.report_id}</p>
               </div>
               <div>
-                <span className="text-gray-600">Generated:</span>
+                <span className="text-gray-600 dark:text-gray-400">Generated:</span>
                 <p className="font-medium">{new Date(data.generated_at).toLocaleString()}</p>
               </div>
               <div>
-                <span className="text-gray-600">Type:</span>
+                <span className="text-gray-600 dark:text-gray-400">Type:</span>
                 <p className="font-medium">{data.report_type}</p>
               </div>
               {data.period && (
                 <div>
-                  <span className="text-gray-600">Period:</span>
+                  <span className="text-gray-600 dark:text-gray-400">Period:</span>
                   <p className="font-medium">
                     {new Date(data.period.from).toLocaleDateString()} - {new Date(data.period.to).toLocaleDateString()}
                   </p>
@@ -508,7 +508,7 @@ function ReportDataModal({ reportType, data, onClose }: any) {
                   {Object.entries(data.summary).map(([key, value]) => (
                     <div key={key} className="bg-white border border-gray-200 rounded-lg p-3">
                       <p className="text-sm text-gray-600 capitalize">{key.replace(/_/g, ' ')}</p>
-                      <p className="text-lg font-semibold text-gray-900">{String(value)}</p>
+                      <p className="text-lg font-semibold text-gray-900 dark:text-white">{String(value)}</p>
                     </div>
                   ))}
                 </div>
@@ -521,21 +521,21 @@ function ReportDataModal({ reportType, data, onClose }: any) {
                 <h4 className="font-medium text-gray-900 mb-3">Department Breakdown</h4>
                 <div className="overflow-x-auto">
                   <table className="w-full border border-gray-200 rounded-lg">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-800">
                       <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Department</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Users</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Active</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Logins</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Department</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Users</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Active</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-900 dark:text-white">Logins</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.department_breakdown.map((dept: any, index: number) => (
-                        <tr key={index} className="border-t border-gray-200">
-                          <td className="px-4 py-2 text-sm text-gray-900">{dept.department}</td>
-                          <td className="px-4 py-2 text-sm text-gray-900">{dept.users}</td>
-                          <td className="px-4 py-2 text-sm text-gray-900">{dept.active}</td>
-                          <td className="px-4 py-2 text-sm text-gray-900">{dept.logins}</td>
+                        <tr key={index} className="border-t border-gray-200 dark:border-gray-700">
+                          <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">{dept.department}</td>
+                          <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">{dept.users}</td>
+                          <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">{dept.active}</td>
+                          <td className="px-4 py-2 text-sm text-gray-900 dark:text-white">{dept.logins}</td>
                         </tr>
                       ))}
                     </tbody>

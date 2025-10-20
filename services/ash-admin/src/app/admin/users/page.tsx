@@ -207,12 +207,12 @@ export default function UserManagementPage() {
         <div className="text-center">
           <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You need Administrator privileges to access User Management.</p>
+          <p className="text-gray-600 dark:text-gray-400">You need Administrator privileges to access User Management.</p>
         </div>
       </div>
     }>
       <DashboardLayout>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -221,7 +221,7 @@ export default function UserManagementPage() {
                   <Users className="w-8 h-8 mr-3 text-blue-600" />
                   User Management
                 </h1>
-                <p className="text-sm text-gray-600">Manage employee accounts and permissions</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Manage employee accounts and permissions</p>
               </div>
               <button
                 onClick={() => setShowCreateModal(true)}
@@ -293,13 +293,13 @@ export default function UserManagementPage() {
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-600">Loading users...</p>
+                  <p className="text-gray-600 dark:text-gray-400">Loading users...</p>
                 </div>
               ) : (
                 <>
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b border-gray-200">
+                      <thead className="bg-gray-50 border-b border-gray-200 dark:border-gray-700">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
@@ -311,13 +311,13 @@ export default function UserManagementPage() {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {users.map((user) => (
-                          <tr key={user.id} className="hover:bg-gray-50">
+                          <tr key={user.id} className="hover:bg-gray-50 dark:bg-gray-800">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <div className="text-sm font-medium text-gray-900 dark:text-white">
                                   {user.first_name} {user.last_name}
                                 </div>
-                                <div className="text-sm text-gray-500">{user.email}</div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
                                 <div className="text-xs text-gray-400">@{user.username}</div>
                               </div>
                             </td>
@@ -326,7 +326,7 @@ export default function UserManagementPage() {
                                 {getRoleLabel(user.role)}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                               {user.department || '-'}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -334,17 +334,17 @@ export default function UserManagementPage() {
                                 {user.is_active ? (
                                   <>
                                     <UserCheck className="w-4 h-4 text-green-500 mr-1" />
-                                    <span className="text-sm text-green-600">Active</span>
+                                    <span className="text-sm text-green-600 dark:text-green-400">Active</span>
                                   </>
                                 ) : (
                                   <>
                                     <UserX className="w-4 h-4 text-red-500 mr-1" />
-                                    <span className="text-sm text-red-600">Inactive</span>
+                                    <span className="text-sm text-red-600 dark:text-red-400">Inactive</span>
                                   </>
                                 )}
                               </div>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                               {user.last_login_at
                                 ? new Date(user.last_login_at).toLocaleDateString()
                                 : 'Never'
@@ -357,7 +357,7 @@ export default function UserManagementPage() {
                                     setSelectedUser(user)
                                     setShowEditModal(true)
                                   }}
-                                  className="text-blue-600 hover:text-blue-900"
+                                  className="text-blue-600 hover:text-blue-900 dark:text-blue-100"
                                   title="Edit user"
                                 >
                                   <Edit className="w-4 h-4" />
@@ -381,21 +381,21 @@ export default function UserManagementPage() {
                   {totalPages > 1 && (
                     <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
                           Page {page} of {totalPages}
                         </div>
                         <div className="flex space-x-2">
                           <button
                             onClick={() => setPage(page - 1)}
                             disabled={page === 1}
-                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-800"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setPage(page + 1)}
                             disabled={page === totalPages}
-                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                            className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-gray-800"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>

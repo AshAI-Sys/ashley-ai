@@ -187,12 +187,12 @@ export default function AuditLogsPage() {
         <div className="text-center">
           <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600">You need Administrator privileges to access Audit Logs.</p>
+          <p className="text-gray-600 dark:text-gray-400">You need Administrator privileges to access Audit Logs.</p>
         </div>
       </div>
     }>
       <DashboardLayout>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
           {/* Header */}
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
@@ -201,7 +201,7 @@ export default function AuditLogsPage() {
                   <Shield className="w-8 h-8 mr-3 text-purple-600" />
                   Audit Logs
                 </h1>
-                <p className="text-sm text-gray-600">System security and user activity monitoring</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">System security and user activity monitoring</p>
               </div>
               <div className="flex space-x-3">
                 <button
@@ -228,8 +228,8 @@ export default function AuditLogsPage() {
               <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-blue-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.total}</p>
-                    <p className="text-sm text-gray-600">Total Events</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.total}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Events</p>
                   </div>
                   <Activity className="w-8 h-8 text-blue-600" />
                 </div>
@@ -238,32 +238,32 @@ export default function AuditLogsPage() {
               <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.today}</p>
-                    <p className="text-sm text-gray-600">Today</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.today}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Today</p>
                   </div>
-                  <Clock className="w-8 h-8 text-green-600" />
+                  <Clock className="w-8 h-8 text-green-600 dark:text-green-400" />
                 </div>
               </div>
 
               <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-yellow-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">{summary.this_week}</p>
-                    <p className="text-sm text-gray-600">This Week</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{summary.this_week}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">This Week</p>
                   </div>
-                  <Calendar className="w-8 h-8 text-yellow-600" />
+                  <Calendar className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
                 </div>
               </div>
 
               <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-red-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {summary.severity_counts.high + summary.severity_counts.critical}
                     </p>
-                    <p className="text-sm text-gray-600">High Priority</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">High Priority</p>
                   </div>
-                  <AlertTriangle className="w-8 h-8 text-red-600" />
+                  <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
                 </div>
               </div>
             </div>
@@ -333,13 +333,13 @@ export default function AuditLogsPage() {
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="w-8 h-8 border-4 border-gray-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-600">Loading audit logs...</p>
+                  <p className="text-gray-600 dark:text-gray-400">Loading audit logs...</p>
                 </div>
               ) : (
                 <>
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-gray-50 border-b border-gray-200">
+                      <thead className="bg-gray-50 border-b border-gray-200 dark:border-gray-700">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
                           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
@@ -354,15 +354,15 @@ export default function AuditLogsPage() {
                         {auditLogs.map((log) => {
                           const timestamp = formatTimestamp(log.timestamp)
                           return (
-                            <tr key={log.id} className="hover:bg-gray-50">
+                            <tr key={log.id} className="hover:bg-gray-50 dark:bg-gray-800">
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{timestamp.relative}</div>
-                                <div className="text-xs text-gray-500">{timestamp.date} {timestamp.time}</div>
+                                <div className="text-sm text-gray-900 dark:text-white">{timestamp.relative}</div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">{timestamp.date} {timestamp.time}</div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
                                   {getActionIcon(log.action)}
-                                  <span className="ml-2 text-sm font-medium text-gray-900">
+                                  <span className="ml-2 text-sm font-medium text-gray-900 dark:text-white">
                                     {log.action.replace(/_/g, ' ')}
                                   </span>
                                 </div>
@@ -373,18 +373,18 @@ export default function AuditLogsPage() {
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
+                                <div className="text-sm text-gray-900 dark:text-white">
                                   {log.performer
                                     ? `${log.performer.first_name} ${log.performer.last_name}`
                                     : 'System'
                                   }
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
                                   {log.performer?.email || 'Automated'}
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">
+                                <div className="text-sm text-gray-900 dark:text-white">
                                   {log.target_user_email || '-'}
                                 </div>
                               </td>
@@ -416,7 +416,7 @@ export default function AuditLogsPage() {
                   {totalPages > 1 && (
                     <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
+                        <div className="text-sm text-gray-700 dark:text-gray-300">
                           Page {page} of {totalPages}
                         </div>
                         <div className="flex space-x-2">
@@ -467,7 +467,7 @@ function AuditLogDetailModal({ log, onClose }: { log: AuditLog; onClose: () => v
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Audit Log Details</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             ✕
           </button>
         </div>
@@ -476,23 +476,23 @@ function AuditLogDetailModal({ log, onClose }: { log: AuditLog; onClose: () => v
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Timestamp</label>
-              <p className="text-sm text-gray-900">{timestamp.toLocaleString()}</p>
+              <p className="text-sm text-gray-900 dark:text-white">{timestamp.toLocaleString()}</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
-              <p className="text-sm text-gray-900">{log.action.replace(/_/g, ' ')}</p>
+              <p className="text-sm text-gray-900 dark:text-white">{log.action.replace(/_/g, ' ')}</p>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <p className="text-sm text-gray-900">{log.description}</p>
+            <p className="text-sm text-gray-900 dark:text-white">{log.description}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Performer</label>
-              <p className="text-sm text-gray-900">
+              <p className="text-sm text-gray-900 dark:text-white">
                 {log.performer
                   ? `${log.performer.first_name} ${log.performer.last_name} (${log.performer.email})`
                   : 'System'
@@ -501,7 +501,7 @@ function AuditLogDetailModal({ log, onClose }: { log: AuditLog; onClose: () => v
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Target User</label>
-              <p className="text-sm text-gray-900">{log.target_user_email || 'N/A'}</p>
+              <p className="text-sm text-gray-900 dark:text-white">{log.target_user_email || 'N/A'}</p>
             </div>
           </div>
 

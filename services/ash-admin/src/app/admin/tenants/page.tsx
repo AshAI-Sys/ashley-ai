@@ -147,7 +147,7 @@ function OverviewTab() {
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">User Usage</p>
-            <Users className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            <Users className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {tenantStats.active_users}/{subscription.max_users}
@@ -166,7 +166,7 @@ function OverviewTab() {
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">Order Capacity</p>
-            <TrendingUp className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            <TrendingUp className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {tenantStats.total_orders}/{subscription.max_orders_per_month}
@@ -183,7 +183,7 @@ function OverviewTab() {
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">Storage Used</p>
-            <Settings className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            <Settings className="w-5 h-5 text-gray-400 dark:text-gray-500 dark:text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900 dark:text-white">
             {tenantStats.storage_used_gb}GB/{subscription.storage_quota_gb}GB
@@ -258,7 +258,7 @@ function BrandingTab() {
                     type="color"
                     value={primaryColor}
                     onChange={(e) => setPrimaryColor(e.target.value)}
-                    className="w-16 h-10 rounded border border-gray-300"
+                    className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600"
                   />
                   <input
                     type="text"
@@ -276,7 +276,7 @@ function BrandingTab() {
                     type="color"
                     value={secondaryColor}
                     onChange={(e) => setSecondaryColor(e.target.value)}
-                    className="w-16 h-10 rounded border border-gray-300"
+                    className="w-16 h-10 rounded border border-gray-300 dark:border-gray-600"
                   />
                   <input
                     type="text"
@@ -295,7 +295,7 @@ function BrandingTab() {
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition-colors cursor-pointer">
               <Palette className="w-12 h-12 text-gray-400 mx-auto mb-3" />
               <p className="text-gray-600 mb-2">Drop logo here or click to upload</p>
-              <p className="text-xs text-gray-500">Supports: PNG, SVG (max 2MB)</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Supports: PNG, SVG (max 2MB)</p>
             </div>
           </div>
         </div>
@@ -316,8 +316,8 @@ function BrandingTab() {
                 AI
               </div>
               <div>
-                <h4 className="font-bold text-gray-900">Ashley AI Manufacturing</h4>
-                <p className="text-sm text-gray-600">Smart Manufacturing ERP</p>
+                <h4 className="font-bold text-gray-900 dark:text-white">Ashley AI Manufacturing</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Smart Manufacturing ERP</p>
               </div>
             </div>
 
@@ -370,34 +370,34 @@ function PermissionsTab() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">RBAC Permissions</h2>
-          <p className="text-gray-600 mt-1">Role-based access control configuration</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">RBAC Permissions</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Role-based access control configuration</p>
         </div>
-        <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+        <button className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600">
           + Create Custom Role
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {roles.map((role, idx) => (
-          <div key={idx} className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+          <div key={idx} className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-6 h-6 text-indigo-600" />
-              <h3 className="font-semibold text-gray-900">{role.name}</h3>
+              <Shield className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <h3 className="font-semibold text-gray-900 dark:text-white">{role.name}</h3>
             </div>
 
             <div className="space-y-2 text-sm mb-4">
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 <strong>{role.users}</strong> users assigned
               </p>
-              <p className="text-gray-600">{role.permissions}</p>
+              <p className="text-gray-600 dark:text-gray-400">{role.permissions}</p>
             </div>
 
             <div className="flex gap-2">
-              <button className="flex-1 px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">
+              <button className="flex-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700">
                 Edit
               </button>
-              <button className="flex-1 px-3 py-2 text-sm text-indigo-600 border border-indigo-600 rounded hover:bg-indigo-50">
+              <button className="flex-1 px-3 py-2 text-sm text-indigo-600 dark:text-indigo-400 border border-indigo-600 dark:border-indigo-400 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20">
                 View
               </button>
             </div>
@@ -405,40 +405,40 @@ function PermissionsTab() {
         ))}
       </div>
 
-      <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
-        <h3 className="font-semibold text-blue-900 mb-3">Permission Categories</h3>
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
+        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">Permission Categories</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
-            <p className="font-medium text-blue-900">Orders</p>
-            <p className="text-blue-700">5 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">Orders</p>
+            <p className="text-blue-700 dark:text-blue-300">5 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">Production</p>
-            <p className="text-blue-700">8 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">Production</p>
+            <p className="text-blue-700 dark:text-blue-300">8 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">Finance</p>
-            <p className="text-blue-700">7 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">Finance</p>
+            <p className="text-blue-700 dark:text-blue-300">7 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">HR & Payroll</p>
-            <p className="text-blue-700">6 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">HR & Payroll</p>
+            <p className="text-blue-700 dark:text-blue-300">6 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">Quality</p>
-            <p className="text-blue-700">5 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">Quality</p>
+            <p className="text-blue-700 dark:text-blue-300">5 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">Inventory</p>
-            <p className="text-blue-700">6 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">Inventory</p>
+            <p className="text-blue-700 dark:text-blue-300">6 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">AI Features</p>
-            <p className="text-blue-700">4 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">AI Features</p>
+            <p className="text-blue-700 dark:text-blue-300">4 permissions</p>
           </div>
           <div>
-            <p className="font-medium text-blue-900">Settings</p>
-            <p className="text-blue-700">4 permissions</p>
+            <p className="font-medium text-blue-900 dark:text-blue-100">Settings</p>
+            <p className="text-blue-700 dark:text-blue-300">4 permissions</p>
           </div>
         </div>
       </div>
@@ -475,8 +475,8 @@ function I18nTab() {
             {supportedLanguages.map((lang) => (
               <div key={lang.code} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">{lang.name}</p>
-                  <p className="text-sm text-gray-600">{lang.native}</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{lang.name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{lang.native}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" defaultChecked={lang.active} className="sr-only peer" />
@@ -495,10 +495,10 @@ function I18nTab() {
             {supportedCurrencies.map((curr) => (
               <div key={curr.code} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div>
-                  <p className="font-medium text-gray-900">
+                  <p className="font-medium text-gray-900 dark:text-white">
                     {curr.symbol} {curr.name}
                   </p>
-                  <p className="text-sm text-gray-600">{curr.code}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{curr.code}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" defaultChecked={curr.active} className="sr-only peer" />
@@ -508,8 +508,8 @@ function I18nTab() {
             ))}
           </div>
 
-          <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-            <p className="text-sm text-blue-800">
+          <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
               <strong>Exchange Rate:</strong> 1 USD = 56.00 PHP (auto-updated daily)
             </p>
           </div>
