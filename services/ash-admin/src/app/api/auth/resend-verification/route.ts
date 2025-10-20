@@ -106,9 +106,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Verification email sent! Please check your inbox.',
-      // Return URL for easy access (can be shown in UI or clicked from console)
-      verificationUrl,
-      expiresAt: verificationExpires,
+      // Only return verification URL in development (for testing)
+      // In production, user must check email
+      ...(process.env.NODE_ENV === 'development' && {
+        verificationUrl,
+        expiresAt: verificationExpires,
+      }),
     }, { status: 200 })
 
   } catch (error: any) {

@@ -200,9 +200,12 @@ export async function POST(request: NextRequest) {
         name: `${user.first_name} ${user.last_name}`,
         role: user.role,
       },
-      // Return verification URL for easy access (can click from console/success message)
-      verificationUrl,
-      expiresAt: verificationExpires,
+      // Only return verification URL in development (for testing)
+      // In production, user must check email
+      ...(process.env.NODE_ENV === 'development' && {
+        verificationUrl,
+        expiresAt: verificationExpires,
+      }),
     }, { status: 201 })
 
   } catch (error: any) {
