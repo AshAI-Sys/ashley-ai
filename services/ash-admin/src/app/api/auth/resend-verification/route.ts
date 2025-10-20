@@ -82,9 +82,9 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
 
-    // Send verification email - ALWAYS TRY TO SEND
+    // Send verification email using Gmail SMTP
     try {
-      const { sendEmailVerification } = await import('../../../../lib/email')
+      const { sendEmailVerification } = await import('../../../../lib/gmail-email')
       await sendEmailVerification(user.email, {
         user_name: `${user.first_name} ${user.last_name}`,
         verification_link: verificationUrl,
