@@ -209,39 +209,39 @@ function BrandingTab() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">White-Label Branding</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">White-Label Branding</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Branding Config */}
         <div className="space-y-6">
-          <div className="border border-gray-200 rounded-lg p-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Company Information</h3>
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Company Information</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name</label>
                 <input
                   type="text"
                   defaultValue="Ashley AI Manufacturing"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tagline</label>
                 <input
                   type="text"
                   defaultValue="Smart Manufacturing ERP"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
                 <input
                   type="url"
                   defaultValue="https://ashley-ai.com"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
             </div>
