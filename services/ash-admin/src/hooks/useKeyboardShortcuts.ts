@@ -64,7 +64,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
       } = shortcut
 
       // Check if the key matches (with null safety)
-      const keyMatches = event.key?.toLowerCase() === key.toLowerCase()
+      const keyMatches = event.key?.toLowerCase() === key?.toLowerCase()
 
       // Check if modifiers match
       const ctrlMatches = ctrl ? event.ctrlKey || event.metaKey : !event.ctrlKey && !event.metaKey
