@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { defectDetectionAI } from '@/lib/ai/defect-detection';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { defectDetectionAI } from "@/lib/ai/defect-detection";
+import { prisma } from "@/lib/db";
 
 // GET /api/ai/defect-detection/patterns - Analyze defect patterns
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const days = parseInt(searchParams.get('days') || '30');
-    const operator_id = searchParams.get('operator_id');
-    const station = searchParams.get('station');
+    const days = parseInt(searchParams.get("days") || "30");
+    const operator_id = searchParams.get("operator_id");
+    const station = searchParams.get("station");
 
     // Build where clause
     const whereClause: any = {
@@ -21,14 +21,14 @@ export async function GET(req: NextRequest) {
     const qcChecks = await prisma.qCInspection.findMany({
       where: {
         ...whereClause,
-        workspace_id: 'default',
+        workspace_id: "default",
       },
       include: {
         order: true,
         inspector: true,
       },
       orderBy: {
-        created_at: 'desc',
+        created_at: "desc",
       },
     });
 
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         success: true,
         pattern_analysis: {
-          pattern_type: 'INSUFFICIENT_DATA',
+          pattern_type: "INSUFFICIENT_DATA",
           defect_rate: 0,
           common_defects: [],
           root_causes: [],
@@ -52,17 +52,20 @@ export async function GET(req: NextRequest) {
       const defects: any[] = [];
 
       // Calculate total defects from critical + major + minor
-      const totalDefects = (qc.critical_found || 0) + (qc.major_found || 0) + (qc.minor_found || 0);
+      const totalDefects =
+        (qc.critical_found || 0) +
+        (qc.major_found || 0) +
+        (qc.minor_found || 0);
 
       // If we have defects, simulate defect data
       if (totalDefects > 0) {
         for (let i = 0; i < totalDefects; i++) {
           defects.push({
-            type: 'UNKNOWN',
-            severity: qc.status === 'FAILED' ? 'MAJOR' : 'MINOR',
+            type: "UNKNOWN",
+            severity: qc.status === "FAILED" ? "MAJOR" : "MINOR",
             confidence: 85,
-            description: qc.notes || 'Defect detected',
-            recommendation: 'Review and address defect',
+            description: qc.notes || "Defect detected",
+            recommendation: "Review and address defect",
           });
         }
       }
@@ -70,13 +73,14 @@ export async function GET(req: NextRequest) {
       return {
         date: qc.created_at,
         operator_id: qc.inspector_id,
-        station: qc.stage || 'UNKNOWN',
+        station: qc.stage || "UNKNOWN",
         defects,
       };
     });
 
     // Analyze patterns
-    const patternAnalysis = await defectDetectionAI.analyzeDefectPatterns(inspections);
+    const patternAnalysis =
+      await defectDetectionAI.analyzeDefectPatterns(inspections);
 
     return NextResponse.json({
       success: true,
@@ -88,9 +92,9 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Pattern analysis error:', error);
+    console.error("Pattern analysis error:", error);
     return NextResponse.json(
-      { error: 'Failed to analyze patterns', details: error.message },
+      { error: "Failed to analyze patterns", details: error.message },
       { status: 500 }
     );
   }
@@ -101,7 +105,7 @@ export async function POST(req: NextRequest) {
   try {
     const { entity_type, days = 30 } = await req.json();
 
-    if (!entity_type || !['operator', 'station'].includes(entity_type)) {
+    if (!entity_type || !["operator", "station"].includes(entity_type)) {
       return NextResponse.json(
         { error: 'entity_type must be "operator" or "station"' },
         { status: 400 }
@@ -114,7 +118,7 @@ export async function POST(req: NextRequest) {
         created_at: {
           gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         },
-        workspace_id: 'default',
+        workspace_id: "default",
       },
       include: {
         order: true,
@@ -126,7 +130,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         comparison: [],
-        message: 'No AI vision inspections found',
+        message: "No AI vision inspections found",
       });
     }
 
@@ -137,12 +141,12 @@ export async function POST(req: NextRequest) {
       let entityId: string;
       let entityName: string;
 
-      if (entity_type === 'operator') {
-        entityId = qc.inspector_id || 'UNKNOWN';
-        entityName = qc.inspector?.name || 'Unknown Operator';
+      if (entity_type === "operator") {
+        entityId = qc.inspector_id || "UNKNOWN";
+        entityName = qc.inspector?.name || "Unknown Operator";
       } else {
-        entityId = qc.stage || 'UNKNOWN';
-        entityName = qc.stage || 'Unknown Station';
+        entityId = qc.stage || "UNKNOWN";
+        entityName = qc.stage || "Unknown Station";
       }
 
       if (!entityGroups[entityId]) {
@@ -150,17 +154,20 @@ export async function POST(req: NextRequest) {
       }
 
       // Calculate total defects from critical + major + minor
-      const totalDefects = (qc.critical_found || 0) + (qc.major_found || 0) + (qc.minor_found || 0);
+      const totalDefects =
+        (qc.critical_found || 0) +
+        (qc.major_found || 0) +
+        (qc.minor_found || 0);
 
       // Create simulated defect detection result
       const result = {
         defects_found: totalDefects,
-        quality_score: qc.status === 'PASSED' ? 95 : 70,
+        quality_score: qc.status === "PASSED" ? 95 : 70,
         detected_defects: [],
         confidence: 90,
-        pass_fail: qc.status === 'PASSED' ? 'PASS' : 'FAIL',
+        pass_fail: qc.status === "PASSED" ? "PASS" : "FAIL",
         analysis_time_ms: 500,
-        model_version: 'v1.0.0',
+        model_version: "v1.0.0",
       };
 
       entityGroups[entityId].push({
@@ -171,11 +178,13 @@ export async function POST(req: NextRequest) {
     });
 
     // Prepare data for comparison
-    const comparisonData = Object.entries(entityGroups).map(([entityId, inspections]) => ({
-      entity_id: entityId,
-      entity_name: inspections[0].entity_name,
-      inspections: inspections.map(i => i.result),
-    }));
+    const comparisonData = Object.entries(entityGroups).map(
+      ([entityId, inspections]) => ({
+        entity_id: entityId,
+        entity_name: inspections[0].entity_name,
+        inspections: inspections.map(i => i.result),
+      })
+    );
 
     // Perform comparison
     const comparison = await defectDetectionAI.compareQuality(comparisonData);
@@ -187,9 +196,9 @@ export async function POST(req: NextRequest) {
       total_entities: comparison.length,
     });
   } catch (error: any) {
-    console.error('Quality comparison error:', error);
+    console.error("Quality comparison error:", error);
     return NextResponse.json(
-      { error: 'Failed to compare quality', details: error.message },
+      { error: "Failed to compare quality", details: error.message },
       { status: 500 }
     );
   }

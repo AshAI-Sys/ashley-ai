@@ -3,26 +3,26 @@
  * Provides automatic caching for expensive database queries
  */
 
-import { getRedisClient } from './redis'
+import { getRedisClient } from "./redis";
 
 export interface CacheOptions {
   /**
    * Time to live in seconds
    * Default: 300 (5 minutes)
    */
-  ttl?: number
+  ttl?: number;
   /**
    * Cache key prefix
    */
-  prefix?: string
+  prefix?: string;
   /**
    * Whether to use stale-while-revalidate pattern
    */
-  swr?: boolean
+  swr?: boolean;
   /**
    * Stale time in seconds (for SWR)
    */
-  staleTime?: number
+  staleTime?: number;
 }
 
 /**
@@ -33,76 +33,76 @@ export async function cached<T>(
   fn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  const {
-    ttl = 300,
-    prefix = 'cache',
-    swr = false,
-    staleTime = 60
-  } = options
+  const { ttl = 300, prefix = "cache", swr = false, staleTime = 60 } = options;
 
-  const cacheKey = `${prefix}:${key}`
-  const redis = getRedisClient()
+  const cacheKey = `${prefix}:${key}`;
+  const redis = getRedisClient();
 
   try {
     // Try to get from cache
     if (redis) {
-      const cached = await redis.get(cacheKey)
+      const cached = await redis.get(cacheKey);
       if (cached) {
-        const data = JSON.parse(cached) as T
+        const data = JSON.parse(cached) as T;
 
         // If using SWR, check if stale
         if (swr) {
-          const age = await redis.ttl(cacheKey)
+          const age = await redis.ttl(cacheKey);
           if (age > 0 && age < staleTime) {
             // Data is stale, revalidate in background
-            fn().then(async (freshData) => {
-              await redis.setex(cacheKey, ttl, JSON.stringify(freshData))
-            }).catch(console.error)
+            fn()
+              .then(async freshData => {
+                await redis.setex(cacheKey, ttl, JSON.stringify(freshData));
+              })
+              .catch(console.error);
           }
         }
 
-        return data
+        return data;
       }
     }
 
     // Cache miss - execute function
-    const result = await fn()
+    const result = await fn();
 
     // Store in cache
     if (redis && result !== null && result !== undefined) {
-      await redis.setex(cacheKey, ttl, JSON.stringify(result))
+      await redis.setex(cacheKey, ttl, JSON.stringify(result));
     }
 
-    return result
+    return result;
   } catch (error) {
-    console.error('Cache error:', error)
+    console.error("Cache error:", error);
     // Fall back to executing function without cache
-    return fn()
+    return fn();
   }
 }
 
 /**
  * Invalidate cache by key or pattern
  */
-export async function invalidateCache(keyOrPattern: string, prefix = 'cache'): Promise<void> {
-  const redis = getRedisClient()
-  if (!redis) return
+export async function invalidateCache(
+  keyOrPattern: string,
+  prefix = "cache"
+): Promise<void> {
+  const redis = getRedisClient();
+  if (!redis) return;
 
   try {
-    const fullPattern = `${prefix}:${keyOrPattern}`
+    const fullPattern = `${prefix}:${keyOrPattern}`;
 
     // If it's a pattern with wildcard
-    if (fullPattern.includes('*')) {
-      const keys = await redis.keys(fullPattern)
+    if (fullPattern.includes("*")) {
+      const keys = await redis.keys(fullPattern);
       if (keys.length > 0) {
-        await redis.del(...keys)
+        await redis.del(...keys);
       }
     } else {
       // Single key
-      await redis.del(fullPattern)
+      await redis.del(fullPattern);
     }
   } catch (error) {
-    console.error('Cache invalidation error:', error)
+    console.error("Cache invalidation error:", error);
   }
 }
 
@@ -116,8 +116,8 @@ export async function cachedPaginated<T>(
   fn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  const paginatedKey = `${key}:page:${page}:limit:${limit}`
-  return cached(paginatedKey, fn, options)
+  const paginatedKey = `${key}:page:${page}:limit:${limit}`;
+  return cached(paginatedKey, fn, options);
 }
 
 /**
@@ -129,15 +129,15 @@ export async function cachedForUser<T>(
   fn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  const userKey = `user:${userId}:${key}`
-  return cached(userKey, fn, { ...options, prefix: 'user-cache' })
+  const userKey = `user:${userId}:${key}`;
+  return cached(userKey, fn, { ...options, prefix: "user-cache" });
 }
 
 /**
  * Invalidate all user cache
  */
 export async function invalidateUserCache(userId: string): Promise<void> {
-  await invalidateCache(`user:${userId}:*`, 'user-cache')
+  await invalidateCache(`user:${userId}:*`, "user-cache");
 }
 
 /**
@@ -149,15 +149,17 @@ export async function cachedForWorkspace<T>(
   fn: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  const workspaceKey = `workspace:${workspaceId}:${key}`
-  return cached(workspaceKey, fn, { ...options, prefix: 'workspace-cache' })
+  const workspaceKey = `workspace:${workspaceId}:${key}`;
+  return cached(workspaceKey, fn, { ...options, prefix: "workspace-cache" });
 }
 
 /**
  * Invalidate all workspace cache
  */
-export async function invalidateWorkspaceCache(workspaceId: string): Promise<void> {
-  await invalidateCache(`workspace:${workspaceId}:*`, 'workspace-cache')
+export async function invalidateWorkspaceCache(
+  workspaceId: string
+): Promise<void> {
+  await invalidateCache(`workspace:${workspaceId}:*`, "workspace-cache");
 }
 
 /**
@@ -166,18 +168,18 @@ export async function invalidateWorkspaceCache(workspaceId: string): Promise<voi
 export function memoize<T extends (...args: any[]) => Promise<any>>(
   fn: T,
   options: CacheOptions & {
-    keyGenerator?: (...args: Parameters<T>) => string
+    keyGenerator?: (...args: Parameters<T>) => string;
   } = {}
 ): T {
-  const { keyGenerator, ...cacheOptions } = options
+  const { keyGenerator, ...cacheOptions } = options;
 
   return (async (...args: Parameters<T>) => {
     const key = keyGenerator
       ? keyGenerator(...args)
-      : `fn:${fn.name}:${JSON.stringify(args)}`
+      : `fn:${fn.name}:${JSON.stringify(args)}`;
 
-    return cached(key, () => fn(...args), cacheOptions)
-  }) as T
+    return cached(key, () => fn(...args), cacheOptions);
+  }) as T;
 }
 
 /**
@@ -185,31 +187,31 @@ export function memoize<T extends (...args: any[]) => Promise<any>>(
  */
 export async function batchGet<T>(
   keys: string[],
-  prefix = 'cache'
+  prefix = "cache"
 ): Promise<Map<string, T>> {
-  const redis = getRedisClient()
-  const result = new Map<string, T>()
+  const redis = getRedisClient();
+  const result = new Map<string, T>();
 
-  if (!redis || keys.length === 0) return result
+  if (!redis || keys.length === 0) return result;
 
   try {
-    const fullKeys = keys.map(k => `${prefix}:${k}`)
-    const values = await redis.mget(...fullKeys)
+    const fullKeys = keys.map(k => `${prefix}:${k}`);
+    const values = await redis.mget(...fullKeys);
 
     values.forEach((value, index) => {
       if (value) {
         try {
-          result.set(keys[index], JSON.parse(value))
+          result.set(keys[index], JSON.parse(value));
         } catch (e) {
-          console.error('Failed to parse cached value:', e)
+          console.error("Failed to parse cached value:", e);
         }
       }
-    })
+    });
   } catch (error) {
-    console.error('Batch get error:', error)
+    console.error("Batch get error:", error);
   }
 
-  return result
+  return result;
 }
 
 /**
@@ -217,23 +219,23 @@ export async function batchGet<T>(
  */
 export async function batchSet(
   entries: Array<{ key: string; value: any; ttl?: number }>,
-  prefix = 'cache'
+  prefix = "cache"
 ): Promise<void> {
-  const redis = getRedisClient()
-  if (!redis || entries.length === 0) return
+  const redis = getRedisClient();
+  if (!redis || entries.length === 0) return;
 
   try {
-    const pipeline = redis.pipeline()
+    const pipeline = redis.pipeline();
 
     for (const entry of entries) {
-      const fullKey = `${prefix}:${entry.key}`
-      const ttl = entry.ttl || 300
-      pipeline.setex(fullKey, ttl, JSON.stringify(entry.value))
+      const fullKey = `${prefix}:${entry.key}`;
+      const ttl = entry.ttl || 300;
+      pipeline.setex(fullKey, ttl, JSON.stringify(entry.value));
     }
 
-    await pipeline.exec()
+    await pipeline.exec();
   } catch (error) {
-    console.error('Batch set error:', error)
+    console.error("Batch set error:", error);
   }
 }
 
@@ -245,37 +247,37 @@ export async function warmCache(
 ): Promise<void> {
   await Promise.allSettled(
     tasks.map(task => cached(task.key, task.fn, task.options))
-  )
+  );
 }
 
 /**
  * Get cache statistics
  */
-export async function getCacheStats(prefix = 'cache'): Promise<{
-  totalKeys: number
-  memoryUsage: number
-  hitRate?: number
+export async function getCacheStats(prefix = "cache"): Promise<{
+  totalKeys: number;
+  memoryUsage: number;
+  hitRate?: number;
 }> {
-  const redis = getRedisClient()
+  const redis = getRedisClient();
 
   if (!redis) {
-    return { totalKeys: 0, memoryUsage: 0 }
+    return { totalKeys: 0, memoryUsage: 0 };
   }
 
   try {
-    const pattern = `${prefix}:*`
-    const keys = await redis.keys(pattern)
-    const info = await redis.info('memory')
+    const pattern = `${prefix}:*`;
+    const keys = await redis.keys(pattern);
+    const info = await redis.info("memory");
 
-    const memoryMatch = info.match(/used_memory:(\d+)/)
-    const memoryUsage = memoryMatch ? parseInt(memoryMatch[1]) : 0
+    const memoryMatch = info.match(/used_memory:(\d+)/);
+    const memoryUsage = memoryMatch ? parseInt(memoryMatch[1]) : 0;
 
     return {
       totalKeys: keys.length,
       memoryUsage,
-    }
+    };
   } catch (error) {
-    console.error('Failed to get cache stats:', error)
-    return { totalKeys: 0, memoryUsage: 0 }
+    console.error("Failed to get cache stats:", error);
+    return { totalKeys: 0, memoryUsage: 0 };
   }
 }

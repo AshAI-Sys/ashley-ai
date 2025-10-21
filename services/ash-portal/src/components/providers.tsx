@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import React from 'react'
+import React from "react";
 
 function Providers({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return <>{children}</>;
 }
 
-export { Providers }
-export default Providers
+export { Providers };
+export default Providers;

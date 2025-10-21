@@ -1,31 +1,31 @@
-import { Resend } from 'resend'
+import { Resend } from "resend";
 
 // Lazy initialize Resend client only when API key is available
-let resendClient: Resend | null = null
+let resendClient: Resend | null = null;
 
 function getResendClient(): Resend | null {
   if (!process.env.RESEND_API_KEY) {
-    return null
+    return null;
   }
   if (!resendClient) {
-    resendClient = new Resend(process.env.RESEND_API_KEY)
+    resendClient = new Resend(process.env.RESEND_API_KEY);
   }
-  return resendClient
+  return resendClient;
 }
 
 interface EmailOptions {
-  to: string
-  subject: string
-  html: string
-  text?: string
-  from?: string
-  replyTo?: string
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+  from?: string;
+  replyTo?: string;
 }
 
 interface EmailResult {
-  success: boolean
-  id?: string
-  error?: string
+  success: boolean;
+  id?: string;
+  error?: string;
 }
 
 /**
@@ -34,38 +34,46 @@ interface EmailResult {
  */
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   try {
-    const client = getResendClient()
+    const client = getResendClient();
 
     // If Resend is not configured, log to console (development mode)
     if (!client) {
-      console.warn('⚠️ RESEND_API_KEY not configured. Email will be logged to console only.')
-      console.log('📧 Email would be sent:', {
+      console.warn(
+        "⚠️ RESEND_API_KEY not configured. Email will be logged to console only."
+      );
+      console.log("📧 Email would be sent:", {
         to: options.to,
         subject: options.subject,
-        from: options.from || process.env.EMAIL_FROM || 'Ashley AI <noreply@ashleyai.com>'
-      })
-      return { success: true, id: 'dev-mode-' + Date.now() }
+        from:
+          options.from ||
+          process.env.EMAIL_FROM ||
+          "Ashley AI <noreply@ashleyai.com>",
+      });
+      return { success: true, id: "dev-mode-" + Date.now() };
     }
 
     const result = await client.emails.send({
-      from: options.from || process.env.EMAIL_FROM || 'Ashley AI <noreply@ashleyai.com>',
+      from:
+        options.from ||
+        process.env.EMAIL_FROM ||
+        "Ashley AI <noreply@ashleyai.com>",
       to: options.to,
       subject: options.subject,
       html: options.html,
       text: options.text,
       reply_to: options.replyTo,
-    })
+    });
 
     if (result.error) {
-      console.error('❌ Resend error:', result.error)
-      return { success: false, error: result.error.message }
+      console.error("❌ Resend error:", result.error);
+      return { success: false, error: result.error.message };
     }
 
-    console.log('✅ Email sent successfully:', result.data?.id)
-    return { success: true, id: result.data?.id }
+    console.log("✅ Email sent successfully:", result.data?.id);
+    return { success: true, id: result.data?.id };
   } catch (error: any) {
-    console.error('❌ Error sending email:', error)
-    return { success: false, error: error.message }
+    console.error("❌ Error sending email:", error);
+    return { success: false, error: error.message };
   }
 }
 
@@ -75,10 +83,10 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 export async function sendOrderConfirmation(
   to: string,
   data: {
-    order_number: string
-    client_name: string
-    total_amount: string
-    order_date?: string
+    order_number: string;
+    client_name: string;
+    total_amount: string;
+    order_date?: string;
   }
 ): Promise<EmailResult> {
   const html = `
@@ -106,7 +114,7 @@ export async function sendOrderConfirmation(
         <h3>📋 Order Details</h3>
         <ul>
           <li><strong>Order Number:</strong> ${data.order_number}</li>
-          ${data.order_date ? `<li><strong>Order Date:</strong> ${data.order_date}</li>` : ''}
+          ${data.order_date ? `<li><strong>Order Date:</strong> ${data.order_date}</li>` : ""}
           <li><strong>Total:</strong> ${data.total_amount}</li>
         </ul>
       </div>
@@ -115,13 +123,13 @@ export async function sendOrderConfirmation(
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
     subject: `Order Confirmation - ${data.order_number}`,
     html,
-  })
+  });
 }
 
 /**
@@ -130,10 +138,10 @@ export async function sendOrderConfirmation(
 export async function sendDeliveryNotification(
   to: string,
   data: {
-    order_number: string
-    tracking_number: string
-    carrier_name: string
-    estimated_delivery?: string
+    order_number: string;
+    tracking_number: string;
+    carrier_name: string;
+    estimated_delivery?: string;
   }
 ): Promise<EmailResult> {
   const html = `
@@ -161,7 +169,7 @@ export async function sendDeliveryNotification(
         <ul>
           <li><strong>Tracking Number:</strong> ${data.tracking_number}</li>
           <li><strong>Carrier:</strong> ${data.carrier_name}</li>
-          ${data.estimated_delivery ? `<li><strong>Estimated Delivery:</strong> ${data.estimated_delivery}</li>` : ''}
+          ${data.estimated_delivery ? `<li><strong>Estimated Delivery:</strong> ${data.estimated_delivery}</li>` : ""}
         </ul>
       </div>
       <p>You can track your package using the tracking number above on the carrier's website.</p>
@@ -169,13 +177,13 @@ export async function sendDeliveryNotification(
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
     subject: `Order Shipped - ${data.order_number}`,
     html,
-  })
+  });
 }
 
 /**
@@ -184,10 +192,10 @@ export async function sendDeliveryNotification(
 export async function sendInvoiceEmail(
   to: string,
   data: {
-    invoice_number: string
-    client_name: string
-    amount: string
-    due_date?: string
+    invoice_number: string;
+    client_name: string;
+    amount: string;
+    due_date?: string;
   }
 ): Promise<EmailResult> {
   const html = `
@@ -216,7 +224,7 @@ export async function sendInvoiceEmail(
         <ul>
           <li><strong>Invoice Number:</strong> ${data.invoice_number}</li>
           <li><strong>Amount:</strong> ${data.amount}</li>
-          ${data.due_date ? `<li><strong>Due Date:</strong> ${data.due_date}</li>` : ''}
+          ${data.due_date ? `<li><strong>Due Date:</strong> ${data.due_date}</li>` : ""}
         </ul>
       </div>
       <p>Please process payment by the due date to avoid any delays in production or delivery.</p>
@@ -224,13 +232,13 @@ export async function sendInvoiceEmail(
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
     subject: `Invoice ${data.invoice_number} - Ashley AI`,
     html,
-  })
+  });
 }
 
 /**
@@ -239,8 +247,8 @@ export async function sendInvoiceEmail(
 export async function sendWelcomeEmail(
   to: string,
   data: {
-    user_name: string
-    verification_link: string
+    user_name: string;
+    verification_link: string;
   }
 ): Promise<EmailResult> {
   const html = `
@@ -275,13 +283,13 @@ export async function sendWelcomeEmail(
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
-    subject: 'Welcome to Ashley AI - Verify Your Email',
+    subject: "Welcome to Ashley AI - Verify Your Email",
     html,
-  })
+  });
 }
 
 /**
@@ -290,8 +298,8 @@ export async function sendWelcomeEmail(
 export async function sendEmailVerification(
   to: string,
   data: {
-    user_name: string
-    verification_link: string
+    user_name: string;
+    verification_link: string;
   }
 ): Promise<EmailResult> {
   const html = `
@@ -323,13 +331,13 @@ export async function sendEmailVerification(
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
-    subject: 'Verify Your Email - Ashley AI',
+    subject: "Verify Your Email - Ashley AI",
     html,
-  })
+  });
 }
 
 /**
@@ -338,8 +346,8 @@ export async function sendEmailVerification(
 export async function sendPasswordResetEmail(
   to: string,
   data: {
-    user_name: string
-    reset_link: string
+    user_name: string;
+    reset_link: string;
   }
 ): Promise<EmailResult> {
   const html = `
@@ -370,13 +378,13 @@ export async function sendPasswordResetEmail(
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
-    subject: 'Password Reset Request - Ashley AI',
+    subject: "Password Reset Request - Ashley AI",
     html,
-  })
+  });
 }
 
 /**
@@ -385,8 +393,8 @@ export async function sendPasswordResetEmail(
 export async function send2FASetupEmail(
   to: string,
   data: {
-    user_name: string
-    backup_codes: string[]
+    user_name: string;
+    backup_codes: string[];
   }
 ): Promise<EmailResult> {
   const html = `
@@ -411,18 +419,18 @@ export async function send2FASetupEmail(
       <p>Two-factor authentication has been successfully enabled for your account.</p>
       <p><strong>Save these backup codes in a safe place:</strong></p>
       <div class="codes">
-        ${data.backup_codes.map(code => `<div>${code}</div>`).join('')}
+        ${data.backup_codes.map(code => `<div>${code}</div>`).join("")}
       </div>
       <p>You can use these codes to access your account if you lose access to your authenticator app.</p>
       <p>Each code can only be used once.</p>
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
-    subject: '2FA Backup Codes - Ashley AI',
+    subject: "2FA Backup Codes - Ashley AI",
     html,
-  })
+  });
 }

@@ -4,9 +4,13 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const db = globalForPrisma.prisma ?? 
+export const db =
+  globalForPrisma.prisma ??
   new PrismaClient({
-    log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["query", "error", "warn"]
+        : ["error"],
     errorFormat: "pretty",
   });
 
@@ -16,7 +20,10 @@ if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
 export * from "@prisma/client";
 
 // Type-safe database helpers
-export type DatabaseTransaction = Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
+export type DatabaseTransaction = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
 
 // Connection health check
 export async function healthCheck(): Promise<boolean> {

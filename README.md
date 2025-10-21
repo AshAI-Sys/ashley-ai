@@ -13,6 +13,7 @@ ASH AI is a comprehensive, AI-powered enterprise resource planning (ERP) system 
 ## ✨ Features
 
 ### 🎯 **Core Manufacturing Modules**
+
 - **Order Management** - Client intake, routing templates, Ashley AI validation
 - **Design & Approval** - Version control, client portal, printability checks
 - **Production Control** - Cutting, printing (Silkscreen/Sublimation/DTF/Embroidery), sewing
@@ -21,12 +22,14 @@ ASH AI is a comprehensive, AI-powered enterprise resource planning (ERP) system 
 - **Payroll & HR** - Piece-rate calculations, attendance, Philippine compliance
 
 ### 🤖 **Ashley AI Intelligence**
+
 - **Capacity Planning** - Smart scheduling and bottleneck detection
 - **Quality Prediction** - Defect pattern analysis and prevention
 - **Cost Optimization** - Material usage and efficiency recommendations
 - **Merchandising** - Reprint suggestions and trend analysis
 
 ### 🌐 **Client Experience**
+
 - **Self-Service Portal** - Order tracking, approvals, reorders
 - **Real-time Updates** - Progress notifications and delivery tracking
 - **Payment Integration** - PayMongo, GCash, bank transfers
@@ -44,35 +47,40 @@ ASH AI is a comprehensive, AI-powered enterprise resource planning (ERP) system 
 ### Development Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/ash-ai/ash-ai.git
    cd ash-ai
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 4. **Start with Docker (Recommended)**
+
    ```bash
    pnpm docker:up
    ```
-   
+
    Or manually:
+
    ```bash
    # Start database and Redis
    docker-compose up postgres redis -d
-   
+
    # Run migrations and seed
    pnpm setup
-   
+
    # Start development server
    pnpm dev
    ```
@@ -87,6 +95,7 @@ ASH AI is a comprehensive, AI-powered enterprise resource planning (ERP) system 
 ## 🏗️ Architecture
 
 ### **Monorepo Structure**
+
 ```
 ash-ai/
 ├── apps/
@@ -107,23 +116,23 @@ ash-ai/
 
 ### **Technology Stack**
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | Next.js 14, React 18, TypeScript | Modern web applications |
-| **UI/UX** | Tailwind CSS, Shadcn/UI, Framer Motion | Beautiful, accessible interfaces |
-| **Backend** | Node.js, Fastify, tRPC | High-performance APIs |
-| **Database** | PostgreSQL 16, Prisma ORM | Reliable data persistence |
-| **Caching** | Redis 7, Bull queues | Fast data access & job processing |
-| **Storage** | AWS S3 / MinIO | File and asset management |
-| **AI/ML** | OpenAI GPT-4, Claude 3.5 | Intelligent recommendations |
-| **Monitoring** | Sentry, Mixpanel | Error tracking & analytics |
+| Layer          | Technology                             | Purpose                           |
+| -------------- | -------------------------------------- | --------------------------------- |
+| **Frontend**   | Next.js 14, React 18, TypeScript       | Modern web applications           |
+| **UI/UX**      | Tailwind CSS, Shadcn/UI, Framer Motion | Beautiful, accessible interfaces  |
+| **Backend**    | Node.js, Fastify, tRPC                 | High-performance APIs             |
+| **Database**   | PostgreSQL 16, Prisma ORM              | Reliable data persistence         |
+| **Caching**    | Redis 7, Bull queues                   | Fast data access & job processing |
+| **Storage**    | AWS S3 / MinIO                         | File and asset management         |
+| **AI/ML**      | OpenAI GPT-4, Claude 3.5               | Intelligent recommendations       |
+| **Monitoring** | Sentry, Mixpanel                       | Error tracking & analytics        |
 
 ## 🎯 Production Stages
 
 The system covers 14 production stages:
 
 1. **Client & Order Intake** - PO creation, routing templates
-2. **Design & Approval** - Asset management, client approvals  
+2. **Design & Approval** - Asset management, client approvals
 3. **Cutting** - Fabric cutting, bundle creation
 4. **Printing** - Multi-method printing (Silkscreen, Sublimation, DTF, Embroidery)
 5. **Sewing** - Sewing operations, piece-rate tracking
@@ -153,7 +162,7 @@ Ashley is the AI assistant that monitors, forecasts, and advises across all stag
 
 - **BIR Compliance** - Tax reporting and compliance
 - **GCash Integration** - Local payment method
-- **Labor Law Compliance** - PH employment regulations  
+- **Labor Law Compliance** - PH employment regulations
 - **Multi-language** - English/Filipino support
 - **Timezone** - Asia/Manila default
 
@@ -188,4 +197,5 @@ This project is proprietary software. All rights reserved.
 ---
 
 **ASH AI Team** - Building the future of apparel manufacturing with AI# Deployment trigger
+
 # Trigger deployment

@@ -1,100 +1,104 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Responsive, WidthProvider, Layout } from 'react-grid-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Settings, X, Plus, Save, RotateCcw, Lock, Unlock } from 'lucide-react'
-import 'react-grid-layout/css/styles.css'
-import 'react-resizable/css/styles.css'
-import ProductionTrendChart from '../charts/ProductionTrendChart'
-import EfficiencyGaugeChart from '../charts/EfficiencyGaugeChart'
-import RealTimeMetrics from './RealTimeMetrics'
+import { useState, useEffect } from "react";
+import { Responsive, WidthProvider, Layout } from "react-grid-layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Settings, X, Plus, Save, RotateCcw, Lock, Unlock } from "lucide-react";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+import ProductionTrendChart from "../charts/ProductionTrendChart";
+import EfficiencyGaugeChart from "../charts/EfficiencyGaugeChart";
+import RealTimeMetrics from "./RealTimeMetrics";
 
-const ResponsiveGridLayout = WidthProvider(Responsive)
+const ResponsiveGridLayout = WidthProvider(Responsive);
 
 interface Widget {
-  id: string
-  title: string
-  component: React.ReactNode
-  minW?: number
-  minH?: number
-  maxW?: number
-  maxH?: number
+  id: string;
+  title: string;
+  component: React.ReactNode;
+  minW?: number;
+  minH?: number;
+  maxW?: number;
+  maxH?: number;
 }
 
 const availableWidgets: Widget[] = [
   {
-    id: 'real-time-metrics',
-    title: 'Real-Time Metrics',
+    id: "real-time-metrics",
+    title: "Real-Time Metrics",
     component: <RealTimeMetrics />,
     minW: 4,
-    minH: 2
+    minH: 2,
   },
   {
-    id: 'production-trends',
-    title: 'Production Trends',
+    id: "production-trends",
+    title: "Production Trends",
     component: <ProductionTrendChart />,
     minW: 4,
-    minH: 3
+    minH: 3,
   },
   {
-    id: 'efficiency-gauge',
-    title: 'Efficiency Gauge',
+    id: "efficiency-gauge",
+    title: "Efficiency Gauge",
     component: <EfficiencyGaugeChart />,
     minW: 3,
-    minH: 3
-  }
-]
+    minH: 3,
+  },
+];
 
 const defaultLayout: Layout[] = [
-  { i: 'real-time-metrics', x: 0, y: 0, w: 12, h: 2, minW: 4, minH: 2 },
-  { i: 'production-trends', x: 0, y: 2, w: 8, h: 3, minW: 4, minH: 3 },
-  { i: 'efficiency-gauge', x: 8, y: 2, w: 4, h: 3, minW: 3, minH: 3 }
-]
+  { i: "real-time-metrics", x: 0, y: 0, w: 12, h: 2, minW: 4, minH: 2 },
+  { i: "production-trends", x: 0, y: 2, w: 8, h: 3, minW: 4, minH: 3 },
+  { i: "efficiency-gauge", x: 8, y: 2, w: 4, h: 3, minW: 3, minH: 3 },
+];
 
 export default function CustomizableDashboard() {
-  const [layouts, setLayouts] = useState<{ lg: Layout[] }>({ lg: defaultLayout })
-  const [activeWidgets, setActiveWidgets] = useState<string[]>(defaultLayout.map(l => l.i))
-  const [isEditMode, setIsEditMode] = useState(false)
-  const [isLocked, setIsLocked] = useState(true)
+  const [layouts, setLayouts] = useState<{ lg: Layout[] }>({
+    lg: defaultLayout,
+  });
+  const [activeWidgets, setActiveWidgets] = useState<string[]>(
+    defaultLayout.map(l => l.i)
+  );
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isLocked, setIsLocked] = useState(true);
 
   // Load saved layout from localStorage
   useEffect(() => {
-    const savedLayout = localStorage.getItem('dashboard-layout')
-    const savedWidgets = localStorage.getItem('dashboard-widgets')
+    const savedLayout = localStorage.getItem("dashboard-layout");
+    const savedWidgets = localStorage.getItem("dashboard-widgets");
 
     if (savedLayout) {
-      setLayouts({ lg: JSON.parse(savedLayout) })
+      setLayouts({ lg: JSON.parse(savedLayout) });
     }
     if (savedWidgets) {
-      setActiveWidgets(JSON.parse(savedWidgets))
+      setActiveWidgets(JSON.parse(savedWidgets));
     }
-  }, [])
+  }, []);
 
   const handleLayoutChange = (layout: Layout[]) => {
-    setLayouts({ lg: layout })
-  }
+    setLayouts({ lg: layout });
+  };
 
   const handleSaveLayout = () => {
-    localStorage.setItem('dashboard-layout', JSON.stringify(layouts.lg))
-    localStorage.setItem('dashboard-widgets', JSON.stringify(activeWidgets))
-    setIsEditMode(false)
-    setIsLocked(true)
-  }
+    localStorage.setItem("dashboard-layout", JSON.stringify(layouts.lg));
+    localStorage.setItem("dashboard-widgets", JSON.stringify(activeWidgets));
+    setIsEditMode(false);
+    setIsLocked(true);
+  };
 
   const handleResetLayout = () => {
-    setLayouts({ lg: defaultLayout })
-    setActiveWidgets(defaultLayout.map(l => l.i))
-    localStorage.removeItem('dashboard-layout')
-    localStorage.removeItem('dashboard-widgets')
-  }
+    setLayouts({ lg: defaultLayout });
+    setActiveWidgets(defaultLayout.map(l => l.i));
+    localStorage.removeItem("dashboard-layout");
+    localStorage.removeItem("dashboard-widgets");
+  };
 
   const handleAddWidget = (widgetId: string) => {
-    if (activeWidgets.includes(widgetId)) return
+    if (activeWidgets.includes(widgetId)) return;
 
-    const newWidget = availableWidgets.find(w => w.id === widgetId)
-    if (!newWidget) return
+    const newWidget = availableWidgets.find(w => w.id === widgetId);
+    if (!newWidget) return;
 
     const newLayout: Layout = {
       i: widgetId,
@@ -105,41 +109,41 @@ export default function CustomizableDashboard() {
       minW: newWidget.minW,
       minH: newWidget.minH,
       maxW: newWidget.maxW,
-      maxH: newWidget.maxH
-    }
+      maxH: newWidget.maxH,
+    };
 
-    setLayouts({ lg: [...layouts.lg, newLayout] })
-    setActiveWidgets([...activeWidgets, widgetId])
-  }
+    setLayouts({ lg: [...layouts.lg, newLayout] });
+    setActiveWidgets([...activeWidgets, widgetId]);
+  };
 
   const handleRemoveWidget = (widgetId: string) => {
-    setLayouts({ lg: layouts.lg.filter(l => l.i !== widgetId) })
-    setActiveWidgets(activeWidgets.filter(id => id !== widgetId))
-  }
+    setLayouts({ lg: layouts.lg.filter(l => l.i !== widgetId) });
+    setActiveWidgets(activeWidgets.filter(id => id !== widgetId));
+  };
 
   const renderWidget = (widgetId: string) => {
-    const widget = availableWidgets.find(w => w.id === widgetId)
-    if (!widget) return null
+    const widget = availableWidgets.find(w => w.id === widgetId);
+    if (!widget) return null;
 
     return (
       <div key={widgetId} className="widget-container">
         {isEditMode && (
           <button
             onClick={() => handleRemoveWidget(widgetId)}
-            className="absolute top-2 right-2 z-10 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-colors"
+            className="absolute right-2 top-2 z-10 rounded-full bg-red-500 p-1.5 text-white shadow-lg transition-colors hover:bg-red-600"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         )}
         {widget.component}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="space-y-4">
       {/* Dashboard Controls */}
-      <Card className="dark:bg-gray-800 dark:border-gray-700">
+      <Card className="dark:border-gray-700 dark:bg-gray-800">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -148,8 +152,8 @@ export default function CustomizableDashboard() {
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {isEditMode
-                  ? 'Drag widgets to rearrange, resize by dragging corners'
-                  : 'Click customize to edit your dashboard layout'}
+                  ? "Drag widgets to rearrange, resize by dragging corners"
+                  : "Click customize to edit your dashboard layout"}
               </p>
             </div>
 
@@ -159,16 +163,16 @@ export default function CustomizableDashboard() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsLocked(!isLocked)}
-                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+                className="dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
               >
                 {isLocked ? (
                   <>
-                    <Lock className="w-4 h-4 mr-1" />
+                    <Lock className="mr-1 h-4 w-4" />
                     Locked
                   </>
                 ) : (
                   <>
-                    <Unlock className="w-4 h-4 mr-1" />
+                    <Unlock className="mr-1 h-4 w-4" />
                     Unlocked
                   </>
                 )}
@@ -180,27 +184,27 @@ export default function CustomizableDashboard() {
                     variant="outline"
                     size="sm"
                     onClick={handleResetLayout}
-                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+                    className="dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                   >
-                    <RotateCcw className="w-4 h-4 mr-1" />
+                    <RotateCcw className="mr-1 h-4 w-4" />
                     Reset
                   </Button>
                   <Button
                     size="sm"
                     onClick={handleSaveLayout}
-                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+                    className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700"
                   >
-                    <Save className="w-4 h-4 mr-1" />
+                    <Save className="mr-1 h-4 w-4" />
                     Save Layout
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setIsEditMode(false)
-                      setIsLocked(true)
+                      setIsEditMode(false);
+                      setIsLocked(true);
                     }}
-                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+                    className="dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                   >
                     Cancel
                   </Button>
@@ -210,12 +214,12 @@ export default function CustomizableDashboard() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setIsEditMode(true)
-                    setIsLocked(false)
+                    setIsEditMode(true);
+                    setIsLocked(false);
                   }}
-                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+                  className="dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                 >
-                  <Settings className="w-4 h-4 mr-1" />
+                  <Settings className="mr-1 h-4 w-4" />
                   Customize
                 </Button>
               )}
@@ -224,29 +228,29 @@ export default function CustomizableDashboard() {
 
           {/* Widget Selector (Edit Mode Only) */}
           {isEditMode && (
-            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+            <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <h3 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                 Add Widgets:
               </h3>
               <div className="flex flex-wrap gap-2">
                 {availableWidgets.map(widget => {
-                  const isActive = activeWidgets.includes(widget.id)
+                  const isActive = activeWidgets.includes(widget.id);
                   return (
                     <button
                       key={widget.id}
                       onClick={() => !isActive && handleAddWidget(widget.id)}
                       disabled={isActive}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                         isActive
-                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50'
+                          ? "cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
+                          : "bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
                       }`}
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="h-4 w-4" />
                       {widget.title}
                       {isActive && <span className="text-xs">(Active)</span>}
                     </button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -273,15 +277,15 @@ export default function CustomizableDashboard() {
 
       {/* Instructions */}
       {isEditMode && (
-        <Card className="dark:bg-gray-800 dark:border-gray-700 border-blue-200 dark:border-blue-800">
+        <Card className="border-blue-200 dark:border-blue-800 dark:border-gray-700 dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+              <Settings className="mt-0.5 h-5 w-5 text-blue-600 dark:text-blue-400" />
               <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                <h3 className="mb-1 text-sm font-medium text-gray-900 dark:text-white">
                   Customization Tips:
                 </h3>
-                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                   <li>• Drag widgets to rearrange their position</li>
                   <li>• Resize widgets by dragging the bottom-right corner</li>
                   <li>• Click the X button to remove a widget</li>
@@ -331,7 +335,7 @@ export default function CustomizableDashboard() {
           transition-duration: 100ms;
           z-index: 2;
           border-radius: 8px;
-          border: 2px dashed #3B82F6;
+          border: 2px dashed #3b82f6;
         }
 
         .react-grid-item > .react-resizable-handle {
@@ -341,7 +345,7 @@ export default function CustomizableDashboard() {
         }
 
         .react-grid-item > .react-resizable-handle::after {
-          content: '';
+          content: "";
           position: absolute;
           right: 3px;
           bottom: 3px;
@@ -356,5 +360,5 @@ export default function CustomizableDashboard() {
         }
       `}</style>
     </div>
-  )
+  );
 }

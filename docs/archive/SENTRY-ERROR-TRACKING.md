@@ -60,6 +60,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
 ### Configuration Files
 
 #### 1. `sentry.client.config.ts` (Client-side config)
+
 - **Lines**: 120
 - **Purpose**: Browser error tracking
 - **Features**:
@@ -70,6 +71,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
   - Performance monitoring
 
 #### 2. `sentry.server.config.ts` (Server-side config)
+
 - **Lines**: 100
 - **Purpose**: Server error tracking (API, SSR)
 - **Features**:
@@ -80,6 +82,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
   - Custom integrations
 
 #### 3. `sentry.edge.config.ts` (Edge runtime config)
+
 - **Lines**: 40
 - **Purpose**: Middleware and edge function errors
 - **Features**:
@@ -88,6 +91,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
   - Edge-specific error capture
 
 #### 4. `next.config.sentry.js` (Build configuration)
+
 - **Lines**: 40
 - **Purpose**: Sentry webpack plugin configuration
 - **Features**:
@@ -99,6 +103,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
 ### Component Files
 
 #### 5. `src/components/ErrorBoundary.tsx`
+
 - **Lines**: 160
 - **Purpose**: React error boundary component
 - **Features**:
@@ -111,6 +116,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
 ### Utility Files
 
 #### 6. `src/lib/error-logger.ts`
+
 - **Lines**: 250
 - **Purpose**: Centralized error logging utilities
 - **Exports**:
@@ -140,6 +146,7 @@ Implemented comprehensive error tracking and performance monitoring using Sentry
 ### Step 2: Configure Environment Variables
 
 Add to `.env`:
+
 ```bash
 # Sentry Configuration
 SENTRY_DSN="https://xxx@xxx.ingest.sentry.io/xxx"
@@ -162,6 +169,7 @@ pnpm add @sentry/nextjs
 ### Step 4: Initialize Sentry
 
 Run wizard (optional):
+
 ```bash
 npx @sentry/wizard@latest -i nextjs
 ```
@@ -171,14 +179,15 @@ Or use our pre-configured files (already created).
 ### Step 5: Update next.config.js
 
 Wrap your Next.js config:
+
 ```javascript
-const { withSentryConfig } = require('./next.config.sentry')
+const { withSentryConfig } = require("./next.config.sentry");
 
 const nextConfig = {
   // your existing config
-}
+};
 
-module.exports = withSentryConfig(nextConfig)
+module.exports = withSentryConfig(nextConfig);
 ```
 
 ---
@@ -188,7 +197,7 @@ module.exports = withSentryConfig(nextConfig)
 ### 1. Basic Error Logging
 
 ```typescript
-import { logError } from '@/lib/error-logger'
+import { logError } from "@/lib/error-logger";
 
 try {
   // Your code
@@ -196,36 +205,36 @@ try {
   logError(error as Error, {
     category: ErrorCategory.API,
     severity: ErrorSeverity.Error,
-    operation: 'create-order',
-    orderId: '123',
-  })
+    operation: "create-order",
+    orderId: "123",
+  });
 }
 ```
 
 ### 2. Database Error Logging
 
 ```typescript
-import { logDatabaseError } from '@/lib/error-logger'
+import { logDatabaseError } from "@/lib/error-logger";
 
 try {
-  const order = await prisma.order.create({ data })
+  const order = await prisma.order.create({ data });
 } catch (error) {
-  logDatabaseError(error as Error, 'CREATE Order', data)
-  throw error
+  logDatabaseError(error as Error, "CREATE Order", data);
+  throw error;
 }
 ```
 
 ### 3. API Error Logging
 
 ```typescript
-import { logAPIError } from '@/lib/error-logger'
+import { logAPIError } from "@/lib/error-logger";
 
 export async function POST(request: NextRequest) {
   try {
     // API logic
   } catch (error) {
-    logAPIError(error as Error, '/api/orders', 'POST', 500)
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+    logAPIError(error as Error, "/api/orders", "POST", 500);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }
 ```
@@ -247,61 +256,62 @@ export default function Layout({ children }) {
 ### 5. Wrapping Functions with Error Logging
 
 ```typescript
-import { withErrorLogging } from '@/lib/error-logger'
+import { withErrorLogging } from "@/lib/error-logger";
 
 const createOrder = withErrorLogging(
   async (data: OrderData) => {
-    return await prisma.order.create({ data })
+    return await prisma.order.create({ data });
   },
   {
     category: ErrorCategory.Database,
-    operation: 'create-order'
+    operation: "create-order",
   }
-)
+);
 ```
 
 ### 6. Performance Tracking
 
 ```typescript
-import { startPerformanceTrace, logPerformanceIssue } from '@/lib/error-logger'
+import { startPerformanceTrace, logPerformanceIssue } from "@/lib/error-logger";
 
-const transaction = startPerformanceTrace('process-order', 'business-logic')
+const transaction = startPerformanceTrace("process-order", "business-logic");
 
-const startTime = Date.now()
+const startTime = Date.now();
 // Your code
-const duration = Date.now() - startTime
+const duration = Date.now() - startTime;
 
-logPerformanceIssue('process-order', duration, 2000, { orderId })
+logPerformanceIssue("process-order", duration, 2000, { orderId });
 
-transaction.finish()
+transaction.finish();
 ```
 
 ### 7. User Context Tracking
 
 ```typescript
-import { createUserErrorContext, clearUserErrorContext } from '@/lib/error-logger'
+import {
+  createUserErrorContext,
+  clearUserErrorContext,
+} from "@/lib/error-logger";
 
 // On login
-createUserErrorContext(user.id, user.email, user.role)
+createUserErrorContext(user.id, user.email, user.role);
 
 // On logout
-clearUserErrorContext()
+clearUserErrorContext();
 ```
 
 ### 8. External Service Error Logging
 
 ```typescript
-import { logExternalServiceError } from '@/lib/error-logger'
+import { logExternalServiceError } from "@/lib/error-logger";
 
 try {
-  const result = await fetch('https://api.lalamove.com/...')
+  const result = await fetch("https://api.lalamove.com/...");
 } catch (error) {
-  logExternalServiceError(
-    error as Error,
-    'Lalamove',
-    'create-delivery',
-    { orderId, response: result }
-  )
+  logExternalServiceError(error as Error, "Lalamove", "create-delivery", {
+    orderId,
+    response: result,
+  });
 }
 ```
 
@@ -310,45 +320,59 @@ try {
 ## Error Categories
 
 ### Database Errors
+
 ```typescript
-logDatabaseError(error, 'SELECT * FROM orders', { userId })
+logDatabaseError(error, "SELECT * FROM orders", { userId });
 ```
+
 **Tracks**: Prisma errors, SQL errors, connection issues
 
 ### API Errors
+
 ```typescript
-logAPIError(error, '/api/orders', 'POST', 500)
+logAPIError(error, "/api/orders", "POST", 500);
 ```
+
 **Tracks**: Endpoint failures, validation errors, timeouts
 
 ### Authentication Errors
+
 ```typescript
-logAuthError(error, userId, 'login-attempt')
+logAuthError(error, userId, "login-attempt");
 ```
+
 **Tracks**: Login failures, token errors, permission issues
 
 ### Validation Errors
+
 ```typescript
-logValidationError('Invalid email format', 'email', userInput)
+logValidationError("Invalid email format", "email", userInput);
 ```
+
 **Tracks**: Input validation, schema validation, business rules
 
 ### External Service Errors
+
 ```typescript
-logExternalServiceError(error, 'Twilio', 'send-sms', response)
+logExternalServiceError(error, "Twilio", "send-sms", response);
 ```
+
 **Tracks**: 3PL, SMS, email, payment gateway errors
 
 ### Business Logic Errors
+
 ```typescript
-logBusinessError(error, 'process-order', orderId, clientId)
+logBusinessError(error, "process-order", orderId, clientId);
 ```
+
 **Tracks**: Order processing, inventory, workflow errors
 
 ### Performance Issues
+
 ```typescript
-logPerformanceIssue('db-query', 3500, 2000, { query })
+logPerformanceIssue("db-query", 3500, 2000, { query });
 ```
+
 **Tracks**: Slow queries, API timeouts, bottlenecks
 
 ---
@@ -356,30 +380,35 @@ logPerformanceIssue('db-query', 3500, 2000, { query })
 ## Sentry Dashboard Features
 
 ### 1. **Issues**
+
 - All errors grouped by type
 - Stack traces with source maps
 - User impact metrics
 - Error trends and frequency
 
 ### 2. **Performance**
+
 - Transaction traces
 - Slow endpoint detection
 - Database query performance
 - Frontend vitals (LCP, FID, CLS)
 
 ### 3. **Releases**
+
 - Track errors by version
 - Deployment tracking
 - Regression detection
 - Adoption metrics
 
 ### 4. **Alerts**
+
 - Email/Slack notifications
 - Spike detection
 - Custom alert rules
 - On-call integration
 
 ### 5. **User Feedback**
+
 - Error report dialog
 - User comments
 - Contact information
@@ -392,6 +421,7 @@ logPerformanceIssue('db-query', 3500, 2000, { query })
 ### 1. Test Client Error
 
 Create test page:
+
 ```typescript
 // app/test-error/page.tsx
 'use client'
@@ -408,10 +438,11 @@ export default function TestError() {
 ### 2. Test Server Error
 
 Create test API:
+
 ```typescript
 // app/api/test-error/route.ts
 export async function GET() {
-  throw new Error('Test server error')
+  throw new Error("Test server error");
 }
 ```
 
@@ -420,21 +451,21 @@ export async function GET() {
 ```typescript
 // Trigger Prisma error
 await prisma.order.findUnique({
-  where: { id: 'non-existent-id' }
-})
+  where: { id: "non-existent-id" },
+});
 ```
 
 ### 4. Test Performance Issue
 
 ```typescript
-import { logPerformanceIssue } from '@/lib/error-logger'
+import { logPerformanceIssue } from "@/lib/error-logger";
 
 // Simulate slow operation
-const start = Date.now()
-await new Promise(resolve => setTimeout(resolve, 3000))
-const duration = Date.now() - start
+const start = Date.now();
+await new Promise(resolve => setTimeout(resolve, 3000));
+const duration = Date.now() - start;
 
-logPerformanceIssue('test-operation', duration, 2000)
+logPerformanceIssue("test-operation", duration, 2000);
 ```
 
 ### 5. Verify in Sentry Dashboard
@@ -452,12 +483,14 @@ logPerformanceIssue('test-operation', duration, 2000)
 ### Sampling Rates
 
 **Development:**
+
 ```typescript
 tracesSampleRate: 1.0,          // 100% of transactions
 replaysSessionSampleRate: 1.0,  // 100% of sessions
 ```
 
 **Production:**
+
 ```typescript
 tracesSampleRate: 0.1,          // 10% of transactions
 replaysSessionSampleRate: 0.1,  // 10% of sessions
@@ -467,6 +500,7 @@ replaysOnErrorSampleRate: 1.0,  // 100% when errors occur
 ### Source Maps
 
 Automatically uploaded during build:
+
 ```bash
 pnpm build
 # Sentry webpack plugin uploads source maps
@@ -475,12 +509,14 @@ pnpm build
 ### Release Tracking
 
 Set version:
+
 ```bash
 export APP_VERSION="1.0.1"
 pnpm build
 ```
 
 Sentry will:
+
 - Create release `1.0.1`
 - Associate errors with this release
 - Track regressions
@@ -493,6 +529,7 @@ Sentry will:
 ### 1. Slack Notifications
 
 In Sentry dashboard:
+
 1. Settings → Integrations → Slack
 2. Connect workspace
 3. Configure alert rules
@@ -506,6 +543,7 @@ vercel integration add sentry
 ```
 
 Automatic:
+
 - Deploy tracking
 - Release creation
 - Source map upload
@@ -514,6 +552,7 @@ Automatic:
 ### 3. PagerDuty (Optional)
 
 For critical errors:
+
 1. Settings → Integrations → PagerDuty
 2. Create incident on critical errors
 3. On-call escalation
@@ -526,56 +565,62 @@ For critical errors:
 ### ✅ Do's
 
 1. **Add Context**: Always include relevant context
+
    ```typescript
    logError(error, {
      orderId,
      clientId,
-     operation: 'create-order',
-     metadata: { items, total }
-   })
+     operation: "create-order",
+     metadata: { items, total },
+   });
    ```
 
 2. **Use Categories**: Categorize for better filtering
+
    ```typescript
-   category: ErrorCategory.Database
+   category: ErrorCategory.Database;
    ```
 
 3. **Set User Context**: Track errors by user
+
    ```typescript
-   createUserErrorContext(user.id, user.email, user.role)
+   createUserErrorContext(user.id, user.email, user.role);
    ```
 
 4. **Add Breadcrumbs**: Leave trail for debugging
+
    ```typescript
-   addErrorBreadcrumb('Starting order process', 'order', { orderId })
+   addErrorBreadcrumb("Starting order process", "order", { orderId });
    ```
 
 5. **Track Performance**: Monitor slow operations
    ```typescript
-   logPerformanceIssue(operation, duration, threshold)
+   logPerformanceIssue(operation, duration, threshold);
    ```
 
 ### ❌ Don'ts
 
 1. **Don't Log Sensitive Data**
+
    ```typescript
    // BAD
-   logError(error, { password: user.password })
+   logError(error, { password: user.password });
 
    // GOOD
-   logError(error, { userId: user.id })
+   logError(error, { userId: user.id });
    ```
 
 2. **Don't Log Everything**
+
    ```typescript
    // Filter noise in beforeSend
-   if (errorMessage.includes('ResizeObserver')) return null
+   if (errorMessage.includes("ResizeObserver")) return null;
    ```
 
 3. **Don't Ignore Sampling**
    ```typescript
    // Production: Don't track 100% (too expensive)
-   tracesSampleRate: 0.1 // 10% is enough
+   tracesSampleRate: 0.1; // 10% is enough
    ```
 
 ---
@@ -585,12 +630,14 @@ For critical errors:
 ### Issue: Errors Not Appearing in Sentry
 
 **Check:**
+
 1. DSN configured correctly
 2. `NODE_ENV` is production (or disable dev filter)
 3. Network connectivity
 4. Sentry quota not exceeded
 
 **Solution:**
+
 ```typescript
 // Temporarily disable beforeSend filter
 beforeSend(event) {
@@ -602,11 +649,13 @@ beforeSend(event) {
 ### Issue: Source Maps Not Working
 
 **Check:**
+
 1. `SENTRY_AUTH_TOKEN` configured
 2. Build completes successfully
 3. Source maps uploaded (check build logs)
 
 **Solution:**
+
 ```bash
 # Manual upload
 npx @sentry/cli sourcemaps upload --org=ashley-ai --project=ashley-ai-admin .next
@@ -616,6 +665,7 @@ npx @sentry/cli sourcemaps upload --org=ashley-ai --project=ashley-ai-admin .nex
 
 **Solution:**
 Adjust sampling:
+
 ```typescript
 tracesSampleRate: 0.05, // Reduce to 5%
 beforeSend(event) {
@@ -630,6 +680,7 @@ beforeSend(event) {
 ## Monitoring Checklist
 
 ### ✅ Setup
+
 - [x] Sentry account created
 - [x] Project configured
 - [x] DSN added to .env
@@ -640,6 +691,7 @@ beforeSend(event) {
 - [x] Error logger utilities created
 
 ### ✅ Integration
+
 - [ ] Slack notifications configured
 - [ ] Alert rules set up
 - [ ] Team members invited
@@ -647,6 +699,7 @@ beforeSend(event) {
 - [ ] Release tracking enabled
 
 ### ✅ Production
+
 - [ ] Source maps uploading
 - [ ] Sampling rates optimized
 - [ ] Sensitive data filtered
@@ -688,6 +741,7 @@ beforeSend(event) {
 **Sentry Error Tracking is COMPLETE and production-ready!**
 
 The system now provides:
+
 - Real-time error detection and alerting
 - Detailed stack traces with source maps
 - User context and breadcrumbs

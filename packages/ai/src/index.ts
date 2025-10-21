@@ -26,9 +26,13 @@ export const defaultConfigs = {
 };
 
 // Helper function to create Ashley instance
-export function createAshley(provider: "openai" | "anthropic", apiKey: string, options: Partial<AshleyConfig> = {}) {
+export function createAshley(
+  provider: "openai" | "anthropic",
+  apiKey: string,
+  options: Partial<AshleyConfig> = {}
+) {
   const baseConfig = defaultConfigs[provider];
-  
+
   return new Ashley({
     ...baseConfig,
     config: {

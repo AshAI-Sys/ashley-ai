@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { translationManager } from '@/lib/i18n/translation-manager';
-import { currencyManager } from '@/lib/i18n/currency-manager';
+import { NextRequest, NextResponse } from "next/server";
+import { translationManager } from "@/lib/i18n/translation-manager";
+import { currencyManager } from "@/lib/i18n/currency-manager";
 
 // GET /api/i18n?action=languages|translations|currencies
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const action = searchParams.get('action') || 'languages';
-    const lang = searchParams.get('lang') as any || 'en';
+    const action = searchParams.get("action") || "languages";
+    const lang = (searchParams.get("lang") as any) || "en";
 
     switch (action) {
-      case 'languages':
+      case "languages":
         const languages = translationManager.getSupportedLanguages();
         return NextResponse.json({
           success: true,
           languages,
         });
 
-      case 'translations':
+      case "translations":
         const translations = translationManager.getAllTranslations(lang);
         return NextResponse.json({
           success: true,
@@ -25,16 +25,16 @@ export async function GET(req: NextRequest) {
           translations,
         });
 
-      case 'currencies':
+      case "currencies":
         const currencies = currencyManager.getSupportedCurrencies();
         return NextResponse.json({
           success: true,
           currencies,
         });
 
-      case 'exchange_rate':
-        const from = searchParams.get('from') as any || 'PHP';
-        const to = searchParams.get('to') as any || 'USD';
+      case "exchange_rate":
+        const from = (searchParams.get("from") as any) || "PHP";
+        const to = (searchParams.get("to") as any) || "USD";
         const rate = currencyManager.getExchangeRate(from, to);
         return NextResponse.json({
           success: true,
@@ -42,15 +42,12 @@ export async function GET(req: NextRequest) {
         });
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid action' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error: any) {
-    console.error('i18n API error:', error);
+    console.error("i18n API error:", error);
     return NextResponse.json(
-      { error: 'Failed to process request', details: error.message },
+      { error: "Failed to process request", details: error.message },
       { status: 500 }
     );
   }
@@ -63,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     if (!amount || !from || !to) {
       return NextResponse.json(
-        { error: 'amount, from, and to are required' },
+        { error: "amount, from, and to are required" },
         { status: 400 }
       );
     }
@@ -78,9 +75,9 @@ export async function POST(req: NextRequest) {
       rate: currencyManager.getExchangeRate(from, to).rate,
     });
   } catch (error: any) {
-    console.error('Currency conversion error:', error);
+    console.error("Currency conversion error:", error);
     return NextResponse.json(
-      { error: 'Failed to convert currency', details: error.message },
+      { error: "Failed to convert currency", details: error.message },
       { status: 500 }
     );
   }

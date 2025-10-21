@@ -4,10 +4,24 @@
  */
 
 // Client
-export { getRedisClient, closeRedis, isRedisAvailable, getRedisInfo } from './client'
+export {
+  getRedisClient,
+  closeRedis,
+  isRedisAvailable,
+  getRedisInfo,
+} from "./client";
 
 // Cache service
-export { CacheService, cache, userCache, orderCache, clientCache, inventoryCache, sessionCache, apiCache } from './cache'
+export {
+  CacheService,
+  cache,
+  userCache,
+  orderCache,
+  clientCache,
+  inventoryCache,
+  sessionCache,
+  apiCache,
+} from "./cache";
 
 // Strategies
 export {
@@ -39,10 +53,15 @@ export {
   invalidateAllDashboards,
   warmCache,
   getCacheStats,
-} from './strategies'
+} from "./strategies";
 
 // Middleware
-export { withCache, withCacheInvalidation, Cacheable, memoize } from './middleware'
+export {
+  withCache,
+  withCacheInvalidation,
+  Cacheable,
+  memoize,
+} from "./middleware";
 
 /**
  * Quick Start Examples:

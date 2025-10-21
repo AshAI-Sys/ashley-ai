@@ -60,19 +60,20 @@
 
 ✅ **Test Suite:** `account-lockout.test.ts`
 
-| Test Case | Purpose |
-|-----------|---------|
-| Login with correct credentials | Verify normal authentication works |
-| Failed attempt tracking | Track and count failed login attempts |
-| Account lockout after 5 attempts | Trigger lockout mechanism |
-| Lockout prevents correct password | Verify lockout is enforced |
-| Remaining attempts in errors | User feedback on attempts left |
-| Lockout expiry (30 minutes) | Verify automatic unlock |
-| Reset after successful login | Clear failed attempts on success |
-| Case-insensitive email matching | Prevent bypass with case changes |
-| No info leakage | Security through obscurity |
+| Test Case                         | Purpose                               |
+| --------------------------------- | ------------------------------------- |
+| Login with correct credentials    | Verify normal authentication works    |
+| Failed attempt tracking           | Track and count failed login attempts |
+| Account lockout after 5 attempts  | Trigger lockout mechanism             |
+| Lockout prevents correct password | Verify lockout is enforced            |
+| Remaining attempts in errors      | User feedback on attempts left        |
+| Lockout expiry (30 minutes)       | Verify automatic unlock               |
+| Reset after successful login      | Clear failed attempts on success      |
+| Case-insensitive email matching   | Prevent bypass with case changes      |
+| No info leakage                   | Security through obscurity            |
 
 **Implementation Validated:**
+
 - `src/lib/account-lockout.ts` (7.4KB)
 - Redis-based distributed locking
 - Comprehensive audit logging
@@ -85,25 +86,26 @@
 
 ✅ **Test Suite:** `password-complexity.test.ts`
 
-| Test Case | Purpose |
-|-----------|---------|
-| Minimum 12 characters | Enforce length requirement |
-| Uppercase requirement | Validate character diversity |
-| Lowercase requirement | Validate character diversity |
-| Number requirement | Validate character diversity |
-| Special character requirement | Validate character diversity |
-| Common password rejection | Prevent weak passwords |
-| Very long passwords (100+ chars) | Handle edge cases |
-| Various special characters | Acceptance validation |
-| Password strength feedback | User guidance |
-| Unicode characters | International support |
-| Whitespace trimming | Input sanitization |
-| Null/undefined handling | Error prevention |
-| Registration with weak password | End-to-end validation |
-| Registration with strong password | Success case validation |
-| Password strength scoring | Algorithm validation |
+| Test Case                         | Purpose                      |
+| --------------------------------- | ---------------------------- |
+| Minimum 12 characters             | Enforce length requirement   |
+| Uppercase requirement             | Validate character diversity |
+| Lowercase requirement             | Validate character diversity |
+| Number requirement                | Validate character diversity |
+| Special character requirement     | Validate character diversity |
+| Common password rejection         | Prevent weak passwords       |
+| Very long passwords (100+ chars)  | Handle edge cases            |
+| Various special characters        | Acceptance validation        |
+| Password strength feedback        | User guidance                |
+| Unicode characters                | International support        |
+| Whitespace trimming               | Input sanitization           |
+| Null/undefined handling           | Error prevention             |
+| Registration with weak password   | End-to-end validation        |
+| Registration with strong password | Success case validation      |
+| Password strength scoring         | Algorithm validation         |
 
 **Implementation Validated:**
+
 - `src/lib/password-validator.ts` (7.1KB)
 - NIST-compliant requirements
 - Common password database (10,000+ entries)
@@ -116,36 +118,37 @@
 
 ✅ **Test Suite:** `file-upload.test.ts`
 
-| Category | Test Cases |
-|----------|------------|
-| **File Type Validation** | 6 tests |
-| - Valid JPEG files | Magic byte verification |
-| - Valid PNG files | Magic byte verification |
-| - Mismatched MIME/magic bytes | Security validation |
-| - Executable files (.exe) | Rejection validation |
-| - PHP shell files | Injection prevention |
-| - SVG XSS attacks | Script prevention |
-| **File Size Validation** | 3 tests |
-| - Exceed max size (10MB) | Limit enforcement |
-| - Under max size | Success validation |
-| - Zero-byte files | Edge case handling |
-| **Filename Sanitization** | 4 tests |
-| - Path traversal (../) | Attack prevention |
-| - Special characters | Sanitization validation |
-| - Unicode filenames | International support |
-| - Very long filenames | Truncation validation |
-| **Double Extension** | 1 test |
-| - Double extensions (.php.jpg) | Attack prevention |
-| **Content Security** | 2 tests |
-| - EXIF script injection | Metadata validation |
-| - ZIP bombs | Decompression protection |
-| **Authentication** | 2 tests |
-| - No authentication | Access control |
-| - Invalid token | Authorization validation |
-| **Upload Limits** | 1 test |
-| - Rate limiting | Abuse prevention |
+| Category                       | Test Cases               |
+| ------------------------------ | ------------------------ |
+| **File Type Validation**       | 6 tests                  |
+| - Valid JPEG files             | Magic byte verification  |
+| - Valid PNG files              | Magic byte verification  |
+| - Mismatched MIME/magic bytes  | Security validation      |
+| - Executable files (.exe)      | Rejection validation     |
+| - PHP shell files              | Injection prevention     |
+| - SVG XSS attacks              | Script prevention        |
+| **File Size Validation**       | 3 tests                  |
+| - Exceed max size (10MB)       | Limit enforcement        |
+| - Under max size               | Success validation       |
+| - Zero-byte files              | Edge case handling       |
+| **Filename Sanitization**      | 4 tests                  |
+| - Path traversal (../)         | Attack prevention        |
+| - Special characters           | Sanitization validation  |
+| - Unicode filenames            | International support    |
+| - Very long filenames          | Truncation validation    |
+| **Double Extension**           | 1 test                   |
+| - Double extensions (.php.jpg) | Attack prevention        |
+| **Content Security**           | 2 tests                  |
+| - EXIF script injection        | Metadata validation      |
+| - ZIP bombs                    | Decompression protection |
+| **Authentication**             | 2 tests                  |
+| - No authentication            | Access control           |
+| - Invalid token                | Authorization validation |
+| **Upload Limits**              | 1 test                   |
+| - Rate limiting                | Abuse prevention         |
 
 **Implementation Validated:**
+
 - `src/lib/file-validator.ts` (9.5KB)
 - Magic byte verification
 - MIME type validation
@@ -158,36 +161,37 @@
 
 ✅ **Test Suite:** `rate-limiting.test.ts`
 
-| Category | Test Cases |
-|----------|------------|
-| **Login Endpoint** | 3 tests |
-| - Excessive login attempts | Rate limit enforcement |
-| - Retry-After header | Client guidance |
-| - Distributed rate limiting | Redis-based tracking |
-| **API Endpoints** | 3 tests |
-| - GET endpoint limiting | Read operation limits |
-| - POST endpoint limiting | Write operation limits |
-| - Different endpoint limits | Tiered limiting |
-| **Tracking Methods** | 2 tests |
-| - IP-based tracking | Network-level limiting |
-| - Rate limit window expiry | Time-based reset |
-| **User-based Limiting** | 1 test |
-| - Per-user rate limits | Account-level tracking |
-| **Response Headers** | 2 tests |
-| - X-RateLimit-* headers | Standard compliance |
-| - Remaining counter decrement | Accurate tracking |
-| **DDoS Protection** | 3 tests |
-| - Burst traffic (200+ requests) | Spike handling |
-| - Service availability | Graceful degradation |
-| - Legitimate traffic priority | Quality of service |
-| **Bypass Prevention** | 3 tests |
-| - User-Agent rotation | Header bypass prevention |
-| - Referer changes | Header bypass prevention |
-| - Multiple techniques | Combined bypass prevention |
-| **CSRF Token** | 1 test |
-| - Token generation limits | Token abuse prevention |
+| Category                        | Test Cases                 |
+| ------------------------------- | -------------------------- |
+| **Login Endpoint**              | 3 tests                    |
+| - Excessive login attempts      | Rate limit enforcement     |
+| - Retry-After header            | Client guidance            |
+| - Distributed rate limiting     | Redis-based tracking       |
+| **API Endpoints**               | 3 tests                    |
+| - GET endpoint limiting         | Read operation limits      |
+| - POST endpoint limiting        | Write operation limits     |
+| - Different endpoint limits     | Tiered limiting            |
+| **Tracking Methods**            | 2 tests                    |
+| - IP-based tracking             | Network-level limiting     |
+| - Rate limit window expiry      | Time-based reset           |
+| **User-based Limiting**         | 1 test                     |
+| - Per-user rate limits          | Account-level tracking     |
+| **Response Headers**            | 2 tests                    |
+| - X-RateLimit-\* headers        | Standard compliance        |
+| - Remaining counter decrement   | Accurate tracking          |
+| **DDoS Protection**             | 3 tests                    |
+| - Burst traffic (200+ requests) | Spike handling             |
+| - Service availability          | Graceful degradation       |
+| - Legitimate traffic priority   | Quality of service         |
+| **Bypass Prevention**           | 3 tests                    |
+| - User-Agent rotation           | Header bypass prevention   |
+| - Referer changes               | Header bypass prevention   |
+| - Multiple techniques           | Combined bypass prevention |
+| **CSRF Token**                  | 1 test                     |
+| - Token generation limits       | Token abuse prevention     |
 
 **Implementation Validated:**
+
 - `src/lib/rate-limit.ts` (Redis-based)
 - Distributed rate limiting
 - IP and user-based tracking
@@ -218,6 +222,7 @@ npm install
 ### Running Tests
 
 **Windows:**
+
 ```bash
 # Run all tests
 run-tests.bat
@@ -233,6 +238,7 @@ run-tests.bat report
 ```
 
 **Linux/macOS:**
+
 ```bash
 # Make script executable
 chmod +x run-tests.sh
@@ -251,6 +257,7 @@ chmod +x run-tests.sh
 ```
 
 **NPM Scripts:**
+
 ```bash
 npm test                    # All tests
 npm run test:account-lockout  # Account lockout only
@@ -267,19 +274,20 @@ npm run test:report           # All tests + HTML report
 
 ### Expected Execution Time
 
-| Test Suite | Tests | Duration |
-|------------|-------|----------|
-| Account Lockout | 9 | ~15s |
-| Password Complexity | 15 | ~10s |
-| File Upload Security | 24 | ~20s |
-| Rate Limiting | 22 | ~30s |
-| **Total** | **70** | **~75s** |
+| Test Suite           | Tests  | Duration |
+| -------------------- | ------ | -------- |
+| Account Lockout      | 9      | ~15s     |
+| Password Complexity  | 15     | ~10s     |
+| File Upload Security | 24     | ~20s     |
+| Rate Limiting        | 22     | ~30s     |
+| **Total**            | **70** | **~75s** |
 
-*Note: Durations may vary based on network latency and server performance*
+_Note: Durations may vary based on network latency and server performance_
 
 ### Success Criteria
 
 All tests must pass with:
+
 - ✅ HTTP 200/400/401/429 responses (no 500 errors)
 - ✅ Security mechanisms enforced correctly
 - ✅ No bypasses or vulnerabilities detected
@@ -292,30 +300,32 @@ All tests must pass with:
 
 ### Overall Score: A+ (98/100)
 
-| Feature | Score | Status |
-|---------|-------|--------|
-| Content Security Policy | 100/100 | ✅ PERFECT |
-| Account Lockout | 100/100 | ✅ PERFECT |
-| Password Complexity | 100/100 | ✅ PERFECT |
-| File Upload Security | 100/100 | ✅ PERFECT |
-| Rate Limiting | 95/100 | ✅ EXCELLENT |
-| SQL Injection Prevention | 100/100 | ✅ PERFECT |
-| Authentication | 100/100 | ✅ PERFECT |
-| CSRF Protection | 100/100 | ✅ PERFECT |
+| Feature                  | Score   | Status       |
+| ------------------------ | ------- | ------------ |
+| Content Security Policy  | 100/100 | ✅ PERFECT   |
+| Account Lockout          | 100/100 | ✅ PERFECT   |
+| Password Complexity      | 100/100 | ✅ PERFECT   |
+| File Upload Security     | 100/100 | ✅ PERFECT   |
+| Rate Limiting            | 95/100  | ✅ EXCELLENT |
+| SQL Injection Prevention | 100/100 | ✅ PERFECT   |
+| Authentication           | 100/100 | ✅ PERFECT   |
+| CSRF Protection          | 100/100 | ✅ PERFECT   |
 
 **Grade Calculation:**
+
 - A+ (95-100): World-class security
-- A  (90-94): Excellent security
-- B  (80-89): Good security
-- C  (70-79): Adequate security
-- D  (60-69): Needs improvement
-- F  (<60): Critical vulnerabilities
+- A (90-94): Excellent security
+- B (80-89): Good security
+- C (70-79): Adequate security
+- D (60-69): Needs improvement
+- F (<60): Critical vulnerabilities
 
 ---
 
 ## 🛡️ Security Features Validated
 
 ### 1. Authentication & Access Control
+
 - ✅ JWT token-based authentication
 - ✅ Secure session management
 - ✅ Account lockout (brute-force prevention)
@@ -323,6 +333,7 @@ All tests must pass with:
 - ✅ Role-based access control (RBAC)
 
 ### 2. Data Protection
+
 - ✅ SQL injection prevention (Prisma ORM)
 - ✅ XSS prevention (CSP policies)
 - ✅ CSRF protection (token-based)
@@ -330,6 +341,7 @@ All tests must pass with:
 - ✅ Input validation (Zod schemas)
 
 ### 3. Network Security
+
 - ✅ Rate limiting (distributed, Redis-based)
 - ✅ DDoS protection (burst traffic handling)
 - ✅ HTTPS enforcement (production)
@@ -337,6 +349,7 @@ All tests must pass with:
 - ✅ Security headers (Helmet.js)
 
 ### 4. Logging & Monitoring
+
 - ✅ Comprehensive audit logging
 - ✅ Security event tracking
 - ✅ Failed login monitoring
@@ -352,6 +365,7 @@ After running `npm run test:report`, a comprehensive HTML report is generated:
 **File:** `security-report.html`
 
 **Sections:**
+
 1. **Security Score Dashboard** - A+ grade with 98/100 score
 2. **Summary Cards** - Test suites, vulnerabilities, coverage
 3. **Test Categories** - All test cases organized by category
@@ -360,6 +374,7 @@ After running `npm run test:report`, a comprehensive HTML report is generated:
 6. **Recommendations** - Ongoing monitoring checklist
 
 **Features:**
+
 - Beautiful responsive design
 - Gradient backgrounds
 - Color-coded status indicators
@@ -405,10 +420,13 @@ After running `npm run test:report`, a comprehensive HTML report is generated:
 ### Common Issues
 
 **Issue:** Server not running
+
 ```
 Error: connect ECONNREFUSED 127.0.0.1:3001
 ```
+
 **Solution:** Start development server
+
 ```bash
 cd services/ash-admin
 pnpm run dev
@@ -417,10 +435,13 @@ pnpm run dev
 ---
 
 **Issue:** Redis not running
+
 ```
 Error: Redis connection failed
 ```
+
 **Solution:** Start Redis or skip rate limiting tests
+
 ```bash
 npm run test -- --testPathIgnorePatterns=rate-limiting
 ```
@@ -428,23 +449,29 @@ npm run test -- --testPathIgnorePatterns=rate-limiting
 ---
 
 **Issue:** Test timeouts
+
 ```
 Timeout - Async callback was not invoked within 30000ms
 ```
+
 **Solution:** Increase timeout in `jest.config.js`
+
 ```javascript
-testTimeout: 60000  // 60 seconds
+testTimeout: 60000; // 60 seconds
 ```
 
 ---
 
 **Issue:** Rate limit conflicts during tests
+
 ```
 Error: Rate limited during test execution
 ```
+
 **Solution:** Ensure sequential execution
+
 ```javascript
-maxWorkers: 1  // In jest.config.js
+maxWorkers: 1; // In jest.config.js
 ```
 
 ---
@@ -452,17 +479,20 @@ maxWorkers: 1  // In jest.config.js
 ## 📚 References
 
 ### Security Standards
+
 - [OWASP Top 10 2021](https://owasp.org/www-project-top-ten/)
 - [NIST Password Guidelines](https://pages.nist.gov/800-63-3/sp800-63b.html)
 - [CWE Top 25](https://cwe.mitre.org/top25/)
 - [OWASP Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
 
 ### Testing Frameworks
+
 - [Jest Documentation](https://jestjs.io/)
 - [ts-jest](https://kulshekhar.github.io/ts-jest/)
 - [TypeScript](https://www.typescriptlang.org/)
 
 ### Ashley AI Implementation
+
 - `SECURITY-AUDIT-REPORT.md` - Complete security audit (900 lines)
 - `SECURITY-REMEDIATION-PLAN.md` - Implementation guide (600 lines)
 - `LOAD-TESTING.md` - Performance testing guide
@@ -473,6 +503,7 @@ maxWorkers: 1  // In jest.config.js
 ## ✅ Next Steps
 
 ### Immediate Actions
+
 1. ✅ **Test Suite Created** - All 4 test files implemented
 2. ✅ **Configuration Files** - Jest, TypeScript, package.json
 3. ✅ **Test Runners** - Batch and shell scripts
@@ -480,6 +511,7 @@ maxWorkers: 1  // In jest.config.js
 5. ✅ **Report Generator** - HTML report automation
 
 ### Recommended Actions
+
 1. **Run Initial Tests** - Execute test suite to validate
 2. **Review Results** - Check for any environment-specific issues
 3. **Generate Report** - Create HTML security report
@@ -494,9 +526,9 @@ name: Security Tests
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [master, develop]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   security:
@@ -508,7 +540,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install dependencies
         run: |
@@ -538,6 +570,7 @@ jobs:
 ### October 3, 2025 - Initial Creation
 
 **Created Files:**
+
 - 4 test suites (70+ tests)
 - 3 configuration files
 - 2 test runner scripts
@@ -547,6 +580,7 @@ jobs:
 **Total Lines of Code:** ~2,500 lines
 
 **Security Coverage:**
+
 - Account Lockout: 100%
 - Password Complexity: 100%
 - File Upload Security: 100%
@@ -561,6 +595,7 @@ jobs:
 This security test suite provides **comprehensive automated validation** of all security features in the Ashley AI Manufacturing ERP System.
 
 **Key Achievements:**
+
 - ✅ **70+ test cases** covering all critical security features
 - ✅ **A+ security score** (98/100) with world-class security posture
 - ✅ **Automated testing** with one-command execution
@@ -568,6 +603,7 @@ This security test suite provides **comprehensive automated validation** of all 
 - ✅ **CI/CD ready** for continuous security validation
 
 **Security Confidence:**
+
 - Zero critical vulnerabilities
 - Industry-leading security practices
 - OWASP Top 10 compliant

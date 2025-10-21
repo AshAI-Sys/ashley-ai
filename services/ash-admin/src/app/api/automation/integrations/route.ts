@@ -1,32 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 // GET /api/automation/integrations - Get integrations
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get('workspace_id') || 'workspace_1';
-    const type = searchParams.get('type');
-    const provider = searchParams.get('provider');
-    const isActive = searchParams.get('is_active');
-    const isConnected = searchParams.get('is_connected');
+    const workspaceId = searchParams.get("workspace_id") || "workspace_1";
+    const type = searchParams.get("type");
+    const provider = searchParams.get("provider");
+    const isActive = searchParams.get("is_active");
+    const isConnected = searchParams.get("is_connected");
 
     const where: any = { workspace_id: workspaceId };
 
     if (type) where.type = type;
     if (provider) where.provider = provider;
-    if (isActive !== null) where.is_active = isActive === 'true';
-    if (isConnected !== null) where.is_connected = isConnected === 'true';
+    if (isActive !== null) where.is_active = isActive === "true";
+    if (isConnected !== null) where.is_connected = isConnected === "true";
 
     const integrations = await prisma.integration.findMany({
       where,
       include: {
         user: {
-          select: { id: true, email: true, username: true }
+          select: { id: true, email: true, username: true },
         },
         sync_logs: {
           take: 5,
-          orderBy: { started_at: 'desc' },
+          orderBy: { started_at: "desc" },
           select: {
             id: true,
             sync_type: true,
@@ -36,17 +36,17 @@ export async function GET(request: NextRequest) {
             records_success: true,
             records_failed: true,
             started_at: true,
-            completed_at: true
-          }
-        }
+            completed_at: true,
+          },
+        },
       },
-      orderBy: { updated_at: 'desc' }
+      orderBy: { updated_at: "desc" },
     });
 
     // Mask sensitive configuration data
     const sanitizedIntegrations = integrations.map(integration => ({
       ...integration,
-      config: maskSensitiveConfig(JSON.parse(integration.config))
+      config: maskSensitiveConfig(JSON.parse(integration.config)),
     }));
 
     return NextResponse.json({
@@ -54,14 +54,13 @@ export async function GET(request: NextRequest) {
       data: sanitizedIntegrations,
       meta: {
         total: integrations.length,
-        filters: { type, provider, isActive, isConnected }
-      }
+        filters: { type, provider, isActive, isConnected },
+      },
     });
-
   } catch (error) {
-    console.error('Error fetching integrations:', error);
+    console.error("Error fetching integrations:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch integrations' },
+      { success: false, error: "Failed to fetch integrations" },
       { status: 500 }
     );
   }
@@ -72,20 +71,23 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      workspace_id = 'workspace_1',
+      workspace_id = "workspace_1",
       name,
       type,
       provider,
       config,
       sync_frequency,
       is_active = true,
-      created_by = 'user_1'
+      created_by = "user_1",
     } = body;
 
     // Validate required fields
     if (!name || !type || !provider || !config) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: name, type, provider, config' },
+        {
+          success: false,
+          error: "Missing required fields: name, type, provider, config",
+        },
         { status: 400 }
       );
     }
@@ -113,29 +115,28 @@ export async function POST(request: NextRequest) {
         is_active,
         is_connected: connectionTest.success,
         last_error: connectionTest.success ? null : connectionTest.error,
-        created_by
+        created_by,
       },
       include: {
         user: {
-          select: { id: true, email: true, username: true }
-        }
-      }
+          select: { id: true, email: true, username: true },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: {
         ...integration,
-        config: maskSensitiveConfig(JSON.parse(integration.config))
+        config: maskSensitiveConfig(JSON.parse(integration.config)),
       },
-      message: 'Integration created successfully',
-      connection_test: connectionTest
+      message: "Integration created successfully",
+      connection_test: connectionTest,
     });
-
   } catch (error) {
-    console.error('Error creating integration:', error);
+    console.error("Error creating integration:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create integration' },
+      { success: false, error: "Failed to create integration" },
       { status: 500 }
     );
   }
@@ -149,7 +150,7 @@ export async function PUT(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Integration ID is required' },
+        { success: false, error: "Integration ID is required" },
         { status: 400 }
       );
     }
@@ -164,24 +165,23 @@ export async function PUT(request: NextRequest) {
       data: updateData,
       include: {
         user: {
-          select: { id: true, email: true, username: true }
-        }
-      }
+          select: { id: true, email: true, username: true },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: {
         ...integration,
-        config: maskSensitiveConfig(JSON.parse(integration.config))
+        config: maskSensitiveConfig(JSON.parse(integration.config)),
       },
-      message: 'Integration updated successfully'
+      message: "Integration updated successfully",
     });
-
   } catch (error) {
-    console.error('Error updating integration:', error);
+    console.error("Error updating integration:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update integration' },
+      { success: false, error: "Failed to update integration" },
       { status: 500 }
     );
   }
@@ -191,28 +191,27 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Integration ID is required' },
+        { success: false, error: "Integration ID is required" },
         { status: 400 }
       );
     }
 
     await prisma.integration.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Integration deleted successfully'
+      message: "Integration deleted successfully",
     });
-
   } catch (error) {
-    console.error('Error deleting integration:', error);
+    console.error("Error deleting integration:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete integration' },
+      { success: false, error: "Failed to delete integration" },
       { status: 500 }
     );
   }
@@ -221,41 +220,51 @@ export async function DELETE(request: NextRequest) {
 // Helper functions
 function maskSensitiveConfig(config: any): any {
   const masked = { ...config };
-  const sensitiveKeys = ['api_key', 'password', 'secret', 'token', 'private_key'];
+  const sensitiveKeys = [
+    "api_key",
+    "password",
+    "secret",
+    "token",
+    "private_key",
+  ];
 
   for (const key of sensitiveKeys) {
     if (masked[key]) {
-      masked[key] = '***MASKED***';
+      masked[key] = "***MASKED***";
     }
   }
 
   return masked;
 }
 
-function validateIntegrationConfig(type: string, provider: string, config: any): { valid: boolean; error?: string } {
+function validateIntegrationConfig(
+  type: string,
+  provider: string,
+  config: any
+): { valid: boolean; error?: string } {
   const requiredFields: Record<string, Record<string, string[]>> = {
     EMAIL: {
-      MAILGUN: ['api_key', 'domain'],
-      SENDGRID: ['api_key'],
-      SES: ['access_key_id', 'secret_access_key', 'region']
+      MAILGUN: ["api_key", "domain"],
+      SENDGRID: ["api_key"],
+      SES: ["access_key_id", "secret_access_key", "region"],
     },
     SMS: {
-      TWILIO: ['account_sid', 'auth_token', 'from_number']
+      TWILIO: ["account_sid", "auth_token", "from_number"],
     },
     ACCOUNTING: {
-      QUICKBOOKS: ['client_id', 'client_secret', 'sandbox'],
-      XERO: ['client_id', 'client_secret']
+      QUICKBOOKS: ["client_id", "client_secret", "sandbox"],
+      XERO: ["client_id", "client_secret"],
     },
     CRM: {
-      SALESFORCE: ['client_id', 'client_secret', 'username', 'password']
+      SALESFORCE: ["client_id", "client_secret", "username", "password"],
     },
     SHIPPING: {
-      FEDEX: ['api_key', 'secret_key', 'account_number'],
-      UPS: ['api_key', 'username', 'password']
+      FEDEX: ["api_key", "secret_key", "account_number"],
+      UPS: ["api_key", "username", "password"],
     },
     SLACK: {
-      SLACK: ['webhook_url']
-    }
+      SLACK: ["webhook_url"],
+    },
   };
 
   const typeConfig = requiredFields[type];
@@ -265,7 +274,10 @@ function validateIntegrationConfig(type: string, provider: string, config: any):
 
   const providerConfig = typeConfig[provider];
   if (!providerConfig) {
-    return { valid: false, error: `Unsupported provider for ${type}: ${provider}` };
+    return {
+      valid: false,
+      error: `Unsupported provider for ${type}: ${provider}`,
+    };
   }
 
   for (const field of providerConfig) {
@@ -277,29 +289,33 @@ function validateIntegrationConfig(type: string, provider: string, config: any):
   return { valid: true };
 }
 
-async function testConnection(type: string, provider: string, config: any): Promise<{ success: boolean; error?: string }> {
+async function testConnection(
+  type: string,
+  provider: string,
+  config: any
+): Promise<{ success: boolean; error?: string }> {
   try {
     // This would implement actual connection testing based on the integration type
     // For now, we'll do basic validation
 
     switch (type) {
-      case 'EMAIL':
-        if (provider === 'MAILGUN' && config.api_key && config.domain) {
+      case "EMAIL":
+        if (provider === "MAILGUN" && config.api_key && config.domain) {
           return { success: true };
         }
-        if (provider === 'SENDGRID' && config.api_key) {
-          return { success: true };
-        }
-        break;
-
-      case 'SMS':
-        if (provider === 'TWILIO' && config.account_sid && config.auth_token) {
+        if (provider === "SENDGRID" && config.api_key) {
           return { success: true };
         }
         break;
 
-      case 'SLACK':
-        if (provider === 'SLACK' && config.webhook_url) {
+      case "SMS":
+        if (provider === "TWILIO" && config.account_sid && config.auth_token) {
+          return { success: true };
+        }
+        break;
+
+      case "SLACK":
+        if (provider === "SLACK" && config.webhook_url) {
           return { success: true };
         }
         break;
@@ -308,12 +324,11 @@ async function testConnection(type: string, provider: string, config: any): Prom
         return { success: true }; // Assume success for other types
     }
 
-    return { success: false, error: 'Invalid configuration' };
-
+    return { success: false, error: "Invalid configuration" };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Connection test failed'
+      error: error instanceof Error ? error.message : "Connection test failed",
     };
   }
 }

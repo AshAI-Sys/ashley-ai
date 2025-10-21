@@ -49,6 +49,7 @@ Click "Deploy" and wait!
 ## Why This Works
 
 When you set **Root Directory = `services/ash-admin`**:
+
 - ✅ Vercel builds FROM that directory
 - ✅ Sees package.json with Next.js dependency
 - ✅ Runs pnpm install which hoists dependencies from root
@@ -65,6 +66,7 @@ vercel --cwd services/ash-admin --prod
 ```
 
 Then in the prompts:
+
 - Link to existing project: Yes → ash-admin
 - Or create new project
 

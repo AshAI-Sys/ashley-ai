@@ -8,7 +8,7 @@ export class AnthropicProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super(config);
-    
+
     if (!config.apiKey) {
       throw new Error("Anthropic API key is required");
     }
@@ -31,7 +31,9 @@ export class AnthropicProvider extends BaseAIProvider {
     return this.analyze(context, "Client Risk Assessment");
   }
 
-  async validateProduction(context: ValidationContext): Promise<AshleyAnalysis> {
+  async validateProduction(
+    context: ValidationContext
+  ): Promise<AshleyAnalysis> {
     return this.analyze(context, "Production Feasibility");
   }
 
@@ -43,9 +45,15 @@ export class AnthropicProvider extends BaseAIProvider {
     return this.analyze(context, "Quality Control");
   }
 
-  private async analyze(context: ValidationContext, analysisType: string): Promise<AshleyAnalysis> {
+  private async analyze(
+    context: ValidationContext,
+    analysisType: string
+  ): Promise<AshleyAnalysis> {
     try {
-      const systemPrompt = this.buildSystemPrompt(context.entity, context.stage);
+      const systemPrompt = this.buildSystemPrompt(
+        context.entity,
+        context.stage
+      );
       const userPrompt = this.buildUserPrompt(context);
 
       const response = await this.client.messages.create({
@@ -56,8 +64,8 @@ export class AnthropicProvider extends BaseAIProvider {
         messages: [
           {
             role: "user",
-            content: `${analysisType}: ${userPrompt}\n\nPlease respond with valid JSON only.`
-          }
+            content: `${analysisType}: ${userPrompt}\n\nPlease respond with valid JSON only.`,
+          },
         ],
       });
 
@@ -67,7 +75,7 @@ export class AnthropicProvider extends BaseAIProvider {
       }
 
       const parsed = JSON.parse(content.text);
-      
+
       return {
         id: nanoid(),
         timestamp: new Date(),
@@ -84,23 +92,25 @@ export class AnthropicProvider extends BaseAIProvider {
       };
     } catch (error) {
       console.error("Anthropic analysis error:", error);
-      
+
       // Fallback analysis
       return {
         id: nanoid(),
         timestamp: new Date(),
         risk: "AMBER",
         confidence: 0.3,
-        issues: [{
-          type: "Analysis Error",
-          message: "Unable to complete AI analysis. Manual review required.",
-          severity: "HIGH",
-          category: "FEASIBILITY",
-          details: { error: String(error) }
-        }],
+        issues: [
+          {
+            type: "Analysis Error",
+            message: "Unable to complete AI analysis. Manual review required.",
+            severity: "HIGH",
+            category: "FEASIBILITY",
+            details: { error: String(error) },
+          },
+        ],
         recommendations: [
           "Manual review required due to AI analysis failure",
-          "Consider checking API configuration if this persists"
+          "Consider checking API configuration if this persists",
         ],
         metadata: {
           provider: "anthropic",

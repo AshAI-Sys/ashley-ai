@@ -1,30 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
     // Fixed: Changed createdAt to created_at
-    const { searchParams } = new URL(request.url)
-    const department = searchParams.get('department')
-    const status = searchParams.get('status')
-    const position = searchParams.get('position')
-    const limit = parseInt(searchParams.get('limit') || '100')
-    const page = parseInt(searchParams.get('page') || '1')
+    const { searchParams } = new URL(request.url);
+    const department = searchParams.get("department");
+    const status = searchParams.get("status");
+    const position = searchParams.get("position");
+    const limit = parseInt(searchParams.get("limit") || "100");
+    const page = parseInt(searchParams.get("page") || "1");
 
-    const skip = (page - 1) * limit
+    const skip = (page - 1) * limit;
 
-    const where: any = {}
+    const where: any = {};
 
     if (department) {
-      where.department = department
+      where.department = department;
     }
 
     if (status) {
-      where.status = status
+      where.status = status;
     }
 
     if (position) {
-      where.position = position
+      where.position = position;
     }
 
     const [employees, total] = await Promise.all([
@@ -33,11 +33,11 @@ export async function GET(request: NextRequest) {
         take: limit,
         skip,
         orderBy: {
-          created_at: 'desc'
-        }
+          created_at: "desc",
+        },
       }),
-      prisma.employee.count({ where })
-    ])
+      prisma.employee.count({ where }),
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -46,14 +46,14 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
-    })
+        pages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
-    console.error('Error fetching employees:', error)
+    console.error("Error fetching employees:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch employees' },
+      { success: false, error: "Failed to fetch employees" },
       { status: 500 }
-    )
+    );
   }
 }

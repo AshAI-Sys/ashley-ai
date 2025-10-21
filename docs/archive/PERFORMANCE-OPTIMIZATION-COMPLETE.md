@@ -24,6 +24,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - Cache hit/miss recording with statistics
 
 2. **Cache Durations**
+
    ```
    - Static data (users, clients, employees): 30 minutes
    - Moderate updates (orders, inventory): 5 minutes
@@ -48,6 +49,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - Ready for: clients, finance, production, QC, maintenance
 
 ### **Performance Impact**
+
 - **Query Speed**: 50-150ms (from 200-500ms) - **70% faster**
 - **Cache Hit Rate**: 80-95% expected
 - **Database Load**: Reduced by 80-90%
@@ -67,6 +69,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - Cache invalidation helpers
 
 2. **Cache Strategies**
+
    ```typescript
    - Realtime: 10s cache, 5s revalidate
    - Short: 60s cache, 30s revalidate
@@ -80,6 +83,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - `X-Cache-Key` for debugging
 
 ### **Performance Impact**
+
 - **API Response**: 10-50ms (from 200-1000ms) - **90% faster**
 - **Server Load**: Reduced by 85%
 - **Concurrent Users**: 10x increase capacity
@@ -111,6 +115,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - SVG security
 
 ### **Performance Impact**
+
 - **Image Load Time**: 0.3-0.8s (from 2-5s) - **85% faster**
 - **Bundle Size**: 50-70% smaller images
 - **Bandwidth**: Reduced by 60%
@@ -141,6 +146,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - Tree shaking enabled
 
 ### **Performance Impact**
+
 - **Initial Bundle**: ~1MB (from ~3MB) - **66% smaller**
 - **Time to Interactive**: 0.8s (from 2.5s) - **68% faster**
 - **First Load JS**: Reduced by 2MB
@@ -174,6 +180,7 @@ Complete performance optimization implementation for Ashley AI with database cac
    - Administration department access
 
 ### **Key Metrics Tracked**
+
 - Total queries executed
 - Cache hits/misses
 - Cache hit rate (%)
@@ -183,6 +190,7 @@ Complete performance optimization implementation for Ashley AI with database cac
 - Redis statistics (clients, memory, ops/sec)
 
 ### **Performance Impact**
+
 - **Visibility**: 100% transparency into system performance
 - **Debugging**: Instant slow query identification
 - **Optimization**: Data-driven performance improvements
@@ -191,22 +199,23 @@ Complete performance optimization implementation for Ashley AI with database cac
 
 ## 📊 Overall Performance Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Page Load Time** | 1.4s | 0.5s | **64% faster** |
-| **API Response** | 200-500ms | 50-150ms | **70% faster** |
-| **Database Queries** | No cache | 90% hit | **10x faster** |
-| **Bundle Size** | ~3MB | ~1MB | **66% smaller** |
-| **Image Load** | 2-5s | 0.3-0.8s | **85% faster** |
-| **Time to Interactive** | 2.5s | 0.8s | **68% faster** |
-| **Cache Hit Rate** | 0% | 85-95% | **∞ improvement** |
-| **Concurrent Users** | Baseline | 10x | **1000% increase** |
+| Metric                  | Before    | After    | Improvement        |
+| ----------------------- | --------- | -------- | ------------------ |
+| **Page Load Time**      | 1.4s      | 0.5s     | **64% faster**     |
+| **API Response**        | 200-500ms | 50-150ms | **70% faster**     |
+| **Database Queries**    | No cache  | 90% hit  | **10x faster**     |
+| **Bundle Size**         | ~3MB      | ~1MB     | **66% smaller**    |
+| **Image Load**          | 2-5s      | 0.3-0.8s | **85% faster**     |
+| **Time to Interactive** | 2.5s      | 0.8s     | **68% faster**     |
+| **Cache Hit Rate**      | 0%        | 85-95%   | **∞ improvement**  |
+| **Concurrent Users**    | Baseline  | 10x      | **1000% increase** |
 
 ---
 
 ## 🚀 Production Readiness Checklist
 
 ### **✅ Completed**
+
 - [x] Database query caching implemented
 - [x] API response caching middleware created
 - [x] Prisma extensions for performance monitoring
@@ -223,6 +232,7 @@ Complete performance optimization implementation for Ashley AI with database cac
 - [x] Auto-pagination limits
 
 ### **⚠️ Recommended Before Production**
+
 - [ ] Deploy Redis cluster (Upstash/AWS ElastiCache)
 - [ ] Set up CDN for image delivery (Cloudinary/Vercel)
 - [ ] Configure production database connection pooling
@@ -301,6 +311,7 @@ const HeavyChart = createLazyComponent(
 ## 📈 Monitoring Performance
 
 ### **Access the Dashboard**
+
 1. Navigate to http://localhost:3001/performance
 2. View real-time metrics:
    - System health status
@@ -311,6 +322,7 @@ const HeavyChart = createLazyComponent(
    - Performance recommendations
 
 ### **Interpreting Grades**
+
 - **A+ (90-100%)**: Excellent performance
 - **A (80-89%)**: Good performance
 - **B (70-79%)**: Acceptable, room for improvement
@@ -319,6 +331,7 @@ const HeavyChart = createLazyComponent(
 - **F (<50%)**: Critical issues
 
 ### **Key Metrics to Watch**
+
 - **Cache Hit Rate**: Aim for >85%
 - **Avg Query Duration**: Keep <100ms
 - **Speedup Factor**: Should be >5x for cached queries
@@ -363,6 +376,7 @@ With performance optimization complete, the next phase is implementing the Subsc
 ## 🔗 Related Files
 
 ### **Core Performance Files**
+
 - `src/lib/performance/query-cache.ts`
 - `src/lib/performance/api-cache-middleware.ts`
 - `src/lib/performance/prisma-extensions.ts`
@@ -370,14 +384,17 @@ With performance optimization complete, the next phase is implementing the Subsc
 - `src/lib/db.ts`
 
 ### **Components**
+
 - `src/components/OptimizedImage.tsx`
 - `src/app/(dashboard)/performance/page.tsx`
 
 ### **Configuration**
+
 - `next.config.js`
 - `src/components/Sidebar.tsx`
 
 ### **API Endpoints**
+
 - `src/app/api/performance/metrics/route.ts`
 - `src/app/api/orders/route.ts` (example)
 - `src/app/api/hr/stats/route.ts` (example)

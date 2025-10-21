@@ -1,34 +1,34 @@
-import { Resend } from 'resend'
+import { Resend } from "resend";
 
 // Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY || '')
+const resend = new Resend(process.env.RESEND_API_KEY || "");
 
 export interface EmailOptions {
-  to: string | string[]
-  subject: string
-  html?: string
-  text?: string
-  from?: string
-  replyTo?: string
-  reply_to?: string  // Deprecated alias for replyTo
-  cc?: string | string[]
-  bcc?: string | string[]
+  to: string | string[];
+  subject: string;
+  html?: string;
+  text?: string;
+  from?: string;
+  replyTo?: string;
+  reply_to?: string; // Deprecated alias for replyTo
+  cc?: string | string[];
+  bcc?: string | string[];
   attachments?: Array<{
-    filename: string
-    content: string | Buffer
-    content_type?: string
-  }>
+    filename: string;
+    content: string | Buffer;
+    content_type?: string;
+  }>;
 }
 
 export interface EmailTemplate {
-  template: string
-  variables: Record<string, any>
+  template: string;
+  variables: Record<string, any>;
 }
 
 export interface EmailResult {
-  success: boolean
-  id?: string
-  error?: string
+  success: boolean;
+  id?: string;
+  error?: string;
 }
 
 /**
@@ -37,10 +37,13 @@ export interface EmailResult {
 export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   try {
     if (!process.env.RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY not configured')
+      throw new Error("RESEND_API_KEY not configured");
     }
 
-    const from = options.from || process.env.EMAIL_FROM || 'Ashley AI <noreply@ashleyai.com>'
+    const from =
+      options.from ||
+      process.env.EMAIL_FROM ||
+      "Ashley AI <noreply@ashleyai.com>";
 
     const result = await resend.emails.send({
       from,
@@ -51,22 +54,22 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
       reply_to: options.replyTo || options.reply_to,
       cc: options.cc,
       bcc: options.bcc,
-    })
+    });
 
     if (result.error) {
-      throw new Error(result.error.message)
+      throw new Error(result.error.message);
     }
 
     return {
       success: true,
       id: result.data?.id,
-    }
+    };
   } catch (error: any) {
-    console.error('Email send error:', error)
+    console.error("Email send error:", error);
     return {
       success: false,
       error: error.message,
-    }
+    };
   }
 }
 
@@ -74,13 +77,16 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
  * Email Templates
  */
 
-export async function sendOrderConfirmation(to: string, orderData: {
-  order_number: string
-  client_name: string
-  total_amount: number
-  delivery_date: string
-  items: Array<{ name: string; quantity: number }>
-}) {
+export async function sendOrderConfirmation(
+  to: string,
+  orderData: {
+    order_number: string;
+    client_name: string;
+    total_amount: number;
+    delivery_date: string;
+    items: Array<{ name: string; quantity: number }>;
+  }
+) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -120,12 +126,16 @@ export async function sendOrderConfirmation(to: string, orderData: {
                 </tr>
               </thead>
               <tbody>
-                ${orderData.items.map(item => `
+                ${orderData.items
+                  .map(
+                    item => `
                   <tr>
                     <td>${item.name}</td>
                     <td>${item.quantity}</td>
                   </tr>
-                `).join('')}
+                `
+                  )
+                  .join("")}
               </tbody>
             </table>
           </div>
@@ -140,22 +150,25 @@ export async function sendOrderConfirmation(to: string, orderData: {
       </div>
     </body>
     </html>
-  `
+  `;
 
   return sendEmail({
     to,
     subject: `Order Confirmation - ${orderData.order_number}`,
     html,
-  })
+  });
 }
 
-export async function sendDeliveryNotification(to: string, deliveryData: {
-  order_number: string
-  tracking_number: string
-  carrier_name: string
-  estimated_delivery: string
-  client_name: string
-}) {
+export async function sendDeliveryNotification(
+  to: string,
+  deliveryData: {
+    order_number: string;
+    tracking_number: string;
+    carrier_name: string;
+    estimated_delivery: string;
+    client_name: string;
+  }
+) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -195,23 +208,26 @@ export async function sendDeliveryNotification(to: string, deliveryData: {
       </div>
     </body>
     </html>
-  `
+  `;
 
   return sendEmail({
     to,
     subject: `Order Shipped - ${deliveryData.order_number}`,
     html,
-  })
+  });
 }
 
-export async function sendInvoiceEmail(to: string, invoiceData: {
-  invoice_number: string
-  client_name: string
-  amount: number
-  due_date: string
-  items: Array<{ description: string; amount: number }>
-  invoice_url?: string
-}) {
+export async function sendInvoiceEmail(
+  to: string,
+  invoiceData: {
+    invoice_number: string;
+    client_name: string;
+    amount: number;
+    due_date: string;
+    items: Array<{ description: string; amount: number }>;
+    invoice_url?: string;
+  }
+) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -250,12 +266,16 @@ export async function sendInvoiceEmail(to: string, invoiceData: {
                 </tr>
               </thead>
               <tbody>
-                ${invoiceData.items.map(item => `
+                ${invoiceData.items
+                  .map(
+                    item => `
                   <tr>
                     <td>${item.description}</td>
                     <td>₱${item.amount.toLocaleString()}</td>
                   </tr>
-                `).join('')}
+                `
+                  )
+                  .join("")}
               </tbody>
             </table>
 
@@ -263,11 +283,15 @@ export async function sendInvoiceEmail(to: string, invoiceData: {
               Total Amount: ₱${invoiceData.amount.toLocaleString()}
             </div>
 
-            ${invoiceData.invoice_url ? `
+            ${
+              invoiceData.invoice_url
+                ? `
               <div style="text-align: center;">
                 <a href="${invoiceData.invoice_url}" class="button">View Invoice</a>
               </div>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
 
           <p>Please process payment by the due date. If you have any questions, please contact us.</p>
@@ -278,20 +302,23 @@ export async function sendInvoiceEmail(to: string, invoiceData: {
       </div>
     </body>
     </html>
-  `
+  `;
 
   return sendEmail({
     to,
     subject: `Invoice ${invoiceData.invoice_number}`,
     html,
-  })
+  });
 }
 
-export async function sendPasswordResetEmail(to: string, resetData: {
-  user_name: string
-  reset_link: string
-  expires_in: string
-}) {
+export async function sendPasswordResetEmail(
+  to: string,
+  resetData: {
+    user_name: string;
+    reset_link: string;
+    expires_in: string;
+  }
+) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -333,19 +360,22 @@ export async function sendPasswordResetEmail(to: string, resetData: {
       </div>
     </body>
     </html>
-  `
+  `;
 
   return sendEmail({
     to,
-    subject: 'Password Reset Request',
+    subject: "Password Reset Request",
     html,
-  })
+  });
 }
 
-export async function send2FASetupEmail(to: string, userData: {
-  user_name: string
-  backup_codes: string[]
-}) {
+export async function send2FASetupEmail(
+  to: string,
+  userData: {
+    user_name: string;
+    backup_codes: string[];
+  }
+) {
   const html = `
     <!DOCTYPE html>
     <html>
@@ -378,7 +408,7 @@ export async function send2FASetupEmail(to: string, userData: {
 
           <div class="codes">
             <h3>Your Backup Codes:</h3>
-            ${userData.backup_codes.map(code => `<div class="code">${code}</div>`).join('')}
+            ${userData.backup_codes.map(code => `<div class="code">${code}</div>`).join("")}
           </div>
 
           <p>Your account is now more secure. You'll need to enter a code from your authenticator app when logging in.</p>
@@ -389,11 +419,11 @@ export async function send2FASetupEmail(to: string, userData: {
       </div>
     </body>
     </html>
-  `
+  `;
 
   return sendEmail({
     to,
-    subject: '2FA Enabled - Save Your Backup Codes',
+    subject: "2FA Enabled - Save Your Backup Codes",
     html,
-  })
+  });
 }

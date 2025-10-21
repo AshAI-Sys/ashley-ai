@@ -1,189 +1,198 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { ArrowLeft, Save, Building2, Tag, Plus, Trash2, ToggleLeft, ToggleRight } from 'lucide-react'
-import Link from 'next/link'
-import { api } from '@/lib/api'
-import { toast } from 'react-hot-toast'
+import React, { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  ArrowLeft,
+  Save,
+  Building2,
+  Tag,
+  Plus,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
+} from "lucide-react";
+import Link from "next/link";
+import { api } from "@/lib/api";
+import { toast } from "react-hot-toast";
 
 interface BrandData {
-  id?: string
-  name: string
-  logo_url: string
+  id?: string;
+  name: string;
+  logo_url: string;
   settings: {
-    notes: string
-  }
-  is_active: boolean
-  _action?: 'create' | 'update' | 'delete'
+    notes: string;
+  };
+  is_active: boolean;
+  _action?: "create" | "update" | "delete";
 }
 
 interface ClientFormData {
-  name: string
-  contact_person: string
-  email: string
-  phone: string
+  name: string;
+  contact_person: string;
+  email: string;
+  phone: string;
   address: {
-    street: string
-    city: string
-    state: string
-    postal_code: string
-    country: string
-  }
-  is_active: boolean
-  brands: BrandData[]
+    street: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+  };
+  is_active: boolean;
+  brands: BrandData[];
 }
 
 interface FormErrors {
-  name?: string
-  contact_person?: string
-  email?: string
-  phone?: string
+  name?: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
 }
 
 export default function EditClientPage() {
-  const router = useRouter()
-  const params = useParams()
-  const clientId = params.id as string
+  const router = useRouter();
+  const params = useParams();
+  const clientId = params.id as string;
 
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [errors, setErrors] = useState<FormErrors>({})
-  const [existingBrands, setExistingBrands] = useState<BrandData[]>([])
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [existingBrands, setExistingBrands] = useState<BrandData[]>([]);
 
   const [formData, setFormData] = useState<ClientFormData>({
-    name: '',
-    contact_person: '',
-    email: '',
-    phone: '',
+    name: "",
+    contact_person: "",
+    email: "",
+    phone: "",
     address: {
-      street: '',
-      city: '',
-      state: '',
-      postal_code: '',
-      country: 'Philippines'
+      street: "",
+      city: "",
+      state: "",
+      postal_code: "",
+      country: "Philippines",
     },
     is_active: true,
-    brands: []
-  })
+    brands: [],
+  });
 
   useEffect(() => {
     if (clientId) {
-      fetchClientAndBrands()
+      fetchClientAndBrands();
     }
-  }, [clientId])
+  }, [clientId]);
 
   const fetchClientAndBrands = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
       // Fetch client details
-      const clientResponse = await api.getClient(clientId)
+      const clientResponse = await api.getClient(clientId);
 
       if (clientResponse.success) {
-        const client = clientResponse.data
+        const client = clientResponse.data;
         let parsedAddress = {
-          street: '',
-          city: '',
-          state: '',
-          postal_code: '',
-          country: 'Philippines'
-        }
+          street: "",
+          city: "",
+          state: "",
+          postal_code: "",
+          country: "Philippines",
+        };
 
         if (client.address) {
           try {
-            parsedAddress = JSON.parse(client.address)
+            parsedAddress = JSON.parse(client.address);
           } catch {
-            parsedAddress.street = client.address
+            parsedAddress.street = client.address;
           }
         }
 
         // Fetch client brands
-        const brandsResponse = await api.getClientBrands(clientId)
-        const clientBrands = brandsResponse.success ? brandsResponse.data : []
+        const brandsResponse = await api.getClientBrands(clientId);
+        const clientBrands = brandsResponse.success ? brandsResponse.data : [];
 
         const formattedBrands = clientBrands.map((brand: any) => {
-          let settings = { notes: '' }
+          let settings = { notes: "" };
           if (brand.settings) {
             try {
-              settings = JSON.parse(brand.settings)
+              settings = JSON.parse(brand.settings);
             } catch (e) {
               // Invalid JSON, use default settings
-              console.warn('Failed to parse brand settings:', e)
+              console.warn("Failed to parse brand settings:", e);
             }
           }
 
           return {
             id: brand.id,
             name: brand.name,
-            logo_url: brand.logo_url || '',
+            logo_url: brand.logo_url || "",
             settings,
-            is_active: brand.is_active
-          }
-        })
+            is_active: brand.is_active,
+          };
+        });
 
         setFormData({
-          name: client.name || '',
-          contact_person: client.contact_person || '',
-          email: client.email || '',
-          phone: client.phone || '',
+          name: client.name || "",
+          contact_person: client.contact_person || "",
+          email: client.email || "",
+          phone: client.phone || "",
           address: parsedAddress,
           is_active: client.is_active,
-          brands: formattedBrands
-        })
+          brands: formattedBrands,
+        });
 
-        setExistingBrands(formattedBrands)
+        setExistingBrands(formattedBrands);
       } else {
-        toast.error('Client not found')
-        router.push('/clients')
+        toast.error("Client not found");
+        router.push("/clients");
       }
     } catch (error) {
-      console.error('Failed to fetch client:', error)
-      toast.error('Failed to load client details')
-      router.push('/clients')
+      console.error("Failed to fetch client:", error);
+      toast.error("Failed to load client details");
+      router.push("/clients");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {}
+    const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Client name is required'
+      newErrors.name = "Client name is required";
     }
 
     if (!formData.contact_person.trim()) {
-      newErrors.contact_person = 'Contact person is required'
+      newErrors.contact_person = "Contact person is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address'
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (formData.phone && !/^[\d\s\-\+\(\)]+$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number'
+      newErrors.phone = "Please enter a valid phone number";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      toast.error('Please fix the validation errors')
-      return
+      toast.error("Please fix the validation errors");
+      return;
     }
 
-    setSaving(true)
+    setSaving(true);
 
     try {
       // Update client information
@@ -193,29 +202,31 @@ export default function EditClientPage() {
         email: formData.email,
         phone: formData.phone,
         address: JSON.stringify(formData.address),
-        is_active: formData.is_active
-      }
+        is_active: formData.is_active,
+      };
 
-      const clientResponse = await api.updateClient(clientId, clientPayload)
+      const clientResponse = await api.updateClient(clientId, clientPayload);
 
       if (!clientResponse.success) {
-        throw new Error(clientResponse.error || 'Failed to update client')
+        throw new Error(clientResponse.error || "Failed to update client");
       }
 
       // Handle brand operations
-      const brandPromises: Promise<any>[] = []
+      const brandPromises: Promise<any>[] = [];
 
       // Determine which brands to create, update, or delete
-      const existingBrandIds = existingBrands.map(b => b.id)
-      const currentBrandIds = formData.brands.filter(b => b.id).map(b => b.id)
+      const existingBrandIds = existingBrands.map(b => b.id);
+      const currentBrandIds = formData.brands.filter(b => b.id).map(b => b.id);
 
       // Delete brands that were removed
-      const brandsToDelete = existingBrands.filter(eb => !currentBrandIds.includes(eb.id))
+      const brandsToDelete = existingBrands.filter(
+        eb => !currentBrandIds.includes(eb.id)
+      );
       brandsToDelete.forEach(brand => {
         if (brand.id) {
-          brandPromises.push(api.deleteClientBrand(clientId, brand.id))
+          brandPromises.push(api.deleteClientBrand(clientId, brand.id));
         }
-      })
+      });
 
       // Create or update brands
       formData.brands.forEach(brand => {
@@ -223,54 +234,61 @@ export default function EditClientPage() {
           name: brand.name,
           logo_url: brand.logo_url || undefined,
           settings: JSON.stringify(brand.settings),
-          is_active: brand.is_active
-        }
+          is_active: brand.is_active,
+        };
 
         if (brand.id) {
           // Update existing brand
-          brandPromises.push(api.updateClientBrand(clientId, brand.id, brandPayload))
+          brandPromises.push(
+            api.updateClientBrand(clientId, brand.id, brandPayload)
+          );
         } else {
           // Create new brand
-          brandPromises.push(api.createClientBrand(clientId, brandPayload))
+          brandPromises.push(api.createClientBrand(clientId, brandPayload));
         }
-      })
+      });
 
       // Wait for all brand operations to complete
-      await Promise.all(brandPromises)
+      await Promise.all(brandPromises);
 
-      toast.success('Client updated successfully')
-      router.push(`/clients/${clientId}`)
+      toast.success("Client updated successfully");
+      router.push(`/clients/${clientId}`);
     } catch (error) {
-      console.error('Failed to update client:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to update client')
+      console.error("Failed to update client:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update client"
+      );
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleInputChange = (field: keyof ClientFormData, value: any) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
-    }))
+      [field]: value,
+    }));
 
     if (errors[field as keyof FormErrors]) {
       setErrors(prev => ({
         ...prev,
-        [field]: undefined
-      }))
+        [field]: undefined,
+      }));
     }
-  }
+  };
 
-  const handleAddressChange = (field: keyof ClientFormData['address'], value: string) => {
+  const handleAddressChange = (
+    field: keyof ClientFormData["address"],
+    value: string
+  ) => {
     setFormData(prev => ({
       ...prev,
       address: {
         ...prev.address,
-        [field]: value
-      }
-    }))
-  }
+        [field]: value,
+      },
+    }));
+  };
 
   const handleAddBrand = () => {
     setFormData(prev => ({
@@ -278,63 +296,63 @@ export default function EditClientPage() {
       brands: [
         ...prev.brands,
         {
-          name: '',
-          logo_url: '',
-          settings: { notes: '' },
-          is_active: true
-        }
-      ]
-    }))
-  }
+          name: "",
+          logo_url: "",
+          settings: { notes: "" },
+          is_active: true,
+        },
+      ],
+    }));
+  };
 
   const handleRemoveBrand = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      brands: prev.brands.filter((_, i) => i !== index)
-    }))
-  }
+      brands: prev.brands.filter((_, i) => i !== index),
+    }));
+  };
 
   const handleBrandChange = (index: number, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       brands: prev.brands.map((brand, i) => {
         if (i === index) {
-          if (field.startsWith('settings.')) {
-            const settingField = field.replace('settings.', '')
+          if (field.startsWith("settings.")) {
+            const settingField = field.replace("settings.", "");
             return {
               ...brand,
               settings: {
                 ...brand.settings,
-                [settingField]: value
-              }
-            }
+                [settingField]: value,
+              },
+            };
           }
           return {
             ...brand,
-            [field]: value
-          }
+            [field]: value,
+          };
         }
-        return brand
-      })
-    }))
-  }
+        return brand;
+      }),
+    }));
+  };
 
   if (loading) {
     return (
       <div className="container mx-auto py-6">
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-2xl">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="container mx-auto max-w-2xl py-6">
+      <div className="mb-6 flex items-center gap-4">
         <Link href={`/clients/${clientId}`}>
           <Button variant="outline" size="sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Client
           </Button>
         </Link>
@@ -348,40 +366,44 @@ export default function EditClientPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Building2 className="w-5 h-5" />
+              <Building2 className="h-5 w-5" />
               Client Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Status Toggle */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
               <div>
                 <Label className="text-base font-semibold">Client Status</Label>
-                <p className="text-sm text-muted-foreground">Active clients can place orders</p>
+                <p className="text-sm text-muted-foreground">
+                  Active clients can place orders
+                </p>
               </div>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => handleInputChange('is_active', !formData.is_active)}
+                onClick={() =>
+                  handleInputChange("is_active", !formData.is_active)
+                }
                 className="flex items-center gap-2"
               >
                 {formData.is_active ? (
                   <>
-                    <ToggleRight className="w-5 h-5 text-green-600" />
-                    <span className="text-green-600 font-medium">Active</span>
+                    <ToggleRight className="h-5 w-5 text-green-600" />
+                    <span className="font-medium text-green-600">Active</span>
                   </>
                 ) : (
                   <>
-                    <ToggleLeft className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600 font-medium">Inactive</span>
+                    <ToggleLeft className="h-5 w-5 text-gray-400" />
+                    <span className="font-medium text-gray-600">Inactive</span>
                   </>
                 )}
               </Button>
             </div>
 
             {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="name">
                   Client Name <span className="text-red-500">*</span>
@@ -390,11 +412,13 @@ export default function EditClientPage() {
                   id="name"
                   type="text"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={e => handleInputChange("name", e.target.value)}
                   placeholder="Enter client name"
-                  className={errors.name ? 'border-red-500' : ''}
+                  className={errors.name ? "border-red-500" : ""}
                 />
-                {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -405,16 +429,22 @@ export default function EditClientPage() {
                   id="contact_person"
                   type="text"
                   value={formData.contact_person}
-                  onChange={(e) => handleInputChange('contact_person', e.target.value)}
+                  onChange={e =>
+                    handleInputChange("contact_person", e.target.value)
+                  }
                   placeholder="Enter contact person name"
-                  className={errors.contact_person ? 'border-red-500' : ''}
+                  className={errors.contact_person ? "border-red-500" : ""}
                 />
-                {errors.contact_person && <p className="text-sm text-red-500">{errors.contact_person}</p>}
+                {errors.contact_person && (
+                  <p className="text-sm text-red-500">
+                    {errors.contact_person}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="email">
                   Email <span className="text-red-500">*</span>
@@ -423,11 +453,13 @@ export default function EditClientPage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={e => handleInputChange("email", e.target.value)}
                   placeholder="Enter email address"
-                  className={errors.email ? 'border-red-500' : ''}
+                  className={errors.email ? "border-red-500" : ""}
                 />
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -436,11 +468,13 @@ export default function EditClientPage() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  onChange={e => handleInputChange("phone", e.target.value)}
                   placeholder="Enter phone number"
-                  className={errors.phone ? 'border-red-500' : ''}
+                  className={errors.phone ? "border-red-500" : ""}
                 />
-                {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+                {errors.phone && (
+                  <p className="text-sm text-red-500">{errors.phone}</p>
+                )}
               </div>
             </div>
 
@@ -454,19 +488,19 @@ export default function EditClientPage() {
                   id="street"
                   type="text"
                   value={formData.address.street}
-                  onChange={(e) => handleAddressChange('street', e.target.value)}
+                  onChange={e => handleAddressChange("street", e.target.value)}
                   placeholder="Enter street address"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>
                   <Input
                     id="city"
                     type="text"
                     value={formData.address.city}
-                    onChange={(e) => handleAddressChange('city', e.target.value)}
+                    onChange={e => handleAddressChange("city", e.target.value)}
                     placeholder="Enter city"
                   />
                 </div>
@@ -477,20 +511,22 @@ export default function EditClientPage() {
                     id="state"
                     type="text"
                     value={formData.address.state}
-                    onChange={(e) => handleAddressChange('state', e.target.value)}
+                    onChange={e => handleAddressChange("state", e.target.value)}
                     placeholder="Enter state or province"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="postal_code">Postal Code</Label>
                   <Input
                     id="postal_code"
                     type="text"
                     value={formData.address.postal_code}
-                    onChange={(e) => handleAddressChange('postal_code', e.target.value)}
+                    onChange={e =>
+                      handleAddressChange("postal_code", e.target.value)
+                    }
                     placeholder="Enter postal code"
                   />
                 </div>
@@ -501,7 +537,9 @@ export default function EditClientPage() {
                     id="country"
                     type="text"
                     value={formData.address.country}
-                    onChange={(e) => handleAddressChange('country', e.target.value)}
+                    onChange={e =>
+                      handleAddressChange("country", e.target.value)
+                    }
                     placeholder="Enter country"
                   />
                 </div>
@@ -515,36 +553,48 @@ export default function EditClientPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <Tag className="w-5 h-5" />
+                <Tag className="h-5 w-5" />
                 Brands (Optional)
               </CardTitle>
-              <Button type="button" variant="outline" size="sm" onClick={handleAddBrand}>
-                <Plus className="w-4 h-4 mr-2" />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleAddBrand}
+              >
+                <Plus className="mr-2 h-4 w-4" />
                 Add Brand
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             {formData.brands.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Tag className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <div className="py-8 text-center text-muted-foreground">
+                <Tag className="mx-auto mb-3 h-12 w-12 opacity-50" />
                 <p>No brands added yet</p>
-                <p className="text-sm">Click "Add Brand" to create brands for this client</p>
+                <p className="text-sm">
+                  Click "Add Brand" to create brands for this client
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
                 {formData.brands.map((brand, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-gray-50 space-y-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-sm">Brand #{index + 1}</h4>
+                  <div
+                    key={index}
+                    className="space-y-4 rounded-lg border bg-gray-50 p-4"
+                  >
+                    <div className="mb-2 flex items-center justify-between">
+                      <h4 className="text-sm font-semibold">
+                        Brand #{index + 1}
+                      </h4>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => handleRemoveBrand(index)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-500 hover:bg-red-50 hover:text-red-700"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
 
@@ -557,7 +607,9 @@ export default function EditClientPage() {
                         id={`brand-name-${index}`}
                         type="text"
                         value={brand.name}
-                        onChange={(e) => handleBrandChange(index, 'name', e.target.value)}
+                        onChange={e =>
+                          handleBrandChange(index, "name", e.target.value)
+                        }
                         placeholder="e.g., Nike, Adidas"
                       />
                     </div>
@@ -569,7 +621,9 @@ export default function EditClientPage() {
                         id={`brand-logo-${index}`}
                         type="url"
                         value={brand.logo_url}
-                        onChange={(e) => handleBrandChange(index, 'logo_url', e.target.value)}
+                        onChange={e =>
+                          handleBrandChange(index, "logo_url", e.target.value)
+                        }
                         placeholder="https://example.com/logo.png"
                       />
                     </div>
@@ -581,7 +635,13 @@ export default function EditClientPage() {
                         id={`brand-notes-${index}`}
                         type="text"
                         value={brand.settings.notes}
-                        onChange={(e) => handleBrandChange(index, 'settings.notes', e.target.value)}
+                        onChange={e =>
+                          handleBrandChange(
+                            index,
+                            "settings.notes",
+                            e.target.value
+                          )
+                        }
                         placeholder="Additional notes about this brand"
                       />
                     </div>
@@ -592,21 +652,25 @@ export default function EditClientPage() {
           </CardContent>
         </Card>
 
-        <div className="flex justify-end gap-4 mt-6">
+        <div className="mt-6 flex justify-end gap-4">
           <Link href={`/clients/${clientId}`}>
             <Button type="button" variant="outline" disabled={saving}>
               Cancel
             </Button>
           </Link>
-          <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700">
+          <Button
+            type="submit"
+            disabled={saving}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
             {saving ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 Saving...
               </>
             ) : (
               <>
-                <Save className="w-4 h-4 mr-2" />
+                <Save className="mr-2 h-4 w-4" />
                 Save Changes
               </>
             )}
@@ -614,5 +678,5 @@ export default function EditClientPage() {
         </div>
       </form>
     </div>
-  )
+  );
 }

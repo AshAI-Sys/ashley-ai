@@ -1,22 +1,29 @@
 // Granular RBAC Permission System
 // Role-Based Access Control with fine-grained permissions
 
-export type PermissionAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'EXECUTE' | 'APPROVE' | 'EXPORT';
+export type PermissionAction =
+  | "CREATE"
+  | "READ"
+  | "UPDATE"
+  | "DELETE"
+  | "EXECUTE"
+  | "APPROVE"
+  | "EXPORT";
 export type PermissionResource =
-  | 'ORDERS'
-  | 'CLIENTS'
-  | 'PRODUCTION'
-  | 'QUALITY'
-  | 'FINANCE'
-  | 'HR'
-  | 'INVENTORY'
-  | 'REPORTS'
-  | 'USERS'
-  | 'SETTINGS'
-  | 'AI_FEATURES'
-  | 'MAINTENANCE'
-  | 'DELIVERIES'
-  | 'DESIGN';
+  | "ORDERS"
+  | "CLIENTS"
+  | "PRODUCTION"
+  | "QUALITY"
+  | "FINANCE"
+  | "HR"
+  | "INVENTORY"
+  | "REPORTS"
+  | "USERS"
+  | "SETTINGS"
+  | "AI_FEATURES"
+  | "MAINTENANCE"
+  | "DELIVERIES"
+  | "DESIGN";
 
 export interface Permission {
   id: string;
@@ -46,169 +53,463 @@ export interface UserPermissions {
 
 export class PermissionManager {
   // Predefined system permissions
-  private readonly SYSTEM_PERMISSIONS: Omit<Permission, 'id'>[] = [
+  private readonly SYSTEM_PERMISSIONS: Omit<Permission, "id">[] = [
     // Orders
-    { name: 'orders.create', resource: 'ORDERS', action: 'CREATE', description: 'Create new orders' },
-    { name: 'orders.read', resource: 'ORDERS', action: 'READ', description: 'View orders' },
-    { name: 'orders.update', resource: 'ORDERS', action: 'UPDATE', description: 'Edit orders' },
-    { name: 'orders.delete', resource: 'ORDERS', action: 'DELETE', description: 'Delete orders' },
-    { name: 'orders.approve', resource: 'ORDERS', action: 'APPROVE', description: 'Approve orders' },
+    {
+      name: "orders.create",
+      resource: "ORDERS",
+      action: "CREATE",
+      description: "Create new orders",
+    },
+    {
+      name: "orders.read",
+      resource: "ORDERS",
+      action: "READ",
+      description: "View orders",
+    },
+    {
+      name: "orders.update",
+      resource: "ORDERS",
+      action: "UPDATE",
+      description: "Edit orders",
+    },
+    {
+      name: "orders.delete",
+      resource: "ORDERS",
+      action: "DELETE",
+      description: "Delete orders",
+    },
+    {
+      name: "orders.approve",
+      resource: "ORDERS",
+      action: "APPROVE",
+      description: "Approve orders",
+    },
 
     // Clients
-    { name: 'clients.create', resource: 'CLIENTS', action: 'CREATE', description: 'Add new clients' },
-    { name: 'clients.read', resource: 'CLIENTS', action: 'READ', description: 'View client information' },
-    { name: 'clients.update', resource: 'CLIENTS', action: 'UPDATE', description: 'Edit client details' },
-    { name: 'clients.delete', resource: 'CLIENTS', action: 'DELETE', description: 'Remove clients' },
+    {
+      name: "clients.create",
+      resource: "CLIENTS",
+      action: "CREATE",
+      description: "Add new clients",
+    },
+    {
+      name: "clients.read",
+      resource: "CLIENTS",
+      action: "READ",
+      description: "View client information",
+    },
+    {
+      name: "clients.update",
+      resource: "CLIENTS",
+      action: "UPDATE",
+      description: "Edit client details",
+    },
+    {
+      name: "clients.delete",
+      resource: "CLIENTS",
+      action: "DELETE",
+      description: "Remove clients",
+    },
 
     // Production
-    { name: 'production.create', resource: 'PRODUCTION', action: 'CREATE', description: 'Create production runs' },
-    { name: 'production.read', resource: 'PRODUCTION', action: 'READ', description: 'View production data' },
-    { name: 'production.update', resource: 'PRODUCTION', action: 'UPDATE', description: 'Update production runs' },
-    { name: 'production.execute', resource: 'PRODUCTION', action: 'EXECUTE', description: 'Execute production tasks' },
+    {
+      name: "production.create",
+      resource: "PRODUCTION",
+      action: "CREATE",
+      description: "Create production runs",
+    },
+    {
+      name: "production.read",
+      resource: "PRODUCTION",
+      action: "READ",
+      description: "View production data",
+    },
+    {
+      name: "production.update",
+      resource: "PRODUCTION",
+      action: "UPDATE",
+      description: "Update production runs",
+    },
+    {
+      name: "production.execute",
+      resource: "PRODUCTION",
+      action: "EXECUTE",
+      description: "Execute production tasks",
+    },
 
     // Quality Control
-    { name: 'quality.create', resource: 'QUALITY', action: 'CREATE', description: 'Create QC inspections' },
-    { name: 'quality.read', resource: 'QUALITY', action: 'READ', description: 'View quality data' },
-    { name: 'quality.update', resource: 'QUALITY', action: 'UPDATE', description: 'Update QC records' },
-    { name: 'quality.approve', resource: 'QUALITY', action: 'APPROVE', description: 'Approve quality checks' },
+    {
+      name: "quality.create",
+      resource: "QUALITY",
+      action: "CREATE",
+      description: "Create QC inspections",
+    },
+    {
+      name: "quality.read",
+      resource: "QUALITY",
+      action: "READ",
+      description: "View quality data",
+    },
+    {
+      name: "quality.update",
+      resource: "QUALITY",
+      action: "UPDATE",
+      description: "Update QC records",
+    },
+    {
+      name: "quality.approve",
+      resource: "QUALITY",
+      action: "APPROVE",
+      description: "Approve quality checks",
+    },
 
     // Finance
-    { name: 'finance.create', resource: 'FINANCE', action: 'CREATE', description: 'Create financial records' },
-    { name: 'finance.read', resource: 'FINANCE', action: 'READ', description: 'View financial data' },
-    { name: 'finance.update', resource: 'FINANCE', action: 'UPDATE', description: 'Edit financial records' },
-    { name: 'finance.approve', resource: 'FINANCE', action: 'APPROVE', description: 'Approve invoices/payments' },
-    { name: 'finance.export', resource: 'FINANCE', action: 'EXPORT', description: 'Export financial reports' },
+    {
+      name: "finance.create",
+      resource: "FINANCE",
+      action: "CREATE",
+      description: "Create financial records",
+    },
+    {
+      name: "finance.read",
+      resource: "FINANCE",
+      action: "READ",
+      description: "View financial data",
+    },
+    {
+      name: "finance.update",
+      resource: "FINANCE",
+      action: "UPDATE",
+      description: "Edit financial records",
+    },
+    {
+      name: "finance.approve",
+      resource: "FINANCE",
+      action: "APPROVE",
+      description: "Approve invoices/payments",
+    },
+    {
+      name: "finance.export",
+      resource: "FINANCE",
+      action: "EXPORT",
+      description: "Export financial reports",
+    },
 
     // HR & Payroll
-    { name: 'hr.create', resource: 'HR', action: 'CREATE', description: 'Add employees' },
-    { name: 'hr.read', resource: 'HR', action: 'READ', description: 'View employee data' },
-    { name: 'hr.update', resource: 'HR', action: 'UPDATE', description: 'Edit employee records' },
-    { name: 'hr.delete', resource: 'HR', action: 'DELETE', description: 'Remove employees' },
-    { name: 'hr.approve', resource: 'HR', action: 'APPROVE', description: 'Approve payroll' },
+    {
+      name: "hr.create",
+      resource: "HR",
+      action: "CREATE",
+      description: "Add employees",
+    },
+    {
+      name: "hr.read",
+      resource: "HR",
+      action: "READ",
+      description: "View employee data",
+    },
+    {
+      name: "hr.update",
+      resource: "HR",
+      action: "UPDATE",
+      description: "Edit employee records",
+    },
+    {
+      name: "hr.delete",
+      resource: "HR",
+      action: "DELETE",
+      description: "Remove employees",
+    },
+    {
+      name: "hr.approve",
+      resource: "HR",
+      action: "APPROVE",
+      description: "Approve payroll",
+    },
 
     // Inventory
-    { name: 'inventory.create', resource: 'INVENTORY', action: 'CREATE', description: 'Add inventory items' },
-    { name: 'inventory.read', resource: 'INVENTORY', action: 'READ', description: 'View inventory' },
-    { name: 'inventory.update', resource: 'INVENTORY', action: 'UPDATE', description: 'Update inventory levels' },
-    { name: 'inventory.approve', resource: 'INVENTORY', action: 'APPROVE', description: 'Approve purchase orders' },
+    {
+      name: "inventory.create",
+      resource: "INVENTORY",
+      action: "CREATE",
+      description: "Add inventory items",
+    },
+    {
+      name: "inventory.read",
+      resource: "INVENTORY",
+      action: "READ",
+      description: "View inventory",
+    },
+    {
+      name: "inventory.update",
+      resource: "INVENTORY",
+      action: "UPDATE",
+      description: "Update inventory levels",
+    },
+    {
+      name: "inventory.approve",
+      resource: "INVENTORY",
+      action: "APPROVE",
+      description: "Approve purchase orders",
+    },
 
     // Reports & Analytics
-    { name: 'reports.create', resource: 'REPORTS', action: 'CREATE', description: 'Create custom reports' },
-    { name: 'reports.read', resource: 'REPORTS', action: 'READ', description: 'View reports' },
-    { name: 'reports.export', resource: 'REPORTS', action: 'EXPORT', description: 'Export reports' },
-    { name: 'reports.execute', resource: 'REPORTS', action: 'EXECUTE', description: 'Run report queries' },
+    {
+      name: "reports.create",
+      resource: "REPORTS",
+      action: "CREATE",
+      description: "Create custom reports",
+    },
+    {
+      name: "reports.read",
+      resource: "REPORTS",
+      action: "READ",
+      description: "View reports",
+    },
+    {
+      name: "reports.export",
+      resource: "REPORTS",
+      action: "EXPORT",
+      description: "Export reports",
+    },
+    {
+      name: "reports.execute",
+      resource: "REPORTS",
+      action: "EXECUTE",
+      description: "Run report queries",
+    },
 
     // User Management
-    { name: 'users.create', resource: 'USERS', action: 'CREATE', description: 'Create new users' },
-    { name: 'users.read', resource: 'USERS', action: 'READ', description: 'View user accounts' },
-    { name: 'users.update', resource: 'USERS', action: 'UPDATE', description: 'Edit user accounts' },
-    { name: 'users.delete', resource: 'USERS', action: 'DELETE', description: 'Delete user accounts' },
+    {
+      name: "users.create",
+      resource: "USERS",
+      action: "CREATE",
+      description: "Create new users",
+    },
+    {
+      name: "users.read",
+      resource: "USERS",
+      action: "READ",
+      description: "View user accounts",
+    },
+    {
+      name: "users.update",
+      resource: "USERS",
+      action: "UPDATE",
+      description: "Edit user accounts",
+    },
+    {
+      name: "users.delete",
+      resource: "USERS",
+      action: "DELETE",
+      description: "Delete user accounts",
+    },
 
     // Settings & Configuration
-    { name: 'settings.read', resource: 'SETTINGS', action: 'READ', description: 'View system settings' },
-    { name: 'settings.update', resource: 'SETTINGS', action: 'UPDATE', description: 'Modify system settings' },
+    {
+      name: "settings.read",
+      resource: "SETTINGS",
+      action: "READ",
+      description: "View system settings",
+    },
+    {
+      name: "settings.update",
+      resource: "SETTINGS",
+      action: "UPDATE",
+      description: "Modify system settings",
+    },
 
     // AI Features
-    { name: 'ai.execute', resource: 'AI_FEATURES', action: 'EXECUTE', description: 'Use AI features' },
-    { name: 'ai.read', resource: 'AI_FEATURES', action: 'READ', description: 'View AI insights' },
+    {
+      name: "ai.execute",
+      resource: "AI_FEATURES",
+      action: "EXECUTE",
+      description: "Use AI features",
+    },
+    {
+      name: "ai.read",
+      resource: "AI_FEATURES",
+      action: "READ",
+      description: "View AI insights",
+    },
 
     // Maintenance
-    { name: 'maintenance.create', resource: 'MAINTENANCE', action: 'CREATE', description: 'Create work orders' },
-    { name: 'maintenance.read', resource: 'MAINTENANCE', action: 'READ', description: 'View maintenance records' },
-    { name: 'maintenance.update', resource: 'MAINTENANCE', action: 'UPDATE', description: 'Update work orders' },
+    {
+      name: "maintenance.create",
+      resource: "MAINTENANCE",
+      action: "CREATE",
+      description: "Create work orders",
+    },
+    {
+      name: "maintenance.read",
+      resource: "MAINTENANCE",
+      action: "READ",
+      description: "View maintenance records",
+    },
+    {
+      name: "maintenance.update",
+      resource: "MAINTENANCE",
+      action: "UPDATE",
+      description: "Update work orders",
+    },
 
     // Deliveries
-    { name: 'deliveries.create', resource: 'DELIVERIES', action: 'CREATE', description: 'Create shipments' },
-    { name: 'deliveries.read', resource: 'DELIVERIES', action: 'READ', description: 'View delivery status' },
-    { name: 'deliveries.update', resource: 'DELIVERIES', action: 'UPDATE', description: 'Update deliveries' },
+    {
+      name: "deliveries.create",
+      resource: "DELIVERIES",
+      action: "CREATE",
+      description: "Create shipments",
+    },
+    {
+      name: "deliveries.read",
+      resource: "DELIVERIES",
+      action: "READ",
+      description: "View delivery status",
+    },
+    {
+      name: "deliveries.update",
+      resource: "DELIVERIES",
+      action: "UPDATE",
+      description: "Update deliveries",
+    },
 
     // Design
-    { name: 'design.create', resource: 'DESIGN', action: 'CREATE', description: 'Upload designs' },
-    { name: 'design.read', resource: 'DESIGN', action: 'READ', description: 'View designs' },
-    { name: 'design.approve', resource: 'DESIGN', action: 'APPROVE', description: 'Approve designs' },
+    {
+      name: "design.create",
+      resource: "DESIGN",
+      action: "CREATE",
+      description: "Upload designs",
+    },
+    {
+      name: "design.read",
+      resource: "DESIGN",
+      action: "READ",
+      description: "View designs",
+    },
+    {
+      name: "design.approve",
+      resource: "DESIGN",
+      action: "APPROVE",
+      description: "Approve designs",
+    },
   ];
 
   // Predefined system roles with permissions
   private readonly SYSTEM_ROLES = {
     SUPER_ADMIN: {
-      name: 'Super Administrator',
-      description: 'Full system access',
-      permissions: '*', // All permissions
+      name: "Super Administrator",
+      description: "Full system access",
+      permissions: "*", // All permissions
     },
     ADMIN: {
-      name: 'Administrator',
-      description: 'Administrative access',
+      name: "Administrator",
+      description: "Administrative access",
       permissions: [
-        'orders.*', 'clients.*', 'production.read', 'production.update',
-        'quality.*', 'finance.*', 'hr.*', 'inventory.*',
-        'reports.*', 'users.*', 'settings.*', 'ai.*',
-        'maintenance.*', 'deliveries.*', 'design.*',
+        "orders.*",
+        "clients.*",
+        "production.read",
+        "production.update",
+        "quality.*",
+        "finance.*",
+        "hr.*",
+        "inventory.*",
+        "reports.*",
+        "users.*",
+        "settings.*",
+        "ai.*",
+        "maintenance.*",
+        "deliveries.*",
+        "design.*",
       ],
     },
     MANAGER: {
-      name: 'Manager',
-      description: 'Operational management',
+      name: "Manager",
+      description: "Operational management",
       permissions: [
-        'orders.*', 'clients.read', 'production.*', 'quality.*',
-        'finance.read', 'finance.create', 'hr.read', 'inventory.*',
-        'reports.read', 'reports.create', 'ai.read', 'ai.execute',
-        'maintenance.read', 'deliveries.*', 'design.read', 'design.approve',
+        "orders.*",
+        "clients.read",
+        "production.*",
+        "quality.*",
+        "finance.read",
+        "finance.create",
+        "hr.read",
+        "inventory.*",
+        "reports.read",
+        "reports.create",
+        "ai.read",
+        "ai.execute",
+        "maintenance.read",
+        "deliveries.*",
+        "design.read",
+        "design.approve",
       ],
     },
     SUPERVISOR: {
-      name: 'Supervisor',
-      description: 'Production supervision',
+      name: "Supervisor",
+      description: "Production supervision",
       permissions: [
-        'orders.read', 'production.*', 'quality.*',
-        'inventory.read', 'reports.read', 'maintenance.read',
-        'deliveries.read',
+        "orders.read",
+        "production.*",
+        "quality.*",
+        "inventory.read",
+        "reports.read",
+        "maintenance.read",
+        "deliveries.read",
       ],
     },
     OPERATOR: {
-      name: 'Operator',
-      description: 'Production floor worker',
+      name: "Operator",
+      description: "Production floor worker",
       permissions: [
-        'orders.read', 'production.read', 'production.execute',
-        'quality.read', 'quality.create',
+        "orders.read",
+        "production.read",
+        "production.execute",
+        "quality.read",
+        "quality.create",
       ],
     },
     FINANCE_MANAGER: {
-      name: 'Finance Manager',
-      description: 'Financial operations',
+      name: "Finance Manager",
+      description: "Financial operations",
       permissions: [
-        'orders.read', 'clients.read', 'finance.*',
-        'reports.read', 'reports.export',
+        "orders.read",
+        "clients.read",
+        "finance.*",
+        "reports.read",
+        "reports.export",
       ],
     },
     HR_MANAGER: {
-      name: 'HR Manager',
-      description: 'Human resources',
-      permissions: [
-        'hr.*', 'reports.read', 'users.read',
-      ],
+      name: "HR Manager",
+      description: "Human resources",
+      permissions: ["hr.*", "reports.read", "users.read"],
     },
     QC_INSPECTOR: {
-      name: 'Quality Inspector',
-      description: 'Quality control',
+      name: "Quality Inspector",
+      description: "Quality control",
       permissions: [
-        'orders.read', 'production.read', 'quality.*',
-        'reports.read',
+        "orders.read",
+        "production.read",
+        "quality.*",
+        "reports.read",
       ],
     },
     SALES: {
-      name: 'Sales Representative',
-      description: 'Sales and client management',
+      name: "Sales Representative",
+      description: "Sales and client management",
       permissions: [
-        'orders.create', 'orders.read', 'orders.update',
-        'clients.*', 'reports.read',
+        "orders.create",
+        "orders.read",
+        "orders.update",
+        "clients.*",
+        "reports.read",
       ],
     },
     VIEWER: {
-      name: 'Viewer',
-      description: 'Read-only access',
-      permissions: [
-        '*.read',
-      ],
+      name: "Viewer",
+      description: "Read-only access",
+      permissions: ["*.read"],
     },
   };
 
@@ -232,21 +533,23 @@ export class PermissionManager {
 
   // Get user permissions
   async getUserPermissions(user_id: string): Promise<UserPermissions> {
-    const { prisma } = await import('@/lib/database');
+    const { prisma } = await import("@/lib/database");
 
     const user = await prisma.user.findUnique({
       where: { id: user_id },
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     // Get permissions from user's role
     const rolePermissions = this.getRolePermissions(user.role);
 
     // Parse custom permissions if any
-    const customPermissions = user.permissions ? JSON.parse(user.permissions) : [];
+    const customPermissions = user.permissions
+      ? JSON.parse(user.permissions)
+      : [];
 
     // Combine role and custom permissions
     const allPermissions = [...rolePermissions, ...customPermissions];
@@ -264,7 +567,8 @@ export class PermissionManager {
 
   // Get permissions for a role
   getRolePermissions(role: string): Permission[] {
-    const roleConfig = this.SYSTEM_ROLES[role as keyof typeof this.SYSTEM_ROLES];
+    const roleConfig =
+      this.SYSTEM_ROLES[role as keyof typeof this.SYSTEM_ROLES];
 
     if (!roleConfig) {
       return [];
@@ -273,7 +577,7 @@ export class PermissionManager {
     const allPerms = this.getAllPermissions();
 
     // If role has all permissions
-    if (roleConfig.permissions === '*') {
+    if (roleConfig.permissions === "*") {
       return allPerms;
     }
 
@@ -286,10 +590,13 @@ export class PermissionManager {
   }
 
   // Check if permission name matches pattern (supports wildcards)
-  private matchesPermissionPattern(permissionName: string, pattern: string): boolean {
-    if (pattern === '*') return true;
+  private matchesPermissionPattern(
+    permissionName: string,
+    pattern: string
+  ): boolean {
+    if (pattern === "*") return true;
 
-    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+    const regex = new RegExp("^" + pattern.replace(/\*/g, ".*") + "$");
     return regex.test(permissionName);
   }
 
@@ -309,7 +616,7 @@ export class PermissionManager {
     user_id: string,
     permissionNames: string[]
   ): Promise<boolean> {
-    const { prisma } = await import('@/lib/database');
+    const { prisma } = await import("@/lib/database");
 
     const allPerms = this.getAllPermissions();
     const permissions = allPerms.filter(p => permissionNames.includes(p.name));
@@ -338,7 +645,9 @@ export class PermissionManager {
       id: roleId,
       name,
       description,
-      permissions: allPerms.filter(p => permissionNames.includes(p.name)).map(p => p.id),
+      permissions: allPerms
+        .filter(p => permissionNames.includes(p.name))
+        .map(p => p.id),
       is_system_role: false,
       workspace_id,
     };
@@ -349,7 +658,11 @@ export class PermissionManager {
   }
 
   // Get available roles
-  getAvailableRoles(): Array<{ id: string; name: string; description: string }> {
+  getAvailableRoles(): Array<{
+    id: string;
+    name: string;
+    description: string;
+  }> {
     return Object.entries(this.SYSTEM_ROLES).map(([id, config]) => ({
       id,
       name: config.name,

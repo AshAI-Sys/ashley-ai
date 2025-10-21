@@ -16,6 +16,7 @@ This guide covers comprehensive load testing for the Ashley AI Manufacturing ERP
    - **Linux**: `sudo apt install k6` or use package manager
 
 2. **Start the Development Server**
+
    ```bash
    cd "C:\Users\Khell\Desktop\Ashley AI"
    pnpm --filter @ash/admin dev
@@ -93,11 +94,13 @@ k6 run run-all-tests.js
 **Purpose**: Test all critical API endpoints under normal load
 
 **Scenarios**:
+
 - Smoke test: 1 user for 30 seconds
 - Load test: Ramp 0→10 users over 5 minutes
 - Stress test: Ramp 0→20→50 users
 
 **Endpoints Tested**:
+
 - `GET /api/clients` - List clients
 - `GET /api/clients/:id` - Get client details
 - `GET /api/orders` - List orders
@@ -113,6 +116,7 @@ k6 run run-all-tests.js
 - `GET /api/hr/payroll` - Payroll information
 
 **Metrics**:
+
 - Response times (avg, p95, p99)
 - Request failure rate
 - Custom API duration metrics
@@ -124,10 +128,12 @@ k6 run run-all-tests.js
 **Purpose**: Identify slow queries and database bottlenecks
 
 **Scenarios**:
+
 - Stress test: Ramp 0→10→20→50 users
 - Sustained load at peak
 
 **Query Types Tested**:
+
 1. **Complex Joins**: Orders with client and item relations
 2. **Filtering & Search**: Orders with filters and pagination
 3. **Aggregations**: Finance dashboard with SUM/COUNT
@@ -137,11 +143,13 @@ k6 run run-all-tests.js
 7. **N+1 Detection**: Sewing runs with relations
 
 **Metrics**:
+
 - Database query duration
 - Slow query count (>500ms)
 - Database error rate
 
 **Thresholds**:
+
 - p95 < 300ms
 - p99 < 500ms
 - Error rate < 1%
@@ -153,10 +161,12 @@ k6 run run-all-tests.js
 **Purpose**: Test authentication and session management
 
 **Scenarios**:
+
 - Spike test: Sudden surge from 5→20 users
 - Rate limiting verification
 
 **Workflows Tested**:
+
 1. **User Login**: Valid credentials
 2. **Session Validation**: Token verification
 3. **Protected Routes**: Authenticated access
@@ -166,11 +176,13 @@ k6 run run-all-tests.js
 7. **Concurrent Sessions**: Multiple logins
 
 **Metrics**:
+
 - Authentication duration
 - Login attempts vs failures
 - Auth error rate
 
 **Thresholds**:
+
 - p95 < 400ms
 - p99 < 800ms
 - Error rate < 5% (allowing for rate limiting)
@@ -182,17 +194,20 @@ k6 run run-all-tests.js
 ### Success Criteria
 
 ✅ **PASS** - Production Ready
+
 - HTTP request p95 < 500ms
 - HTTP request p99 < 1000ms
 - Failure rate < 1%
 - Check success rate > 99%
 
 ⚠️ **WARNING** - Optimizations Recommended
+
 - HTTP request p95: 500-1000ms
 - Failure rate: 1-5%
 - Check success rate: 95-99%
 
 ❌ **FAIL** - Critical Issues
+
 - HTTP request p95 > 1000ms
 - Failure rate > 5%
 - Check success rate < 95%
@@ -209,6 +224,7 @@ checks.........................: 99.92%  ✓ 12340 ✗ 10
 ```
 
 **Interpretation**:
+
 - ✓ Checks passing at high rate (99.92%)
 - Average response time: 245ms
 - 95% of requests < 458ms ✅
@@ -221,15 +237,16 @@ checks.........................: 99.92%  ✓ 12340 ✗ 10
 
 Results include an automatic performance grade:
 
-| Grade | Score | Assessment |
-|-------|-------|------------|
-| **A** | 90-100 | Excellent - Production Ready |
-| **B** | 80-89 | Good - Minor Optimizations Needed |
-| **C** | 70-79 | Acceptable - Optimizations Required |
-| **D** | 60-69 | Poor - Significant Issues |
-| **F** | 0-59 | Critical - Major Problems |
+| Grade | Score  | Assessment                          |
+| ----- | ------ | ----------------------------------- |
+| **A** | 90-100 | Excellent - Production Ready        |
+| **B** | 80-89  | Good - Minor Optimizations Needed   |
+| **C** | 70-79  | Acceptable - Optimizations Required |
+| **D** | 60-69  | Poor - Significant Issues           |
+| **F** | 0-59   | Critical - Major Problems           |
 
 **Grading Factors**:
+
 - Response time (p95 < 500ms = +10 points)
 - Failure rate (< 1% = +15 points)
 - Check success rate (> 99% = +10 points)
@@ -239,12 +256,15 @@ Results include an automatic performance grade:
 ## 🛠️ Optimization Workflow
 
 ### Step 1: Run Baseline Tests
+
 ```bash
 pnpm --filter @ash/admin load-test
 ```
 
 ### Step 2: Identify Bottlenecks
+
 Check the results for:
+
 - Slow queries (>500ms)
 - High failure rates (>1%)
 - Failed checks
@@ -252,6 +272,7 @@ Check the results for:
 ### Step 3: Apply Optimizations
 
 **Database Optimizations**:
+
 ```bash
 # Apply performance indexes
 cd packages/database
@@ -259,6 +280,7 @@ psql $DATABASE_URL -f prisma/migrations/performance_indexes.sql
 ```
 
 **Code Optimizations**:
+
 - Enable Redis caching
 - Fix N+1 queries
 - Add pagination
@@ -267,11 +289,13 @@ psql $DATABASE_URL -f prisma/migrations/performance_indexes.sql
 See: `PERFORMANCE-OPTIMIZATION-GUIDE.md`
 
 ### Step 4: Re-test
+
 ```bash
 pnpm --filter @ash/admin load-test
 ```
 
 ### Step 5: Compare Results
+
 - Check if p95/p99 improved
 - Verify failure rate decreased
 - Confirm check success rate increased
@@ -329,17 +353,17 @@ Edit `services/ash-admin/load-tests/config.js`:
 ```javascript
 export const scenarios = {
   smoke: {
-    executor: 'constant-vus',
+    executor: "constant-vus",
     vus: 1,
-    duration: '30s',
+    duration: "30s",
   },
   load: {
-    executor: 'ramping-vus',
+    executor: "ramping-vus",
     startVUs: 0,
     stages: [
-      { duration: '1m', target: 10 },   // Customize VUs
-      { duration: '3m', target: 10 },   // Customize duration
-      { duration: '1m', target: 0 },
+      { duration: "1m", target: 10 }, // Customize VUs
+      { duration: "3m", target: 10 }, // Customize duration
+      { duration: "1m", target: 0 },
     ],
   },
 };
@@ -351,9 +375,9 @@ Customize performance thresholds in `config.js`:
 
 ```javascript
 export const thresholds = {
-  http_req_duration: ['p(95)<500', 'p(99)<1000'],  // Response time
-  http_req_failed: ['rate<0.01'],                   // Failure rate
-  checks: ['rate>0.99'],                            // Check success
+  http_req_duration: ["p(95)<500", "p(99)<1000"], // Response time
+  http_req_failed: ["rate<0.01"], // Failure rate
+  checks: ["rate>0.99"], // Check success
 };
 ```
 
@@ -374,7 +398,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM
+    - cron: "0 2 * * *" # Daily at 2 AM
 
 jobs:
   load-test:
@@ -386,7 +410,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install k6
         run: |
@@ -418,6 +442,7 @@ jobs:
 ## 🚨 Troubleshooting
 
 ### Server Not Running
+
 ```
 ❌ Server is not running on localhost:3001
 💡 Start the server with: pnpm --filter @ash/admin dev
@@ -426,6 +451,7 @@ jobs:
 **Solution**: Start the dev server before running tests
 
 ### k6 Not Installed
+
 ```
 ❌ k6 is not installed
 📦 Install k6: https://k6.io/docs/getting-started/installation/
@@ -434,34 +460,40 @@ jobs:
 **Solution**: Install k6 using package manager
 
 ### High Failure Rate
+
 ```
 http_req_failed: 15.2%  ❌ FAIL
 ```
 
 **Possible Causes**:
+
 - Database connection issues
 - Rate limiting triggered
 - Server overloaded
 - Network issues
 
 **Solutions**:
+
 1. Check server logs
 2. Verify database connection
 3. Reduce virtual users
 4. Check rate limiting configuration
 
 ### Slow Response Times
+
 ```
 http_req_duration: p95=2450ms  ❌ FAIL
 ```
 
 **Possible Causes**:
+
 - Missing database indexes
 - N+1 queries
 - No caching
 - Large datasets without pagination
 
 **Solutions**:
+
 1. Apply performance indexes
 2. Enable Redis caching
 3. Fix N+1 queries
@@ -520,16 +552,19 @@ See: `PERFORMANCE-OPTIMIZATION-GUIDE.md`
 After implementing load testing and optimizations:
 
 **Before**:
+
 - p95: 1,245ms
 - Failure rate: 8.2%
 - Grade: D
 
 **After**:
+
 - p95: 287ms ✅
 - Failure rate: 0.3% ✅
 - Grade: A ✅
 
 **Optimizations Applied**:
+
 1. Added 45+ database indexes
 2. Enabled Redis caching
 3. Fixed 12 N+1 queries
@@ -541,6 +576,7 @@ After implementing load testing and optimizations:
 ## 📞 Support
 
 For issues or questions:
+
 - Check `PERFORMANCE-OPTIMIZATION-GUIDE.md`
 - Review k6 documentation
 - Contact dev team

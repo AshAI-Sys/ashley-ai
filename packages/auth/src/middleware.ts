@@ -22,7 +22,7 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     roles: [UserRole.ADMIN, UserRole.MANAGER],
     requireAuth: true,
   },
-  
+
   // Orders and production
   {
     path: "/orders",
@@ -39,7 +39,7 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     permissions: ["orders.edit"],
     requireAuth: true,
   },
-  
+
   // Design and assets
   {
     path: "/designs",
@@ -51,21 +51,25 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
     permissions: ["design.upload"],
     requireAuth: true,
   },
-  
+
   // Production
   {
     path: "/production",
-    permissions: ["production.cutting.issue", "production.print.run", "production.sew.run"],
+    permissions: [
+      "production.cutting.issue",
+      "production.print.run",
+      "production.sew.run",
+    ],
     requireAuth: true,
   },
-  
+
   // Quality Control
   {
     path: "/qc",
     permissions: ["qc.create", "qc.sample"],
     requireAuth: true,
   },
-  
+
   // Settings
   {
     path: "/settings",
@@ -78,7 +82,7 @@ export const PROTECTED_ROUTES: RouteConfig[] = [
 export const PUBLIC_ROUTES = [
   "/",
   "/auth/signin",
-  "/auth/signup", 
+  "/auth/signup",
   "/auth/error",
   "/auth/verify",
   "/portal/approvals",
@@ -99,14 +103,14 @@ export const PROTECTED_API_ROUTES: RouteConfig[] = [
     permissions: ["orders.create"],
     requireAuth: true,
   },
-  
+
   // Clients API
   {
     path: "/api/v1/clients",
     permissions: ["clients.view"],
     requireAuth: true,
   },
-  
+
   // Admin API
   {
     path: "/api/v1/admin",
@@ -118,17 +122,17 @@ export const PROTECTED_API_ROUTES: RouteConfig[] = [
 // Middleware function for Next.js
 export async function authMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Skip middleware for public routes
   if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
-  
+
   // Handle API routes
   if (pathname.startsWith("/api/")) {
     return handleApiRoute(request);
   }
-  
+
   // Handle web routes
   return handleWebRoute(request);
 }
@@ -149,16 +153,16 @@ function isPublicRoute(pathname: string): boolean {
 // Handle API route protection
 async function handleApiRoute(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Find matching route configuration
-  const routeConfig = PROTECTED_API_ROUTES.find(config => 
+  const routeConfig = PROTECTED_API_ROUTES.find(config =>
     pathname.startsWith(config.path)
   );
-  
+
   if (!routeConfig) {
     return NextResponse.next();
   }
-  
+
   // Check for API token
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -167,19 +171,19 @@ async function handleApiRoute(request: NextRequest) {
       { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
-  
+
   const token = authHeader.substring(7);
   const payload = verifyAccessToken(token);
-  
+
   if (!payload) {
     return new NextResponse(
       JSON.stringify({ error: "Invalid or expired token" }),
       { status: 401, headers: { "Content-Type": "application/json" } }
     );
   }
-  
+
   const userRole = payload.role as UserRole;
-  
+
   // Check role requirements
   if (routeConfig.roles && !routeConfig.roles.includes(userRole)) {
     return new NextResponse(
@@ -187,13 +191,13 @@ async function handleApiRoute(request: NextRequest) {
       { status: 403, headers: { "Content-Type": "application/json" } }
     );
   }
-  
+
   // Check permission requirements
   if (routeConfig.permissions) {
     const hasRequiredPermission = routeConfig.permissions.some(permission =>
       hasPermission(userRole, permission)
     );
-    
+
     if (!hasRequiredPermission) {
       return new NextResponse(
         JSON.stringify({ error: "Insufficient permissions" }),
@@ -201,61 +205,65 @@ async function handleApiRoute(request: NextRequest) {
       );
     }
   }
-  
+
   // Add user context to request headers
   const response = NextResponse.next();
   response.headers.set("x-user-id", payload.sub as string);
   response.headers.set("x-user-role", userRole);
   response.headers.set("x-workspace-id", payload.workspace_id as string);
-  
+
   return response;
 }
 
 // Handle web route protection
 async function handleWebRoute(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Get session token
   const token = await getToken({ req: request });
-  
+
   // Find matching route configuration
-  const routeConfig = PROTECTED_ROUTES.find(config => 
+  const routeConfig = PROTECTED_ROUTES.find(config =>
     pathname.startsWith(config.path)
   );
-  
+
   if (!routeConfig) {
     return NextResponse.next();
   }
-  
+
   // Require authentication
   if (routeConfig.requireAuth && !token) {
     const signInUrl = new URL("/auth/signin", request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
-  
+
   if (!token) {
     return NextResponse.next();
   }
-  
+
   const userRole = token.role as UserRole;
-  
+
   // Check role requirements
   if (routeConfig.roles && !routeConfig.roles.includes(userRole)) {
-    return NextResponse.redirect(new URL("/auth/error?error=AccessDenied", request.url));
+    return NextResponse.redirect(
+      new URL("/auth/error?error=AccessDenied", request.url)
+    );
   }
-  
+
   // Check permission requirements
   if (routeConfig.permissions) {
     const hasRequiredPermission = routeConfig.permissions.some(permission =>
       hasPermission(userRole, permission)
     );
-    
+
     if (!hasRequiredPermission) {
-      return NextResponse.redirect(new URL("/auth/error?error=AccessDenied", request.url));
+      return NextResponse.redirect(
+        new URL("/auth/error?error=AccessDenied", request.url)
+      );
     }
   }
-  
+
   return NextResponse.next();
 }
 
@@ -281,11 +289,12 @@ export function rateLimit(
   windowMs: number = 15 * 60 * 1000 // 15 minutes
 ) {
   return (request: NextRequest): NextResponse | null => {
-    const identifier = request.ip || request.headers.get("x-forwarded-for") || "unknown";
+    const identifier =
+      request.ip || request.headers.get("x-forwarded-for") || "unknown";
     const now = Date.now();
-    
+
     const userRequests = requestCounts.get(identifier);
-    
+
     if (!userRequests || now > userRequests.resetTime) {
       // Reset or initialize counter
       requestCounts.set(identifier, {
@@ -294,26 +303,25 @@ export function rateLimit(
       });
       return null; // Allow request
     }
-    
+
     if (userRequests.count >= maxRequests) {
-      return new NextResponse(
-        JSON.stringify({ error: "Too many requests" }),
-        { 
-          status: 429,
-          headers: {
-            "Content-Type": "application/json",
-            "X-RateLimit-Limit": maxRequests.toString(),
-            "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": Math.ceil(userRequests.resetTime / 1000).toString(),
-          }
-        }
-      );
+      return new NextResponse(JSON.stringify({ error: "Too many requests" }), {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "X-RateLimit-Limit": maxRequests.toString(),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": Math.ceil(
+            userRequests.resetTime / 1000
+          ).toString(),
+        },
+      });
     }
-    
+
     // Increment counter
     userRequests.count++;
     requestCounts.set(identifier, userRequests);
-    
+
     return null; // Allow request
   };
 }

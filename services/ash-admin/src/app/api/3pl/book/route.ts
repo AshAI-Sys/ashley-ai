@@ -1,20 +1,20 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/database';
-import { threePLService } from '@/lib/3pl'
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
+import { threePLService } from "@/lib/3pl";
 
-const prisma = db
+const prisma = db;
 
 // POST /api/3pl/book - Book shipment with 3PL provider
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { provider, shipment, shipment_id, reference_number } = body
+    const body = await request.json();
+    const { provider, shipment, shipment_id, reference_number } = body;
 
     if (!provider || !shipment) {
       return NextResponse.json(
-        { error: 'provider and shipment details are required' },
+        { error: "provider and shipment details are required" },
         { status: 400 }
-      )
+      );
     }
 
     // Book with 3PL provider
@@ -22,13 +22,13 @@ export async function POST(request: NextRequest) {
       provider,
       shipment,
       reference_number,
-    })
+    });
 
     if (!booking.success) {
       return NextResponse.json(
-        { error: booking.error || 'Booking failed' },
+        { error: booking.error || "Booking failed" },
         { status: 400 }
-      )
+      );
     }
 
     // Update shipment in database if shipment_id provided
@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
           method: provider,
           carrier_ref: booking.booking_id,
           tracking_code: booking.tracking_number, // Changed from tracking_number to tracking_code
-          status: 'BOOKED',
+          status: "BOOKED",
         },
-      })
+      });
 
       // Create initial tracking event
       const delivery = await prisma.delivery.findFirst({
@@ -52,29 +52,29 @@ export async function POST(request: NextRequest) {
             },
           },
         },
-      })
+      });
 
       if (delivery) {
         await prisma.deliveryTrackingEvent.create({
           data: {
             delivery_id: delivery.id,
-            status: 'BOOKED',
+            status: "BOOKED",
             description: `Booked with ${provider} - Tracking: ${booking.tracking_number}`,
             timestamp: new Date(),
           },
-        })
+        });
       }
     }
 
-    return NextResponse.json(booking, { status: 201 })
+    return NextResponse.json(booking, { status: 201 });
   } catch (error: any) {
-    console.error('Error booking 3PL shipment:', error)
+    console.error("Error booking 3PL shipment:", error);
     return NextResponse.json(
       {
-        error: 'Failed to book shipment',
-        details: error.message
+        error: "Failed to book shipment",
+        details: error.message,
       },
       { status: 500 }
-    )
+    );
   }
 }

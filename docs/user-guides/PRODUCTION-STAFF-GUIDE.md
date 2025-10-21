@@ -16,6 +16,7 @@
 ## 🎯 Your Main Tasks
 
 As a production staff member, you will:
+
 - ✅ Scan QR codes on bundles
 - ✅ Update production status
 - ✅ Record completed quantities
@@ -27,13 +28,16 @@ As a production staff member, you will:
 ## 📲 Getting Started
 
 ### 1. Login
+
 1. Open browser on your mobile/tablet
 2. Go to the Ashley AI URL
 3. Enter your email and password
 4. Tap "Sign In"
 
 ### 2. Your Dashboard
+
 After login, you'll see:
+
 - **Today's Tasks**: Your assigned work
 - **Pending Bundles**: What needs to be done
 - **Completed Today**: Your progress
@@ -44,13 +48,16 @@ After login, you'll see:
 ## 📦 Working with Bundles
 
 ### What is a Bundle?
+
 A bundle is a group of cut pieces that move through production together. Each bundle has:
+
 - Unique bundle number (e.g., BDL-001)
 - QR code for easy scanning
 - Size and quantity information
 - Current status
 
 ### Bundle Statuses
+
 - **PENDING**: Not started yet
 - **IN_PROGRESS**: You're working on it
 - **COMPLETED**: Finished
@@ -64,17 +71,20 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ### How to Scan
 
 **Method 1: Using Your Phone/Tablet Camera**
+
 1. Tap the "Scan" button in the app
 2. Point camera at QR code
 3. Hold steady until it beeps
 4. Bundle details appear automatically
 
 **Method 2: Manual Entry**
+
 1. Tap "Manual Entry"
 2. Type bundle number (e.g., BDL-001)
 3. Tap "Search"
 
 ### What Happens After Scanning?
+
 - Bundle details display
 - Current status shows
 - You can update status
@@ -86,6 +96,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ## ✂️ CUTTING DEPARTMENT
 
 ### Your Tasks
+
 1. **Receive Lay**: Get cutting assignment
 2. **Cut Fabric**: Follow pattern markers
 3. **Create Bundles**: Group pieces by size
@@ -95,23 +106,27 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ### Step-by-Step
 
 **Starting a Cut**:
+
 1. Scan the lay QR code
 2. Tap "Start Cutting"
 3. System shows what to cut
 
 **Creating Bundles**:
+
 1. Group cut pieces (usually 12-24 pieces)
 2. Print bundle tag from system
 3. Attach tag to bundle
 4. Scan to register bundle
 
 **Finishing**:
+
 1. Count total pieces cut
 2. Enter quantity in system
 3. Calculate wastage (if any)
 4. Tap "Complete Run"
 
 ### Tips
+
 - ✅ Keep bundles organized by size
 - ✅ Check blade sharpness before starting
 - ✅ Report fabric defects immediately
@@ -122,6 +137,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ## 🎨 PRINTING DEPARTMENT
 
 ### Your Tasks
+
 1. **Receive Bundles**: Scan incoming bundles
 2. **Setup Machine**: Prepare screen/transfer/embroidery
 3. **Print/Press**: Complete the printing
@@ -131,6 +147,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ### Step-by-Step
 
 **Starting Print Run**:
+
 1. Tap "Printing" in menu
 2. Tap "New Run"
 3. Scan bundles to print
@@ -138,18 +155,21 @@ A bundle is a group of cut pieces that move through production together. Each bu
 5. Tap "Start"
 
 **During Printing**:
+
 1. Print each piece
 2. For every 10-20 pieces, update count
 3. Report defects immediately
 4. Track ink/material usage
 
 **Quality Check**:
+
 - Check print alignment
 - Verify colors match sample
 - Test for smudging/bleeding
 - Set aside defective pieces
 
 **Finishing**:
+
 1. Enter total pieces printed
 2. Enter defect count (if any)
 3. Record material used
@@ -157,6 +177,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 5. Pass to next station
 
 ### Tips
+
 - ✅ Test print on scrap first
 - ✅ Check registration every 50 pieces
 - ✅ Clean screen/platen regularly
@@ -167,6 +188,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ## 🪡 SEWING DEPARTMENT
 
 ### Your Tasks
+
 1. **Receive Bundles**: Get bundles to sew
 2. **Assemble Garments**: Follow sewing sequence
 3. **Track Pieces**: Count as you sew
@@ -176,12 +198,14 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ### Step-by-Step
 
 **Starting Your Day**:
+
 1. Login to system
 2. Tap "Sewing"
 3. View your assigned bundles
 4. Scan first bundle to start
 
 **While Sewing**:
+
 1. Sew pieces per instructions
 2. Every 10-20 pieces, update count:
    - Tap "Update Progress"
@@ -190,6 +214,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 3. Continue until bundle done
 
 **Finishing Bundle**:
+
 1. Count final pieces
 2. Enter total in system
 3. Tap "Complete Bundle"
@@ -199,6 +224,7 @@ A bundle is a group of cut pieces that move through production together. Each bu
 ### Tracking Your Earnings
 
 **Piece Rate System**:
+
 ```
 Your Pay = Pieces Completed × Rate per Piece
 
@@ -209,12 +235,14 @@ Example:
 ```
 
 **View Your Earnings**:
+
 1. Tap "My Performance"
 2. See today's pieces and earnings
 3. View weekly/monthly totals
 4. Check against payroll
 
 ### Tips
+
 - ✅ Focus on quality, not just speed
 - ✅ Check your machine before starting
 - ✅ Update system regularly (don't wait)
@@ -226,6 +254,7 @@ Example:
 ## ✅ QUALITY CONTROL (QC)
 
 ### Your Tasks
+
 1. **Receive Completed Batches**: Get finished garments
 2. **Inspect per AQL**: Check sample quantity
 3. **Record Defects**: Note any issues
@@ -235,6 +264,7 @@ Example:
 ### Step-by-Step
 
 **Starting Inspection**:
+
 1. Tap "Quality Control"
 2. Tap "New Inspection"
 3. Scan batch/carton to inspect
@@ -243,6 +273,7 @@ Example:
 
 **During Inspection**:
 For each sample piece, check:
+
 - ✅ Print quality (alignment, color)
 - ✅ Sewing quality (straight seams, no skips)
 - ✅ No stains or damages
@@ -250,6 +281,7 @@ For each sample piece, check:
 - ✅ Complete (no missing parts)
 
 **Recording Defects**:
+
 1. If you find a defect:
 2. Tap "Add Defect"
 3. Select type:
@@ -261,6 +293,7 @@ For each sample piece, check:
 6. Continue inspection
 
 **Final Decision**:
+
 - System auto-calculates Pass/Fail based on AQL
 - If **PASS**: Tap "Approve Batch"
 - If **FAIL**: Tap "Reject Batch", create CAPA task
@@ -268,24 +301,28 @@ For each sample piece, check:
 ### Defect Categories
 
 **Critical** (Fails immediately):
+
 - Holes or tears
 - Wrong size or color
 - Incomplete assembly
 - Unwearable defects
 
 **Major** (Limited allowed):
+
 - Print misalignment
 - Skipped stitches
 - Incorrect label
 - Visible stains
 
 **Minor** (More tolerance):
+
 - Loose threads
 - Small snags
 - Slight color variation
 - Minor imperfections
 
 ### Tips
+
 - ✅ Inspect in good lighting
 - ✅ Use measuring tools
 - ✅ Compare to approved sample
@@ -297,6 +334,7 @@ For each sample piece, check:
 ## 📦 FINISHING & PACKING
 
 ### Your Tasks
+
 1. **Receive QC-Passed Garments**: Get approved items
 2. **Finishing Tasks**: Tag, fold, press as needed
 3. **Pack in Cartons**: Organized packing
@@ -306,6 +344,7 @@ For each sample piece, check:
 ### Step-by-Step
 
 **Starting Finishing Run**:
+
 1. Tap "Finishing"
 2. Scan QC-approved batch
 3. Check finishing tasks required:
@@ -317,12 +356,14 @@ For each sample piece, check:
    - Poly bagging
 
 **Performing Tasks**:
+
 1. Complete each task per order specs
 2. Keep count of pieces finished
 3. Update system progress
 4. Set aside in organized manner
 
 **Packing Cartons**:
+
 1. Tap "Packing"
 2. Scan carton barcode
 3. Scan each piece/bundle going in
@@ -334,6 +375,7 @@ For each sample piece, check:
 6. Print and attach carton label
 
 **Carton Label Shows**:
+
 - Carton number
 - Contents (SKUs and quantities)
 - Total pieces
@@ -341,6 +383,7 @@ For each sample piece, check:
 - QR code for tracking
 
 ### Tips
+
 - ✅ Handle garments carefully
 - ✅ Pack firmly but don't overstuff
 - ✅ Group same sizes together
@@ -352,6 +395,7 @@ For each sample piece, check:
 ## 🚗 DELIVERY STAGING
 
 ### Your Tasks (Warehouse/Logistics)
+
 1. **Scan Packed Cartons**: Register for shipment
 2. **Stage for Pickup**: Organized by delivery
 3. **Load Shipment**: Scan as loading
@@ -360,12 +404,14 @@ For each sample piece, check:
 ### Step-by-Step
 
 **Preparing Shipment**:
+
 1. Receive completed cartons
 2. Check against shipment list
 3. Scan each carton
 4. Stage in loading area
 
 **Loading Vehicle**:
+
 1. Tap "Delivery" → "Scan Out"
 2. Scan shipment barcode
 3. Scan each carton as loaded
@@ -374,6 +420,7 @@ For each sample piece, check:
 6. Driver signs off
 
 ### Tips
+
 - ✅ Double-check carton numbers
 - ✅ Handle with care
 - ✅ Stack properly in vehicle
@@ -384,7 +431,9 @@ For each sample piece, check:
 ## 📊 Viewing Your Performance
 
 ### Daily Summary
+
 Tap "My Performance" to see:
+
 - Pieces completed today
 - Your efficiency %
 - Earnings (if piece rate)
@@ -392,6 +441,7 @@ Tap "My Performance" to see:
 - Attendance record
 
 ### Weekly/Monthly Stats
+
 - Total pieces by week/month
 - Average efficiency
 - Total earnings
@@ -405,6 +455,7 @@ Tap "My Performance" to see:
 ### When to Report
 
 **Immediately Report**:
+
 - Machine breakdown
 - Out of materials
 - Defective materials
@@ -412,6 +463,7 @@ Tap "My Performance" to see:
 - Quality concerns
 
 **How to Report**:
+
 1. Tap "Report Issue" (red button)
 2. Select issue type
 3. Add description
@@ -424,6 +476,7 @@ Tap "My Performance" to see:
 ## 💡 Quick Tips for Success
 
 ### General Best Practices
+
 - ✅ **Scan everything**: Bundles, materials, completed work
 - ✅ **Update regularly**: Don't batch at end of day
 - ✅ **Quality first**: Speed comes with practice
@@ -432,6 +485,7 @@ Tap "My Performance" to see:
 - ✅ **Report promptly**: Issues, defects, delays
 
 ### Earning More (Piece Rate Workers)
+
 - Focus on quality to avoid rejects
 - Minimize downtime between bundles
 - Maintain your machine
@@ -439,6 +493,7 @@ Tap "My Performance" to see:
 - Hit daily/weekly bonuses
 
 ### Staying Safe
+
 - Use safety equipment (glasses, gloves)
 - Keep work area clean
 - Report hazards immediately
@@ -450,17 +505,20 @@ Tap "My Performance" to see:
 ## 📞 Getting Help
 
 ### In the System
+
 - Tap "?" icon for help
 - Use AI Chat (if available)
 - Check tooltips (ℹ️ icons)
 
 ### Ask Your Supervisor
+
 - When unsure about quality
 - Machine issues
 - Material shortages
 - Schedule questions
 
 ### Emergency
+
 - Report accidents immediately
 - Know your first aid officer
 - Know emergency exits
@@ -470,6 +528,7 @@ Tap "My Performance" to see:
 ## 🔑 Login & Password
 
 ### Forgot Password?
+
 1. Tap "Forgot Password"
 2. Enter your email
 3. Check email for reset link
@@ -477,6 +536,7 @@ Tap "My Performance" to see:
 5. Login with new password
 
 ### Can't Login?
+
 - Check caps lock
 - Verify email spelling
 - Contact HR or supervisor
@@ -487,12 +547,14 @@ Tap "My Performance" to see:
 ## 📱 Mobile App Features
 
 ### Offline Mode (if enabled)
+
 - System works without internet
 - Data syncs when connection returns
 - Scans saved locally
 - Never lose your work
 
 ### Camera Features
+
 - QR code scanning
 - Photo of defects
 - Photo of finished work
@@ -503,12 +565,14 @@ Tap "My Performance" to see:
 ## 📝 Quick Reference
 
 ### Common QR Code Locations
+
 - **Bundles**: Attached tag on bundle
 - **Lay Plans**: On cutting table
 - **Machines**: On equipment
 - **Cartons**: On box exterior
 
 ### Status Colors
+
 - 🔵 **Blue**: Pending/Not Started
 - 🟡 **Yellow**: In Progress
 - 🟢 **Green**: Completed/Pass
@@ -516,6 +580,7 @@ Tap "My Performance" to see:
 - ⚫ **Gray**: On Hold
 
 ### Icons You'll See
+
 - 📦 Bundle/Carton
 - ✂️ Cutting
 - 🎨 Printing
@@ -530,6 +595,7 @@ Tap "My Performance" to see:
 ## 🎓 Training Checklist
 
 Before working independently, make sure you can:
+
 - [ ] Login to the system
 - [ ] Scan a QR code
 - [ ] Start a production task
@@ -546,14 +612,17 @@ Before working independently, make sure you can:
 ## 📞 Support Contacts
 
 **Technical Issues**:
+
 - IT Support: [ext. ____]
 - Email: support@ashleyai.com
 
 **Work/Schedule Questions**:
+
 - Your Supervisor: [name/ext]
 - HR Department: [ext. ____]
 
 **Emergency**:
+
 - First Aid: [ext. ____]
 - Security: [ext. ____]
 - Fire: [emergency number]
@@ -561,6 +630,7 @@ Before working independently, make sure you can:
 ---
 
 **Remember**:
+
 - Quality is everyone's responsibility
 - Your work matters to the team
 - Ask questions when unsure
@@ -571,4 +641,4 @@ Before working independently, make sure you can:
 
 **Document End**
 
-*Keep this guide handy on your device or print it for reference!*
+_Keep this guide handy on your device or print it for reference!_

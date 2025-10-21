@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,47 +9,50 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-} from 'react-native'
-import { StackNavigationProp } from '@react-navigation/stack'
-import { RootStackParamList } from '../../App'
-import { login } from '../services/auth'
+} from "react-native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../App";
+import { login } from "../services/auth";
 
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>
+type LoginScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "Login"
+>;
 
 interface Props {
-  navigation: LoginScreenNavigationProp
+  navigation: LoginScreenNavigationProp;
 }
 
 export default function LoginScreen({ navigation }: Props) {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter email and password')
-      return
+      Alert.alert("Error", "Please enter email and password");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const success = await login(email, password)
+      const success = await login(email, password);
       if (success) {
-        navigation.replace('Dashboard')
+        navigation.replace("Dashboard");
       } else {
-        Alert.alert('Login Failed', 'Invalid email or password')
+        Alert.alert("Login Failed", "Invalid email or password");
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred during login')
+      Alert.alert("Error", "An error occurred during login");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={styles.content}>
         {/* Logo */}
@@ -85,7 +88,7 @@ export default function LoginScreen({ navigation }: Props) {
             disabled={loading}
           >
             <Text style={styles.buttonText}>
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? "Logging in..." : "Login"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -94,64 +97,64 @@ export default function LoginScreen({ navigation }: Props) {
         <Text style={styles.footer}>Ashley AI v1.0</Text>
       </View>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
   },
   logoContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 50,
   },
   logoText: {
     fontSize: 36,
-    fontWeight: 'bold',
-    color: '#3b82f6',
+    fontWeight: "bold",
+    color: "#3b82f6",
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
   },
   formContainer: {
-    width: '100%',
+    width: "100%",
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderRadius: 10,
     fontSize: 16,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
   },
   button: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: "#3b82f6",
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonDisabled: {
-    backgroundColor: '#93c5fd',
+    backgroundColor: "#93c5fd",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footer: {
-    textAlign: 'center',
-    color: '#999',
+    textAlign: "center",
+    color: "#999",
     marginTop: 30,
   },
-})
+});

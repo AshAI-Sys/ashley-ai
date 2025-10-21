@@ -1,21 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { defectDetectionAI } from '@/lib/ai/defect-detection';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { defectDetectionAI } from "@/lib/ai/defect-detection";
+import { prisma } from "@/lib/db";
 
 // POST /api/ai/defect-detection - Detect defects in image
 export async function POST(req: NextRequest) {
   try {
-    const { image_url, image_base64, garment_type, bundle_id } = await req.json();
+    const { image_url, image_base64, garment_type, bundle_id } =
+      await req.json();
 
     if (!image_url && !image_base64) {
       return NextResponse.json(
-        { error: 'Either image_url or image_base64 is required' },
+        { error: "Either image_url or image_base64 is required" },
         { status: 400 }
       );
     }
 
     const image = {
-      url: image_url || '',
+      url: image_url || "",
       base64: image_base64,
     };
 
@@ -27,19 +28,19 @@ export async function POST(req: NextRequest) {
       // Create QC check record
       const qcCheck = await prisma.qCInspection.create({
         data: {
-          workspace_id: 'default',
-          order_id: 'unknown', // TODO: Get from bundle if available
-          inspector_id: 'AI-SYSTEM',
-          stage: 'FINAL',
-          inspection_level: 'GII',
+          workspace_id: "default",
+          order_id: "unknown", // TODO: Get from bundle if available
+          inspector_id: "AI-SYSTEM",
+          stage: "FINAL",
+          inspection_level: "GII",
           aql: 2.5,
           lot_size: 1,
           sample_size: 1,
           acceptance: 0,
           rejection: 1,
           inspection_date: new Date(),
-          status: result.pass_fail === 'PASS' ? 'PASSED' : 'FAILED',
-          result: result.pass_fail === 'PASS' ? 'PASSED' : 'FAILED',
+          status: result.pass_fail === "PASS" ? "PASSED" : "FAILED",
+          result: result.pass_fail === "PASS" ? "PASSED" : "FAILED",
           critical_found: 0,
           major_found: result.defects_found,
           minor_found: 0,
@@ -54,7 +55,9 @@ export async function POST(req: NextRequest) {
       // 3. Then create QCDefect records linked to the QCInspection
       for (const defect of result.detected_defects) {
         // TODO: Implement proper defect type and defect creation with inspection points
-        console.log(`Detected ${defect.type}: ${defect.description} (${defect.severity})`);
+        console.log(
+          `Detected ${defect.type}: ${defect.description} (${defect.severity})`
+        );
       }
     }
 
@@ -63,9 +66,9 @@ export async function POST(req: NextRequest) {
       result,
     });
   } catch (error: any) {
-    console.error('Defect detection error:', error);
+    console.error("Defect detection error:", error);
     return NextResponse.json(
-      { error: 'Failed to detect defects', details: error.message },
+      { error: "Failed to detect defects", details: error.message },
       { status: 500 }
     );
   }
@@ -75,21 +78,21 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const bundleIdsParam = searchParams.get('bundle_ids');
+    const bundleIdsParam = searchParams.get("bundle_ids");
 
     if (!bundleIdsParam) {
       return NextResponse.json(
-        { error: 'bundle_ids parameter required' },
+        { error: "bundle_ids parameter required" },
         { status: 400 }
       );
     }
 
-    const bundleIds = bundleIdsParam.split(',');
+    const bundleIds = bundleIdsParam.split(",");
 
     // Get QC checks with photos for these bundles
     const qcChecks = await prisma.qCInspection.findMany({
       where: {
-        workspace_id: 'default',
+        workspace_id: "default",
       },
       include: {
         order: true,
@@ -100,7 +103,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         success: true,
         results: [],
-        message: 'No QC inspections found for provided bundles',
+        message: "No QC inspections found for provided bundles",
       });
     }
 
@@ -117,9 +120,9 @@ export async function GET(req: NextRequest) {
       total_analyzed: results.length,
     });
   } catch (error: any) {
-    console.error('Batch defect detection error:', error);
+    console.error("Batch defect detection error:", error);
     return NextResponse.json(
-      { error: 'Failed to detect defects', details: error.message },
+      { error: "Failed to detect defects", details: error.message },
       { status: 500 }
     );
   }

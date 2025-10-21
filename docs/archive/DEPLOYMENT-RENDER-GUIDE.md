@@ -1,6 +1,7 @@
 # Ashley AI - Render Deployment Guide
 
 ## Why Render?
+
 - ✅ **Free Tier**: 750 hours/month for web services (enough for 24/7 operation)
 - ✅ **Free PostgreSQL**: Included with 90-day data retention
 - ✅ **pnpm Support**: Native monorepo support
@@ -44,6 +45,7 @@
 Fill in the following settings:
 
 ### Basic Settings
+
 - **Name**: `ashley-ai-admin`
 - **Region**: **Oregon (US West)** (same as database)
 - **Branch**: `master`
@@ -59,10 +61,12 @@ Fill in the following settings:
   ```
 
 ### Advanced Settings (click "Advanced")
+
 - **Node Version**: `18` (or leave blank for latest)
 - **Auto-Deploy**: ✅ **Yes** (enabled by default)
 
 ### Instance Type
+
 - **Plan**: **Free** (select this!)
 
 ## Step 5: Add Environment Variables
@@ -108,6 +112,7 @@ Click **"Add Environment Variable"** and add these:
 4. Build takes ~3-5 minutes for first deployment
 
 ### What Happens During Build:
+
 1. ✅ Clone repository
 2. ✅ Install pnpm dependencies
 3. ✅ Generate Prisma client
@@ -118,6 +123,7 @@ Click **"Add Environment Variable"** and add these:
 ## Step 7: Monitor Deployment
 
 Watch the build logs for:
+
 - ✅ **"Build successful"** - Build completed
 - ✅ **"Your service is live"** - App is running
 - ❌ **"Build failed"** - Check logs for errors
@@ -125,14 +131,17 @@ Watch the build logs for:
 ### Common Build Issues:
 
 **Issue 1: Prisma Client Not Generated**
+
 - **Error**: `Cannot find module '@prisma/client'`
 - **Fix**: Build command includes `npx prisma generate`
 
 **Issue 2: Database Connection Failed**
+
 - **Error**: `Can't reach database server`
 - **Fix**: Check DATABASE_URL is correct (use Internal URL, not External)
 
 **Issue 3: Out of Memory**
+
 - **Error**: `JavaScript heap out of memory`
 - **Fix**: Free tier has 512MB RAM limit, may need to upgrade to Starter ($7/month)
 
@@ -148,6 +157,7 @@ After first deployment, Render automatically runs migrations. To manually trigge
    ```
 
 Or set up automatic migrations by updating build command:
+
 ```bash
 cd ../.. && pnpm install && cd packages/database && npx prisma generate && npx prisma migrate deploy && cd ../../services/ash-admin && pnpm build
 ```
@@ -164,6 +174,7 @@ cd ../.. && pnpm install && cd packages/database && npx prisma generate && npx p
 ## Step 10: Verify Everything Works
 
 Test these features:
+
 - ✅ Login page loads
 - ✅ Authentication works
 - ✅ Dashboard shows data
@@ -189,6 +200,7 @@ To use your own domain (e.g., `app.ashleyai.com`):
 ## Free Tier Limitations
 
 ### What's Included (Free Forever):
+
 - ✅ 750 hours/month (enough for 24/7 single instance)
 - ✅ 512MB RAM
 - ✅ 0.1 CPU
@@ -197,6 +209,7 @@ To use your own domain (e.g., `app.ashleyai.com`):
 - ✅ Free PostgreSQL database (1GB storage, 90-day data retention)
 
 ### Limitations:
+
 - ⚠️ **Auto-Spin Down**: Services spin down after 15 minutes of inactivity
   - **Impact**: First request after inactivity takes ~30 seconds to wake up
   - **Solution**: Upgrade to Starter ($7/month) for always-on
@@ -207,12 +220,14 @@ To use your own domain (e.g., `app.ashleyai.com`):
 ### When to Upgrade:
 
 **Web Service - Starter ($7/month)**:
+
 - ✅ Always-on (no spin-down)
 - ✅ 512MB RAM (same)
 - ✅ 0.5 CPU (5x faster)
 - ✅ Custom domains included
 
 **PostgreSQL - Starter ($7/month)**:
+
 - ✅ Permanent storage (no 90-day limit)
 - ✅ 1GB storage
 - ✅ Daily backups
@@ -220,39 +235,47 @@ To use your own domain (e.g., `app.ashleyai.com`):
 ## Monitoring & Logs
 
 ### View Logs:
+
 1. Go to web service dashboard
 2. Click **"Logs"** tab
 3. See real-time application logs
 
 ### Metrics:
+
 1. Click **"Metrics"** tab
 2. See CPU, Memory, Response Time graphs
 3. Free tier has basic metrics
 
 ### Health Checks:
+
 Render automatically monitors your app:
+
 - **Health Check Path**: `/api/health` (if you have one)
 - **Restart on Failure**: Automatic
 
 ## Troubleshooting
 
 ### App Won't Start
+
 1. Check **Logs** tab for errors
 2. Verify environment variables are set correctly
 3. Ensure DATABASE_URL is the **Internal** URL, not External
 4. Check Node version compatibility
 
 ### Database Connection Errors
+
 1. Verify DATABASE_URL includes `?sslmode=require` for Render PostgreSQL
 2. Check database is in same region as web service
 3. Use **Internal Database URL**, not External
 
 ### Build Timeout
+
 1. Free tier has 15-minute build timeout
 2. If exceeded, upgrade to Starter plan
 3. Or optimize build by caching node_modules
 
 ### Out of Memory
+
 1. Free tier has 512MB RAM
 2. Reduce build parallelism
 3. Upgrade to Starter ($7/month) for more RAM
@@ -270,12 +293,12 @@ Render automatically monitors your app:
 
 ## Cost Comparison
 
-| Provider | Free Tier | Paid Tier | Notes |
-|----------|-----------|-----------|-------|
-| **Render** | ✅ Free (750hrs) | $7/month | Best free tier, auto-spin down |
-| **Railway** | ❌ DB only | $5/month | Best monorepo support |
-| **Fly.io** | ✅ Free (3 VMs) | $5/month | Always-on, needs credit card |
-| **Vercel** | ✅ Free | $20/month | Poor monorepo support |
+| Provider    | Free Tier        | Paid Tier | Notes                          |
+| ----------- | ---------------- | --------- | ------------------------------ |
+| **Render**  | ✅ Free (750hrs) | $7/month  | Best free tier, auto-spin down |
+| **Railway** | ❌ DB only       | $5/month  | Best monorepo support          |
+| **Fly.io**  | ✅ Free (3 VMs)  | $5/month  | Always-on, needs credit card   |
+| **Vercel**  | ✅ Free          | $20/month | Poor monorepo support          |
 
 ## Support
 

@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "@ash-ai/eslint-config"
-  ],
+  "extends": ["next/core-web-vitals", "@ash-ai/eslint-config"],
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2020

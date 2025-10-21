@@ -23,11 +23,13 @@
 ### Accessing Ashley AI
 
 **Web Application**:
+
 - **URL**: http://localhost:3001 (or your production URL)
 - **Browser**: Chrome, Firefox, Safari, Edge (latest versions)
 - **Mobile**: Responsive design works on tablets and phones
 
 **Login Credentials**:
+
 - Use the email and password provided by your administrator
 - Default admin: `admin@ashleyai.com` / `password123`
 
@@ -43,42 +45,49 @@
 ## 👥 User Roles & Permissions
 
 ### 1. **Administrator**
+
 - Full system access
 - Manage all users and settings
 - Access to all modules
 - Can override workflows
 
 ### 2. **Manager**
+
 - Oversee production operations
 - Approve orders and changes
 - Access to reports and analytics
 - Manage department staff
 
 ### 3. **CSR (Customer Service Representative)**
+
 - Create and manage orders
 - Client communication
 - Order intake and processing
 - Basic reporting
 
 ### 4. **Production Operator**
+
 - View assigned tasks
 - Update production status
 - Scan QR codes
 - Record completion
 
 ### 5. **Quality Inspector**
+
 - Perform QC inspections
 - Record defects
 - Approve/reject batches
 - Create CAPA tasks
 
 ### 6. **Finance Staff**
+
 - Manage invoices
 - Process payments
 - Generate financial reports
 - Track expenses
 
 ### 7. **Client (Portal Access)**
+
 - View order status
 - Approve designs
 - Make payments
@@ -93,18 +102,21 @@
 **Purpose**: Manage clients, brands, and production orders
 
 **Key Features**:
+
 - Client database with contact information
 - Brand management per client
 - Order creation and tracking
 - Order status workflow
 
 **Quick Actions**:
+
 ```
 Dashboard → Orders → New Order
 Dashboard → Clients → View Client → Create Order
 ```
 
 **Common Tasks**:
+
 1. **Create New Client**:
    - Navigate to Clients page
    - Click "New Client"
@@ -135,15 +147,18 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Manage design assets and client approvals
 
 **Key Features**:
+
 - Design file upload and versioning
 - Client approval workflow
 - Magic link for client reviews
 - Version history tracking
 
 **Process Flow**:
+
 1. Upload design → 2. Send for approval → 3. Client reviews → 4. Approved/Changes requested → 5. Production ready
 
 **Common Tasks**:
+
 1. **Upload Design**:
    - Open order details
    - Navigate to Designs tab
@@ -172,12 +187,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Plan fabric cutting and create production bundles
 
 **Key Features**:
+
 - Lay planning with fabric optimization
 - Bundle generation with QR codes
 - Fabric batch tracking
 - Cutting efficiency calculations
 
 **Common Tasks**:
+
 1. **Create Lay**:
    - Go to Cutting page
    - Click "Create Lay"
@@ -207,6 +224,7 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Manage printing across all methods (Silkscreen, Sublimation, DTF, Embroidery)
 
 **Methods Supported**:
+
 - **Silkscreen**: Traditional screen printing
 - **Sublimation**: Heat transfer for polyester
 - **DTF**: Direct-to-film transfer
@@ -214,6 +232,7 @@ Dashboard → Clients → View Client → Create Order
 - **Rubberized**: Raised rubber printing
 
 **Common Tasks**:
+
 1. **Create Print Run**:
    - Navigate to Printing page
    - Click "Create Run"
@@ -240,12 +259,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Track sewing production and operator performance
 
 **Key Features**:
+
 - Sewing run management
 - Operator assignment
 - Piece-rate tracking
 - Real-time efficiency monitoring
 
 **Common Tasks**:
+
 1. **Create Sewing Run**:
    - Go to Sewing page
    - Click "New Run"
@@ -273,12 +294,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Inspect products and manage quality standards
 
 **Key Features**:
+
 - AQL sampling plans
 - Defect tracking with photos
 - CAPA (Corrective Action) management
 - Statistical quality charts
 
 **Common Tasks**:
+
 1. **Create QC Inspection**:
    - Navigate to Quality Control
    - Click "New Inspection"
@@ -314,12 +337,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Final product finishing and carton packing
 
 **Key Features**:
+
 - Finishing task management
 - SKU generation
 - Carton builder
 - Weight and dimension tracking
 
 **Common Tasks**:
+
 1. **Create Finishing Run**:
    - Go to Finishing & Packing
    - Click "New Run"
@@ -349,12 +374,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Manage shipments and track deliveries
 
 **Key Features**:
+
 - Multi-carrier support
 - Real-time tracking
 - Proof of delivery
 - 3PL integration
 
 **Common Tasks**:
+
 1. **Create Shipment**:
    - Navigate to Delivery
    - Click "New Shipment"
@@ -390,6 +417,7 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Manage invoices, payments, and financial reporting
 
 **Key Features**:
+
 - Invoice generation
 - Payment processing
 - Credit notes
@@ -397,6 +425,7 @@ Dashboard → Clients → View Client → Create Order
 - Cash flow tracking
 
 **Common Tasks**:
+
 1. **Generate Invoice**:
    - From order, click "Create Invoice"
    - Review line items
@@ -434,12 +463,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Manage employees and process payroll
 
 **Key Features**:
+
 - Employee database
 - Attendance tracking
 - Payroll calculation (daily, hourly, piece-rate, monthly)
 - Performance metrics
 
 **Common Tasks**:
+
 1. **Add New Employee**:
    - Go to HR & Payroll
    - Click "New Employee"
@@ -476,12 +507,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Track assets and schedule maintenance
 
 **Key Features**:
+
 - Asset registry
 - Work order management
 - Preventive maintenance scheduling
 - Maintenance cost tracking
 
 **Common Tasks**:
+
 1. **Register New Asset**:
    - Go to Maintenance
    - Click "New Asset"
@@ -514,6 +547,7 @@ Dashboard → Clients → View Client → Create Order
 **Access**: Separate URL (usually port 3003 or subdomain)
 
 **Features for Clients**:
+
 - Order tracking
 - Design approval
 - Payment status
@@ -521,6 +555,7 @@ Dashboard → Clients → View Client → Create Order
 - Messaging
 
 **Client Experience**:
+
 1. Receive magic link via email
 2. Click to access portal (no password needed)
 3. View all their orders
@@ -536,6 +571,7 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: AI-powered insights for merchandising and inventory
 
 **Key Features**:
+
 - Demand forecasting
 - Product recommendations
 - Market trend analysis
@@ -543,6 +579,7 @@ Dashboard → Clients → View Client → Create Order
 - Customer segmentation
 
 **How to Use**:
+
 1. **View Demand Forecast**:
    - Go to Merchandising page
    - See predicted demand for products
@@ -569,12 +606,14 @@ Dashboard → Clients → View Client → Create Order
 **Purpose**: Automate workflows and send notifications
 
 **Key Features**:
+
 - Workflow automation rules
 - Multi-channel notifications (Email, SMS, In-app)
 - Alert management
 - External integrations
 
 **Common Tasks**:
+
 1. **Create Automation Rule**:
    - Go to Automation
    - Click "New Rule"
@@ -604,6 +643,7 @@ Dashboard → Clients → View Client → Create Order
 **Access**: Floating chat widget on all pages (bottom right)
 
 **How to Use**:
+
 1. Click the chat icon
 2. Type your question
 3. Ashley AI responds with relevant help
@@ -615,6 +655,7 @@ Dashboard → Clients → View Client → Create Order
    - Troubleshooting
 
 **Example Questions**:
+
 - "How do I create a new order?"
 - "What's the status of order #ORD-2025-001?"
 - "Show me production bottlenecks"
@@ -658,6 +699,7 @@ Dashboard → Clients → View Client → Create Order
 ### Status Progression
 
 Each order goes through these statuses:
+
 - **PENDING** → Order created, awaiting design
 - **DESIGN_APPROVAL** → Design uploaded, client review
 - **APPROVED** → Design approved, ready for production
@@ -679,6 +721,7 @@ Each order goes through these statuses:
 ### Daily Operations
 
 **Morning Checklist**:
+
 1. Check dashboard for alerts
 2. Review today's production schedule
 3. Check pending approvals
@@ -686,6 +729,7 @@ Each order goes through these statuses:
 5. Review Ashley AI recommendations
 
 **Production Floor**:
+
 1. Scan bundles as they move through stages
 2. Update completion quantities
 3. Record defects immediately
@@ -693,6 +737,7 @@ Each order goes through these statuses:
 5. Report issues to supervisor
 
 **End of Day**:
+
 1. Update all run statuses
 2. Review incomplete tasks
 3. Check tomorrow's schedule
@@ -704,6 +749,7 @@ Each order goes through these statuses:
 ### Weekly Tasks
 
 **Managers**:
+
 - Review production efficiency reports
 - Check quality metrics
 - Approve payroll
@@ -711,6 +757,7 @@ Each order goes through these statuses:
 - Plan upcoming production
 
 **Finance**:
+
 - Generate weekly revenue report
 - Follow up on overdue invoices
 - Process payments
@@ -722,6 +769,7 @@ Each order goes through these statuses:
 ### Monthly Tasks
 
 **Administration**:
+
 - Month-end closing
 - Financial reporting
 - Inventory reconciliation
@@ -735,30 +783,35 @@ Each order goes through these statuses:
 ### Common Issues
 
 **1. Cannot Login**
+
 - Check email/password spelling
 - Ensure caps lock is off
 - Try "Forgot Password" if available
 - Contact administrator
 
 **2. Order Not Showing**
+
 - Check filters (status, date range)
 - Ensure you have permission
 - Try refreshing page
 - Search by order number
 
 **3. QR Code Not Scanning**
+
 - Clean camera lens
 - Ensure good lighting
 - Hold steady at correct distance
 - Try manual entry if persistent
 
 **4. Slow Performance**
+
 - Check internet connection
 - Clear browser cache
 - Close unnecessary tabs
 - Try different browser
 
 **5. Data Not Saving**
+
 - Check all required fields filled
 - Look for validation errors (red text)
 - Ensure you have save permission
@@ -771,16 +824,19 @@ Each order goes through these statuses:
 ### Getting Help
 
 **In-App Support**:
+
 - Use AI Chat Assistant (bottom right)
 - Check help tooltips (? icons)
 - Review in-context help messages
 
 **Documentation**:
+
 - This user guide
 - API documentation (for developers)
 - Video tutorials (if available)
 
 **Contact Support**:
+
 - Email: support@ashleyai.com
 - Phone: [Your support number]
 - Hours: [Your support hours]
@@ -816,4 +872,4 @@ Each order goes through these statuses:
 
 **Document End**
 
-*For the latest updates, check CLAUDE.md in the root directory.*
+_For the latest updates, check CLAUDE.md in the root directory._

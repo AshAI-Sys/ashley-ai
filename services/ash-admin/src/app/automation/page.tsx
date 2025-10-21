@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Play,
   Pause,
@@ -16,8 +16,8 @@ import {
   TrendingUp,
   Users,
   Link,
-  RefreshCw
-} from 'lucide-react';
+  RefreshCw,
+} from "lucide-react";
 
 interface AutomationStats {
   summary: {
@@ -63,8 +63,8 @@ interface AutomationStats {
 }
 
 export default function AutomationPage() {
-  const [timeRange, setTimeRange] = useState('7d');
-  const [activeTab, setActiveTab] = useState('overview');
+  const [timeRange, setTimeRange] = useState("7d");
+  const [activeTab, setActiveTab] = useState("overview");
 
   // React Query: Stats
   const {
@@ -72,28 +72,35 @@ export default function AutomationPage() {
     isLoading: loading,
     error,
     refetch,
-    isFetching
+    isFetching,
   } = useQuery({
-    queryKey: ['automation-stats', timeRange],
+    queryKey: ["automation-stats", timeRange],
     queryFn: async () => {
-      const response = await fetch(`/api/automation/stats?time_range=${timeRange}`);
-      if (!response.ok) throw new Error('Failed to fetch automation stats');
+      const response = await fetch(
+        `/api/automation/stats?time_range=${timeRange}`
+      );
+      if (!response.ok) throw new Error("Failed to fetch automation stats");
       const data = await response.json();
       return data.success ? data.data : null;
     },
     staleTime: 30000,
-    refetchInterval: 60000
+    refetchInterval: 60000,
   });
 
-  const StatCard = ({ title, value, subtitle, icon: Icon, color = 'blue', trend }: any) => (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+  const StatCard = ({
+    title,
+    value,
+    subtitle,
+    icon: Icon,
+    color = "blue",
+    trend,
+  }: any) => (
+    <div className="rounded-lg border border-gray-200 bg-white p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-gray-600">{title}</p>
           <p className={`text-2xl font-semibold text-${color}-600`}>{value}</p>
-          {subtitle && (
-            <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
-          )}
+          {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
         </div>
         <div className={`p-3 bg-${color}-50 rounded-lg`}>
           <Icon className={`h-6 w-6 text-${color}-600`} />
@@ -101,8 +108,10 @@ export default function AutomationPage() {
       </div>
       {trend && (
         <div className="mt-4">
-          <div className={`flex items-center text-sm ${trend > 0 ? 'text-green-600' : 'text-red-600'}`}>
-            <TrendingUp className="h-4 w-4 mr-1" />
+          <div
+            className={`flex items-center text-sm ${trend > 0 ? "text-green-600" : "text-red-600"}`}
+          >
+            <TrendingUp className="mr-1 h-4 w-4" />
             {Math.abs(trend)}% from last period
           </div>
         </div>
@@ -112,38 +121,54 @@ export default function AutomationPage() {
 
   const ActivityItem = ({ activity }: { activity: any }) => {
     const getStatusColor = (status: string) => {
-      if (!status) return 'text-gray-600 bg-gray-50';
+      if (!status) return "text-gray-600 bg-gray-50";
       switch (status.toUpperCase()) {
-        case 'SUCCESS': case 'SENT': case 'RESOLVED': return 'text-green-600 bg-green-50';
-        case 'FAILED': case 'OPEN': return 'text-red-600 bg-red-50';
-        case 'PENDING': case 'ACKNOWLEDGED': return 'text-yellow-600 bg-yellow-50';
-        default: return 'text-gray-600 bg-gray-50';
+        case "SUCCESS":
+        case "SENT":
+        case "RESOLVED":
+          return "text-green-600 bg-green-50";
+        case "FAILED":
+        case "OPEN":
+          return "text-red-600 bg-red-50";
+        case "PENDING":
+        case "ACKNOWLEDGED":
+          return "text-yellow-600 bg-yellow-50";
+        default:
+          return "text-gray-600 bg-gray-50";
       }
     };
 
     const getTypeIcon = (type: string) => {
       switch (type) {
-        case 'EXECUTION': return <Zap className="h-4 w-4" />;
-        case 'ALERT': return <AlertTriangle className="h-4 w-4" />;
-        case 'NOTIFICATION': return <Bell className="h-4 w-4" />;
-        default: return <Activity className="h-4 w-4" />;
+        case "EXECUTION":
+          return <Zap className="h-4 w-4" />;
+        case "ALERT":
+          return <AlertTriangle className="h-4 w-4" />;
+        case "NOTIFICATION":
+          return <Bell className="h-4 w-4" />;
+        default:
+          return <Activity className="h-4 w-4" />;
       }
     };
 
     return (
-      <div className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+      <div className="flex items-center justify-between border-b border-gray-100 py-3 last:border-b-0">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-gray-50 rounded-lg">
+          <div className="rounded-lg bg-gray-50 p-2">
             {getTypeIcon(activity.type)}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-900">{activity.title}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {activity.title}
+            </p>
             <p className="text-xs text-gray-500">
               {new Date(activity.timestamp).toLocaleString()}
             </p>
           </div>
         </div>
-        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(activity.status)}`}>
+        <span
+          className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(activity.status)}`}
+        >
           {activity.status}
         </span>
       </div>
@@ -154,10 +179,10 @@ export default function AutomationPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="mb-6 h-8 w-1/4 rounded bg-gray-200"></div>
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded-lg"></div>
+              <div key={i} className="h-32 rounded-lg bg-gray-200"></div>
             ))}
           </div>
         </div>
@@ -166,19 +191,23 @@ export default function AutomationPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Automation & Reminders</h1>
-          <p className="text-gray-600">Manage workflows, notifications, and system integrations</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Automation & Reminders
+          </h1>
+          <p className="text-gray-600">
+            Manage workflows, notifications, and system integrations
+          </p>
         </div>
 
         <div className="flex items-center space-x-4">
           <select
             value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            onChange={e => setTimeRange(e.target.value)}
+            className="rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
           >
             <option value="24h">Last 24 Hours</option>
             <option value="7d">Last 7 Days</option>
@@ -188,12 +217,14 @@ export default function AutomationPage() {
           <button
             onClick={() => refetch()}
             disabled={isFetching}
-            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="rounded-lg border border-gray-300 px-3 py-2 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           >
-            <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+            />
           </button>
 
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
+          <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500">
             Create Rule
           </button>
         </div>
@@ -203,19 +234,19 @@ export default function AutomationPage() {
       <div className="border-b border-gray-200">
         <nav className="-mb-px flex space-x-8">
           {[
-            { id: 'overview', name: 'Overview', icon: Activity },
-            { id: 'rules', name: 'Automation Rules', icon: Zap },
-            { id: 'notifications', name: 'Notifications', icon: Bell },
-            { id: 'alerts', name: 'Alerts', icon: AlertTriangle },
-            { id: 'integrations', name: 'Integrations', icon: Link },
-          ].map((tab) => (
+            { id: "overview", name: "Overview", icon: Activity },
+            { id: "rules", name: "Automation Rules", icon: Zap },
+            { id: "notifications", name: "Notifications", icon: Bell },
+            { id: "alerts", name: "Alerts", icon: AlertTriangle },
+            { id: "integrations", name: "Integrations", icon: Link },
+          ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`flex items-center space-x-2 border-b-2 px-1 py-4 text-sm font-medium ${
                 activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
               }`}
             >
               <tab.icon className="h-4 w-4" />
@@ -226,10 +257,10 @@ export default function AutomationPage() {
       </div>
 
       {/* Overview Tab */}
-      {activeTab === 'overview' && stats && (
+      {activeTab === "overview" && stats && (
         <div className="space-y-6">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
             <StatCard
               title="Active Rules"
               value={stats.summary.automation_rules.active}
@@ -264,10 +295,12 @@ export default function AutomationPage() {
           </div>
 
           {/* Execution Performance */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Execution Performance</h3>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="rounded-lg border border-gray-200 bg-white p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Execution Performance
+                </h3>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-5 w-5 text-green-500" />
                   <span className="text-sm text-gray-600">
@@ -277,32 +310,36 @@ export default function AutomationPage() {
               </div>
 
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">Successful</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-600">
+                    Successful
+                  </span>
                   <span className="text-sm font-medium text-green-600">
                     {stats.summary.executions.successful}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="h-2 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-green-500 h-2 rounded-full"
+                    className="h-2 rounded-full bg-green-500"
                     style={{
-                      width: `${(stats.summary.executions.successful / stats.summary.executions.total) * 100}%`
+                      width: `${(stats.summary.executions.successful / stats.summary.executions.total) * 100}%`,
                     }}
                   ></div>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-600">Failed</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-600">
+                    Failed
+                  </span>
                   <span className="text-sm font-medium text-red-600">
                     {stats.summary.executions.failed}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="h-2 w-full rounded-full bg-gray-200">
                   <div
-                    className="bg-red-500 h-2 rounded-full"
+                    className="h-2 rounded-full bg-red-500"
                     style={{
-                      width: `${(stats.summary.executions.failed / stats.summary.executions.total) * 100}%`
+                      width: `${(stats.summary.executions.failed / stats.summary.executions.total) * 100}%`,
                     }}
                   ></div>
                 </div>
@@ -310,19 +347,21 @@ export default function AutomationPage() {
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
+            <div className="rounded-lg border border-gray-200 bg-white p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Recent Activity
+                </h3>
                 <Clock className="h-5 w-5 text-gray-400" />
               </div>
 
-              <div className="space-y-2 max-h-64 overflow-y-auto">
+              <div className="max-h-64 space-y-2 overflow-y-auto">
                 {stats.recent_activity && stats.recent_activity.length > 0 ? (
                   stats.recent_activity.map((activity, index) => (
                     <ActivityItem key={index} activity={activity} />
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500 text-center py-4">
+                  <p className="py-4 text-center text-sm text-gray-500">
                     No recent activity
                   </p>
                 )}
@@ -333,15 +372,17 @@ export default function AutomationPage() {
       )}
 
       {/* Rules Tab */}
-      {activeTab === 'rules' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="text-center py-12">
-            <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Automation Rules</h3>
-            <p className="text-gray-600 mb-6">
+      {activeTab === "rules" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="py-12 text-center">
+            <Zap className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Automation Rules
+            </h3>
+            <p className="mb-6 text-gray-600">
               Configure automated workflows and business rules
             </p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
               Create First Rule
             </button>
           </div>
@@ -349,15 +390,17 @@ export default function AutomationPage() {
       )}
 
       {/* Notifications Tab */}
-      {activeTab === 'notifications' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="text-center py-12">
-            <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Notification Center</h3>
-            <p className="text-gray-600 mb-6">
+      {activeTab === "notifications" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="py-12 text-center">
+            <Bell className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Notification Center
+            </h3>
+            <p className="mb-6 text-gray-600">
               Manage notification templates and delivery channels
             </p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
               Create Template
             </button>
           </div>
@@ -365,15 +408,17 @@ export default function AutomationPage() {
       )}
 
       {/* Alerts Tab */}
-      {activeTab === 'alerts' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="text-center py-12">
-            <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Alert Management</h3>
-            <p className="text-gray-600 mb-6">
+      {activeTab === "alerts" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="py-12 text-center">
+            <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              Alert Management
+            </h3>
+            <p className="mb-6 text-gray-600">
               Monitor system alerts and manage escalations
             </p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
               View All Alerts
             </button>
           </div>
@@ -381,15 +426,17 @@ export default function AutomationPage() {
       )}
 
       {/* Integrations Tab */}
-      {activeTab === 'integrations' && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="text-center py-12">
-            <Link className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">System Integrations</h3>
-            <p className="text-gray-600 mb-6">
+      {activeTab === "integrations" && (
+        <div className="rounded-lg border border-gray-200 bg-white p-6">
+          <div className="py-12 text-center">
+            <Link className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              System Integrations
+            </h3>
+            <p className="mb-6 text-gray-600">
               Connect with external services and APIs
             </p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
               Add Integration
             </button>
           </div>

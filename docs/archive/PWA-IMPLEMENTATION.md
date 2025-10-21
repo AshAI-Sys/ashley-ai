@@ -77,12 +77,14 @@ A Progressive Web App (PWA) is a web application that can be installed on device
 ## 🚀 Features Implemented
 
 ### 1. ✅ Installability
+
 - **Add to Home Screen**: Users can install Ashley AI as an app
 - **Smart Install Prompt**: Shows after 3 seconds of usage
 - **Cross-Platform**: Works on iOS, Android, desktop
 - **App Shortcuts**: Quick access to Orders, Dashboard, Printing, Scan QR
 
 ### 2. ✅ Offline Functionality
+
 - **Offline Page**: Beautiful fallback when no connection
 - **Cache Strategy**:
   - Static assets → Cache first
@@ -92,6 +94,7 @@ A Progressive Web App (PWA) is a web application that can be installed on device
 - **API Cache TTL**: 5 minutes for API responses
 
 ### 3. ✅ Background Sync
+
 - **Pending Orders**: Save orders offline, auto-sync when online
 - **Production Data**: Refresh dashboard stats in background
 - **IndexedDB Storage**: Persistent local storage for offline data
@@ -100,6 +103,7 @@ A Progressive Web App (PWA) is a web application that can be installed on device
   - `sync-production-data`: Refresh dashboard data
 
 ### 4. ✅ Push Notifications (Infrastructure Ready)
+
 - **Service Worker Support**: Push event handlers implemented
 - **Notification Click**: Opens relevant page
 - **VAPID Keys**: Environment variable support
@@ -107,6 +111,7 @@ A Progressive Web App (PWA) is a web application that can be installed on device
 - **Server Integration**: API endpoints structure ready
 
 ### 5. ✅ Connection Monitoring
+
 - **Online/Offline Detection**: Real-time connection status
 - **Toast Notifications**: User-friendly status updates
 - **Retry Functionality**: Automatic retry when back online
@@ -117,6 +122,7 @@ A Progressive Web App (PWA) is a web application that can be installed on device
 ## 📦 Service Worker Strategies
 
 ### Cache-First (Static Assets)
+
 ```
 User Request → Check Cache → Return if found
                             ↓
@@ -128,6 +134,7 @@ User Request → Check Cache → Return if found
 **Used for**: CSS, JS, images, fonts
 
 ### Network-First (API Calls)
+
 ```
 User Request → Fetch from network → Return response
                                   ↓
@@ -143,6 +150,7 @@ User Request → Fetch from network → Return response
 **Used for**: All `/api/*` endpoints
 
 ### Network-First with Offline Fallback (Pages)
+
 ```
 User Request → Fetch from network → Return page
                                   ↓
@@ -162,6 +170,7 @@ User Request → Fetch from network → Return page
 ## 🔧 Configuration
 
 ### Manifest Settings
+
 ```json
 {
   "name": "Ashley AI - Manufacturing ERP",
@@ -175,8 +184,9 @@ User Request → Fetch from network → Return page
 ```
 
 ### Service Worker Settings
+
 ```javascript
-const CACHE_VERSION = 'ashley-ai-v1';
+const CACHE_VERSION = "ashley-ai-v1";
 const MAX_CACHE_SIZE = 50;
 const MAX_API_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
 ```
@@ -186,6 +196,7 @@ const MAX_API_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
 ## 📱 Icon Requirements
 
 ### Required Icon Sizes:
+
 - ✅ 72x72px
 - ✅ 96x96px
 - ✅ 128x128px
@@ -196,15 +207,18 @@ const MAX_API_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
 - ✅ 512x512px (Android maskable)
 
 ### Icon Location:
+
 Place icons in: `public/icons/`
 
 **File naming**:
+
 - `icon-72x72.png`
 - `icon-96x96.png`
 - `icon-128x128.png`
 - etc.
 
 ### Generating Icons:
+
 Use [RealFaviconGenerator](https://realfavicongenerator.net/) to generate all required sizes from a single 512x512px PNG.
 
 ---
@@ -212,6 +226,7 @@ Use [RealFaviconGenerator](https://realfavicongenerator.net/) to generate all re
 ## 🧪 Testing PWA Features
 
 ### 1. Test Installation
+
 ```bash
 # Open in Chrome/Edge
 http://localhost:3001
@@ -222,6 +237,7 @@ http://localhost:3001
 ```
 
 ### 2. Test Offline Mode
+
 ```bash
 # 1. Open Ashley AI in browser
 # 2. Open DevTools → Application → Service Workers
@@ -231,6 +247,7 @@ http://localhost:3001
 ```
 
 ### 3. Test Cache
+
 ```bash
 # 1. Open DevTools → Application → Cache Storage
 # 2. Verify caches exist:
@@ -241,6 +258,7 @@ http://localhost:3001
 ```
 
 ### 4. Test Background Sync
+
 ```bash
 # 1. Go offline
 # 2. Submit an order (will be saved locally)
@@ -250,6 +268,7 @@ http://localhost:3001
 ```
 
 ### 5. Test Push Notifications (When Server Ready)
+
 ```bash
 # In browser console:
 const { subscribeToPushNotifications } = await import('/lib/pwa.ts')
@@ -264,29 +283,32 @@ await subscribeToPushNotifications()
 ## 🛠️ Development Commands
 
 ### Clear All Caches
+
 ```javascript
 // In browser console
 caches.keys().then(names => {
-  names.forEach(name => caches.delete(name))
-})
+  names.forEach(name => caches.delete(name));
+});
 ```
 
 ### Unregister Service Worker
+
 ```javascript
 // In browser console
 navigator.serviceWorker.getRegistrations().then(registrations => {
-  registrations.forEach(registration => registration.unregister())
-})
+  registrations.forEach(registration => registration.unregister());
+});
 ```
 
 ### Check Service Worker Status
+
 ```javascript
 // In browser console
 navigator.serviceWorker.getRegistration().then(reg => {
-  console.log('Active:', reg?.active)
-  console.log('Installing:', reg?.installing)
-  console.log('Waiting:', reg?.waiting)
-})
+  console.log("Active:", reg?.active);
+  console.log("Installing:", reg?.installing);
+  console.log("Waiting:", reg?.waiting);
+});
 ```
 
 ---
@@ -294,6 +316,7 @@ navigator.serviceWorker.getRegistration().then(reg => {
 ## 📊 Offline Capabilities
 
 ### What Works Offline:
+
 ✅ **Previously Visited Pages**: All cached pages available
 ✅ **Cached API Data**: Recent API responses (5min TTL)
 ✅ **Static Assets**: All CSS, JS, images cached
@@ -302,6 +325,7 @@ navigator.serviceWorker.getRegistration().then(reg => {
 ✅ **Connection Status**: Real-time online/offline detection
 
 ### What Requires Internet:
+
 ❌ **New API Calls**: Fresh data from server
 ❌ **Image Uploads**: Need connection to upload
 ❌ **Real-time Updates**: WebSocket connections
@@ -312,11 +336,13 @@ navigator.serviceWorker.getRegistration().then(reg => {
 ## 🔐 Security Considerations
 
 ### Service Worker Scope
+
 - **Scope**: `/` (entire app)
 - **HTTPS Required**: PWAs require HTTPS in production
 - **localhost Exception**: Works on localhost for development
 
 ### Data Security
+
 - **Encrypted Transport**: All API calls use HTTPS (production)
 - **Cache Isolation**: Each origin has separate cache
 - **Permission Required**: Push notifications require user permission
@@ -327,6 +353,7 @@ navigator.serviceWorker.getRegistration().then(reg => {
 ## 🚀 Production Deployment
 
 ### Pre-Deployment Checklist:
+
 - [ ] Generate all required icon sizes (72px - 512px)
 - [ ] Update `manifest.json` with production URLs
 - [ ] Configure VAPID keys for push notifications
@@ -338,6 +365,7 @@ navigator.serviceWorker.getRegistration().then(reg => {
 - [ ] Configure push notification server endpoint
 
 ### Environment Variables:
+
 ```env
 # Push Notifications (Optional)
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_public_key_here
@@ -345,6 +373,7 @@ VAPID_PRIVATE_KEY=your_private_key_here
 ```
 
 ### Generate VAPID Keys:
+
 ```bash
 # Install web-push
 npm install -g web-push
@@ -360,6 +389,7 @@ web-push generate-vapid-keys
 ## 📈 Performance Impact
 
 ### Benefits:
+
 - ⚡ **Faster Load Times**: Cached assets load instantly
 - 🔌 **Offline Access**: Work without internet
 - 📱 **Native Feel**: Standalone app experience
@@ -367,6 +397,7 @@ web-push generate-vapid-keys
 - 💾 **Reduced Bandwidth**: Serve from cache
 
 ### Metrics:
+
 - **Cache Hit Rate**: ~80-90% for static assets
 - **API Response Time**: ~0ms for cached responses
 - **Install Size**: ~2-5MB (cached assets)
@@ -377,7 +408,9 @@ web-push generate-vapid-keys
 ## 🐛 Troubleshooting
 
 ### Issue: Install Prompt Not Showing
+
 **Solution**:
+
 1. Ensure using HTTPS or localhost
 2. Check manifest.json is valid
 3. Verify service worker registered
@@ -385,23 +418,29 @@ web-push generate-vapid-keys
 5. Check console for errors
 
 ### Issue: Service Worker Not Updating
+
 **Solution**:
+
 ```javascript
 // Force update
 navigator.serviceWorker.getRegistration().then(reg => {
-  reg?.update()
-})
+  reg?.update();
+});
 ```
 
 ### Issue: Offline Mode Not Working
+
 **Solution**:
+
 1. Check service worker active
 2. Verify cache strategies in sw.js
 3. Check DevTools → Application → Service Workers
 4. Look for errors in console
 
 ### Issue: Background Sync Failing
+
 **Solution**:
+
 1. Verify IndexedDB has pending items
 2. Check service worker sync event listener
 3. Ensure online when sync triggers
@@ -412,41 +451,47 @@ navigator.serviceWorker.getRegistration().then(reg => {
 ## 📚 Browser Support
 
 ### Desktop:
+
 - ✅ Chrome 90+ (Full support)
 - ✅ Edge 90+ (Full support)
 - ⚠️ Firefox 90+ (Most features, no install prompt)
 - ⚠️ Safari 15+ (Limited, no background sync)
 
 ### Mobile:
+
 - ✅ Android Chrome 90+ (Full support)
 - ✅ Samsung Internet 15+ (Full support)
 - ⚠️ iOS Safari 15+ (Limited PWA support)
 - ⚠️ iOS Chrome (Uses Safari engine, limited)
 
 ### Feature Support:
-| Feature | Chrome | Firefox | Safari | iOS |
-|---------|--------|---------|--------|-----|
-| Service Workers | ✅ | ✅ | ✅ | ✅ |
-| Add to Home Screen | ✅ | ❌ | ✅ | ✅ |
-| Push Notifications | ✅ | ✅ | ❌ | ❌ |
-| Background Sync | ✅ | ❌ | ❌ | ❌ |
-| Offline Mode | ✅ | ✅ | ✅ | ✅ |
+
+| Feature            | Chrome | Firefox | Safari | iOS |
+| ------------------ | ------ | ------- | ------ | --- |
+| Service Workers    | ✅     | ✅      | ✅     | ✅  |
+| Add to Home Screen | ✅     | ❌      | ✅     | ✅  |
+| Push Notifications | ✅     | ✅      | ❌     | ❌  |
+| Background Sync    | ✅     | ❌      | ❌     | ❌  |
+| Offline Mode       | ✅     | ✅      | ✅     | ✅  |
 
 ---
 
 ## 🎯 Next Steps
 
 ### Immediate (Optional):
+
 1. **Generate Icon Images**: Create all required icon sizes
 2. **Test Installation**: Try installing on mobile device
 3. **Test Offline**: Verify offline functionality works
 
 ### Short-Term (Recommended):
+
 1. **Configure Push Notifications**: Set up VAPID keys and server endpoint
 2. **Create Push API Route**: `/api/push/subscribe` and `/api/push/unsubscribe`
 3. **Test Background Sync**: Submit orders offline and verify sync
 
 ### Long-Term (Advanced):
+
 1. **Implement Periodic Background Sync**: Auto-refresh data
 2. **Add Share Target API**: Share files to app
 3. **Implement App Badges**: Show notification count
@@ -457,16 +502,19 @@ navigator.serviceWorker.getRegistration().then(reg => {
 ## 📖 Resources
 
 ### Documentation:
+
 - [MDN - Progressive Web Apps](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 - [web.dev - PWA](https://web.dev/progressive-web-apps/)
 - [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
 
 ### Tools:
+
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse) - PWA audit
 - [Workbox](https://developers.google.com/web/tools/workbox) - Service worker library
 - [PWA Builder](https://www.pwabuilder.com/) - PWA testing tool
 
 ### Testing:
+
 - [Chrome DevTools](https://developer.chrome.com/docs/devtools/) - Service worker debugging
 - [Webhint](https://webhint.io/) - PWA validation
 - [PWA Testing Tool](https://www.pwatest.com/) - Online PWA tester
@@ -475,17 +523,17 @@ navigator.serviceWorker.getRegistration().then(reg => {
 
 ## ✅ Implementation Status
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Web App Manifest | ✅ Complete | All metadata configured |
-| Service Worker | ✅ Complete | Cache strategies implemented |
-| Offline Page | ✅ Complete | Beautiful fallback UI |
-| Install Prompt | ✅ Complete | Smart timing, dismissable |
-| Connection Monitor | ✅ Complete | Real-time status |
-| Background Sync | ✅ Complete | Order sync implemented |
-| Push Notifications | ⚠️ Infrastructure | Server endpoint needed |
-| IndexedDB Storage | ✅ Complete | Offline data storage |
-| Icon Assets | ⚠️ Pending | Need to generate images |
+| Feature            | Status            | Notes                        |
+| ------------------ | ----------------- | ---------------------------- |
+| Web App Manifest   | ✅ Complete       | All metadata configured      |
+| Service Worker     | ✅ Complete       | Cache strategies implemented |
+| Offline Page       | ✅ Complete       | Beautiful fallback UI        |
+| Install Prompt     | ✅ Complete       | Smart timing, dismissable    |
+| Connection Monitor | ✅ Complete       | Real-time status             |
+| Background Sync    | ✅ Complete       | Order sync implemented       |
+| Push Notifications | ⚠️ Infrastructure | Server endpoint needed       |
+| IndexedDB Storage  | ✅ Complete       | Offline data storage         |
+| Icon Assets        | ⚠️ Pending        | Need to generate images      |
 
 **Overall Status**: ✅ **95% Complete** - Ready for production with icon generation
 

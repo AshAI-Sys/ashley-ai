@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
 const prisma = db;
 
 // GET /api/dashboards - List all dashboards
 export async function GET(req: NextRequest) {
   try {
-    const workspaceId = req.headers.get('x-workspace-id') || 'default-workspace';
+    const workspaceId =
+      req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
-    const type = url.searchParams.get('type');
+    const type = url.searchParams.get("type");
 
     const where: any = { workspace_id: workspaceId, is_active: true };
     if (type) where.dashboard_type = type;
@@ -26,10 +27,7 @@ export async function GET(req: NextRequest) {
         },
         widgets_data: true,
       },
-      orderBy: [
-        { is_default: 'desc' },
-        { created_at: 'desc' },
-      ],
+      orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
     });
 
     return NextResponse.json({
@@ -47,7 +45,7 @@ export async function GET(req: NextRequest) {
       })),
     });
   } catch (error: any) {
-    console.error('Error fetching dashboards:', error);
+    console.error("Error fetching dashboards:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
@@ -58,8 +56,9 @@ export async function GET(req: NextRequest) {
 // POST /api/dashboards - Create new dashboard
 export async function POST(req: NextRequest) {
   try {
-    const workspaceId = req.headers.get('x-workspace-id') || 'default-workspace';
-    const userId = req.headers.get('x-user-id') || 'system';
+    const workspaceId =
+      req.headers.get("x-workspace-id") || "default-workspace";
+    const userId = req.headers.get("x-user-id") || "system";
     const body = await req.json();
 
     const {
@@ -74,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     if (!name || !dashboard_type || !layout || !widgets) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -112,7 +111,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Error creating dashboard:', error);
+    console.error("Error creating dashboard:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

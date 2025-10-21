@@ -14,9 +14,11 @@
 ## Deployment Method 1: Vercel Dashboard (Recommended)
 
 ### Step 1: Access Vercel Dashboard
+
 Visit: https://vercel.com/ash-ais-projects/ash-admin
 
 ### Step 2: Configure Project Settings
+
 1. Go to **Settings** → **General**
 2. Set **Root Directory**: `services/ash-admin`
 3. Set **Framework Preset**: Next.js
@@ -26,6 +28,7 @@ Visit: https://vercel.com/ash-ais-projects/ash-admin
 7. Set **Node.js Version**: 20.x
 
 ### Step 3: Add Environment Variables
+
 Go to **Settings** → **Environment Variables** and add:
 
 #### Required Variables (MUST ADD THESE):
@@ -50,6 +53,7 @@ DEMO_MODE=false
 ```
 
 ### Step 4: Deploy
+
 1. Go to **Deployments** tab
 2. Click **Redeploy** on the latest deployment
 3. Or push a new commit to GitHub to trigger automatic deployment
@@ -73,6 +77,7 @@ Vercel will automatically detect the push and start deployment.
 ## Deployment Method 3: Vercel CLI
 
 ### Prerequisites
+
 ```bash
 # Install Vercel CLI (if not installed)
 npm i -g vercel
@@ -82,6 +87,7 @@ vercel login
 ```
 
 ### Deploy from Vercel Dashboard Settings
+
 Since the monorepo structure requires specific root directory configuration, it's easier to deploy via the Vercel Dashboard. However, you can also use the CLI after proper configuration:
 
 1. **Update Root Directory in Vercel Dashboard**:
@@ -102,6 +108,7 @@ Since the monorepo structure requires specific root directory configuration, it'
 ### 1. Get Free PostgreSQL Database
 
 **Option A: Neon (Recommended)**
+
 1. Visit: https://neon.tech
 2. Sign up for free account
 3. Create new project
@@ -109,6 +116,7 @@ Since the monorepo structure requires specific root directory configuration, it'
 5. Example: `postgresql://user:pass@ep-xxx.ap-southeast-1.aws.neon.tech/neondb?sslmode=require`
 
 **Option B: Supabase**
+
 1. Visit: https://supabase.com
 2. Create new project
 3. Go to Settings → Database → Connection string
@@ -116,6 +124,7 @@ Since the monorepo structure requires specific root directory configuration, it'
 5. Example: `postgresql://postgres:pass@db.xxx.supabase.co:5432/postgres`
 
 **Option C: Railway**
+
 1. Visit: https://railway.app
 2. Create new project
 3. Add PostgreSQL plugin
@@ -125,18 +134,21 @@ Since the monorepo structure requires specific root directory configuration, it'
 ### 2. Generate Security Secrets
 
 **Windows PowerShell**:
+
 ```powershell
 # Run this 3 times for each secret
 [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
 ```
 
 **Mac/Linux**:
+
 ```bash
 # Run this 3 times for each secret
 openssl rand -base64 32
 ```
 
 Copy the output for:
+
 - `NEXTAUTH_SECRET`
 - `JWT_SECRET`
 - `ENCRYPTION_KEY`
@@ -178,6 +190,7 @@ DATABASE_URL="your-production-database-url" pnpm --filter @ash-ai/database prism
 ### 3. Update URLs
 
 After first deployment, get your actual Vercel URL and update these environment variables:
+
 - `NEXTAUTH_URL` = `https://your-actual-url.vercel.app`
 - `APP_URL` = `https://your-actual-url.vercel.app`
 
@@ -186,6 +199,7 @@ Then redeploy.
 ### 4. Test Deployment
 
 Visit your deployment URL and test:
+
 - ✅ Homepage loads
 - ✅ Login works
 - ✅ Dashboard displays
@@ -203,6 +217,7 @@ Visit your deployment URL and test:
 ### Build Fails: "Prisma Client not generated"
 
 **Solution**: The build command should include Prisma generation:
+
 ```bash
 cd ../.. && pnpm --filter @ash-ai/database prisma generate && pnpm --filter @ash/admin build
 ```
@@ -210,6 +225,7 @@ cd ../.. && pnpm --filter @ash-ai/database prisma generate && pnpm --filter @ash
 ### Database Connection Error
 
 **Solutions**:
+
 1. Verify `DATABASE_URL` is added to environment variables
 2. Check database is accessible (not localhost)
 3. Ensure `?sslmode=require` is in connection string
@@ -218,6 +234,7 @@ cd ../.. && pnpm --filter @ash-ai/database prisma generate && pnpm --filter @ash
 ### Environment Variables Not Loading
 
 **Solutions**:
+
 1. Add variables in Vercel Dashboard → Settings → Environment Variables
 2. Ensure "Production" environment is selected
 3. Redeploy after adding variables
@@ -226,6 +243,7 @@ cd ../.. && pnpm --filter @ash-ai/database prisma generate && pnpm --filter @ash
 ### 500 Internal Server Error
 
 **Solutions**:
+
 1. Check logs: https://vercel.com/ash-ais-projects/ash-admin
 2. Verify all required environment variables are set
 3. Check database migrations are run
@@ -236,16 +254,19 @@ cd ../.. && pnpm --filter @ash-ai/database prisma generate && pnpm --filter @ash
 ## Monitoring & Logs
 
 ### View Deployment Logs
+
 1. Go to: https://vercel.com/ash-ais-projects/ash-admin
 2. Click on latest deployment
 3. View **Build Logs** and **Function Logs**
 
 ### View Runtime Logs
+
 1. Go to **Logs** tab in Vercel dashboard
 2. Filter by severity (Error, Warning, Info)
 3. Search logs by time range or text
 
 ### Set up Alerts
+
 1. Go to **Settings** → **Notifications**
 2. Enable deployment failure notifications
 3. Add webhook for custom alerting

@@ -1,16 +1,17 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
-  checked?: boolean
-  onCheckedChange?: (checked: boolean) => void
+interface SwitchProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
 }
 
 const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
   ({ className, checked, onCheckedChange, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      onCheckedChange?.(e.target.checked)
-    }
+      onCheckedChange?.(e.target.checked);
+    };
 
     return (
       <label
@@ -37,10 +38,10 @@ const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
           )}
         />
       </label>
-    )
+    );
   }
-)
+);
 
-Switch.displayName = "Switch"
+Switch.displayName = "Switch";
 
-export { Switch }
+export { Switch };

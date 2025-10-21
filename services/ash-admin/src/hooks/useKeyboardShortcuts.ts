@@ -1,25 +1,25 @@
-'use client'
+"use client";
 
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useCallback, useRef } from "react";
 
 export interface KeyboardShortcut {
-  key: string
-  ctrl?: boolean
-  alt?: boolean
-  shift?: boolean
-  meta?: boolean
-  callback: (event: KeyboardEvent) => void
-  description?: string
-  preventDefault?: boolean
+  key: string;
+  ctrl?: boolean;
+  alt?: boolean;
+  shift?: boolean;
+  meta?: boolean;
+  callback: (event: KeyboardEvent) => void;
+  description?: string;
+  preventDefault?: boolean;
 }
 
 export interface ShortcutGroup {
-  name: string
+  name: string;
   shortcuts: Array<{
-    keys: string
-    description: string
-    action: () => void
-  }>
+    keys: string;
+    description: string;
+    action: () => void;
+  }>;
 }
 
 /**
@@ -42,15 +42,15 @@ export interface ShortcutGroup {
  * ])
  */
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
-  const shortcutsRef = useRef(shortcuts)
+  const shortcutsRef = useRef(shortcuts);
 
   // Update ref when shortcuts change
   useEffect(() => {
-    shortcutsRef.current = shortcuts
-  }, [shortcuts])
+    shortcutsRef.current = shortcuts;
+  }, [shortcuts]);
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    const shortcuts = shortcutsRef.current
+    const shortcuts = shortcutsRef.current;
 
     for (const shortcut of shortcuts) {
       const {
@@ -61,37 +61,41 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
         meta = false,
         callback,
         preventDefault = true,
-      } = shortcut
+      } = shortcut;
 
       // Check if the key matches (with null safety)
       // Skip if key is undefined
       if (!key || !event.key) {
-        continue
+        continue;
       }
-      const keyMatches = event.key.toLowerCase() === key.toLowerCase()
+      const keyMatches = event.key.toLowerCase() === key.toLowerCase();
 
       // Check if modifiers match
-      const ctrlMatches = ctrl ? event.ctrlKey || event.metaKey : !event.ctrlKey && !event.metaKey
-      const altMatches = alt ? event.altKey : !event.altKey
-      const shiftMatches = shift ? event.shiftKey : !event.shiftKey
-      const metaMatches = meta ? event.metaKey : !event.metaKey && !event.ctrlKey
+      const ctrlMatches = ctrl
+        ? event.ctrlKey || event.metaKey
+        : !event.ctrlKey && !event.metaKey;
+      const altMatches = alt ? event.altKey : !event.altKey;
+      const shiftMatches = shift ? event.shiftKey : !event.shiftKey;
+      const metaMatches = meta
+        ? event.metaKey
+        : !event.metaKey && !event.ctrlKey;
 
       if (keyMatches && ctrlMatches && altMatches && shiftMatches) {
         if (preventDefault) {
-          event.preventDefault()
+          event.preventDefault();
         }
-        callback(event)
-        break
+        callback(event);
+        break;
       }
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [handleKeyDown])
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
 }
 
 /**
@@ -99,60 +103,64 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
  */
 export const globalShortcuts: ShortcutGroup[] = [
   {
-    name: 'Navigation',
+    name: "Navigation",
     shortcuts: [
-      { keys: 'Ctrl+K', description: 'Open global search', action: () => {} },
-      { keys: 'Ctrl+/', description: 'Toggle sidebar', action: () => {} },
-      { keys: 'Ctrl+H', description: 'Go to dashboard', action: () => {} },
-      { keys: 'Ctrl+O', description: 'Go to orders', action: () => {} },
-      { keys: 'Ctrl+C', description: 'Go to clients', action: () => {} },
+      { keys: "Ctrl+K", description: "Open global search", action: () => {} },
+      { keys: "Ctrl+/", description: "Toggle sidebar", action: () => {} },
+      { keys: "Ctrl+H", description: "Go to dashboard", action: () => {} },
+      { keys: "Ctrl+O", description: "Go to orders", action: () => {} },
+      { keys: "Ctrl+C", description: "Go to clients", action: () => {} },
     ],
   },
   {
-    name: 'Actions',
+    name: "Actions",
     shortcuts: [
-      { keys: 'Ctrl+N', description: 'Create new order', action: () => {} },
-      { keys: 'Ctrl+S', description: 'Save current form', action: () => {} },
-      { keys: 'Esc', description: 'Close dialog/modal', action: () => {} },
-      { keys: 'Ctrl+P', description: 'Print current page', action: () => {} },
+      { keys: "Ctrl+N", description: "Create new order", action: () => {} },
+      { keys: "Ctrl+S", description: "Save current form", action: () => {} },
+      { keys: "Esc", description: "Close dialog/modal", action: () => {} },
+      { keys: "Ctrl+P", description: "Print current page", action: () => {} },
     ],
   },
   {
-    name: 'View',
+    name: "View",
     shortcuts: [
-      { keys: 'Ctrl+T', description: 'Toggle dark mode', action: () => {} },
-      { keys: 'Ctrl+B', description: 'Toggle sidebar', action: () => {} },
-      { keys: 'Ctrl+,', description: 'Open settings', action: () => {} },
+      { keys: "Ctrl+T", description: "Toggle dark mode", action: () => {} },
+      { keys: "Ctrl+B", description: "Toggle sidebar", action: () => {} },
+      { keys: "Ctrl+,", description: "Open settings", action: () => {} },
     ],
   },
   {
-    name: 'Help',
+    name: "Help",
     shortcuts: [
-      { keys: '?', description: 'Show keyboard shortcuts', action: () => {} },
-      { keys: 'Ctrl+Shift+H', description: 'Open help center', action: () => {} },
+      { keys: "?", description: "Show keyboard shortcuts", action: () => {} },
+      {
+        keys: "Ctrl+Shift+H",
+        description: "Open help center",
+        action: () => {},
+      },
     ],
   },
-]
+];
 
 /**
  * Format keyboard shortcut for display
  */
 export function formatShortcut(keys: string): string[] {
-  return keys.split('+').map((key) => {
+  return keys.split("+").map(key => {
     switch (key.toLowerCase()) {
-      case 'ctrl':
-        return 'Ctrl'
-      case 'alt':
-        return 'Alt'
-      case 'shift':
-        return 'Shift'
-      case 'meta':
-      case 'cmd':
-        return '⌘'
+      case "ctrl":
+        return "Ctrl";
+      case "alt":
+        return "Alt";
+      case "shift":
+        return "Shift";
+      case "meta":
+      case "cmd":
+        return "⌘";
       default:
-        return key.toUpperCase()
+        return key.toUpperCase();
     }
-  })
+  });
 }
 
 /**
@@ -160,17 +168,17 @@ export function formatShortcut(keys: string): string[] {
  * Useful to prevent shortcuts when user is typing
  */
 export function isTyping(): boolean {
-  const activeElement = document.activeElement
-  const tagName = activeElement?.tagName.toLowerCase()
-  const isEditable = (activeElement as HTMLElement)?.isContentEditable
+  const activeElement = document.activeElement;
+  const tagName = activeElement?.tagName.toLowerCase();
+  const isEditable = (activeElement as HTMLElement)?.isContentEditable;
 
   return (
-    tagName === 'input' ||
-    tagName === 'textarea' ||
-    tagName === 'select' ||
+    tagName === "input" ||
+    tagName === "textarea" ||
+    tagName === "select" ||
     isEditable ||
     false
-  )
+  );
 }
 
 /**
@@ -180,12 +188,12 @@ export function useKeyboardShortcut(
   key: string,
   callback: (event: KeyboardEvent) => void,
   options: {
-    ctrl?: boolean
-    alt?: boolean
-    shift?: boolean
-    meta?: boolean
-    preventDefault?: boolean
-    ignoreInputFields?: boolean
+    ctrl?: boolean;
+    alt?: boolean;
+    shift?: boolean;
+    meta?: boolean;
+    preventDefault?: boolean;
+    ignoreInputFields?: boolean;
   } = {}
 ) {
   const {
@@ -195,7 +203,7 @@ export function useKeyboardShortcut(
     meta = false,
     preventDefault = true,
     ignoreInputFields = true,
-  } = options
+  } = options;
 
   useKeyboardShortcuts([
     {
@@ -204,44 +212,44 @@ export function useKeyboardShortcut(
       alt,
       shift,
       meta,
-      callback: (event) => {
+      callback: event => {
         // Don't trigger if user is typing in an input field
         if (ignoreInputFields && isTyping()) {
-          return
+          return;
         }
-        callback(event)
+        callback(event);
       },
       preventDefault,
     },
-  ])
+  ]);
 }
 
 /**
  * Hook for Escape key
  */
 export function useEscapeKey(callback: () => void) {
-  useKeyboardShortcut('Escape', callback, {
+  useKeyboardShortcut("Escape", callback, {
     preventDefault: true,
     ignoreInputFields: false,
-  })
+  });
 }
 
 /**
  * Hook for Ctrl+K (command palette)
  */
 export function useCommandPalette(callback: () => void) {
-  useKeyboardShortcut('k', callback, {
+  useKeyboardShortcut("k", callback, {
     ctrl: true,
     preventDefault: true,
-  })
+  });
 }
 
 /**
  * Hook for Ctrl+S (save)
  */
 export function useSaveShortcut(callback: () => void) {
-  useKeyboardShortcut('s', callback, {
+  useKeyboardShortcut("s", callback, {
     ctrl: true,
     preventDefault: true,
-  })
+  });
 }

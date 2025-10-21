@@ -1,8 +1,8 @@
 // Government API Services - Philippine Compliance
-export { birService, BIRService } from './bir'
-export { sssService, SSSService } from './sss'
-export { philHealthService, PhilHealthService } from './philhealth'
-export { pagIBIGService, PagIBIGService } from './pagibig'
+export { birService, BIRService } from "./bir";
+export { sssService, SSSService } from "./sss";
+export { philHealthService, PhilHealthService } from "./philhealth";
+export { pagIBIGService, PagIBIGService } from "./pagibig";
 
 export type {
   GovernmentAgency,
@@ -26,7 +26,7 @@ export type {
   // Export Types
   ExportOptions,
   GovernmentReport,
-} from './types'
+} from "./types";
 
 /**
  * Government API Service Manager

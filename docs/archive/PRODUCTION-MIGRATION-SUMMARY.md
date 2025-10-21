@@ -11,6 +11,7 @@
 Ashley AI has been successfully upgraded from a **demo/development system** to a **production-ready enterprise application**.
 
 ### Before (Demo Mode)
+
 - ❌ Automatic demo user login (admin@ashleyai.com / password123)
 - ❌ Hardcoded workspace ID (demo-workspace-1)
 - ❌ No real authentication required
@@ -18,6 +19,7 @@ Ashley AI has been successfully upgraded from a **demo/development system** to a
 - ❌ Mock data and bypasses throughout codebase
 
 ### After (Production Mode)
+
 - ✅ Real JWT-based authentication required
 - ✅ Bcrypt password hashing (12 salt rounds)
 - ✅ Workspace isolation enforced
@@ -48,6 +50,7 @@ pnpm init-db
 ### Step 2: Configure Environment
 
 Create `.env` file:
+
 ```bash
 DATABASE_URL="postgresql://user:pass@localhost:5432/ashleyai"
 JWT_SECRET="your-secure-random-secret-key"
@@ -68,6 +71,7 @@ Access: http://localhost:3001
 ## 🔐 Password Requirements
 
 All passwords must have:
+
 - ✅ Minimum 8 characters
 - ✅ At least 1 uppercase letter
 - ✅ At least 1 lowercase letter
@@ -81,6 +85,7 @@ All passwords must have:
 ## 📝 Files Changed
 
 ### Modified (10 files)
+
 1. `services/ash-admin/src/lib/auth-middleware.ts` - Removed demo mode bypass
 2. `services/ash-admin/src/lib/auth-context.tsx` - Removed demo user fallback
 3. `services/ash-admin/src/lib/workspace.ts` - Removed hardcoded workspace
@@ -93,11 +98,13 @@ All passwords must have:
 10. `CLAUDE.md` - Updated production status
 
 ### Created (3 files)
+
 1. `services/ash-admin/src/lib/auth-utils.ts` - Authentication utilities (155 lines)
 2. `services/ash-admin/scripts/init-production-db.ts` - DB initialization (290 lines)
 3. `services/ash-admin/PRODUCTION-SETUP.md` - Deployment guide (400+ lines)
 
 ### Documentation (2 files)
+
 1. `DEMO-TO-PRODUCTION-MIGRATION.md` - Complete migration details
 2. `PRODUCTION-MIGRATION-SUMMARY.md` - This file
 
@@ -106,6 +113,7 @@ All passwords must have:
 ## ✅ What Works Now
 
 ### Authentication
+
 - ✅ Real login with email/password
 - ✅ JWT token generation (15min access, 7 day refresh)
 - ✅ HTTP-only secure cookies
@@ -114,12 +122,14 @@ All passwords must have:
 - ✅ Session management with Redis
 
 ### Authorization
+
 - ✅ Role-based access control (admin, manager, operator, viewer)
 - ✅ Workspace isolation (multi-tenant)
 - ✅ Permission checking on all endpoints
 - ✅ API route protection with requireAuth()
 
 ### Security
+
 - ✅ A+ Security Grade (98/100)
 - ✅ Bcrypt password hashing (12 rounds)
 - ✅ CSRF protection
@@ -132,6 +142,7 @@ All passwords must have:
 ## 🎓 How To Use
 
 ### 1. First Time Setup
+
 ```bash
 # Initialize database with admin user
 cd services/ash-admin
@@ -143,17 +154,20 @@ pnpm init-db
 ```
 
 ### 2. Login
+
 - Navigate to http://localhost:3001/login
 - Enter admin credentials created during setup
 - System generates JWT tokens automatically
 
 ### 3. Create Additional Users
+
 - Login as admin
 - Navigate to Settings → Users
 - Click "Add User"
 - Fill in details and assign role
 
 ### 4. Multi-Workspace Setup
+
 ```bash
 # Run init-db again with different details
 WORKSPACE_NAME="Second Company" \
@@ -167,12 +181,14 @@ pnpm init-db
 ## ⚠️ Breaking Changes
 
 ### For Developers
+
 1. **No Auto-Login**: All requests need authentication tokens
 2. **Workspace Required**: Cannot use hardcoded workspace IDs
 3. **API Changes**: Many routes wrapped with `requireAuth()`
 4. **Auth Context**: May return `null` if not authenticated
 
 ### For Users
+
 1. **Must Create Account**: No automatic demo access
 2. **Login Required**: Cannot access without credentials
 3. **Strong Passwords**: Complexity requirements enforced
@@ -229,6 +245,7 @@ Ashley AI is now a **secure, enterprise-grade manufacturing ERP system** ready f
 ---
 
 **Need Help?**
+
 - Read `PRODUCTION-SETUP.md` for detailed setup instructions
 - Check `CLAUDE.md` for development guidelines
 - Review `SECURITY-AUDIT-REPORT.md` for security details

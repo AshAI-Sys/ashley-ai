@@ -5,8 +5,8 @@
  * This replaces hardcoded workspace IDs with a flexible, multi-tenant approach.
  */
 
-import { cookies } from 'next/headers'
-import { NextRequest } from 'next/server'
+import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 
 /**
  * No default workspace in production
@@ -22,42 +22,44 @@ import { NextRequest } from 'next/server'
  *
  * IMPORTANT: Returns null if no workspace found - requires authentication
  */
-export async function getWorkspaceId(request?: NextRequest): Promise<string | null> {
+export async function getWorkspaceId(
+  request?: NextRequest
+): Promise<string | null> {
   // Try to get from request headers
   if (request) {
-    const headerWorkspaceId = request.headers.get('X-Workspace-ID')
+    const headerWorkspaceId = request.headers.get("X-Workspace-ID");
     if (headerWorkspaceId) {
-      return headerWorkspaceId
+      return headerWorkspaceId;
     }
 
     // Try to get from query parameters
-    const url = new URL(request.url)
-    const queryWorkspaceId = url.searchParams.get('workspaceId')
+    const url = new URL(request.url);
+    const queryWorkspaceId = url.searchParams.get("workspaceId");
     if (queryWorkspaceId) {
-      return queryWorkspaceId
+      return queryWorkspaceId;
     }
 
     // Try to get from cookies
-    const cookieWorkspaceId = request.cookies.get('workspace_id')?.value
+    const cookieWorkspaceId = request.cookies.get("workspace_id")?.value;
     if (cookieWorkspaceId) {
-      return cookieWorkspaceId
+      return cookieWorkspaceId;
     }
   }
 
   // Try to get from server-side cookies
   try {
-    const cookieStore = cookies()
-    const workspaceCookie = cookieStore.get('workspace_id')
+    const cookieStore = cookies();
+    const workspaceCookie = cookieStore.get("workspace_id");
     if (workspaceCookie?.value) {
-      return workspaceCookie.value
+      return workspaceCookie.value;
     }
   } catch (error) {
     // Cookies may not be available in all contexts
-    console.warn('Failed to read workspace cookie:', error)
+    console.warn("Failed to read workspace cookie:", error);
   }
 
   // No workspace found - user must authenticate
-  return null
+  return null;
 }
 
 /**
@@ -66,26 +68,26 @@ export async function getWorkspaceId(request?: NextRequest): Promise<string | nu
  */
 export function getWorkspaceIdFromRequest(request: NextRequest): string | null {
   // Try request headers first
-  const headerWorkspaceId = request.headers.get('X-Workspace-ID')
+  const headerWorkspaceId = request.headers.get("X-Workspace-ID");
   if (headerWorkspaceId) {
-    return headerWorkspaceId
+    return headerWorkspaceId;
   }
 
   // Try query parameters
-  const url = new URL(request.url)
-  const queryWorkspaceId = url.searchParams.get('workspaceId')
+  const url = new URL(request.url);
+  const queryWorkspaceId = url.searchParams.get("workspaceId");
   if (queryWorkspaceId) {
-    return queryWorkspaceId
+    return queryWorkspaceId;
   }
 
   // Try cookies
-  const cookieWorkspaceId = request.cookies.get('workspace_id')?.value
+  const cookieWorkspaceId = request.cookies.get("workspace_id")?.value;
   if (cookieWorkspaceId) {
-    return cookieWorkspaceId
+    return cookieWorkspaceId;
   }
 
   // No workspace found - user must authenticate
-  return null
+  return null;
 }
 
 /**
@@ -94,15 +96,15 @@ export function getWorkspaceIdFromRequest(request: NextRequest): string | null {
  */
 export function setWorkspaceId(workspaceId: string): void {
   try {
-    const cookieStore = cookies()
-    cookieStore.set('workspace_id', workspaceId, {
+    const cookieStore = cookies();
+    cookieStore.set("workspace_id", workspaceId, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 60 * 60 * 24 * 30, // 30 days
-    })
+    });
   } catch (error) {
-    console.error('Failed to set workspace cookie:', error)
+    console.error("Failed to set workspace cookie:", error);
   }
 }
 
@@ -111,7 +113,11 @@ export function setWorkspaceId(workspaceId: string): void {
  */
 export function isValidWorkspaceId(workspaceId: string): boolean {
   // Workspace IDs should be alphanumeric with hyphens
-  return /^[a-zA-Z0-9-_]+$/.test(workspaceId) && workspaceId.length > 0 && workspaceId.length <= 50
+  return (
+    /^[a-zA-Z0-9-_]+$/.test(workspaceId) &&
+    workspaceId.length > 0 &&
+    workspaceId.length <= 50
+  );
 }
 
 /**
@@ -121,28 +127,30 @@ export function isValidWorkspaceId(workspaceId: string): boolean {
 export function getWorkspaceFromToken(token: string): string | null {
   // TODO: Implement JWT token parsing to extract workspace ID
   // For now, return null to fall back to other methods
-  return null
+  return null;
 }
 
 /**
  * Workspace context type for use in API routes and components
  */
 export interface WorkspaceContext {
-  workspaceId: string
-  isDefault: boolean
+  workspaceId: string;
+  isDefault: boolean;
 }
 
 /**
  * Get full workspace context with metadata
  * Returns null if no workspace found
  */
-export async function getWorkspaceContext(request?: NextRequest): Promise<WorkspaceContext | null> {
-  const workspaceId = await getWorkspaceId(request)
+export async function getWorkspaceContext(
+  request?: NextRequest
+): Promise<WorkspaceContext | null> {
+  const workspaceId = await getWorkspaceId(request);
   if (!workspaceId) {
-    return null
+    return null;
   }
   return {
     workspaceId,
     isDefault: false, // No default workspace in production
-  }
+  };
 }

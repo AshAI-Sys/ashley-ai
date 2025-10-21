@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import DashboardLayout from '@/components/dashboard-layout'
+import React, { useState, useEffect } from "react";
+import DashboardLayout from "@/components/dashboard-layout";
 
 export default function CuttingPage() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(false)
-  }, [])
+    setLoading(false);
+  }, []);
 
   if (loading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -20,5 +20,5 @@ export default function CuttingPage() {
         <h1>Cutting Operations</h1>
       </div>
     </DashboardLayout>
-  )
+  );
 }

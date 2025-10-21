@@ -27,21 +27,25 @@ Railway is the **EASIEST** way to deploy pnpm workspaces. Takes only **5 minutes
 Railway will auto-detect it's a monorepo. Configure:
 
 ### Root Directory:
+
 ```
 services/ash-admin
 ```
 
 ### Build Command:
+
 ```
 cd ../.. && pnpm install && cd services/ash-admin && pnpm build
 ```
 
 ### Start Command:
+
 ```
 pnpm start
 ```
 
 ### Install Command:
+
 ```
 pnpm install
 ```
@@ -68,6 +72,7 @@ PORT=3000
 ```
 
 ### To generate NEXTAUTH_SECRET:
+
 ```bash
 # Run this in terminal:
 openssl rand -base64 32
@@ -101,11 +106,13 @@ After first deployment, run migrations:
 1. Go to your Railway service
 2. Click **"Settings"** → **"Deploy Triggers"**
 3. Add this **Custom Start Command**:
+
 ```
 npx prisma migrate deploy && pnpm start
 ```
 
 Or run manually in Railway CLI:
+
 ```bash
 # Install Railway CLI
 npm i -g @railway/cli
@@ -136,16 +143,19 @@ After deployment, verify:
 ## 🔧 Troubleshooting
 
 ### Build fails?
+
 - Check build logs in Railway dashboard
 - Verify pnpm-lock.yaml is committed
 - Ensure all dependencies are in package.json
 
 ### Database error?
+
 - Verify DATABASE_URL is correct
 - Run migrations: `railway run npx prisma migrate deploy`
 - Check PostgreSQL is running in Railway
 
 ### Can't access app?
+
 - Check if deployment succeeded
 - Verify PORT is set to 3000
 - Check Railway logs for errors
@@ -163,6 +173,7 @@ After deployment, verify:
 ## 🎯 Summary
 
 **Railway is easier than Vercel for monorepos because:**
+
 - ✅ Native pnpm workspace support
 - ✅ Automatic PostgreSQL database
 - ✅ Simple environment variable management
@@ -176,6 +187,7 @@ After deployment, verify:
 ## 📞 Need Help?
 
 If you encounter issues:
+
 1. Check Railway docs: https://docs.railway.app
 2. Join Railway Discord: https://discord.gg/railway
 3. Check build logs in Railway dashboard

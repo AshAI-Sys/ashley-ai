@@ -1,5 +1,5 @@
-const fs = require('fs')
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Security Test Report Generator
@@ -8,19 +8,23 @@ const path = require('path')
  */
 
 function generateSecurityReport() {
-  const coverageFile = path.join(__dirname, 'coverage', 'coverage-summary.json')
+  const coverageFile = path.join(
+    __dirname,
+    "coverage",
+    "coverage-summary.json"
+  );
 
   if (!fs.existsSync(coverageFile)) {
-    console.error('Coverage file not found. Run tests with --coverage first.')
-    process.exit(1)
+    console.error("Coverage file not found. Run tests with --coverage first.");
+    process.exit(1);
   }
 
-  const coverage = JSON.parse(fs.readFileSync(coverageFile, 'utf8'))
-  const timestamp = new Date().toISOString()
+  const coverage = JSON.parse(fs.readFileSync(coverageFile, "utf8"));
+  const timestamp = new Date().toISOString();
 
   // Calculate overall statistics
-  const testFiles = Object.keys(coverage).filter(key => key !== 'total')
-  const totalTests = testFiles.length
+  const testFiles = Object.keys(coverage).filter(key => key !== "total");
+  const totalTests = testFiles.length;
 
   const html = `
 <!DOCTYPE html>
@@ -469,21 +473,21 @@ function generateSecurityReport() {
   </div>
 </body>
 </html>
-  `
+  `;
 
-  const reportPath = path.join(__dirname, 'security-report.html')
-  fs.writeFileSync(reportPath, html)
+  const reportPath = path.join(__dirname, "security-report.html");
+  fs.writeFileSync(reportPath, html);
 
-  console.log('\n✓ Security test report generated successfully!')
-  console.log(`\n📄 Report location: ${reportPath}`)
-  console.log('\n🎯 Security Score: A+ (98/100)')
-  console.log('✓ All security features validated')
-  console.log('✓ 0 vulnerabilities found\n')
+  console.log("\n✓ Security test report generated successfully!");
+  console.log(`\n📄 Report location: ${reportPath}`);
+  console.log("\n🎯 Security Score: A+ (98/100)");
+  console.log("✓ All security features validated");
+  console.log("✓ 0 vulnerabilities found\n");
 }
 
 try {
-  generateSecurityReport()
+  generateSecurityReport();
 } catch (error) {
-  console.error('Error generating report:', error)
-  process.exit(1)
+  console.error("Error generating report:", error);
+  process.exit(1);
 }

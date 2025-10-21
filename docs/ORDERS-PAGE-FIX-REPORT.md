@@ -8,14 +8,17 @@
 ## 📋 Mga Napansin at Naayos
 
 ### **ISSUE #1: Missing Counts sa API Response**
+
 **Status**: ✅ Fixed
 
 **Problem**:
+
 - Frontend nag-eexpect ng `_count.design_assets` at `_count.bundles`
 - Pero sa API endpoint, naka-include lang ang `_count.line_items`
 - Result: Undefined properties, causing potential errors
 
 **Solution**:
+
 ```typescript
 // Before (mali):
 _count: {
@@ -39,14 +42,17 @@ _count: {
 ---
 
 ### **ISSUE #2: Status Filter Hindi Match sa Database**
+
 **Status**: ✅ Fixed
 
 **Problem**:
+
 - Filter dropdown gumagamit ng lowercase values (`draft`, `intake`, `confirmed`)
 - Pero sa database schema, uppercase ang expected (`DRAFT`, `PENDING`, `DESIGN`)
 - Result: Filter button hindi gumagana, walang resulta
 
 **Solution**:
+
 ```typescript
 // Before (mali):
 <option value="draft">Draft</option>
@@ -71,13 +77,16 @@ _count: {
 ---
 
 ### **ISSUE #3: Status Badge Colors Hindi Match**
+
 **Status**: ✅ Fixed
 
 **Problem**:
+
 - Status badge color mapping gumagamit ng lowercase comparison
 - Hindi nag-mmatch sa uppercase database values
 
 **Solution**:
+
 ```typescript
 // Before:
 switch (status.toLowerCase()) {
@@ -109,18 +118,18 @@ switch (status.toUpperCase()) {
 
 Mas descriptive at color-coded ang bawat stage:
 
-| Status | Color | Description |
-|--------|-------|-------------|
-| DRAFT | Gray | Initial state |
-| PENDING | Blue | Waiting approval |
-| DESIGN | Purple | Design phase |
-| PRODUCTION | Yellow | Manufacturing in progress |
-| QC | Orange | Quality control inspection |
-| PACKING | Indigo | Packaging stage |
-| SHIPPED | Cyan | In transit |
-| DELIVERED | Green | Delivered to client |
-| COMPLETED | Emerald | Fully completed |
-| CANCELLED | Red | Cancelled order |
+| Status     | Color   | Description                |
+| ---------- | ------- | -------------------------- |
+| DRAFT      | Gray    | Initial state              |
+| PENDING    | Blue    | Waiting approval           |
+| DESIGN     | Purple  | Design phase               |
+| PRODUCTION | Yellow  | Manufacturing in progress  |
+| QC         | Orange  | Quality control inspection |
+| PACKING    | Indigo  | Packaging stage            |
+| SHIPPED    | Cyan    | In transit                 |
+| DELIVERED  | Green   | Delivered to client        |
+| COMPLETED  | Emerald | Fully completed            |
+| CANCELLED  | Red     | Cancelled order            |
 
 ---
 

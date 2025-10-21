@@ -107,6 +107,7 @@ vercel link
 ```
 
 **Answer the prompts**:
+
 - Set up and deploy: `Yes`
 - Which scope: `ashaisystem-1783`
 - Link to existing project: `No` (create new)
@@ -116,6 +117,7 @@ vercel link
 ### B. Configure Build Settings
 
 Vercel will auto-detect Next.js. Confirm these settings:
+
 - **Framework**: Next.js
 - **Build Command**: `pnpm run build` or `npm run build`
 - **Output Directory**: `.next`
@@ -229,12 +231,14 @@ vercel --prod
 ```
 
 This will:
+
 1. ✅ Build your Next.js app
 2. ✅ Upload to Vercel
 3. ✅ Assign production domain
 4. ✅ Return live URL
 
 **Expected Output**:
+
 ```
 🔍 Inspect: https://vercel.com/ashaisystem-1783/ashley-ai-admin/...
 ✅ Production: https://ashley-ai-admin.vercel.app [deployed]
@@ -270,6 +274,7 @@ vercel domains add yourdomain.com
 ```
 
 Then update DNS:
+
 - **Type**: CNAME
 - **Name**: @ (or subdomain)
 - **Value**: cname.vercel-dns.com
@@ -295,15 +300,18 @@ Then update DNS:
 ### Build Fails
 
 **Error**: Module not found
+
 - **Fix**: Check `package.json` has all dependencies
 - Run locally: `pnpm run build` to verify
 
 **Error**: Environment variable not set
+
 - **Fix**: Add missing variables in Vercel dashboard
 
 ### Database Connection Fails
 
 **Error**: `P1001: Can't reach database server`
+
 - **Fix**: Check DATABASE_URL is correct
 - Ensure `?sslmode=require` is in connection string
 - Verify database is accessible from external IPs (not localhost)
@@ -311,6 +319,7 @@ Then update DNS:
 ### Redis Connection Fails
 
 **Error**: `ECONNREFUSED` or timeout
+
 - **Fix**: Check REDIS_URL is correct
 - Ensure using `rediss://` (with double 's' for SSL)
 - Verify Upstash database is active
@@ -356,6 +365,7 @@ vercel rollback <deployment-id>
 **Total Cost**: $0/month (within free tier limits)
 
 **Upgrade When**:
+
 - Traffic > 100GB/month
 - Database > 512 MB
 - Redis > 10K commands/day

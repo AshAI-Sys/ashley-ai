@@ -1,9 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: [
-    "eslint:recommended",
-  ],
+  extends: ["eslint:recommended"],
   env: {
     node: true,
     es2022: true,
@@ -16,7 +14,7 @@ module.exports = {
     "build/",
     ".next/",
     "coverage/",
-    "*.d.ts"
+    "*.d.ts",
   ],
   rules: {
     "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
@@ -30,7 +28,7 @@ module.exports = {
       rules: {
         "react/no-unescaped-entities": "off",
         "react-hooks/exhaustive-deps": "warn",
-      }
-    }
+      },
+    },
   ],
 };

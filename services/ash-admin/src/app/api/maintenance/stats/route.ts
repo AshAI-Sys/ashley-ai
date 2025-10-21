@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const workspace_id = 'default'
-    const today = new Date()
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+    const workspace_id = "default";
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     // Parallel queries for better performance
     const [
@@ -23,26 +23,29 @@ export async function GET(request: NextRequest) {
       assetsByType,
       upcomingMaintenance,
       recentWorkOrders,
-      maintenanceCosts
+      maintenanceCosts,
     ] = await Promise.all([
       // Total assets count
       prisma.asset.count({
-        where: { workspace_id, deleted_at: null }
+        where: { workspace_id, deleted_at: null },
       }),
 
       // Active assets count
       prisma.asset.count({
-        where: { workspace_id, status: 'active', deleted_at: null }
+        where: { workspace_id, status: "active", deleted_at: null },
       }),
 
       // Total work orders
       prisma.workOrder.count({
-        where: { workspace_id }
+        where: { workspace_id },
       }),
 
       // Open work orders
       prisma.workOrder.count({
-        where: { workspace_id, status: { in: ['open', 'assigned', 'in_progress'] } }
+        where: {
+          workspace_id,
+          status: { in: ["open", "assigned", "in_progress"] },
+        },
       }),
 
       // Overdue maintenance schedules
@@ -50,55 +53,55 @@ export async function GET(request: NextRequest) {
         where: {
           workspace_id,
           is_active: true,
-          next_due_date: { lt: today }
-        }
+          next_due_date: { lt: today },
+        },
       }),
 
       // Total maintenance schedules
       prisma.maintenanceSchedule.count({
-        where: { workspace_id, is_active: true }
+        where: { workspace_id, is_active: true },
       }),
 
       // Completed work orders this month
       prisma.workOrder.count({
         where: {
           workspace_id,
-          status: 'completed',
+          status: "completed",
           completed_at: {
             gte: startOfMonth,
-            lte: endOfMonth
-          }
-        }
+            lte: endOfMonth,
+          },
+        },
       }),
 
       // Pending work orders (unassigned)
       prisma.workOrder.count({
         where: {
           workspace_id,
-          status: 'open',
-          assigned_to: null
-        }
+          status: "open",
+          assigned_to: null,
+        },
       }),
 
       // Work orders by type
       prisma.workOrder.groupBy({
-        by: ['type'],
+        by: ["type"],
         where: { workspace_id },
-        _count: { type: true }
+        _count: { type: true },
       }),
 
       // Work orders by priority
       prisma.workOrder.groupBy({
-        by: ['priority'],
-        where: { workspace_id, status: { not: 'completed' } },
-        _count: { priority: true }
+        by: ["priority"],
+        where: { workspace_id, status: { not: "completed" } },
+        _count: { priority: true },
       }),
 
       // Assets by type
       prisma.asset.groupBy({
-        by: ['type'],
+        by: ["type"],
         where: { workspace_id, deleted_at: null },
-        _count: { type: true }
+        _count: { type: true },
       }),
 
       // Upcoming maintenance (next 30 days)
@@ -108,19 +111,19 @@ export async function GET(request: NextRequest) {
           is_active: true,
           next_due_date: {
             gte: today,
-            lte: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000)
-          }
+            lte: new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000),
+          },
         },
         include: {
           asset: {
             select: {
               name: true,
-              asset_number: true
-            }
-          }
+              asset_number: true,
+            },
+          },
         },
-        orderBy: { next_due_date: 'asc' },
-        take: 10
+        orderBy: { next_due_date: "asc" },
+        take: 10,
       }),
 
       // Recent work orders
@@ -130,18 +133,18 @@ export async function GET(request: NextRequest) {
           asset: {
             select: {
               name: true,
-              asset_number: true
-            }
+              asset_number: true,
+            },
           },
           assignee: {
             select: {
               first_name: true,
-              last_name: true
-            }
-          }
+              last_name: true,
+            },
+          },
         },
-        orderBy: { created_at: 'desc' },
-        take: 5
+        orderBy: { created_at: "desc" },
+        take: 5,
       }),
 
       // Maintenance costs this month
@@ -150,42 +153,51 @@ export async function GET(request: NextRequest) {
           workspace_id,
           completed_at: {
             gte: startOfMonth,
-            lte: endOfMonth
+            lte: endOfMonth,
           },
-          cost: { not: null }
+          cost: { not: null },
         },
-        _sum: { cost: true }
-      })
-    ])
+        _sum: { cost: true },
+      }),
+    ]);
 
     // Calculate completion rate
-    const completionRate = totalWorkOrders > 0
-      ? Math.round((completedThisMonth / totalWorkOrders) * 100)
-      : 0
+    const completionRate =
+      totalWorkOrders > 0
+        ? Math.round((completedThisMonth / totalWorkOrders) * 100)
+        : 0;
 
     // Calculate asset utilization
-    const assetUtilization = totalAssets > 0
-      ? Math.round((activeAssets / totalAssets) * 100)
-      : 0
+    const assetUtilization =
+      totalAssets > 0 ? Math.round((activeAssets / totalAssets) * 100) : 0;
 
     // Process work order distributions
     const workOrderTypeDistribution = workOrdersByType.map(item => ({
       type: item.type,
       count: item._count.type,
-      percentage: totalWorkOrders > 0 ? Math.round((item._count.type / totalWorkOrders) * 100) : 0
-    }))
+      percentage:
+        totalWorkOrders > 0
+          ? Math.round((item._count.type / totalWorkOrders) * 100)
+          : 0,
+    }));
 
     const workOrderPriorityDistribution = workOrdersByPriority.map(item => ({
       priority: item.priority,
       count: item._count.priority,
-      percentage: openWorkOrders > 0 ? Math.round((item._count.priority / openWorkOrders) * 100) : 0
-    }))
+      percentage:
+        openWorkOrders > 0
+          ? Math.round((item._count.priority / openWorkOrders) * 100)
+          : 0,
+    }));
 
     const assetTypeDistribution = assetsByType.map(item => ({
       type: item.type,
       count: item._count.type,
-      percentage: totalAssets > 0 ? Math.round((item._count.type / totalAssets) * 100) : 0
-    }))
+      percentage:
+        totalAssets > 0
+          ? Math.round((item._count.type / totalAssets) * 100)
+          : 0,
+    }));
 
     const response = {
       success: true,
@@ -201,12 +213,12 @@ export async function GET(request: NextRequest) {
           completion_rate: completionRate,
           overdue_maintenance: overdueSchedules,
           total_schedules: totalSchedules,
-          maintenance_costs_this_month: maintenanceCosts._sum.cost || 0
+          maintenance_costs_this_month: maintenanceCosts._sum.cost || 0,
         },
         distributions: {
           work_orders_by_type: workOrderTypeDistribution,
           work_orders_by_priority: workOrderPriorityDistribution,
-          assets_by_type: assetTypeDistribution
+          assets_by_type: assetTypeDistribution,
         },
         upcoming_maintenance: upcomingMaintenance.map(schedule => ({
           id: schedule.id,
@@ -216,7 +228,10 @@ export async function GET(request: NextRequest) {
           due_date: schedule.next_due_date.toISOString(),
           maintenance_type: schedule.maintenance_type,
           priority: schedule.priority,
-          days_until_due: Math.ceil((schedule.next_due_date.getTime() - today.getTime()) / (1000 * 3600 * 24))
+          days_until_due: Math.ceil(
+            (schedule.next_due_date.getTime() - today.getTime()) /
+              (1000 * 3600 * 24)
+          ),
         })),
         recent_activity: recentWorkOrders.map(wo => ({
           id: wo.id,
@@ -226,24 +241,28 @@ export async function GET(request: NextRequest) {
           type: wo.type,
           status: wo.status,
           priority: wo.priority,
-          assignee: wo.assignee ? `${wo.assignee.first_name} ${wo.assignee.last_name}` : 'Unassigned',
-          created_at: wo.created_at.toISOString()
+          assignee: wo.assignee
+            ? `${wo.assignee.first_name} ${wo.assignee.last_name}`
+            : "Unassigned",
+          created_at: wo.created_at.toISOString(),
         })),
         alerts: {
           overdue_count: overdueSchedules,
-          high_priority_open: workOrdersByPriority.find(p => p.priority === 'CRITICAL')?._count.priority || 0,
+          high_priority_open:
+            workOrdersByPriority.find(p => p.priority === "CRITICAL")?._count
+              .priority || 0,
           unassigned_count: pendingWorkOrders,
-          inactive_assets: totalAssets - activeAssets
-        }
-      }
-    }
+          inactive_assets: totalAssets - activeAssets,
+        },
+      },
+    };
 
-    return NextResponse.json(response)
+    return NextResponse.json(response);
   } catch (error) {
-    console.error('Error fetching maintenance stats:', error)
+    console.error("Error fetching maintenance stats:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch maintenance statistics' },
+      { success: false, error: "Failed to fetch maintenance statistics" },
       { status: 500 }
-    )
+    );
   }
 }

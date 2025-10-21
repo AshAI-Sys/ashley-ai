@@ -7,6 +7,7 @@
 ## 🚀 Quick Setup (5 Minutes)
 
 ### Step 1: Create Sentry Account
+
 ```bash
 # Go to https://sentry.io
 # Sign up (free plan available)
@@ -14,18 +15,21 @@
 ```
 
 ### Step 2: Get Your DSN
+
 ```bash
 # Copy DSN from Sentry project settings
 # Example: https://abc123@o123456.ingest.sentry.io/123456
 ```
 
 ### Step 3: Install Sentry Package
+
 ```bash
 cd services/ash-admin
 pnpm add @sentry/nextjs
 ```
 
 ### Step 4: Update .env
+
 ```bash
 # Add these to services/ash-admin/.env
 SENTRY_DSN="your_dsn_here"
@@ -34,6 +38,7 @@ SENTRY_AUTH_TOKEN="your_auth_token" # Optional, for source maps
 ```
 
 ### Step 5: Test It
+
 ```bash
 # Start dev server
 pnpm dev
@@ -53,6 +58,7 @@ export default function Test() {
 ## ✅ What's Already Done
 
 ### Files Created:
+
 1. ✅ `sentry.client.config.ts` - Browser error tracking
 2. ✅ `sentry.server.config.ts` - Server error tracking
 3. ✅ `sentry.edge.config.ts` - Middleware error tracking
@@ -62,6 +68,7 @@ export default function Test() {
 7. ✅ `.env` - Environment variables (empty, needs DSN)
 
 ### Features Ready:
+
 - ✅ Client-side error tracking
 - ✅ Server-side error tracking
 - ✅ Edge runtime error tracking
@@ -76,17 +83,19 @@ export default function Test() {
 ## 📝 Usage Examples
 
 ### Log Any Error
+
 ```typescript
-import { logError } from '@/lib/error-logger'
+import { logError } from "@/lib/error-logger";
 
 logError(error, {
-  category: 'api',
-  orderId: '123',
-  metadata: { details }
-})
+  category: "api",
+  orderId: "123",
+  metadata: { details },
+});
 ```
 
 ### Wrap Component with Error Boundary
+
 ```typescript
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
@@ -96,12 +105,13 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 ```
 
 ### Track Performance
-```typescript
-import { logPerformanceIssue } from '@/lib/error-logger'
 
-const start = Date.now()
+```typescript
+import { logPerformanceIssue } from "@/lib/error-logger";
+
+const start = Date.now();
 // ... your code
-logPerformanceIssue('operation', Date.now() - start, 2000)
+logPerformanceIssue("operation", Date.now() - start, 2000);
 ```
 
 ---
@@ -109,17 +119,19 @@ logPerformanceIssue('operation', Date.now() - start, 2000)
 ## 🔧 Production Setup
 
 ### Update next.config.js
+
 ```javascript
-const { withSentryConfig } = require('./next.config.sentry')
+const { withSentryConfig } = require("./next.config.sentry");
 
 const nextConfig = {
   // your config
-}
+};
 
-module.exports = withSentryConfig(nextConfig)
+module.exports = withSentryConfig(nextConfig);
 ```
 
 ### Set Release Version
+
 ```bash
 export APP_VERSION="1.0.0"
 pnpm build
@@ -153,6 +165,7 @@ pnpm build
 ## 📚 Full Documentation
 
 See `SENTRY-ERROR-TRACKING.md` for:
+
 - Detailed setup guide
 - All error categories
 - Advanced configuration

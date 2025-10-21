@@ -1,22 +1,15 @@
 module.exports = {
-  extends: [
-    'eslint:recommended'
-  ],
+  extends: ["eslint:recommended"],
   env: {
     node: true,
-    es2022: true
+    es2022: true,
   },
   parserOptions: {
     ecmaVersion: 2022,
-    sourceType: 'module'
+    sourceType: "module",
   },
-  ignorePatterns: [
-    'dist',
-    'node_modules',
-    '.turbo',
-    'src'
-  ],
+  ignorePatterns: ["dist", "node_modules", ".turbo", "src"],
   rules: {
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
-  }
-}
+    "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+  },
+};

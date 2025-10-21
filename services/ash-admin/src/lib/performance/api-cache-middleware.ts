@@ -3,29 +3,29 @@
  * Automatic caching for GET endpoints
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { cache } from '@/lib/redis'
+import { NextRequest, NextResponse } from "next/server";
+import { cache } from "@/lib/redis";
 
 export interface CacheOptions {
-  ttl?: number // Time to live in seconds
-  key?: string // Custom cache key
-  enabled?: boolean // Enable/disable caching
-  vary?: string[] // Vary cache by headers
-  revalidate?: number // Revalidate interval
+  ttl?: number; // Time to live in seconds
+  key?: string; // Custom cache key
+  enabled?: boolean; // Enable/disable caching
+  vary?: string[]; // Vary cache by headers
+  revalidate?: number; // Revalidate interval
 }
 
 /**
  * Create cache key from request
  */
 function createCacheKey(request: NextRequest, customKey?: string): string {
-  if (customKey) return customKey
+  if (customKey) return customKey;
 
-  const url = new URL(request.url)
-  const method = request.method
-  const pathname = url.pathname
-  const searchParams = url.searchParams.toString()
+  const url = new URL(request.url);
+  const method = request.method;
+  const pathname = url.pathname;
+  const searchParams = url.searchParams.toString();
 
-  return `api:${method}:${pathname}${searchParams ? ':' + searchParams : ''}`
+  return `api:${method}:${pathname}${searchParams ? ":" + searchParams : ""}`;
 }
 
 /**
@@ -41,88 +41,101 @@ export function withAPICache(
     key,
     enabled = true,
     vary = [],
-    revalidate
-  } = options
+    revalidate,
+  } = options;
 
   return async (request: NextRequest): Promise<NextResponse> => {
     // Only cache GET requests
-    if (request.method !== 'GET' || !enabled) {
-      return handler(request)
+    if (request.method !== "GET" || !enabled) {
+      return handler(request);
     }
 
     try {
       // Create cache key
-      let cacheKey = createCacheKey(request, key)
+      let cacheKey = createCacheKey(request, key);
 
       // Add vary headers to cache key
       if (vary.length > 0) {
-        const varyValues = vary.map(h => request.headers.get(h) || '').join(':')
-        cacheKey += `:${varyValues}`
+        const varyValues = vary
+          .map(h => request.headers.get(h) || "")
+          .join(":");
+        cacheKey += `:${varyValues}`;
       }
 
       // Try to get from cache
-      const cached = await cache.get(cacheKey)
+      const cached = await cache.get(cacheKey);
 
       if (cached) {
-        const parsedCache = JSON.parse(cached)
+        const parsedCache = JSON.parse(cached);
 
         // Check if revalidation is needed
         if (revalidate) {
-          const cachedAt = parsedCache.cachedAt || 0
-          const now = Date.now()
+          const cachedAt = parsedCache.cachedAt || 0;
+          const now = Date.now();
           if (now - cachedAt > revalidate * 1000) {
             // Revalidation needed - return cached data but refresh in background
-            handler(request).then(freshResponse => {
-              freshResponse.json().then(freshData => {
-                cache.set(cacheKey, JSON.stringify({
-                  data: freshData,
-                  cachedAt: Date.now()
-                }), ttl).catch(err => console.error('Cache set error:', err))
+            handler(request)
+              .then(freshResponse => {
+                freshResponse.json().then(freshData => {
+                  cache
+                    .set(
+                      cacheKey,
+                      JSON.stringify({
+                        data: freshData,
+                        cachedAt: Date.now(),
+                      }),
+                      ttl
+                    )
+                    .catch(err => console.error("Cache set error:", err));
+                });
               })
-            }).catch(err => console.error('Background refresh error:', err))
+              .catch(err => console.error("Background refresh error:", err));
           }
         }
 
         // Return cached response
-        const response = NextResponse.json(parsedCache.data)
-        response.headers.set('X-Cache', 'HIT')
-        response.headers.set('X-Cache-Key', cacheKey)
-        return response
+        const response = NextResponse.json(parsedCache.data);
+        response.headers.set("X-Cache", "HIT");
+        response.headers.set("X-Cache-Key", cacheKey);
+        return response;
       }
 
       // Cache miss - execute handler
-      const response = await handler(request)
+      const response = await handler(request);
 
       // Only cache successful responses
       if (response.ok) {
-        const responseData = await response.json()
+        const responseData = await response.json();
 
         // Store in cache
-        await cache.set(cacheKey, JSON.stringify({
-          data: responseData,
-          cachedAt: Date.now()
-        }), ttl)
+        await cache.set(
+          cacheKey,
+          JSON.stringify({
+            data: responseData,
+            cachedAt: Date.now(),
+          }),
+          ttl
+        );
 
         // Return response with cache miss header
         const cachedResponse = NextResponse.json(responseData, {
           status: response.status,
-          statusText: response.statusText
-        })
-        cachedResponse.headers.set('X-Cache', 'MISS')
-        cachedResponse.headers.set('X-Cache-Key', cacheKey)
+          statusText: response.statusText,
+        });
+        cachedResponse.headers.set("X-Cache", "MISS");
+        cachedResponse.headers.set("X-Cache-Key", cacheKey);
 
-        return cachedResponse
+        return cachedResponse;
       }
 
       // Return non-200 responses as-is
-      return response
-
+      return response;
     } catch (error) {
-      console.error('API cache middleware error:', error)
+      console.error("API cache middleware error:", error);
       // Fallback to handler on error
-      return handler(request)
+      return handler(request);
     }
-  }
+  };
 }
 
 /**
@@ -130,9 +143,9 @@ export function withAPICache(
  */
 export async function invalidateAPICache(pattern: string) {
   try {
-    await cache.deletePattern(`api:*${pattern}*`)
+    await cache.deletePattern(`api:*${pattern}*`);
   } catch (error) {
-    console.error('Cache invalidation error:', error)
+    console.error("Cache invalidation error:", error);
   }
 }
 
@@ -154,7 +167,7 @@ export const CacheStrategies = {
 
   // Very long cache for static data
   static: { ttl: 3600, revalidate: 1800 },
-}
+};
 
 /**
  * Example usage:

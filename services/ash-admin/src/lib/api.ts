@@ -1,213 +1,227 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { AxiosInstance } from "axios";
 
 // Define LoginResponse locally to avoid missing @ash/types dependency
 interface LoginResponse {
-  token: string
+  token: string;
   user: {
-    id: string
-    workspace_id: string
-    email: string
-    first_name: string
-    last_name: string
-    role: string
-    is_active: boolean
-  }
+    id: string;
+    workspace_id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+    is_active: boolean;
+  };
   workspace: {
-    id: string
-    name: string
-    slug: string
-  }
+    id: string;
+    name: string;
+    slug: string;
+  };
 }
 
 class ApiClient {
-  private client: AxiosInstance
-  private authToken: string | null = null
+  private client: AxiosInstance;
+  private authToken: string | null = null;
 
   constructor() {
     // Auto-detect API URL based on current host
-    let apiUrl = process.env.NEXT_PUBLIC_API_URL
-    if (!apiUrl && typeof window !== 'undefined') {
+    let apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl && typeof window !== "undefined") {
       // Running in browser - use same origin
-      apiUrl = window.location.origin
+      apiUrl = window.location.origin;
     }
     if (!apiUrl) {
       // Fallback to localhost for development
-      apiUrl = 'http://localhost:3001'
+      apiUrl = "http://localhost:3001";
     }
 
     this.client = axios.create({
       baseURL: apiUrl,
       timeout: 30000,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-    })
+    });
 
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => {
+      config => {
         // Check for token in localStorage if not set in memory
-        if (!this.authToken && typeof window !== 'undefined') {
-          const storedToken = localStorage.getItem('ash_token')
+        if (!this.authToken && typeof window !== "undefined") {
+          const storedToken = localStorage.getItem("ash_token");
           if (storedToken) {
-            this.authToken = storedToken
+            this.authToken = storedToken;
           }
         }
 
         if (this.authToken) {
-          config.headers.Authorization = `Bearer ${this.authToken}`
+          config.headers.Authorization = `Bearer ${this.authToken}`;
         }
 
         // Add CSRF token for state-changing requests
-        if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(config.method?.toUpperCase() || '')) {
+        if (
+          ["POST", "PUT", "DELETE", "PATCH"].includes(
+            config.method?.toUpperCase() || ""
+          )
+        ) {
           const csrfToken = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrf-token='))
-            ?.split('=')[1]
+            .split("; ")
+            .find(row => row.startsWith("csrf-token="))
+            ?.split("=")[1];
 
           if (csrfToken) {
-            config.headers['X-CSRF-Token'] = csrfToken
+            config.headers["X-CSRF-Token"] = csrfToken;
           }
         }
 
-        return config
+        return config;
       },
-      (error) => {
-        return Promise.reject(error)
+      error => {
+        return Promise.reject(error);
       }
-    )
+    );
 
     // Response interceptor
     this.client.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      response => response,
+      async error => {
         if (error.response?.status === 401) {
           // Token expired or invalid
-          this.setAuthToken(null)
-          localStorage.removeItem('ash_token')
-          window.location.href = '/login'
+          this.setAuthToken(null);
+          localStorage.removeItem("ash_token");
+          window.location.href = "/login";
         }
-        return Promise.reject(error)
+        return Promise.reject(error);
       }
-    )
+    );
   }
 
   setAuthToken(token: string | null) {
-    this.authToken = token
+    this.authToken = token;
   }
 
   // Auth endpoints
-  async login(email: string, password: string, workspaceSlug?: string): Promise<LoginResponse> {
-    const response = await this.client.post('/api/auth/login', {
+  async login(
+    email: string,
+    password: string,
+    workspaceSlug?: string
+  ): Promise<LoginResponse> {
+    const response = await this.client.post("/api/auth/login", {
       email,
       password,
       workspace_slug: workspaceSlug,
-    })
-    return response.data
+    });
+    return response.data;
   }
 
   async getCurrentUser() {
-    const response = await this.client.get('/api/auth/me')
-    return response.data
+    const response = await this.client.get("/api/auth/me");
+    return response.data;
   }
 
   async logout() {
-    await this.client.post('/api/auth/logout')
+    await this.client.post("/api/auth/logout");
   }
 
   // Clients endpoints
   async getClients(params?: {
-    page?: number
-    limit?: number
-    search?: string
-    is_active?: boolean
+    page?: number;
+    limit?: number;
+    search?: string;
+    is_active?: boolean;
   }) {
-    const response = await this.client.get('/api/clients', { params })
-    return response.data
+    const response = await this.client.get("/api/clients", { params });
+    return response.data;
   }
 
   async getClient(id: string) {
-    const response = await this.client.get(`/api/clients/${id}`)
-    return response.data
+    const response = await this.client.get(`/api/clients/${id}`);
+    return response.data;
   }
 
   async createClient(data: any) {
-    const response = await this.client.post('/api/clients', data)
-    return response.data
+    const response = await this.client.post("/api/clients", data);
+    return response.data;
   }
 
   async updateClient(id: string, data: any) {
-    const response = await this.client.put(`/api/clients/${id}`, data)
-    return response.data
+    const response = await this.client.put(`/api/clients/${id}`, data);
+    return response.data;
   }
 
   async deleteClient(id: string) {
-    await this.client.delete(`/api/clients/${id}`)
+    await this.client.delete(`/api/clients/${id}`);
   }
 
   async getClientBrands(clientId: string) {
-    const response = await this.client.get(`/api/clients/${clientId}/brands`)
-    return response.data
+    const response = await this.client.get(`/api/clients/${clientId}/brands`);
+    return response.data;
   }
 
   async createClientBrand(clientId: string, data: any) {
-    const response = await this.client.post(`/api/clients/${clientId}/brands`, data)
-    return response.data
+    const response = await this.client.post(
+      `/api/clients/${clientId}/brands`,
+      data
+    );
+    return response.data;
   }
 
   async updateClientBrand(clientId: string, brandId: string, data: any) {
-    const response = await this.client.put(`/api/clients/${clientId}/brands/${brandId}`, data)
-    return response.data
+    const response = await this.client.put(
+      `/api/clients/${clientId}/brands/${brandId}`,
+      data
+    );
+    return response.data;
   }
 
   async deleteClientBrand(clientId: string, brandId: string) {
-    await this.client.delete(`/api/clients/${clientId}/brands/${brandId}`)
+    await this.client.delete(`/api/clients/${clientId}/brands/${brandId}`);
   }
 
   // Orders endpoints
   async getOrders(params?: {
-    page?: number
-    limit?: number
-    status?: string
-    client_id?: string
-    search?: string
+    page?: number;
+    limit?: number;
+    status?: string;
+    client_id?: string;
+    search?: string;
   }) {
-    const response = await this.client.get('/api/orders', { params })
-    return response.data
+    const response = await this.client.get("/api/orders", { params });
+    return response.data;
   }
 
   async getOrder(id: string) {
-    const response = await this.client.get(`/api/orders/${id}`)
-    return response.data
+    const response = await this.client.get(`/api/orders/${id}`);
+    return response.data;
   }
 
   async createOrder(data: any) {
-    const response = await this.client.post('/api/orders', data)
-    return response.data
+    const response = await this.client.post("/api/orders", data);
+    return response.data;
   }
 
   async updateOrder(id: string, data: any) {
-    const response = await this.client.put(`/api/orders/${id}`, data)
-    return response.data
+    const response = await this.client.put(`/api/orders/${id}`, data);
+    return response.data;
   }
 
   async generateOrderRouting(orderId: string, templateId?: string) {
     const response = await this.client.post(`/api/orders/${orderId}/routing`, {
-      template_id: templateId
-    })
-    return response.data
+      template_id: templateId,
+    });
+    return response.data;
   }
 
   async getOrderRouting(orderId: string) {
-    const response = await this.client.get(`/api/orders/${orderId}/routing`)
-    return response.data
+    const response = await this.client.get(`/api/orders/${orderId}/routing`);
+    return response.data;
   }
 
   // Dashboard endpoint
   async getDashboard() {
-    const response = await this.client.get('/api/dashboard')
-    return response.data
+    const response = await this.client.get("/api/dashboard");
+    return response.data;
   }
 }
 
-export const api = new ApiClient()
+export const api = new ApiClient();

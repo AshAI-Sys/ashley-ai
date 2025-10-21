@@ -1,44 +1,52 @@
-import * as React from "react"
-import { X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DialogProps {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  children: React.ReactNode
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: React.ReactNode;
 }
 
 interface DialogContextValue {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-const DialogContext = React.createContext<DialogContextValue | undefined>(undefined)
+const DialogContext = React.createContext<DialogContextValue | undefined>(
+  undefined
+);
 
-const Dialog: React.FC<DialogProps> = ({ open = false, onOpenChange, children }) => {
+const Dialog: React.FC<DialogProps> = ({
+  open = false,
+  onOpenChange,
+  children,
+}) => {
   return (
-    <DialogContext.Provider value={{ open, onOpenChange: onOpenChange || (() => {}) }}>
+    <DialogContext.Provider
+      value={{ open, onOpenChange: onOpenChange || (() => {}) }}
+    >
       {children}
     </DialogContext.Provider>
-  )
-}
+  );
+};
 
 const DialogTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
 >(({ className, children, asChild, ...props }, ref) => {
-  const context = React.useContext(DialogContext)
+  const context = React.useContext(DialogContext);
 
   // If asChild is true, clone the child element instead of wrapping in button
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children as React.ReactElement<any>, {
       ref,
       onClick: (e: React.MouseEvent) => {
-        context?.onOpenChange(true)
-        const originalOnClick = (children as any).props?.onClick
-        if (originalOnClick) originalOnClick(e)
-      }
-    })
+        context?.onOpenChange(true);
+        const originalOnClick = (children as any).props?.onClick;
+        if (originalOnClick) originalOnClick(e);
+      },
+    });
   }
 
   return (
@@ -50,26 +58,26 @@ const DialogTrigger = React.forwardRef<
     >
       {children}
     </button>
-  )
-})
-DialogTrigger.displayName = "DialogTrigger"
+  );
+});
+DialogTrigger.displayName = "DialogTrigger";
 
 const DialogContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => {
-  const context = React.useContext(DialogContext)
-  
-  if (!context?.open) return null
-  
+  const context = React.useContext(DialogContext);
+
+  if (!context?.open) return null;
+
   return (
     <>
       {/* Overlay */}
-      <div 
+      <div
         className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
         onClick={() => context.onOpenChange(false)}
       />
-      
+
       {/* Content */}
       <div
         ref={ref}
@@ -89,9 +97,9 @@ const DialogContent = React.forwardRef<
         </button>
       </div>
     </>
-  )
-})
-DialogContent.displayName = "DialogContent"
+  );
+});
+DialogContent.displayName = "DialogContent";
 
 const DialogHeader = ({
   className,
@@ -104,8 +112,8 @@ const DialogHeader = ({
     )}
     {...props}
   />
-)
-DialogHeader.displayName = "DialogHeader"
+);
+DialogHeader.displayName = "DialogHeader";
 
 const DialogTitle = React.forwardRef<
   HTMLHeadingElement,
@@ -119,8 +127,8 @@ const DialogTitle = React.forwardRef<
     )}
     {...props}
   />
-))
-DialogTitle.displayName = "DialogTitle"
+));
+DialogTitle.displayName = "DialogTitle";
 
 const DialogDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -131,8 +139,8 @@ const DialogDescription = React.forwardRef<
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
-))
-DialogDescription.displayName = "DialogDescription"
+));
+DialogDescription.displayName = "DialogDescription";
 
 const DialogFooter = ({
   className,
@@ -145,8 +153,8 @@ const DialogFooter = ({
     )}
     {...props}
   />
-)
-DialogFooter.displayName = "DialogFooter"
+);
+DialogFooter.displayName = "DialogFooter";
 
 export {
   Dialog,
@@ -156,4 +164,4 @@ export {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-}
+};

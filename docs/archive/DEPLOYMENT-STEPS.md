@@ -7,6 +7,7 @@
 ## ✅ **PRE-DEPLOYMENT CHECKLIST**
 
 All systems ready:
+
 - ✅ 350+ tests passing
 - ✅ A+ Security (98/100)
 - ✅ Production configuration ready
@@ -102,11 +103,13 @@ railway domain
 ### **Step 8: Verify Deployment**
 
 Visit your URL:
+
 ```
 https://your-app.up.railway.app
 ```
 
 Check:
+
 - ✅ Homepage loads
 - ✅ Can login (admin@ashleyai.com / password123)
 - ✅ Dashboard works
@@ -163,6 +166,7 @@ railway variables delete KEY
 ## 🚨 **TROUBLESHOOTING**
 
 ### Build Failed?
+
 ```bash
 # Check logs
 railway logs --build
@@ -174,6 +178,7 @@ railway logs --build
 ```
 
 ### App Won't Start?
+
 ```bash
 # Check runtime logs
 railway logs
@@ -185,6 +190,7 @@ railway logs
 ```
 
 ### Database Issues?
+
 ```bash
 # Check database connection
 railway run npx prisma db push --schema=./packages/database/prisma/schema.prisma
@@ -240,6 +246,7 @@ After deployment, verify:
 If stuck, just let me know and I'll help troubleshoot!
 
 Common questions:
+
 - "Build failed" - Share the error log
 - "Can't login" - Check DATABASE_URL is set
 - "500 error" - Check railway logs
@@ -251,5 +258,5 @@ Common questions:
 
 ---
 
-*Deployment Guide Version 1.0*
-*Created: October 19, 2025*
+_Deployment Guide Version 1.0_
+_Created: October 19, 2025_

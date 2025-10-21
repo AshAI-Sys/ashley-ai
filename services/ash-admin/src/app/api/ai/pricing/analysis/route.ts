@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { dynamicPricingAI } from '@/lib/ai/dynamic-pricing';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
+import { prisma } from "@/lib/db";
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const client_id = searchParams.get('client_id');
-    const days = parseInt(searchParams.get('days') || '90');
+    const client_id = searchParams.get("client_id");
+    const days = parseInt(searchParams.get("days") || "90");
 
     // Build where clause
     const whereClause: any = {
@@ -47,18 +47,24 @@ export async function GET(req: NextRequest) {
       const actualCost = materialCost + cuttingCost + sewingCost + printCost;
 
       // Get quoted price from invoice
-      const quotedPrice = order.invoices.length > 0
-        ? parseFloat(order.invoices[0].total_amount.toString())
-        : parseFloat(order.total_amount.toString());
+      const quotedPrice =
+        order.invoices.length > 0
+          ? parseFloat(order.invoices[0].total_amount.toString())
+          : parseFloat(order.total_amount.toString());
 
       // Determine if accepted (has invoice or status is not CANCELLED)
-      const accepted = order.status !== 'CANCELLED' && order.invoices.length > 0;
+      const accepted =
+        order.status !== "CANCELLED" && order.invoices.length > 0;
 
       // Get total quantity from line items
-      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalQuantity = order.line_items.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
 
       // Get product type from design_name or first line item description
-      const productType = order.design_name || (order.line_items[0]?.description) || 'UNKNOWN';
+      const productType =
+        order.design_name || order.line_items[0]?.description || "UNKNOWN";
 
       return {
         client_id: order.client_id,
@@ -83,7 +89,7 @@ export async function GET(req: NextRequest) {
           acceptance_rate: 0,
           price_elasticity: 0,
           optimal_margin_range: { min: 0, max: 0 },
-          insights: ['Not enough historical data for analysis'],
+          insights: ["Not enough historical data for analysis"],
         },
         total_orders: 0,
       });
@@ -102,9 +108,9 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Pricing analysis error:', error);
+    console.error("Pricing analysis error:", error);
     return NextResponse.json(
-      { error: 'Failed to analyze pricing', details: error.message },
+      { error: "Failed to analyze pricing", details: error.message },
       { status: 500 }
     );
   }
@@ -113,7 +119,8 @@ export async function GET(req: NextRequest) {
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
 export async function POST(req: NextRequest) {
   try {
-    const { product_type, target_margin, min_acceptance_rate } = await req.json();
+    const { product_type, target_margin, min_acceptance_rate } =
+      await req.json();
 
     // Get recent orders for this product type
     const orders = await prisma.order.findMany({
@@ -144,15 +151,20 @@ export async function POST(req: NextRequest) {
       const materialCost = 0; // Material cost would come from material_requirements
       const actualCost = materialCost + cuttingCost + sewingCost + printCost;
 
-      const quotedPrice = order.invoices.length > 0
-        ? parseFloat(order.invoices[0].total_amount.toString())
-        : parseFloat(order.total_amount.toString());
+      const quotedPrice =
+        order.invoices.length > 0
+          ? parseFloat(order.invoices[0].total_amount.toString())
+          : parseFloat(order.total_amount.toString());
 
-      const margin = quotedPrice > 0 ? ((quotedPrice - actualCost) / quotedPrice) * 100 : 0;
-      const accepted = order.status !== 'CANCELLED';
+      const margin =
+        quotedPrice > 0 ? ((quotedPrice - actualCost) / quotedPrice) * 100 : 0;
+      const accepted = order.status !== "CANCELLED";
 
       // Get total quantity from line items
-      const totalQuantity = order.line_items.reduce((sum, item) => sum + item.quantity, 0);
+      const totalQuantity = order.line_items.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
 
       return {
         cost: actualCost > 0 ? actualCost : quotedPrice * 0.7,
@@ -169,18 +181,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         recommendations: {
-          message: 'Not enough data for optimization',
+          message: "Not enough data for optimization",
           suggested_margin: target_margin || 30,
-          confidence: 'LOW',
+          confidence: "LOW",
         },
       });
     }
 
     // Calculate averages
-    const avgCost = validStats.reduce((sum, s) => sum + s.cost, 0) / validStats.length;
-    const avgPrice = validStats.reduce((sum, s) => sum + s.price, 0) / validStats.length;
+    const avgCost =
+      validStats.reduce((sum, s) => sum + s.cost, 0) / validStats.length;
+    const avgPrice =
+      validStats.reduce((sum, s) => sum + s.price, 0) / validStats.length;
     const currentMargin = ((avgPrice - avgCost) / avgPrice) * 100;
-    const acceptanceRate = (validStats.filter(s => s.accepted).length / validStats.length) * 100;
+    const acceptanceRate =
+      (validStats.filter(s => s.accepted).length / validStats.length) * 100;
 
     // Generate recommendations
     const recommendations: any = {
@@ -197,7 +212,10 @@ export async function POST(req: NextRequest) {
     const minAcceptanceValue = min_acceptance_rate || 75;
 
     // Pricing optimization logic
-    if (currentMargin < targetMarginValue && acceptanceRate > minAcceptanceValue) {
+    if (
+      currentMargin < targetMarginValue &&
+      acceptanceRate > minAcceptanceValue
+    ) {
       // Can increase prices
       const suggestedPrice = avgCost / (1 - targetMarginValue / 100);
       const priceIncrease = ((suggestedPrice - avgPrice) / avgPrice) * 100;
@@ -209,7 +227,10 @@ export async function POST(req: NextRequest) {
         `✅ High acceptance rate (${acceptanceRate.toFixed(0)}%) suggests room for price optimization`
       );
       recommendations.suggested_price = Math.round(suggestedPrice * 100) / 100;
-    } else if (currentMargin > targetMarginValue && acceptanceRate < minAcceptanceValue) {
+    } else if (
+      currentMargin > targetMarginValue &&
+      acceptanceRate < minAcceptanceValue
+    ) {
       // Should decrease prices
       const suggestedPrice = avgPrice * 0.95; // 5% reduction
       const priceDecrease = ((avgPrice - suggestedPrice) / avgPrice) * 100;
@@ -221,10 +242,13 @@ export async function POST(req: NextRequest) {
         `⚠️ Low acceptance rate (${acceptanceRate.toFixed(0)}%) indicates pricing may be too high`
       );
       recommendations.suggested_price = Math.round(suggestedPrice * 100) / 100;
-    } else if (currentMargin >= targetMarginValue && acceptanceRate >= minAcceptanceValue) {
+    } else if (
+      currentMargin >= targetMarginValue &&
+      acceptanceRate >= minAcceptanceValue
+    ) {
       // Optimal pricing
       recommendations.insights.push(
-        '✅ Current pricing is optimal - meeting both margin and acceptance targets'
+        "✅ Current pricing is optimal - meeting both margin and acceptance targets"
       );
       recommendations.insights.push(
         `💰 Margin: ${currentMargin.toFixed(1)}% (target: ${targetMarginValue}%)`
@@ -236,15 +260,20 @@ export async function POST(req: NextRequest) {
     } else {
       // Below both targets
       recommendations.insights.push(
-        '⚠️ Pricing challenges detected - low margin and low acceptance'
+        "⚠️ Pricing challenges detected - low margin and low acceptance"
       );
       recommendations.insights.push(
-        '💡 Focus on cost reduction or value differentiation'
+        "💡 Focus on cost reduction or value differentiation"
       );
       recommendations.suggested_price = Math.round(avgPrice * 100) / 100;
     }
 
-    recommendations.confidence = validStats.length >= 20 ? 'HIGH' : validStats.length >= 10 ? 'MEDIUM' : 'LOW';
+    recommendations.confidence =
+      validStats.length >= 20
+        ? "HIGH"
+        : validStats.length >= 10
+          ? "MEDIUM"
+          : "LOW";
     recommendations.sample_size = validStats.length;
 
     return NextResponse.json({
@@ -252,9 +281,9 @@ export async function POST(req: NextRequest) {
       recommendations,
     });
   } catch (error: any) {
-    console.error('Pricing optimization error:', error);
+    console.error("Pricing optimization error:", error);
     return NextResponse.json(
-      { error: 'Failed to optimize pricing', details: error.message },
+      { error: "Failed to optimize pricing", details: error.message },
       { status: 500 }
     );
   }

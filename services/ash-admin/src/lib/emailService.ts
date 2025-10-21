@@ -1,27 +1,27 @@
-import { Resend } from 'resend'
+import { Resend } from "resend";
 
 // Lazy initialize Resend client only when needed
-let resend: Resend | null = null
+let resend: Resend | null = null;
 
 function getResendClient() {
   if (!resend && process.env.RESEND_API_KEY) {
-    resend = new Resend(process.env.RESEND_API_KEY)
+    resend = new Resend(process.env.RESEND_API_KEY);
   }
-  return resend
+  return resend;
 }
 
 export interface EmailData {
-  to: string | string[]
-  subject: string
-  html: string
-  from?: string
-  replyTo?: string
-  cc?: string | string[]
-  bcc?: string | string[]
+  to: string | string[];
+  subject: string;
+  html: string;
+  from?: string;
+  replyTo?: string;
+  cc?: string | string[];
+  bcc?: string | string[];
   attachments?: Array<{
-    filename: string
-    content: Buffer | string
-  }>
+    filename: string;
+    content: Buffer | string;
+  }>;
 }
 
 export const emailService = {
@@ -33,41 +33,43 @@ export const emailService = {
     try {
       // Check if Resend is configured
       if (!process.env.RESEND_API_KEY) {
-        console.warn('⚠️ RESEND_API_KEY not configured. Email will be logged to console only.')
-        console.log('📧 Email would be sent:', {
+        console.warn(
+          "⚠️ RESEND_API_KEY not configured. Email will be logged to console only."
+        );
+        console.log("📧 Email would be sent:", {
           to: data.to,
           subject: data.subject,
-          from: data.from || 'noreply@ashleyai.com'
-        })
-        return true
+          from: data.from || "noreply@ashleyai.com",
+        });
+        return true;
       }
 
       // Send via Resend
-      const client = getResendClient()
+      const client = getResendClient();
       if (!client) {
-        throw new Error('Resend client not initialized')
+        throw new Error("Resend client not initialized");
       }
 
       const result = await client.emails.send({
-        from: data.from || 'Ashley AI <noreply@ashleyai.com>',
+        from: data.from || "Ashley AI <noreply@ashleyai.com>",
         to: Array.isArray(data.to) ? data.to : [data.to],
         subject: data.subject,
         html: data.html,
         reply_to: data.replyTo,
         cc: data.cc,
         bcc: data.bcc,
-      })
+      });
 
       if (result.error) {
-        console.error('❌ Resend error:', result.error)
-        return false
+        console.error("❌ Resend error:", result.error);
+        return false;
       }
 
-      console.log('✅ Email sent successfully:', result.data?.id)
-      return true
+      console.log("✅ Email sent successfully:", result.data?.id);
+      return true;
     } catch (error) {
-      console.error('❌ Error sending email:', error)
-      return false
+      console.error("❌ Error sending email:", error);
+      return false;
     }
   },
 
@@ -75,12 +77,12 @@ export const emailService = {
    * Send approval request email to client
    */
   async sendApprovalRequest(data: {
-    to: string
-    clientName: string
-    designName: string
-    orderNumber: string
-    approvalLink: string
-    expiryDate: string
+    to: string;
+    clientName: string;
+    designName: string;
+    orderNumber: string;
+    approvalLink: string;
+    expiryDate: string;
   }): Promise<boolean> {
     const html = `
 <!DOCTYPE html>
@@ -114,24 +116,24 @@ export const emailService = {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
     return this.sendEmail({
       to: data.to,
       subject: `Design Approval Required - ${data.designName}`,
-      html
-    })
+      html,
+    });
   },
 
   /**
    * Send order confirmation email
    */
   async sendOrderConfirmation(data: {
-    to: string
-    clientName: string
-    orderNumber: string
-    orderTotal: string
-    orderDate: string
+    to: string;
+    clientName: string;
+    orderNumber: string;
+    orderTotal: string;
+    orderDate: string;
   }): Promise<boolean> {
     const html = `
 <!DOCTYPE html>
@@ -167,25 +169,25 @@ export const emailService = {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
     return this.sendEmail({
       to: data.to,
       subject: `Order Confirmation - ${data.orderNumber}`,
-      html
-    })
+      html,
+    });
   },
 
   /**
    * Send invoice email
    */
   async sendInvoice(data: {
-    to: string
-    clientName: string
-    invoiceNumber: string
-    amount: string
-    dueDate: string
-    downloadLink: string
+    to: string;
+    clientName: string;
+    invoiceNumber: string;
+    amount: string;
+    dueDate: string;
+    downloadLink: string;
   }): Promise<boolean> {
     const html = `
 <!DOCTYPE html>
@@ -225,12 +227,12 @@ export const emailService = {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
     return this.sendEmail({
       to: data.to,
       subject: `Invoice ${data.invoiceNumber} - Ashley AI`,
-      html
-    })
-  }
-}
+      html,
+    });
+  },
+};

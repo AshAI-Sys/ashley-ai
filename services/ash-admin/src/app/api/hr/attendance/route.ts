@@ -1,35 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const employee_id = searchParams.get('employee_id')
-    const date_from = searchParams.get('date_from')
-    const date_to = searchParams.get('date_to')
-    const status = searchParams.get('status')
-    const type = searchParams.get('type')
+    const { searchParams } = new URL(request.url);
+    const employee_id = searchParams.get("employee_id");
+    const date_from = searchParams.get("date_from");
+    const date_to = searchParams.get("date_to");
+    const status = searchParams.get("status");
+    const type = searchParams.get("type");
 
-    const where: any = { workspace_id: 'default' }
-    if (employee_id) where.employee_id = employee_id
-    if (status && status !== 'all') {
+    const where: any = { workspace_id: "default" };
+    if (employee_id) where.employee_id = employee_id;
+    if (status && status !== "all") {
       // Map status to our schema fields
-      if (status === 'APPROVED') where.status = 'APPROVED'
-      else if (status === 'PENDING') where.status = 'PENDING'
+      if (status === "APPROVED") where.status = "APPROVED";
+      else if (status === "PENDING") where.status = "PENDING";
     }
 
     // Date filtering
     if (date_from || date_to) {
-      where.date = {}
-      if (date_from) where.date.gte = new Date(date_from)
-      if (date_to) where.date.lte = new Date(date_to)
+      where.date = {};
+      if (date_from) where.date.gte = new Date(date_from);
+      if (date_to) where.date.lte = new Date(date_to);
     } else {
       // Default to today if no date range specified
-      const today = new Date()
+      const today = new Date();
       where.date = {
         gte: new Date(today.setHours(0, 0, 0, 0)),
-        lt: new Date(today.setHours(23, 59, 59, 999))
-      }
+        lt: new Date(today.setHours(23, 59, 59, 999)),
+      };
     }
 
     const attendanceLogs = await prisma.attendanceLog.findMany({
@@ -40,18 +40,18 @@ export async function GET(request: NextRequest) {
             first_name: true,
             last_name: true,
             position: true,
-            department: true
-          }
-        }
+            department: true,
+          },
+        },
       },
-      orderBy: { created_at: 'desc' }
-    })
+      orderBy: { created_at: "desc" },
+    });
 
     const processedLogs = attendanceLogs.map(log => ({
       id: log.id,
       employee: {
         name: `${log.employee.first_name} ${log.employee.last_name}`,
-        role: log.employee.position
+        role: log.employee.position,
       },
       date: log.date.toISOString(),
       time_in: log.time_in?.toISOString() || null,
@@ -60,77 +60,85 @@ export async function GET(request: NextRequest) {
       overtime_minutes: log.overtime_minutes,
       status: log.status,
       notes: log.notes,
-      created_at: log.created_at.toISOString()
-    }))
+      created_at: log.created_at.toISOString(),
+    }));
 
     return NextResponse.json({
       success: true,
-      data: processedLogs
-    })
+      data: processedLogs,
+    });
   } catch (error) {
-    console.error('Error fetching attendance logs:', error)
+    console.error("Error fetching attendance logs:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch attendance logs' },
+      { success: false, error: "Failed to fetch attendance logs" },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
+    const data = await request.json();
     const {
       employee_id,
       type, // IN/OUT/BREAK_START/BREAK_END
-      source = 'MANUAL', // KIOSK/MOBILE/SUPERVISOR/WEBHOOK/MANUAL
+      source = "MANUAL", // KIOSK/MOBILE/SUPERVISOR/WEBHOOK/MANUAL
       geo,
       selfie_url,
       device_id,
-      timestamp
-    } = data
+      timestamp,
+    } = data;
 
     // Validate employee exists
     const employee = await prisma.employee.findUnique({
       where: { id: employee_id },
-      select: { id: true, first_name: true, last_name: true, is_active: true }
-    })
+      select: { id: true, first_name: true, last_name: true, is_active: true },
+    });
 
     if (!employee) {
       return NextResponse.json(
-        { success: false, error: 'Employee not found' },
+        { success: false, error: "Employee not found" },
         { status: 404 }
-      )
+      );
     }
 
     if (!employee.is_active) {
       return NextResponse.json(
-        { success: false, error: 'Employee is not active' },
+        { success: false, error: "Employee is not active" },
         { status: 400 }
-      )
+      );
     }
 
-    const today = new Date()
-    const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+    const today = new Date();
+    const dateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
     // Check if attendance record already exists for today
     const existingAttendance = await prisma.attendanceLog.findUnique({
       where: {
         employee_id_date: {
           employee_id,
-          date: dateOnly
-        }
-      }
-    })
+          date: dateOnly,
+        },
+      },
+    });
 
-    let attendanceLog
+    let attendanceLog;
     if (existingAttendance) {
       // Update existing record based on type
-      const updateData: any = {}
-      if (type === 'IN' && !existingAttendance.time_in) {
-        updateData.time_in = timestamp ? new Date(timestamp) : new Date()
-        updateData.status = source === 'MANUAL' ? 'PENDING' : 'APPROVED'
-      } else if (type === 'OUT' && existingAttendance.time_in && !existingAttendance.time_out) {
-        updateData.time_out = timestamp ? new Date(timestamp) : new Date()
+      const updateData: any = {};
+      if (type === "IN" && !existingAttendance.time_in) {
+        updateData.time_in = timestamp ? new Date(timestamp) : new Date();
+        updateData.status = source === "MANUAL" ? "PENDING" : "APPROVED";
+      } else if (
+        type === "OUT" &&
+        existingAttendance.time_in &&
+        !existingAttendance.time_out
+      ) {
+        updateData.time_out = timestamp ? new Date(timestamp) : new Date();
       }
 
       if (Object.keys(updateData).length > 0) {
@@ -143,28 +151,38 @@ export async function POST(request: NextRequest) {
                 first_name: true,
                 last_name: true,
                 position: true,
-                department: true
-              }
-            }
-          }
-        })
+                department: true,
+              },
+            },
+          },
+        });
       } else {
         return NextResponse.json(
-          { success: false, error: 'Invalid attendance action' },
+          { success: false, error: "Invalid attendance action" },
           { status: 400 }
-        )
+        );
       }
     } else {
       // Create new attendance record
       attendanceLog = await prisma.attendanceLog.create({
         data: {
-          workspace_id: 'default',
+          workspace_id: "default",
           employee_id,
           date: dateOnly,
-          time_in: type === 'IN' ? (timestamp ? new Date(timestamp) : new Date()) : null,
-          time_out: type === 'OUT' ? (timestamp ? new Date(timestamp) : new Date()) : null,
-          status: source === 'MANUAL' ? 'PENDING' : 'APPROVED',
-          metadata: JSON.stringify({ source, geo: geo || {}, device_id })
+          time_in:
+            type === "IN"
+              ? timestamp
+                ? new Date(timestamp)
+                : new Date()
+              : null,
+          time_out:
+            type === "OUT"
+              ? timestamp
+                ? new Date(timestamp)
+                : new Date()
+              : null,
+          status: source === "MANUAL" ? "PENDING" : "APPROVED",
+          metadata: JSON.stringify({ source, geo: geo || {}, device_id }),
         },
         include: {
           employee: {
@@ -172,49 +190,53 @@ export async function POST(request: NextRequest) {
               first_name: true,
               last_name: true,
               position: true,
-              department: true
-            }
-          }
-        }
-      })
+              department: true,
+            },
+          },
+        },
+      });
     }
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        id: attendanceLog.id,
-        employee: {
-          name: `${attendanceLog.employee.first_name} ${attendanceLog.employee.last_name}`,
-          role: attendanceLog.employee.position
-        },
-        date: attendanceLog.date.toISOString(),
-        time_in: attendanceLog.time_in?.toISOString() || null,
-        time_out: attendanceLog.time_out?.toISOString() || null,
-        status: attendanceLog.status,
-        type: type,
-        timestamp: (attendanceLog.time_in || attendanceLog.time_out)?.toISOString()
-      }
-    }, { status: 201 })
-
-  } catch (error) {
-    console.error('Error creating attendance log:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to create attendance log' },
+      {
+        success: true,
+        data: {
+          id: attendanceLog.id,
+          employee: {
+            name: `${attendanceLog.employee.first_name} ${attendanceLog.employee.last_name}`,
+            role: attendanceLog.employee.position,
+          },
+          date: attendanceLog.date.toISOString(),
+          time_in: attendanceLog.time_in?.toISOString() || null,
+          time_out: attendanceLog.time_out?.toISOString() || null,
+          status: attendanceLog.status,
+          type: type,
+          timestamp: (
+            attendanceLog.time_in || attendanceLog.time_out
+          )?.toISOString(),
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error creating attendance log:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create attendance log" },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const data = await request.json()
-    const { id, approved, approver_notes } = data
+    const data = await request.json();
+    const { id, approved, approver_notes } = data;
 
     const attendanceLog = await prisma.attendanceLog.update({
       where: { id },
       data: {
-        status: approved ? 'APPROVED' : 'REJECTED',
-        notes: approver_notes
+        status: approved ? "APPROVED" : "REJECTED",
+        notes: approver_notes,
       },
       include: {
         employee: {
@@ -222,22 +244,21 @@ export async function PUT(request: NextRequest) {
             first_name: true,
             last_name: true,
             position: true,
-            department: true
-          }
-        }
-      }
-    })
+            department: true,
+          },
+        },
+      },
+    });
 
     return NextResponse.json({
       success: true,
-      data: attendanceLog
-    })
-
+      data: attendanceLog,
+    });
   } catch (error) {
-    console.error('Error updating attendance log:', error)
+    console.error("Error updating attendance log:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update attendance log' },
+      { success: false, error: "Failed to update attendance log" },
       { status: 500 }
-    )
+    );
   }
 }

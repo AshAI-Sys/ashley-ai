@@ -1,104 +1,111 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Brain, 
-  TrendingUp, 
+import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Brain,
+  TrendingUp,
   TrendingDown,
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   Target,
   Zap,
   BarChart3,
-  Activity
-} from 'lucide-react'
+  Activity,
+} from "lucide-react";
 
 interface DashboardAIData {
-  overall_performance_grade: string
-  overall_performance_score: number
+  overall_performance_grade: string;
+  overall_performance_score: number;
   active_runs_insights: {
-    total_active: number
-    high_risk_runs: number
-    optimization_opportunities: number
-    avg_efficiency: number
-  }
+    total_active: number;
+    high_risk_runs: number;
+    optimization_opportunities: number;
+    avg_efficiency: number;
+  };
   recommendations: Array<{
-    type: string
-    priority: string
-    message: string
-    runs_affected: number
-  }>
+    type: string;
+    priority: string;
+    message: string;
+    runs_affected: number;
+  }>;
   performance_trends: {
-    efficiency_trend: 'up' | 'down' | 'stable'
-    quality_trend: 'up' | 'down' | 'stable'
-    cost_trend: 'up' | 'down' | 'stable'
-    efficiency_change: number
-    quality_change: number
-    cost_change: number
-  }
+    efficiency_trend: "up" | "down" | "stable";
+    quality_trend: "up" | "down" | "stable";
+    cost_trend: "up" | "down" | "stable";
+    efficiency_change: number;
+    quality_change: number;
+    cost_change: number;
+  };
   method_performance: {
     [key: string]: {
-      score: number
-      runs_count: number
-      top_issue?: string
-    }
-  }
+      score: number;
+      runs_count: number;
+      top_issue?: string;
+    };
+  };
 }
 
 export default function AIInsightsDashboard() {
-  const [aiData, setAiData] = useState<DashboardAIData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [aiData, setAiData] = useState<DashboardAIData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAIInsights()
-    const interval = setInterval(fetchAIInsights, 60000) // Update every minute
-    return () => clearInterval(interval)
-  }, [])
+    fetchAIInsights();
+    const interval = setInterval(fetchAIInsights, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchAIInsights = async () => {
     try {
-      const response = await fetch('/api/printing/ai/dashboard-insights')
+      const response = await fetch("/api/printing/ai/dashboard-insights");
       if (response.ok) {
-        const result = await response.json()
+        const result = await response.json();
         if (result.success) {
-          setAiData(result.data)
+          setAiData(result.data);
         }
       }
     } catch (error) {
-      console.error('Error fetching AI insights:', error)
+      console.error("Error fetching AI insights:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getGradeColor = (grade: string) => {
-    if (grade.startsWith('A')) return 'text-green-600'
-    if (grade.startsWith('B')) return 'text-blue-600'
-    if (grade.startsWith('C')) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (grade.startsWith("A")) return "text-green-600";
+    if (grade.startsWith("B")) return "text-blue-600";
+    if (grade.startsWith("C")) return "text-yellow-600";
+    return "text-red-600";
+  };
 
   const getTrendIcon = (trend: string, change: number) => {
-    if (trend === 'up') return <TrendingUp className="h-4 w-4 text-green-500" />
-    if (trend === 'down') return <TrendingDown className="h-4 w-4 text-red-500" />
-    return <Activity className="h-4 w-4 text-gray-500" />
-  }
+    if (trend === "up")
+      return <TrendingUp className="h-4 w-4 text-green-500" />;
+    if (trend === "down")
+      return <TrendingDown className="h-4 w-4 text-red-500" />;
+    return <Activity className="h-4 w-4 text-gray-500" />;
+  };
 
   const getPriorityColor = (priority: string) => {
-    if (!priority) return 'outline'
+    if (!priority) return "outline";
     switch (priority.toLowerCase()) {
-      case 'critical': return 'destructive'
-      case 'high': return 'destructive'
-      case 'medium': return 'secondary'
-      case 'low': return 'outline'
-      default: return 'outline'
+      case "critical":
+        return "destructive";
+      case "high":
+        return "destructive";
+      case "medium":
+        return "secondary";
+      case "low":
+        return "outline";
+      default:
+        return "outline";
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -110,14 +117,12 @@ export default function AIInsightsDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">
-            <div className="text-muted-foreground">
-              Loading AI insights...
-            </div>
+          <div className="py-8 text-center">
+            <div className="text-muted-foreground">Loading AI insights...</div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!aiData) {
@@ -130,13 +135,13 @@ export default function AIInsightsDashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-muted-foreground">
-            <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
+          <div className="py-8 text-center text-muted-foreground">
+            <AlertTriangle className="mx-auto mb-2 h-8 w-8" />
             <p>Unable to load AI insights</p>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -149,48 +154,62 @@ export default function AIInsightsDashboard() {
               <Brain className="h-5 w-5 text-blue-600" />
               Ashley AI Performance Overview
             </div>
-            <Badge className={`${getGradeColor(aiData.overall_performance_grade)} font-bold`}>
+            <Badge
+              className={`${getGradeColor(aiData.overall_performance_grade)} font-bold`}
+            >
               Grade: {aiData.overall_performance_grade}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <div>
               <div className="text-2xl font-bold text-blue-600">
                 {Math.round(aiData.overall_performance_score * 100)}%
               </div>
               <div className="text-xs text-muted-foreground">Overall Score</div>
-              <Progress value={aiData.overall_performance_score * 100} className="mt-1" />
+              <Progress
+                value={aiData.overall_performance_score * 100}
+                className="mt-1"
+              />
             </div>
-            
+
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {aiData.active_runs_insights.total_active}
               </div>
               <div className="text-xs text-muted-foreground">Active Runs</div>
-              <div className="text-xs text-blue-600 mt-1">
-                {Math.round(aiData.active_runs_insights.avg_efficiency * 100)}% avg efficiency
+              <div className="mt-1 text-xs text-blue-600">
+                {Math.round(aiData.active_runs_insights.avg_efficiency * 100)}%
+                avg efficiency
               </div>
             </div>
-            
+
             <div>
               <div className="text-2xl font-bold text-orange-600">
                 {aiData.active_runs_insights.high_risk_runs}
               </div>
               <div className="text-xs text-muted-foreground">High Risk</div>
-              <div className="text-xs text-green-600 mt-1">
-                {aiData.active_runs_insights.optimization_opportunities} optimizable
+              <div className="mt-1 text-xs text-green-600">
+                {aiData.active_runs_insights.optimization_opportunities}{" "}
+                optimizable
               </div>
             </div>
-            
+
             <div>
               <div className="text-2xl font-bold text-purple-600">
                 {aiData.recommendations.length}
               </div>
-              <div className="text-xs text-muted-foreground">Active Recommendations</div>
-              <div className="text-xs text-red-600 mt-1">
-                {aiData.recommendations.filter(r => r.priority === 'HIGH' || r.priority === 'CRITICAL').length} urgent
+              <div className="text-xs text-muted-foreground">
+                Active Recommendations
+              </div>
+              <div className="mt-1 text-xs text-red-600">
+                {
+                  aiData.recommendations.filter(
+                    r => r.priority === "HIGH" || r.priority === "CRITICAL"
+                  ).length
+                }{" "}
+                urgent
               </div>
             </div>
           </div>
@@ -207,37 +226,49 @@ export default function AIInsightsDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-3 border rounded">
+            <div className="flex items-center justify-between rounded border p-3">
               <div>
                 <div className="text-sm font-medium">Efficiency</div>
                 <div className="text-xs text-muted-foreground">
-                  {aiData.performance_trends.efficiency_change > 0 ? '+' : ''}
-                  {Math.round(aiData.performance_trends.efficiency_change * 100)}%
+                  {aiData.performance_trends.efficiency_change > 0 ? "+" : ""}
+                  {Math.round(
+                    aiData.performance_trends.efficiency_change * 100
+                  )}
+                  %
                 </div>
               </div>
-              {getTrendIcon(aiData.performance_trends.efficiency_trend, aiData.performance_trends.efficiency_change)}
+              {getTrendIcon(
+                aiData.performance_trends.efficiency_trend,
+                aiData.performance_trends.efficiency_change
+              )}
             </div>
-            
-            <div className="flex items-center justify-between p-3 border rounded">
+
+            <div className="flex items-center justify-between rounded border p-3">
               <div>
                 <div className="text-sm font-medium">Quality</div>
                 <div className="text-xs text-muted-foreground">
-                  {aiData.performance_trends.quality_change > 0 ? '+' : ''}
+                  {aiData.performance_trends.quality_change > 0 ? "+" : ""}
                   {Math.round(aiData.performance_trends.quality_change * 100)}%
                 </div>
               </div>
-              {getTrendIcon(aiData.performance_trends.quality_trend, aiData.performance_trends.quality_change)}
+              {getTrendIcon(
+                aiData.performance_trends.quality_trend,
+                aiData.performance_trends.quality_change
+              )}
             </div>
-            
-            <div className="flex items-center justify-between p-3 border rounded">
+
+            <div className="flex items-center justify-between rounded border p-3">
               <div>
                 <div className="text-sm font-medium">Cost</div>
                 <div className="text-xs text-muted-foreground">
-                  {aiData.performance_trends.cost_change > 0 ? '+' : ''}
+                  {aiData.performance_trends.cost_change > 0 ? "+" : ""}
                   {Math.round(aiData.performance_trends.cost_change * 100)}%
                 </div>
               </div>
-              {getTrendIcon(aiData.performance_trends.cost_trend, aiData.performance_trends.cost_change)}
+              {getTrendIcon(
+                aiData.performance_trends.cost_trend,
+                aiData.performance_trends.cost_change
+              )}
             </div>
           </div>
         </CardContent>
@@ -254,7 +285,10 @@ export default function AIInsightsDashboard() {
         <CardContent>
           <div className="space-y-3">
             {Object.entries(aiData.method_performance).map(([method, data]) => (
-              <div key={method} className="flex items-center justify-between p-3 border rounded">
+              <div
+                key={method}
+                className="flex items-center justify-between rounded border p-3"
+              >
                 <div>
                   <div className="font-medium">{method}</div>
                   <div className="text-xs text-muted-foreground">
@@ -266,7 +300,7 @@ export default function AIInsightsDashboard() {
                   <div className="text-sm font-bold">
                     {Math.round(data.score * 100)}%
                   </div>
-                  <Progress value={data.score * 100} className="w-20 mt-1" />
+                  <Progress value={data.score * 100} className="mt-1 w-20" />
                 </div>
               </div>
             ))}
@@ -288,7 +322,7 @@ export default function AIInsightsDashboard() {
               <Alert key={index}>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="mb-1 flex items-center gap-2">
                       <Badge variant={getPriorityColor(rec.priority)}>
                         {rec.priority}
                       </Badge>
@@ -304,22 +338,23 @@ export default function AIInsightsDashboard() {
                 </div>
               </Alert>
             ))}
-            
+
             {aiData.recommendations.length === 0 && (
-              <div className="text-center py-4 text-muted-foreground">
-                <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+              <div className="py-4 text-center text-muted-foreground">
+                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-green-500" />
                 No immediate recommendations. All systems are running optimally.
               </div>
             )}
-            
+
             {aiData.recommendations.length > 5 && (
               <div className="text-center text-sm text-muted-foreground">
-                +{aiData.recommendations.length - 5} more recommendations available
+                +{aiData.recommendations.length - 5} more recommendations
+                available
               </div>
             )}
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
 const prisma = db;
 
@@ -9,14 +9,15 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const workspaceId = req.headers.get('x-workspace-id') || 'default-workspace';
-    const userId = req.headers.get('x-user-id') || 'mobile-scanner';
+    const workspaceId =
+      req.headers.get("x-workspace-id") || "default-workspace";
+    const userId = req.headers.get("x-user-id") || "mobile-scanner";
     const body = await req.json();
     const { status, notes, location } = body;
 
     if (!status) {
       return NextResponse.json(
-        { success: false, error: 'Status is required' },
+        { success: false, error: "Status is required" },
         { status: 400 }
       );
     }
@@ -31,7 +32,7 @@ export async function PUT(
 
     if (!bundle) {
       return NextResponse.json(
-        { success: false, error: 'Bundle not found' },
+        { success: false, error: "Bundle not found" },
         { status: 404 }
       );
     }
@@ -68,7 +69,7 @@ export async function PUT(
       });
     } catch (err) {
       // Ignore if BundleStatusHistory table doesn't exist
-      console.log('Bundle status history logging skipped');
+      console.log("Bundle status history logging skipped");
     }
 
     return NextResponse.json({
@@ -77,7 +78,7 @@ export async function PUT(
       message: `Bundle status updated to ${status}`,
     });
   } catch (error: any) {
-    console.error('Bundle status update error:', error);
+    console.error("Bundle status update error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from "@sentry/nextjs";
 
 /**
  * Sentry Client-Side Configuration
@@ -10,13 +10,13 @@ Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   // Environment
-  environment: process.env.NODE_ENV || 'development',
+  environment: process.env.NODE_ENV || "development",
 
   // Release version (for tracking)
-  release: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
+  release: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
 
   // Performance Monitoring
-  tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0, // 10% in prod, 100% in dev
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0, // 10% in prod, 100% in dev
 
   // Session Replay (optional - records user sessions)
   replaysSessionSampleRate: 0.1, // 10% of sessions
@@ -25,29 +25,32 @@ Sentry.init({
   // Error Filtering
   beforeSend(event, hint) {
     // Don't send errors in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Sentry Error (not sent in dev):', hint.originalException || hint.syntheticException)
-      return null
+    if (process.env.NODE_ENV === "development") {
+      console.error(
+        "Sentry Error (not sent in dev):",
+        hint.originalException || hint.syntheticException
+      );
+      return null;
     }
 
     // Filter out network errors (handled separately)
-    if (event.exception?.values?.[0]?.type === 'NetworkError') {
-      return null
+    if (event.exception?.values?.[0]?.type === "NetworkError") {
+      return null;
     }
 
     // Filter out specific errors
-    const errorMessage = event.exception?.values?.[0]?.value || ''
+    const errorMessage = event.exception?.values?.[0]?.value || "";
     const ignoredErrors = [
-      'ResizeObserver loop limit exceeded',
-      'Non-Error promise rejection captured',
-      'ChunkLoadError',
-    ]
+      "ResizeObserver loop limit exceeded",
+      "Non-Error promise rejection captured",
+      "ChunkLoadError",
+    ];
 
     if (ignoredErrors.some(ignored => errorMessage.includes(ignored))) {
-      return null
+      return null;
     }
 
-    return event
+    return event;
   },
 
   // Integrations
@@ -63,49 +66,52 @@ Sentry.init({
   // Tag all events with user info
   initialScope: {
     tags: {
-      component: 'client',
-      app: 'ashley-ai-admin',
+      component: "client",
+      app: "ashley-ai-admin",
     },
   },
-})
+});
 
 // Custom error logging helper
 export function logError(error: Error, context?: Record<string, any>) {
   Sentry.captureException(error, {
     extra: context,
-  })
+  });
 }
 
 // Custom message logging helper
-export function logMessage(message: string, level: 'info' | 'warning' | 'error' = 'info') {
-  Sentry.captureMessage(message, level)
+export function logMessage(
+  message: string,
+  level: "info" | "warning" | "error" = "info"
+) {
+  Sentry.captureMessage(message, level);
 }
 
 // Set user context (call after authentication)
 export function setUserContext(user: {
-  id: string
-  email?: string
-  name?: string
-  role?: string
+  id: string;
+  email?: string;
+  name?: string;
+  role?: string;
 }) {
   Sentry.setUser({
     id: user.id,
     email: user.email,
     username: user.name,
     role: user.role,
-  })
+  });
 }
 
 // Clear user context (call on logout)
 export function clearUserContext() {
-  Sentry.setUser(null)
+  Sentry.setUser(null);
 }
 
 // Add custom breadcrumb
 export function addBreadcrumb(message: string, data?: Record<string, any>) {
   Sentry.addBreadcrumb({
     message,
-    level: 'info',
+    level: "info",
     data,
-  })
+  });
 }

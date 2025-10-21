@@ -40,42 +40,39 @@ const riskConfig = {
 };
 
 const AshleyAlert = React.forwardRef<HTMLDivElement, AshleyAlertProps>(
-  ({ 
-    className, 
-    risk, 
-    issues = [], 
-    recommendations = [], 
-    confidence = 0, 
-    showDetails = true,
-    ...props 
-  }, ref) => {
+  (
+    {
+      className,
+      risk,
+      issues = [],
+      recommendations = [],
+      confidence = 0,
+      showDetails = true,
+      ...props
+    },
+    ref
+  ) => {
     const config = riskConfig[risk];
     const Icon = config.icon;
 
     return (
       <div
         ref={ref}
-        className={cn(
-          "rounded-lg border p-4",
-          config.bgColor,
-          className
-        )}
+        className={cn("rounded-lg border p-4", config.bgColor, className)}
         {...props}
       >
         <div className="flex items-start gap-3">
-          <Icon className={cn("h-5 w-5 mt-0.5", config.iconColor)} />
-          
+          <Icon className={cn("mt-0.5 h-5 w-5", config.iconColor)} />
+
           <div className="flex-1 space-y-3">
             <div className="flex items-center justify-between">
               <h4 className={cn("font-semibold", config.textColor)}>
                 Ashley AI Analysis
               </h4>
               <div className="flex items-center gap-2">
-                <Badge variant={config.badgeVariant}>
-                  {risk}
-                </Badge>
+                <Badge variant={config.badgeVariant}>{risk}</Badge>
                 {confidence > 0 && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {Math.round(confidence * 100)}% confidence
                   </span>
                 )}
@@ -91,21 +88,26 @@ const AshleyAlert = React.forwardRef<HTMLDivElement, AshleyAlertProps>(
                     </h5>
                     <ul className="space-y-1">
                       {issues.map((issue, index) => (
-                        <li 
+                        <li
                           key={index}
-                          className={cn("text-sm flex items-start gap-2", config.textColor)}
+                          className={cn(
+                            "flex items-start gap-2 text-sm",
+                            config.textColor
+                          )}
                         >
-                          <span className="inline-block w-1 h-1 rounded-full bg-current mt-2 flex-shrink-0" />
+                          <span className="mt-2 inline-block h-1 w-1 flex-shrink-0 rounded-full bg-current" />
                           <div>
                             <span className="font-medium">{issue.type}:</span>{" "}
                             {issue.message}
                             {issue.details && (
                               <div className="mt-1 text-xs opacity-75">
-                                {Object.entries(issue.details).map(([key, value]) => (
-                                  <span key={key} className="block">
-                                    {key}: {String(value)}
-                                  </span>
-                                ))}
+                                {Object.entries(issue.details).map(
+                                  ([key, value]) => (
+                                    <span key={key} className="block">
+                                      {key}: {String(value)}
+                                    </span>
+                                  )
+                                )}
                               </div>
                             )}
                           </div>
@@ -122,11 +124,14 @@ const AshleyAlert = React.forwardRef<HTMLDivElement, AshleyAlertProps>(
                     </h5>
                     <ul className="space-y-1">
                       {recommendations.map((recommendation, index) => (
-                        <li 
+                        <li
                           key={index}
-                          className={cn("text-sm flex items-start gap-2", config.textColor)}
+                          className={cn(
+                            "flex items-start gap-2 text-sm",
+                            config.textColor
+                          )}
                         >
-                          <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                          <Info className="mt-0.5 h-3 w-3 flex-shrink-0" />
                           {recommendation}
                         </li>
                       ))}

@@ -9,6 +9,7 @@
 ## ✅ COMPLETED (Phases 1-2)
 
 ### **Phase 1: PWA Architecture Design**
+
 ✅ Complete architecture document created
 ✅ Screen designs for all production floor views
 ✅ Offline-first strategy defined
@@ -19,6 +20,7 @@
 **File Created**: `PWA-ARCHITECTURE.md` (15-page comprehensive guide)
 
 ### **Phase 2: PWA Manifest Enhancement**
+
 ✅ Manifest.json updated with production floor shortcuts
 ✅ Added Scanner and Tasks shortcuts for quick access
 ✅ Configured display override options
@@ -35,11 +37,13 @@
 ### **Phase 3: QR/Barcode Scanner** (3-4 hours)
 
 **Install Dependencies:**
+
 ```bash
 pnpm add @zxing/browser @zxing/library
 ```
 
 **Create Scanner Component** (`src/components/mobile/Scanner.tsx`):
+
 ```typescript
 // Features:
 - Camera access with getUserMedia
@@ -51,6 +55,7 @@ pnpm add @zxing/browser @zxing/library
 ```
 
 **API Endpoint** (`src/app/api/mobile/scan/route.ts`):
+
 ```typescript
 POST /api/mobile/scan
 {
@@ -63,6 +68,7 @@ POST /api/mobile/scan
 ### **Phase 4: Offline IndexedDB** (4-5 hours)
 
 **Create Database Wrapper** (`src/lib/offline/db.ts`):
+
 ```typescript
 // Stores:
 - orders (cached)
@@ -74,17 +80,16 @@ POST /api/mobile/scan
 ```
 
 **Background Sync** (`public/sw.js` enhancement):
+
 ```javascript
 // Sync events:
-- sync-scans
-- sync-tasks
-- sync-qc
-- sync-photos
+-sync - scans - sync - tasks - sync - qc - sync - photos;
 ```
 
 ### **Phase 5: Touch-Optimized UI** (3-4 hours)
 
 **Create Components:**
+
 1. `LargeButton.tsx` - 56px height, easy to tap
 2. `BottomNav.tsx` - Thumb-friendly navigation
 3. `FAB.tsx` - Floating action button
@@ -92,6 +97,7 @@ POST /api/mobile/scan
 5. `ProductionTheme.tsx` - High-contrast theme
 
 **Responsive Styles:**
+
 ```css
 /* Mobile: Single column */
 /* Tablet Portrait: 2 columns */
@@ -101,6 +107,7 @@ POST /api/mobile/scan
 ### **Phase 6: Production Operator Mode** (4-5 hours)
 
 **Create Pages:**
+
 1. `/mobile/dashboard` - Active tasks + quick actions
 2. `/mobile/scanner` - Camera view + scan history
 3. `/mobile/tasks` - Task list with status
@@ -108,6 +115,7 @@ POST /api/mobile/scan
 5. `/mobile/stats` - Performance metrics
 
 **Features:**
+
 - Scan to start/complete tasks
 - Real-time piece count tracker
 - Efficiency calculations
@@ -116,12 +124,14 @@ POST /api/mobile/scan
 ### **Phase 7: Push Notifications** (2-3 hours)
 
 **Setup:**
+
 1. Generate VAPID keys
 2. Create subscription endpoint
 3. Implement notification service
 4. Build preferences UI
 
 **Notification Types:**
+
 - New task assigned
 - QC inspection needed
 - Urgent issue
@@ -134,18 +144,18 @@ POST /api/mobile/scan
 
 ### **Core Capabilities**
 
-| Feature | Status | Priority | Est. Time |
-|---------|--------|----------|-----------|
-| **Enhanced Manifest** | ✅ Complete | - | - |
-| **QR/Barcode Scanner** | ⏳ Pending | HIGH | 4 hrs |
-| **Offline Data Sync** | ⏳ Pending | HIGH | 5 hrs |
-| **Touch-Optimized UI** | ⏳ Pending | MEDIUM | 4 hrs |
-| **Operator Mode** | ⏳ Pending | HIGH | 5 hrs |
-| **Push Notifications** | ⏳ Pending | MEDIUM | 3 hrs |
-| **Install Prompt** | ⏳ Pending | LOW | 1 hr |
-| **Offline Indicator** | ⏳ Pending | LOW | 1 hr |
-| **Photo Upload** | ⏳ Pending | MEDIUM | 2 hrs |
-| **Geolocation** | ⏳ Pending | LOW | 1 hr |
+| Feature                | Status      | Priority | Est. Time |
+| ---------------------- | ----------- | -------- | --------- |
+| **Enhanced Manifest**  | ✅ Complete | -        | -         |
+| **QR/Barcode Scanner** | ⏳ Pending  | HIGH     | 4 hrs     |
+| **Offline Data Sync**  | ⏳ Pending  | HIGH     | 5 hrs     |
+| **Touch-Optimized UI** | ⏳ Pending  | MEDIUM   | 4 hrs     |
+| **Operator Mode**      | ⏳ Pending  | HIGH     | 5 hrs     |
+| **Push Notifications** | ⏳ Pending  | MEDIUM   | 3 hrs     |
+| **Install Prompt**     | ⏳ Pending  | LOW      | 1 hr      |
+| **Offline Indicator**  | ⏳ Pending  | LOW      | 1 hr      |
+| **Photo Upload**       | ⏳ Pending  | MEDIUM   | 2 hrs     |
+| **Geolocation**        | ⏳ Pending  | LOW      | 1 hr      |
 
 **Total Time Remaining**: ~26 hours (~3 days with testing)
 
@@ -154,12 +164,14 @@ POST /api/mobile/scan
 ## 📱 Target Screens (Mobile-First)
 
 ### **1. Production Operator Dashboard**
+
 - Active tasks card
 - Quick scan button (FAB)
 - Today's stats (pieces, efficiency)
 - Clock in/out status
 
 ### **2. Scanner**
+
 - Full-screen camera view
 - Target overlay
 - Flash toggle
@@ -167,6 +179,7 @@ POST /api/mobile/scan
 - Manual entry
 
 ### **3. Task Detail**
+
 - Bundle/order information
 - Operation instructions
 - Start/pause/complete buttons
@@ -174,12 +187,14 @@ POST /api/mobile/scan
 - Real-time metrics
 
 ### **4. QC Inspection**
+
 - Photo capture grid
 - Defect entry form
 - Pass/fail decision
 - Submit button
 
 ### **5. Performance Stats**
+
 - Daily/weekly charts
 - Efficiency trends
 - Piece count history
@@ -212,6 +227,7 @@ mkdir -p services/ash-admin/src/app/(mobile)
 ## ✅ Implementation Checklist
 
 ### **Immediate Next Steps**
+
 - [ ] Install @zxing/browser library
 - [ ] Create mobile layout component
 - [ ] Build scanner component with camera
@@ -219,6 +235,7 @@ mkdir -p services/ash-admin/src/app/(mobile)
 - [ ] Implement background sync
 
 ### **Week 1 Goals**
+
 - [ ] Scanner fully functional
 - [ ] Offline mode working
 - [ ] 3 mobile pages created
@@ -226,6 +243,7 @@ mkdir -p services/ash-admin/src/app/(mobile)
 - [ ] Basic testing complete
 
 ### **Week 2 Goals**
+
 - [ ] Push notifications working
 - [ ] All mobile pages complete
 - [ ] Performance optimized
@@ -237,6 +255,7 @@ mkdir -p services/ash-admin/src/app/(mobile)
 ## 📊 Expected Impact
 
 ### **Production Floor Benefits**
+
 - ✅ **No app download needed** - Install directly from browser
 - ✅ **Works offline** - Continue scanning even without WiFi
 - ✅ **Fast access** - Open from home screen icon
@@ -244,6 +263,7 @@ mkdir -p services/ash-admin/src/app/(mobile)
 - ✅ **Real-time updates** - Push notifications for tasks
 
 ### **Performance Metrics**
+
 - **Scanner Success Rate**: >95% (target)
 - **Offline Capability**: 100% of core features
 - **Install Size**: <5MB (including cache)
@@ -251,6 +271,7 @@ mkdir -p services/ash-admin/src/app/(mobile)
 - **Warm Start**: <500ms
 
 ### **User Adoption**
+
 - **Training Time**: <15 minutes per worker
 - **Error Rate**: <5% (vs 20% with paper)
 - **Time Savings**: 30% faster data entry
@@ -261,22 +282,17 @@ mkdir -p services/ash-admin/src/app/(mobile)
 ## 🎨 UI/UX Highlights
 
 ### **Production Floor Theme**
+
 ```css
 /* High contrast for factory lighting */
---primary: #2563eb (Blue)
---success: #16a34a (Green)
---warning: #ea580c (Orange)
---danger: #dc2626 (Red)
-
-/* Large touch targets */
-min-height: 44px (buttons)
-min-height: 56px (primary actions)
-
-/* Simple navigation */
-Bottom nav: Scan | Tasks | Stats
+--primary: #2563eb (Blue) --success: #16a34a (Green) --warning: #ea580c (Orange)
+  --danger: #dc2626 (Red) /* Large touch targets */ min-height: 44px (buttons)
+  min-height: 56px (primary actions) /* Simple navigation */ Bottom nav: Scan |
+  Tasks | Stats;
 ```
 
 ### **Dark Mode Support**
+
 - Automatic based on system preference
 - Manual toggle in settings
 - Optimized for low-light production environments
@@ -286,12 +302,14 @@ Bottom nav: Scan | Tasks | Stats
 ## 📱 Device Support
 
 ### **Tested Platforms** (Planned)
+
 - [ ] iOS Safari (iPhone 12+)
 - [ ] Android Chrome (Samsung, Pixel)
 - [ ] iPad Safari (9.7", 10.2")
 - [ ] Android Tablets (10")
 
 ### **Minimum Requirements**
+
 - **iOS**: iOS 14+ (Safari 14+)
 - **Android**: Android 8+ (Chrome 80+)
 - **Camera**: Required for scanner
@@ -302,6 +320,7 @@ Bottom nav: Scan | Tasks | Stats
 ## 🔧 Technical Architecture
 
 ### **Service Worker Strategy**
+
 ```
 1. Network First (API calls)
 2. Cache First (static assets)
@@ -310,6 +329,7 @@ Bottom nav: Scan | Tasks | Stats
 ```
 
 ### **IndexedDB Schema**
+
 ```
 Database: ashley-ai-offline
 Version: 1
@@ -323,6 +343,7 @@ Stores:
 ```
 
 ### **Sync Queue Processing**
+
 ```
 1. User performs action offline
 2. Action queued in IndexedDB
@@ -337,12 +358,14 @@ Stores:
 ## ⚠️ Known Limitations
 
 ### **iOS Safari Quirks**
+
 - Service worker requires HTTPS (or localhost)
 - Background sync not fully supported
 - Push notifications require iOS 16.4+
 - Limited offline storage (50MB)
 
 ### **Workarounds**
+
 - Fallback to periodic background fetch
 - Use local notifications instead of push
 - Implement manual sync button
@@ -353,6 +376,7 @@ Stores:
 ## 🎯 Success Criteria
 
 **MVP Definition** (Minimum Viable Product):
+
 1. ✅ Scanner works on mobile
 2. ✅ Can scan and view bundle details
 3. ✅ Works offline (basic caching)
@@ -360,6 +384,7 @@ Stores:
 5. ✅ Can be installed as PWA
 
 **Full Feature Set**:
+
 1. ✅ All MVP features
 2. ✅ Background sync working
 3. ✅ Push notifications enabled
@@ -372,16 +397,19 @@ Stores:
 ## 📈 Development Timeline
 
 ### **Day 1: Core Scanner (8 hours)**
+
 - Morning: Install dependencies, setup
 - Afternoon: Build scanner component
 - Evening: Test camera access
 
 ### **Day 2: Offline & UI (8 hours)**
+
 - Morning: IndexedDB wrapper
 - Afternoon: Background sync
 - Evening: Touch-optimized components
 
 ### **Day 3: Pages & Testing (8 hours)**
+
 - Morning: Mobile pages
 - Afternoon: Push notifications
 - Evening: Device testing
@@ -393,11 +421,13 @@ Stores:
 ## 📞 Support & Resources
 
 ### **Libraries Used**
+
 - **@zxing/browser**: QR/barcode scanning
 - **idb**: IndexedDB wrapper
 - **workbox**: Service worker helpers (optional)
 
 ### **Documentation**
+
 - [PWA Web.dev Guide](https://web.dev/progressive-web-apps/)
 - [ZXing Documentation](https://github.com/zxing-js/browser)
 - [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
@@ -408,12 +438,14 @@ Stores:
 ## ✅ Phase 1-2 Complete!
 
 **What's Done:**
+
 - ✅ Architecture designed (15-page document)
 - ✅ PWA manifest enhanced
 - ✅ Implementation plan created
 - ✅ Todo list updated
 
 **What's Next:**
+
 - ⏳ Install QR scanner library
 - ⏳ Build scanner component
 - ⏳ Create mobile pages
@@ -426,6 +458,7 @@ Stores:
 **Ready to continue implementation!** 🚀
 
 **Commands to run:**
+
 ```bash
 # Install scanner library
 cd services/ash-admin

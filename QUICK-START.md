@@ -7,6 +7,7 @@ Welcome to Ashley AI Manufacturing ERP! This guide will get you up and running i
 ## 🚀 Quick Setup (5 Minutes)
 
 ### 1. **Clone & Install**
+
 ```bash
 # Clone the repository
 git clone <your-repo-url>
@@ -21,6 +22,7 @@ pnpm install
 ```
 
 ### 2. **Configure Environment**
+
 ```bash
 # Copy environment template
 cp .env.example .env
@@ -30,6 +32,7 @@ cp .env.example .env
 ```
 
 ### 3. **Set Up Database**
+
 ```bash
 # Generate Prisma client
 cd packages/database
@@ -43,6 +46,7 @@ npm run seed
 ```
 
 ### 4. **Start Development Server**
+
 ```bash
 # From root directory
 cd services/ash-admin
@@ -52,6 +56,7 @@ pnpm dev
 ```
 
 ### 5. **Access the Application**
+
 ```
 🌐 Open: http://localhost:3001
 📧 Email: admin@ashleyai.com
@@ -65,6 +70,7 @@ pnpm dev
 ## 📚 What You Get
 
 ### ✅ **15 Manufacturing Stages**
+
 1. Client & Order Intake
 2. Design & Approval
 3. Cutting Operations
@@ -82,6 +88,7 @@ pnpm dev
 15. AI Chat Assistant
 
 ### ✅ **New Features (Oct 2025)**
+
 - ✨ **Multi-Tenancy** - Support multiple workspaces
 - ✨ **Type Safety** - 50+ TypeScript types
 - ✨ **Structured Logging** - Production-ready logs
@@ -93,6 +100,7 @@ pnpm dev
 ## 🎯 Common Tasks
 
 ### Create an Order
+
 ```
 1. Go to "Orders" → "New Order"
 2. Select client and brand
@@ -102,6 +110,7 @@ pnpm dev
 ```
 
 ### Add a Client
+
 ```
 1. Go to "Clients" → "New Client"
 2. Fill in company details
@@ -110,6 +119,7 @@ pnpm dev
 ```
 
 ### View Production Status
+
 ```
 1. Go to "Dashboard"
 2. See real-time production metrics
@@ -117,6 +127,7 @@ pnpm dev
 ```
 
 ### Process Delivery
+
 ```
 1. Go to "Delivery" → "Create Shipment"
 2. Select order and method
@@ -129,6 +140,7 @@ pnpm dev
 ## 🔧 Development Workflow
 
 ### Project Structure
+
 ```
 ashley-ai/
 ├── services/
@@ -142,6 +154,7 @@ ashley-ai/
 ```
 
 ### Key Files
+
 ```
 services/ash-admin/src/
 ├── app/                # Next.js App Router pages
@@ -158,6 +171,7 @@ services/ash-admin/src/
 ```
 
 ### Available Scripts
+
 ```bash
 # Development
 pnpm dev              # Start dev server
@@ -179,13 +193,14 @@ pnpm type-check       # Check TypeScript
 ## 💡 Using New Features
 
 ### 1. **Multi-Workspace Support**
+
 ```typescript
 // API routes automatically get workspace from:
 // - Header: X-Workspace-ID
 // - Cookie: workspace_id
 // - Query: ?workspaceId=xxx
 
-import { getWorkspaceIdFromRequest } from '@/lib/workspace';
+import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 
 export async function GET(request: NextRequest) {
   const workspaceId = getWorkspaceIdFromRequest(request);
@@ -194,36 +209,40 @@ export async function GET(request: NextRequest) {
 ```
 
 ### 2. **Type-Safe Development**
+
 ```typescript
 // Import types for autocomplete
-import { Order, Client, ApiResponse } from '@/lib/types';
+import { Order, Client, ApiResponse } from "@/lib/types";
 
 // Use in components
 const [orders, setOrders] = useState<Order[]>([]);
 
 // Use with API calls
-const response: ApiResponse<Order[]> = await fetch('/api/orders')
-  .then(r => r.json());
+const response: ApiResponse<Order[]> = await fetch("/api/orders").then(r =>
+  r.json()
+);
 ```
 
 ### 3. **Production Logging**
+
 ```typescript
 // Import logger
-import { logger, logError } from '@/lib/logger';
+import { logger, logError } from "@/lib/logger";
 
 // Log messages
-logger.info('Order created', { orderId: '123' });
-logger.error('Failed to save', error);
+logger.info("Order created", { orderId: "123" });
+logger.error("Failed to save", error);
 
 // Domain-specific loggers
-import { apiLogger, dbLogger } from '@/lib/logger';
-apiLogger.info('POST /api/orders');
+import { apiLogger, dbLogger } from "@/lib/logger";
+apiLogger.info("POST /api/orders");
 ```
 
 ### 4. **Route Protection**
+
 ```typescript
 // Protect API routes
-import { requireAuth, requirePermission, Permission } from '@/lib/auth-guards';
+import { requireAuth, requirePermission, Permission } from "@/lib/auth-guards";
 
 export async function POST(request: NextRequest) {
   // Require authentication
@@ -239,6 +258,7 @@ export async function POST(request: NextRequest) {
 ## 🐛 Troubleshooting
 
 ### Port Already in Use
+
 ```bash
 # Kill process on port 3001
 # Windows:
@@ -250,6 +270,7 @@ lsof -ti:3001 | xargs kill -9
 ```
 
 ### Database Connection Error
+
 ```bash
 # Regenerate Prisma client
 cd packages/database
@@ -260,6 +281,7 @@ echo $DATABASE_URL
 ```
 
 ### TypeScript Errors
+
 ```bash
 # Rebuild project
 pnpm build
@@ -270,6 +292,7 @@ pnpm dev
 ```
 
 ### Module Not Found
+
 ```bash
 # Reinstall dependencies
 rm -rf node_modules package-lock.json
@@ -281,11 +304,13 @@ pnpm install
 ## 📖 Learn More
 
 ### Documentation
+
 - [CLAUDE.md](./CLAUDE.md) - Complete development guide
 - [IMPROVEMENTS-2025-10-14.md](./IMPROVEMENTS-2025-10-14.md) - Recent improvements
 - [DEPLOYMENT-CHECKLIST.md](./DEPLOYMENT-CHECKLIST.md) - Production deployment
 
 ### Key Technologies
+
 - **Next.js 14** - React framework with App Router
 - **TypeScript** - Type-safe JavaScript
 - **Prisma** - Database ORM
@@ -293,6 +318,7 @@ pnpm install
 - **Lucide React** - Icon library
 
 ### External Resources
+
 - [Next.js Docs](https://nextjs.org/docs)
 - [Prisma Docs](https://www.prisma.io/docs)
 - [TypeScript Docs](https://www.typescriptlang.org/docs)
@@ -302,6 +328,7 @@ pnpm install
 ## 🎓 Next Steps
 
 ### For Developers
+
 1. ✅ Read [CLAUDE.md](./CLAUDE.md) for full system overview
 2. ✅ Explore the codebase starting with `/app`
 3. ✅ Check out API routes in `/app/api`
@@ -309,6 +336,7 @@ pnpm install
 5. ✅ Try creating a new feature
 
 ### For Deployment
+
 1. ✅ Read [DEPLOYMENT-CHECKLIST.md](./DEPLOYMENT-CHECKLIST.md)
 2. ✅ Configure production environment variables
 3. ✅ Set up production database (PostgreSQL)
@@ -316,6 +344,7 @@ pnpm install
 5. ✅ Set up monitoring and alerts
 
 ### For Testing
+
 1. ✅ Create test accounts
 2. ✅ Test complete order workflow
 3. ✅ Test multi-workspace functionality

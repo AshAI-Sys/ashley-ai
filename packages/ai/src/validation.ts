@@ -1,11 +1,11 @@
 import { z } from "zod";
-import type { 
-  RiskLevel, 
-  AshleyAnalysis, 
-  ProductionValidation, 
+import type {
+  RiskLevel,
+  AshleyAnalysis,
+  ProductionValidation,
   ClientRiskAssessment,
   OrderAnalysis,
-  ValidationContext
+  ValidationContext,
 } from "./types";
 
 export const RiskLevelSchema = z.enum(["GREEN", "AMBER", "RED"]);
@@ -14,7 +14,13 @@ export const AshleyIssueSchema = z.object({
   type: z.string(),
   message: z.string(),
   severity: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]),
-  category: z.enum(["TIMELINE", "COST", "QUALITY", "FEASIBILITY", "COMPLIANCE"]),
+  category: z.enum([
+    "TIMELINE",
+    "COST",
+    "QUALITY",
+    "FEASIBILITY",
+    "COMPLIANCE",
+  ]),
   details: z.record(z.unknown()).optional(),
 });
 
@@ -72,11 +78,13 @@ export const OrderIntakeDataSchema = z.object({
   targetPrice: z.number().positive().optional(),
   deadline: z.string().datetime(),
   specifications: z.record(z.unknown()),
-  materials: z.array(z.object({
-    type: z.string(),
-    quantity: z.number(),
-    unit: z.string(),
-  })),
+  materials: z.array(
+    z.object({
+      type: z.string(),
+      quantity: z.number(),
+      unit: z.string(),
+    })
+  ),
   sizeCurve: z.record(z.number()),
 });
 

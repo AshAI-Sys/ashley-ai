@@ -5,17 +5,39 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { Button } from "../button";
 import { Input } from "../input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../form";
 import { SizeCurveInput } from "../manufacturing/size-curve-input";
 import { AshleyAlert } from "../manufacturing/ashley-alert";
 import { Badge } from "../badge";
 import { Calendar } from "../calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 import {
-  Loader2, Package, Calendar as CalendarIcon,
-  Palette, Ruler
+  Loader2,
+  Package,
+  Calendar as CalendarIcon,
+  Palette,
+  Ruler,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -33,19 +55,34 @@ const materialSchema = z.object({
 const orderIntakeFormSchema = z.object({
   clientId: z.string().min(1, "Please select a client"),
   orderNumber: z.string().optional(),
-  garmentType: z.enum([
-    "T_SHIRT", "POLO_SHIRT", "DRESS_SHIRT", "BLOUSE", "DRESS", 
-    "PANTS", "SHORTS", "SKIRT", "JACKET", "HOODIE", "UNIFORM", "OTHER"
-  ], {
-    required_error: "Please select a garment type",
-  }),
+  garmentType: z.enum(
+    [
+      "T_SHIRT",
+      "POLO_SHIRT",
+      "DRESS_SHIRT",
+      "BLOUSE",
+      "DRESS",
+      "PANTS",
+      "SHORTS",
+      "SKIRT",
+      "JACKET",
+      "HOODIE",
+      "UNIFORM",
+      "OTHER",
+    ],
+    {
+      required_error: "Please select a garment type",
+    }
+  ),
   customGarmentType: z.string().optional(),
   description: z.string().min(5, "Please provide a detailed description"),
   quantity: z.number().positive("Quantity must be greater than 0"),
-  sizeCurve: z.record(z.number().nonnegative()).refine(
-    (curve) => Object.values(curve).reduce((sum, qty) => sum + qty, 0) > 0,
-    "Size curve must have at least one size with quantity > 0"
-  ),
+  sizeCurve: z
+    .record(z.number().nonnegative())
+    .refine(
+      curve => Object.values(curve).reduce((sum, qty) => sum + qty, 0) > 0,
+      "Size curve must have at least one size with quantity > 0"
+    ),
   targetPrice: z.number().positive("Target price must be positive").optional(),
   maxPrice: z.number().positive("Maximum price must be positive").optional(),
   deadline: z.date({
@@ -54,17 +91,23 @@ const orderIntakeFormSchema = z.object({
   priority: z.enum(["LOW", "NORMAL", "HIGH", "URGENT"], {
     required_error: "Please select priority level",
   }),
-  materials: z.array(materialSchema).min(1, "At least one material is required"),
+  materials: z
+    .array(materialSchema)
+    .min(1, "At least one material is required"),
   colorways: z.array(z.string()).min(1, "At least one colorway is required"),
-  specifications: z.object({
-    printingMethod: z.enum(["SCREEN", "DIGITAL", "HEAT_TRANSFER", "EMBROIDERY", "NONE"]).optional(),
-    fabricWeight: z.string().optional(),
-    fitType: z.enum(["SLIM", "REGULAR", "LOOSE", "OVERSIZED"]).optional(),
-    neckType: z.string().optional(),
-    sleeveLength: z.string().optional(),
-    hemType: z.string().optional(),
-    pocketType: z.string().optional(),
-  }).optional(),
+  specifications: z
+    .object({
+      printingMethod: z
+        .enum(["SCREEN", "DIGITAL", "HEAT_TRANSFER", "EMBROIDERY", "NONE"])
+        .optional(),
+      fabricWeight: z.string().optional(),
+      fitType: z.enum(["SLIM", "REGULAR", "LOOSE", "OVERSIZED"]).optional(),
+      neckType: z.string().optional(),
+      sleeveLength: z.string().optional(),
+      hemType: z.string().optional(),
+      pocketType: z.string().optional(),
+    })
+    .optional(),
   designFiles: z.array(z.string()).optional(),
   referenceImages: z.array(z.string()).optional(),
   specialRequirements: z.string().optional(),
@@ -108,7 +151,6 @@ const garmentTypeLabels = {
   OTHER: "Other (Custom)",
 };
 
-
 const printingMethods = {
   SCREEN: "Screen Printing",
   DIGITAL: "Digital Printing",
@@ -124,17 +166,23 @@ const fitTypes = {
   OVERSIZED: "Oversized",
 };
 
-export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeFormProps>(
-  ({ 
-    initialData, 
-    clients,
-    onSubmit, 
-    onCancel,
-    onValidate,
-    isLoading = false, 
-    ashleyAnalysis, 
-    className 
-  }, ref) => {
+export const OrderIntakeForm = React.forwardRef<
+  HTMLFormElement,
+  OrderIntakeFormProps
+>(
+  (
+    {
+      initialData,
+      clients,
+      onSubmit,
+      onCancel,
+      onValidate,
+      isLoading = false,
+      ashleyAnalysis,
+      className,
+    },
+    ref
+  ) => {
     const [isValidating, setIsValidating] = React.useState(false);
 
     const form = useForm<OrderIntakeFormData>({
@@ -172,7 +220,10 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
 
     // Auto-validate total quantity matches size curve
     React.useEffect(() => {
-      const sizeCurveTotal = Object.values(watchedSizeCurve || {}).reduce((sum, qty) => sum + qty, 0);
+      const sizeCurveTotal = Object.values(watchedSizeCurve || {}).reduce(
+        (sum, qty) => sum + qty,
+        0
+      );
       if (sizeCurveTotal > 0 && sizeCurveTotal !== watchedQuantity) {
         form.setValue("quantity", sizeCurveTotal);
       }
@@ -180,7 +231,7 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
 
     const handleValidate = async () => {
       if (!onValidate) return;
-      
+
       setIsValidating(true);
       try {
         const currentData = form.getValues();
@@ -212,7 +263,11 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
         )}
 
         <Form {...form}>
-          <form ref={ref} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <form
+            ref={ref}
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-8"
+          >
             {/* Basic Order Information */}
             <Card>
               <CardHeader>
@@ -225,23 +280,26 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="clientId"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Client *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select client" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {clients.map((client) => (
+                            {clients.map(client => (
                               <SelectItem key={client.id} value={client.id}>
-                                <div className="flex items-center justify-between w-full">
+                                <div className="flex w-full items-center justify-between">
                                   <span>{client.name}</span>
                                   <Badge variant="outline" className="ml-2">
                                     {client.businessType}
@@ -262,7 +320,10 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Priority Level *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
@@ -270,11 +331,17 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="LOW">
-                              <span className="text-green-600">Low Priority</span>
+                              <span className="text-green-600">
+                                Low Priority
+                              </span>
                             </SelectItem>
-                            <SelectItem value="NORMAL">Normal Priority</SelectItem>
+                            <SelectItem value="NORMAL">
+                              Normal Priority
+                            </SelectItem>
                             <SelectItem value="HIGH">
-                              <span className="text-orange-600">High Priority</span>
+                              <span className="text-orange-600">
+                                High Priority
+                              </span>
                             </SelectItem>
                             <SelectItem value="URGENT">
                               <span className="text-red-600">Urgent</span>
@@ -296,7 +363,7 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                       <FormControl>
                         <textarea
                           {...field}
-                          className="min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                           placeholder="Detailed description of the garment requirements..."
                         />
                       </FormControl>
@@ -305,7 +372,7 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="deadline"
@@ -357,7 +424,9 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                       disabled={isValidating}
                       className="flex-1"
                     >
-                      {isValidating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {isValidating && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                       Validate with Ashley AI
                     </Button>
                   </div>
@@ -374,25 +443,30 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="garmentType"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Garment Type *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(garmentTypeLabels).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            ))}
+                            {Object.entries(garmentTypeLabels).map(
+                              ([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -408,7 +482,10 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                         <FormItem>
                           <FormLabel>Custom Garment Type *</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="Specify garment type" />
+                            <Input
+                              {...field}
+                              placeholder="Specify garment type"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -417,14 +494,17 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <FormField
                     control={form.control}
                     name="specifications.fitType"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Fit Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
@@ -449,18 +529,23 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Printing Method</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(printingMethods).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            ))}
+                            {Object.entries(printingMethods).map(
+                              ([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -495,11 +580,15 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-muted-foreground text-sm">
                     Total quantity will be calculated from size distribution
                   </div>
-                  <Badge variant="outline" className="text-lg px-3 py-1">
-                    {Object.values(watchedSizeCurve || {}).reduce((sum, qty) => sum + qty, 0)} pieces
+                  <Badge variant="outline" className="px-3 py-1 text-lg">
+                    {Object.values(watchedSizeCurve || {}).reduce(
+                      (sum, qty) => sum + qty,
+                      0
+                    )}{" "}
+                    pieces
                   </Badge>
                 </div>
 
@@ -524,7 +613,7 @@ export const OrderIntakeForm = React.forwardRef<HTMLFormElement, OrderIntakeForm
             </Card>
 
             {/* Form Actions */}
-            <div className="flex gap-4 justify-end">
+            <div className="flex justify-end gap-4">
               {onCancel && (
                 <Button type="button" variant="outline" onClick={onCancel}>
                   Cancel

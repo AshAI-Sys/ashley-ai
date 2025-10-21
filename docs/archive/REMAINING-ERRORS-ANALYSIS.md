@@ -1,4 +1,5 @@
 # Ashley AI - Remaining Errors Analysis
+
 **Date**: 2025-10-15
 **Current Error Count**: 143
 **Progress**: 164 errors fixed (53% reduction from 307)
@@ -17,15 +18,16 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 
 **Problem**: Code uses incorrect model names that don't exist in schema
 
-| Wrong Model Name | Correct Model Name |
-|-----------------|-------------------|
-| `qualityControlCheck` | `qCInspection` |
-| `defectCode` | `qCDefectCode` or `qCDefectType` |
-| `cuttingRun` | `cutLay` |
-| `supplier` | No supplier model exists |
-| `bundleStatusHistory` | No such model |
+| Wrong Model Name      | Correct Model Name               |
+| --------------------- | -------------------------------- |
+| `qualityControlCheck` | `qCInspection`                   |
+| `defectCode`          | `qCDefectCode` or `qCDefectType` |
+| `cuttingRun`          | `cutLay`                         |
+| `supplier`            | No supplier model exists         |
+| `bundleStatusHistory` | No such model                    |
 
 **Files Affected**:
+
 - `src/app/api/ai/defect-detection/route.ts`
 - `src/app/api/ai/defect-detection/patterns/route.ts`
 - `src/app/api/ai/bottleneck/trends/route.ts`
@@ -40,17 +42,17 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 
 **Problem**: Code references fields that don't exist in Prisma schema
 
-| Model | Wrong Field | Correct Field/Solution |
-|-------|------------|----------------------|
-| `PrintRun` | `quantity` | Calculate from outputs |
-| `SewingRun` | `pieces_completed`, `target_pieces` | Use `qty_good` + `qty_reject` |
-| `Shipment` | `tracking_number` | Use `tracking_code` |
-| `Bundle` | `bundle_number`, `order` | Use `qr_code`, include lay.order |
-| `Bundle` | `notes` | Not in schema |
-| `Workspace` | `description` | Not in schema |
-| `Client` | `company` | Use `name` |
-| `Employee` | `createdAt` | Use `created_at` |
-| `Expense` | `status` | Not in schema |
+| Model       | Wrong Field                         | Correct Field/Solution           |
+| ----------- | ----------------------------------- | -------------------------------- |
+| `PrintRun`  | `quantity`                          | Calculate from outputs           |
+| `SewingRun` | `pieces_completed`, `target_pieces` | Use `qty_good` + `qty_reject`    |
+| `Shipment`  | `tracking_number`                   | Use `tracking_code`              |
+| `Bundle`    | `bundle_number`, `order`            | Use `qr_code`, include lay.order |
+| `Bundle`    | `notes`                             | Not in schema                    |
+| `Workspace` | `description`                       | Not in schema                    |
+| `Client`    | `company`                           | Use `name`                       |
+| `Employee`  | `createdAt`                         | Use `created_at`                 |
+| `Expense`   | `status`                            | Not in schema                    |
 
 **Files Affected**: 25+ API routes
 
@@ -62,13 +64,14 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 
 **Problem**: Some code still uses camelCase instead of snake_case
 
-| Wrong | Correct |
-|-------|---------|
-| `orderId` | `order_id` |
-| `clientId` | `client_id` |
+| Wrong       | Correct      |
+| ----------- | ------------ |
+| `orderId`   | `order_id`   |
+| `clientId`  | `client_id`  |
 | `createdAt` | `created_at` |
 
 **Files Affected**:
+
 - `src/app/api/cutting/bundles/route.ts`
 - `src/app/api/employees/route.ts`
 - Others
@@ -82,6 +85,7 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 **Problem**: Prisma create/update operations missing required fields
 
 **Examples**:
+
 - `User.create()` - Missing `workspace` relation
 - `Brand.create()` - Missing `workspace` and `client` relations
 - `CutIssue.create()` - Missing required relation fields
@@ -95,11 +99,13 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 **Problem**: UI library type mismatches
 
 **Examples**:
+
 - Badge component doesn't have `size` prop
 - Workflow step enums don't match
 - Toast missing `warning` method (already fixed)
 
 **Files Affected**:
+
 - `src/components/approval-workflow/ThreadedComments.tsx`
 - `src/components/approval-workflow/BatchApprovalActions.tsx`
 - `src/components/printing/*Workflow.tsx`
@@ -124,6 +130,7 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 **Problem**: Module export issues
 
 **Examples**:
+
 - `src/lib/email/queue.ts` - EmailOptions not exported
 - `src/lib/api.ts` - @ash/types import (already fixed)
 
@@ -184,7 +191,9 @@ We've successfully fixed all **critical and high-priority errors**. The remainin
 ## Recommended Fix Order
 
 ### **Phase 1: Model Name Fixes** (15 minutes)
+
 Fix all incorrect model names globally:
+
 ```
 qualityControlCheck → qCInspection
 defectCode → qCDefectCode
@@ -193,24 +202,30 @@ supplier → Remove or add model
 ```
 
 ### **Phase 2: Field Name Fixes** (30 minutes)
+
 Fix all non-existent fields:
+
 - SewingRun pieces_completed → qty_good
 - PrintRun quantity → calculate
 - Bundle bundle_number → remove
 - Shipment tracking_number → tracking_code
 
 ### **Phase 3: Missing Relations** (20 minutes)
+
 Add required relations to create operations:
+
 - User workspace
 - Brand workspace + client
 - Other models
 
 ### **Phase 4: UI Components** (15 minutes)
+
 - Remove Badge size props
 - Fix workflow enums
 - Fix role type comparisons
 
 ### **Phase 5: Test Files** (10 minutes)
+
 - Create generateEmail() helper
 - Fix any remaining test issues
 
@@ -245,6 +260,7 @@ Despite 143 remaining errors, the system is **FULLY FUNCTIONAL** because:
 ✅ **Monitoring systems operational**
 
 The remaining errors are in:
+
 - Less frequently used API endpoints
 - AI features (defect detection, scheduling)
 - Admin/reporting tools

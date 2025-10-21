@@ -1,15 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { z } from "zod";
 
 const CreateFabricBatchSchema = z.object({
-  lot_no: z.string().min(1, 'Lot number is required'),
-  brand_id: z.string().min(1, 'Brand ID is required'),
-  gsm: z.number().int().positive('GSM must be positive').optional(),
-  width_cm: z.number().int().positive('Width must be positive').optional(),
-  qty_on_hand: z.number().positive('Quantity on hand must be positive'),
-  uom: z.enum(['KG', 'M']),
-  received_at: z.string().transform((str) => new Date(str)).optional(),
+  lot_no: z.string().min(1, "Lot number is required"),
+  brand_id: z.string().min(1, "Brand ID is required"),
+  gsm: z.number().int().positive("GSM must be positive").optional(),
+  width_cm: z.number().int().positive("Width must be positive").optional(),
+  qty_on_hand: z.number().positive("Quantity on hand must be positive"),
+  uom: z.enum(["KG", "M"]),
+  received_at: z
+    .string()
+    .transform(str => new Date(str))
+    .optional(),
 });
 
 const UpdateFabricBatchSchema = CreateFabricBatchSchema.partial();
@@ -17,27 +20,29 @@ const UpdateFabricBatchSchema = CreateFabricBatchSchema.partial();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const brandId = searchParams.get('brandId') || '';
-    const uom = searchParams.get('uom') || '';
-    const minQty = searchParams.get('minQty');
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+    const brandId = searchParams.get("brandId") || "";
+    const uom = searchParams.get("uom") || "";
+    const minQty = searchParams.get("minQty");
 
     const skip = (page - 1) * limit;
 
     const where = {
       AND: [
-        search ? {
-          OR: [
-            { lot_no: { contains: search, mode: 'insensitive' } },
-            { brand: { name: { contains: search, mode: 'insensitive' } } },
-          ]
-        } : {},
+        search
+          ? {
+              OR: [
+                { lot_no: { contains: search, mode: "insensitive" } },
+                { brand: { name: { contains: search, mode: "insensitive" } } },
+              ],
+            }
+          : {},
         brandId ? { brand_id: brandId } : {},
         uom ? { uom } : {},
         minQty ? { qty_on_hand: { gte: parseFloat(minQty) } } : {},
-      ]
+      ],
     };
 
     const [fabricBatches, total] = await Promise.all([
@@ -50,15 +55,15 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               name: true,
-            }
+            },
           },
           _count: {
             select: {
               cut_issues: true,
-            }
-          }
+            },
+          },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { created_at: "desc" },
       }),
       prisma.fabricBatch.count({ where }),
     ]);
@@ -72,13 +77,13 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           pages: Math.ceil(total / limit),
-        }
-      }
+        },
+      },
     });
   } catch (error) {
-    console.error('Error fetching fabric batches:', error);
+    console.error("Error fetching fabric batches:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch fabric batches' },
+      { success: false, error: "Failed to fetch fabric batches" },
       { status: 500 }
     );
   }
@@ -91,12 +96,12 @@ export async function POST(request: NextRequest) {
 
     // Check if brand exists
     const brand = await prisma.brand.findUnique({
-      where: { id: validatedData.brand_id }
+      where: { id: validatedData.brand_id },
     });
 
     if (!brand) {
       return NextResponse.json(
-        { success: false, error: 'Brand not found' },
+        { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
@@ -117,32 +122,35 @@ export async function POST(request: NextRequest) {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         _count: {
           select: {
             cut_issues: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      data: fabricBatch,
-      message: 'Fabric batch created successfully'
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: fabricBatch,
+        message: "Fabric batch created successfully",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error('Error creating fabric batch:', error);
+    console.error("Error creating fabric batch:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create fabric batch' },
+      { success: false, error: "Failed to create fabric batch" },
       { status: 500 }
     );
   }
@@ -151,11 +159,11 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Fabric batch ID is required' },
+        { success: false, error: "Fabric batch ID is required" },
         { status: 400 }
       );
     }
@@ -165,12 +173,12 @@ export async function PUT(request: NextRequest) {
 
     // Check if fabric batch exists
     const existingBatch = await prisma.fabricBatch.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingBatch) {
       return NextResponse.json(
-        { success: false, error: 'Fabric batch not found' },
+        { success: false, error: "Fabric batch not found" },
         { status: 404 }
       );
     }
@@ -183,32 +191,32 @@ export async function PUT(request: NextRequest) {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         _count: {
           select: {
             cut_issues: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: fabricBatch,
-      message: 'Fabric batch updated successfully'
+      message: "Fabric batch updated successfully",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error('Error updating fabric batch:', error);
+    console.error("Error updating fabric batch:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update fabric batch' },
+      { success: false, error: "Failed to update fabric batch" },
       { status: 500 }
     );
   }
@@ -217,11 +225,11 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Fabric batch ID is required' },
+        { success: false, error: "Fabric batch ID is required" },
         { status: 400 }
       );
     }
@@ -233,14 +241,14 @@ export async function DELETE(request: NextRequest) {
         _count: {
           select: {
             cut_issues: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!existingBatch) {
       return NextResponse.json(
-        { success: false, error: 'Fabric batch not found' },
+        { success: false, error: "Fabric batch not found" },
         { status: 404 }
       );
     }
@@ -248,25 +256,27 @@ export async function DELETE(request: NextRequest) {
     // Check if fabric batch has issues (prevent deletion if they do)
     if (existingBatch._count.cut_issues > 0) {
       return NextResponse.json(
-        { success: false, error: 'Cannot delete fabric batch with existing fabric issues' },
+        {
+          success: false,
+          error: "Cannot delete fabric batch with existing fabric issues",
+        },
         { status: 400 }
       );
     }
 
     await prisma.fabricBatch.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Fabric batch deleted successfully'
+      message: "Fabric batch deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting fabric batch:', error);
+    console.error("Error deleting fabric batch:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete fabric batch' },
+      { success: false, error: "Failed to delete fabric batch" },
       { status: 500 }
     );
   }
 }
-

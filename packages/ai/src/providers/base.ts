@@ -17,15 +17,17 @@ export abstract class BaseAIProvider {
   }
 
   abstract getName(): string;
-  
+
   abstract validateOrder(context: ValidationContext): Promise<AshleyAnalysis>;
-  
+
   abstract assessClient(context: ValidationContext): Promise<AshleyAnalysis>;
-  
-  abstract validateProduction(context: ValidationContext): Promise<AshleyAnalysis>;
-  
+
+  abstract validateProduction(
+    context: ValidationContext
+  ): Promise<AshleyAnalysis>;
+
   abstract analyzeDesign(context: ValidationContext): Promise<AshleyAnalysis>;
-  
+
   abstract performQC(context: ValidationContext): Promise<AshleyAnalysis>;
 
   protected buildSystemPrompt(entity: string, stage: string): string {

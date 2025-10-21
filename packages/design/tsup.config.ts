@@ -2,12 +2,12 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: [
-    "src/index.ts", 
+    "src/index.ts",
     "src/workflow.ts",
-    "src/collaboration.ts", 
+    "src/collaboration.ts",
     "src/validation.ts",
     "src/mockup.ts",
-    "src/estimation.ts"
+    "src/estimation.ts",
   ],
   format: ["cjs", "esm"],
   dts: true,

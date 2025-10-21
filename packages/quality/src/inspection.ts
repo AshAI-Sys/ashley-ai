@@ -12,7 +12,7 @@ import type {
   AshleyQualityAnalysis,
   InspectionStatus,
   QCStage,
-  QualityAlert
+  QualityAlert,
 } from "./types";
 
 export interface PhotoAnalysisResult {
@@ -55,7 +55,7 @@ export class QualityInspectionSystem extends EventEmitter {
 
   async createInspection(request: InspectionRequest): Promise<QCInspection> {
     const inspectionId = nanoid();
-    
+
     // Get inspection point details
     const inspectionPoint = await db.qCInspectionPoint.findUnique({
       where: { id: request.inspectionPointId },
@@ -87,27 +87,33 @@ export class QualityInspectionSystem extends EventEmitter {
 
     // Generate inspection criteria from inspection point
     const criteria = JSON.parse(inspectionPoint.criteria || "[]");
-    const criteriaResults: QCCriteriaResult[] = criteria.map((criterion: any) => ({
-      criteriaName: criterion.name,
-      result: "PASS", // Default, will be updated during inspection
-      targetValue: criterion.targetValue,
-      tolerance: criterion.tolerance,
-      score: 100, // Default score
-      aiDetected: false,
-    }));
+    const criteriaResults: QCCriteriaResult[] = criteria.map(
+      (criterion: any) => ({
+        criteriaName: criterion.name,
+        result: "PASS", // Default, will be updated during inspection
+        targetValue: criterion.targetValue,
+        tolerance: criterion.tolerance,
+        score: 100, // Default score
+        aiDetected: false,
+      })
+    );
 
     // Perform AI analysis if enabled and photos provided
     let ashleyAnalysis: AshleyQualityAnalysis | undefined;
     let aiConfidence: number | undefined;
 
-    if (inspectionPoint.ai_enabled && request.photos && request.photos.length > 0) {
+    if (
+      inspectionPoint.ai_enabled &&
+      request.photos &&
+      request.photos.length > 0
+    ) {
       ashleyAnalysis = await this.performAIAnalysis(
         request.photos,
         inspectionPoint,
         criteria
       );
       aiConfidence = ashleyAnalysis.confidence;
-      
+
       // Update criteria results with AI findings
       this.applyAIFindingsToCriteria(criteriaResults, ashleyAnalysis);
     }
@@ -137,7 +143,7 @@ export class QualityInspectionSystem extends EventEmitter {
     };
 
     this.emit("inspection:created", { inspection: qcInspection });
-    
+
     return qcInspection;
   }
 
@@ -155,7 +161,7 @@ export class QualityInspectionSystem extends EventEmitter {
   ): Promise<QCInspection> {
     // Calculate overall score
     const overallScore = this.calculateOverallScore(results.criteriaResults);
-    
+
     // Determine status based on results
     const status: InspectionStatus = this.determineInspectionStatus(
       results.criteriaResults,
@@ -223,17 +229,21 @@ export class QualityInspectionSystem extends EventEmitter {
     await this.checkForQualityAlerts(completedInspection);
 
     // Auto-generate CAPA if critical defects found
-    const criticalDefects = results.defects.filter(d => d.severity === "CRITICAL");
+    const criticalDefects = results.defects.filter(
+      d => d.severity === "CRITICAL"
+    );
     if (criticalDefects.length > 0) {
       await this.autoGenerateCAPA(inspectionId, criticalDefects);
     }
 
     this.emit("inspection:completed", { inspection: completedInspection });
-    
+
     return completedInspection;
   }
 
-  async performPhotoAnalysis(photoUrls: string[]): Promise<PhotoAnalysisResult> {
+  async performPhotoAnalysis(
+    photoUrls: string[]
+  ): Promise<PhotoAnalysisResult> {
     const analysisResults: PhotoAnalysisResult = {
       defectsDetected: [],
       qualityScore: 95, // Default high score
@@ -251,10 +261,10 @@ export class QualityInspectionSystem extends EventEmitter {
       for (const photoUrl of photoUrls) {
         // Process each photo
         const photoAnalysis = await this.analyzeIndividualPhoto(photoUrl);
-        
+
         // Merge results
         analysisResults.defectsDetected.push(...photoAnalysis.defectsDetected);
-        
+
         // Update quality score (take minimum)
         analysisResults.qualityScore = Math.min(
           analysisResults.qualityScore,
@@ -263,8 +273,12 @@ export class QualityInspectionSystem extends EventEmitter {
       }
 
       // Determine overall assessment
-      const criticalDefects = analysisResults.defectsDetected.filter(d => d.severity === "CRITICAL");
-      const highDefects = analysisResults.defectsDetected.filter(d => d.severity === "HIGH");
+      const criticalDefects = analysisResults.defectsDetected.filter(
+        d => d.severity === "CRITICAL"
+      );
+      const highDefects = analysisResults.defectsDetected.filter(
+        d => d.severity === "HIGH"
+      );
 
       if (criticalDefects.length > 0) {
         analysisResults.overallAssessment = "FAIL";
@@ -273,10 +287,9 @@ export class QualityInspectionSystem extends EventEmitter {
       }
 
       analysisResults.analysisMetadata.processingTime = Date.now() - startTime;
-      
     } catch (error) {
       console.error("Photo analysis error:", error);
-      
+
       // Return default result on error
       analysisResults.overallAssessment = "REVIEW_REQUIRED";
       analysisResults.qualityScore = 50;
@@ -285,7 +298,8 @@ export class QualityInspectionSystem extends EventEmitter {
         confidence: 0.5,
         location: { x: 0, y: 0, width: 100, height: 100 },
         severity: "MEDIUM",
-        description: "Unable to complete automated analysis. Manual inspection required.",
+        description:
+          "Unable to complete automated analysis. Manual inspection required.",
       });
     }
 
@@ -327,7 +341,11 @@ export class QualityInspectionSystem extends EventEmitter {
   ): Promise<{
     overallQuality: Array<{ date: string; score: number; inspections: number }>;
     defectTrends: Array<{ date: string; defectType: string; count: number }>;
-    passRates: Array<{ date: string; passRate: number; totalInspected: number }>;
+    passRates: Array<{
+      date: string;
+      passRate: number;
+      totalInspected: number;
+    }>;
   }> {
     // This would implement complex quality trend analysis
     // For now, return sample data structure
@@ -401,7 +419,7 @@ export class QualityInspectionSystem extends EventEmitter {
       // 1. Load the image using Sharp
       // 2. Run it through TensorFlow.js model
       // 3. Detect defects and calculate quality score
-      
+
       // For now, return simulated analysis
       return {
         defectsDetected: [
@@ -430,15 +448,22 @@ export class QualityInspectionSystem extends EventEmitter {
   ): void {
     // Apply AI findings to update criteria results
     for (const issue of ashleyAnalysis.detectedIssues) {
-      const relatedCriteria = criteriaResults.find(c => 
+      const relatedCriteria = criteriaResults.find(c =>
         c.criteriaName.toLowerCase().includes(issue.type.toLowerCase())
       );
-      
+
       if (relatedCriteria) {
         relatedCriteria.aiDetected = true;
-        relatedCriteria.result = issue.severity === "CRITICAL" ? "CRITICAL" : 
-                                 issue.severity === "HIGH" ? "FAIL" : "ACCEPTABLE";
-        relatedCriteria.score = Math.max(0, relatedCriteria.score - (issue.severity === "HIGH" ? 20 : 5));
+        relatedCriteria.result =
+          issue.severity === "CRITICAL"
+            ? "CRITICAL"
+            : issue.severity === "HIGH"
+              ? "FAIL"
+              : "ACCEPTABLE";
+        relatedCriteria.score = Math.max(
+          0,
+          relatedCriteria.score - (issue.severity === "HIGH" ? 20 : 5)
+        );
         relatedCriteria.notes = `AI detected: ${issue.description} (confidence: ${(issue.confidence * 100).toFixed(1)}%)`;
       }
     }
@@ -446,8 +471,11 @@ export class QualityInspectionSystem extends EventEmitter {
 
   private calculateOverallScore(criteriaResults: QCCriteriaResult[]): number {
     if (criteriaResults.length === 0) return 0;
-    
-    const totalScore = criteriaResults.reduce((sum, result) => sum + result.score, 0);
+
+    const totalScore = criteriaResults.reduce(
+      (sum, result) => sum + result.score,
+      0
+    );
     return totalScore / criteriaResults.length;
   }
 
@@ -456,7 +484,9 @@ export class QualityInspectionSystem extends EventEmitter {
     defects: any[],
     overallScore: number
   ): InspectionStatus {
-    const criticalResults = criteriaResults.filter(r => r.result === "CRITICAL");
+    const criticalResults = criteriaResults.filter(
+      r => r.result === "CRITICAL"
+    );
     const failedResults = criteriaResults.filter(r => r.result === "FAIL");
     const criticalDefects = defects.filter(d => d.severity === "CRITICAL");
 
@@ -490,7 +520,11 @@ export class QualityInspectionSystem extends EventEmitter {
         data: { inspectionId: inspection.id, score: inspection.overallScore },
         triggeredBy: "system",
         affectedEntities: [
-          { type: "ORDER", id: inspection.orderId, name: `Order ${inspection.orderId}` },
+          {
+            type: "ORDER",
+            id: inspection.orderId,
+            name: `Order ${inspection.orderId}`,
+          },
         ],
         actionRequired: true,
         suggestedActions: [
@@ -504,7 +538,9 @@ export class QualityInspectionSystem extends EventEmitter {
     }
 
     // High defect rate alert
-    const criticalDefects = inspection.defects.filter(d => d.severity === "CRITICAL");
+    const criticalDefects = inspection.defects.filter(
+      d => d.severity === "CRITICAL"
+    );
     if (criticalDefects.length > 0) {
       alerts.push({
         id: nanoid(),
@@ -512,10 +548,17 @@ export class QualityInspectionSystem extends EventEmitter {
         severity: "CRITICAL",
         title: "Critical Defects Detected",
         message: `${criticalDefects.length} critical defects found in inspection ${inspection.id}`,
-        data: { inspectionId: inspection.id, defectCount: criticalDefects.length },
+        data: {
+          inspectionId: inspection.id,
+          defectCount: criticalDefects.length,
+        },
         triggeredBy: "system",
         affectedEntities: [
-          { type: "ORDER", id: inspection.orderId, name: `Order ${inspection.orderId}` },
+          {
+            type: "ORDER",
+            id: inspection.orderId,
+            name: `Order ${inspection.orderId}`,
+          },
         ],
         actionRequired: true,
         suggestedActions: [
@@ -534,10 +577,13 @@ export class QualityInspectionSystem extends EventEmitter {
     }
   }
 
-  private async autoGenerateCAPA(inspectionId: string, criticalDefects: any[]): Promise<void> {
+  private async autoGenerateCAPA(
+    inspectionId: string,
+    criticalDefects: any[]
+  ): Promise<void> {
     // Auto-generate CAPA task for critical defects
     const capaNumber = `CAPA-${format(new Date(), "yyyy")}-${String(Date.now()).slice(-6)}`;
-    
+
     await db.cAPATask.create({
       data: {
         workspace_id: this.workspaceId,
@@ -603,7 +649,9 @@ export class QualityInspectionSystem extends EventEmitter {
       inspectionTime: dbInspection.inspection_time || 0,
       notes: dbInspection.notes,
       photos: dbInspection.photos ? JSON.parse(dbInspection.photos) : [],
-      ashleyAnalysis: dbInspection.ashley_analysis ? JSON.parse(dbInspection.ashley_analysis) : undefined,
+      ashleyAnalysis: dbInspection.ashley_analysis
+        ? JSON.parse(dbInspection.ashley_analysis)
+        : undefined,
       aiConfidence: dbInspection.ai_confidence,
       criteriaResults: (dbInspection.criteria_results || []).map((cr: any) => ({
         criteriaName: cr.criteria_name,

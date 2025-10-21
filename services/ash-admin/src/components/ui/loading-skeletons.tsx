@@ -1,6 +1,6 @@
-import React from 'react'
-import { cn } from '@/lib/utils'
-import { Skeleton } from './skeleton'
+import React from "react";
+import { cn } from "@/lib/utils";
+import { Skeleton } from "./skeleton";
 
 /**
  * Dashboard Statistics Grid Skeleton
@@ -22,7 +22,7 @@ export function DashboardStatsSkeleton() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 /**
@@ -78,7 +78,7 @@ export function DataTableSkeleton({ rows = 10 }: { rows?: number }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -107,7 +107,7 @@ export function FormSkeleton({ fields = 6 }: { fields?: number }) {
         <Skeleton className="h-10 w-24" />
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -144,7 +144,7 @@ export function DetailsPageSkeleton() {
       {/* Content cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="rounded-lg border p-4 space-y-3">
+          <div key={i} className="space-y-3 rounded-lg border p-4">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-6 w-32" />
             <Skeleton className="h-3 w-full" />
@@ -152,7 +152,7 @@ export function DetailsPageSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -174,7 +174,7 @@ export function ProductionDashboardSkeleton() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-lg border p-6 space-y-4">
+            <div key={i} className="space-y-4 rounded-lg border p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <Skeleton className="h-5 w-24" />
@@ -198,21 +198,21 @@ export function ProductionDashboardSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /**
  * Chart Skeleton
  * Used for: Analytics pages with charts
  */
-export function ChartSkeleton({ height = 'h-80' }: { height?: string }) {
+export function ChartSkeleton({ height = "h-80" }: { height?: string }) {
   return (
-    <div className="rounded-lg border p-6 space-y-4">
+    <div className="space-y-4 rounded-lg border p-6">
       <div className="flex items-center justify-between">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-8 w-32" />
       </div>
-      <Skeleton className={cn('w-full rounded', height)} />
+      <Skeleton className={cn("w-full rounded", height)} />
       <div className="flex items-center justify-center gap-4">
         <div className="flex items-center gap-2">
           <Skeleton className="h-3 w-3 rounded-full" />
@@ -224,7 +224,7 @@ export function ChartSkeleton({ height = 'h-80' }: { height?: string }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -238,9 +238,9 @@ export function TimelineSkeleton({ items = 5 }: { items?: number }) {
         <div key={i} className="flex gap-4">
           <div className="flex flex-col items-center">
             <Skeleton className="h-8 w-8 rounded-full" />
-            {i < items - 1 && <Skeleton className="h-full w-0.5 my-2" />}
+            {i < items - 1 && <Skeleton className="my-2 h-full w-0.5" />}
           </div>
-          <div className="flex-1 pb-8 space-y-2">
+          <div className="flex-1 space-y-2 pb-8">
             <Skeleton className="h-4 w-48" />
             <Skeleton className="h-3 w-32" />
             <Skeleton className="h-3 w-full max-w-md" />
@@ -248,7 +248,7 @@ export function TimelineSkeleton({ items = 5 }: { items?: number }) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 /**
@@ -259,9 +259,9 @@ export function MobileCardListSkeleton({ items = 5 }: { items?: number }) {
   return (
     <div className="space-y-3">
       {[...Array(items)].map((_, i) => (
-        <div key={i} className="rounded-lg border p-4 space-y-3">
+        <div key={i} className="space-y-3 rounded-lg border p-4">
           <div className="flex items-start justify-between">
-            <div className="space-y-1 flex-1">
+            <div className="flex-1 space-y-1">
               <Skeleton className="h-5 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
             </div>
@@ -274,14 +274,14 @@ export function MobileCardListSkeleton({ items = 5 }: { items?: number }) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 /**
  * Page Loading Component
  * Full-page loading state with brand styling
  */
-export function PageLoader({ message = 'Loading...' }: { message?: string }) {
+export function PageLoader({ message = "Loading..." }: { message?: string }) {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center space-y-4">
       <div className="relative">
@@ -290,5 +290,5 @@ export function PageLoader({ message = 'Loading...' }: { message?: string }) {
       </div>
       <p className="text-sm text-muted-foreground">{message}</p>
     </div>
-  )
+  );
 }

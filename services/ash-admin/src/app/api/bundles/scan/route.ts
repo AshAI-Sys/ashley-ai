@@ -1,18 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
 const prisma = db;
 
 // GET /api/bundles/scan?code=BUNDLE-XXX - Scan bundle QR code
 export async function GET(req: NextRequest) {
   try {
-    const workspaceId = req.headers.get('x-workspace-id') || 'default-workspace';
+    const workspaceId =
+      req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
-    const code = url.searchParams.get('code');
+    const code = url.searchParams.get("code");
 
     if (!code) {
       return NextResponse.json(
-        { success: false, error: 'QR code is required' },
+        { success: false, error: "QR code is required" },
         { status: 400 }
       );
     }
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
 
     if (!bundle) {
       return NextResponse.json(
-        { success: false, error: 'Bundle not found' },
+        { success: false, error: "Bundle not found" },
         { status: 404 }
       );
     }
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Bundle scan error:', error);
+    console.error("Bundle scan error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

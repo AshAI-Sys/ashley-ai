@@ -1,11 +1,18 @@
 import { db } from "@ash-ai/database";
-import { addDays, startOfDay, endOfDay, differenceInHours, format, isWeekend } from "date-fns";
-import type { 
-  ProductionCapacity, 
-  WorkerCapacity, 
-  ShiftType, 
+import {
+  addDays,
+  startOfDay,
+  endOfDay,
+  differenceInHours,
+  format,
+  isWeekend,
+} from "date-fns";
+import type {
+  ProductionCapacity,
+  WorkerCapacity,
+  ShiftType,
   SkillLevel,
-  ProductionMetrics
+  ProductionMetrics,
 } from "./types";
 
 export interface WorkerAssignmentRequest {
@@ -68,7 +75,9 @@ export class ProductionScheduler {
     this.workspaceId = workspaceId;
   }
 
-  async assignWorkerToTask(request: WorkerAssignmentRequest): Promise<WorkerAssignmentResult> {
+  async assignWorkerToTask(
+    request: WorkerAssignmentRequest
+  ): Promise<WorkerAssignmentResult> {
     // Check worker availability
     const worker = await this.getWorkerDetails(request.workerId);
     if (!worker) {
@@ -79,7 +88,10 @@ export class ProductionScheduler {
     }
 
     // Check skill compatibility
-    const skillMatch = this.calculateSkillMatch(worker.skillLevel, request.requiredSkill);
+    const skillMatch = this.calculateSkillMatch(
+      worker.skillLevel,
+      request.requiredSkill
+    );
     if (skillMatch < 0.5) {
       return {
         success: false,
@@ -115,7 +127,10 @@ export class ProductionScheduler {
       },
     });
 
-    const scheduledEnd = addDays(request.preferredStartTime, request.estimatedHours / 8);
+    const scheduledEnd = addDays(
+      request.preferredStartTime,
+      request.estimatedHours / 8
+    );
 
     return {
       success: true,
@@ -216,17 +231,25 @@ export class ProductionScheduler {
 
     // Calculate shift hours
     const shiftHours = this.getShiftHours(shift);
-    
+
     // Calculate total capacity based on work stations and workers
     const totalWorkers = productionLine.allocations.length;
     const totalHours = totalWorkers * shiftHours;
-    
+
     // Get current assignments for the date/shift
-    const assignments = await this.getProductionAssignments(productionLineId, date, shift);
-    const utilizationHours = assignments.reduce((sum, a) => sum + a.assignedHours, 0);
+    const assignments = await this.getProductionAssignments(
+      productionLineId,
+      date,
+      shift
+    );
+    const utilizationHours = assignments.reduce(
+      (sum, a) => sum + a.assignedHours,
+      0
+    );
 
     const availableHours = totalHours - utilizationHours;
-    const utilizationRate = totalHours > 0 ? (utilizationHours / totalHours) * 100 : 0;
+    const utilizationRate =
+      totalHours > 0 ? (utilizationHours / totalHours) * 100 : 0;
 
     return {
       productionLineId,
@@ -291,7 +314,10 @@ export class ProductionScheduler {
       },
     });
 
-    const assignedHours = assignments.reduce((sum, a) => sum + a.assigned_hours, 0);
+    const assignedHours = assignments.reduce(
+      (sum, a) => sum + a.assigned_hours,
+      0
+    );
     const availableHours = allocation.hours_allocated - assignedHours;
 
     return {
@@ -341,50 +367,67 @@ export class ProductionScheduler {
 
     // Calculate metrics
     const totalOrders = schedules.length;
-    const completedOrders = schedules.filter(s => s.status === "COMPLETED").length;
-    const onTimeOrders = schedules.filter(s => 
-      s.actual_end && s.actual_end <= s.planned_end
+    const completedOrders = schedules.filter(
+      s => s.status === "COMPLETED"
+    ).length;
+    const onTimeOrders = schedules.filter(
+      s => s.actual_end && s.actual_end <= s.planned_end
     ).length;
 
-    const totalPlannedHours = schedules.reduce((sum, s) => 
-      differenceInHours(s.planned_end, s.planned_start), 0
-    );
-    
-    const totalActualHours = schedules.reduce((sum, s) => 
-      s.actual_start && s.actual_end 
-        ? differenceInHours(s.actual_end, s.actual_start)
-        : 0, 0
+    const totalPlannedHours = schedules.reduce(
+      (sum, s) => differenceInHours(s.planned_end, s.planned_start),
+      0
     );
 
-    const efficiency = totalPlannedHours > 0 
-      ? (totalPlannedHours / totalActualHours) * 100 
-      : 0;
+    const totalActualHours = schedules.reduce(
+      (sum, s) =>
+        s.actual_start && s.actual_end
+          ? differenceInHours(s.actual_end, s.actual_start)
+          : 0,
+      0
+    );
 
-    const onTimeDelivery = totalOrders > 0 ? (onTimeOrders / totalOrders) * 100 : 0;
+    const efficiency =
+      totalPlannedHours > 0 ? (totalPlannedHours / totalActualHours) * 100 : 0;
+
+    const onTimeDelivery =
+      totalOrders > 0 ? (onTimeOrders / totalOrders) * 100 : 0;
 
     // Calculate quality score from progress logs
-    const qualityScores = schedules.flatMap(s => 
+    const qualityScores = schedules.flatMap(s =>
       s.progress_logs
         .filter(log => log.quality_score !== null)
         .map(log => log.quality_score!)
     );
-    
-    const qualityScore = qualityScores.length > 0
-      ? qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length
-      : 0;
+
+    const qualityScore =
+      qualityScores.length > 0
+        ? qualityScores.reduce((sum, score) => sum + score, 0) /
+          qualityScores.length
+        : 0;
 
     // Calculate utilization (simplified)
     const utilizationRate = Math.min(100, efficiency);
 
     // Calculate defect rate (simplified)
-    const totalProduced = schedules.reduce((sum, s) => sum + s.completed_quantity, 0);
-    const totalDefects = schedules.reduce((sum, s) => 
-      s.progress_logs.reduce((defectSum, log) => defectSum + log.quantity_rejected, 0), 0
+    const totalProduced = schedules.reduce(
+      (sum, s) => sum + s.completed_quantity,
+      0
     );
-    const defectRate = totalProduced > 0 ? (totalDefects / totalProduced) * 100 : 0;
+    const totalDefects = schedules.reduce(
+      (sum, s) =>
+        s.progress_logs.reduce(
+          (defectSum, log) => defectSum + log.quantity_rejected,
+          0
+        ),
+      0
+    );
+    const defectRate =
+      totalProduced > 0 ? (totalDefects / totalProduced) * 100 : 0;
 
     // Throughput calculation (pieces per hour)
-    const throughput = totalActualHours > 0 ? totalProduced / totalActualHours : 0;
+    const throughput =
+      totalActualHours > 0 ? totalProduced / totalActualHours : 0;
 
     return {
       date: format(date, "yyyy-MM-dd"),
@@ -423,7 +466,10 @@ export class ProductionScheduler {
     };
   }
 
-  private calculateSkillMatch(workerSkill: SkillLevel, requiredSkill: SkillLevel): number {
+  private calculateSkillMatch(
+    workerSkill: SkillLevel,
+    requiredSkill: SkillLevel
+  ): number {
     const skillLevels = { BEGINNER: 1, INTERMEDIATE: 2, ADVANCED: 3 };
     const workerLevel = skillLevels[workerSkill];
     const requiredLevel = skillLevels[requiredSkill];
@@ -476,9 +522,9 @@ export class ProductionScheduler {
 
   private getShiftHours(shift: ShiftType): number {
     const shiftHours = {
-      MORNING: 8,    // 6 AM - 2 PM
-      AFTERNOON: 8,  // 2 PM - 10 PM
-      NIGHT: 8,      // 10 PM - 6 AM
+      MORNING: 8, // 6 AM - 2 PM
+      AFTERNOON: 8, // 2 PM - 10 PM
+      NIGHT: 8, // 10 PM - 6 AM
     };
     return shiftHours[shift];
   }
@@ -530,7 +576,8 @@ export class ProductionScheduler {
       scheduleId: schedule.id,
       optimizedStart: schedule.planned_start,
       optimizedEnd: addDays(schedule.planned_end, -1), // Optimize by 1 day
-      assignedWorker: availableWorkers[0]?.id || schedule.worker_assignments[0]?.worker_id,
+      assignedWorker:
+        availableWorkers[0]?.id || schedule.worker_assignments[0]?.worker_id,
       improvementReasons: ["Optimized worker assignment", "Reduced idle time"],
     }));
   }

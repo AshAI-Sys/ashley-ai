@@ -1,31 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || 'month'
+    const { searchParams } = new URL(request.url);
+    const period = searchParams.get("period") || "month";
 
     // Calculate date range
-    const endDate = new Date()
-    const startDate = new Date()
+    const endDate = new Date();
+    const startDate = new Date();
 
     switch (period) {
-      case 'week':
-        startDate.setDate(endDate.getDate() - 7)
-        break
-      case 'month':
-        startDate.setMonth(endDate.getMonth() - 1)
-        break
-      case 'quarter':
-        startDate.setMonth(endDate.getMonth() - 3)
-        break
+      case "week":
+        startDate.setDate(endDate.getDate() - 7);
+        break;
+      case "month":
+        startDate.setMonth(endDate.getMonth() - 1);
+        break;
+      case "quarter":
+        startDate.setMonth(endDate.getMonth() - 3);
+        break;
       default:
-        startDate.setMonth(endDate.getMonth() - 1)
+        startDate.setMonth(endDate.getMonth() - 1);
     }
 
     // Get defect counts by type
-    const defectData = await prisma.$queryRaw`
+    const defectData = (await prisma.$queryRaw`
       SELECT
         dc.code as defect_code,
         dc.name as defect_name,
@@ -39,27 +39,30 @@ export async function GET(request: NextRequest) {
         AND qi.inspection_date <= ${endDate}
       GROUP BY dc.id, dc.code, dc.name, dc.category
       ORDER BY total_quantity DESC
-    ` as Array<{
-      defect_code: string
-      defect_name: string
-      category: string
-      defect_count: bigint
-      total_quantity: bigint
-    }>
+    `) as Array<{
+      defect_code: string;
+      defect_name: string;
+      category: string;
+      defect_count: bigint;
+      total_quantity: bigint;
+    }>;
 
     if (defectData.length === 0) {
-      return NextResponse.json([])
+      return NextResponse.json([]);
     }
 
     // Convert to Pareto data
-    const totalDefects = defectData.reduce((sum, item) => sum + Number(item.total_quantity), 0)
+    const totalDefects = defectData.reduce(
+      (sum, item) => sum + Number(item.total_quantity),
+      0
+    );
 
-    let cumulativeCount = 0
-    const paretoData = defectData.map((item) => {
-      const count = Number(item.total_quantity)
-      const percentage = (count / totalDefects) * 100
-      cumulativeCount += count
-      const cumulativePercentage = (cumulativeCount / totalDefects) * 100
+    let cumulativeCount = 0;
+    const paretoData = defectData.map(item => {
+      const count = Number(item.total_quantity);
+      const percentage = (count / totalDefects) * 100;
+      cumulativeCount += count;
+      const cumulativePercentage = (cumulativeCount / totalDefects) * 100;
 
       return {
         defect_code: item.defect_code,
@@ -68,13 +71,16 @@ export async function GET(request: NextRequest) {
         count: count,
         occurrences: Number(item.defect_count),
         percentage: percentage,
-        cumulative_percentage: cumulativePercentage
-      }
-    })
+        cumulative_percentage: cumulativePercentage,
+      };
+    });
 
-    return NextResponse.json(paretoData)
+    return NextResponse.json(paretoData);
   } catch (error) {
-    console.error('Error generating Pareto data:', error)
-    return NextResponse.json({ error: 'Failed to generate Pareto data' }, { status: 500 })
+    console.error("Error generating Pareto data:", error);
+    return NextResponse.json(
+      { error: "Failed to generate Pareto data" },
+      { status: 500 }
+    );
   }
 }

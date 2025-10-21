@@ -1,20 +1,20 @@
-import { redisClient } from '@/lib/redis'
-import { sendEmail, EmailOptions, EmailResult } from '@/lib/email'
+import { redisClient } from "@/lib/redis";
+import { sendEmail, EmailOptions, EmailResult } from "@/lib/email";
 
 /**
  * Email job interface
  */
 interface EmailJob {
-  id: string
-  type: string
-  to: string
-  data: any
-  attempts: number
-  maxAttempts: number
-  createdAt: string
-  scheduledFor?: string
-  status: 'pending' | 'processing' | 'completed' | 'failed'
-  error?: string
+  id: string;
+  type: string;
+  to: string;
+  data: any;
+  attempts: number;
+  maxAttempts: number;
+  createdAt: string;
+  scheduledFor?: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  error?: string;
 }
 
 /**
@@ -22,20 +22,20 @@ interface EmailJob {
  * Provides reliable email delivery with retry logic
  */
 export class EmailQueue {
-  private static instance: EmailQueue
-  private processing = false
-  private processingInterval: NodeJS.Timeout | null = null
+  private static instance: EmailQueue;
+  private processing = false;
+  private processingInterval: NodeJS.Timeout | null = null;
 
   private constructor() {
     // Start processing queue
-    this.startProcessing()
+    this.startProcessing();
   }
 
   static getInstance(): EmailQueue {
     if (!EmailQueue.instance) {
-      EmailQueue.instance = new EmailQueue()
+      EmailQueue.instance = new EmailQueue();
     }
-    return EmailQueue.instance
+    return EmailQueue.instance;
   }
 
   /**
@@ -46,11 +46,11 @@ export class EmailQueue {
     to: string,
     data: any,
     options?: {
-      scheduledFor?: Date
-      maxAttempts?: number
+      scheduledFor?: Date;
+      maxAttempts?: number;
     }
   ): Promise<string> {
-    const jobId = `email:${Date.now()}:${Math.random().toString(36).substr(2, 9)}`
+    const jobId = `email:${Date.now()}:${Math.random().toString(36).substr(2, 9)}`;
 
     const job: EmailJob = {
       id: jobId,
@@ -61,87 +61,103 @@ export class EmailQueue {
       maxAttempts: options?.maxAttempts || 3,
       createdAt: new Date().toISOString(),
       scheduledFor: options?.scheduledFor?.toISOString(),
-      status: 'pending'
-    }
+      status: "pending",
+    };
 
     // Store in Redis
     await redisClient.set(
       `email:job:${jobId}`,
       JSON.stringify(job),
       86400 // 24 hours TTL
-    )
+    );
 
     // Add to pending queue
-    const queueKey = 'email:queue:pending'
-    const score = options?.scheduledFor?.getTime() || Date.now()
+    const queueKey = "email:queue:pending";
+    const score = options?.scheduledFor?.getTime() || Date.now();
 
     // Use sorted set for scheduled delivery
-    await this.addToSortedSet(queueKey, jobId, score)
+    await this.addToSortedSet(queueKey, jobId, score);
 
-    console.log(`📧 Email job queued: ${jobId} (${type} to ${to})`)
+    console.log(`📧 Email job queued: ${jobId} (${type} to ${to})`);
 
-    return jobId
+    return jobId;
   }
 
   /**
    * Add to sorted set (fallback implementation)
    */
-  private async addToSortedSet(key: string, member: string, score: number): Promise<void> {
+  private async addToSortedSet(
+    key: string,
+    member: string,
+    score: number
+  ): Promise<void> {
     // Get existing set
-    const existing = await redisClient.get(key)
-    const set: Array<{ member: string; score: number }> = existing ? JSON.parse(existing) : []
+    const existing = await redisClient.get(key);
+    const set: Array<{ member: string; score: number }> = existing
+      ? JSON.parse(existing)
+      : [];
 
     // Add new member
-    set.push({ member, score })
+    set.push({ member, score });
 
     // Sort by score
-    set.sort((a, b) => a.score - b.score)
+    set.sort((a, b) => a.score - b.score);
 
     // Save back
-    await redisClient.set(key, JSON.stringify(set))
+    await redisClient.set(key, JSON.stringify(set));
   }
 
   /**
    * Get from sorted set
    */
-  private async getFromSortedSet(key: string, maxScore: number, limit: number): Promise<string[]> {
-    const existing = await redisClient.get(key)
-    if (!existing) return []
+  private async getFromSortedSet(
+    key: string,
+    maxScore: number,
+    limit: number
+  ): Promise<string[]> {
+    const existing = await redisClient.get(key);
+    if (!existing) return [];
 
-    const set: Array<{ member: string; score: number }> = JSON.parse(existing)
+    const set: Array<{ member: string; score: number }> = JSON.parse(existing);
 
     // Filter by score and limit
     const filtered = set
       .filter(item => item.score <= maxScore)
       .slice(0, limit)
-      .map(item => item.member)
+      .map(item => item.member);
 
     // Remove from set
-    const remaining = set.filter(item => item.score > maxScore || !filtered.includes(item.member))
-    await redisClient.set(key, JSON.stringify(remaining))
+    const remaining = set.filter(
+      item => item.score > maxScore || !filtered.includes(item.member)
+    );
+    await redisClient.set(key, JSON.stringify(remaining));
 
-    return filtered
+    return filtered;
   }
 
   /**
    * Process pending emails
    */
   private async processPendingEmails(): Promise<void> {
-    if (this.processing) return
-    this.processing = true
+    if (this.processing) return;
+    this.processing = true;
 
     try {
       // Get pending jobs (scheduled for now or earlier)
-      const now = Date.now()
-      const jobIds = await this.getFromSortedSet('email:queue:pending', now, 10)
+      const now = Date.now();
+      const jobIds = await this.getFromSortedSet(
+        "email:queue:pending",
+        now,
+        10
+      );
 
       for (const jobId of jobIds) {
-        await this.processJob(jobId)
+        await this.processJob(jobId);
       }
     } catch (error) {
-      console.error('❌ Error processing email queue:', error)
+      console.error("❌ Error processing email queue:", error);
     } finally {
-      this.processing = false
+      this.processing = false;
     }
   }
 
@@ -151,70 +167,72 @@ export class EmailQueue {
   private async processJob(jobId: string): Promise<void> {
     try {
       // Get job data
-      const jobData = await redisClient.get(`email:job:${jobId}`)
+      const jobData = await redisClient.get(`email:job:${jobId}`);
       if (!jobData) {
-        console.warn(`⚠️ Email job not found: ${jobId}`)
-        return
+        console.warn(`⚠️ Email job not found: ${jobId}`);
+        return;
       }
 
-      const job: EmailJob = JSON.parse(jobData)
+      const job: EmailJob = JSON.parse(jobData);
 
       // Skip if already processing/completed
-      if (job.status === 'processing' || job.status === 'completed') {
-        return
+      if (job.status === "processing" || job.status === "completed") {
+        return;
       }
 
       // Mark as processing
-      job.status = 'processing'
-      job.attempts++
-      await redisClient.set(`email:job:${jobId}`, JSON.stringify(job))
+      job.status = "processing";
+      job.attempts++;
+      await redisClient.set(`email:job:${jobId}`, JSON.stringify(job));
 
-      console.log(`📤 Processing email job: ${jobId} (attempt ${job.attempts}/${job.maxAttempts})`)
+      console.log(
+        `📤 Processing email job: ${jobId} (attempt ${job.attempts}/${job.maxAttempts})`
+      );
 
       // Send email based on type
-      const result = await this.sendEmailByType(job)
+      const result = await this.sendEmailByType(job);
 
       if (result.success) {
         // Mark as completed
-        job.status = 'completed'
-        await redisClient.set(`email:job:${jobId}`, JSON.stringify(job))
-        console.log(`✅ Email sent successfully: ${jobId}`)
+        job.status = "completed";
+        await redisClient.set(`email:job:${jobId}`, JSON.stringify(job));
+        console.log(`✅ Email sent successfully: ${jobId}`);
       } else {
-        throw new Error(result.error || 'Failed to send email')
+        throw new Error(result.error || "Failed to send email");
       }
     } catch (error: any) {
-      console.error(`❌ Error processing email job ${jobId}:`, error)
+      console.error(`❌ Error processing email job ${jobId}:`, error);
 
       // Get job data again
-      const jobData = await redisClient.get(`email:job:${jobId}`)
-      if (!jobData) return
+      const jobData = await redisClient.get(`email:job:${jobId}`);
+      if (!jobData) return;
 
-      const job: EmailJob = JSON.parse(jobData)
+      const job: EmailJob = JSON.parse(jobData);
 
       // Check if we should retry
       if (job.attempts < job.maxAttempts) {
         // Retry with exponential backoff
-        const retryDelay = Math.min(1000 * Math.pow(2, job.attempts), 60000) // Max 1 minute
-        const retryTime = Date.now() + retryDelay
+        const retryDelay = Math.min(1000 * Math.pow(2, job.attempts), 60000); // Max 1 minute
+        const retryTime = Date.now() + retryDelay;
 
-        job.status = 'pending'
-        job.error = error.message
-        await redisClient.set(`email:job:${jobId}`, JSON.stringify(job))
+        job.status = "pending";
+        job.error = error.message;
+        await redisClient.set(`email:job:${jobId}`, JSON.stringify(job));
 
         // Re-queue with delay
-        await this.addToSortedSet('email:queue:pending', jobId, retryTime)
+        await this.addToSortedSet("email:queue:pending", jobId, retryTime);
 
-        console.log(`🔄 Email job will retry in ${retryDelay}ms: ${jobId}`)
+        console.log(`🔄 Email job will retry in ${retryDelay}ms: ${jobId}`);
       } else {
         // Max attempts reached, mark as failed
-        job.status = 'failed'
-        job.error = error.message
-        await redisClient.set(`email:job:${jobId}`, JSON.stringify(job))
+        job.status = "failed";
+        job.error = error.message;
+        await redisClient.set(`email:job:${jobId}`, JSON.stringify(job));
 
-        console.error(`💀 Email job failed permanently: ${jobId}`)
+        console.error(`💀 Email job failed permanently: ${jobId}`);
 
         // Move to dead letter queue
-        await this.addToSortedSet('email:queue:failed', jobId, Date.now())
+        await this.addToSortedSet("email:queue:failed", jobId, Date.now());
       }
     }
   }
@@ -224,45 +242,45 @@ export class EmailQueue {
    */
   private async sendEmailByType(job: EmailJob): Promise<EmailResult> {
     switch (job.type) {
-      case 'order_confirmation':
-        return sendOrderConfirmation(job.to, job.data)
+      case "order_confirmation":
+        return sendOrderConfirmation(job.to, job.data);
 
-      case 'delivery_notification':
-        return sendDeliveryNotification(job.to, job.data)
+      case "delivery_notification":
+        return sendDeliveryNotification(job.to, job.data);
 
-      case 'invoice':
-        return sendInvoiceEmail(job.to, job.data)
+      case "invoice":
+        return sendInvoiceEmail(job.to, job.data);
 
-      case 'password_reset':
-        return sendPasswordResetEmail(job.to, job.data)
+      case "password_reset":
+        return sendPasswordResetEmail(job.to, job.data);
 
-      case '2fa_setup':
-        return send2FASetupEmail(job.to, job.data)
+      case "2fa_setup":
+        return send2FASetupEmail(job.to, job.data);
 
-      case 'security_alert':
-        return sendSecurityAlert(job.to, job.data)
+      case "security_alert":
+        return sendSecurityAlert(job.to, job.data);
 
-      case 'design_approval':
-        return sendDesignApprovalRequest(job.to, job.data)
+      case "design_approval":
+        return sendDesignApprovalRequest(job.to, job.data);
 
-      case 'payment_reminder':
-        return sendPaymentReminder(job.to, job.data)
+      case "payment_reminder":
+        return sendPaymentReminder(job.to, job.data);
 
-      case 'qc_failure':
-        return sendQCFailureAlert(job.to, job.data)
+      case "qc_failure":
+        return sendQCFailureAlert(job.to, job.data);
 
-      case 'custom':
+      case "custom":
         return sendEmail({
           to: job.to,
           subject: job.data.subject,
           html: job.data.html,
           text: job.data.text,
           from: job.data.from,
-          reply_to: job.data.reply_to
-        })
+          reply_to: job.data.reply_to,
+        });
 
       default:
-        throw new Error(`Unknown email type: ${job.type}`)
+        throw new Error(`Unknown email type: ${job.type}`);
     }
   }
 
@@ -272,10 +290,10 @@ export class EmailQueue {
   private startProcessing(): void {
     // Process queue every 5 seconds
     this.processingInterval = setInterval(() => {
-      this.processPendingEmails()
-    }, 5000)
+      this.processPendingEmails();
+    }, 5000);
 
-    console.log('📬 Email queue processor started')
+    console.log("📬 Email queue processor started");
   }
 
   /**
@@ -283,55 +301,55 @@ export class EmailQueue {
    */
   stopProcessing(): void {
     if (this.processingInterval) {
-      clearInterval(this.processingInterval)
-      this.processingInterval = null
+      clearInterval(this.processingInterval);
+      this.processingInterval = null;
     }
-    console.log('📭 Email queue processor stopped')
+    console.log("📭 Email queue processor stopped");
   }
 
   /**
    * Get queue statistics
    */
   async getStats(): Promise<{
-    pending: number
-    processing: number
-    completed: number
-    failed: number
+    pending: number;
+    processing: number;
+    completed: number;
+    failed: number;
   }> {
-    const pendingData = await redisClient.get('email:queue:pending')
-    const pending = pendingData ? JSON.parse(pendingData).length : 0
+    const pendingData = await redisClient.get("email:queue:pending");
+    const pending = pendingData ? JSON.parse(pendingData).length : 0;
 
-    const failedData = await redisClient.get('email:queue:failed')
-    const failed = failedData ? JSON.parse(failedData).length : 0
+    const failedData = await redisClient.get("email:queue:failed");
+    const failed = failedData ? JSON.parse(failedData).length : 0;
 
     return {
       pending,
       processing: 0, // Would need additional tracking
       completed: 0, // Would need additional tracking
-      failed
-    }
+      failed,
+    };
   }
 
   /**
    * Retry failed job
    */
   async retryFailedJob(jobId: string): Promise<void> {
-    const jobData = await redisClient.get(`email:job:${jobId}`)
+    const jobData = await redisClient.get(`email:job:${jobId}`);
     if (!jobData) {
-      throw new Error('Job not found')
+      throw new Error("Job not found");
     }
 
-    const job: EmailJob = JSON.parse(jobData)
+    const job: EmailJob = JSON.parse(jobData);
 
     // Reset job
-    job.status = 'pending'
-    job.attempts = 0
-    job.error = undefined
+    job.status = "pending";
+    job.attempts = 0;
+    job.error = undefined;
 
-    await redisClient.set(`email:job:${jobId}`, JSON.stringify(job))
-    await this.addToSortedSet('email:queue:pending', jobId, Date.now())
+    await redisClient.set(`email:job:${jobId}`, JSON.stringify(job));
+    await this.addToSortedSet("email:queue:pending", jobId, Date.now());
 
-    console.log(`🔄 Retrying failed email job: ${jobId}`)
+    console.log(`🔄 Retrying failed email job: ${jobId}`);
   }
 }
 
@@ -341,20 +359,23 @@ import {
   sendDeliveryNotification,
   sendInvoiceEmail,
   sendPasswordResetEmail,
-  send2FASetupEmail
-} from '@/lib/email'
+  send2FASetupEmail,
+} from "@/lib/email";
 
 /**
  * Additional email templates
  */
 
-async function sendSecurityAlert(to: string, data: {
-  user_name: string
-  alert_type: string
-  details: string
-  timestamp: string
-  ip_address?: string
-}): Promise<EmailResult> {
+async function sendSecurityAlert(
+  to: string,
+  data: {
+    user_name: string;
+    alert_type: string;
+    details: string;
+    timestamp: string;
+    ip_address?: string;
+  }
+): Promise<EmailResult> {
   const html = `
 <!DOCTYPE html>
 <html>
@@ -379,29 +400,32 @@ async function sendSecurityAlert(to: string, data: {
         <h3>⚠️ ${data.alert_type}</h3>
         <p>${data.details}</p>
         <p><strong>Time:</strong> ${data.timestamp}</p>
-        ${data.ip_address ? `<p><strong>IP Address:</strong> ${data.ip_address}</p>` : ''}
+        ${data.ip_address ? `<p><strong>IP Address:</strong> ${data.ip_address}</p>` : ""}
       </div>
       <p>If this was not you, please contact support immediately.</p>
       <p><strong>Action Required:</strong> Review your account security settings.</p>
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
     subject: `Security Alert: ${data.alert_type} - Ashley AI`,
-    html
-  })
+    html,
+  });
 }
 
-async function sendDesignApprovalRequest(to: string, data: {
-  client_name: string
-  design_name: string
-  order_number: string
-  approval_link: string
-  expires_at: string
-}): Promise<EmailResult> {
+async function sendDesignApprovalRequest(
+  to: string,
+  data: {
+    client_name: string;
+    design_name: string;
+    order_number: string;
+    approval_link: string;
+    expires_at: string;
+  }
+): Promise<EmailResult> {
   const html = `
 <!DOCTYPE html>
 <html>
@@ -429,23 +453,26 @@ async function sendDesignApprovalRequest(to: string, data: {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
     subject: `Design Approval Required - ${data.design_name}`,
-    html
-  })
+    html,
+  });
 }
 
-async function sendPaymentReminder(to: string, data: {
-  client_name: string
-  invoice_number: string
-  amount: string
-  due_date: string
-  days_overdue?: number
-}): Promise<EmailResult> {
-  const isOverdue = data.days_overdue && data.days_overdue > 0
+async function sendPaymentReminder(
+  to: string,
+  data: {
+    client_name: string;
+    invoice_number: string;
+    amount: string;
+    due_date: string;
+    days_overdue?: number;
+  }
+): Promise<EmailResult> {
+  const isOverdue = data.days_overdue && data.days_overdue > 0;
 
   const html = `
 <!DOCTYPE html>
@@ -454,20 +481,21 @@ async function sendPaymentReminder(to: string, data: {
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: ${isOverdue ? '#dc2626' : '#2563eb'}; color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+    .header { background: ${isOverdue ? "#dc2626" : "#2563eb"}; color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
     .content { background: #fff; padding: 30px; border: 1px solid #e5e5e5; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <h1>💰 Payment ${isOverdue ? 'Overdue' : 'Reminder'}</h1>
+      <h1>💰 Payment ${isOverdue ? "Overdue" : "Reminder"}</h1>
     </div>
     <div class="content">
       <p>Hi <strong>${data.client_name}</strong>,</p>
-      ${isOverdue
-        ? `<p style="color: #dc2626;">⚠️ Your payment is <strong>${data.days_overdue} days overdue</strong>.</p>`
-        : `<p>This is a friendly reminder about your upcoming payment.</p>`
+      ${
+        isOverdue
+          ? `<p style="color: #dc2626;">⚠️ Your payment is <strong>${data.days_overdue} days overdue</strong>.</p>`
+          : `<p>This is a friendly reminder about your upcoming payment.</p>`
       }
       <ul>
         <li><strong>Invoice:</strong> ${data.invoice_number}</li>
@@ -478,22 +506,25 @@ async function sendPaymentReminder(to: string, data: {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
-    subject: `Payment ${isOverdue ? 'Overdue' : 'Reminder'} - ${data.invoice_number}`,
-    html
-  })
+    subject: `Payment ${isOverdue ? "Overdue" : "Reminder"} - ${data.invoice_number}`,
+    html,
+  });
 }
 
-async function sendQCFailureAlert(to: string, data: {
-  order_number: string
-  qc_inspector: string
-  defect_count: number
-  severity: string
-  details: string
-}): Promise<EmailResult> {
+async function sendQCFailureAlert(
+  to: string,
+  data: {
+    order_number: string;
+    qc_inspector: string;
+    defect_count: number;
+    severity: string;
+    details: string;
+  }
+): Promise<EmailResult> {
   const html = `
 <!DOCTYPE html>
 <html>
@@ -525,14 +556,14 @@ async function sendQCFailureAlert(to: string, data: {
     </div>
   </div>
 </body>
-</html>`
+</html>`;
 
   return sendEmail({
     to,
     subject: `QC Alert: Order ${data.order_number} Failed Inspection`,
-    html
-  })
+    html,
+  });
 }
 
 // Export singleton instance
-export const emailQueue = EmailQueue.getInstance()
+export const emailQueue = EmailQueue.getInstance();

@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@ash-ai/ui/card'
-import { Button } from '@ash-ai/ui/button'
-import { Badge } from '@ash-ai/ui/badge'
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@ash-ai/ui/card";
+import { Button } from "@ash-ai/ui/button";
+import { Badge } from "@ash-ai/ui/badge";
 import {
   ZoomIn,
   ZoomOut,
@@ -13,92 +13,99 @@ import {
   Eye,
   Grid,
   Move,
-  Image as ImageIcon
-} from 'lucide-react'
+  Image as ImageIcon,
+} from "lucide-react";
 
 interface DesignFile {
-  mockup_url?: string
-  prod_url?: string
-  separations?: string[]
-  dst_url?: string
+  mockup_url?: string;
+  prod_url?: string;
+  separations?: string[];
+  dst_url?: string;
 }
 
 interface DesignViewerProps {
-  files: DesignFile
-  designName: string
-  version: number
-  className?: string
+  files: DesignFile;
+  designName: string;
+  version: number;
+  className?: string;
 }
 
-export function DesignViewer({ files, designName, version, className = '' }: DesignViewerProps) {
-  const [zoom, setZoom] = useState(100)
-  const [rotation, setRotation] = useState(0)
-  const [selectedView, setSelectedView] = useState<'mockup' | 'production' | 'separations'>('mockup')
-  const [separationIndex, setSeparationIndex] = useState(0)
-  const [fullscreen, setFullscreen] = useState(false)
-  const [imageError, setImageError] = useState(false)
-  const [imageLoading, setImageLoading] = useState(true)
+export function DesignViewer({
+  files,
+  designName,
+  version,
+  className = "",
+}: DesignViewerProps) {
+  const [zoom, setZoom] = useState(100);
+  const [rotation, setRotation] = useState(0);
+  const [selectedView, setSelectedView] = useState<
+    "mockup" | "production" | "separations"
+  >("mockup");
+  const [separationIndex, setSeparationIndex] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   const getCurrentImageUrl = () => {
     switch (selectedView) {
-      case 'mockup':
-        return files.mockup_url
-      case 'production':
-        return files.prod_url
-      case 'separations':
-        return files.separations?.[separationIndex]
+      case "mockup":
+        return files.mockup_url;
+      case "production":
+        return files.prod_url;
+      case "separations":
+        return files.separations?.[separationIndex];
       default:
-        return files.mockup_url
+        return files.mockup_url;
     }
-  }
+  };
 
   const handleZoomIn = () => {
-    setZoom(prev => Math.min(200, prev + 25))
-  }
+    setZoom(prev => Math.min(200, prev + 25));
+  };
 
   const handleZoomOut = () => {
-    setZoom(prev => Math.max(25, prev - 25))
-  }
+    setZoom(prev => Math.max(25, prev - 25));
+  };
 
   const handleRotate = () => {
-    setRotation(prev => (prev + 90) % 360)
-  }
+    setRotation(prev => (prev + 90) % 360);
+  };
 
   const handleReset = () => {
-    setZoom(100)
-    setRotation(0)
-  }
+    setZoom(100);
+    setRotation(0);
+  };
 
   const handleImageLoad = () => {
-    setImageLoading(false)
-    setImageError(false)
-  }
+    setImageLoading(false);
+    setImageError(false);
+  };
 
   const handleImageError = () => {
-    setImageLoading(false)
-    setImageError(true)
-  }
+    setImageLoading(false);
+    setImageError(true);
+  };
 
-  const currentImageUrl = getCurrentImageUrl()
+  const currentImageUrl = getCurrentImageUrl();
 
   return (
     <Card className={className}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <ImageIcon className="w-5 h-5" />
+            <ImageIcon className="h-5 w-5" />
             Design Viewer
             <Badge variant="outline">v{version}</Badge>
           </CardTitle>
-          
+
           {/* View Controls */}
           <div className="flex items-center gap-2">
-            <div className="flex border rounded-lg p-1">
+            <div className="flex rounded-lg border p-1">
               {files.mockup_url && (
                 <Button
                   size="sm"
-                  variant={selectedView === 'mockup' ? 'default' : 'ghost'}
-                  onClick={() => setSelectedView('mockup')}
+                  variant={selectedView === "mockup" ? "default" : "ghost"}
+                  onClick={() => setSelectedView("mockup")}
                   className="h-8 px-3"
                 >
                   Mockup
@@ -107,8 +114,8 @@ export function DesignViewer({ files, designName, version, className = '' }: Des
               {files.prod_url && (
                 <Button
                   size="sm"
-                  variant={selectedView === 'production' ? 'default' : 'ghost'}
-                  onClick={() => setSelectedView('production')}
+                  variant={selectedView === "production" ? "default" : "ghost"}
+                  onClick={() => setSelectedView("production")}
                   className="h-8 px-3"
                 >
                   Production
@@ -117,8 +124,8 @@ export function DesignViewer({ files, designName, version, className = '' }: Des
               {files.separations && files.separations.length > 0 && (
                 <Button
                   size="sm"
-                  variant={selectedView === 'separations' ? 'default' : 'ghost'}
-                  onClick={() => setSelectedView('separations')}
+                  variant={selectedView === "separations" ? "default" : "ghost"}
+                  onClick={() => setSelectedView("separations")}
                   className="h-8 px-3"
                 >
                   Separations
@@ -128,71 +135,96 @@ export function DesignViewer({ files, designName, version, className = '' }: Des
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Separations Navigation */}
-        {selectedView === 'separations' && files.separations && files.separations.length > 1 && (
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <span className="text-sm font-medium">
-              Separation {separationIndex + 1} of {files.separations.length}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setSeparationIndex(prev => Math.max(0, prev - 1))}
-                disabled={separationIndex === 0}
-              >
-                Previous
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setSeparationIndex(prev => Math.min(files.separations!.length - 1, prev + 1))}
-                disabled={separationIndex === files.separations.length - 1}
-              >
-                Next
-              </Button>
+        {selectedView === "separations" &&
+          files.separations &&
+          files.separations.length > 1 && (
+            <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3">
+              <span className="text-sm font-medium">
+                Separation {separationIndex + 1} of {files.separations.length}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    setSeparationIndex(prev => Math.max(0, prev - 1))
+                  }
+                  disabled={separationIndex === 0}
+                >
+                  Previous
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    setSeparationIndex(prev =>
+                      Math.min(files.separations!.length - 1, prev + 1)
+                    )
+                  }
+                  disabled={separationIndex === files.separations.length - 1}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Image Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={handleZoomOut} disabled={zoom <= 25}>
-              <ZoomOut className="w-4 h-4" />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleZoomOut}
+              disabled={zoom <= 25}
+            >
+              <ZoomOut className="h-4 w-4" />
             </Button>
-            
-            <span className="text-sm font-mono min-w-[60px] text-center">
+
+            <span className="min-w-[60px] text-center font-mono text-sm">
               {zoom}%
             </span>
-            
-            <Button size="sm" variant="outline" onClick={handleZoomIn} disabled={zoom >= 200}>
-              <ZoomIn className="w-4 h-4" />
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleZoomIn}
+              disabled={zoom >= 200}
+            >
+              <ZoomIn className="h-4 w-4" />
             </Button>
-            
+
             <Button size="sm" variant="outline" onClick={handleRotate}>
-              <RotateCw className="w-4 h-4" />
+              <RotateCw className="h-4 w-4" />
             </Button>
-            
+
             <Button size="sm" variant="outline" onClick={handleReset}>
               Reset
             </Button>
           </div>
-          
+
           <div className="flex gap-2">
             {currentImageUrl && (
               <>
                 <Button size="sm" variant="outline" asChild>
-                  <a href={currentImageUrl} target="_blank" rel="noopener noreferrer">
-                    <Eye className="w-4 h-4 mr-1" />
+                  <a
+                    href={currentImageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Eye className="mr-1 h-4 w-4" />
                     View Full
                   </a>
                 </Button>
                 <Button size="sm" variant="outline" asChild>
-                  <a href={currentImageUrl} download={`${designName}-v${version}-${selectedView}`}>
-                    <Download className="w-4 h-4 mr-1" />
+                  <a
+                    href={currentImageUrl}
+                    download={`${designName}-v${version}-${selectedView}`}
+                  >
+                    <Download className="mr-1 h-4 w-4" />
                     Download
                   </a>
                 </Button>
@@ -202,37 +234,37 @@ export function DesignViewer({ files, designName, version, className = '' }: Des
         </div>
 
         {/* Image Display */}
-        <div className="relative border-2 border-dashed border-gray-200 rounded-lg overflow-hidden bg-gray-50 min-h-[400px] flex items-center justify-center">
+        <div className="relative flex min-h-[400px] items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-gray-200 bg-gray-50">
           {currentImageUrl ? (
-            <div className="relative w-full h-full flex items-center justify-center p-4">
+            <div className="relative flex h-full w-full items-center justify-center p-4">
               {imageLoading && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
                 </div>
               )}
-              
+
               {!imageError ? (
                 <img
                   src={currentImageUrl}
                   alt={`${designName} - ${selectedView}`}
-                  className="max-w-full max-h-full object-contain transition-transform duration-200 ease-in-out"
+                  className="max-h-full max-w-full object-contain transition-transform duration-200 ease-in-out"
                   style={{
                     transform: `scale(${zoom / 100}) rotate(${rotation}deg)`,
-                    transformOrigin: 'center center'
+                    transformOrigin: "center center",
                   }}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
                 />
               ) : (
-                <div className="text-center py-12">
-                  <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-2">Failed to load image</p>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
+                <div className="py-12 text-center">
+                  <ImageIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                  <p className="mb-2 text-gray-500">Failed to load image</p>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     onClick={() => {
-                      setImageError(false)
-                      setImageLoading(true)
+                      setImageError(false);
+                      setImageLoading(true);
                     }}
                   >
                     Retry
@@ -241,20 +273,22 @@ export function DesignViewer({ files, designName, version, className = '' }: Des
               )}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">No image available for {selectedView}</p>
+            <div className="py-12 text-center">
+              <ImageIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <p className="text-gray-500">
+                No image available for {selectedView}
+              </p>
             </div>
           )}
         </div>
 
         {/* File Information */}
-        <div className="text-sm text-muted-foreground space-y-1">
+        <div className="text-muted-foreground space-y-1 text-sm">
           <div className="flex justify-between">
             <span>Current View:</span>
-            <span className="capitalize font-medium">{selectedView}</span>
+            <span className="font-medium capitalize">{selectedView}</span>
           </div>
-          {selectedView === 'separations' && files.separations && (
+          {selectedView === "separations" && files.separations && (
             <div className="flex justify-between">
               <span>Total Separations:</span>
               <span className="font-medium">{files.separations.length}</span>
@@ -263,50 +297,59 @@ export function DesignViewer({ files, designName, version, className = '' }: Des
         </div>
 
         {/* Quick Actions */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t">
+        <div className="flex flex-wrap gap-2 border-t pt-2">
           {files.mockup_url && (
             <Button size="sm" variant="outline" asChild>
-              <a href={files.mockup_url} download={`${designName}-v${version}-mockup`}>
-                <Download className="w-3 h-3 mr-1" />
+              <a
+                href={files.mockup_url}
+                download={`${designName}-v${version}-mockup`}
+              >
+                <Download className="mr-1 h-3 w-3" />
                 Mockup
               </a>
             </Button>
           )}
           {files.prod_url && (
             <Button size="sm" variant="outline" asChild>
-              <a href={files.prod_url} download={`${designName}-v${version}-production`}>
-                <Download className="w-3 h-3 mr-1" />
+              <a
+                href={files.prod_url}
+                download={`${designName}-v${version}-production`}
+              >
+                <Download className="mr-1 h-3 w-3" />
                 Production File
               </a>
             </Button>
           )}
           {files.dst_url && (
             <Button size="sm" variant="outline" asChild>
-              <a href={files.dst_url} download={`${designName}-v${version}-embroidery`}>
-                <Download className="w-3 h-3 mr-1" />
+              <a
+                href={files.dst_url}
+                download={`${designName}-v${version}-embroidery`}
+              >
+                <Download className="mr-1 h-3 w-3" />
                 Embroidery File
               </a>
             </Button>
           )}
           {files.separations && files.separations.length > 0 && (
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               onClick={() => {
                 files.separations?.forEach((url, index) => {
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = `${designName}-v${version}-separation-${index + 1}`
-                  a.click()
-                })
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `${designName}-v${version}-separation-${index + 1}`;
+                  a.click();
+                });
               }}
             >
-              <Download className="w-3 h-3 mr-1" />
+              <Download className="mr-1 h-3 w-3" />
               All Separations
             </Button>
           )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

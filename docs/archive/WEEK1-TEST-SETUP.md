@@ -26,6 +26,7 @@ This guide covers the Week 1 test infrastructure improvements for Ashley AI, inc
 **File**: `docker-compose.test.yml`
 
 Provides isolated test environment with:
+
 - PostgreSQL 16 (port 5433)
 - Redis 7 (port 6380)
 - Separate from development databases
@@ -36,6 +37,7 @@ Provides isolated test environment with:
 **File**: `tests/setup/seed-test-db.ts`
 
 Seeds test database with:
+
 - 3 test users (admin, manager, operator)
 - 3 employees with different salary types
 - 2 clients and 2 brands
@@ -46,9 +48,11 @@ Seeds test database with:
 ### 🧪 Integration Test Suites
 
 #### **Orders API Tests**
+
 **File**: `tests/integration/orders-api.test.ts`
 
 17 comprehensive tests covering:
+
 - GET /api/orders - List, pagination, filtering
 - POST /api/orders - Create with validation
 - GET /api/orders/:id - Details retrieval
@@ -57,9 +61,11 @@ Seeds test database with:
 - Performance tests
 
 #### **Finance API Tests**
+
 **File**: `tests/integration/finance-api.test.ts`
 
 14 comprehensive tests covering:
+
 - GET /api/finance/stats - Financial statistics
 - GET /api/finance/invoices - List and filters
 - POST /api/finance/invoices - Creation and validation
@@ -68,9 +74,11 @@ Seeds test database with:
 - Performance tests
 
 #### **HR API Tests**
+
 **File**: `tests/integration/hr-api.test.ts`
 
 15 comprehensive tests covering:
+
 - GET /api/hr/employees - List and filters
 - POST /api/hr/employees - Creation and validation
 - GET /api/hr/attendance - Attendance logs
@@ -86,6 +94,7 @@ Seeds test database with:
 **File**: `.github/workflows/test.yml`
 
 5 jobs running in parallel:
+
 1. **Unit & Integration Tests** - With PostgreSQL and Redis services
 2. **E2E Tests** - With real server
 3. **Security Tests** - Authentication and security validation
@@ -98,6 +107,7 @@ Seeds test database with:
 **Linux/Mac**: `scripts/test-with-db.sh`
 
 Automated test runner that:
+
 1. Starts Docker containers
 2. Waits for databases
 3. Runs migrations
@@ -172,16 +182,19 @@ pnpm test:db:down
 ## All-in-One Command
 
 **Linux/Mac**:
+
 ```bash
 pnpm test:with-db
 ```
 
 **Windows** (PowerShell):
+
 ```powershell
 .\scripts\test-with-db.bat
 ```
 
 This command:
+
 1. Starts databases
 2. Runs migrations
 3. Seeds data
@@ -254,11 +267,13 @@ NODE_ENV="test"
 Some tests require a running development server:
 
 ### Terminal 1: Start Dev Server
+
 ```bash
 pnpm --filter @ash/admin dev
 ```
 
 ### Terminal 2: Run Tests
+
 ```bash
 # Security tests
 pnpm test:security
@@ -276,35 +291,35 @@ pnpm test tests/integration/api-real.test.ts tests/security/
 
 ### Test Users
 
-| Email | Password | Role |
-|-------|----------|------|
-| admin@ashleyai.com | password123 | ADMIN |
-| manager@ashleyai.com | password123 | MANAGER |
+| Email                 | Password    | Role     |
+| --------------------- | ----------- | -------- |
+| admin@ashleyai.com    | password123 | ADMIN    |
+| manager@ashleyai.com  | password123 | MANAGER  |
 | operator@ashleyai.com | password123 | OPERATOR |
 
 ### Test Employees
 
-| Number | Name | Position | Salary Type |
-|--------|------|----------|-------------|
-| EMP-001 | John Doe | Sewing Operator | PIECE |
-| EMP-002 | Jane Smith | Quality Inspector | HOURLY |
-| EMP-003 | Mike Johnson | Cutting Operator | DAILY |
+| Number  | Name         | Position          | Salary Type |
+| ------- | ------------ | ----------------- | ----------- |
+| EMP-001 | John Doe     | Sewing Operator   | PIECE       |
+| EMP-002 | Jane Smith   | Quality Inspector | HOURLY      |
+| EMP-003 | Mike Johnson | Cutting Operator  | DAILY       |
 
 ### Test Clients
 
-| Name | Contact |
-|------|---------|
-| Test Client Inc. | john@testclient.com |
-| Sample Company Ltd. | jane@sampleco.com |
+| Name                | Contact             |
+| ------------------- | ------------------- |
+| Test Client Inc.    | john@testclient.com |
+| Sample Company Ltd. | jane@sampleco.com   |
 
 ### Test Orders
 
-| Order Number | Status | Quantity | Priority |
-|--------------|--------|----------|----------|
-| ORD-TEST-001 | PENDING | 1000 | NORMAL |
-| ORD-TEST-002 | IN_PROGRESS | 500 | HIGH |
-| ORD-TEST-003 | COMPLETED | 750 | NORMAL |
-| ORD-TEST-004 | PENDING | 200 | URGENT |
+| Order Number | Status      | Quantity | Priority |
+| ------------ | ----------- | -------- | -------- |
+| ORD-TEST-001 | PENDING     | 1000     | NORMAL   |
+| ORD-TEST-002 | IN_PROGRESS | 500      | HIGH     |
+| ORD-TEST-003 | COMPLETED   | 750      | NORMAL   |
+| ORD-TEST-004 | PENDING     | 200      | URGENT   |
 
 ---
 
@@ -313,10 +328,12 @@ pnpm test tests/integration/api-real.test.ts tests/security/
 ### GitHub Actions
 
 Tests run automatically on:
+
 - Push to master/main/develop
 - Pull requests to master/main/develop
 
 **Workflow includes**:
+
 1. Unit tests with coverage
 2. Integration tests with real database
 3. E2E tests with server
@@ -326,6 +343,7 @@ Tests run automatically on:
 ### View Results
 
 Check GitHub Actions tab in repository for:
+
 - Test results
 - Coverage reports
 - Performance metrics
@@ -338,6 +356,7 @@ Check GitHub Actions tab in repository for:
 ### Docker Issues
 
 **Problem**: Docker not running
+
 ```bash
 # Check if Docker is running
 docker info
@@ -348,6 +367,7 @@ sudo systemctl start docker
 ```
 
 **Problem**: Port conflicts
+
 ```bash
 # Check if ports are in use
 netstat -an | findstr :5433  # Windows
@@ -359,6 +379,7 @@ lsof -i :5433                 # Mac/Linux
 ### Database Issues
 
 **Problem**: Migration failed
+
 ```bash
 # Reset database
 pnpm test:db:down
@@ -371,6 +392,7 @@ npx prisma migrate deploy
 ```
 
 **Problem**: Seed data failed
+
 ```bash
 # Clear and reseed
 cd packages/database
@@ -382,6 +404,7 @@ pnpm test:db:seed
 ### Test Issues
 
 **Problem**: Tests timing out
+
 ```bash
 # Increase timeout in test file
 it('test name', async () => {
@@ -390,6 +413,7 @@ it('test name', async () => {
 ```
 
 **Problem**: Server not ready for security tests
+
 ```bash
 # Wait longer after starting server
 pnpm --filter @ash/admin dev
@@ -399,8 +423,10 @@ pnpm test:security
 ```
 
 **Problem**: Fetch not defined
+
 - This should be fixed by jest.setup.js
 - If still occurring, check that node-fetch is installed:
+
 ```bash
 pnpm add -D -w node-fetch@2
 ```
@@ -410,6 +436,7 @@ pnpm add -D -w node-fetch@2
 ## Test Coverage Goals
 
 ### Current Status
+
 - Unit tests: 41 tests ✅
 - Integration tests (mock): 21 tests ✅
 - Integration tests (real API): 46 tests ✅ (NEW)
@@ -420,12 +447,12 @@ pnpm add -D -w node-fetch@2
 
 ### Coverage Targets
 
-| Category | Current | Target |
-|----------|---------|--------|
-| Unit Tests | 0% (mock-based) | 70% |
-| Integration Tests | 15% API coverage | 60% |
-| Security Tests | 100% (when server running) | 100% |
-| E2E Tests | Core workflows | All critical paths |
+| Category          | Current                    | Target             |
+| ----------------- | -------------------------- | ------------------ |
+| Unit Tests        | 0% (mock-based)            | 70%                |
+| Integration Tests | 15% API coverage           | 60%                |
+| Security Tests    | 100% (when server running) | 100%               |
+| E2E Tests         | Core workflows             | All critical paths |
 
 ---
 
@@ -479,6 +506,7 @@ A: Yes, but some tests may behave differently. PostgreSQL is recommended for pro
 
 **Q: How long do tests take to run?**
 A:
+
 - Unit tests: ~2 seconds
 - Integration tests (mock): ~2 seconds
 - Integration tests (real DB): ~10-15 seconds
@@ -496,6 +524,7 @@ A: Tests automatically skip if server is not running. They check for server avai
 **Week 1 Complete!** ✅
 
 All test infrastructure is now in place. The system has:
+
 - 161 total tests
 - Docker-based test environment
 - Automated CI/CD pipeline

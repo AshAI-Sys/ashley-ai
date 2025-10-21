@@ -23,6 +23,7 @@
 ## 👨‍💼 Administrator Overview
 
 As an Ashley AI Administrator, you have full control over:
+
 - System configuration
 - User accounts and permissions
 - Data management
@@ -32,6 +33,7 @@ As an Ashley AI Administrator, you have full control over:
 - Integration settings
 
 ### Admin Dashboard Access
+
 - **URL**: http://localhost:3001/admin
 - **Login**: Use admin credentials
 - **Required Role**: Administrator
@@ -43,6 +45,7 @@ As an Ashley AI Administrator, you have full control over:
 ### Initial System Configuration
 
 #### 1. Workspace Setup
+
 ```
 Navigate to: Settings → Workspace
 
@@ -56,6 +59,7 @@ Configure:
 ```
 
 #### 2. Database Configuration
+
 ```
 Location: .env file or environment variables
 
@@ -66,6 +70,7 @@ Required:
 ```
 
 #### 3. Email Settings
+
 ```
 Configure SMTP for notifications:
 - SMTP_HOST
@@ -77,6 +82,7 @@ Configure SMTP for notifications:
 ```
 
 #### 4. AI Integration (Optional)
+
 ```
 For AI Chat Assistant:
 - ANTHROPIC_API_KEY=your_claude_key
@@ -90,6 +96,7 @@ For AI Chat Assistant:
 ### Creating New Users
 
 **Step-by-Step**:
+
 1. Navigate to Admin → Users
 2. Click "New User"
 3. Fill in user details:
@@ -105,20 +112,21 @@ For AI Chat Assistant:
 
 ### User Roles Available
 
-| Role | Access Level | Key Permissions |
-|------|--------------|-----------------|
-| **Administrator** | Full system | All permissions |
-| **Manager** | Department-wide | Approve, override, reports |
-| **CSR** | Client & Orders | Create/edit orders, client management |
-| **Production** | Production floor | Update status, scan bundles |
-| **QC Inspector** | Quality Control | Inspections, defects, CAPA |
-| **Finance** | Finance module | Invoices, payments, reports |
-| **HR Staff** | HR module | Employees, attendance, payroll |
-| **Client** | Portal only | View orders, approve designs |
+| Role              | Access Level     | Key Permissions                       |
+| ----------------- | ---------------- | ------------------------------------- |
+| **Administrator** | Full system      | All permissions                       |
+| **Manager**       | Department-wide  | Approve, override, reports            |
+| **CSR**           | Client & Orders  | Create/edit orders, client management |
+| **Production**    | Production floor | Update status, scan bundles           |
+| **QC Inspector**  | Quality Control  | Inspections, defects, CAPA            |
+| **Finance**       | Finance module   | Invoices, payments, reports           |
+| **HR Staff**      | HR module        | Employees, attendance, payroll        |
+| **Client**        | Portal only      | View orders, approve designs          |
 
 ### Managing User Permissions
 
 **Role-Based Access Control (RBAC)**:
+
 ```
 Navigate to: Admin → Roles & Permissions
 
@@ -138,6 +146,7 @@ Available Permissions:
 ```
 
 **Custom Permission Sets**:
+
 1. Create new role
 2. Select permissions
 3. Assign to users
@@ -146,6 +155,7 @@ Available Permissions:
 ### Bulk User Operations
 
 **Import Users**:
+
 ```
 1. Prepare CSV file with columns:
    email, first_name, last_name, role, department
@@ -157,6 +167,7 @@ Available Permissions:
 ```
 
 **Export Users**:
+
 ```
 Admin → Users → Export → Select format (CSV/Excel)
 ```
@@ -168,6 +179,7 @@ Admin → Users → Export → Select format (CSV/Excel)
 ### General Settings
 
 #### System Preferences
+
 ```
 Settings → General
 
@@ -181,6 +193,7 @@ Settings → General
 ```
 
 #### Business Rules
+
 ```
 Settings → Business Rules
 
@@ -206,6 +219,7 @@ Finance Settings:
 ### Module Configuration
 
 #### 1. Order Management
+
 ```
 Settings → Orders
 
@@ -216,6 +230,7 @@ Settings → Orders
 ```
 
 #### 2. Production
+
 ```
 Settings → Production
 
@@ -236,6 +251,7 @@ Sewing:
 ```
 
 #### 3. Quality Control
+
 ```
 Settings → Quality Control
 
@@ -246,6 +262,7 @@ Settings → Quality Control
 ```
 
 #### 4. Finance
+
 ```
 Settings → Finance
 
@@ -263,6 +280,7 @@ Settings → Finance
 ### Security Best Practices
 
 #### 1. Password Policy
+
 ```
 Settings → Security → Password Policy
 
@@ -275,6 +293,7 @@ Requirements:
 ```
 
 #### 2. Two-Factor Authentication (2FA)
+
 ```
 Enable for sensitive roles:
 - Administrators
@@ -288,6 +307,7 @@ Settings → Security → 2FA
 ```
 
 #### 3. IP Whitelisting (Optional)
+
 ```
 Settings → Security → IP Whitelist
 
@@ -298,6 +318,7 @@ Add trusted IPs:
 ```
 
 #### 4. Audit Logging
+
 ```
 View audit logs:
 Admin → Audit Logs
@@ -313,6 +334,7 @@ Tracks:
 ### Data Security
 
 #### Field-Level Encryption
+
 ```
 Sensitive data automatically encrypted:
 - User passwords (bcrypt)
@@ -322,6 +344,7 @@ Sensitive data automatically encrypted:
 ```
 
 #### Row-Level Security (RLS)
+
 ```
 Automatic filtering by:
 - workspace_id (multi-tenant isolation)
@@ -336,6 +359,7 @@ Automatic filtering by:
 ### Regular Maintenance Tasks
 
 #### Daily
+
 - [x] Check system health dashboard
 - [x] Review error logs
 - [x] Monitor disk space
@@ -343,6 +367,7 @@ Automatic filtering by:
 - [x] Review security alerts
 
 #### Weekly
+
 - [x] Clear temporary files
 - [x] Review user activity logs
 - [x] Check database performance
@@ -350,6 +375,7 @@ Automatic filtering by:
 - [x] Review automation rules
 
 #### Monthly
+
 - [x] Database optimization (VACUUM, ANALYZE)
 - [x] Archive old data
 - [x] Review and rotate logs
@@ -357,6 +383,7 @@ Automatic filtering by:
 - [x] Security audit
 
 #### Quarterly
+
 - [x] Full system backup
 - [x] Disaster recovery test
 - [x] Performance review
@@ -366,6 +393,7 @@ Automatic filtering by:
 ### Database Maintenance
 
 #### Prisma Database Commands
+
 ```bash
 # Generate Prisma Client
 cd packages/database
@@ -385,6 +413,7 @@ npx prisma studio
 ```
 
 #### Database Optimization
+
 ```sql
 -- SQLite (Development)
 VACUUM;
@@ -398,6 +427,7 @@ REINDEX DATABASE dbname;
 ### Log Management
 
 #### View Logs
+
 ```bash
 # Application logs (if configured)
 tail -f services/ash-admin/logs/app.log
@@ -410,6 +440,7 @@ tail -f services/ash-admin/logs/access.log
 ```
 
 #### Log Rotation
+
 ```
 Configured to rotate:
 - Daily for access logs
@@ -427,6 +458,7 @@ Configured to rotate:
 **Access**: Admin → System Health
 
 **Metrics Displayed**:
+
 - Server uptime
 - CPU usage
 - Memory usage
@@ -441,6 +473,7 @@ Configured to rotate:
 #### Key Performance Indicators (KPIs)
 
 **System Performance**:
+
 ```
 - API Response Time (p95 < 500ms)
 - Database Query Time (p95 < 100ms)
@@ -450,6 +483,7 @@ Configured to rotate:
 ```
 
 **Business Metrics**:
+
 ```
 - Orders processed/day
 - Production efficiency %
@@ -461,6 +495,7 @@ Configured to rotate:
 ### Analytics & Reports
 
 #### Available Reports
+
 1. **User Activity Report**
    - Login frequency
    - Feature usage
@@ -478,6 +513,7 @@ Configured to rotate:
    - Delivery performance
 
 #### Generating Reports
+
 ```
 Admin → Reports → Select Report Type
 - Choose date range
@@ -493,7 +529,9 @@ Admin → Reports → Select Report Type
 ### Common Admin Issues
 
 #### 1. User Cannot Login
+
 **Diagnosis**:
+
 ```
 Admin → Users → Search user
 Check:
@@ -505,13 +543,16 @@ Check:
 ```
 
 **Solution**:
+
 - Reset password
 - Unlock account
 - Enable account
 - Resend verification email
 
 #### 2. Slow System Performance
+
 **Diagnosis**:
+
 ```
 Admin → System Health
 Check:
@@ -522,13 +563,16 @@ Check:
 ```
 
 **Solutions**:
+
 - Restart services if needed
 - Clear cache
 - Optimize slow queries
 - Scale resources
 
 #### 3. Module Not Working
+
 **Diagnosis**:
+
 ```
 Check:
 - Module is enabled
@@ -538,13 +582,16 @@ Check:
 ```
 
 **Solution**:
+
 - Enable module in settings
 - Grant permissions
 - Clear browser cache
 - Check error logs
 
 #### 4. Email Notifications Not Sending
+
 **Diagnosis**:
+
 ```
 Settings → Email Configuration
 Test:
@@ -555,6 +602,7 @@ Test:
 ```
 
 **Solution**:
+
 - Update SMTP settings
 - Check credentials
 - Verify port access (587/465)
@@ -567,6 +615,7 @@ Test:
 ### Backup Strategy
 
 #### Automated Backups
+
 ```
 Configured in: Settings → Backups
 
@@ -582,6 +631,7 @@ Retention:
 ```
 
 #### Manual Backup
+
 ```bash
 # Database backup
 npm run backup:db
@@ -595,6 +645,7 @@ npm run backup:db
 ### Backup Locations
 
 **Local Storage**:
+
 ```
 /backups/
   ├── daily/
@@ -603,6 +654,7 @@ npm run backup:db
 ```
 
 **Cloud Storage** (Recommended):
+
 ```
 Configure in .env:
 - AWS_S3_BUCKET
@@ -618,6 +670,7 @@ Or use:
 ### Recovery Procedures
 
 #### Database Recovery
+
 ```bash
 # Restore from backup
 cd packages/database
@@ -630,6 +683,7 @@ pg_restore -d database_name backup_file.dump
 ```
 
 #### Full System Recovery
+
 ```bash
 # 1. Stop services
 pnpm stop
@@ -650,6 +704,7 @@ pnpm --filter @ash/admin dev
 ```
 
 #### Disaster Recovery Checklist
+
 - [ ] Restore database from latest backup
 - [ ] Restore uploaded files
 - [ ] Restore environment configuration
@@ -666,6 +721,7 @@ pnpm --filter @ash/admin dev
 ### Environment Variables
 
 **Essential Variables**:
+
 ```bash
 # Database
 DATABASE_URL=postgresql://user:pass@host:5432/db
@@ -698,6 +754,7 @@ SENTRY_DSN=https://...
 ### API Configuration
 
 #### Rate Limiting
+
 ```
 Settings → API → Rate Limits
 
@@ -710,6 +767,7 @@ Customize per endpoint if needed
 ```
 
 #### CORS Settings
+
 ```
 Settings → API → CORS
 
@@ -722,6 +780,7 @@ Allowed origins:
 ### Integration Settings
 
 #### 3PL Courier Integration
+
 ```
 Settings → Integrations → 3PL
 
@@ -733,6 +792,7 @@ Configure:
 ```
 
 #### Payment Gateway
+
 ```
 Settings → Integrations → Payments
 
@@ -755,12 +815,14 @@ Configure:
 ### Getting Administrative Help
 
 **Internal Support**:
+
 - Check this Admin Guide
 - Review system logs
 - Use AI Chat Assistant
 - Consult API documentation
 
 **External Support**:
+
 - GitHub Issues: https://github.com/AshAI-Sys/ashley-ai/issues
 - Email: admin-support@ashleyai.com
 - Emergency: [Your emergency contact]
@@ -808,6 +870,7 @@ pnpm --filter @ash/admin health-check
 ### System Requirements
 
 **Server Requirements**:
+
 - Node.js 20+
 - 4GB RAM minimum (8GB recommended)
 - 50GB disk space minimum
@@ -815,6 +878,7 @@ pnpm --filter @ash/admin health-check
 - Redis (optional, for caching)
 
 **Client Requirements**:
+
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - 1024x768 resolution minimum
 - Stable internet connection (1 Mbps+)
@@ -836,4 +900,4 @@ pnpm --filter @ash/admin health-check
 
 **Document End**
 
-*For system updates and changes, refer to CLAUDE.md in the root directory.*
+_For system updates and changes, refer to CLAUDE.md in the root directory._

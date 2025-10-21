@@ -7,7 +7,7 @@ import type {
   DesignFileType,
   ValidationStatus,
   DesignValidationRule,
-  FileValidationResult
+  FileValidationResult,
 } from "./types";
 
 const FileValidationSchema = z.object({
@@ -16,8 +16,14 @@ const FileValidationSchema = z.object({
   fileUrl: z.string(),
   fileName: z.string(),
   fileType: z.enum(["AI", "PSD", "PNG", "JPG", "SVG", "PDF", "DST", "EPS"]),
-  printMethod: z.enum(["SILKSCREEN", "DTG", "SUBLIMATION", "EMBROIDERY", "HEAT_TRANSFER"]),
-  validationRules: z.array(z.string()).optional()
+  printMethod: z.enum([
+    "SILKSCREEN",
+    "DTG",
+    "SUBLIMATION",
+    "EMBROIDERY",
+    "HEAT_TRANSFER",
+  ]),
+  validationRules: z.array(z.string()).optional(),
 });
 
 export class DesignFileValidationSystem extends EventEmitter {
@@ -44,7 +50,8 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { minDPI: 300, maxDPI: 600 },
       severity: "ERROR",
       errorMessage: "Screen printing requires 300-600 DPI resolution",
-      fixSuggestion: "Adjust image resolution to 300-400 DPI for optimal results"
+      fixSuggestion:
+        "Adjust image resolution to 300-400 DPI for optimal results",
     });
 
     this.addValidationRule({
@@ -54,7 +61,7 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { maxColors: 6, colorMode: "SPOT" },
       severity: "WARNING",
       errorMessage: "Screen printing works best with 6 or fewer spot colors",
-      fixSuggestion: "Consider reducing color count or using process colors"
+      fixSuggestion: "Consider reducing color count or using process colors",
     });
 
     // DTG Rules
@@ -65,7 +72,8 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { minDPI: 300, preferredDPI: 400 },
       severity: "ERROR",
       errorMessage: "DTG printing requires minimum 300 DPI",
-      fixSuggestion: "Increase resolution to at least 300 DPI, preferably 400 DPI"
+      fixSuggestion:
+        "Increase resolution to at least 300 DPI, preferably 400 DPI",
     });
 
     this.addValidationRule({
@@ -75,7 +83,8 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { colorMode: "CMYK", profile: "sRGB" },
       severity: "WARNING",
       errorMessage: "DTG works best with CMYK color mode",
-      fixSuggestion: "Convert to CMYK color mode for accurate color reproduction"
+      fixSuggestion:
+        "Convert to CMYK color mode for accurate color reproduction",
     });
 
     // Embroidery Rules
@@ -86,7 +95,8 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { formats: ["DST", "EMB", "PES", "VP3"] },
       severity: "ERROR",
       errorMessage: "Embroidery requires DST, EMB, PES, or VP3 format",
-      fixSuggestion: "Convert design to embroidery format using digitizing software"
+      fixSuggestion:
+        "Convert design to embroidery format using digitizing software",
     });
 
     this.addValidationRule({
@@ -96,7 +106,7 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { maxDensity: 0.4, minDensity: 0.3 },
       severity: "WARNING",
       errorMessage: "Stitch density should be between 0.3-0.4mm",
-      fixSuggestion: "Adjust stitch density for optimal embroidery quality"
+      fixSuggestion: "Adjust stitch density for optimal embroidery quality",
     });
 
     // General Rules
@@ -107,7 +117,7 @@ export class DesignFileValidationSystem extends EventEmitter {
       conditions: { maxSizeMB: 50 },
       severity: "ERROR",
       errorMessage: "File size cannot exceed 50MB",
-      fixSuggestion: "Compress file or reduce image dimensions"
+      fixSuggestion: "Compress file or reduce image dimensions",
     });
 
     this.addValidationRule({
@@ -116,8 +126,8 @@ export class DesignFileValidationSystem extends EventEmitter {
       type: "DIMENSION",
       conditions: { maxWidth: 356, maxHeight: 280 }, // mm
       severity: "ERROR",
-      errorMessage: "Design exceeds maximum print area (14\"×11\")",
-      fixSuggestion: "Resize design to fit within print area limitations"
+      errorMessage: 'Design exceeds maximum print area (14"×11")',
+      fixSuggestion: "Resize design to fit within print area limitations",
     });
   }
 
@@ -141,8 +151,8 @@ export class DesignFileValidationSystem extends EventEmitter {
           printMethod: validated.printMethod,
           validationStatus: "VALIDATING",
           startedAt: new Date(),
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       });
 
       this.emit("validation:started", { validation });
@@ -162,32 +172,40 @@ export class DesignFileValidationSystem extends EventEmitter {
           validationStatus: result.isValid ? "PASSED" : "FAILED",
           validationResults: JSON.stringify(result),
           errorCount: result.errors.filter(e => e.severity === "ERROR").length,
-          warningCount: result.errors.filter(e => e.severity === "WARNING").length,
+          warningCount: result.errors.filter(e => e.severity === "WARNING")
+            .length,
           fileMetadata: JSON.stringify(result.metadata),
-          completedAt: new Date()
-        }
+          completedAt: new Date(),
+        },
       });
 
       if (result.isValid) {
-        this.emit("validation:completed", { validation: updatedValidation, result });
+        this.emit("validation:completed", {
+          validation: updatedValidation,
+          result,
+        });
       } else {
-        this.emit("validation:failed", { validation: updatedValidation, result });
+        this.emit("validation:failed", {
+          validation: updatedValidation,
+          result,
+        });
       }
 
       return { validation: updatedValidation, result };
-
     } catch (error) {
       console.error("File validation failed:", error);
-      
+
       // Update validation record with error
-      await this.db.designFileValidation.update({
-        where: { id: "temp" }, // This would need the actual ID
-        data: {
-          validationStatus: "FAILED",
-          errorMessage: error.message,
-          completedAt: new Date()
-        }
-      }).catch(() => {}); // Ignore errors in error handling
+      await this.db.designFileValidation
+        .update({
+          where: { id: "temp" }, // This would need the actual ID
+          data: {
+            validationStatus: "FAILED",
+            errorMessage: error.message,
+            completedAt: new Date(),
+          },
+        })
+        .catch(() => {}); // Ignore errors in error handling
 
       throw new Error(`File validation failed: ${error.message}`);
     }
@@ -199,15 +217,15 @@ export class DesignFileValidationSystem extends EventEmitter {
     printMethod: string,
     ruleIds?: string[]
   ): Promise<FileValidationResult> {
-    const errors: FileValidationResult['errors'] = [];
-    let metadata: FileValidationResult['metadata'];
+    const errors: FileValidationResult["errors"] = [];
+    let metadata: FileValidationResult["metadata"];
 
     try {
       // Get file metadata
       metadata = await this.extractFileMetadata(fileUrl, fileType);
 
       // Get applicable rules
-      const rulesToApply = ruleIds 
+      const rulesToApply = ruleIds
         ? ruleIds.map(id => this.validationRules.get(id)).filter(Boolean)
         : this.getApplicableRules(fileType, printMethod);
 
@@ -215,7 +233,11 @@ export class DesignFileValidationSystem extends EventEmitter {
       for (const rule of rulesToApply) {
         if (!rule) continue;
 
-        const ruleResult = await this.applyValidationRule(rule, metadata, fileUrl);
+        const ruleResult = await this.applyValidationRule(
+          rule,
+          metadata,
+          fileUrl
+        );
         if (ruleResult) {
           errors.push(ruleResult);
         }
@@ -224,23 +246,24 @@ export class DesignFileValidationSystem extends EventEmitter {
       return {
         isValid: !errors.some(e => e.severity === "ERROR"),
         errors,
-        metadata
+        metadata,
       };
-
     } catch (error) {
       console.error("Validation error:", error);
-      
+
       return {
         isValid: false,
-        errors: [{
-          rule: "system_error",
-          message: `Validation system error: ${error.message}`,
-          severity: "ERROR"
-        }],
+        errors: [
+          {
+            rule: "system_error",
+            message: `Validation system error: ${error.message}`,
+            severity: "ERROR",
+          },
+        ],
         metadata: metadata || {
           fileSize: 0,
-          format: fileType
-        }
+          format: fileType,
+        },
       };
     }
   }
@@ -251,18 +274,18 @@ export class DesignFileValidationSystem extends EventEmitter {
       try {
         const response = await fetch(fileUrl);
         const buffer = Buffer.from(await response.arrayBuffer());
-        
+
         const imageInfo = await sharp(buffer).metadata();
-        
+
         return {
           dimensions: {
             width: imageInfo.width || 0,
-            height: imageInfo.height || 0
+            height: imageInfo.height || 0,
           },
           dpi: imageInfo.density || 72,
           colorMode: this.getColorMode(imageInfo),
           fileSize: buffer.length,
-          format: fileType
+          format: fileType,
         };
       } catch (error) {
         console.error("Failed to extract image metadata:", error);
@@ -273,16 +296,16 @@ export class DesignFileValidationSystem extends EventEmitter {
     try {
       const response = await fetch(fileUrl, { method: "HEAD" });
       const fileSize = parseInt(response.headers.get("content-length") || "0");
-      
+
       return {
         fileSize,
-        format: fileType
+        format: fileType,
       };
     } catch (error) {
       console.error("Failed to get file metadata:", error);
       return {
         fileSize: 0,
-        format: fileType
+        format: fileType,
       };
     }
   }
@@ -291,17 +314,24 @@ export class DesignFileValidationSystem extends EventEmitter {
     if (imageInfo.space) {
       return imageInfo.space.toUpperCase();
     }
-    
+
     // Infer from channels
     switch (imageInfo.channels) {
-      case 1: return "GRAYSCALE";
-      case 3: return "RGB";
-      case 4: return "CMYK";
-      default: return "RGB";
+      case 1:
+        return "GRAYSCALE";
+      case 3:
+        return "RGB";
+      case 4:
+        return "CMYK";
+      default:
+        return "RGB";
     }
   }
 
-  private getApplicableRules(fileType: DesignFileType, printMethod: string): DesignValidationRule[] {
+  private getApplicableRules(
+    fileType: DesignFileType,
+    printMethod: string
+  ): DesignValidationRule[] {
     const rules: DesignValidationRule[] = [];
 
     // Always apply general rules
@@ -339,9 +369,9 @@ export class DesignFileValidationSystem extends EventEmitter {
 
   private async applyValidationRule(
     rule: DesignValidationRule,
-    metadata: FileValidationResult['metadata'],
+    metadata: FileValidationResult["metadata"],
     fileUrl: string
-  ): Promise<FileValidationResult['errors'][0] | null> {
+  ): Promise<FileValidationResult["errors"][0] | null> {
     switch (rule.type) {
       case "RESOLUTION":
         return this.validateResolution(rule, metadata);
@@ -365,8 +395,8 @@ export class DesignFileValidationSystem extends EventEmitter {
 
   private validateResolution(
     rule: DesignValidationRule,
-    metadata: FileValidationResult['metadata']
-  ): FileValidationResult['errors'][0] | null {
+    metadata: FileValidationResult["metadata"]
+  ): FileValidationResult["errors"][0] | null {
     const dpi = metadata.dpi || 72;
     const { minDPI, maxDPI, preferredDPI } = rule.conditions;
 
@@ -375,7 +405,7 @@ export class DesignFileValidationSystem extends EventEmitter {
         rule: rule.id,
         message: rule.errorMessage,
         severity: rule.severity,
-        suggestion: rule.fixSuggestion
+        suggestion: rule.fixSuggestion,
       };
     }
 
@@ -384,7 +414,7 @@ export class DesignFileValidationSystem extends EventEmitter {
         rule: rule.id,
         message: rule.errorMessage,
         severity: rule.severity,
-        suggestion: rule.fixSuggestion
+        suggestion: rule.fixSuggestion,
       };
     }
 
@@ -393,7 +423,7 @@ export class DesignFileValidationSystem extends EventEmitter {
         rule: rule.id,
         message: `Resolution is ${dpi} DPI, preferred is ${preferredDPI} DPI`,
         severity: "INFO",
-        suggestion: `Consider using ${preferredDPI} DPI for optimal quality`
+        suggestion: `Consider using ${preferredDPI} DPI for optimal quality`,
       };
     }
 
@@ -402,8 +432,8 @@ export class DesignFileValidationSystem extends EventEmitter {
 
   private validateFileFormat(
     rule: DesignValidationRule,
-    metadata: FileValidationResult['metadata']
-  ): FileValidationResult['errors'][0] | null {
+    metadata: FileValidationResult["metadata"]
+  ): FileValidationResult["errors"][0] | null {
     const { formats, maxSizeMB } = rule.conditions;
 
     if (formats && !formats.includes(metadata.format)) {
@@ -411,7 +441,7 @@ export class DesignFileValidationSystem extends EventEmitter {
         rule: rule.id,
         message: rule.errorMessage,
         severity: rule.severity,
-        suggestion: rule.fixSuggestion
+        suggestion: rule.fixSuggestion,
       };
     }
 
@@ -420,7 +450,7 @@ export class DesignFileValidationSystem extends EventEmitter {
         rule: rule.id,
         message: rule.errorMessage,
         severity: rule.severity,
-        suggestion: rule.fixSuggestion
+        suggestion: rule.fixSuggestion,
       };
     }
 
@@ -429,8 +459,8 @@ export class DesignFileValidationSystem extends EventEmitter {
 
   private validateColorMode(
     rule: DesignValidationRule,
-    metadata: FileValidationResult['metadata']
-  ): FileValidationResult['errors'][0] | null {
+    metadata: FileValidationResult["metadata"]
+  ): FileValidationResult["errors"][0] | null {
     const { colorMode } = rule.conditions;
 
     if (colorMode && metadata.colorMode !== colorMode) {
@@ -438,7 +468,7 @@ export class DesignFileValidationSystem extends EventEmitter {
         rule: rule.id,
         message: `Color mode is ${metadata.colorMode}, expected ${colorMode}`,
         severity: rule.severity,
-        suggestion: rule.fixSuggestion
+        suggestion: rule.fixSuggestion,
       };
     }
 
@@ -447,8 +477,8 @@ export class DesignFileValidationSystem extends EventEmitter {
 
   private validateDimensions(
     rule: DesignValidationRule,
-    metadata: FileValidationResult['metadata']
-  ): FileValidationResult['errors'][0] | null {
+    metadata: FileValidationResult["metadata"]
+  ): FileValidationResult["errors"][0] | null {
     if (!metadata.dimensions) return null;
 
     const { maxWidth, maxHeight } = rule.conditions;
@@ -458,12 +488,15 @@ export class DesignFileValidationSystem extends EventEmitter {
     const widthMM = (width * 25.4) / (metadata.dpi || 300);
     const heightMM = (height * 25.4) / (metadata.dpi || 300);
 
-    if ((maxWidth && widthMM > maxWidth) || (maxHeight && heightMM > maxHeight)) {
+    if (
+      (maxWidth && widthMM > maxWidth) ||
+      (maxHeight && heightMM > maxHeight)
+    ) {
       return {
         rule: rule.id,
         message: `Design size is ${widthMM.toFixed(1)}×${heightMM.toFixed(1)}mm, maximum is ${maxWidth}×${maxHeight}mm`,
         severity: rule.severity,
-        suggestion: rule.fixSuggestion
+        suggestion: rule.fixSuggestion,
       };
     }
 
@@ -472,9 +505,9 @@ export class DesignFileValidationSystem extends EventEmitter {
 
   private async validatePrintSpecs(
     rule: DesignValidationRule,
-    metadata: FileValidationResult['metadata'],
+    metadata: FileValidationResult["metadata"],
     fileUrl: string
-  ): Promise<FileValidationResult['errors'][0] | null> {
+  ): Promise<FileValidationResult["errors"][0] | null> {
     // This would involve more complex validation
     // like counting colors, analyzing stitch density, etc.
     // For now, return a basic implementation
@@ -484,13 +517,13 @@ export class DesignFileValidationSystem extends EventEmitter {
   async getValidationHistory(designVersionId: string) {
     return await this.db.designFileValidation.findMany({
       where: { designVersionId },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
   }
 
   async revalidateFile(validationId: string) {
     const validation = await this.db.designFileValidation.findUnique({
-      where: { id: validationId }
+      where: { id: validationId },
     });
 
     if (!validation) {
@@ -503,7 +536,7 @@ export class DesignFileValidationSystem extends EventEmitter {
       fileUrl: validation.fileUrl,
       fileName: validation.fileName,
       fileType: validation.fileType as DesignFileType,
-      printMethod: validation.printMethod as any
+      printMethod: validation.printMethod as any,
     });
   }
 

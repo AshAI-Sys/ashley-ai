@@ -11,34 +11,44 @@ const CreateVersionSchema = z.object({
     mockupUrl: z.string().optional(),
     prodUrl: z.string(),
     separations: z.array(z.string()).optional(),
-    dstUrl: z.string().optional()
+    dstUrl: z.string().optional(),
   }),
-  placements: z.array(z.object({
-    area: z.string(), // FRONT/BACK/LEFT_SLEEVE/etc
-    widthCm: z.number(),
-    heightCm: z.number(),
-    offsetX: z.number(),
-    offsetY: z.number()
-  })),
+  placements: z.array(
+    z.object({
+      area: z.string(), // FRONT/BACK/LEFT_SLEEVE/etc
+      widthCm: z.number(),
+      heightCm: z.number(),
+      offsetX: z.number(),
+      offsetY: z.number(),
+    })
+  ),
   palette: z.array(z.string()).optional(),
-  metadata: z.object({
-    dpi: z.number().optional(),
-    colorProfile: z.string().optional(),
-    notes: z.string().optional(),
-    tags: z.array(z.string()).optional()
-  }).optional(),
-  createdBy: z.string()
+  metadata: z
+    .object({
+      dpi: z.number().optional(),
+      colorProfile: z.string().optional(),
+      notes: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+    })
+    .optional(),
+  createdBy: z.string(),
 });
 
 const CompareVersionsSchema = z.object({
   assetId: z.string(),
   fromVersion: z.number(),
   toVersion: z.number(),
-  comparisonType: z.enum(["VISUAL", "METADATA", "PLACEMENT", "FULL"]).default("VISUAL")
+  comparisonType: z
+    .enum(["VISUAL", "METADATA", "PLACEMENT", "FULL"])
+    .default("VISUAL"),
 });
 
 export interface VersionDifference {
-  type: "FILE_CHANGED" | "PLACEMENT_MODIFIED" | "PALETTE_UPDATED" | "METADATA_CHANGED";
+  type:
+    | "FILE_CHANGED"
+    | "PLACEMENT_MODIFIED"
+    | "PALETTE_UPDATED"
+    | "METADATA_CHANGED";
   field: string;
   oldValue: any;
   newValue: any;
@@ -82,7 +92,7 @@ export class DesignVersionControlSystem extends EventEmitter {
       // Get current highest version for this asset
       const currentVersion = await this.db.designVersion.findFirst({
         where: { assetId: validated.assetId },
-        orderBy: { version: "desc" }
+        orderBy: { version: "desc" },
       });
 
       const newVersionNumber = (currentVersion?.version || 0) + 1;
@@ -94,7 +104,7 @@ export class DesignVersionControlSystem extends EventEmitter {
           assetId: validated.assetId,
           files: validated.files,
           placements: validated.placements,
-          previousVersion: currentVersion?.version
+          previousVersion: currentVersion?.version,
         });
       } catch (error) {
         console.error("Ashley AI analysis failed:", error);
@@ -110,52 +120,55 @@ export class DesignVersionControlSystem extends EventEmitter {
           files: JSON.stringify(validated.files),
           placements: JSON.stringify(validated.placements),
           palette: validated.palette ? JSON.stringify(validated.palette) : null,
-          meta: validated.metadata ? JSON.stringify({
-            ...validated.metadata,
-            ashleyAnalysis
-          }) : JSON.stringify({ ashleyAnalysis }),
+          meta: validated.metadata
+            ? JSON.stringify({
+                ...validated.metadata,
+                ashleyAnalysis,
+              })
+            : JSON.stringify({ ashleyAnalysis }),
           createdBy: validated.createdBy,
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         include: {
-          designAsset: true
-        }
+          designAsset: true,
+        },
       });
 
       // If this is an improvement over previous version, update asset current version
       if (ashleyAnalysis?.qualityScore && ashleyAnalysis.qualityScore > 0.8) {
         await this.db.designAsset.update({
           where: { id: validated.assetId },
-          data: { currentVersion: newVersionNumber }
+          data: { currentVersion: newVersionNumber },
         });
       }
 
-      this.emit("version:created", { 
-        version, 
+      this.emit("version:created", {
+        version,
         ashleyAnalysis,
-        isImprovement: ashleyAnalysis?.qualityScore > 0.8 
+        isImprovement: ashleyAnalysis?.qualityScore > 0.8,
       });
 
       return version;
-
     } catch (error) {
       console.error("Failed to create design version:", error);
       throw new Error(`Version creation failed: ${error.message}`);
     }
   }
 
-  async compareVersions(data: z.infer<typeof CompareVersionsSchema>): Promise<VersionComparison> {
+  async compareVersions(
+    data: z.infer<typeof CompareVersionsSchema>
+  ): Promise<VersionComparison> {
     const validated = CompareVersionsSchema.parse(data);
 
     try {
       // Get both versions
       const [fromVersion, toVersion] = await Promise.all([
         this.db.designVersion.findFirst({
-          where: { assetId: validated.assetId, version: validated.fromVersion }
+          where: { assetId: validated.assetId, version: validated.fromVersion },
         }),
         this.db.designVersion.findFirst({
-          where: { assetId: validated.assetId, version: validated.toVersion }
-        })
+          where: { assetId: validated.assetId, version: validated.toVersion },
+        }),
       ]);
 
       if (!fromVersion || !toVersion) {
@@ -167,22 +180,29 @@ export class DesignVersionControlSystem extends EventEmitter {
         files: JSON.parse(fromVersion.files),
         placements: JSON.parse(fromVersion.placements),
         palette: fromVersion.palette ? JSON.parse(fromVersion.palette) : [],
-        meta: fromVersion.meta ? JSON.parse(fromVersion.meta) : {}
+        meta: fromVersion.meta ? JSON.parse(fromVersion.meta) : {},
       };
 
       const toData = {
         files: JSON.parse(toVersion.files),
         placements: JSON.parse(toVersion.placements),
         palette: toVersion.palette ? JSON.parse(toVersion.palette) : [],
-        meta: toVersion.meta ? JSON.parse(toVersion.meta) : {}
+        meta: toVersion.meta ? JSON.parse(toVersion.meta) : {},
       };
 
       // Perform comparison based on type
-      const differences = await this.analyzeDifferences(fromData, toData, validated.comparisonType);
-      
+      const differences = await this.analyzeDifferences(
+        fromData,
+        toData,
+        validated.comparisonType
+      );
+
       // Calculate visual similarity if comparing files
       let visualSimilarity = 1;
-      if (validated.comparisonType === "VISUAL" || validated.comparisonType === "FULL") {
+      if (
+        validated.comparisonType === "VISUAL" ||
+        validated.comparisonType === "FULL"
+      ) {
         visualSimilarity = await this.calculateVisualSimilarity(
           fromData.files.prodUrl,
           toData.files.prodUrl
@@ -195,7 +215,7 @@ export class DesignVersionControlSystem extends EventEmitter {
         fromVersion: validated.fromVersion,
         toVersion: validated.toVersion,
         differences,
-        visualSimilarity
+        visualSimilarity,
       });
 
       const comparison: VersionComparison = {
@@ -203,13 +223,12 @@ export class DesignVersionControlSystem extends EventEmitter {
         toVersion: validated.toVersion,
         differences,
         visualSimilarity,
-        ashleyAnalysis
+        ashleyAnalysis,
       };
 
       this.emit("version:compared", { comparison, fromVersion, toVersion });
 
       return comparison;
-
     } catch (error) {
       console.error("Failed to compare versions:", error);
       throw new Error(`Version comparison failed: ${error.message}`);
@@ -220,17 +239,17 @@ export class DesignVersionControlSystem extends EventEmitter {
     return await this.db.designVersion.findMany({
       where: { assetId },
       include: {
-        designAsset: true
+        designAsset: true,
       },
       orderBy: { version: "desc" },
-      take: limit
+      take: limit,
     });
   }
 
   async getVersionAnalytics(assetId: string) {
     const versions = await this.db.designVersion.findMany({
       where: { assetId },
-      orderBy: { version: "asc" }
+      orderBy: { version: "asc" },
     });
 
     if (versions.length === 0) {
@@ -244,17 +263,21 @@ export class DesignVersionControlSystem extends EventEmitter {
       creationFrequency: this.calculateCreationFrequency(versions),
       qualityTrend: this.calculateQualityTrend(versions),
       majorChanges: this.identifyMajorChanges(versions),
-      collaboratorActivity: await this.getCollaboratorActivity(assetId)
+      collaboratorActivity: await this.getCollaboratorActivity(assetId),
     };
 
     return analytics;
   }
 
-  async revertToVersion(assetId: string, targetVersion: number, revertedBy: string) {
+  async revertToVersion(
+    assetId: string,
+    targetVersion: number,
+    revertedBy: string
+  ) {
     try {
       // Get the target version
       const targetVersionData = await this.db.designVersion.findFirst({
-        where: { assetId, version: targetVersion }
+        where: { assetId, version: targetVersion },
       });
 
       if (!targetVersionData) {
@@ -266,24 +289,25 @@ export class DesignVersionControlSystem extends EventEmitter {
         assetId,
         files: JSON.parse(targetVersionData.files),
         placements: JSON.parse(targetVersionData.placements),
-        palette: targetVersionData.palette ? JSON.parse(targetVersionData.palette) : undefined,
+        palette: targetVersionData.palette
+          ? JSON.parse(targetVersionData.palette)
+          : undefined,
         metadata: {
           ...(targetVersionData.meta ? JSON.parse(targetVersionData.meta) : {}),
           notes: `Reverted to version ${targetVersion}`,
-          revertedFrom: targetVersion
+          revertedFrom: targetVersion,
         },
-        createdBy: revertedBy
+        createdBy: revertedBy,
       });
 
       this.emit("version:reverted", {
         assetId,
         targetVersion,
         newVersion: newVersion.version,
-        revertedBy
+        revertedBy,
       });
 
       return newVersion;
-
     } catch (error) {
       console.error("Failed to revert version:", error);
       throw error;
@@ -299,7 +323,7 @@ export class DesignVersionControlSystem extends EventEmitter {
     try {
       // Get the source version
       const sourceVersion = await this.db.designVersion.findFirst({
-        where: { assetId, version: fromVersion }
+        where: { assetId, version: fromVersion },
       });
 
       if (!sourceVersion) {
@@ -308,7 +332,7 @@ export class DesignVersionControlSystem extends EventEmitter {
 
       // Create new asset for the branch
       const originalAsset = await this.db.designAsset.findUnique({
-        where: { id: assetId }
+        where: { id: assetId },
       });
 
       const branchedAsset = await this.db.designAsset.create({
@@ -323,8 +347,8 @@ export class DesignVersionControlSystem extends EventEmitter {
           currentVersion: 1,
           tags: `${originalAsset!.tags || ""},[BRANCH:${branchName}]`,
           createdBy: createdBy,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       });
 
       // Create initial version in the new branch
@@ -332,14 +356,16 @@ export class DesignVersionControlSystem extends EventEmitter {
         assetId: branchedAsset.id,
         files: JSON.parse(sourceVersion.files),
         placements: JSON.parse(sourceVersion.placements),
-        palette: sourceVersion.palette ? JSON.parse(sourceVersion.palette) : undefined,
+        palette: sourceVersion.palette
+          ? JSON.parse(sourceVersion.palette)
+          : undefined,
         metadata: {
           ...(sourceVersion.meta ? JSON.parse(sourceVersion.meta) : {}),
           branchedFrom: assetId,
           branchedFromVersion: fromVersion,
-          branchName
+          branchName,
         },
-        createdBy
+        createdBy,
       });
 
       this.emit("version:branched", {
@@ -347,11 +373,10 @@ export class DesignVersionControlSystem extends EventEmitter {
         branchedAssetId: branchedAsset.id,
         sourceVersion: fromVersion,
         branchName,
-        createdBy
+        createdBy,
       });
 
       return { branchedAsset, branchVersion };
-
     } catch (error) {
       console.error("Failed to create branch:", error);
       throw error;
@@ -374,29 +399,38 @@ export class DesignVersionControlSystem extends EventEmitter {
           oldValue: fromData.files.prodUrl,
           newValue: toData.files.prodUrl,
           significance: "MAJOR",
-          description: "Production file has been changed"
+          description: "Production file has been changed",
         });
       }
     }
 
     // Placement changes
     if (comparisonType === "PLACEMENT" || comparisonType === "FULL") {
-      const placementChanges = this.comparePlacements(fromData.placements, toData.placements);
+      const placementChanges = this.comparePlacements(
+        fromData.placements,
+        toData.placements
+      );
       differences.push(...placementChanges);
     }
 
     // Palette changes
     if (comparisonType === "FULL") {
-      const paletteChanges = this.comparePalettes(fromData.palette, toData.palette);
+      const paletteChanges = this.comparePalettes(
+        fromData.palette,
+        toData.palette
+      );
       differences.push(...paletteChanges);
     }
 
     return differences;
   }
 
-  private comparePlacements(fromPlacements: any[], toPlacements: any[]): VersionDifference[] {
+  private comparePlacements(
+    fromPlacements: any[],
+    toPlacements: any[]
+  ): VersionDifference[] {
     const differences: VersionDifference[] = [];
-    
+
     // Simple comparison - in reality would be more sophisticated
     if (fromPlacements.length !== toPlacements.length) {
       differences.push({
@@ -405,19 +439,22 @@ export class DesignVersionControlSystem extends EventEmitter {
         oldValue: fromPlacements.length,
         newValue: toPlacements.length,
         significance: "MODERATE",
-        description: "Number of design placements changed"
+        description: "Number of design placements changed",
       });
     }
 
     return differences;
   }
 
-  private comparePalettes(fromPalette: string[], toPalette: string[]): VersionDifference[] {
+  private comparePalettes(
+    fromPalette: string[],
+    toPalette: string[]
+  ): VersionDifference[] {
     const differences: VersionDifference[] = [];
-    
+
     const fromSet = new Set(fromPalette);
     const toSet = new Set(toPalette);
-    
+
     const added = [...toSet].filter(color => !fromSet.has(color));
     const removed = [...fromSet].filter(color => !toSet.has(color));
 
@@ -428,37 +465,39 @@ export class DesignVersionControlSystem extends EventEmitter {
         oldValue: fromPalette,
         newValue: toPalette,
         significance: "MODERATE",
-        description: `Palette changed: ${added.length} added, ${removed.length} removed`
+        description: `Palette changed: ${added.length} added, ${removed.length} removed`,
       });
     }
 
     return differences;
   }
 
-  private async calculateVisualSimilarity(url1: string, url2: string): Promise<number> {
+  private async calculateVisualSimilarity(
+    url1: string,
+    url2: string
+  ): Promise<number> {
     try {
       // This is a simplified implementation
       // In reality, you'd use more sophisticated computer vision techniques
       const [response1, response2] = await Promise.all([
         fetch(url1),
-        fetch(url2)
+        fetch(url2),
       ]);
 
       const [buffer1, buffer2] = await Promise.all([
         Buffer.from(await response1.arrayBuffer()),
-        Buffer.from(await response2.arrayBuffer())
+        Buffer.from(await response2.arrayBuffer()),
       ]);
 
       // Simple similarity check based on file size and basic image metrics
       const [info1, info2] = await Promise.all([
         sharp(buffer1).stats(),
-        sharp(buffer2).stats()
+        sharp(buffer2).stats(),
       ]);
 
       // Calculate similarity based on statistical properties
       const similarity = this.compareImageStats(info1, info2);
       return Math.max(0, Math.min(1, similarity));
-
     } catch (error) {
       console.error("Failed to calculate visual similarity:", error);
       return 0.5; // Default neutral similarity
@@ -470,17 +509,17 @@ export class DesignVersionControlSystem extends EventEmitter {
     // In reality, would use perceptual hashing or feature detection
     const channels1 = stats1.channels;
     const channels2 = stats2.channels;
-    
+
     let totalSimilarity = 0;
     let channelCount = 0;
 
     for (let i = 0; i < Math.min(channels1.length, channels2.length); i++) {
       const channel1 = channels1[i];
       const channel2 = channels2[i];
-      
+
       const meanSimilarity = 1 - Math.abs(channel1.mean - channel2.mean) / 255;
       const stdSimilarity = 1 - Math.abs(channel1.std - channel2.std) / 255;
-      
+
       totalSimilarity += (meanSimilarity + stdSimilarity) / 2;
       channelCount++;
     }
@@ -494,7 +533,7 @@ export class DesignVersionControlSystem extends EventEmitter {
     const first = new Date(versions[0].createdAt);
     const last = new Date(versions[versions.length - 1].createdAt);
     const daysDiff = (last.getTime() - first.getTime()) / (1000 * 60 * 60 * 24);
-    
+
     return versions.length / Math.max(daysDiff, 1);
   }
 
@@ -508,8 +547,13 @@ export class DesignVersionControlSystem extends EventEmitter {
 
     if (qualityScores.length < 2) return "STABLE";
 
-    const firstHalf = qualityScores.slice(0, Math.floor(qualityScores.length / 2));
-    const secondHalf = qualityScores.slice(Math.floor(qualityScores.length / 2));
+    const firstHalf = qualityScores.slice(
+      0,
+      Math.floor(qualityScores.length / 2)
+    );
+    const secondHalf = qualityScores.slice(
+      Math.floor(qualityScores.length / 2)
+    );
 
     const avgFirst = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
     const avgSecond = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
@@ -526,14 +570,14 @@ export class DesignVersionControlSystem extends EventEmitter {
     return versions
       .filter((version, index) => {
         if (index === 0) return false;
-        
+
         const meta = version.meta ? JSON.parse(version.meta) : {};
         return meta.ashleyAnalysis?.impactLevel === "MAJOR";
       })
       .map(v => ({
         version: v.version,
         createdAt: v.createdAt,
-        impactLevel: "MAJOR"
+        impactLevel: "MAJOR",
       }));
   }
 
@@ -541,14 +585,14 @@ export class DesignVersionControlSystem extends EventEmitter {
     const collaborations = await this.db.designCollaboration.findMany({
       where: { designAssetId: assetId },
       include: { collaborator: true },
-      orderBy: { invitedAt: "desc" }
+      orderBy: { invitedAt: "desc" },
     });
 
     return collaborations.map(c => ({
       collaboratorId: c.collaboratorId,
       collaboratorName: c.collaborator.fullName,
       permissionLevel: c.permissionLevel,
-      lastActivity: c.invitedAt
+      lastActivity: c.invitedAt,
     }));
   }
 
@@ -558,11 +602,15 @@ export class DesignVersionControlSystem extends EventEmitter {
   }
 
   private async handleVersionCompared(data: any) {
-    console.log(`Design versions compared: ${data.comparison.fromVersion} vs ${data.comparison.toVersion}`);
+    console.log(
+      `Design versions compared: ${data.comparison.fromVersion} vs ${data.comparison.toVersion}`
+    );
   }
 
   private async handleVersionMerged(data: any) {
-    console.log(`Design versions merged: ${data.sourceVersion} → ${data.targetVersion}`);
+    console.log(
+      `Design versions merged: ${data.sourceVersion} → ${data.targetVersion}`
+    );
   }
 
   private async handleVersionBranched(data: any) {

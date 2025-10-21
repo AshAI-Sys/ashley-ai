@@ -9,6 +9,7 @@
 ## 🔴 THE PROBLEM
 
 Vercel build is still failing with this error:
+
 ```
 error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
 ```
@@ -22,16 +23,19 @@ error: Error validating datasource `db`: the URL must start with the protocol `p
 When you copied the connection string from Neon, you copied the **COMMAND FORMAT** instead of just the **URL**:
 
 **❌ WRONG (What you might have copied)**:
+
 ```bash
 psql 'postgresql://neondb_owner:npg_...'
 ```
 
 Or with connection options:
+
 ```bash
 postgresql://neondb_owner:npg_5YeIhqZxSiQ0a@ep-cold-tooth-a1sl7pq9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 ```
 
 **✅ CORRECT (What you need)**:
+
 ```
 postgresql://neondb_owner:npg_5YeIhqZxSiQ0aep-cold-tooth-a1sl7pq9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 ```
@@ -55,6 +59,7 @@ Look for the **"Connection string"** tab (NOT the "psql" tab):
 - ✅ Click: **"Copy"** button
 
 It should look EXACTLY like this:
+
 ```
 postgresql://neondb_owner:PASSWORD_HERE@ep-cold-tooth-a1sl7pq9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 ```
@@ -72,6 +77,7 @@ postgresql://neondb_owner:PASSWORD_HERE@ep-cold-tooth-a1sl7pq9-pooler.ap-southea
 5. **PASTE** the connection string you copied from Step 2
 
 6. Make sure it looks like this (with YOUR actual password):
+
    ```
    postgresql://neondb_owner:npg_5YeIhqZxSiQ0aep-cold-tooth-a1sl7pq9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
    ```
@@ -88,6 +94,7 @@ postgresql://neondb_owner:PASSWORD_HERE@ep-cold-tooth-a1sl7pq9-pooler.ap-southea
 ### Step 4: Verify It Saved Correctly
 
 After saving, the value should show as:
+
 ```
 postgresql://••••••••••••••@ep-cold-tooth-a1sl7pq9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 ```
@@ -117,6 +124,7 @@ When you click "Connect" in Neon, you should see tabs like:
 **Click on "Connection string" tab** - NOT the "psql" tab!
 
 Then you'll see something like:
+
 ```
 Connection type: [Pooled ▼]
 

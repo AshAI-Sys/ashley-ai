@@ -43,14 +43,14 @@ All critical security improvements have been successfully implemented. Your Ashl
 
 ## 🎯 Security Improvements
 
-| Feature | Status | Score |
-|---------|--------|-------|
-| Redis Rate Limiting | ✅ Complete | 100/100 |
-| Account Lockout | ✅ Complete | 100/100 |
-| Password Security | ✅ Complete | 100/100 |
-| File Upload Security | ✅ Complete | 100/100 |
+| Feature                 | Status      | Score   |
+| ----------------------- | ----------- | ------- |
+| Redis Rate Limiting     | ✅ Complete | 100/100 |
+| Account Lockout         | ✅ Complete | 100/100 |
+| Password Security       | ✅ Complete | 100/100 |
+| File Upload Security    | ✅ Complete | 100/100 |
 | Content Security Policy | ✅ Complete | 100/100 |
-| Security Headers | ✅ Complete | 100/100 |
+| Security Headers        | ✅ Complete | 100/100 |
 
 **Total Lines of Security Code**: 1,319 lines
 
@@ -59,38 +59,44 @@ All critical security improvements have been successfully implemented. Your Ashl
 ## 🚀 Quick Start Usage
 
 ### 1. Rate Limiting Example
-```typescript
-import { createRateLimiter, RateLimitPresets } from '@/lib/security/rate-limit'
 
-const loginLimiter = createRateLimiter(RateLimitPresets.LOGIN)
+```typescript
+import { createRateLimiter, RateLimitPresets } from "@/lib/security/rate-limit";
+
+const loginLimiter = createRateLimiter(RateLimitPresets.LOGIN);
 
 export async function POST(request: NextRequest) {
-  const limitResponse = await loginLimiter(request)
-  if (limitResponse) return limitResponse
+  const limitResponse = await loginLimiter(request);
+  if (limitResponse) return limitResponse;
 
   // ... your code
 }
 ```
 
 ### 2. Password Validation Example
-```typescript
-import { validatePassword, hashPassword } from '@/lib/security/password'
 
-const validation = validatePassword('MySecureP@ssw0rd2025')
+```typescript
+import { validatePassword, hashPassword } from "@/lib/security/password";
+
+const validation = validatePassword("MySecureP@ssw0rd2025");
 if (!validation.valid) {
-  return { errors: validation.errors }
+  return { errors: validation.errors };
 }
 
-const hash = await hashPassword('MySecureP@ssw0rd2025')
+const hash = await hashPassword("MySecureP@ssw0rd2025");
 ```
 
 ### 3. File Upload Validation Example
-```typescript
-import { validateFileUpload, IMAGE_UPLOAD_CONFIG } from '@/lib/security/file-upload'
 
-const result = await validateFileUpload(file, IMAGE_UPLOAD_CONFIG)
+```typescript
+import {
+  validateFileUpload,
+  IMAGE_UPLOAD_CONFIG,
+} from "@/lib/security/file-upload";
+
+const result = await validateFileUpload(file, IMAGE_UPLOAD_CONFIG);
 if (!result.valid) {
-  return { errors: result.errors }
+  return { errors: result.errors };
 }
 ```
 
@@ -99,6 +105,7 @@ if (!result.valid) {
 ## 📋 Production Deployment
 
 ### Required Environment Variables
+
 ```env
 REDIS_URL="rediss://default:xxx@xxx.upstash.io:6379"
 JWT_SECRET="<strong-random-secret-64-chars>"
@@ -107,6 +114,7 @@ NODE_ENV="production"
 ```
 
 ### Optional Features
+
 ```env
 ENABLE_2FA="true"
 ENABLE_EMAIL_NOTIFICATIONS="true"
@@ -118,6 +126,7 @@ RESEND_API_KEY="re_your_api_key"
 ## ✅ All Security Tasks Complete!
 
 **Next Steps**: Feature Enhancements (Option 5)
+
 - Choose from: Mobile App, Analytics, API Docs, Backups, or Email Features
 - Let me know which you'd like to implement next!
 

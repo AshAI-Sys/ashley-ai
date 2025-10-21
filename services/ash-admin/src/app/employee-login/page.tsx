@@ -1,69 +1,75 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import { AlertCircle, User, Lock, Loader2 } from 'lucide-react'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { AlertCircle, User, Lock, Loader2 } from "lucide-react";
 
 export default function EmployeeLoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(false)
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/employee-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+      const response = await fetch("/api/auth/employee-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
         // Store token
-        localStorage.setItem('access_token', data.access_token)
-        localStorage.setItem('user_type', 'employee')
-        localStorage.setItem('employee_data', JSON.stringify(data.employee))
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user_type", "employee");
+        localStorage.setItem("employee_data", JSON.stringify(data.employee));
 
         // Remember me
         if (rememberMe) {
-          localStorage.setItem('employee_remember_email', email)
-          localStorage.setItem('employee_remember_password', password)
+          localStorage.setItem("employee_remember_email", email);
+          localStorage.setItem("employee_remember_password", password);
         } else {
-          localStorage.removeItem('employee_remember_email')
-          localStorage.removeItem('employee_remember_password')
+          localStorage.removeItem("employee_remember_email");
+          localStorage.removeItem("employee_remember_password");
         }
 
         // Redirect to employee dashboard
-        router.push('/employee')
+        router.push("/employee");
       } else {
-        setError(data.error || 'Login failed. Please check your credentials.')
+        setError(data.error || "Login failed. Please check your credentials.");
       }
     } catch (err) {
-      console.error('Login error:', err)
-      setError('An error occurred. Please try again.')
+      console.error("Login error:", err);
+      setError("An error occurred. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-            <User className="w-8 h-8 text-white" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
+            <User className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-2xl">Employee Login</CardTitle>
           <CardDescription>
@@ -73,20 +79,20 @@ export default function EmployeeLoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
+                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600" />
                 <p className="text-sm text-red-800">{error}</p>
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
+              <label className="mb-2 block text-sm font-medium">Email</label>
               <div className="relative">
-                <User className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
+                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <Input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   placeholder="your.email@ashley.com"
                   className="pl-10"
                   required
@@ -96,13 +102,13 @@ export default function EmployeeLoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
+              <label className="mb-2 block text-sm font-medium">Password</label>
               <div className="relative">
-                <Lock className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
+                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                 <Input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="pl-10"
                   required
@@ -115,7 +121,7 @@ export default function EmployeeLoginPage() {
               <Checkbox
                 id="remember"
                 checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                onCheckedChange={checked => setRememberMe(checked as boolean)}
                 disabled={isLoading}
               />
               <label htmlFor="remember" className="text-sm text-gray-600">
@@ -123,24 +129,20 @@ export default function EmployeeLoginPage() {
               </label>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...
                 </>
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
 
-            <div className="text-center pt-4 border-t">
+            <div className="border-t pt-4 text-center">
               <p className="text-sm text-gray-600">
-                Admin user?{' '}
+                Admin user?{" "}
                 <a href="/login" className="text-blue-600 hover:underline">
                   Sign in here
                 </a>
@@ -151,11 +153,11 @@ export default function EmployeeLoginPage() {
       </Card>
 
       {/* Info Card */}
-      <Card className="absolute bottom-4 right-4 max-w-sm hidden lg:block">
+      <Card className="absolute bottom-4 right-4 hidden max-w-sm lg:block">
         <CardHeader>
           <CardTitle className="text-sm">Employee Portal</CardTitle>
         </CardHeader>
-        <CardContent className="text-xs text-gray-600 space-y-2">
+        <CardContent className="space-y-2 text-xs text-gray-600">
           <p>✓ View your assigned tasks</p>
           <p>✓ Track production performance</p>
           <p>✓ Check attendance records</p>
@@ -163,5 +165,5 @@ export default function EmployeeLoginPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

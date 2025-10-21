@@ -20,6 +20,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -67,6 +68,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "id": "client-uuid",
@@ -112,6 +114,7 @@ Idempotency-Key: order-creation-uuid
 ```
 
 **Response (201):**
+
 ```json
 {
   "id": "order-uuid",
@@ -147,6 +150,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "steps": [
@@ -205,6 +209,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "asset_id": "design-uuid",
@@ -233,6 +238,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "approval_id": "approval-uuid",
@@ -253,6 +259,7 @@ Content-Type: application/json
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": "APPROVED",
@@ -278,6 +285,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "id": "issue-uuid",
@@ -310,6 +318,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "lay_id": "lay-uuid",
@@ -340,6 +349,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "bundles": [
@@ -372,6 +382,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "run_id": "run-uuid"
@@ -419,6 +430,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": "DONE",
@@ -459,6 +471,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": "DONE",
@@ -488,6 +501,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (201):**
+
 ```json
 {
   "inspection_id": "inspection-uuid",
@@ -527,6 +541,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "status": "PASSED",
@@ -550,6 +565,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "orders": {
@@ -580,6 +596,7 @@ Authorization: Bearer {token}
 ```
 
 **Response (200):**
+
 ```json
 {
   "recommendations": [
@@ -624,15 +641,15 @@ All API endpoints return standardized error responses:
 
 ### Common Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `UNAUTHORIZED` | 401 | Invalid or expired token |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `VALIDATION_ERROR` | 422 | Request validation failed |
-| `NOT_FOUND` | 404 | Resource not found |
-| `CONFLICT` | 409 | Resource conflict (e.g., duplicate) |
-| `RATE_LIMITED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Server error |
+| Code               | HTTP Status | Description                         |
+| ------------------ | ----------- | ----------------------------------- |
+| `UNAUTHORIZED`     | 401         | Invalid or expired token            |
+| `FORBIDDEN`        | 403         | Insufficient permissions            |
+| `VALIDATION_ERROR` | 422         | Request validation failed           |
+| `NOT_FOUND`        | 404         | Resource not found                  |
+| `CONFLICT`         | 409         | Resource conflict (e.g., duplicate) |
+| `RATE_LIMITED`     | 429         | Too many requests                   |
+| `INTERNAL_ERROR`   | 500         | Server error                        |
 
 ## 📈 Rate Limits
 

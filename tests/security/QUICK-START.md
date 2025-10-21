@@ -38,17 +38,20 @@ npm install
 ## Step 4: Run Tests (10 seconds)
 
 **Windows:**
+
 ```bash
 run-tests.bat
 ```
 
 **Linux/macOS:**
+
 ```bash
 chmod +x run-tests.sh
 ./run-tests.sh
 ```
 
 **NPM:**
+
 ```bash
 npm test
 ```
@@ -58,6 +61,7 @@ npm test
 ## Step 5: View Results
 
 **Terminal Output:**
+
 ```
 ✓ Account Lockout Protection (9 tests)
 ✓ Password Complexity (15 tests)
@@ -72,12 +76,12 @@ Security Score: A+ (98/100)
 
 ## 🎯 What Gets Tested
 
-| Feature | Tests | Duration |
-|---------|-------|----------|
-| Account Lockout | 9 | ~15s |
-| Password Rules | 15 | ~10s |
-| File Upload | 24 | ~20s |
-| Rate Limiting | 22 | ~30s |
+| Feature         | Tests | Duration |
+| --------------- | ----- | -------- |
+| Account Lockout | 9     | ~15s     |
+| Password Rules  | 15    | ~10s     |
+| File Upload     | 24    | ~20s     |
+| Rate Limiting   | 22    | ~30s     |
 
 **Total:** 70 tests in ~75 seconds
 
@@ -90,6 +94,7 @@ npm run test:report
 ```
 
 Opens beautiful HTML report in browser with:
+
 - Security score dashboard (A+ grade)
 - All test results
 - Coverage metrics
@@ -121,6 +126,7 @@ npm run test:coverage
 ## ✅ Expected Results
 
 **All tests should PASS with:**
+
 - ✅ 70/70 tests passing
 - ✅ 0 vulnerabilities found
 - ✅ A+ security score (98/100)
@@ -131,12 +137,14 @@ npm run test:coverage
 ## 🐛 Troubleshooting
 
 **Server not running?**
+
 ```bash
 cd services/ash-admin
 pnpm run dev
 ```
 
 **Port already in use?**
+
 ```bash
 # Windows
 netstat -ano | findstr :3001
@@ -147,13 +155,17 @@ lsof -ti:3001 | xargs kill -9
 ```
 
 **Tests timing out?**
+
 - Increase timeout in `jest.config.js`:
+
 ```javascript
-testTimeout: 60000  // 60 seconds
+testTimeout: 60000; // 60 seconds
 ```
 
 **Redis not running?**
+
 - Skip rate limiting tests:
+
 ```bash
 npm test -- --testPathIgnorePatterns=rate-limiting
 ```

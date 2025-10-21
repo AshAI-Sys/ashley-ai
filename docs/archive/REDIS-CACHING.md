@@ -15,6 +15,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 ## Features Implemented
 
 ### 1. **Redis Client** 🔌
+
 - IORedis integration with connection pooling
 - Automatic reconnection and retry logic
 - In-memory fallback for development
@@ -22,6 +23,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 - Graceful shutdown handling
 
 ### 2. **Cache Service** 💾
+
 - High-level caching API
 - Automatic JSON serialization/deserialization
 - TTL (Time To Live) management
@@ -30,6 +32,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 - Counter operations (increment, decrement)
 
 ### 3. **Caching Strategies** 🎯
+
 - **Cache-Aside Pattern**: getOrSet for automatic caching
 - **Specialized Caches**: User, Order, Client, Inventory, Session, API
 - **Smart TTLs**: Optimized durations for different data types
@@ -37,6 +40,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 - **Batch Invalidation**: Invalidate related data together
 
 ### 4. **Cache Middleware** ⚡
+
 - Automatic API response caching
 - Cache key generation with vary-by headers
 - Cache invalidation on mutations
@@ -44,6 +48,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 - Memoization utilities
 
 ### 5. **Rate Limiting** 🚦
+
 - Redis-based rate limiting
 - Per-endpoint limits
 - Distributed rate limiting (works across instances)
@@ -56,6 +61,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 ### Core Files
 
 #### 1. `src/lib/redis/client.ts`
+
 - **Lines**: 150
 - **Purpose**: Redis connection and client management
 - **Features**:
@@ -65,6 +71,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
   - Health check utilities
 
 #### 2. `src/lib/redis/cache.ts`
+
 - **Lines**: 200
 - **Purpose**: High-level cache service
 - **Features**:
@@ -75,6 +82,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
   - Specialized cache instances
 
 #### 3. `src/lib/redis/strategies.ts`
+
 - **Lines**: 250
 - **Purpose**: Caching strategies and patterns
 - **Features**:
@@ -86,6 +94,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
   - Batch operations
 
 #### 4. `src/lib/redis/middleware.ts`
+
 - **Lines**: 150
 - **Purpose**: Cache middleware for API routes
 - **Features**:
@@ -96,6 +105,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
   - Memoization
 
 #### 5. `src/lib/redis/index.ts`
+
 - **Lines**: 80
 - **Purpose**: Export module with examples
 - **Features**:
@@ -110,6 +120,7 @@ Implemented high-performance Redis caching to speed up the Ashley AI system by 1
 ### Step 1: Install Redis (Choose One)
 
 #### Option 1: Local Redis (Development)
+
 ```bash
 # Windows (Chocolatey)
 choco install redis
@@ -124,18 +135,21 @@ sudo systemctl start redis
 ```
 
 #### Option 2: Upstash Redis (Serverless - Recommended for Production)
+
 1. Go to https://upstash.com
 2. Create free account
 3. Create Redis database
 4. Copy connection URL
 
 #### Option 3: Redis Cloud
+
 1. Go to https://redis.com/try-free/
 2. Create account
 3. Create database
 4. Copy connection URL
 
 ### Step 2: Install Redis Client
+
 ```bash
 cd services/ash-admin
 pnpm add ioredis
@@ -144,6 +158,7 @@ npm install ioredis
 ```
 
 ### Step 3: Configure Environment
+
 ```bash
 # Add to .env
 REDIS_URL="redis://localhost:6379"
@@ -153,11 +168,12 @@ REDIS_URL="rediss://default:xxx@xxx.upstash.io:6379"
 ```
 
 ### Step 4: Test Connection
-```typescript
-import { isRedisAvailable } from '@/lib/redis'
 
-const available = await isRedisAvailable()
-console.log('Redis available:', available)
+```typescript
+import { isRedisAvailable } from "@/lib/redis";
+
+const available = await isRedisAvailable();
+console.log("Redis available:", available);
 ```
 
 ---
@@ -167,105 +183,105 @@ console.log('Redis available:', available)
 ### 1. Basic Caching
 
 ```typescript
-import { cache } from '@/lib/redis'
+import { cache } from "@/lib/redis";
 
 // Set with TTL (5 minutes)
-await cache.set('user:123', { id: '123', name: 'John' }, 300)
+await cache.set("user:123", { id: "123", name: "John" }, 300);
 
 // Get
-const user = await cache.get('user:123')
+const user = await cache.get("user:123");
 
 // Delete
-await cache.delete('user:123')
+await cache.delete("user:123");
 
 // Check existence
-const exists = await cache.exists('user:123')
+const exists = await cache.exists("user:123");
 ```
 
 ### 2. Cache-Aside Pattern (Recommended)
 
 ```typescript
-import { cache } from '@/lib/redis'
+import { cache } from "@/lib/redis";
 
 const user = await cache.getOrSet(
-  'user:123',
+  "user:123",
   async () => {
     // Fetch from database if not in cache
     return await prisma.user.findUnique({
-      where: { id: '123' }
-    })
+      where: { id: "123" },
+    });
   },
   1800 // 30 minutes TTL
-)
+);
 ```
 
 ### 3. User Caching
 
 ```typescript
-import { cacheUser, getCachedUser, invalidateUser } from '@/lib/redis'
+import { cacheUser, getCachedUser, invalidateUser } from "@/lib/redis";
 
 // Cache user
-await cacheUser(user.id, user)
+await cacheUser(user.id, user);
 
 // Get cached user
-const cached = await getCachedUser(user.id)
+const cached = await getCachedUser(user.id);
 
 // Invalidate user cache
-await invalidateUser(user.id, user.email)
+await invalidateUser(user.id, user.email);
 ```
 
 ### 4. Order Caching
 
 ```typescript
-import { cacheOrder, getCachedOrder, invalidateOrder } from '@/lib/redis'
+import { cacheOrder, getCachedOrder, invalidateOrder } from "@/lib/redis";
 
 // Cache order
-await cacheOrder(order.id, order)
+await cacheOrder(order.id, order);
 
 // Get cached order
-const cached = await getCachedOrder(order.id)
+const cached = await getCachedOrder(order.id);
 
 // Invalidate (e.g., on status update)
-await invalidateOrder(order.id, order.client_id)
+await invalidateOrder(order.id, order.client_id);
 ```
 
 ### 5. API Response Caching
 
 ```typescript
-import { withCache } from '@/lib/redis'
+import { withCache } from "@/lib/redis";
 
 export const GET = withCache(
   async (request: NextRequest) => {
-    const orders = await prisma.order.findMany()
-    return NextResponse.json(orders)
+    const orders = await prisma.order.findMany();
+    return NextResponse.json(orders);
   },
   {
-    ttl: 300,           // 5 minutes
-    varyBy: ['user-id'] // Include user-id header in cache key
+    ttl: 300, // 5 minutes
+    varyBy: ["user-id"], // Include user-id header in cache key
   }
-)
+);
 ```
 
 ### 6. Rate Limiting
 
 ```typescript
-import { checkRateLimit } from '@/lib/redis'
+import { checkRateLimit } from "@/lib/redis";
 
 export async function POST(request: NextRequest) {
-  const ip = request.ip || 'unknown'
+  const ip = request.ip || "unknown";
 
   const { allowed, remaining, resetAt } = await checkRateLimit(
     ip,
-    '/api/auth/login',
-    5,  // Max 5 requests
-    60  // Per 60 seconds
-  )
+    "/api/auth/login",
+    5, // Max 5 requests
+    60 // Per 60 seconds
+  );
 
   if (!allowed) {
     return NextResponse.json(
-      { error: 'Too many requests', retryAfter: resetAt },
+      { error: "Too many requests", retryAfter: resetAt },
       { status: 429 }
-    )
+    );
   }
 
   // Process login...
@@ -275,79 +291,86 @@ export async function POST(request: NextRequest) {
 ### 7. Session Caching
 
 ```typescript
-import { cacheSession, getCachedSession, invalidateSession } from '@/lib/redis'
+import { cacheSession, getCachedSession, invalidateSession } from "@/lib/redis";
 
 // Store session
 await cacheSession(sessionId, {
   userId: user.id,
   role: user.role,
-  permissions: user.permissions
-})
+  permissions: user.permissions,
+});
 
 // Get session
-const session = await getCachedSession(sessionId)
+const session = await getCachedSession(sessionId);
 
 // Invalidate (on logout)
-await invalidateSession(sessionId)
+await invalidateSession(sessionId);
 ```
 
 ### 8. Dashboard Stats Caching
 
 ```typescript
-import { cacheDashboardStats, getCachedDashboardStats } from '@/lib/redis'
+import { cacheDashboardStats, getCachedDashboardStats } from "@/lib/redis";
 
 export async function GET(request: NextRequest) {
-  const workspaceId = 'workspace-123'
+  const workspaceId = "workspace-123";
 
-  const stats = await getCachedDashboardStats(workspaceId) ||
-    await cache.getOrSet(
+  const stats =
+    (await getCachedDashboardStats(workspaceId)) ||
+    (await cache.getOrSet(
       `dashboard:${workspaceId}`,
       async () => {
         return {
           totalOrders: await prisma.order.count(),
-          activeOrders: await prisma.order.count({ where: { status: 'ACTIVE' } }),
+          activeOrders: await prisma.order.count({
+            where: { status: "ACTIVE" },
+          }),
           revenue: await calculateRevenue(),
-        }
+        };
       },
       300 // 5 minutes
-    )
+    ));
 
-  return NextResponse.json(stats)
+  return NextResponse.json(stats);
 }
 ```
 
 ### 9. Inventory Caching
 
 ```typescript
-import { cacheInventory, getCachedInventory, invalidateInventory } from '@/lib/redis'
+import {
+  cacheInventory,
+  getCachedInventory,
+  invalidateInventory,
+} from "@/lib/redis";
 
 // Cache inventory level
 await cacheInventory(itemId, {
   itemId,
   quantity: 100,
-  lowStockThreshold: 20
-})
+  lowStockThreshold: 20,
+});
 
 // Get cached inventory
-const inventory = await getCachedInventory(itemId)
+const inventory = await getCachedInventory(itemId);
 
 // Invalidate on stock update
-await invalidateInventory(itemId)
+await invalidateInventory(itemId);
 ```
 
 ### 10. Pattern-Based Invalidation
 
 ```typescript
-import { cache } from '@/lib/redis'
+import { cache } from "@/lib/redis";
 
 // Invalidate all order caches
-await cache.invalidatePattern('order:*')
+await cache.invalidatePattern("order:*");
 
 // Invalidate all user caches
-await cache.invalidatePattern('user:*')
+await cache.invalidatePattern("user:*");
 
 // Invalidate specific pattern
-await cache.invalidatePattern('dashboard:workspace-*')
+await cache.invalidatePattern("dashboard:workspace-*");
 ```
 
 ---
@@ -359,25 +382,25 @@ await cache.invalidatePattern('dashboard:workspace-*')
 ```typescript
 export const CacheTTL = {
   // Very short (1-5 minutes) - Frequently changing
-  REAL_TIME: 60,              // 1 minute
-  STOCK_LEVELS: 120,          // 2 minutes
-  PRODUCTION_STATUS: 300,     // 5 minutes
+  REAL_TIME: 60, // 1 minute
+  STOCK_LEVELS: 120, // 2 minutes
+  PRODUCTION_STATUS: 300, // 5 minutes
 
   // Short (5-15 minutes) - Semi-dynamic
-  USER_SESSION: 900,          // 15 minutes
-  ORDER_STATUS: 600,          // 10 minutes
-  DASHBOARD_STATS: 300,       // 5 minutes
+  USER_SESSION: 900, // 15 minutes
+  ORDER_STATUS: 600, // 10 minutes
+  DASHBOARD_STATS: 300, // 5 minutes
 
   // Medium (15-60 minutes) - Moderate change
-  USER_PROFILE: 1800,         // 30 minutes
-  CLIENT_DATA: 3600,          // 1 hour
-  PRODUCT_DATA: 3600,         // 1 hour
+  USER_PROFILE: 1800, // 30 minutes
+  CLIENT_DATA: 3600, // 1 hour
+  PRODUCT_DATA: 3600, // 1 hour
 
   // Long (1-24 hours) - Rarely changing
-  SYSTEM_CONFIG: 7200,        // 2 hours
-  STATIC_DATA: 86400,         // 24 hours
-  REPORTS: 43200,             // 12 hours
-}
+  SYSTEM_CONFIG: 7200, // 2 hours
+  STATIC_DATA: 86400, // 24 hours
+  REPORTS: 43200, // 12 hours
+};
 ```
 
 ### Cache Key Patterns
@@ -412,6 +435,7 @@ ratelimit:${identifier}:${endpoint}
 ## Performance Impact
 
 ### Without Redis
+
 ```
 GET /api/orders               →  500ms (database query)
 GET /api/dashboard/stats      →  2000ms (complex aggregations)
@@ -419,6 +443,7 @@ GET /api/clients              →  300ms (database query)
 ```
 
 ### With Redis
+
 ```
 GET /api/orders               →  5ms (cache hit)    ✅ 100x faster
 GET /api/dashboard/stats      →  3ms (cache hit)    ✅ 666x faster
@@ -426,6 +451,7 @@ GET /api/clients              →  4ms (cache hit)    ✅ 75x faster
 ```
 
 ### Cache Hit Rates (Expected)
+
 - User profiles: **90-95%**
 - Order lists: **70-80%**
 - Dashboard stats: **85-90%**
@@ -436,32 +462,36 @@ GET /api/clients              →  4ms (cache hit)    ✅ 75x faster
 ## Cache Invalidation Strategies
 
 ### 1. Time-Based (TTL)
+
 ```typescript
 // Automatic expiration after TTL
-await cache.set('key', value, 300) // Expires in 5 minutes
+await cache.set("key", value, 300); // Expires in 5 minutes
 ```
 
 ### 2. Event-Based
+
 ```typescript
 // Invalidate on data change
 async function updateOrder(orderId: string, data: any) {
-  await prisma.order.update({ where: { id: orderId }, data })
-  await invalidateOrder(orderId) // Invalidate cache
+  await prisma.order.update({ where: { id: orderId }, data });
+  await invalidateOrder(orderId); // Invalidate cache
 }
 ```
 
 ### 3. Pattern-Based
+
 ```typescript
 // Invalidate all related caches
-await cache.invalidatePattern('orders:*')
-await invalidateAllOrderData()
+await cache.invalidatePattern("orders:*");
+await invalidateAllOrderData();
 ```
 
 ### 4. Version-Based
+
 ```typescript
 // Include version in cache key
-const version = '1'
-await cache.set(`user:${userId}:v${version}`, user)
+const version = "1";
+await cache.set(`user:${userId}:v${version}`, user);
 ```
 
 ---
@@ -471,6 +501,7 @@ await cache.set(`user:${userId}:v${version}`, user)
 ### Upstash Redis (Serverless - Recommended)
 
 **Pros:**
+
 - No server management
 - Auto-scaling
 - Pay-per-request
@@ -478,6 +509,7 @@ await cache.set(`user:${userId}:v${version}`, user)
 - Free tier available
 
 **Setup:**
+
 ```bash
 # 1. Create account at https://upstash.com
 # 2. Create Redis database
@@ -488,12 +520,14 @@ REDIS_URL="rediss://default:xxx@xxx.upstash.io:6379"
 ### Redis Cloud
 
 **Pros:**
+
 - Enterprise features
 - High availability
 - Managed service
 - Multiple regions
 
 **Setup:**
+
 ```bash
 # 1. Sign up at https://redis.com/try-free/
 # 2. Create database
@@ -504,11 +538,13 @@ REDIS_URL="redis://username:password@host:port"
 ### Self-Hosted Redis
 
 **Pros:**
+
 - Full control
 - No costs
 - Customizable
 
 **Cons:**
+
 - Requires management
 - Need backups
 - Scaling complexity
@@ -518,35 +554,39 @@ REDIS_URL="redis://username:password@host:port"
 ## Monitoring & Debugging
 
 ### Check Redis Status
+
 ```typescript
-import { isRedisAvailable, getRedisInfo } from '@/lib/redis'
+import { isRedisAvailable, getRedisInfo } from "@/lib/redis";
 
-const available = await isRedisAvailable()
-const info = await getRedisInfo()
+const available = await isRedisAvailable();
+const info = await getRedisInfo();
 
-console.log('Redis available:', available)
-console.log('Redis info:', info)
+console.log("Redis available:", available);
+console.log("Redis info:", info);
 ```
 
 ### Cache Statistics
-```typescript
-import { getCacheStats } from '@/lib/redis'
 
-const stats = await getCacheStats()
-console.log('Total keys:', stats?.totalKeys)
-console.log('Stats:', stats?.info)
+```typescript
+import { getCacheStats } from "@/lib/redis";
+
+const stats = await getCacheStats();
+console.log("Total keys:", stats?.totalKeys);
+console.log("Stats:", stats?.info);
 ```
 
 ### Debug Cache Keys
-```typescript
-import { getRedisClient } from '@/lib/redis'
 
-const redis = getRedisClient()
-const keys = await redis.keys('order:*')
-console.log('Order cache keys:', keys)
+```typescript
+import { getRedisClient } from "@/lib/redis";
+
+const redis = getRedisClient();
+const keys = await redis.keys("order:*");
+console.log("Order cache keys:", keys);
 ```
 
 ### Monitor Cache Hits/Misses
+
 ```typescript
 // Check API response headers
 X-Cache: HIT    // Cache hit
@@ -561,36 +601,40 @@ X-Cache-Key: abc123
 ### ✅ Do's
 
 1. **Use Appropriate TTLs**
+
    ```typescript
    // Frequently changing data: short TTL
-   await cache.set('stock:123', data, 60) // 1 minute
+   await cache.set("stock:123", data, 60); // 1 minute
 
    // Static data: long TTL
-   await cache.set('config', data, 86400) // 24 hours
+   await cache.set("config", data, 86400); // 24 hours
    ```
 
 2. **Invalidate on Updates**
+
    ```typescript
    async function updateUser(userId: string, data: any) {
-     await prisma.user.update({ where: { id: userId }, data })
-     await invalidateUser(userId) // Important!
+     await prisma.user.update({ where: { id: userId }, data });
+     await invalidateUser(userId); // Important!
    }
    ```
 
 3. **Use Cache-Aside Pattern**
+
    ```typescript
-   const data = await cache.getOrSet('key', fetchData, ttl)
+   const data = await cache.getOrSet("key", fetchData, ttl);
    ```
 
 4. **Namespace Your Keys**
+
    ```typescript
    // Good
-   user:123
-   order:456
+   user: 123;
+   order: 456;
 
    // Bad
-   123
-   456
+   123;
+   456;
    ```
 
 5. **Handle Cache Failures Gracefully**
@@ -605,33 +649,36 @@ X-Cache-Key: abc123
 ### ❌ Don'ts
 
 1. **Don't Cache Everything**
+
    ```typescript
    // Don't cache one-time data
    // Don't cache data that changes every request
    ```
 
 2. **Don't Store Sensitive Data**
+
    ```typescript
    // Bad: Caching passwords, tokens
-   await cache.set('password:123', hashedPassword) // ❌
+   await cache.set("password:123", hashedPassword); // ❌
 
    // Good: Cache only non-sensitive data
-   await cache.set('user:123', { id, email, name }) // ✅
+   await cache.set("user:123", { id, email, name }); // ✅
    ```
 
 3. **Don't Use Infinite TTL**
+
    ```typescript
    // Bad: No expiration
-   await cache.set('key', value) // ❌
+   await cache.set("key", value); // ❌
 
    // Good: Always set TTL
-   await cache.set('key', value, 3600) // ✅
+   await cache.set("key", value, 3600); // ✅
    ```
 
 4. **Don't Forget to Invalidate**
    ```typescript
    // After updates, delete cache!
-   await invalidateOrder(orderId)
+   await invalidateOrder(orderId);
    ```
 
 ---
@@ -641,11 +688,13 @@ X-Cache-Key: abc123
 ### Issue: Redis Connection Failed
 
 **Check:**
+
 1. Redis server running
 2. REDIS_URL correct
 3. Network/firewall allows connection
 
 **Solution:**
+
 ```bash
 # Test Redis locally
 redis-cli ping
@@ -663,6 +712,7 @@ rediss://user:pass@host:port    # TLS/SSL
 **Cause:** REDIS_URL not configured
 
 **Solution:**
+
 ```bash
 # Add to .env
 REDIS_URL="redis://localhost:6379"
@@ -671,23 +721,26 @@ REDIS_URL="redis://localhost:6379"
 ### Issue: Cache Not Invalidating
 
 **Check:**
+
 1. Invalidation called after updates
 2. Correct cache key used
 3. Pattern matches keys
 
 **Solution:**
+
 ```typescript
 // Debug: List all keys
-const keys = await redis.keys('*')
-console.log('All cache keys:', keys)
+const keys = await redis.keys("*");
+console.log("All cache keys:", keys);
 
 // Force invalidate
-await cache.clear() // Clear all
+await cache.clear(); // Clear all
 ```
 
 ### Issue: High Memory Usage
 
 **Solution:**
+
 1. Reduce TTLs
 2. Use pattern invalidation
 3. Monitor key count
@@ -704,35 +757,42 @@ maxmemory-policy allkeys-lru
 ## Testing
 
 ### Test Cache Functionality
+
 ```typescript
 // test/redis.test.ts
-import { cache } from '@/lib/redis'
+import { cache } from "@/lib/redis";
 
-test('cache operations', async () => {
-  await cache.set('test', { value: 123 }, 60)
-  const data = await cache.get('test')
-  expect(data).toEqual({ value: 123 })
+test("cache operations", async () => {
+  await cache.set("test", { value: 123 }, 60);
+  const data = await cache.get("test");
+  expect(data).toEqual({ value: 123 });
 
-  await cache.delete('test')
-  const deleted = await cache.get('test')
-  expect(deleted).toBeNull()
-})
+  await cache.delete("test");
+  const deleted = await cache.get("test");
+  expect(deleted).toBeNull();
+});
 ```
 
 ### Test Rate Limiting
+
 ```typescript
-test('rate limiting', async () => {
-  const { allowed } = await checkRateLimit('test-ip', '/api/test', 5, 60)
-  expect(allowed).toBe(true)
+test("rate limiting", async () => {
+  const { allowed } = await checkRateLimit("test-ip", "/api/test", 5, 60);
+  expect(allowed).toBe(true);
 
   // Exceed limit
   for (let i = 0; i < 5; i++) {
-    await checkRateLimit('test-ip', '/api/test', 5, 60)
+    await checkRateLimit("test-ip", "/api/test", 5, 60);
   }
 
-  const { allowed: blocked } = await checkRateLimit('test-ip', '/api/test', 5, 60)
-  expect(blocked).toBe(false)
-})
+  const { allowed: blocked } = await checkRateLimit(
+    "test-ip",
+    "/api/test",
+    5,
+    60
+  );
+  expect(blocked).toBe(false);
+});
 ```
 
 ---
@@ -770,6 +830,7 @@ test('rate limiting', async () => {
 **Redis Caching is COMPLETE and production-ready!**
 
 The system now provides:
+
 - 10-100x performance improvement for cached data
 - Distributed caching across multiple instances
 - Automatic fallback for development

@@ -1,26 +1,26 @@
-'use client'
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from "react";
 import {
   AnimationType,
   AnimationDuration,
   AnimationEasing,
   animate,
   isInViewport,
-} from '@/lib/animations'
+} from "@/lib/animations";
 
 interface AnimatedWrapperProps {
-  children: React.ReactNode
-  animation?: AnimationType
-  duration?: AnimationDuration
-  easing?: AnimationEasing
-  delay?: number
-  triggerOnScroll?: boolean
-  threshold?: number
-  repeat?: boolean
-  className?: string
-  onAnimationStart?: () => void
-  onAnimationEnd?: () => void
+  children: React.ReactNode;
+  animation?: AnimationType;
+  duration?: AnimationDuration;
+  easing?: AnimationEasing;
+  delay?: number;
+  triggerOnScroll?: boolean;
+  threshold?: number;
+  repeat?: boolean;
+  className?: string;
+  onAnimationStart?: () => void;
+  onAnimationEnd?: () => void;
 }
 
 /**
@@ -40,78 +40,89 @@ interface AnimatedWrapperProps {
  */
 export function AnimatedWrapper({
   children,
-  animation = 'fadeIn',
-  duration = 'normal',
-  easing = 'easeOut',
+  animation = "fadeIn",
+  duration = "normal",
+  easing = "easeOut",
   delay = 0,
   triggerOnScroll = false,
   threshold = 0.1,
   repeat = false,
-  className = '',
+  className = "",
   onAnimationStart,
   onAnimationEnd,
 }: AnimatedWrapperProps) {
-  const elementRef = useRef<HTMLDivElement>(null)
-  const [hasAnimated, setHasAnimated] = useState(false)
-  const observerRef = useRef<IntersectionObserver | null>(null)
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const element = elementRef.current
-    if (!element) return
+    const element = elementRef.current;
+    if (!element) return;
 
     if (triggerOnScroll) {
       // Create intersection observer for scroll-triggered animations
       observerRef.current = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
+        entries => {
+          entries.forEach(entry => {
             if (entry.isIntersecting && (!hasAnimated || repeat)) {
-              onAnimationStart?.()
+              onAnimationStart?.();
               const anim = animate(element, {
                 type: animation,
                 duration,
                 easing,
                 delay,
-              })
+              });
 
               anim.finished.then(() => {
-                onAnimationEnd?.()
-                setHasAnimated(true)
-              })
+                onAnimationEnd?.();
+                setHasAnimated(true);
+              });
             }
-          })
+          });
         },
         { threshold }
-      )
+      );
 
-      observerRef.current.observe(element)
+      observerRef.current.observe(element);
     } else {
       // Immediate animation
-      onAnimationStart?.()
+      onAnimationStart?.();
       const anim = animate(element, {
         type: animation,
         duration,
         easing,
         delay,
-      })
+      });
 
       anim.finished.then(() => {
-        onAnimationEnd?.()
-        setHasAnimated(true)
-      })
+        onAnimationEnd?.();
+        setHasAnimated(true);
+      });
     }
 
     return () => {
       if (observerRef.current) {
-        observerRef.current.disconnect()
+        observerRef.current.disconnect();
       }
-    }
-  }, [animation, duration, easing, delay, triggerOnScroll, threshold, repeat, hasAnimated, onAnimationStart, onAnimationEnd])
+    };
+  }, [
+    animation,
+    duration,
+    easing,
+    delay,
+    triggerOnScroll,
+    threshold,
+    repeat,
+    hasAnimated,
+    onAnimationStart,
+    onAnimationEnd,
+  ]);
 
   return (
     <div ref={elementRef} className={className}>
       {children}
     </div>
-  )
+  );
 }
 
 /**
@@ -126,31 +137,31 @@ export function AnimatedWrapper({
  * </StaggeredList>
  */
 interface StaggeredListProps {
-  children: React.ReactNode
-  animation?: AnimationType
-  duration?: AnimationDuration
-  easing?: AnimationEasing
-  staggerDelay?: number
-  className?: string
-  itemClassName?: string
+  children: React.ReactNode;
+  animation?: AnimationType;
+  duration?: AnimationDuration;
+  easing?: AnimationEasing;
+  staggerDelay?: number;
+  className?: string;
+  itemClassName?: string;
 }
 
 export function StaggeredList({
   children,
-  animation = 'fadeIn',
-  duration = 'normal',
-  easing = 'easeOut',
+  animation = "fadeIn",
+  duration = "normal",
+  easing = "easeOut",
   staggerDelay = 50,
-  className = '',
-  itemClassName = '',
+  className = "",
+  itemClassName = "",
 }: StaggeredListProps) {
-  const listRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const listElement = listRef.current
-    if (!listElement) return
+    const listElement = listRef.current;
+    if (!listElement) return;
 
-    const items = Array.from(listElement.children) as HTMLElement[]
+    const items = Array.from(listElement.children) as HTMLElement[];
 
     items.forEach((item, index) => {
       animate(item, {
@@ -158,17 +169,17 @@ export function StaggeredList({
         duration,
         easing,
         delay: index * staggerDelay,
-      })
-    })
-  }, [animation, duration, easing, staggerDelay])
+      });
+    });
+  }, [animation, duration, easing, staggerDelay]);
 
   return (
     <div ref={listRef} className={className}>
-      {React.Children.map(children, (child) => (
+      {React.Children.map(children, child => (
         <div className={itemClassName}>{child}</div>
       ))}
     </div>
-  )
+  );
 }
 
 /**
@@ -181,52 +192,52 @@ export function StaggeredList({
  * </FadeTransition>
  */
 interface FadeTransitionProps {
-  show: boolean
-  children: React.ReactNode
-  duration?: AnimationDuration
-  className?: string
+  show: boolean;
+  children: React.ReactNode;
+  duration?: AnimationDuration;
+  className?: string;
 }
 
 export function FadeTransition({
   show,
   children,
-  duration = 'normal',
-  className = '',
+  duration = "normal",
+  className = "",
 }: FadeTransitionProps) {
-  const elementRef = useRef<HTMLDivElement>(null)
-  const [shouldRender, setShouldRender] = useState(show)
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [shouldRender, setShouldRender] = useState(show);
 
   useEffect(() => {
-    const element = elementRef.current
-    if (!element) return
+    const element = elementRef.current;
+    if (!element) return;
 
     if (show) {
-      setShouldRender(true)
+      setShouldRender(true);
       requestAnimationFrame(() => {
         animate(element, {
-          type: 'fadeIn',
+          type: "fadeIn",
           duration,
-        })
-      })
+        });
+      });
     } else {
       const anim = animate(element, {
-        type: 'fadeOut',
+        type: "fadeOut",
         duration,
-      })
+      });
 
       anim.finished.then(() => {
-        setShouldRender(false)
-      })
+        setShouldRender(false);
+      });
     }
-  }, [show, duration])
+  }, [show, duration]);
 
-  if (!shouldRender) return null
+  if (!shouldRender) return null;
 
   return (
     <div ref={elementRef} className={className}>
       {children}
     </div>
-  )
+  );
 }
 
 /**
@@ -239,61 +250,61 @@ export function FadeTransition({
  * </SlideTransition>
  */
 interface SlideTransitionProps {
-  show: boolean
-  direction?: 'left' | 'right' | 'up' | 'down'
-  children: React.ReactNode
-  duration?: AnimationDuration
-  className?: string
+  show: boolean;
+  direction?: "left" | "right" | "up" | "down";
+  children: React.ReactNode;
+  duration?: AnimationDuration;
+  className?: string;
 }
 
 export function SlideTransition({
   show,
-  direction = 'right',
+  direction = "right",
   children,
-  duration = 'normal',
-  className = '',
+  duration = "normal",
+  className = "",
 }: SlideTransitionProps) {
-  const elementRef = useRef<HTMLDivElement>(null)
-  const [shouldRender, setShouldRender] = useState(show)
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [shouldRender, setShouldRender] = useState(show);
 
   useEffect(() => {
-    const element = elementRef.current
-    if (!element) return
+    const element = elementRef.current;
+    if (!element) return;
 
     const animationMap = {
-      left: { in: 'slideInLeft' as const, out: 'slideOutLeft' as const },
-      right: { in: 'slideInRight' as const, out: 'slideOutRight' as const },
-      up: { in: 'slideInUp' as const, out: 'slideOutUp' as const },
-      down: { in: 'slideInDown' as const, out: 'slideOutDown' as const },
-    }
+      left: { in: "slideInLeft" as const, out: "slideOutLeft" as const },
+      right: { in: "slideInRight" as const, out: "slideOutRight" as const },
+      up: { in: "slideInUp" as const, out: "slideOutUp" as const },
+      down: { in: "slideInDown" as const, out: "slideOutDown" as const },
+    };
 
     if (show) {
-      setShouldRender(true)
+      setShouldRender(true);
       requestAnimationFrame(() => {
         animate(element, {
           type: animationMap[direction].in,
           duration,
-        })
-      })
+        });
+      });
     } else {
       const anim = animate(element, {
         type: animationMap[direction].out,
         duration,
-      })
+      });
 
       anim.finished.then(() => {
-        setShouldRender(false)
-      })
+        setShouldRender(false);
+      });
     }
-  }, [show, direction, duration])
+  }, [show, direction, duration]);
 
-  if (!shouldRender) return null
+  if (!shouldRender) return null;
 
   return (
     <div ref={elementRef} className={className}>
       {children}
     </div>
-  )
+  );
 }
 
 /**
@@ -306,50 +317,50 @@ export function SlideTransition({
  * </ScaleTransition>
  */
 interface ScaleTransitionProps {
-  show: boolean
-  children: React.ReactNode
-  duration?: AnimationDuration
-  className?: string
+  show: boolean;
+  children: React.ReactNode;
+  duration?: AnimationDuration;
+  className?: string;
 }
 
 export function ScaleTransition({
   show,
   children,
-  duration = 'normal',
-  className = '',
+  duration = "normal",
+  className = "",
 }: ScaleTransitionProps) {
-  const elementRef = useRef<HTMLDivElement>(null)
-  const [shouldRender, setShouldRender] = useState(show)
+  const elementRef = useRef<HTMLDivElement>(null);
+  const [shouldRender, setShouldRender] = useState(show);
 
   useEffect(() => {
-    const element = elementRef.current
-    if (!element) return
+    const element = elementRef.current;
+    if (!element) return;
 
     if (show) {
-      setShouldRender(true)
+      setShouldRender(true);
       requestAnimationFrame(() => {
         animate(element, {
-          type: 'scaleIn',
+          type: "scaleIn",
           duration,
-        })
-      })
+        });
+      });
     } else {
       const anim = animate(element, {
-        type: 'scaleOut',
+        type: "scaleOut",
         duration,
-      })
+      });
 
       anim.finished.then(() => {
-        setShouldRender(false)
-      })
+        setShouldRender(false);
+      });
     }
-  }, [show, duration])
+  }, [show, duration]);
 
-  if (!shouldRender) return null
+  if (!shouldRender) return null;
 
   return (
     <div ref={elementRef} className={className}>
       {children}
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import DashboardLayout from '@/components/dashboard-layout'
+import { useState, useEffect } from "react";
+import DashboardLayout from "@/components/dashboard-layout";
 import {
   AlertTriangle,
   CheckCircle,
@@ -12,189 +12,220 @@ import {
   Filter,
   Plus,
   Eye,
-  Edit
-} from 'lucide-react'
+  Edit,
+} from "lucide-react";
 
 interface CAPATask {
-  id: string
-  capa_number: string
-  title: string
-  type: 'CORRECTIVE' | 'PREVENTIVE'
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
-  status: 'OPEN' | 'IN_PROGRESS' | 'PENDING_VERIFICATION' | 'CLOSED'
-  source_type: string
-  root_cause?: string
-  corrective_action?: string
-  preventive_action?: string
-  assignee?: { first_name: string, last_name: string }
-  creator: { first_name: string, last_name: string }
-  due_date?: string
-  completed_at?: string
-  verified_at?: string
-  effectiveness?: string
-  created_at: string
-  order?: { order_number: string }
+  id: string;
+  capa_number: string;
+  title: string;
+  type: "CORRECTIVE" | "PREVENTIVE";
+  priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+  status: "OPEN" | "IN_PROGRESS" | "PENDING_VERIFICATION" | "CLOSED";
+  source_type: string;
+  root_cause?: string;
+  corrective_action?: string;
+  preventive_action?: string;
+  assignee?: { first_name: string; last_name: string };
+  creator: { first_name: string; last_name: string };
+  due_date?: string;
+  completed_at?: string;
+  verified_at?: string;
+  effectiveness?: string;
+  created_at: string;
+  order?: { order_number: string };
 }
 
 interface CAPAStats {
-  total_tasks: number
-  open: number
-  in_progress: number
-  overdue: number
-  effectiveness_rate: number
+  total_tasks: number;
+  open: number;
+  in_progress: number;
+  overdue: number;
+  effectiveness_rate: number;
 }
 
 export default function CAPAManagementPage() {
-  const [tasks, setTasks] = useState<CAPATask[]>([])
-  const [stats, setStats] = useState<CAPAStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [selectedStatus, setSelectedStatus] = useState('all')
-  const [selectedPriority, setSelectedPriority] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
+  const [tasks, setTasks] = useState<CAPATask[]>([]);
+  const [stats, setStats] = useState<CAPAStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedPriority, setSelectedPriority] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    loadData()
-  }, [selectedStatus, selectedPriority])
+    loadData();
+  }, [selectedStatus, selectedPriority]);
 
   const loadData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const params = new URLSearchParams()
-      if (selectedStatus !== 'all') params.append('status', selectedStatus)
-      if (selectedPriority !== 'all') params.append('priority', selectedPriority)
+      const params = new URLSearchParams();
+      if (selectedStatus !== "all") params.append("status", selectedStatus);
+      if (selectedPriority !== "all")
+        params.append("priority", selectedPriority);
 
-      const response = await fetch(`/api/quality-control/capa?${params}`)
-      const data = await response.json()
+      const response = await fetch(`/api/quality-control/capa?${params}`);
+      const data = await response.json();
 
       if (data.capa_tasks) {
-        setTasks(data.capa_tasks)
+        setTasks(data.capa_tasks);
 
         // Calculate stats
-        const total = data.capa_tasks.length
-        const open = data.capa_tasks.filter((t: CAPATask) => t.status === 'OPEN').length
-        const inProgress = data.capa_tasks.filter((t: CAPATask) => t.status === 'IN_PROGRESS').length
-        const now = new Date()
-        const overdue = data.capa_tasks.filter((t: CAPATask) =>
-          t.due_date && new Date(t.due_date) < now && t.status !== 'CLOSED'
-        ).length
-        const effective = data.capa_tasks.filter((t: CAPATask) =>
-          t.effectiveness === 'EFFECTIVE'
-        ).length
-        const totalClosed = data.capa_tasks.filter((t: CAPATask) => t.status === 'CLOSED').length
+        const total = data.capa_tasks.length;
+        const open = data.capa_tasks.filter(
+          (t: CAPATask) => t.status === "OPEN"
+        ).length;
+        const inProgress = data.capa_tasks.filter(
+          (t: CAPATask) => t.status === "IN_PROGRESS"
+        ).length;
+        const now = new Date();
+        const overdue = data.capa_tasks.filter(
+          (t: CAPATask) =>
+            t.due_date && new Date(t.due_date) < now && t.status !== "CLOSED"
+        ).length;
+        const effective = data.capa_tasks.filter(
+          (t: CAPATask) => t.effectiveness === "EFFECTIVE"
+        ).length;
+        const totalClosed = data.capa_tasks.filter(
+          (t: CAPATask) => t.status === "CLOSED"
+        ).length;
 
         setStats({
           total_tasks: total,
           open,
           in_progress: inProgress,
           overdue,
-          effectiveness_rate: totalClosed > 0 ? (effective / totalClosed) * 100 : 0
-        })
+          effectiveness_rate:
+            totalClosed > 0 ? (effective / totalClosed) * 100 : 0,
+        });
       }
     } catch (error) {
-      console.error('Error loading CAPA data:', error)
+      console.error("Error loading CAPA data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const filteredTasks = tasks.filter(task =>
-    searchTerm === '' ||
-    task.capa_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (task.order?.order_number && task.order.order_number.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
+  const filteredTasks = tasks.filter(
+    task =>
+      searchTerm === "" ||
+      task.capa_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.order?.order_number &&
+        task.order.order_number
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()))
+  );
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'OPEN':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-          <Clock className="w-3 h-3 mr-1" />
-          Open
-        </span>
-      case 'IN_PROGRESS':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-          <Users className="w-3 h-3 mr-1" />
-          In Progress
-        </span>
-      case 'PENDING_VERIFICATION':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          <Eye className="w-3 h-3 mr-1" />
-          Pending Verification
-        </span>
-      case 'CLOSED':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          <CheckCircle className="w-3 h-3 mr-1" />
-          Closed
-        </span>
+      case "OPEN":
+        return (
+          <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+            <Clock className="mr-1 h-3 w-3" />
+            Open
+          </span>
+        );
+      case "IN_PROGRESS":
+        return (
+          <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+            <Users className="mr-1 h-3 w-3" />
+            In Progress
+          </span>
+        );
+      case "PENDING_VERIFICATION":
+        return (
+          <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
+            <Eye className="mr-1 h-3 w-3" />
+            Pending Verification
+          </span>
+        );
+      case "CLOSED":
+        return (
+          <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+            <CheckCircle className="mr-1 h-3 w-3" />
+            Closed
+          </span>
+        );
       default:
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-          Unknown
-        </span>
+        return (
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+            Unknown
+          </span>
+        );
     }
-  }
+  };
 
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
-      case 'CRITICAL':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-          <AlertTriangle className="w-3 h-3 mr-1" />
-          Critical
-        </span>
-      case 'HIGH':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-          High
-        </span>
-      case 'MEDIUM':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-          Medium
-        </span>
-      case 'LOW':
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-          Low
-        </span>
+      case "CRITICAL":
+        return (
+          <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+            <AlertTriangle className="mr-1 h-3 w-3" />
+            Critical
+          </span>
+        );
+      case "HIGH":
+        return (
+          <span className="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-800">
+            High
+          </span>
+        );
+      case "MEDIUM":
+        return (
+          <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+            Medium
+          </span>
+        );
+      case "LOW":
+        return (
+          <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+            Low
+          </span>
+        );
       default:
-        return <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-          Unknown
-        </span>
+        return (
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+            Unknown
+          </span>
+        );
     }
-  }
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="mt-4 text-gray-600">Loading CAPA tasks...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="md:flex md:items-center md:justify-between mb-8">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        <div className="mb-8 md:flex md:items-center md:justify-between">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl">
               CAPA Management
             </h1>
             <p className="mt-1 text-sm text-gray-500">
               Corrective and Preventive Action tasks for quality improvement
             </p>
           </div>
-          <div className="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+          <div className="mt-4 flex space-x-3 md:ml-4 md:mt-0">
             <button
-              onClick={() => window.location.href = '/quality-control'}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              onClick={() => (window.location.href = "/quality-control")}
+              className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
             >
-              <Eye className="w-4 h-4 mr-2" />
+              <Eye className="mr-2 h-4 w-4" />
               Quality Control
             </button>
-            <button
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
+            <button className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700">
+              <Plus className="mr-2 h-4 w-4" />
               New CAPA
             </button>
           </div>
@@ -202,8 +233,8 @@ export default function CAPAManagementPage() {
 
         {/* Stats Cards */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -211,15 +242,19 @@ export default function CAPAManagementPage() {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total CAPA Tasks</dt>
-                      <dd className="text-lg font-medium text-gray-900">{stats.total_tasks}</dd>
+                      <dt className="truncate text-sm font-medium text-gray-500">
+                        Total CAPA Tasks
+                      </dt>
+                      <dd className="text-lg font-medium text-gray-900">
+                        {stats.total_tasks}
+                      </dd>
                     </dl>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -227,15 +262,19 @@ export default function CAPAManagementPage() {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Open Tasks</dt>
-                      <dd className="text-lg font-medium text-gray-900">{stats.open}</dd>
+                      <dt className="truncate text-sm font-medium text-gray-500">
+                        Open Tasks
+                      </dt>
+                      <dd className="text-lg font-medium text-gray-900">
+                        {stats.open}
+                      </dd>
                     </dl>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -243,15 +282,19 @@ export default function CAPAManagementPage() {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Overdue</dt>
-                      <dd className="text-lg font-medium text-gray-900">{stats.overdue}</dd>
+                      <dt className="truncate text-sm font-medium text-gray-500">
+                        Overdue
+                      </dt>
+                      <dd className="text-lg font-medium text-gray-900">
+                        {stats.overdue}
+                      </dd>
                     </dl>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -259,7 +302,9 @@ export default function CAPAManagementPage() {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Effectiveness Rate</dt>
+                      <dt className="truncate text-sm font-medium text-gray-500">
+                        Effectiveness Rate
+                      </dt>
                       <dd className="text-lg font-medium text-gray-900">
                         {stats.effectiveness_rate.toFixed(1)}%
                       </dd>
@@ -272,37 +317,39 @@ export default function CAPAManagementPage() {
         )}
 
         {/* Filters */}
-        <div className="bg-white shadow rounded-lg mb-6">
+        <div className="mb-6 rounded-lg bg-white shadow">
           <div className="px-6 py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+              <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search CAPA tasks..."
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    className="rounded-md border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-blue-500"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                   />
                 </div>
 
                 <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
                   value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  onChange={e => setSelectedStatus(e.target.value)}
                 >
                   <option value="all">All Status</option>
                   <option value="OPEN">Open</option>
                   <option value="IN_PROGRESS">In Progress</option>
-                  <option value="PENDING_VERIFICATION">Pending Verification</option>
+                  <option value="PENDING_VERIFICATION">
+                    Pending Verification
+                  </option>
                   <option value="CLOSED">Closed</option>
                 </select>
 
                 <select
-                  className="border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-blue-500"
                   value={selectedPriority}
-                  onChange={(e) => setSelectedPriority(e.target.value)}
+                  onChange={e => setSelectedPriority(e.target.value)}
                 >
                   <option value="all">All Priorities</option>
                   <option value="CRITICAL">Critical</option>
@@ -316,41 +363,41 @@ export default function CAPAManagementPage() {
         </div>
 
         {/* CAPA Tasks Table */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
+        <div className="overflow-hidden rounded-lg bg-white shadow">
+          <div className="border-b border-gray-200 px-6 py-4">
             <h3 className="text-lg font-medium text-gray-900">CAPA Tasks</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     CAPA Number
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Title / Order
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Priority
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Assignee
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Due Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredTasks.map((task) => (
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {filteredTasks.map(task => (
                   <tr key={task.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-6 py-4">
                       <div className="text-sm font-medium text-gray-900">
                         {task.capa_number}
                       </div>
@@ -365,33 +412,31 @@ export default function CAPAManagementPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-6 py-4">
                       {getPriorityBadge(task.priority)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-6 py-4">
                       {getStatusBadge(task.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-6 py-4">
                       <div className="text-sm text-gray-900">
-                        {task.assignee ?
-                          `${task.assignee.first_name} ${task.assignee.last_name}` :
-                          'Unassigned'
-                        }
+                        {task.assignee
+                          ? `${task.assignee.first_name} ${task.assignee.last_name}`
+                          : "Unassigned"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {task.due_date ?
-                        new Date(task.due_date).toLocaleDateString() :
-                        'No due date'
-                      }
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {task.due_date
+                        ? new Date(task.due_date).toLocaleDateString()
+                        : "No due date"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button className="text-blue-600 hover:text-blue-900">
-                          <Eye className="w-4 h-4" />
+                          <Eye className="h-4 w-4" />
                         </button>
                         <button className="text-gray-600 hover:text-gray-900">
-                          <Edit className="w-4 h-4" />
+                          <Edit className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -402,16 +447,19 @@ export default function CAPAManagementPage() {
           </div>
 
           {filteredTasks.length === 0 && (
-            <div className="text-center py-12">
+            <div className="py-12 text-center">
               <FileText className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No CAPA tasks found</h3>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No CAPA tasks found
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
-                CAPA tasks will be created automatically when QC inspections fail.
+                CAPA tasks will be created automatically when QC inspections
+                fail.
               </p>
             </div>
           )}
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

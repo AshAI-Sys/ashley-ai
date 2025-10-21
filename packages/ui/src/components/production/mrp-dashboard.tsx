@@ -1,10 +1,16 @@
 import * as React from "react";
 import { format } from "date-fns";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../card";
 import { Badge } from "../badge";
 import { Button } from "../button";
 import { Alert, AlertDescription } from "../alert";
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -13,10 +19,10 @@ import {
   TableRow,
 } from "../table";
 import { cn } from "../../lib/utils";
-import { 
-  Package, 
-  TrendingDown, 
-  AlertTriangle, 
+import {
+  Package,
+  TrendingDown,
+  AlertTriangle,
   ShoppingCart,
   Calendar,
   DollarSign,
@@ -25,7 +31,7 @@ import {
   Clock,
   ArrowUp,
   ArrowDown,
-  Equal
+  Equal,
 } from "lucide-react";
 
 export interface MRPItem {
@@ -86,31 +92,40 @@ const actionIcons = {
 };
 
 const getStockTrendIcon = (projected: number, current: number) => {
-  if (projected > current * 1.1) return <ArrowUp className="h-4 w-4 text-ash-green-600" />;
-  if (projected < current * 0.9) return <ArrowDown className="h-4 w-4 text-red-600" />;
+  if (projected > current * 1.1)
+    return <ArrowUp className="text-ash-green-600 h-4 w-4" />;
+  if (projected < current * 0.9)
+    return <ArrowDown className="h-4 w-4 text-red-600" />;
   return <Equal className="h-4 w-4 text-gray-600" />;
 };
 
 export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
-  ({ 
-    materials, 
-    projections,
-    selectedMaterial,
-    onMaterialSelect,
-    onCreatePurchaseOrder,
-    onOptimizePlan,
-    className 
-  }, ref) => {
+  (
+    {
+      materials,
+      projections,
+      selectedMaterial,
+      onMaterialSelect,
+      onCreatePurchaseOrder,
+      onOptimizePlan,
+      className,
+    },
+    ref
+  ) => {
     // Calculate summary metrics
     const totalMaterials = materials.length;
-    const criticalMaterials = materials.filter(m => m.recommendedAction === "ORDER_NOW").length;
+    const criticalMaterials = materials.filter(
+      m => m.recommendedAction === "ORDER_NOW"
+    ).length;
     const shortfallMaterials = materials.filter(m => m.shortfall > 0).length;
-    const totalShortfallValue = materials.reduce((sum, m) => 
-      sum + (m.shortfall * m.costPerUnit), 0
+    const totalShortfallValue = materials.reduce(
+      (sum, m) => sum + m.shortfall * m.costPerUnit,
+      0
     );
 
     const handleCreatePO = (material: MRPItem) => {
-      const quantity = material.shortfall > 0 ? material.shortfall : material.reorderPoint;
+      const quantity =
+        material.shortfall > 0 ? material.shortfall : material.reorderPoint;
       onCreatePurchaseOrder?.(material.id, quantity);
     };
 
@@ -123,24 +138,30 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
 
     const getStockStatusColor = (status: string) => {
       switch (status) {
-        case "OUT_OF_STOCK": return "text-red-600";
-        case "LOW_STOCK": return "text-ash-orange-600";
-        case "REORDER_POINT": return "text-ash-blue-600";
-        default: return "text-ash-green-600";
+        case "OUT_OF_STOCK":
+          return "text-red-600";
+        case "LOW_STOCK":
+          return "text-ash-orange-600";
+        case "REORDER_POINT":
+          return "text-ash-blue-600";
+        default:
+          return "text-ash-green-600";
       }
     };
 
     return (
       <div ref={ref} className={cn("space-y-6", className)}>
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold">Material Requirements Planning</h2>
+            <h2 className="text-2xl font-bold">
+              Material Requirements Planning
+            </h2>
             <p className="text-muted-foreground">
               Monitor inventory levels and optimize material procurement
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button onClick={onOptimizePlan} variant="outline">
               <Factory className="mr-2 h-4 w-4" />
@@ -154,16 +175,16 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <Package className="h-4 w-4 text-muted-foreground" />
+                <Package className="text-muted-foreground h-4 w-4" />
                 <span className="text-sm font-medium">Total Materials</span>
               </div>
               <div className="mt-2">
                 <div className="text-2xl font-bold">{totalMaterials}</div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   Tracked in inventory
                 </div>
               </div>
@@ -173,14 +194,14 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                <AlertTriangle className="text-muted-foreground h-4 w-4" />
                 <span className="text-sm font-medium">Critical Materials</span>
               </div>
               <div className="mt-2">
                 <div className="text-2xl font-bold text-red-600">
                   {criticalMaterials}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   Require immediate ordering
                 </div>
               </div>
@@ -190,14 +211,14 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <TrendingDown className="h-4 w-4 text-muted-foreground" />
+                <TrendingDown className="text-muted-foreground h-4 w-4" />
                 <span className="text-sm font-medium">Shortfall Items</span>
               </div>
               <div className="mt-2">
-                <div className="text-2xl font-bold text-ash-orange-600">
+                <div className="text-ash-orange-600 text-2xl font-bold">
                   {shortfallMaterials}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   Materials below requirement
                 </div>
               </div>
@@ -207,14 +228,14 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center space-x-2">
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
+                <DollarSign className="text-muted-foreground h-4 w-4" />
                 <span className="text-sm font-medium">Shortfall Value</span>
               </div>
               <div className="mt-2">
                 <div className="text-2xl font-bold">
                   ₱{totalShortfallValue.toLocaleString()}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   Total procurement needed
                 </div>
               </div>
@@ -227,8 +248,9 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
           <Alert className="border-red-200 bg-red-50">
             <AlertTriangle className="h-4 w-4 text-red-600" />
             <AlertDescription className="text-red-800">
-              <strong>{criticalMaterials} materials</strong> require immediate ordering to avoid production delays.
-              Review and create purchase orders urgently.
+              <strong>{criticalMaterials} materials</strong> require immediate
+              ordering to avoid production delays. Review and create purchase
+              orders urgently.
             </AlertDescription>
           </Alert>
         )}
@@ -257,11 +279,11 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {materials.map((material) => {
+                  {materials.map(material => {
                     const stockStatus = getStockStatus(material);
-                    
+
                     return (
-                      <TableRow 
+                      <TableRow
                         key={material.id}
                         className={cn(
                           "cursor-pointer hover:bg-gray-50",
@@ -271,44 +293,53 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                       >
                         <TableCell>
                           <div>
-                            <div className="font-medium">{material.materialName}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="font-medium">
+                              {material.materialName}
+                            </div>
+                            <div className="text-muted-foreground text-xs">
                               {material.supplier || "No supplier"}
                             </div>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="space-y-1">
                             <div className="font-medium">
-                              {material.currentStock.toLocaleString()} {material.unit}
+                              {material.currentStock.toLocaleString()}{" "}
+                              {material.unit}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-muted-foreground text-xs">
                               Min: {material.minimumStock}
                             </div>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="space-y-1">
                             <div className="font-medium">
-                              {material.totalDemand.toLocaleString()} {material.unit}
+                              {material.totalDemand.toLocaleString()}{" "}
+                              {material.unit}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-muted-foreground text-xs">
                               Supply: {material.plannedSupply}
                             </div>
                           </div>
                         </TableCell>
-                        
+
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <div className={cn(
-                              "font-medium",
-                              getStockStatusColor(stockStatus)
-                            )}>
+                            <div
+                              className={cn(
+                                "font-medium",
+                                getStockStatusColor(stockStatus)
+                              )}
+                            >
                               {material.projectedStock.toLocaleString()}
                             </div>
-                            {getStockTrendIcon(material.projectedStock, material.currentStock)}
+                            {getStockTrendIcon(
+                              material.projectedStock,
+                              material.currentStock
+                            )}
                           </div>
                           {material.shortfall > 0 && (
                             <div className="text-xs text-red-600">
@@ -316,11 +347,14 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                             </div>
                           )}
                         </TableCell>
-                        
+
                         <TableCell>
-                          <Badge 
+                          <Badge
                             variant="outline"
-                            className={cn("", actionColors[material.recommendedAction])}
+                            className={cn(
+                              "",
+                              actionColors[material.recommendedAction]
+                            )}
                           >
                             {actionIcons[material.recommendedAction]}
                             <span className="ml-1 text-xs">
@@ -328,42 +362,49 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                             </span>
                           </Badge>
                         </TableCell>
-                        
+
                         <TableCell>
                           {material.recommendedAction === "ORDER_NOW" && (
                             <div className="space-y-1">
                               <div className="text-sm font-medium">
                                 Order: {material.shortfall} {material.unit}
                               </div>
-                              <div className="text-xs text-muted-foreground">
-                                Est: ₱{(material.shortfall * material.costPerUnit).toLocaleString()}
+                              <div className="text-muted-foreground text-xs">
+                                Est: ₱
+                                {(
+                                  material.shortfall * material.costPerUnit
+                                ).toLocaleString()}
                               </div>
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-muted-foreground text-xs">
                                 Lead time: {material.leadTime} days
                               </div>
                             </div>
                           )}
                         </TableCell>
-                        
+
                         <TableCell>
                           {material.urgentOrders.length > 0 && (
                             <div className="space-y-1">
                               <Badge variant="destructive" className="text-xs">
                                 {material.urgentOrders.length} urgent
                               </Badge>
-                              <div className="text-xs text-muted-foreground">
-                                Next: {format(material.urgentOrders[0].requiredDate, "MMM dd")}
+                              <div className="text-muted-foreground text-xs">
+                                Next:{" "}
+                                {format(
+                                  material.urgentOrders[0].requiredDate,
+                                  "MMM dd"
+                                )}
                               </div>
                             </div>
                           )}
                         </TableCell>
-                        
+
                         <TableCell>
-                          {(material.recommendedAction === "ORDER_NOW" || 
+                          {(material.recommendedAction === "ORDER_NOW" ||
                             material.recommendedAction === "ORDER_SOON") && (
-                            <Button 
-                              size="sm" 
-                              onClick={(e) => {
+                            <Button
+                              size="sm"
+                              onClick={e => {
                                 e.stopPropagation();
                                 handleCreatePO(material);
                               }}
@@ -409,7 +450,7 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                   </TableHeader>
                   <TableBody>
                     {projections.map((projection, index) => (
-                      <TableRow 
+                      <TableRow
                         key={index}
                         className={projection.shortfall > 0 ? "bg-red-50" : ""}
                       >
@@ -417,11 +458,13 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                           <div className="font-medium">
                             {format(new Date(projection.date), "MMM dd")}
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-muted-foreground text-xs">
                             {format(new Date(projection.date), "EEE")}
                           </div>
                         </TableCell>
-                        <TableCell>{projection.beginningStock.toLocaleString()}</TableCell>
+                        <TableCell>
+                          {projection.beginningStock.toLocaleString()}
+                        </TableCell>
                         <TableCell className="text-ash-green-600">
                           +{projection.receipts.toLocaleString()}
                         </TableCell>
@@ -429,16 +472,20 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                           -{projection.demands.toLocaleString()}
                         </TableCell>
                         <TableCell>
-                          <span className={cn(
-                            "font-medium",
-                            projection.endingStock < 0 ? "text-red-600" : "text-gray-900"
-                          )}>
+                          <span
+                            className={cn(
+                              "font-medium",
+                              projection.endingStock < 0
+                                ? "text-red-600"
+                                : "text-gray-900"
+                            )}
+                          >
                             {projection.endingStock.toLocaleString()}
                           </span>
                         </TableCell>
                         <TableCell>
                           {projection.shortfall > 0 && (
-                            <span className="text-red-600 font-medium">
+                            <span className="font-medium text-red-600">
                               {projection.shortfall.toLocaleString()}
                             </span>
                           )}
@@ -447,7 +494,10 @@ export const MRPDashboard = React.forwardRef<HTMLDivElement, MRPDashboardProps>(
                           {projection.actions.length > 0 && (
                             <div className="space-y-1">
                               {projection.actions.map((action, actionIndex) => (
-                                <div key={actionIndex} className="text-xs text-red-600">
+                                <div
+                                  key={actionIndex}
+                                  className="text-xs text-red-600"
+                                >
                                   {action}
                                 </div>
                               ))}

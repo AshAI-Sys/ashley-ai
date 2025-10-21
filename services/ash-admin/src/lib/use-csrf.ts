@@ -1,54 +1,63 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 /**
  * Custom hook to handle CSRF tokens for API requests
  * Automatically includes CSRF token in fetch requests
  */
 export function useCSRFToken() {
-  const [csrfToken, setCSRFToken] = useState<string | null>(null)
+  const [csrfToken, setCSRFToken] = useState<string | null>(null);
 
   useEffect(() => {
     // Get CSRF token from cookie
-    const token = getCookie('csrf-token')
-    setCSRFToken(token)
-  }, [])
+    const token = getCookie("csrf-token");
+    setCSRFToken(token);
+  }, []);
 
-  return csrfToken
+  return csrfToken;
 }
 
 /**
  * Get cookie value by name
  */
 function getCookie(name: string): string | null {
-  if (typeof document === 'undefined') return null
+  if (typeof document === "undefined") return null;
 
-  const value = `; ${document.cookie}`
-  const parts = value.split(`; ${name}=`)
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
 
   if (parts.length === 2) {
-    return parts.pop()?.split(';').shift() || null
+    return parts.pop()?.split(";").shift() || null;
   }
 
-  return null
+  return null;
 }
 
 /**
  * Fetch wrapper that automatically includes CSRF token
  */
-export async function fetchWithCSRF(url: string, options: RequestInit = {}): Promise<Response> {
-  const csrfToken = getCookie('csrf-token')
+export async function fetchWithCSRF(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  const csrfToken = getCookie("csrf-token");
 
-  const headers = new Headers(options.headers)
+  const headers = new Headers(options.headers);
 
-  if (csrfToken && (options.method === 'POST' || options.method === 'PUT' || options.method === 'DELETE' || options.method === 'PATCH')) {
-    headers.set('X-CSRF-Token', csrfToken)
+  if (
+    csrfToken &&
+    (options.method === "POST" ||
+      options.method === "PUT" ||
+      options.method === "DELETE" ||
+      options.method === "PATCH")
+  ) {
+    headers.set("X-CSRF-Token", csrfToken);
   }
 
   return fetch(url, {
     ...options,
     headers,
-    credentials: 'include', // Include cookies
-  })
+    credentials: "include", // Include cookies
+  });
 }
 
 /**

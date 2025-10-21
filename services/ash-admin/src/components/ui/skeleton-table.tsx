@@ -1,8 +1,8 @@
-import React from 'react'
+import React from "react";
 
 interface SkeletonTableProps {
-  rows?: number
-  columns?: number
+  rows?: number;
+  columns?: number;
 }
 
 export function SkeletonTable({ rows = 5, columns = 5 }: SkeletonTableProps) {
@@ -13,7 +13,7 @@ export function SkeletonTable({ rows = 5, columns = 5 }: SkeletonTableProps) {
         <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
           <div className="flex gap-4">
             {Array.from({ length: columns }).map((_, i) => (
-              <div key={i} className="h-4 bg-gray-300 rounded flex-1"></div>
+              <div key={i} className="h-4 flex-1 rounded bg-gray-300"></div>
             ))}
           </div>
         </div>
@@ -24,7 +24,10 @@ export function SkeletonTable({ rows = 5, columns = 5 }: SkeletonTableProps) {
             <div key={rowIndex} className="px-4 py-4">
               <div className="flex gap-4">
                 {Array.from({ length: columns }).map((_, colIndex) => (
-                  <div key={colIndex} className="h-4 bg-gray-200 rounded flex-1"></div>
+                  <div
+                    key={colIndex}
+                    className="h-4 flex-1 rounded bg-gray-200"
+                  ></div>
                 ))}
               </div>
             </div>
@@ -32,7 +35,7 @@ export function SkeletonTable({ rows = 5, columns = 5 }: SkeletonTableProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default SkeletonTable
+export default SkeletonTable;

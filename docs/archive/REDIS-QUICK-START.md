@@ -7,6 +7,7 @@
 ## 🚀 Quick Setup (5 Minutes)
 
 ### Option 1: Local Redis (Development)
+
 ```bash
 # Install Redis
 choco install redis         # Windows
@@ -22,6 +23,7 @@ redis-cli ping
 ```
 
 ### Option 2: Upstash Redis (Production - Serverless)
+
 ```bash
 # 1. Go to https://upstash.com
 # 2. Sign up (free tier available)
@@ -30,12 +32,14 @@ redis-cli ping
 ```
 
 ### Install Package
+
 ```bash
 cd services/ash-admin
 pnpm add ioredis
 ```
 
 ### Configure
+
 ```bash
 # Add to .env
 REDIS_URL="redis://localhost:6379"
@@ -49,6 +53,7 @@ REDIS_URL="rediss://default:xxx@xxx.upstash.io:6379"
 ## ✅ What's Already Done
 
 ### Files Created:
+
 1. ✅ `lib/redis/client.ts` - Redis connection
 2. ✅ `lib/redis/cache.ts` - Cache service
 3. ✅ `lib/redis/strategies.ts` - Caching strategies
@@ -56,6 +61,7 @@ REDIS_URL="rediss://default:xxx@xxx.upstash.io:6379"
 5. ✅ `lib/redis/index.ts` - Exports
 
 ### Features Ready:
+
 - ✅ Redis client with auto-fallback
 - ✅ Cache service with type safety
 - ✅ 10+ caching strategies
@@ -69,51 +75,55 @@ REDIS_URL="rediss://default:xxx@xxx.upstash.io:6379"
 ## 📝 Usage Examples
 
 ### Basic Caching
+
 ```typescript
-import { cache } from '@/lib/redis'
+import { cache } from "@/lib/redis";
 
 // Set with 5-minute TTL
-await cache.set('key', { data: 'value' }, 300)
+await cache.set("key", { data: "value" }, 300);
 
 // Get
-const data = await cache.get('key')
+const data = await cache.get("key");
 
 // Delete
-await cache.delete('key')
+await cache.delete("key");
 ```
 
 ### Cache-Aside Pattern (Recommended)
+
 ```typescript
 const user = await cache.getOrSet(
-  'user:123',
-  () => prisma.user.findUnique({ where: { id: '123' } }),
+  "user:123",
+  () => prisma.user.findUnique({ where: { id: "123" } }),
   1800 // 30 min TTL
-)
+);
 ```
 
 ### API Caching
+
 ```typescript
-import { withCache } from '@/lib/redis'
+import { withCache } from "@/lib/redis";
 
 export const GET = withCache(
-  async (req) => {
-    const data = await fetchData()
-    return NextResponse.json(data)
+  async req => {
+    const data = await fetchData();
+    return NextResponse.json(data);
   },
   { ttl: 300 }
-)
+);
 ```
 
 ### Rate Limiting
+
 ```typescript
-import { checkRateLimit } from '@/lib/redis'
+import { checkRateLimit } from "@/lib/redis";
 
 const { allowed } = await checkRateLimit(
   req.ip,
-  '/api/login',
-  5,  // 5 requests
-  60  // per minute
-)
+  "/api/login",
+  5, // 5 requests
+  60 // per minute
+);
 ```
 
 ---
@@ -121,12 +131,14 @@ const { allowed } = await checkRateLimit(
 ## ⚡ Performance Boost
 
 ### Before Redis:
+
 ```
 GET /api/orders          → 500ms
 GET /api/dashboard       → 2000ms
 ```
 
 ### After Redis:
+
 ```
 GET /api/orders          → 5ms    (100x faster!)
 GET /api/dashboard       → 3ms    (666x faster!)
@@ -137,28 +149,31 @@ GET /api/dashboard       → 3ms    (666x faster!)
 ## 🎯 Common Use Cases
 
 ### 1. User Caching
-```typescript
-import { cacheUser, getCachedUser } from '@/lib/redis'
 
-await cacheUser(user.id, user)
-const cached = await getCachedUser(user.id)
+```typescript
+import { cacheUser, getCachedUser } from "@/lib/redis";
+
+await cacheUser(user.id, user);
+const cached = await getCachedUser(user.id);
 ```
 
 ### 2. Order Caching
-```typescript
-import { cacheOrder, invalidateOrder } from '@/lib/redis'
 
-await cacheOrder(order.id, order)
-await invalidateOrder(order.id) // on update
+```typescript
+import { cacheOrder, invalidateOrder } from "@/lib/redis";
+
+await cacheOrder(order.id, order);
+await invalidateOrder(order.id); // on update
 ```
 
 ### 3. Dashboard Stats
+
 ```typescript
 const stats = await cache.getOrSet(
-  'dashboard:stats',
+  "dashboard:stats",
   () => calculateStats(),
   300
-)
+);
 ```
 
 ---
@@ -166,11 +181,13 @@ const stats = await cache.getOrSet(
 ## 🔧 Development vs Production
 
 ### Development (No Redis Required)
+
 - Automatic in-memory fallback
 - Works without Redis installed
 - Perfect for local dev
 
 ### Production (Redis Recommended)
+
 - Use Upstash (serverless)
 - Or Redis Cloud
 - Configure REDIS_URL
@@ -180,6 +197,7 @@ const stats = await cache.getOrSet(
 ## 📚 Full Documentation
 
 See `REDIS-CACHING.md` for:
+
 - Complete API reference
 - All caching strategies
 - TTL configuration

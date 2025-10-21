@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { bottleneckDetectionAI } from '@/lib/ai/bottleneck-detection';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
+import { prisma } from "@/lib/db";
 
 // GET /api/ai/bottleneck/trends?days=7 - Analyze bottleneck trends over time
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const days = parseInt(searchParams.get('days') || '7');
+    const days = parseInt(searchParams.get("days") || "7");
 
     // Generate historical metrics for the past N days
     const historicalMetrics: any[] = [];
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
         prisma.qCInspection.findMany({
           where: {
             created_at: { gte: startOfDay, lte: endOfDay },
-            workspace_id: 'default',
+            workspace_id: "default",
           },
         }),
       ]);
@@ -55,9 +55,9 @@ export async function GET(req: NextRequest) {
       if (cutLays.length > 0 || i === 0) {
         const efficiency = 75 + Math.random() * 20;
         dayMetrics.push({
-          station_id: 'CUTTING_MAIN',
-          station_name: 'Cutting Department',
-          station_type: 'CUTTING',
+          station_id: "CUTTING_MAIN",
+          station_name: "Cutting Department",
+          station_type: "CUTTING",
           current_throughput: 35 + Math.random() * 15,
           expected_throughput: 50,
           queue_length: Math.floor(Math.random() * 30),
@@ -72,9 +72,9 @@ export async function GET(req: NextRequest) {
 
       // Sewing (often bottleneck)
       dayMetrics.push({
-        station_id: 'SEWING_MAIN',
-        station_name: 'Sewing Department',
-        station_type: 'SEWING',
+        station_id: "SEWING_MAIN",
+        station_name: "Sewing Department",
+        station_type: "SEWING",
         current_throughput: 20 + Math.random() * 15,
         expected_throughput: 40,
         queue_length: Math.floor(30 + Math.random() * 40),
@@ -88,9 +88,9 @@ export async function GET(req: NextRequest) {
 
       // QC
       dayMetrics.push({
-        station_id: 'QC_MAIN',
-        station_name: 'Quality Control',
-        station_type: 'QC',
+        station_id: "QC_MAIN",
+        station_name: "Quality Control",
+        station_type: "QC",
         current_throughput: 25 + Math.random() * 10,
         expected_throughput: 35,
         queue_length: Math.floor(Math.random() * 20),
@@ -98,7 +98,12 @@ export async function GET(req: NextRequest) {
         utilization_rate: 65 + Math.random() * 20,
         operator_count: 4,
         active_operators: 3 + Math.floor(Math.random() * 2),
-        defect_rate: qcChecks.length > 0 ? (qcChecks.filter(q => q.status === 'FAILED').length / qcChecks.length) * 100 : 5,
+        defect_rate:
+          qcChecks.length > 0
+            ? (qcChecks.filter(q => q.status === "FAILED").length /
+                qcChecks.length) *
+              100
+            : 5,
         timestamp: date,
       });
 
@@ -109,7 +114,8 @@ export async function GET(req: NextRequest) {
     }
 
     // Analyze trends
-    const trendAnalysis = await bottleneckDetectionAI.analyzeBottleneckTrends(historicalMetrics);
+    const trendAnalysis =
+      await bottleneckDetectionAI.analyzeBottleneckTrends(historicalMetrics);
 
     return NextResponse.json({
       success: true,
@@ -121,9 +127,9 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error('Trend analysis error:', error);
+    console.error("Trend analysis error:", error);
     return NextResponse.json(
-      { error: 'Failed to analyze trends', details: error.message },
+      { error: "Failed to analyze trends", details: error.message },
       { status: 500 }
     );
   }

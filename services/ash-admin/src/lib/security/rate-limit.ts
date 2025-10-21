@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { redisClient } from '@/lib/redis'
+import { NextRequest, NextResponse } from "next/server";
+import { redisClient } from "@/lib/redis";
 
 export interface RateLimitConfig {
   /**
    * Maximum number of requests allowed
    */
-  max: number
+  max: number;
   /**
    * Time window in seconds
    */
-  windowSeconds: number
+  windowSeconds: number;
   /**
    * Custom key generator (default: IP address)
    */
-  keyGenerator?: (req: NextRequest) => string
+  keyGenerator?: (req: NextRequest) => string;
   /**
    * Message to return when rate limited
    */
-  message?: string
+  message?: string;
 }
 
 /**
@@ -34,70 +34,70 @@ export function createRateLimiter(config: RateLimitConfig) {
     max,
     windowSeconds,
     keyGenerator = getDefaultKey,
-    message = 'Too many requests. Please try again later.'
-  } = config
+    message = "Too many requests. Please try again later.",
+  } = config;
 
   return async function rateLimitMiddleware(
     request: NextRequest
   ): Promise<NextResponse | null> {
     try {
-      const key = `ratelimit:${keyGenerator(request)}`
+      const key = `ratelimit:${keyGenerator(request)}`;
 
       // Get current count
-      const currentCount = await redisClient.get(key)
-      const count = currentCount ? parseInt(currentCount) : 0
+      const currentCount = await redisClient.get(key);
+      const count = currentCount ? parseInt(currentCount) : 0;
 
       // Check if limit exceeded
       if (count >= max) {
-        const ttl = await redisClient.ttl(key)
-        const retryAfter = ttl > 0 ? ttl : windowSeconds
+        const ttl = await redisClient.ttl(key);
+        const retryAfter = ttl > 0 ? ttl : windowSeconds;
 
         return NextResponse.json(
           {
             error: message,
             retryAfter,
             limit: max,
-            windowSeconds
+            windowSeconds,
           },
           {
             status: 429,
             headers: {
-              'X-RateLimit-Limit': String(max),
-              'X-RateLimit-Remaining': '0',
-              'X-RateLimit-Reset': String(Date.now() + retryAfter * 1000),
-              'Retry-After': String(retryAfter)
-            }
+              "X-RateLimit-Limit": String(max),
+              "X-RateLimit-Remaining": "0",
+              "X-RateLimit-Reset": String(Date.now() + retryAfter * 1000),
+              "Retry-After": String(retryAfter),
+            },
           }
-        )
+        );
       }
 
       // Increment counter
-      const newCount = await redisClient.incr(key)
+      const newCount = await redisClient.incr(key);
 
       // Set expiry on first request
       if (newCount === 1) {
-        await redisClient.expire(key, windowSeconds)
+        await redisClient.expire(key, windowSeconds);
       }
 
       // Add rate limit headers to successful responses
-      const remaining = Math.max(0, max - newCount)
-      const ttl = await redisClient.ttl(key)
-      const reset = Date.now() + (ttl > 0 ? ttl * 1000 : windowSeconds * 1000)
+      const remaining = Math.max(0, max - newCount);
+      const ttl = await redisClient.ttl(key);
+      const reset = Date.now() + (ttl > 0 ? ttl * 1000 : windowSeconds * 1000);
 
       // Store headers in request for later use
-      ;(request as any).rateLimitHeaders = {
-        'X-RateLimit-Limit': String(max),
-        'X-RateLimit-Remaining': String(remaining),
-        'X-RateLimit-Reset': String(reset)
-      }
+      (request as any).rateLimitHeaders = {
+        "X-RateLimit-Limit": String(max),
+        "X-RateLimit-Remaining": String(remaining),
+        "X-RateLimit-Reset": String(reset),
+      };
 
-      return null // No rate limit violation
+      return null; // No rate limit violation
     } catch (error) {
-      console.error('Rate limit error:', error)
+      console.error("Rate limit error:", error);
       // Fail open - allow request if rate limiting fails
-      return null
+      return null;
     }
-  }
+  };
 }
 
 /**
@@ -105,12 +105,12 @@ export function createRateLimiter(config: RateLimitConfig) {
  */
 function getDefaultKey(request: NextRequest): string {
   // Get IP from various headers (proxy-aware)
-  const forwarded = request.headers.get('x-forwarded-for')
-  const realIp = request.headers.get('x-real-ip')
-  const cfIp = request.headers.get('cf-connecting-ip')
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIp = request.headers.get("x-real-ip");
+  const cfIp = request.headers.get("cf-connecting-ip");
 
-  const ip = cfIp || forwarded?.split(',')[0] || realIp || 'unknown'
-  return ip
+  const ip = cfIp || forwarded?.split(",")[0] || realIp || "unknown";
+  return ip;
 }
 
 /**
@@ -139,8 +139,8 @@ export const RateLimitPresets = {
   FILE_UPLOAD: { max: 10, windowSeconds: 300 },
 
   /** API: 1000 requests per hour */
-  API: { max: 1000, windowSeconds: 3600 }
-}
+  API: { max: 1000, windowSeconds: 3600 },
+};
 
 /**
  * Helper to add rate limit headers to response
@@ -149,88 +149,88 @@ export function addRateLimitHeaders(
   response: NextResponse,
   request: NextRequest
 ): NextResponse {
-  const headers = (request as any).rateLimitHeaders
+  const headers = (request as any).rateLimitHeaders;
   if (headers) {
     Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value as string)
-    })
+      response.headers.set(key, value as string);
+    });
   }
-  return response
+  return response;
 }
 
 /**
  * Account lockout tracking
  */
 export async function trackFailedLogin(identifier: string): Promise<{
-  attempts: number
-  isLocked: boolean
-  lockedUntil?: Date
+  attempts: number;
+  isLocked: boolean;
+  lockedUntil?: Date;
 }> {
-  const key = `login:failed:${identifier}`
-  const lockKey = `login:locked:${identifier}`
+  const key = `login:failed:${identifier}`;
+  const lockKey = `login:locked:${identifier}`;
 
   // Check if already locked
-  const locked = await redisClient.get(lockKey)
+  const locked = await redisClient.get(lockKey);
   if (locked) {
-    const ttl = await redisClient.ttl(lockKey)
+    const ttl = await redisClient.ttl(lockKey);
     return {
       attempts: 5, // Max attempts
       isLocked: true,
-      lockedUntil: new Date(Date.now() + ttl * 1000)
-    }
+      lockedUntil: new Date(Date.now() + ttl * 1000),
+    };
   }
 
   // Increment failed attempts
-  const attempts = await redisClient.incr(key)
+  const attempts = await redisClient.incr(key);
 
   // Set expiry on first attempt (15 minutes)
   if (attempts === 1) {
-    await redisClient.expire(key, 900)
+    await redisClient.expire(key, 900);
   }
 
   // Lock account after 5 failed attempts (30 minutes)
   if (attempts >= 5) {
-    await redisClient.set(lockKey, 'locked', 1800) // 30 minutes
-    await redisClient.del(key) // Clear failed attempts counter
+    await redisClient.set(lockKey, "locked", 1800); // 30 minutes
+    await redisClient.del(key); // Clear failed attempts counter
 
     return {
       attempts,
       isLocked: true,
-      lockedUntil: new Date(Date.now() + 1800 * 1000)
-    }
+      lockedUntil: new Date(Date.now() + 1800 * 1000),
+    };
   }
 
   return {
     attempts,
-    isLocked: false
-  }
+    isLocked: false,
+  };
 }
 
 /**
  * Clear failed login attempts (on successful login)
  */
 export async function clearFailedLogins(identifier: string): Promise<void> {
-  const key = `login:failed:${identifier}`
-  await redisClient.del(key)
+  const key = `login:failed:${identifier}`;
+  await redisClient.del(key);
 }
 
 /**
  * Check if account is locked
  */
 export async function isAccountLocked(identifier: string): Promise<{
-  locked: boolean
-  lockedUntil?: Date
+  locked: boolean;
+  lockedUntil?: Date;
 }> {
-  const lockKey = `login:locked:${identifier}`
-  const locked = await redisClient.get(lockKey)
+  const lockKey = `login:locked:${identifier}`;
+  const locked = await redisClient.get(lockKey);
 
   if (locked) {
-    const ttl = await redisClient.ttl(lockKey)
+    const ttl = await redisClient.ttl(lockKey);
     return {
       locked: true,
-      lockedUntil: new Date(Date.now() + ttl * 1000)
-    }
+      lockedUntil: new Date(Date.now() + ttl * 1000),
+    };
   }
 
-  return { locked: false }
+  return { locked: false };
 }

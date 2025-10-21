@@ -16,9 +16,11 @@
 ## 📊 Subscription Tiers
 
 ### **1. STARTER - $99/month** 💚
-*Perfect for small manufacturers getting started*
+
+_Perfect for small manufacturers getting started_
 
 **Limits:**
+
 - Up to 50 orders per month
 - Up to 10 users
 - Up to 5 clients
@@ -26,6 +28,7 @@
 - 1,000 API calls per month
 
 **Features:**
+
 - ✅ Order management
 - ✅ Basic cutting operations
 - ✅ Basic printing operations
@@ -44,9 +47,11 @@
 ---
 
 ### **2. PROFESSIONAL - $299/month** 🔵
-*Most popular - For growing manufacturing operations*
+
+_Most popular - For growing manufacturing operations_
 
 **Limits:**
+
 - Up to 500 orders per month
 - Up to 50 users
 - Up to 50 clients
@@ -54,6 +59,7 @@
 - 10,000 API calls per month
 
 **Features:**
+
 - ✅ Everything in Starter
 - ✅ Full production workflow (cutting, printing, sewing, QC)
 - ✅ Finishing & packing management
@@ -74,9 +80,11 @@
 ---
 
 ### **3. ENTERPRISE - $999/month** 🟣
-*Complete solution for large-scale operations*
+
+_Complete solution for large-scale operations_
 
 **Limits:**
+
 - Unlimited orders
 - Unlimited users
 - Unlimited clients
@@ -84,6 +92,7 @@
 - 100,000 API calls per month
 
 **Features:**
+
 - ✅ Everything in Professional
 - ✅ Advanced AI features (merchandising AI, demand forecasting)
 - ✅ Predictive maintenance
@@ -104,9 +113,11 @@
 ---
 
 ### **4. CUSTOM - Contact Sales** 🌟
-*Tailored solutions for unique requirements*
+
+_Tailored solutions for unique requirements_
 
 **Features:**
+
 - ✅ Everything in Enterprise
 - ✅ Custom development
 - ✅ On-premise deployment option
@@ -125,11 +136,11 @@
 
 ### **Monthly vs Annual**
 
-| Tier | Monthly | Annual (20% off) | Savings |
-|------|---------|------------------|---------|
-| **Starter** | $99/mo | $950/year ($79/mo) | $238/year |
-| **Professional** | $299/mo | $2,870/year ($239/mo) | $718/year |
-| **Enterprise** | $999/mo | $9,590/year ($799/mo) | $2,398/year |
+| Tier             | Monthly | Annual (20% off)      | Savings     |
+| ---------------- | ------- | --------------------- | ----------- |
+| **Starter**      | $99/mo  | $950/year ($79/mo)    | $238/year   |
+| **Professional** | $299/mo | $2,870/year ($239/mo) | $718/year   |
+| **Enterprise**   | $999/mo | $9,590/year ($799/mo) | $2,398/year |
 
 ---
 
@@ -137,14 +148,15 @@
 
 **For when you exceed tier limits:**
 
-| Add-on | Price | Unit |
-|--------|-------|------|
-| **Extra Orders** | $2 | per order |
-| **Extra Users** | $10 | per user/month |
-| **Extra Storage** | $0.10 | per GB/month |
-| **Extra API Calls** | $0.01 | per 100 calls |
+| Add-on              | Price | Unit           |
+| ------------------- | ----- | -------------- |
+| **Extra Orders**    | $2    | per order      |
+| **Extra Users**     | $10   | per user/month |
+| **Extra Storage**   | $0.10 | per GB/month   |
+| **Extra API Calls** | $0.01 | per 100 calls  |
 
 **Example:** Professional tier user with 600 orders (100 over limit)
+
 - Base: $299
 - Extra orders: 100 × $2 = $200
 - **Total: $499/month**
@@ -153,33 +165,34 @@
 
 ## 📊 Feature Matrix
 
-| Feature | Starter | Professional | Enterprise | Custom |
-|---------|---------|--------------|------------|--------|
-| **Orders/month** | 50 | 500 | Unlimited | Unlimited |
-| **Users** | 10 | 50 | Unlimited | Unlimited |
-| **Clients** | 5 | 50 | Unlimited | Unlimited |
-| **Storage** | 5GB | 50GB | 500GB | Custom |
-| **API Calls** | 1K | 10K | 100K | Custom |
-| **Order Management** | ✅ | ✅ | ✅ | ✅ |
-| **Production Workflow** | Basic | Full | Full | Full |
-| **Finance & Invoicing** | ❌ | ✅ | ✅ | ✅ |
-| **HR & Payroll** | ❌ | ✅ | ✅ | ✅ |
-| **Client Portal** | ✅ | ✅ | ✅ | ✅ |
-| **AI Features** | ❌ | Basic | Advanced | Custom |
-| **Automation Engine** | ❌ | Limited | Unlimited | Custom |
-| **Custom Reports** | ❌ | ✅ | ✅ | ✅ |
-| **Multi-tenant** | ❌ | ❌ | ✅ | ✅ |
-| **White-label** | ❌ | ❌ | ✅ | ✅ |
-| **API Access** | ❌ | ✅ | ✅ | ✅ |
-| **SSO / SAML** | ❌ | ❌ | ✅ | ✅ |
-| **Support** | Email | Priority | 24/7 | Dedicated |
-| **SLA** | ❌ | ❌ | 99.9% | Custom |
+| Feature                 | Starter | Professional | Enterprise | Custom    |
+| ----------------------- | ------- | ------------ | ---------- | --------- |
+| **Orders/month**        | 50      | 500          | Unlimited  | Unlimited |
+| **Users**               | 10      | 50           | Unlimited  | Unlimited |
+| **Clients**             | 5       | 50           | Unlimited  | Unlimited |
+| **Storage**             | 5GB     | 50GB         | 500GB      | Custom    |
+| **API Calls**           | 1K      | 10K          | 100K       | Custom    |
+| **Order Management**    | ✅      | ✅           | ✅         | ✅        |
+| **Production Workflow** | Basic   | Full         | Full       | Full      |
+| **Finance & Invoicing** | ❌      | ✅           | ✅         | ✅        |
+| **HR & Payroll**        | ❌      | ✅           | ✅         | ✅        |
+| **Client Portal**       | ✅      | ✅           | ✅         | ✅        |
+| **AI Features**         | ❌      | Basic        | Advanced   | Custom    |
+| **Automation Engine**   | ❌      | Limited      | Unlimited  | Custom    |
+| **Custom Reports**      | ❌      | ✅           | ✅         | ✅        |
+| **Multi-tenant**        | ❌      | ❌           | ✅         | ✅        |
+| **White-label**         | ❌      | ❌           | ✅         | ✅        |
+| **API Access**          | ❌      | ✅           | ✅         | ✅        |
+| **SSO / SAML**          | ❌      | ❌           | ✅         | ✅        |
+| **Support**             | Email   | Priority     | 24/7       | Dedicated |
+| **SLA**                 | ❌      | ❌           | 99.9%      | Custom    |
 
 ---
 
 ## 🎁 Free Trial
 
 **14-day free trial** on any plan
+
 - No credit card required
 - Full access to tier features
 - Cancel anytime
@@ -190,11 +203,13 @@
 ## 🔄 Plan Changes
 
 ### **Upgrading**
+
 - Instant access to new features
 - Prorated charge for remainder of billing period
 - Usage limits increase immediately
 
 ### **Downgrading**
+
 - Takes effect at end of current billing period
 - Keep current features until period ends
 - Data retained for 30 days (in case of upgrade)
@@ -205,12 +220,14 @@
 ## 💳 Payment Methods
 
 **Accepted:**
+
 - Credit cards (Visa, Mastercard, Amex)
 - Debit cards
 - ACH bank transfer (Enterprise+)
 - Wire transfer (Custom plans)
 
 **Not Accepted:**
+
 - PayPal (coming soon)
 - Cryptocurrency
 
@@ -239,18 +256,21 @@
 ## 🎯 Target Customer Segments
 
 ### **Starter Tier**
+
 - Small workshops (1-10 employees)
 - Startups entering manufacturing
 - Single location operations
 - Monthly order volume: 10-50
 
 ### **Professional Tier**
+
 - Growing manufacturers (10-100 employees)
 - Multiple production lines
 - Regional operations
 - Monthly order volume: 100-500
 
 ### **Enterprise Tier**
+
 - Large manufacturers (100+ employees)
 - Multiple locations
 - National/international operations
@@ -262,21 +282,21 @@
 
 **Conservative Estimates (Year 1):**
 
-| Tier | Customers | MRR | ARR |
-|------|-----------|-----|-----|
-| Starter | 50 | $4,950 | $59,400 |
-| Professional | 20 | $5,980 | $71,760 |
-| Enterprise | 5 | $4,995 | $59,940 |
-| **Total** | **75** | **$15,925** | **$191,100** |
+| Tier         | Customers | MRR         | ARR          |
+| ------------ | --------- | ----------- | ------------ |
+| Starter      | 50        | $4,950      | $59,400      |
+| Professional | 20        | $5,980      | $71,760      |
+| Enterprise   | 5         | $4,995      | $59,940      |
+| **Total**    | **75**    | **$15,925** | **$191,100** |
 
 **Growth Estimates (Year 2):**
 
-| Tier | Customers | MRR | ARR |
-|------|-----------|-----|-----|
-| Starter | 150 | $14,850 | $178,200 |
-| Professional | 80 | $23,920 | $287,040 |
-| Enterprise | 20 | $19,980 | $239,760 |
-| **Total** | **250** | **$58,750** | **$705,000** |
+| Tier         | Customers | MRR         | ARR          |
+| ------------ | --------- | ----------- | ------------ |
+| Starter      | 150       | $14,850     | $178,200     |
+| Professional | 80        | $23,920     | $287,040     |
+| Enterprise   | 20        | $19,980     | $239,760     |
+| **Total**    | **250**   | **$58,750** | **$705,000** |
 
 ---
 

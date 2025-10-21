@@ -8,13 +8,16 @@
 ## 🚀 Quick Commands
 
 ### Start Server
+
 ```bash
 cd "C:\Users\Khell\Desktop\Ashley AI\services\ash-admin"
 pnpm dev
 ```
+
 **Access**: http://localhost:3001
 
 ### Database
+
 ```bash
 cd packages/database
 npx prisma generate    # Regenerate Prisma client
@@ -26,13 +29,15 @@ npx prisma studio      # Open database GUI
 ## 📦 New Utilities (Use These!)
 
 ### 1. Loading Skeletons
-```tsx
-import { DataTableSkeleton } from '@/components/ui/loading-skeletons'
 
-if (isLoading) return <DataTableSkeleton rows={10} />
+```tsx
+import { DataTableSkeleton } from "@/components/ui/loading-skeletons";
+
+if (isLoading) return <DataTableSkeleton rows={10} />;
 ```
 
 **Available Skeletons:**
+
 - `DashboardStatsSkeleton` - For dashboard cards
 - `DataTableSkeleton` - For data tables
 - `FormSkeleton` - For forms
@@ -40,23 +45,28 @@ if (isLoading) return <DataTableSkeleton rows={10} />
 - `PageLoader` - Full-page loader
 
 ### 2. Responsive Components
+
 ```tsx
-import { ResponsiveGrid } from '@/components/ui/responsive-container'
+import { ResponsiveGrid } from "@/components/ui/responsive-container";
 
 <ResponsiveGrid cols={{ mobile: 1, tablet: 2, desktop: 4 }}>
-  {items.map(item => <Card {...item} />)}
-</ResponsiveGrid>
+  {items.map(item => (
+    <Card {...item} />
+  ))}
+</ResponsiveGrid>;
 ```
 
 **Available Components:**
+
 - `ResponsiveContainer` - Auto padding/width
 - `ResponsiveGrid` - Auto columns
 - `ResponsiveStack` - Vertical→Horizontal
 - `MobileOnly` / `DesktopOnly` - Conditional rendering
 
 ### 3. Form Validation
+
 ```tsx
-import { FormField } from '@/components/ui/form-validation'
+import { FormField } from "@/components/ui/form-validation";
 
 <FormField
   label="Order Number"
@@ -65,50 +75,52 @@ import { FormField } from '@/components/ui/form-validation'
   error={error}
   hint="Format: ORD-YYYY-XXXX"
   required
-/>
+/>;
 ```
 
 **Available Components:**
+
 - `FormField` - Input with validation
 - `FormSelect` - Select with validation
 - `FormTextarea` - Textarea with char count
 - `FormValidationSummary` - Error list
 
 ### 4. Caching
+
 ```tsx
-import { cached } from '@/lib/cache'
+import { cached } from "@/lib/cache";
 
 const data = await cached(
-  'orders-list',
+  "orders-list",
   () => fetchOrders(),
   { ttl: 300 } // 5 minutes
-)
+);
 
 // Invalidate cache
-import { invalidateCache } from '@/lib/cache'
-await invalidateCache('orders-*')
+import { invalidateCache } from "@/lib/cache";
+await invalidateCache("orders-*");
 ```
 
 ### 5. Bulk Operations
+
 ```tsx
-import { bulkUpdateOrderStatus } from '@/lib/bulk-operations'
+import { bulkUpdateOrderStatus } from "@/lib/bulk-operations";
 
 const result = await bulkUpdateOrderStatus(
-  ['order1', 'order2', 'order3'],
-  'APPROVED',
+  ["order1", "order2", "order3"],
+  "APPROVED",
   userId
-)
+);
 
-console.log(`Updated ${result.processed}, Failed ${result.failed}`)
+console.log(`Updated ${result.processed}, Failed ${result.failed}`);
 ```
 
 ### 6. Export
-```tsx
-import { exportOrders } from '@/lib/export'
 
-<Button onClick={() => exportOrders(orders, 'excel')}>
-  Export to Excel
-</Button>
+```tsx
+import { exportOrders } from "@/lib/export";
+
+<Button onClick={() => exportOrders(orders, "excel")}>Export to Excel</Button>;
 ```
 
 ---
@@ -116,20 +128,25 @@ import { exportOrders } from '@/lib/export'
 ## 🎯 Common Patterns
 
 ### Loading State Pattern
+
 ```tsx
 export default function Page() {
-  const { data, isLoading, error } = useQuery('data')
+  const { data, isLoading, error } = useQuery("data");
 
-  if (isLoading) return <DataTableSkeleton />
-  if (error) return <ErrorAlert error={error} />
+  if (isLoading) return <DataTableSkeleton />;
+  if (error) return <ErrorAlert error={error} />;
 
-  return <DataTable data={data} />
+  return <DataTable data={data} />;
 }
 ```
 
 ### Responsive Layout Pattern
+
 ```tsx
-import { ResponsiveContainer, ResponsiveGrid } from '@/components/ui/responsive-container'
+import {
+  ResponsiveContainer,
+  ResponsiveGrid,
+} from "@/components/ui/responsive-container";
 
 export default function Dashboard() {
   return (
@@ -141,16 +158,20 @@ export default function Dashboard() {
         <StatCard title="Products" value={89} />
       </ResponsiveGrid>
     </ResponsiveContainer>
-  )
+  );
 }
 ```
 
 ### Form Validation Pattern
+
 ```tsx
-import { FormField, FormValidationSummary } from '@/components/ui/form-validation'
+import {
+  FormField,
+  FormValidationSummary,
+} from "@/components/ui/form-validation";
 
 export default function OrderForm() {
-  const [errors, setErrors] = useState([])
+  const [errors, setErrors] = useState([]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -159,7 +180,7 @@ export default function OrderForm() {
       <FormField
         label="Order Number"
         value={orderNumber}
-        onChange={(e) => setOrderNumber(e.target.value)}
+        onChange={e => setOrderNumber(e.target.value)}
         error={orderNumberError}
         required
       />
@@ -168,44 +189,45 @@ export default function OrderForm() {
         label="Quantity"
         type="number"
         value={quantity}
-        onChange={(e) => setQuantity(e.target.value)}
+        onChange={e => setQuantity(e.target.value)}
         error={quantityError}
         required
       />
     </form>
-  )
+  );
 }
 ```
 
 ### Cached API Route Pattern
+
 ```tsx
-import { NextRequest, NextResponse } from 'next/server'
-import { cached, invalidateCache } from '@/lib/cache'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { cached, invalidateCache } from "@/lib/cache";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   const orders = await cached(
-    'orders-list',
+    "orders-list",
     async () => {
       return await prisma.order.findMany({
         take: 100,
-        include: { client: true, brand: true }
-      })
+        include: { client: true, brand: true },
+      });
     },
     { ttl: 300 } // Cache for 5 minutes
-  )
+  );
 
-  return NextResponse.json(orders)
+  return NextResponse.json(orders);
 }
 
 export async function POST(request: NextRequest) {
-  const data = await request.json()
-  const order = await prisma.order.create({ data })
+  const data = await request.json();
+  const order = await prisma.order.create({ data });
 
   // Invalidate cache
-  await invalidateCache('orders-*')
+  await invalidateCache("orders-*");
 
-  return NextResponse.json(order)
+  return NextResponse.json(order);
 }
 ```
 
@@ -214,30 +236,33 @@ export async function POST(request: NextRequest) {
 ## 🔧 Database Query Best Practices
 
 ### ✅ DO: Always use pagination
+
 ```tsx
 const orders = await prisma.order.findMany({
-  take: 100,  // ALWAYS add limit
+  take: 100, // ALWAYS add limit
   skip: (page - 1) * 100,
-  where: { status: 'PENDING' }
-})
+  where: { status: "PENDING" },
+});
 ```
 
 ### ❌ DON'T: Query without limits
+
 ```tsx
 const orders = await prisma.order.findMany({
-  where: { status: 'PENDING' }  // Missing take/limit
-})
+  where: { status: "PENDING" }, // Missing take/limit
+});
 ```
 
 ### ✅ DO: Use indexes
+
 ```tsx
 // Already indexed: workspace_id, status, created_at, client_id
 const orders = await prisma.order.findMany({
   where: {
-    workspace_id: workspaceId,  // Indexed
-    status: 'PENDING'            // Indexed
-  }
-})
+    workspace_id: workspaceId, // Indexed
+    status: "PENDING", // Indexed
+  },
+});
 ```
 
 ---
@@ -245,6 +270,7 @@ const orders = await prisma.order.findMany({
 ## 🎨 UI Component Shortcuts
 
 ### Buttons
+
 ```tsx
 <Button variant="default">Save</Button>
 <Button variant="destructive">Delete</Button>
@@ -253,19 +279,19 @@ const orders = await prisma.order.findMany({
 ```
 
 ### Cards
+
 ```tsx
 <Card>
   <CardHeader>
     <CardTitle>Title</CardTitle>
     <CardDescription>Description</CardDescription>
   </CardHeader>
-  <CardContent>
-    {/* Content */}
-  </CardContent>
+  <CardContent>{/* Content */}</CardContent>
 </Card>
 ```
 
 ### Alerts
+
 ```tsx
 <Alert>
   <AlertCircle className="h-4 w-4" />
@@ -289,6 +315,7 @@ const orders = await prisma.order.findMany({
 ## 🐛 Troubleshooting
 
 ### Server won't start
+
 ```bash
 # Check if port is in use
 netstat -ano | findstr :3001
@@ -302,6 +329,7 @@ pnpm dev
 ```
 
 ### Database errors
+
 ```bash
 # Regenerate Prisma client
 cd packages/database
@@ -312,6 +340,7 @@ npx prisma studio
 ```
 
 ### TypeScript errors
+
 ```bash
 # Check for errors
 npx tsc --noEmit
@@ -335,6 +364,7 @@ Ctrl+Shift+P → "Restart TypeScript Server"
 ## 🎯 Key Features
 
 ### System Status
+
 - ✅ 15/15 Manufacturing Stages Complete
 - ✅ 538 Database Indexes
 - ✅ Zero Pagination Warnings
@@ -345,6 +375,7 @@ Ctrl+Shift+P → "Restart TypeScript Server"
 - ✅ Professional Loading States
 
 ### URLs
+
 - **Admin**: http://localhost:3001
 - **Client Portal**: http://localhost:3003
 - **Login**: admin@ashleyai.com / password123

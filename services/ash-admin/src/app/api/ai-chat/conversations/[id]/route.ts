@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
-const prisma = db
+const prisma = db;
 
 // GET /api/ai-chat/conversations/:id - Get a specific conversation with messages
 export async function GET(
@@ -16,7 +16,7 @@ export async function GET(
       include: {
         messages: {
           orderBy: {
-            created_at: 'asc',
+            created_at: "asc",
           },
         },
         user: {
@@ -28,16 +28,22 @@ export async function GET(
           },
         },
       },
-    })
+    });
 
     if (!conversation) {
-      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: "Conversation not found" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({ conversation })
+    return NextResponse.json({ conversation });
   } catch (error) {
-    console.error('Error fetching conversation:', error)
-    return NextResponse.json({ error: 'Failed to fetch conversation' }, { status: 500 })
+    console.error("Error fetching conversation:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch conversation" },
+      { status: 500 }
+    );
   }
 }
 
@@ -47,8 +53,8 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await request.json()
-    const { title, is_archived, is_pinned } = body
+    const body = await request.json();
+    const { title, is_archived, is_pinned } = body;
 
     const conversation = await prisma.aIChatConversation.update({
       where: {
@@ -59,12 +65,15 @@ export async function PATCH(
         ...(is_archived !== undefined && { is_archived }),
         ...(is_pinned !== undefined && { is_pinned }),
       },
-    })
+    });
 
-    return NextResponse.json({ conversation })
+    return NextResponse.json({ conversation });
   } catch (error) {
-    console.error('Error updating conversation:', error)
-    return NextResponse.json({ error: 'Failed to update conversation' }, { status: 500 })
+    console.error("Error updating conversation:", error);
+    return NextResponse.json(
+      { error: "Failed to update conversation" },
+      { status: 500 }
+    );
   }
 }
 
@@ -78,11 +87,14 @@ export async function DELETE(
       where: {
         id: params.id,
       },
-    })
+    });
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting conversation:', error)
-    return NextResponse.json({ error: 'Failed to delete conversation' }, { status: 500 })
+    console.error("Error deleting conversation:", error);
+    return NextResponse.json(
+      { error: "Failed to delete conversation" },
+      { status: 500 }
+    );
   }
 }

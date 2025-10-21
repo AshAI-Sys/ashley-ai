@@ -22,7 +22,7 @@ test.describe("Authentication Flow", () => {
     // Should show validation errors (either inline or toast)
     // Wait for either error message to appear
     await expect(
-      page.locator('text=/email.*required|please enter.*email/i').first()
+      page.locator("text=/email.*required|please enter.*email/i").first()
     ).toBeVisible({ timeout: 5000 });
   });
 
@@ -33,7 +33,7 @@ test.describe("Authentication Flow", () => {
 
     // Should show error message
     await expect(
-      page.locator('text=/invalid.*credentials|incorrect.*password/i').first()
+      page.locator("text=/invalid.*credentials|incorrect.*password/i").first()
     ).toBeVisible({ timeout: 5000 });
   });
 
@@ -52,7 +52,7 @@ test.describe("Authentication Flow", () => {
 
     // Should show user-specific content
     await expect(
-      page.locator('text=/dashboard|welcome|orders/i').first()
+      page.locator("text=/dashboard|welcome|orders/i").first()
     ).toBeVisible();
   });
 
@@ -138,7 +138,7 @@ test.describe("Registration Flow", () => {
 
       // Should show validation errors
       await expect(
-        page.locator('text=/required|please enter/i').first()
+        page.locator("text=/required|please enter/i").first()
       ).toBeVisible({ timeout: 5000 });
     } else {
       test.skip(true, "Registration page not implemented");

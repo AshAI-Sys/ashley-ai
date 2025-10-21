@@ -1,6 +1,11 @@
 export type QCStage = "CUT" | "PRINT" | "SEW" | "PACK" | "FINAL";
 
-export type InspectionStatus = "PENDING" | "IN_PROGRESS" | "PASSED" | "FAILED" | "REWORK";
+export type InspectionStatus =
+  | "PENDING"
+  | "IN_PROGRESS"
+  | "PASSED"
+  | "FAILED"
+  | "REWORK";
 
 export type DefectSeverity = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
@@ -8,7 +13,13 @@ export type DefectCategory = "CRITICAL" | "MAJOR" | "MINOR";
 
 export type CAPAType = "CORRECTIVE" | "PREVENTIVE";
 
-export type CAPAStatus = "OPEN" | "INVESTIGATING" | "ACTION_PLAN" | "IMPLEMENTING" | "VERIFYING" | "CLOSED";
+export type CAPAStatus =
+  | "OPEN"
+  | "INVESTIGATING"
+  | "ACTION_PLAN"
+  | "IMPLEMENTING"
+  | "VERIFYING"
+  | "CLOSED";
 
 export type MetricType = "PERCENTAGE" | "COUNT" | "MEASUREMENT";
 
@@ -118,18 +129,18 @@ export interface CAPATask {
   priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   status: CAPAStatus;
   source: "INSPECTION" | "CUSTOMER_COMPLAINT" | "AUDIT" | "ASHLEY_AI";
-  
+
   // Problem identification
   problemStatement: string;
   rootCause?: string;
   impactAssessment?: string;
-  
+
   // Actions
   immediateAction?: string;
   correctiveAction?: string;
   preventiveAction?: string;
   verificationPlan?: string;
-  
+
   // Assignment and tracking
   assignedTo?: string;
   createdBy: string;
@@ -137,17 +148,17 @@ export interface CAPATask {
   dueDate?: Date;
   completedDate?: Date;
   verificationDate?: Date;
-  
+
   // Links
   orderId?: string;
   inspectionId?: string;
   defectId?: string;
-  
+
   // Ashley AI insights
   ashleySuggestions?: string[];
   aiPriorityScore?: number;
   predictedImpact?: string;
-  
+
   attachments: CAPAAttachment[];
   updates: CAPAUpdate[];
 }
@@ -299,7 +310,11 @@ export interface SPCAnalysis {
 
 export interface QualityAlert {
   id: string;
-  alertType: "DEFECT_THRESHOLD" | "QUALITY_DROP" | "SPC_VIOLATION" | "CAPA_OVERDUE";
+  alertType:
+    | "DEFECT_THRESHOLD"
+    | "QUALITY_DROP"
+    | "SPC_VIOLATION"
+    | "CAPA_OVERDUE";
   severity: "INFO" | "WARNING" | "CRITICAL";
   title: string;
   message: string;

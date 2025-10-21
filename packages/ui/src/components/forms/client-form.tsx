@@ -4,11 +4,39 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "../button";
 import { Input } from "../input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../form";
 import { AshleyAlert } from "../manufacturing/ashley-alert";
-import { Loader2, Building2, User, Phone, Mail, MapPin, CreditCard } from "lucide-react";
+import {
+  Loader2,
+  Building2,
+  User,
+  Phone,
+  Mail,
+  MapPin,
+  CreditCard,
+} from "lucide-react";
 import { cn } from "../../lib/utils";
 
 const clientFormSchema = z.object({
@@ -26,7 +54,10 @@ const clientFormSchema = z.object({
     postalCode: z.string().min(4, "Postal code is required"),
     country: z.string().default("Philippines"),
   }),
-  paymentTerms: z.number().min(0).max(90, "Payment terms must be between 0-90 days"),
+  paymentTerms: z
+    .number()
+    .min(0)
+    .max(90, "Payment terms must be between 0-90 days"),
   creditLimit: z.number().min(0, "Credit limit must be positive"),
   taxId: z.string().optional(),
   notes: z.string().optional(),
@@ -60,20 +91,40 @@ const businessTypeLabels = {
 };
 
 const philippineProvinces = [
-  "Metro Manila", "Cebu", "Davao", "Iloilo", "Pampanga", "Bulacan", "Cavite", 
-  "Laguna", "Bataan", "Rizal", "Quezon", "Pangasinan", "Nueva Ecija", "Tarlac",
-  "Batangas", "Zambales", "Albay", "Camarines Sur", "Sorsogon", "Masbate"
+  "Metro Manila",
+  "Cebu",
+  "Davao",
+  "Iloilo",
+  "Pampanga",
+  "Bulacan",
+  "Cavite",
+  "Laguna",
+  "Bataan",
+  "Rizal",
+  "Quezon",
+  "Pangasinan",
+  "Nueva Ecija",
+  "Tarlac",
+  "Batangas",
+  "Zambales",
+  "Albay",
+  "Camarines Sur",
+  "Sorsogon",
+  "Masbate",
 ];
 
 export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
-  ({ 
-    initialData, 
-    onSubmit, 
-    onCancel, 
-    isLoading = false, 
-    ashleyAnalysis, 
-    className 
-  }, ref) => {
+  (
+    {
+      initialData,
+      onSubmit,
+      onCancel,
+      isLoading = false,
+      ashleyAnalysis,
+      className,
+    },
+    ref
+  ) => {
     const form = useForm<ClientFormData>({
       resolver: zodResolver(clientFormSchema),
       defaultValues: {
@@ -117,7 +168,11 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
         )}
 
         <Form {...form}>
-          <form ref={ref} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+          <form
+            ref={ref}
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-8"
+          >
             {/* Basic Information */}
             <Card>
               <CardHeader>
@@ -130,7 +185,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="name"
@@ -151,18 +206,23 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Business Type *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select business type" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(businessTypeLabels).map(([value, label]) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            ))}
+                            {Object.entries(businessTypeLabels).map(
+                              ([value, label]) => (
+                                <SelectItem key={value} value={value}>
+                                  {label}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -171,7 +231,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="contactPerson"
@@ -199,7 +259,8 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                           <Input {...field} placeholder="000-000-000-000" />
                         </FormControl>
                         <FormDescription>
-                          Tax Identification Number or Business Registration Number
+                          Tax Identification Number or Business Registration
+                          Number
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -207,7 +268,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="email"
@@ -218,7 +279,11 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                           Email Address *
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" placeholder="contact@company.com" />
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="contact@company.com"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -264,14 +329,17 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                     <FormItem>
                       <FormLabel>Street Address *</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="123 Main Street, Barangay San Jose" />
+                        <Input
+                          {...field}
+                          placeholder="123 Main Street, Barangay San Jose"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <FormField
                     control={form.control}
                     name="address.city"
@@ -292,14 +360,17 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Province *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {philippineProvinces.map((province) => (
+                            {philippineProvinces.map(province => (
                               <SelectItem key={province} value={province}>
                                 {province}
                               </SelectItem>
@@ -340,7 +411,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="paymentTerms"
@@ -353,7 +424,9 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                             type="number"
                             min="0"
                             max="90"
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            onChange={e =>
+                              field.onChange(parseInt(e.target.value) || 0)
+                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -376,7 +449,9 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                             type="number"
                             min="0"
                             placeholder="0"
-                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            onChange={e =>
+                              field.onChange(parseFloat(e.target.value) || 0)
+                            }
                           />
                         </FormControl>
                         <FormDescription>
@@ -397,7 +472,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                       <FormControl>
                         <textarea
                           {...field}
-                          className="min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[100px] w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                           placeholder="Any special requirements, preferences, or important information about this client..."
                         />
                       </FormControl>
@@ -409,7 +484,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
             </Card>
 
             {/* Form Actions */}
-            <div className="flex gap-4 justify-end">
+            <div className="flex justify-end gap-4">
               {onCancel && (
                 <Button type="button" variant="outline" onClick={onCancel}>
                   Cancel

@@ -15,21 +15,21 @@ export interface BrandingConfig {
   // Visual Branding
   logo_url?: string;
   logo_light_url?: string; // For dark backgrounds
-  logo_dark_url?: string;  // For light backgrounds
+  logo_dark_url?: string; // For light backgrounds
   favicon_url?: string;
 
   // Color Scheme
   colors: {
-    primary: string;       // Main brand color
-    secondary: string;     // Secondary brand color
-    accent: string;        // Accent color for highlights
-    success: string;       // Success messages
-    warning: string;       // Warnings
-    error: string;         // Errors
-    info: string;          // Information
-    background: string;    // Page background
-    surface: string;       // Card/panel background
-    text_primary: string;  // Main text color
+    primary: string; // Main brand color
+    secondary: string; // Secondary brand color
+    accent: string; // Accent color for highlights
+    success: string; // Success messages
+    warning: string; // Warnings
+    error: string; // Errors
+    info: string; // Information
+    background: string; // Page background
+    surface: string; // Card/panel background
+    text_primary: string; // Main text color
     text_secondary: string; // Secondary text color
   };
 
@@ -45,10 +45,10 @@ export interface BrandingConfig {
 
   // UI Customization
   ui: {
-    border_radius: string;   // e.g., '8px', '1rem'
-    shadow_style: 'none' | 'subtle' | 'normal' | 'strong';
-    button_style: 'rounded' | 'square' | 'pill';
-    layout_style: 'compact' | 'normal' | 'spacious';
+    border_radius: string; // e.g., '8px', '1rem'
+    shadow_style: "none" | "subtle" | "normal" | "strong";
+    button_style: "rounded" | "square" | "pill";
+    layout_style: "compact" | "normal" | "spacious";
   };
 
   // Email Branding
@@ -75,39 +75,39 @@ export interface BrandingConfig {
 }
 
 export class BrandingManager {
-  private readonly DEFAULT_BRANDING: Omit<BrandingConfig, 'workspace_id'> = {
-    company_name: 'Ashley AI',
-    company_tagline: 'Smart Manufacturing ERP',
+  private readonly DEFAULT_BRANDING: Omit<BrandingConfig, "workspace_id"> = {
+    company_name: "Ashley AI",
+    company_tagline: "Smart Manufacturing ERP",
     colors: {
-      primary: '#4F46E5',      // Indigo
-      secondary: '#7C3AED',    // Purple
-      accent: '#EC4899',       // Pink
-      success: '#10B981',      // Green
-      warning: '#F59E0B',      // Amber
-      error: '#EF4444',        // Red
-      info: '#3B82F6',         // Blue
-      background: '#F9FAFB',   // Gray 50
-      surface: '#FFFFFF',      // White
-      text_primary: '#111827', // Gray 900
-      text_secondary: '#6B7280', // Gray 500
+      primary: "#4F46E5", // Indigo
+      secondary: "#7C3AED", // Purple
+      accent: "#EC4899", // Pink
+      success: "#10B981", // Green
+      warning: "#F59E0B", // Amber
+      error: "#EF4444", // Red
+      info: "#3B82F6", // Blue
+      background: "#F9FAFB", // Gray 50
+      surface: "#FFFFFF", // White
+      text_primary: "#111827", // Gray 900
+      text_secondary: "#6B7280", // Gray 500
     },
     typography: {
       font_family_heading: "'Inter', sans-serif",
       font_family_body: "'Inter', sans-serif",
-      font_size_base: '16px',
+      font_size_base: "16px",
       font_weight_normal: 400,
       font_weight_medium: 500,
       font_weight_bold: 700,
     },
     ui: {
-      border_radius: '8px',
-      shadow_style: 'normal',
-      button_style: 'rounded',
-      layout_style: 'normal',
+      border_radius: "8px",
+      shadow_style: "normal",
+      button_style: "rounded",
+      layout_style: "normal",
     },
     email: {
-      header_color: '#4F46E5',
-      footer_text: '© 2024 Ashley AI. All rights reserved.',
+      header_color: "#4F46E5",
+      footer_text: "© 2024 Ashley AI. All rights reserved.",
     },
     feature_visibility: {
       show_powered_by: true,
@@ -119,7 +119,7 @@ export class BrandingManager {
   // Get branding configuration for workspace
   async getBranding(workspace_id: string): Promise<BrandingConfig> {
     try {
-      const { prisma } = await import('@/lib/database');
+      const { prisma } = await import("@/lib/database");
 
       const workspace = await prisma.workspace.findUnique({
         where: { id: workspace_id },
@@ -139,7 +139,8 @@ export class BrandingManager {
       return {
         workspace_id,
         company_name: branding.company_name || workspace.name,
-        company_tagline: branding.company_tagline || this.DEFAULT_BRANDING.company_tagline,
+        company_tagline:
+          branding.company_tagline || this.DEFAULT_BRANDING.company_tagline,
         company_website: branding.company_website,
         company_email: branding.company_email,
         company_phone: branding.company_phone,
@@ -149,7 +150,10 @@ export class BrandingManager {
         logo_dark_url: branding.logo_dark_url,
         favicon_url: branding.favicon_url,
         colors: { ...this.DEFAULT_BRANDING.colors, ...branding.colors },
-        typography: { ...this.DEFAULT_BRANDING.typography, ...branding.typography },
+        typography: {
+          ...this.DEFAULT_BRANDING.typography,
+          ...branding.typography,
+        },
         ui: { ...this.DEFAULT_BRANDING.ui, ...branding.ui },
         email: { ...this.DEFAULT_BRANDING.email, ...branding.email },
         custom_domain: branding.custom_domain,
@@ -161,7 +165,7 @@ export class BrandingManager {
         custom_javascript: branding.custom_javascript,
       };
     } catch (error: any) {
-      console.error('Get branding error:', error);
+      console.error("Get branding error:", error);
       return {
         workspace_id,
         ...this.DEFAULT_BRANDING,
@@ -172,20 +176,22 @@ export class BrandingManager {
   // Update branding configuration
   async updateBranding(
     workspace_id: string,
-    updates: Partial<Omit<BrandingConfig, 'workspace_id'>>
+    updates: Partial<Omit<BrandingConfig, "workspace_id">>
   ): Promise<boolean> {
     try {
-      const { prisma } = await import('@/lib/database');
+      const { prisma } = await import("@/lib/database");
 
       const workspace = await prisma.workspace.findUnique({
         where: { id: workspace_id },
       });
 
       if (!workspace) {
-        throw new Error('Workspace not found');
+        throw new Error("Workspace not found");
       }
 
-      const currentSettings = workspace.settings ? JSON.parse(workspace.settings) : {};
+      const currentSettings = workspace.settings
+        ? JSON.parse(workspace.settings)
+        : {};
       const currentBranding = currentSettings.branding || {};
 
       const updatedBranding = {
@@ -215,7 +221,7 @@ export class BrandingManager {
 
       return true;
     } catch (error: any) {
-      console.error('Update branding error:', error);
+      console.error("Update branding error:", error);
       return false;
     }
   }
@@ -247,9 +253,9 @@ export class BrandingManager {
 
   /* UI */
   --border-radius: ${branding.ui.border_radius};
-  --shadow-subtle: ${this.getShadowStyle(branding.ui.shadow_style, 'subtle')};
-  --shadow-normal: ${this.getShadowStyle(branding.ui.shadow_style, 'normal')};
-  --shadow-strong: ${this.getShadowStyle(branding.ui.shadow_style, 'strong')};
+  --shadow-subtle: ${this.getShadowStyle(branding.ui.shadow_style, "subtle")};
+  --shadow-normal: ${this.getShadowStyle(branding.ui.shadow_style, "normal")};
+  --shadow-strong: ${this.getShadowStyle(branding.ui.shadow_style, "strong")};
 }
 
 /* Button Styles */
@@ -258,7 +264,7 @@ export class BrandingManager {
   background-color: var(--color-primary);
   color: white;
   font-weight: var(--font-weight-medium);
-  padding: ${branding.ui.layout_style === 'compact' ? '0.5rem 1rem' : branding.ui.layout_style === 'spacious' ? '1rem 1.5rem' : '0.75rem 1.25rem'};
+  padding: ${branding.ui.layout_style === "compact" ? "0.5rem 1rem" : branding.ui.layout_style === "spacious" ? "1rem 1.5rem" : "0.75rem 1.25rem"};
 }
 
 .btn:hover {
@@ -270,7 +276,7 @@ export class BrandingManager {
   background-color: var(--color-surface);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-normal);
-  padding: ${branding.ui.layout_style === 'compact' ? '1rem' : branding.ui.layout_style === 'spacious' ? '2rem' : '1.5rem'};
+  padding: ${branding.ui.layout_style === "compact" ? "1rem" : branding.ui.layout_style === "spacious" ? "2rem" : "1.5rem"};
 }
 
 /* Typography */
@@ -286,7 +292,7 @@ body {
   background-color: var(--color-background);
 }
 
-${branding.custom_css || ''}
+${branding.custom_css || ""}
     `.trim();
   }
 
@@ -315,7 +321,7 @@ ${branding.custom_css || ''}
   <div class="container">
     <div class="header">
       ${branding.logo_url ? `<img src="${branding.logo_url}" alt="${branding.company_name}" class="logo">` : `<h1>${branding.company_name}</h1>`}
-      ${branding.company_tagline ? `<p style="color: var(--color-text-secondary); margin-top: 0.5rem;">${branding.company_tagline}</p>` : ''}
+      ${branding.company_tagline ? `<p style="color: var(--color-text-secondary); margin-top: 0.5rem;">${branding.company_tagline}</p>` : ""}
     </div>
 
     <div class="card">
@@ -343,39 +349,44 @@ ${branding.custom_css || ''}
 
   // Helper methods
 
-  private getShadowStyle(style: string, level: 'subtle' | 'normal' | 'strong'): string {
-    if (style === 'none') return 'none';
+  private getShadowStyle(
+    style: string,
+    level: "subtle" | "normal" | "strong"
+  ): string {
+    if (style === "none") return "none";
 
     const shadows = {
       subtle: {
-        subtle: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-        normal: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        strong: '0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+        subtle: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        normal: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+        strong: "0 2px 4px -1px rgba(0, 0, 0, 0.1)",
       },
       normal: {
-        subtle: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
-        normal: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        strong: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+        subtle: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+        normal: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        strong: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
       },
       strong: {
-        subtle: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-        normal: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        strong: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+        subtle: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        normal: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+        strong: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
       },
     };
 
-    return shadows[style as keyof typeof shadows]?.[level] || shadows.normal[level];
+    return (
+      shadows[style as keyof typeof shadows]?.[level] || shadows.normal[level]
+    );
   }
 
   private getButtonBorderRadius(style: string): string {
     switch (style) {
-      case 'square':
-        return '0px';
-      case 'pill':
-        return '9999px';
-      case 'rounded':
+      case "square":
+        return "0px";
+      case "pill":
+        return "9999px";
+      case "rounded":
       default:
-        return 'var(--border-radius)';
+        return "var(--border-radius)";
     }
   }
 }

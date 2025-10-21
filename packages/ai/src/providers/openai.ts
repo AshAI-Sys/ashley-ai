@@ -8,7 +8,7 @@ export class OpenAIProvider extends BaseAIProvider {
 
   constructor(config: AIProviderConfig) {
     super(config);
-    
+
     if (!config.apiKey) {
       throw new Error("OpenAI API key is required");
     }
@@ -32,7 +32,9 @@ export class OpenAIProvider extends BaseAIProvider {
     return this.analyze(context, "Client Risk Assessment");
   }
 
-  async validateProduction(context: ValidationContext): Promise<AshleyAnalysis> {
+  async validateProduction(
+    context: ValidationContext
+  ): Promise<AshleyAnalysis> {
     return this.analyze(context, "Production Feasibility");
   }
 
@@ -44,16 +46,22 @@ export class OpenAIProvider extends BaseAIProvider {
     return this.analyze(context, "Quality Control");
   }
 
-  private async analyze(context: ValidationContext, analysisType: string): Promise<AshleyAnalysis> {
+  private async analyze(
+    context: ValidationContext,
+    analysisType: string
+  ): Promise<AshleyAnalysis> {
     try {
-      const systemPrompt = this.buildSystemPrompt(context.entity, context.stage);
+      const systemPrompt = this.buildSystemPrompt(
+        context.entity,
+        context.stage
+      );
       const userPrompt = this.buildUserPrompt(context);
 
       const response = await this.client.chat.completions.create({
         model: this.config.model || "gpt-4-turbo-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `${analysisType}: ${userPrompt}` }
+          { role: "user", content: `${analysisType}: ${userPrompt}` },
         ],
         max_tokens: this.config.maxTokens || 2000,
         temperature: this.config.temperature || 0.1,
@@ -66,7 +74,7 @@ export class OpenAIProvider extends BaseAIProvider {
       }
 
       const parsed = JSON.parse(content);
-      
+
       return {
         id: nanoid(),
         timestamp: new Date(),
@@ -83,23 +91,25 @@ export class OpenAIProvider extends BaseAIProvider {
       };
     } catch (error) {
       console.error("OpenAI analysis error:", error);
-      
+
       // Fallback analysis
       return {
         id: nanoid(),
         timestamp: new Date(),
         risk: "AMBER",
         confidence: 0.3,
-        issues: [{
-          type: "Analysis Error",
-          message: "Unable to complete AI analysis. Manual review required.",
-          severity: "HIGH",
-          category: "FEASIBILITY",
-          details: { error: String(error) }
-        }],
+        issues: [
+          {
+            type: "Analysis Error",
+            message: "Unable to complete AI analysis. Manual review required.",
+            severity: "HIGH",
+            category: "FEASIBILITY",
+            details: { error: String(error) },
+          },
+        ],
         recommendations: [
           "Manual review required due to AI analysis failure",
-          "Consider contacting technical support if this persists"
+          "Consider contacting technical support if this persists",
         ],
         metadata: {
           provider: "openai",

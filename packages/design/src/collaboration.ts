@@ -5,7 +5,7 @@ import { PrismaClient } from "@ash-ai/database";
 import type {
   CollaboratorType,
   PermissionLevel,
-  CollaborationEvent
+  CollaborationEvent,
 } from "./types";
 
 const CreateCollaborationSchema = z.object({
@@ -16,7 +16,7 @@ const CreateCollaborationSchema = z.object({
   collaboratorType: z.enum(["INTERNAL", "CLIENT", "EXTERNAL"]),
   permissionLevel: z.enum(["VIEW", "COMMENT", "EDIT", "APPROVE"]),
   invitedBy: z.string(),
-  expiresAt: z.date().optional()
+  expiresAt: z.date().optional(),
 });
 
 const CreateCommentSchema = z.object({
@@ -25,13 +25,15 @@ const CreateCommentSchema = z.object({
   versionId: z.string(),
   commentText: z.string(),
   commentType: z.enum(["GENERAL", "REVISION", "APPROVAL", "TECHNICAL"]),
-  coordinates: z.object({
-    x: z.number(),
-    y: z.number()
-  }).optional(),
+  coordinates: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
   taggedUsers: z.array(z.string()).optional(),
-  attachments: z.array(z.string()).optional()
+  attachments: z.array(z.string()).optional(),
 });
 
 export class DesignCollaborationSystem extends EventEmitter {
@@ -41,7 +43,10 @@ export class DesignCollaborationSystem extends EventEmitter {
   }
 
   private setupEventHandlers() {
-    this.on("collaboration:created", this.handleCollaborationCreated.bind(this));
+    this.on(
+      "collaboration:created",
+      this.handleCollaborationCreated.bind(this)
+    );
     this.on("comment:added", this.handleCommentAdded.bind(this));
     this.on("comment:resolved", this.handleCommentResolved.bind(this));
     this.on("version:created", this.handleVersionCreated.bind(this));
@@ -56,8 +61,8 @@ export class DesignCollaborationSystem extends EventEmitter {
         where: {
           designAssetId: validated.designAssetId,
           versionId: validated.versionId,
-          collaboratorId: validated.collaboratorId
-        }
+          collaboratorId: validated.collaboratorId,
+        },
       });
 
       if (existing) {
@@ -68,13 +73,13 @@ export class DesignCollaborationSystem extends EventEmitter {
             permissionLevel: validated.permissionLevel,
             expiresAt: validated.expiresAt,
             invitedAt: new Date(),
-            invitedBy: validated.invitedBy
+            invitedBy: validated.invitedBy,
           },
           include: {
             collaborator: true,
             designAsset: true,
-            designVersion: true
-          }
+            designVersion: true,
+          },
         });
 
         this.emit("collaboration:updated", { collaboration: updated });
@@ -95,26 +100,28 @@ export class DesignCollaborationSystem extends EventEmitter {
           invitedBy: validated.invitedBy,
           invitedAt: new Date(),
           expiresAt: validated.expiresAt,
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         include: {
           collaborator: true,
           designAsset: true,
           designVersion: true,
-          inviter: true
-        }
+          inviter: true,
+        },
       });
 
       this.emit("collaboration:created", { collaboration });
       return collaboration;
-
     } catch (error) {
       console.error("Failed to invite collaborator:", error);
       throw new Error(`Collaboration invitation failed: ${error.message}`);
     }
   }
 
-  async addComment(data: z.infer<typeof CreateCommentSchema>, authorId: string) {
+  async addComment(
+    data: z.infer<typeof CreateCommentSchema>,
+    authorId: string
+  ) {
     const validated = CreateCommentSchema.parse(data);
 
     try {
@@ -138,39 +145,51 @@ export class DesignCollaborationSystem extends EventEmitter {
           commentText: validated.commentText,
           commentType: validated.commentType,
           priority: validated.priority,
-          coordinates: validated.coordinates ? JSON.stringify(validated.coordinates) : null,
+          coordinates: validated.coordinates
+            ? JSON.stringify(validated.coordinates)
+            : null,
           status: "OPEN",
-          taggedUsers: validated.taggedUsers ? JSON.stringify(validated.taggedUsers) : null,
-          attachmentUrls: validated.attachments ? JSON.stringify(validated.attachments) : null,
+          taggedUsers: validated.taggedUsers
+            ? JSON.stringify(validated.taggedUsers)
+            : null,
+          attachmentUrls: validated.attachments
+            ? JSON.stringify(validated.attachments)
+            : null,
           authorId,
-          createdAt: new Date()
+          createdAt: new Date(),
         },
         include: {
           author: true,
           designAsset: true,
-          designVersion: true
-        }
+          designVersion: true,
+        },
       });
 
       // Create notifications for tagged users
       if (validated.taggedUsers?.length) {
-        await this.createCommentNotifications(comment.id, validated.taggedUsers);
+        await this.createCommentNotifications(
+          comment.id,
+          validated.taggedUsers
+        );
       }
 
-      this.emit("comment:added", { 
+      this.emit("comment:added", {
         comment,
-        taggedUsers: validated.taggedUsers || []
+        taggedUsers: validated.taggedUsers || [],
       });
 
       return comment;
-
     } catch (error) {
       console.error("Failed to add comment:", error);
       throw new Error(`Comment creation failed: ${error.message}`);
     }
   }
 
-  async resolveComment(commentId: string, resolverId: string, resolution?: string) {
+  async resolveComment(
+    commentId: string,
+    resolverId: string,
+    resolution?: string
+  ) {
     try {
       const comment = await this.db.designComment.update({
         where: { id: commentId },
@@ -178,18 +197,17 @@ export class DesignCollaborationSystem extends EventEmitter {
           status: "RESOLVED",
           resolution,
           resolvedBy: resolverId,
-          resolvedAt: new Date()
+          resolvedAt: new Date(),
         },
         include: {
           author: true,
           resolver: true,
-          designAsset: true
-        }
+          designAsset: true,
+        },
       });
 
       this.emit("comment:resolved", { comment, resolution });
       return comment;
-
     } catch (error) {
       console.error("Failed to resolve comment:", error);
       throw error;
@@ -206,9 +224,9 @@ export class DesignCollaborationSystem extends EventEmitter {
       where,
       include: {
         collaborator: true,
-        inviter: true
+        inviter: true,
       },
-      orderBy: { invitedAt: "desc" }
+      orderBy: { invitedAt: "desc" },
     });
   }
 
@@ -222,19 +240,22 @@ export class DesignCollaborationSystem extends EventEmitter {
       where,
       include: {
         author: true,
-        resolver: true
+        resolver: true,
       },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
   }
 
-  async getCollaborationActivity(designAssetId: string, limit = 50): Promise<CollaborationEvent[]> {
+  async getCollaborationActivity(
+    designAssetId: string,
+    limit = 50
+  ): Promise<CollaborationEvent[]> {
     // Get recent comments
     const comments = await this.db.designComment.findMany({
       where: { designAssetId },
       include: { author: true },
       orderBy: { createdAt: "desc" },
-      take: Math.floor(limit / 2)
+      take: Math.floor(limit / 2),
     });
 
     // Get recent collaborations
@@ -242,7 +263,7 @@ export class DesignCollaborationSystem extends EventEmitter {
       where: { designAssetId },
       include: { collaborator: true, inviter: true },
       orderBy: { invitedAt: "desc" },
-      take: Math.floor(limit / 2)
+      take: Math.floor(limit / 2),
     });
 
     // Convert to unified event format
@@ -255,8 +276,8 @@ export class DesignCollaborationSystem extends EventEmitter {
           commentId: comment.id,
           commentText: comment.commentText,
           commentType: comment.commentType,
-          authorName: comment.author.fullName
-        }
+          authorName: comment.author.fullName,
+        },
       })),
       ...collaborations.map(collab => ({
         type: "STATUS_CHANGED" as const,
@@ -266,9 +287,9 @@ export class DesignCollaborationSystem extends EventEmitter {
           collaborationId: collab.id,
           collaboratorName: collab.collaborator.fullName,
           permissionLevel: collab.permissionLevel,
-          action: "INVITED"
-        }
-      }))
+          action: "INVITED",
+        },
+      })),
     ];
 
     // Sort by timestamp and limit
@@ -287,22 +308,21 @@ export class DesignCollaborationSystem extends EventEmitter {
         where: { id: collaborationId },
         data: {
           permissionLevel: newPermissionLevel,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         include: {
           collaborator: true,
-          designAsset: true
-        }
+          designAsset: true,
+        },
       });
 
       this.emit("permission:updated", {
         collaboration,
         newPermission: newPermissionLevel,
-        updatedBy
+        updatedBy,
       });
 
       return collaboration;
-
     } catch (error) {
       console.error("Failed to update collaborator permission:", error);
       throw error;
@@ -315,21 +335,20 @@ export class DesignCollaborationSystem extends EventEmitter {
         where: { id: collaborationId },
         data: {
           status: "INACTIVE",
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         include: {
           collaborator: true,
-          designAsset: true
-        }
+          designAsset: true,
+        },
       });
 
       this.emit("collaborator:removed", {
         collaboration,
-        removedBy
+        removedBy,
       });
 
       return collaboration;
-
     } catch (error) {
       console.error("Failed to remove collaborator:", error);
       throw error;
@@ -347,27 +366,35 @@ export class DesignCollaborationSystem extends EventEmitter {
         designAssetId,
         versionId,
         collaboratorId: userId,
-        status: "ACTIVE"
-      }
+        status: "ACTIVE",
+      },
     });
 
     if (!collaboration) {
       // Check if user is the design creator or has workspace access
       const designAsset = await this.db.designAsset.findUnique({
-        where: { id: designAssetId }
+        where: { id: designAssetId },
       });
 
       return designAsset?.createdBy === userId;
     }
 
-    return ["COMMENT", "EDIT", "APPROVE"].includes(collaboration.permissionLevel);
+    return ["COMMENT", "EDIT", "APPROVE"].includes(
+      collaboration.permissionLevel
+    );
   }
 
-  private async createCommentNotifications(commentId: string, userIds: string[]) {
+  private async createCommentNotifications(
+    commentId: string,
+    userIds: string[]
+  ) {
     // TODO: Implement notification system
     // This would integrate with a notification service to send
     // emails, in-app notifications, or webhooks
-    console.log(`Creating notifications for comment ${commentId} to users:`, userIds);
+    console.log(
+      `Creating notifications for comment ${commentId} to users:`,
+      userIds
+    );
   }
 
   // Event handlers

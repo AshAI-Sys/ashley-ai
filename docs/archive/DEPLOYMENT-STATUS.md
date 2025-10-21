@@ -53,6 +53,7 @@ Use this simple config:
 ### Step 4: Redeploy
 
 After updating settings:
+
 1. Go to: https://vercel.com/ash-ais-projects/ash-admin
 2. Click latest deployment
 3. Click "Redeploy"
@@ -65,6 +66,7 @@ After updating settings:
 **Problem**: Vercel is building from MONOREPO ROOT but looking for files in WRONG location
 
 **Solution**:
+
 - Set **Root Directory** = `services/ash-admin`
 - This makes Vercel build FROM the correct directory
 - `.next` output will be in the RIGHT place
@@ -88,6 +90,7 @@ Follow prompts and it should work!
 ## Expected Result
 
 After fix:
+
 - ✅ Build succeeds
 - ✅ Website loads at: https://ash-admin-ash-ais-projects.vercel.app
 - ✅ Login page appears
@@ -98,6 +101,7 @@ After fix:
 ## Need Help?
 
 Check these:
+
 1. Root Directory setting: https://vercel.com/ash-ais-projects/ash-admin/settings/general
 2. Latest deployment: https://vercel.com/ash-ais-projects/ash-admin
 3. Deployment logs for errors

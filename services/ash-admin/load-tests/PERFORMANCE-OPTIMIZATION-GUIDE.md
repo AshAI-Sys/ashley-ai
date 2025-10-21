@@ -5,26 +5,32 @@
 ### 1. Database Query Performance
 
 #### **N+1 Query Problem**
+
 **Problem**: Loading related data in loops causes excessive database queries.
 
 **Bad Example**:
+
 ```typescript
 // This causes N+1 queries!
 const orders = await prisma.order.findMany();
 for (const order of orders) {
-  const client = await prisma.client.findUnique({ where: { id: order.client_id } });
+  const client = await prisma.client.findUnique({
+    where: { id: order.client_id },
+  });
 }
 ```
 
 **Good Example**:
+
 ```typescript
 // Use include to load relations in one query
 const orders = await prisma.order.findMany({
-  include: { client: true }
+  include: { client: true },
 });
 ```
 
 **Solution**:
+
 - Always use `include` or `select` with relations
 - Use Prisma's eager loading
 - Check query logs for repeated patterns
@@ -32,9 +38,11 @@ const orders = await prisma.order.findMany({
 ---
 
 #### **Missing Indexes**
+
 **Problem**: Queries on unindexed columns are slow on large datasets.
 
 **Identify Slow Queries**:
+
 ```sql
 -- PostgreSQL: Check slow queries
 SELECT query, calls, total_time, mean_time
@@ -44,6 +52,7 @@ LIMIT 10;
 ```
 
 **Add Indexes**:
+
 ```prisma
 model Order {
   id           String   @id @default(cuid())
@@ -59,6 +68,7 @@ model Order {
 ```
 
 **Recommended Indexes for Ashley AI**:
+
 ```prisma
 // In packages/database/prisma/schema.prisma
 
@@ -97,15 +107,18 @@ model Employee {
 ---
 
 #### **Large Result Sets**
+
 **Problem**: Loading thousands of records without pagination.
 
 **Bad Example**:
+
 ```typescript
 // Loads ALL orders into memory!
 const orders = await prisma.order.findMany();
 ```
 
 **Good Example**:
+
 ```typescript
 // Paginated query
 const page = 1;
@@ -115,7 +128,7 @@ const [orders, total] = await Promise.all([
   prisma.order.findMany({
     skip: (page - 1) * limit,
     take: limit,
-    orderBy: { created_at: 'desc' },
+    orderBy: { created_at: "desc" },
   }),
   prisma.order.count(),
 ]);
@@ -126,15 +139,16 @@ const [orders, total] = await Promise.all([
 ### 2. API Performance
 
 #### **Implement Caching**
+
 Use Redis caching for frequently accessed data:
 
 ```typescript
-import { cacheService } from '@/lib/redis/cache';
+import { cacheService } from "@/lib/redis/cache";
 
 // Cache client data for 30 minutes
 export async function GET(request: NextRequest) {
   const clients = await cacheService.getOrSet(
-    'clients:all',
+    "clients:all",
     async () => {
       return await prisma.client.findMany();
     },
@@ -146,12 +160,13 @@ export async function GET(request: NextRequest) {
 ```
 
 #### **Invalidate Cache on Updates**
+
 ```typescript
 export async function POST(request: NextRequest) {
   const client = await prisma.client.create({ data });
 
   // Invalidate cache
-  await cacheService.delete('clients:all');
+  await cacheService.delete("clients:all");
 
   return NextResponse.json({ client });
 }
@@ -160,21 +175,24 @@ export async function POST(request: NextRequest) {
 ---
 
 #### **Use Parallel Requests**
+
 **Bad Example**:
+
 ```typescript
 // Sequential - slow!
-const clients = await fetch('/api/clients');
-const orders = await fetch('/api/orders');
-const invoices = await fetch('/api/finance/invoices');
+const clients = await fetch("/api/clients");
+const orders = await fetch("/api/orders");
+const invoices = await fetch("/api/finance/invoices");
 ```
 
 **Good Example**:
+
 ```typescript
 // Parallel - fast!
 const [clients, orders, invoices] = await Promise.all([
-  fetch('/api/clients'),
-  fetch('/api/orders'),
-  fetch('/api/finance/invoices'),
+  fetch("/api/clients"),
+  fetch("/api/orders"),
+  fetch("/api/finance/invoices"),
 ]);
 ```
 
@@ -183,12 +201,14 @@ const [clients, orders, invoices] = await Promise.all([
 ### 3. Database Connection Pooling
 
 **Configure Prisma Connection Pool**:
+
 ```env
 # .env
 DATABASE_URL="postgresql://user:pass@localhost:5432/ashleyai?connection_limit=10&pool_timeout=20"
 ```
 
 **Recommended Settings**:
+
 - Development: `connection_limit=5`
 - Production: `connection_limit=20-50` (based on load)
 - Always set `pool_timeout` to prevent hanging connections
@@ -198,6 +218,7 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/ashleyai?connection_limit=10
 ### 4. Optimize Aggregations
 
 **Bad Example**:
+
 ```typescript
 // Loads ALL data into memory, then counts
 const orders = await prisma.order.findMany();
@@ -205,12 +226,13 @@ const totalRevenue = orders.reduce((sum, o) => sum + o.total_amount, 0);
 ```
 
 **Good Example**:
+
 ```typescript
 // Database aggregation - much faster
 const result = await prisma.order.aggregate({
   _sum: { total_amount: true },
   _count: true,
-  where: { status: 'COMPLETED' },
+  where: { status: "COMPLETED" },
 });
 ```
 
@@ -219,6 +241,7 @@ const result = await prisma.order.aggregate({
 ### 5. Batch Operations
 
 **Bad Example**:
+
 ```typescript
 // Individual inserts - slow!
 for (const item of items) {
@@ -227,6 +250,7 @@ for (const item of items) {
 ```
 
 **Good Example**:
+
 ```typescript
 // Batch insert - fast!
 await prisma.item.createMany({
@@ -240,6 +264,7 @@ await prisma.item.createMany({
 ### 6. Query Optimization
 
 #### **Select Only Needed Fields**
+
 ```typescript
 // Bad: Loads all fields
 const orders = await prisma.order.findMany();
@@ -261,8 +286,9 @@ const orders = await prisma.order.findMany({
 ```
 
 #### **Use Transactions for Multiple Operations**
+
 ```typescript
-await prisma.$transaction(async (tx) => {
+await prisma.$transaction(async tx => {
   const order = await tx.order.create({ data: orderData });
   await tx.invoice.create({ data: { order_id: order.id, ...invoiceData } });
   await tx.payment.create({ data: paymentData });
@@ -274,17 +300,18 @@ await prisma.$transaction(async (tx) => {
 ## 🔍 Performance Monitoring
 
 ### 1. Enable Prisma Query Logging
+
 ```typescript
 // packages/database/src/index.ts
 const prisma = new PrismaClient({
   log: [
-    { level: 'query', emit: 'event' },
-    { level: 'error', emit: 'stdout' },
-    { level: 'warn', emit: 'stdout' },
+    { level: "query", emit: "event" },
+    { level: "error", emit: "stdout" },
+    { level: "warn", emit: "stdout" },
   ],
 });
 
-prisma.$on('query', (e) => {
+prisma.$on("query", e => {
   if (e.duration > 100) {
     console.warn(`Slow query detected: ${e.duration}ms`, e.query);
   }
@@ -292,6 +319,7 @@ prisma.$on('query', (e) => {
 ```
 
 ### 2. Monitor API Response Times
+
 ```typescript
 // middleware.ts
 export function middleware(request: NextRequest) {
@@ -304,12 +332,13 @@ export function middleware(request: NextRequest) {
     console.warn(`Slow request: ${request.url} - ${duration}ms`);
   }
 
-  response.headers.set('X-Response-Time', `${duration}ms`);
+  response.headers.set("X-Response-Time", `${duration}ms`);
   return response;
 }
 ```
 
 ### 3. Database Performance Metrics
+
 ```sql
 -- PostgreSQL: Check table sizes
 SELECT
@@ -335,22 +364,22 @@ ORDER BY idx_scan ASC;
 
 ### Expected Response Times
 
-| Endpoint | Target | Acceptable | Slow |
-|----------|--------|------------|------|
-| GET /api/clients | <100ms | <300ms | >500ms |
-| GET /api/orders | <150ms | <400ms | >600ms |
-| POST /api/orders | <200ms | <500ms | >800ms |
-| GET /api/finance/dashboard | <300ms | <600ms | >1000ms |
-| Login | <200ms | <400ms | >600ms |
+| Endpoint                   | Target | Acceptable | Slow    |
+| -------------------------- | ------ | ---------- | ------- |
+| GET /api/clients           | <100ms | <300ms     | >500ms  |
+| GET /api/orders            | <150ms | <400ms     | >600ms  |
+| POST /api/orders           | <200ms | <500ms     | >800ms  |
+| GET /api/finance/dashboard | <300ms | <600ms     | >1000ms |
+| Login                      | <200ms | <400ms     | >600ms  |
 
 ### Database Query Benchmarks
 
-| Query Type | Target | Acceptable | Slow |
-|------------|--------|------------|------|
-| Simple SELECT | <50ms | <100ms | >200ms |
-| JOIN (2-3 tables) | <100ms | <200ms | >400ms |
-| Aggregation | <200ms | <400ms | >800ms |
-| Full-text search | <300ms | <500ms | >1000ms |
+| Query Type        | Target | Acceptable | Slow    |
+| ----------------- | ------ | ---------- | ------- |
+| Simple SELECT     | <50ms  | <100ms     | >200ms  |
+| JOIN (2-3 tables) | <100ms | <200ms     | >400ms  |
+| Aggregation       | <200ms | <400ms     | >800ms  |
+| Full-text search  | <300ms | <500ms     | >1000ms |
 
 ---
 
@@ -386,6 +415,7 @@ ORDER BY idx_scan ASC;
 ## 🛠️ Tools
 
 ### Database Query Analysis
+
 ```bash
 # Enable PostgreSQL slow query logging
 # postgresql.conf
@@ -394,6 +424,7 @@ log_statement = 'all'
 ```
 
 ### Load Testing
+
 ```bash
 # Run load tests
 cd services/ash-admin
@@ -406,6 +437,7 @@ pnpm load-test:auth     # Authentication
 ```
 
 ### Redis Monitoring
+
 ```bash
 # Connect to Redis
 redis-cli
@@ -437,6 +469,7 @@ INFO stats
 ## 🎯 Next Steps
 
 After running load tests, prioritize optimizations based on:
+
 1. **High Impact, Low Effort**: Missing indexes, caching
 2. **High Impact, Medium Effort**: N+1 queries, pagination
 3. **Medium Impact, Low Effort**: Query optimization, parallel requests

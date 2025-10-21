@@ -4,8 +4,8 @@
  */
 
 export interface EmailTemplate {
-  subject: string
-  html: string
+  subject: string;
+  html: string;
 }
 
 const baseStyles = `
@@ -59,18 +59,18 @@ const baseStyles = `
   .success { background: #d1fae5; border-left: 4px solid #10b981; }
   .warning { background: #fef3c7; border-left: 4px solid #f59e0b; }
   .danger { background: #fee2e2; border-left: 4px solid #ef4444; }
-`
+`;
 
 export const emailTemplates = {
   /**
    * ORDER NOTIFICATIONS
    */
   orderCreated: (data: {
-    clientName: string
-    orderNumber: string
-    orderTotal: string
-    orderDate: string
-    portalLink: string
+    clientName: string;
+    orderNumber: string;
+    orderTotal: string;
+    orderDate: string;
+    portalLink: string;
   }): EmailTemplate => ({
     subject: `Order Confirmation - ${data.orderNumber}`,
     html: `
@@ -108,11 +108,11 @@ export const emailTemplates = {
   }),
 
   orderStatusUpdate: (data: {
-    clientName: string
-    orderNumber: string
-    status: string
-    message: string
-    portalLink: string
+    clientName: string;
+    orderNumber: string;
+    status: string;
+    message: string;
+    portalLink: string;
   }): EmailTemplate => ({
     subject: `Order Update - ${data.orderNumber}`,
     html: `
@@ -147,12 +147,12 @@ export const emailTemplates = {
    * DESIGN APPROVAL NOTIFICATIONS
    */
   designApprovalRequest: (data: {
-    clientName: string
-    designName: string
-    orderNumber: string
-    approvalLink: string
-    expiryDate: string
-    previewUrl?: string
+    clientName: string;
+    designName: string;
+    orderNumber: string;
+    approvalLink: string;
+    expiryDate: string;
+    previewUrl?: string;
   }): EmailTemplate => ({
     subject: `Design Approval Required - ${data.designName}`,
     html: `
@@ -168,9 +168,13 @@ export const emailTemplates = {
     <div class="content">
       <p>Hi <strong>${data.clientName}</strong>,</p>
       <p>Your design "<strong>${data.designName}</strong>" for order <strong>${data.orderNumber}</strong> is ready for your approval.</p>
-      ${data.previewUrl ? `<div style="text-align: center; margin: 20px 0;">
+      ${
+        data.previewUrl
+          ? `<div style="text-align: center; margin: 20px 0;">
         <img src="${data.previewUrl}" alt="Design Preview" style="max-width: 100%; border-radius: 8px; border: 2px solid #e5e5e5;" />
-      </div>` : ''}
+      </div>`
+          : ""
+      }
       <div style="text-align: center; margin: 30px 0;">
         <a href="${data.approvalLink}" class="button" style="background: #10b981;">🔍 Review & Approve Design</a>
       </div>
@@ -188,10 +192,10 @@ export const emailTemplates = {
   }),
 
   designApproved: (data: {
-    clientName: string
-    designName: string
-    orderNumber: string
-    nextSteps: string
+    clientName: string;
+    designName: string;
+    orderNumber: string;
+    nextSteps: string;
   }): EmailTemplate => ({
     subject: `Design Approved - ${data.designName}`,
     html: `
@@ -224,12 +228,12 @@ export const emailTemplates = {
    * INVOICE & PAYMENT NOTIFICATIONS
    */
   invoiceGenerated: (data: {
-    clientName: string
-    invoiceNumber: string
-    amount: string
-    dueDate: string
-    downloadLink: string
-    paymentLink?: string
+    clientName: string;
+    invoiceNumber: string;
+    amount: string;
+    dueDate: string;
+    downloadLink: string;
+    paymentLink?: string;
   }): EmailTemplate => ({
     subject: `Invoice ${data.invoiceNumber} - Ashley AI`,
     html: `
@@ -255,7 +259,7 @@ export const emailTemplates = {
       </div>
       <div style="text-align: center;">
         <a href="${data.downloadLink}" class="button">📥 Download Invoice</a>
-        ${data.paymentLink ? `<a href="${data.paymentLink}" class="button" style="background: #10b981; margin-left: 10px;">💳 Pay Now</a>` : ''}
+        ${data.paymentLink ? `<a href="${data.paymentLink}" class="button" style="background: #10b981; margin-left: 10px;">💳 Pay Now</a>` : ""}
       </div>
       <p>Please process payment by the due date to avoid any delays.</p>
     </div>
@@ -268,11 +272,11 @@ export const emailTemplates = {
   }),
 
   paymentReceived: (data: {
-    clientName: string
-    invoiceNumber: string
-    amount: string
-    paymentDate: string
-    paymentMethod: string
+    clientName: string;
+    invoiceNumber: string;
+    amount: string;
+    paymentDate: string;
+    paymentMethod: string;
   }): EmailTemplate => ({
     subject: `Payment Received - ${data.invoiceNumber}`,
     html: `
@@ -310,12 +314,12 @@ export const emailTemplates = {
    * DELIVERY NOTIFICATIONS
    */
   shipmentDispatched: (data: {
-    clientName: string
-    orderNumber: string
-    trackingNumber?: string
-    carrier?: string
-    estimatedDelivery: string
-    trackingLink?: string
+    clientName: string;
+    orderNumber: string;
+    trackingNumber?: string;
+    carrier?: string;
+    estimatedDelivery: string;
+    trackingLink?: string;
   }): EmailTemplate => ({
     subject: `Order Shipped - ${data.orderNumber}`,
     html: `
@@ -333,14 +337,18 @@ export const emailTemplates = {
       <div class="details-box">
         <h3>📦 Shipment Details</h3>
         <ul>
-          ${data.trackingNumber ? `<li><strong>Tracking Number:</strong> ${data.trackingNumber}</li>` : ''}
-          ${data.carrier ? `<li><strong>Carrier:</strong> ${data.carrier}</li>` : ''}
+          ${data.trackingNumber ? `<li><strong>Tracking Number:</strong> ${data.trackingNumber}</li>` : ""}
+          ${data.carrier ? `<li><strong>Carrier:</strong> ${data.carrier}</li>` : ""}
           <li><strong>Estimated Delivery:</strong> ${data.estimatedDelivery}</li>
         </ul>
       </div>
-      ${data.trackingLink ? `<div style="text-align: center;">
+      ${
+        data.trackingLink
+          ? `<div style="text-align: center;">
         <a href="${data.trackingLink}" class="button">📍 Track Shipment</a>
-      </div>` : ''}
+      </div>`
+          : ""
+      }
     </div>
     <div class="footer">
       <p>📧 support@ashleyai.com | 📞 +63 123 456 7890</p>
@@ -351,10 +359,10 @@ export const emailTemplates = {
   }),
 
   orderDelivered: (data: {
-    clientName: string
-    orderNumber: string
-    deliveryDate: string
-    receivedBy?: string
+    clientName: string;
+    orderNumber: string;
+    deliveryDate: string;
+    receivedBy?: string;
   }): EmailTemplate => ({
     subject: `Order Delivered - ${data.orderNumber}`,
     html: `
@@ -373,7 +381,7 @@ export const emailTemplates = {
         <h3>✅ Delivery Confirmation</h3>
         <ul>
           <li><strong>Delivery Date:</strong> ${data.deliveryDate}</li>
-          ${data.receivedBy ? `<li><strong>Received By:</strong> ${data.receivedBy}</li>` : ''}
+          ${data.receivedBy ? `<li><strong>Received By:</strong> ${data.receivedBy}</li>` : ""}
         </ul>
       </div>
       <p>We hope you're satisfied with your order. If you have any questions or concerns, please don't hesitate to contact us.</p>
@@ -390,13 +398,13 @@ export const emailTemplates = {
    * QUALITY CONTROL NOTIFICATIONS
    */
   qualityIssueDetected: (data: {
-    teamEmail: string
-    orderNumber: string
-    inspectionType: string
-    defectCount: number
-    severity: string
-    details: string
-    adminLink: string
+    teamEmail: string;
+    orderNumber: string;
+    inspectionType: string;
+    defectCount: number;
+    severity: string;
+    details: string;
+    adminLink: string;
   }): EmailTemplate => ({
     subject: `⚠️ Quality Issue - Order ${data.orderNumber}`,
     html: `
@@ -429,4 +437,4 @@ export const emailTemplates = {
 </body>
 </html>`,
   }),
-}
+};

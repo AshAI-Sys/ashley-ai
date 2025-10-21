@@ -1,18 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 // GET /api/automation/rules - Get all automation rules
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get('workspace_id') || 'workspace_1';
-    const isActive = searchParams.get('is_active');
-    const triggerType = searchParams.get('trigger_type');
+    const workspaceId = searchParams.get("workspace_id") || "workspace_1";
+    const isActive = searchParams.get("is_active");
+    const triggerType = searchParams.get("trigger_type");
 
     const where: any = { workspace_id: workspaceId };
 
     if (isActive !== null) {
-      where.is_active = isActive === 'true';
+      where.is_active = isActive === "true";
     }
 
     if (triggerType) {
@@ -23,21 +23,21 @@ export async function GET(request: NextRequest) {
       where,
       include: {
         user: {
-          select: { id: true, email: true, username: true }
+          select: { id: true, email: true, username: true },
         },
         executions: {
           take: 5,
-          orderBy: { started_at: 'desc' },
+          orderBy: { started_at: "desc" },
           select: {
             id: true,
             execution_status: true,
             started_at: true,
             completed_at: true,
-            error_message: true
-          }
-        }
+            error_message: true,
+          },
+        },
       },
-      orderBy: { updated_at: 'desc' }
+      orderBy: { updated_at: "desc" },
     });
 
     return NextResponse.json({
@@ -45,14 +45,13 @@ export async function GET(request: NextRequest) {
       data: rules,
       meta: {
         total: rules.length,
-        filters: { isActive, triggerType }
-      }
+        filters: { isActive, triggerType },
+      },
     });
-
   } catch (error) {
-    console.error('Error fetching automation rules:', error);
+    console.error("Error fetching automation rules:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch automation rules' },
+      { success: false, error: "Failed to fetch automation rules" },
       { status: 500 }
     );
   }
@@ -63,7 +62,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      workspace_id = 'workspace_1',
+      workspace_id = "workspace_1",
       name,
       description,
       trigger_type,
@@ -72,13 +71,16 @@ export async function POST(request: NextRequest) {
       actions,
       priority = 1,
       is_active = true,
-      created_by = 'user_1'
+      created_by = "user_1",
     } = body;
 
     // Validate required fields
     if (!name || !trigger_type || !actions) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields: name, trigger_type, actions' },
+        {
+          success: false,
+          error: "Missing required fields: name, trigger_type, actions",
+        },
         { status: 400 }
       );
     }
@@ -92,7 +94,10 @@ export async function POST(request: NextRequest) {
       parsedActions = JSON.stringify(actions);
     } catch (err) {
       return NextResponse.json(
-        { success: false, error: 'Invalid JSON in trigger_config, conditions, or actions' },
+        {
+          success: false,
+          error: "Invalid JSON in trigger_config, conditions, or actions",
+        },
         { status: 400 }
       );
     }
@@ -108,25 +113,24 @@ export async function POST(request: NextRequest) {
         actions: parsedActions,
         priority,
         is_active,
-        created_by
+        created_by,
       },
       include: {
         user: {
-          select: { id: true, email: true, username: true }
-        }
-      }
+          select: { id: true, email: true, username: true },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: rule,
-      message: 'Automation rule created successfully'
+      message: "Automation rule created successfully",
     });
-
   } catch (error) {
-    console.error('Error creating automation rule:', error);
+    console.error("Error creating automation rule:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create automation rule' },
+      { success: false, error: "Failed to create automation rule" },
       { status: 500 }
     );
   }
@@ -140,7 +144,7 @@ export async function PUT(request: NextRequest) {
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Rule ID is required' },
+        { success: false, error: "Rule ID is required" },
         { status: 400 }
       );
     }
@@ -161,21 +165,20 @@ export async function PUT(request: NextRequest) {
       data: updateData,
       include: {
         user: {
-          select: { id: true, email: true, username: true }
-        }
-      }
+          select: { id: true, email: true, username: true },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: rule,
-      message: 'Automation rule updated successfully'
+      message: "Automation rule updated successfully",
     });
-
   } catch (error) {
-    console.error('Error updating automation rule:', error);
+    console.error("Error updating automation rule:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update automation rule' },
+      { success: false, error: "Failed to update automation rule" },
       { status: 500 }
     );
   }
@@ -185,28 +188,27 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Rule ID is required' },
+        { success: false, error: "Rule ID is required" },
         { status: 400 }
       );
     }
 
     await prisma.automationRule.delete({
-      where: { id }
+      where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Automation rule deleted successfully'
+      message: "Automation rule deleted successfully",
     });
-
   } catch (error) {
-    console.error('Error deleting automation rule:', error);
+    console.error("Error deleting automation rule:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete automation rule' },
+      { success: false, error: "Failed to delete automation rule" },
       { status: 500 }
     );
   }

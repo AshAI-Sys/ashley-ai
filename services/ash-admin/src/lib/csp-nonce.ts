@@ -11,12 +11,12 @@
  */
 export function generateNonce(): string {
   // Use Web Crypto API (available in Edge Runtime)
-  const array = new Uint8Array(16)
-  crypto.getRandomValues(array)
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
 
   // Convert to base64 using btoa (Edge Runtime compatible)
-  const binaryString = String.fromCharCode(...array)
-  return btoa(binaryString)
+  const binaryString = String.fromCharCode(...array);
+  return btoa(binaryString);
 }
 
 /**
@@ -24,7 +24,7 @@ export function generateNonce(): string {
  */
 export function createCSPHeader(nonce: string): string {
   // Relaxed CSP for development - allows inline styles and eval for Next.js dev mode
-  const isDevelopment = process.env.NODE_ENV === 'development'
+  const isDevelopment = process.env.NODE_ENV === "development";
 
   // In development with nonce, use nonce-based CSP
   if (isDevelopment && nonce) {
@@ -39,17 +39,17 @@ export function createCSPHeader(nonce: string): string {
       `base-uri 'self'`,
       `form-action 'self'`,
       `object-src 'none'`,
-    ].join('; ')
+    ].join("; ");
   }
 
   // Production or development without nonce - use unsafe-inline only
   return [
     `default-src 'self'`,
-    `script-src 'self' 'unsafe-inline' ${isDevelopment ? "'unsafe-eval'" : ''}`.trim(),
+    `script-src 'self' 'unsafe-inline' ${isDevelopment ? "'unsafe-eval'" : ""}`.trim(),
     `style-src 'self' 'unsafe-inline'`,
     `img-src 'self' data: https://res.cloudinary.com https:`,
     `font-src 'self' data:`,
-    `connect-src 'self' https://api.anthropic.com https://api.openai.com https: ${isDevelopment ? 'ws: wss:' : ''}`.trim(),
+    `connect-src 'self' https://api.anthropic.com https://api.openai.com https: ${isDevelopment ? "ws: wss:" : ""}`.trim(),
     `frame-ancestors 'self'`,
     `base-uri 'self'`,
     `form-action 'self'`,
@@ -58,7 +58,7 @@ export function createCSPHeader(nonce: string): string {
     `media-src 'self'`,
     `manifest-src 'self'`,
     `worker-src 'self' blob:`,
-  ].join('; ')
+  ].join("; ");
 }
 
 /**
@@ -81,9 +81,9 @@ export function createStrictCSPHeader(nonce: string): string {
     `manifest-src 'self'`,
     `upgrade-insecure-requests`,
     `block-all-mixed-content`,
-  ]
+  ];
 
-  return cspDirectives.join('; ')
+  return cspDirectives.join("; ");
 }
 
 /**
@@ -92,15 +92,15 @@ export function createStrictCSPHeader(nonce: string): string {
 export function getMaxSecurityHeaders(): Record<string, string> {
   return {
     // Cross-Origin policies for maximum isolation
-    'Cross-Origin-Opener-Policy': 'same-origin',
-    'Cross-Origin-Embedder-Policy': 'require-corp',
-    'Cross-Origin-Resource-Policy': 'same-origin',
+    "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Embedder-Policy": "require-corp",
+    "Cross-Origin-Resource-Policy": "same-origin",
 
     // Certificate transparency
-    'Expect-CT': 'max-age=86400, enforce',
+    "Expect-CT": "max-age=86400, enforce",
 
     // Prevent download execution (IE)
-    'X-Download-Options': 'noopen',
-    'X-Permitted-Cross-Domain-Policies': 'none',
-  }
+    "X-Download-Options": "noopen",
+    "X-Permitted-Cross-Domain-Policies": "none",
+  };
 }

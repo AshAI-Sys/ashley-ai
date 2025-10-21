@@ -11,7 +11,7 @@ export type DatabaseError = {
 export const OrderStatus = {
   INTAKE: "INTAKE",
   DESIGN_PENDING: "DESIGN_PENDING",
-  DESIGN_APPROVAL: "DESIGN_APPROVAL", 
+  DESIGN_APPROVAL: "DESIGN_APPROVAL",
   PRODUCTION_PLANNED: "PRODUCTION_PLANNED",
   IN_PROGRESS: "IN_PROGRESS",
   QC: "QC",
@@ -25,7 +25,7 @@ export const OrderStatus = {
 
 export const PrintingMethod = {
   SILKSCREEN: "SILKSCREEN",
-  SUBLIMATION: "SUBLIMATION", 
+  SUBLIMATION: "SUBLIMATION",
   DTF: "DTF",
   EMBROIDERY: "EMBROIDERY",
 } as const;
@@ -33,7 +33,7 @@ export const PrintingMethod = {
 export const DesignStatus = {
   DRAFT: "DRAFT",
   PENDING_APPROVAL: "PENDING_APPROVAL",
-  APPROVED: "APPROVED", 
+  APPROVED: "APPROVED",
   REJECTED: "REJECTED",
   LOCKED: "LOCKED",
 } as const;

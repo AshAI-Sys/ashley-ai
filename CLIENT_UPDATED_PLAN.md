@@ -7,17 +7,17 @@
 
 **Repo & service naming (use consistently):**
 
-* Monorepo: `ash-ai`
-* Services:
+- Monorepo: `ash-ai`
+- Services:
+  - `ash-core` (orders, routing, inventory, HR/finance glue)
+  - `ash-ai` (Ashley: monitor, forecast, advise)
+  - `ash-admin` (backoffice UI)
+  - `ash-staff` (mobile/PWA for workers)
+  - `ash-portal` (client portal)
+  - `ash-api` (BFF/API gateway)
 
-  * `ash-core` (orders, routing, inventory, HR/finance glue)
-  * `ash-ai` (Ashley: monitor, forecast, advise)
-  * `ash-admin` (backoffice UI)
-  * `ash-staff` (mobile/PWA for workers)
-  * `ash-portal` (client portal)
-  * `ash-api` (BFF/API gateway)
-* Env var prefix: `ASH_` (e.g., `ASH_DB_URL`, `ASH_JWT_SECRET`)
-* Event prefix (for the bus): `ash.` (e.g., `ash.po.created`)
+- Env var prefix: `ASH_` (e.g., `ASH_DB_URL`, `ASH_JWT_SECRET`)
+- Event prefix (for the bus): `ash.` (e.g., `ash.po.created`)
 
 ---
 
@@ -25,25 +25,25 @@
 
 **Goal:** ASH AI is an AI-powered ERP for apparel manufacturing with end-to-end coverage:
 
-* **Orders & Production** (Silkscreen, Sublimation, DTF, Embroidery; routing templates + customization)
-* **Warehouse & Inventory** (QR batches, wastage)
-* **Finance & Payroll** (auto-compute, invoicing, PH compliance)
-* **HR** (attendance, performance, training recs)
-* **Maintenance** (machines & vehicles, reminders)
-* **Client Portal** (tracking, approvals, payments, reorders)
-* **Merchandising AI** (reprints, theme suggestions)
-* **Automation Engine** (reminders for bills/deadlines/follow-ups)
+- **Orders & Production** (Silkscreen, Sublimation, DTF, Embroidery; routing templates + customization)
+- **Warehouse & Inventory** (QR batches, wastage)
+- **Finance & Payroll** (auto-compute, invoicing, PH compliance)
+- **HR** (attendance, performance, training recs)
+- **Maintenance** (machines & vehicles, reminders)
+- **Client Portal** (tracking, approvals, payments, reorders)
+- **Merchandising AI** (reprints, theme suggestions)
+- **Automation Engine** (reminders for bills/deadlines/follow-ups)
 
 **Non-functional requirements (NFRs):**
 
-* **Security:** RBAC + 2FA for sensitive roles, RLS by `workspace_id`/`brand_id`, field-level encryption for PII & payroll
-* **Auditability:** immutable `audit_logs`, idempotent writes
-* **Reliability:** daily DB backups + point-in-time recovery; job retries on queues
-* **Performance:** p95 < 300ms for reads; heavy analytics async; indexes + caching
-* **Internationalization:** PH default (Asia/Manila), but multi-locale ready
-* **Offline-first staff PWA:** queue & sync with conflict resolution
+- **Security:** RBAC + 2FA for sensitive roles, RLS by `workspace_id`/`brand_id`, field-level encryption for PII & payroll
+- **Auditability:** immutable `audit_logs`, idempotent writes
+- **Reliability:** daily DB backups + point-in-time recovery; job retries on queues
+- **Performance:** p95 < 300ms for reads; heavy analytics async; indexes + caching
+- **Internationalization:** PH default (Asia/Manila), but multi-locale ready
+- **Offline-first staff PWA:** queue & sync with conflict resolution
 
-**Key principle:** *Every stage logs structured data, moves status forward, and exposes signals for Ashley to monitor, forecast, and suggest actions.*
+**Key principle:** _Every stage logs structured data, moves status forward, and exposes signals for Ashley to monitor, forecast, and suggest actions._
 
 ---
 
@@ -51,16 +51,16 @@
 
 ## 1) Actors & Permissions
 
-* **CSR/Admin** (create/edit PO; send for approval)
-* **Manager** (can change routing template, due dates; approve exceptions)
-* **Client (Portal)** (view intake summary once PO is “Approved/Confirmed”)
-* **Ashley** (read-only over inputs; computes checks & prompts)
+- **CSR/Admin** (create/edit PO; send for approval)
+- **Manager** (can change routing template, due dates; approve exceptions)
+- **Client (Portal)** (view intake summary once PO is “Approved/Confirmed”)
+- **Ashley** (read-only over inputs; computes checks & prompts)
 
 RBAC scopes used here:
 
-* `orders.create`, `orders.edit`, `orders.view`
-* `routing.apply_template`, `routing.customize`
-* `clients.create`, `clients.edit`, `clients.view`
+- `orders.create`, `orders.edit`, `orders.view`
+- `routing.apply_template`, `routing.customize`
+- `clients.create`, `clients.edit`, `clients.view`
 
 Delegations (optional): Admin can grant `orders.edit_critical`/`routing.customize` temporarily to a Manager.
 
@@ -72,61 +72,60 @@ Delegations (optional): Admin can grant `orders.edit_critical`/`routing.customiz
 
 ### A. Client & Brand
 
-* **Client** (picker; or **New Client** modal: name, company, emails\[], phones\[], billing address)
-* **Brand** (Reefer/Sorbetes/…; required; drives defaults & pricing rules)
-* **Channel** (Direct, CSR, Shopee, TikTok, Lazada; optional for attribution)
+- **Client** (picker; or **New Client** modal: name, company, emails\[], phones\[], billing address)
+- **Brand** (Reefer/Sorbetes/…; required; drives defaults & pricing rules)
+- **Channel** (Direct, CSR, Shopee, TikTok, Lazada; optional for attribution)
 
 ### B. Product & Design
 
-* **Product Type** (Tee/Hoodie/Jersey/Uniform/Custom)
-* **Design** (attach or link to `design_assets`; if absent, create placeholder)
-* **Method** (Silkscreen / Sublimation / DTF / Embroidery) → **drives default route**
+- **Product Type** (Tee/Hoodie/Jersey/Uniform/Custom)
+- **Design** (attach or link to `design_assets`; if absent, create placeholder)
+- **Method** (Silkscreen / Sublimation / DTF / Embroidery) → **drives default route**
 
 ### C. Quantities & Size Curve
 
-* **Total Qty** (int > 0)
-* **Size Curve** (JSON map; must sum to Total Qty; validation)
-
-  * Example: `{ "S": 50, "M": 120, "L": 200, "XL": 80 }`
+- **Total Qty** (int > 0)
+- **Size Curve** (JSON map; must sum to Total Qty; validation)
+  - Example: `{ "S": 50, "M": 120, "L": 200, "XL": 80 }`
 
 ### D. Variants & Add-ons (optional)
 
-* Colorways (e.g., Black/White split)
-* Add-ons (puff print, anti-migration, premium thread, special packaging)
+- Colorways (e.g., Black/White split)
+- Add-ons (puff print, anti-migration, premium thread, special packaging)
 
 ### E. Dates & SLAs
 
-* **Target Delivery Date** (required)
-* *Optional*: Target stage dates (auto-derived; can be edited by Manager)
+- **Target Delivery Date** (required)
+- _Optional_: Target stage dates (auto-derived; can be edited by Manager)
 
 ### F. Commercials
 
-* **Unit Price** (by variant optional)
-* **Deposit %** and **Payment Terms** (e.g., 50/50, net 15)
-* **Tax** flags (VAT inclusive/exclusive)
-* **Currency** (default PHP)
+- **Unit Price** (by variant optional)
+- **Deposit %** and **Payment Terms** (e.g., 50/50, net 15)
+- **Tax** flags (VAT inclusive/exclusive)
+- **Currency** (default PHP)
 
 ### G. Production Route
 
-* **Default Route** (auto-selected by Method & Brand defaults)
+- **Default Route** (auto-selected by Method & Brand defaults)
+  - Silkscreen options:
+    - (●) **Cut → Print → Sew → QC → Pack** (Option A – default)
+    - (○) **Cut → Sew → Print → QC → Pack** (Option B – guarded by Ashley)
 
-  * Silkscreen options:
+  - Sublimation default: **GA → Print → Heat Press → Cut → Sew → QC → Pack**
+  - DTF default: **Receive Plain Tee → DTF → QC → Pack**
+  - Embroidery default: **Cut → Emb → Sew → QC → Pack**
 
-    * (●) **Cut → Print → Sew → QC → Pack** (Option A – default)
-    * (○) **Cut → Sew → Print → QC → Pack** (Option B – guarded by Ashley)
-  * Sublimation default: **GA → Print → Heat Press → Cut → Sew → QC → Pack**
-  * DTF default: **Receive Plain Tee → DTF → QC → Pack**
-  * Embroidery default: **Cut → Emb → Sew → QC → Pack**
-* **\[Customize Path]** button → opens drag-and-drop editor for exceptions
-* **Ashley advisory** (inline): hazards (e.g., “Large AOP requires printing before sewing.”)
+- **\[Customize Path]** button → opens drag-and-drop editor for exceptions
+- **Ashley advisory** (inline): hazards (e.g., “Large AOP requires printing before sewing.”)
 
 ### H. Files & Notes
 
-* Upload references, client brief, special instructions (rich text)
+- Upload references, client brief, special instructions (rich text)
 
 ### I. Submit
 
-* Actions: **Save Draft**, **Create PO**, **Send Intake Summary to Client** (optional)
+- Actions: **Save Draft**, **Create PO**, **Send Intake Summary to Client** (optional)
 
 ---
 
@@ -232,14 +231,14 @@ create table audit_logs (
 
 **Indexes you must add:**
 
-* `orders (workspace_id, brand_id, status, created_at)`
-* `routing_steps (order_id, status, sequence)`
-* `clients (workspace_id, name)` (trgm for fuzzy)
-* `audit_logs (workspace_id, entity_type, entity_id, created_at)`
+- `orders (workspace_id, brand_id, status, created_at)`
+- `routing_steps (order_id, status, sequence)`
+- `clients (workspace_id, name)` (trgm for fuzzy)
+- `audit_logs (workspace_id, entity_type, entity_id, created_at)`
 
 **PO number policy:**
 
-* `PO = {BRANDCODE}-{YYYY}-{zero-pad seq}`; sequence is per brand per year (safe via DB transaction).
+- `PO = {BRANDCODE}-{YYYY}-{zero-pad seq}`; sequence is per brand per year (safe via DB transaction).
 
 ---
 
@@ -252,10 +251,10 @@ INTAKE → DESIGN_PENDING → DESIGN_APPROVAL → PRODUCTION_PLANNED
 Any stage can go to ON_HOLD or CANCELLED with reasons.
 ```
 
-* Creating the PO sets `status=INTAKE`
-* Uploading a design sets `DESIGN_PENDING`
-* Client approval sets `DESIGN_APPROVAL`
-* Applying routing & scheduling sets `PRODUCTION_PLANNED`
+- Creating the PO sets `status=INTAKE`
+- Uploading a design sets `DESIGN_PENDING`
+- Client approval sets `DESIGN_APPROVAL`
+- Applying routing & scheduling sets `PRODUCTION_PLANNED`
 
 ---
 
@@ -346,51 +345,45 @@ Emits: ash.po.shared
 
 Triggered on:
 
-* `POST /orders` (create)
-* Routing template change/customization
-* Edit of qty/dates/method
+- `POST /orders` (create)
+- Routing template change/customization
+- Edit of qty/dates/method
 
 **Checks & logic (rules first; ML later):**
 
 1. **Capacity vs Deadlines**
+   - For each routing step, estimate standard time:
+     - Use method/product defaults (e.g., `CUTTING: 0.6 min/pc`, `PRINTING: coats × area factor`, `SEWING: op_time per garment`).
 
-   * For each routing step, estimate standard time:
-
-     * Use method/product defaults (e.g., `CUTTING: 0.6 min/pc`, `PRINTING: coats × area factor`, `SEWING: op_time per garment`).
-   * Add buffers (setup, curing, QC sampling).
-   * Compare required minutes per **workcenter** per day to **available capacity** (operators × shift mins × utilization).
-   * **Warn** if any workcenter exceeds capacity for the target schedule; suggest:
-
-     * Move dates, add shifts, subcontract, or split batches.
+   - Add buffers (setup, curing, QC sampling).
+   - Compare required minutes per **workcenter** per day to **available capacity** (operators × shift mins × utilization).
+   - **Warn** if any workcenter exceeds capacity for the target schedule; suggest:
+     - Move dates, add shifts, subcontract, or split batches.
 
 2. **Stock Availability (Soft Allocation)**
-
-   * Compute BOM snapshot from size curve + variants + addons.
-   * Check `inventory_batches` for available fabric/ink/film/thread under the brand (or shared pool).
-   * If shortfall:
-
-     * Create **draft PR** with suggested suppliers (price history & lead time).
-     * Warn CSR/Manager.
+   - Compute BOM snapshot from size curve + variants + addons.
+   - Check `inventory_batches` for available fabric/ink/film/thread under the brand (or shared pool).
+   - If shortfall:
+     - Create **draft PR** with suggested suppliers (price history & lead time).
+     - Warn CSR/Manager.
 
 3. **Method/Route Safety**
+   - **Silkscreen Option B** (Sew → Print) only allowed for small placements.
+     - If print area > threshold or crosses seam, flag **High Risk**.
 
-   * **Silkscreen Option B** (Sew → Print) only allowed for small placements.
-
-     * If print area > threshold or crosses seam, flag **High Risk**.
-   * **Sublimation** requires print/heat before cutting for AOP; warn if changed.
-   * **DTF** requires blanks before press; enforce step ordering.
+   - **Sublimation** requires print/heat before cutting for AOP; warn if changed.
+   - **DTF** requires blanks before press; enforce step ordering.
 
 4. **Commercials Sanity**
-
-   * Suggested unit price floor from standard cost + margin floor (brand setting).
-   * Warn if margin < configured minimum.
+   - Suggested unit price floor from standard cost + margin floor (brand setting).
+   - Warn if margin < configured minimum.
 
 **Output (to UI & logs):**
 
-* Risk level (Green/Amber/Red)
-* Blocking issues (e.g., “No fabric available; PR required”)
-* Recommended actions (add shift, switch route, reorder qty split)
-* Confidence & assumptions
+- Risk level (Green/Amber/Red)
+- Blocking issues (e.g., “No fabric available; PR required”)
+- Recommended actions (add shift, switch route, reorder qty split)
+- Confidence & assumptions
 
 ---
 
@@ -398,37 +391,37 @@ Triggered on:
 
 **On PO create:**
 
-* To CSR/Manager: “PO REEF-2025-000123 created; method Silkscreen; target 25 Sep.”
-* To Warehouse (if soft allocation found shortages): “PR drafted for Fabric X.”
-* To Client (optional): “We’ve received your order; track link: …”
+- To CSR/Manager: “PO REEF-2025-000123 created; method Silkscreen; target 25 Sep.”
+- To Warehouse (if soft allocation found shortages): “PR drafted for Fabric X.”
+- To Client (optional): “We’ve received your order; track link: …”
 
 **Event bus emissions:**
 
-* `ash.po.created`
-* `ash.routing.applied` / `ash.routing.customized`
-* `ash.po.shared`
-* `ash.ashley.intake_risk_assessed` (with risk, actions)
+- `ash.po.created`
+- `ash.routing.applied` / `ash.routing.customized`
+- `ash.po.shared`
+- `ash.ashley.intake_risk_assessed` (with risk, actions)
 
 ---
 
 ## 9) Edge Cases & Error Handling
 
-* **Size curve mismatch:** Reject if sum ≠ total\_qty (422)
-* **Duplicate client:** CSR gets prompt to link to existing (fuzzy match by name/email/phone)
-* **Route conflicts:** Customization creating cycles or missing prerequisites (409 with hints)
-* **Idempotency:** Replays on network glitches must not duplicate orders (Idempotency-Key header)
-* **Draft mode:** Save partially filled form; validations run only on “Create PO”
-* **Offline CSR (rare):** If CSR PWA offline, queue `orders.create` with a temp negative ID, reconcile on sync
-* **Time zone:** All date inputs shown in Asia/Manila; backend stored UTC
+- **Size curve mismatch:** Reject if sum ≠ total_qty (422)
+- **Duplicate client:** CSR gets prompt to link to existing (fuzzy match by name/email/phone)
+- **Route conflicts:** Customization creating cycles or missing prerequisites (409 with hints)
+- **Idempotency:** Replays on network glitches must not duplicate orders (Idempotency-Key header)
+- **Draft mode:** Save partially filled form; validations run only on “Create PO”
+- **Offline CSR (rare):** If CSR PWA offline, queue `orders.create` with a temp negative ID, reconcile on sync
+- **Time zone:** All date inputs shown in Asia/Manila; backend stored UTC
 
 ---
 
 ## 10) Security & Audit
 
-* Only CSR/Admin/Manager with `orders.create` can create; `routing.customize` limited to Manager/Admin or delegated
-* All create/update actions write to `audit_logs` with `before/after`
-* Client PII (emails/phones/address) stored encrypted at rest (column/field-level crypto)
-* Portal links are signed URLs (short-lived); role-scoped access tokens
+- Only CSR/Admin/Manager with `orders.create` can create; `routing.customize` limited to Manager/Admin or delegated
+- All create/update actions write to `audit_logs` with `before/after`
+- Client PII (emails/phones/address) stored encrypted at rest (column/field-level crypto)
+- Portal links are signed URLs (short-lived); role-scoped access tokens
 
 ---
 
@@ -437,10 +430,10 @@ Triggered on:
 1. **Create PO** with valid payload → returns 201, PO has `status=INTAKE`, `po_number` generated
 2. **Template applied**: `routing_steps` rows created in correct sequence with dependencies
 3. **Ashley check** runs and surfaces at least one advisory when:
+   - Capacity is insufficient
+   - BOM stock is short
+   - Route is unsafe (e.g., Silkscreen Option B with AOP)
 
-   * Capacity is insufficient
-   * BOM stock is short
-   * Route is unsafe (e.g., Silkscreen Option B with AOP)
 4. **Client portal toggle** makes PO visible and emits `ash.po.shared`
 5. **Audit logs** contain entries for create/apply-template/customize with diffs
 6. **Size curve guard** rejects invalid sums
@@ -454,12 +447,27 @@ Triggered on:
 
 ```json
 {
-  "id":"7c3d...","po_number":"REEF-2025-000123","status":"INTAKE",
-  "brand_id":"b1","client_id":"c1","product_type":"Hoodie","method":"SILKSCREEN",
-  "total_qty":450,"size_curve":{"M":180,"L":180,"XL":90},
-  "variants":[{"color":"Black","qty":350},{"color":"White","qty":100}],
-  "target_delivery_date":"2025-09-25",
-  "commercials":{"unit_price":499,"deposit_pct":50,"terms":"50/50","tax_mode":"VAT_INCLUSIVE","currency":"PHP"}
+  "id": "7c3d...",
+  "po_number": "REEF-2025-000123",
+  "status": "INTAKE",
+  "brand_id": "b1",
+  "client_id": "c1",
+  "product_type": "Hoodie",
+  "method": "SILKSCREEN",
+  "total_qty": 450,
+  "size_curve": { "M": 180, "L": 180, "XL": 90 },
+  "variants": [
+    { "color": "Black", "qty": 350 },
+    { "color": "White", "qty": 100 }
+  ],
+  "target_delivery_date": "2025-09-25",
+  "commercials": {
+    "unit_price": 499,
+    "deposit_pct": 50,
+    "terms": "50/50",
+    "tax_mode": "VAT_INCLUSIVE",
+    "currency": "PHP"
+  }
 }
 ```
 
@@ -467,12 +475,42 @@ Triggered on:
 
 ```json
 [
-  {"name":"Cutting","workcenter":"CUTTING","sequence":10,"depends_on":[]},
-  {"name":"Screen Prep","workcenter":"PRINTING","sequence":20,"depends_on":["<Cutting>"]},
-  {"name":"Printing","workcenter":"PRINTING","sequence":30,"depends_on":["<Screen Prep>"]},
-  {"name":"Sewing","workcenter":"SEWING","sequence":40,"depends_on":["<Printing>"]},
-  {"name":"QC","workcenter":"QC","sequence":50,"depends_on":["<Sewing>"]},
-  {"name":"Packing","workcenter":"PACKING","sequence":60,"depends_on":["<QC>"]}
+  {
+    "name": "Cutting",
+    "workcenter": "CUTTING",
+    "sequence": 10,
+    "depends_on": []
+  },
+  {
+    "name": "Screen Prep",
+    "workcenter": "PRINTING",
+    "sequence": 20,
+    "depends_on": ["<Cutting>"]
+  },
+  {
+    "name": "Printing",
+    "workcenter": "PRINTING",
+    "sequence": 30,
+    "depends_on": ["<Screen Prep>"]
+  },
+  {
+    "name": "Sewing",
+    "workcenter": "SEWING",
+    "sequence": 40,
+    "depends_on": ["<Printing>"]
+  },
+  {
+    "name": "QC",
+    "workcenter": "QC",
+    "sequence": 50,
+    "depends_on": ["<Sewing>"]
+  },
+  {
+    "name": "Packing",
+    "workcenter": "PACKING",
+    "sequence": 60,
+    "depends_on": ["<QC>"]
+  }
 ]
 ```
 
@@ -480,31 +518,41 @@ Triggered on:
 
 ```json
 {
-  "risk":"AMBER",
-  "issues":[
-    {"type":"CAPACITY","workcenter":"PRINTING","details":"+18% over capacity in week of Sep 15"},
-    {"type":"STOCK","item":"Black Fabric 240gsm","short_by":"28 kg","action":"PR_DRAFTED"}
+  "risk": "AMBER",
+  "issues": [
+    {
+      "type": "CAPACITY",
+      "workcenter": "PRINTING",
+      "details": "+18% over capacity in week of Sep 15"
+    },
+    {
+      "type": "STOCK",
+      "item": "Black Fabric 240gsm",
+      "short_by": "28 kg",
+      "action": "PR_DRAFTED"
+    }
   ],
-  "advice":[
+  "advice": [
     "Split run: 300 pcs this week, 150 next",
     "Consider subcontracting printing for 2 days"
   ],
-  "assumptions":{"printing_rate_pcs_per_hr":55,"utilization":0.8}
+  "assumptions": { "printing_rate_pcs_per_hr": 55, "utilization": 0.8 }
 }
 ```
 
 ---
 
 ### That’s the level of detail your dev needs for Stage 1.
+
 # 🔹 Stage 2 – Design & Approval (Developer Spec)
 
 ## 2.1 Actors & Permissions
 
-* **Graphic Artist (GA):** upload/edit design files, metadata, placements.
-* **CSR:** send for client approval, view status, communicate with client.
-* **Client (Portal):** approve/reject, comment, e-sign (if contract).
-* **Manager/Admin:** override, lock versions, set print method constraints.
-* **Ashley (AI):** run printability checks, best-seller detection, merchandising recs.
+- **Graphic Artist (GA):** upload/edit design files, metadata, placements.
+- **CSR:** send for client approval, view status, communicate with client.
+- **Client (Portal):** approve/reject, comment, e-sign (if contract).
+- **Manager/Admin:** override, lock versions, set print method constraints.
+- **Ashley (AI):** run printability checks, best-seller detection, merchandising recs.
 
 **Scopes:** `design.upload`, `design.version`, `design.approval.send`, `design.approval.resolve`, `design.lock`, `design.view`
 
@@ -514,43 +562,43 @@ Triggered on:
 
 ### A) GA Upload Screen
 
-* **Fields**
+- **Fields**
+  - Design name (string)
+  - PO link (order picker) – required
+  - Brand (auto from PO)
+  - Method (Silkscreen/Sublimation/DTF/Embroidery) – informs validations
+  - Files:
+    - **Mockup** (PNG/JPG)
+    - **Production file** (AI/PDF/PNG with transparent bg; DST/EMB for embroidery)
+    - **Separations** (per color, for silkscreen)
 
-  * Design name (string)
-  * PO link (order picker) – required
-  * Brand (auto from PO)
-  * Method (Silkscreen/Sublimation/DTF/Embroidery) – informs validations
-  * Files:
+  - Placements (array):
+    - Area: front/back/sleeve/left chest/all-over
+    - Size (W×H in cm)
+    - Position offsets (x,y in cm from anchor)
 
-    * **Mockup** (PNG/JPG)
-    * **Production file** (AI/PDF/PNG with transparent bg; DST/EMB for embroidery)
-    * **Separations** (per color, for silkscreen)
-  * Placements (array):
+  - Colors/palette (hex or named)
+  - Notes (text)
 
-    * Area: front/back/sleeve/left chest/all-over
-    * Size (W×H in cm)
-    * Position offsets (x,y in cm from anchor)
-  * Colors/palette (hex or named)
-  * Notes (text)
-* **Actions**: Save Draft, Upload & Create Version, Send to CSR
+- **Actions**: Save Draft, Upload & Create Version, Send to CSR
 
 ### B) CSR Approval Screen
 
-* Preview (mockup + placements overlay)
-* Client selection + message template
-* **Actions**: Send for Approval, Copy approval link
+- Preview (mockup + placements overlay)
+- Client selection + message template
+- **Actions**: Send for Approval, Copy approval link
 
 ### C) Client Portal
 
-* Preview mockup (zoom), variant toggles (if any)
-* Buttons: **Approve**, **Request Changes** (comment required)
-* Optional E-Sign (DocuSign/AdobeSign) for sample/production signoff
+- Preview mockup (zoom), variant toggles (if any)
+- Buttons: **Approve**, **Request Changes** (comment required)
+- Optional E-Sign (DocuSign/AdobeSign) for sample/production signoff
 
 ### D) Versioning & Locking
 
-* Each upload = **new version** (v1, v2…)
-* Only one **active** version can be “Approved”
-* Lock version to prevent late edits once **PRODUCTION\_PLANNED**
+- Each upload = **new version** (v1, v2…)
+- Only one **active** version can be “Approved”
+- Lock version to prevent late edits once **PRODUCTION_PLANNED**
 
 ---
 
@@ -675,58 +723,57 @@ POST /designs/{asset_id}/versions/{version}/lock
 
 ### File/Art Checks (rules first)
 
-* **Min DPI** at print size: `dpi >= 150` (tee) / `>= 200` (AOP) else WARN
-* **Transparency & bleed:** DTF must have correct knockouts; Silkscreen separations present per color
-* **Stroke width:** min line thickness ≥ 0.3–0.5 mm (mesh dependent) else WARN
-* **Placement bounds:** print must not cross seams for Silkscreen **Option B**
-* **Embroidery:** stitch count density vs fabric; warn if > recommended for area (puckering risk)
+- **Min DPI** at print size: `dpi >= 150` (tee) / `>= 200` (AOP) else WARN
+- **Transparency & bleed:** DTF must have correct knockouts; Silkscreen separations present per color
+- **Stroke width:** min line thickness ≥ 0.3–0.5 mm (mesh dependent) else WARN
+- **Placement bounds:** print must not cross seams for Silkscreen **Option B**
+- **Embroidery:** stitch count density vs fabric; warn if > recommended for area (puckering risk)
 
 ### Estimation Metrics
 
-* **Expected ink grams (silkscreen):**
+- **Expected ink grams (silkscreen):**
   `ink_g ≈ area_cm2 × coats × (coverage_factor)`
-  (coverage\_factor derived from mesh + ink type; e.g., 0.006–0.012 g/cm²)
-* **Stitch runtime (embroidery):**
+  (coverage_factor derived from mesh + ink type; e.g., 0.006–0.012 g/cm²)
+- **Stitch runtime (embroidery):**
   `minutes ≈ stitch_count / machine_spm / eff_factor`
-* **AOP coverage (sublimation):** total cm² to press → checks press bed constraints
+- **AOP coverage (sublimation):** total cm² to press → checks press bed constraints
 
 ### Best-Seller Trigger
 
-* When **asset** (or linked SKU) has historical **sell-through days < target** AND **return rate < threshold**, set `is_best_seller=true` → run:
-
-  * **Reprint Advisor** (qty, size curve, color split, BOM, profit)
-  * **Theme Recommender** (style/palette/placement + test quantities)
+- When **asset** (or linked SKU) has historical **sell-through days < target** AND **return rate < threshold**, set `is_best_seller=true` → run:
+  - **Reprint Advisor** (qty, size curve, color split, BOM, profit)
+  - **Theme Recommender** (style/palette/placement + test quantities)
 
 ---
 
 ## 2.6 Status Transitions
 
-* `design_assets.status`:
+- `design_assets.status`:
   `DRAFT → PENDING_APPROVAL → APPROVED → LOCKED`
   (`REJECTED` if client requests changes and GA closes version)
 
 Approving a version:
 
-* Sets **asset.status=APPROVED**
-* Sets **asset.current\_version=version**
-* Emits `ash.order.status.bump` → moves order to `DESIGN_APPROVAL` → `PRODUCTION_PLANNED` after scheduling
+- Sets **asset.status=APPROVED**
+- Sets **asset.current_version=version**
+- Emits `ash.order.status.bump` → moves order to `DESIGN_APPROVAL` → `PRODUCTION_PLANNED` after scheduling
 
 ---
 
 ## 2.7 Notifications & Events
 
-* To CSR: “Design v2 sent to Client X”
-* To GA: “Client requested changes: \[comment]”
-* To Manager: “Design APPROVED; routing will be scheduled”
-* Events: `ash.design.version.created`, `ash.design.approval.sent`, `ash.design.approved`, `ash.design.changes_requested`, `ash.ashley.printability.checked`
+- To CSR: “Design v2 sent to Client X”
+- To GA: “Client requested changes: \[comment]”
+- To Manager: “Design APPROVED; routing will be scheduled”
+- Events: `ash.design.version.created`, `ash.design.approval.sent`, `ash.design.approved`, `ash.design.changes_requested`, `ash.ashley.printability.checked`
 
 ---
 
 ## 2.8 Edge Cases
 
-* **Mixed method assets** (e.g., DTF + Embroidery): support multiple placements with different “methods” tags.
-* **Late changes after lock:** require Manager override; all downstream steps reset to PLANNED.
-* **Client portal offline:** approval link time-boxed; refresh token if expired.
+- **Mixed method assets** (e.g., DTF + Embroidery): support multiple placements with different “methods” tags.
+- **Late changes after lock:** require Manager override; all downstream steps reset to PLANNED.
+- **Client portal offline:** approval link time-boxed; refresh token if expired.
 
 ---
 
@@ -744,11 +791,11 @@ Approving a version:
 
 ## 3.1 Actors & Permissions
 
-* **Cutting Operator:** scan rolls, log lays/cuts, create bundles, print QR.
-* **Warehouse:** issues fabric rolls to Cutting (stock out to WIP).
-* **QC (optional):** fabric inspection/4-point defects (if you enable).
-* **Manager:** approve anomalies/wastage over threshold.
-* **Ashley:** compute marker efficiency, yield, anomaly alerts.
+- **Cutting Operator:** scan rolls, log lays/cuts, create bundles, print QR.
+- **Warehouse:** issues fabric rolls to Cutting (stock out to WIP).
+- **QC (optional):** fabric inspection/4-point defects (if you enable).
+- **Manager:** approve anomalies/wastage over threshold.
+- **Ashley:** compute marker efficiency, yield, anomaly alerts.
 
 **Scopes:** `cut.issue`, `cut.log`, `cut.bundle`, `cut.adjust`, `cut.view`
 
@@ -758,31 +805,30 @@ Approving a version:
 
 ### A) “Issue Fabric to Cutting”
 
-* Operator scans **roll QR** (or selects batch)
-* Enter **UoM** (kg/m), **qty issued**
-* System creates **WIP issue transaction** from brand warehouse
+- Operator scans **roll QR** (or selects batch)
+- Enter **UoM** (kg/m), **qty issued**
+- System creates **WIP issue transaction** from brand warehouse
 
 ### B) “Create Lay & Cut”
 
-* **Fields**
+- **Fields**
+  - PO, product, size range
+  - Fabric roll(s) used (multi-select)
+  - Lay length (m), number of plies
+  - Marker name / width (cm)
+  - **Target size ratio** (from PO size curve)
 
-  * PO, product, size range
-  * Fabric roll(s) used (multi-select)
-  * Lay length (m), number of plies
-  * Marker name / width (cm)
-  * **Target size ratio** (from PO size curve)
-* **Actions**
-
-  * Start Lay → End Lay
-  * Record **Gross fabric used** (kg or m)
-  * Record **Cut pieces by size** (pcs)
-  * Record **Offcuts** (kg) and **Defects** (optional)
+- **Actions**
+  - Start Lay → End Lay
+  - Record **Gross fabric used** (kg or m)
+  - Record **Cut pieces by size** (pcs)
+  - Record **Offcuts** (kg) and **Defects** (optional)
 
 ### C) “Create Bundles”
 
-* Choose **bundle size** (e.g., 20 pcs per size)
-* System generates bundle counts & **QRs per bundle**
-* Print bundle tickets (QR + PO + size + qty)
+- Choose **bundle size** (e.g., 20 pcs per size)
+- System generates bundle counts & **QRs per bundle**
+- Print bundle tickets (QR + PO + size + qty)
 
 ---
 
@@ -865,11 +911,11 @@ create table bundles (
 
 ### Units & Conversions
 
-* If fabric issued in **kg** but marker specs in **cm/m**, convert using **gsm** and **width** if available:
+- If fabric issued in **kg** but marker specs in **cm/m**, convert using **gsm** and **width** if available:
+  - **Area (m²)** used = `(gross_used_kg × 1000) / gsm`
+  - **Length (m)** used ≈ `Area / (width_cm / 100)`
 
-  * **Area (m²)** used = `(gross_used_kg × 1000) / gsm`
-  * **Length (m)** used ≈ `Area / (width_cm / 100)`
-* If issued in **m**, kg ≈ `m × width_cm × gsm / 1000`
+- If issued in **m**, kg ≈ `m × width_cm × gsm / 1000`
 
 ### Expected Pieces (from lay)
 
@@ -880,7 +926,7 @@ expected_pcs ≈ (marker_width_cm * lay_length_m * plies) / pattern_area_cm2
 pattern_area_cm2 depends on size (S,M,L,XL) and product type
 ```
 
-System stores **pattern\_area\_cm2** per size/product in a reference table.
+System stores **pattern_area_cm2** per size/product in a reference table.
 
 ### Marker Efficiency
 
@@ -900,10 +946,10 @@ If only **offcuts kg** logged, convert kg→area with gsm/width.
 
 ### Ashley Rules (examples)
 
-* **Low efficiency** (< configured threshold, e.g., 78%): *WARN* → suggest alternate marker or size ratio tweak.
-* **High waste** (> threshold): *ALERT* → recommend fabric relax time, recalibrate marker, check cutter training.
-* **Size imbalance** vs PO curve (e.g., overproduction of M/L): *WARN* → adjust next lay ratios.
-* **Batch mix**: mixing different lots can cause shade variance → *WARN* for shade banding risk.
+- **Low efficiency** (< configured threshold, e.g., 78%): _WARN_ → suggest alternate marker or size ratio tweak.
+- **High waste** (> threshold): _ALERT_ → recommend fabric relax time, recalibrate marker, check cutter training.
+- **Size imbalance** vs PO curve (e.g., overproduction of M/L): _WARN_ → adjust next lay ratios.
+- **Batch mix**: mixing different lots can cause shade variance → _WARN_ for shade banding risk.
 
 ---
 
@@ -943,26 +989,26 @@ Emits: ash.bundles.created
 
 ## 3.6 QR / Barcode Encoding
 
-* **QR Content:** `ash://bundle/{bundle_id}` (or short URL to bundle viewer)
-* Include: `PO# • Size • Qty • Lay# • CreatedAt`
-* Printable 2×3” label template
+- **QR Content:** `ash://bundle/{bundle_id}` (or short URL to bundle viewer)
+- Include: `PO# • Size • Qty • Lay# • CreatedAt`
+- Printable 2×3” label template
 
 ---
 
 ## 3.7 Notifications & Events
 
-* To Warehouse: “Fabric issue recorded to PO#… (28 kg from Batch …)”
-* To Manager: “Marker efficiency 73% (< 78% threshold) on PO#… Lay 12”
-* Events: `ash.cutting.issue.created`, `ash.cutting.lay.created`, `ash.bundles.created`, `ash.ashley.cutting.analytics.computed`
+- To Warehouse: “Fabric issue recorded to PO#… (28 kg from Batch …)”
+- To Manager: “Marker efficiency 73% (< 78% threshold) on PO#… Lay 12”
+- Events: `ash.cutting.issue.created`, `ash.cutting.lay.created`, `ash.bundles.created`, `ash.ashley.cutting.analytics.computed`
 
 ---
 
 ## 3.8 Edge Cases
 
-* **No gsm/width:** allow logging but show “efficiency unknown” and prompt to fill batch specs.
-* **Over-issue vs batch balance:** block issue if `qty_issued > qty_on_hand`.
-* **Negative outputs:** reject; quantities must be ≥0.
-* **Partial bundles:** allow last bundle with smaller qty (prints “Part Bundle”).
+- **No gsm/width:** allow logging but show “efficiency unknown” and prompt to fill batch specs.
+- **Over-issue vs batch balance:** block issue if `qty_issued > qty_on_hand`.
+- **Negative outputs:** reject; quantities must be ≥0.
+- **Partial bundles:** allow last bundle with smaller qty (prints “Part Bundle”).
 
 ---
 
@@ -978,8 +1024,8 @@ Emits: ash.bundles.created
 
 ### How Stages 2 & 3 connect
 
-* **Approved design** (Stage 2) locks placements and method → informs **printing specs** and **pattern areas by size** used in **cutting math**.
-* **Cutting outputs & bundles** (Stage 3) feed **Sewing**’s WIP and **Payroll** (piece-rate), and they anchor **traceability** through Printing/Sewing/QC.
+- **Approved design** (Stage 2) locks placements and method → informs **printing specs** and **pattern areas by size** used in **cutting math**.
+- **Cutting outputs & bundles** (Stage 3) feed **Sewing**’s WIP and **Payroll** (piece-rate), and they anchor **traceability** through Printing/Sewing/QC.
 
 # 🔹 Stage 4 – Printing (Developer Spec, per method)
 
@@ -989,16 +1035,16 @@ Emits: ash.bundles.created
 
 **Actors & scopes**
 
-* Printing Operator (`print.run`, `print.material.log`, `print.reject`)
-* QC (`qc.sample`, `qc.reject`)
-* Manager (`print.override`, `print.spec.update`)
-* Ashley (AI): read-only; computes checks & prompts
+- Printing Operator (`print.run`, `print.material.log`, `print.reject`)
+- QC (`qc.sample`, `qc.reject`)
+- Manager (`print.override`, `print.spec.update`)
+- Ashley (AI): read-only; computes checks & prompts
 
 **Shared UX**
 
-* “My Queue” shows **ready** routing steps for the user’s workcenter.
-* Each job card shows: PO, product, method, variant, target qty, required specs (temp/time/pressure or coats/mesh), and **materials checklist**.
-* Buttons: **Start**, **Pause**, **Complete**, **Log Materials**, **Reject** (with photo).
+- “My Queue” shows **ready** routing steps for the user’s workcenter.
+- Each job card shows: PO, product, method, variant, target qty, required specs (temp/time/pressure or coats/mesh), and **materials checklist**.
+- Buttons: **Start**, **Pause**, **Complete**, **Log Materials**, **Reject** (with photo).
 
 **Shared tables**
 
@@ -1096,15 +1142,15 @@ POST /printing/runs/{run_id}/complete
 ### 4.1.1 Steps/UX
 
 1. **Screen Prep**
+   - Log: screen ID, mesh count, emulsion batch, exposure time, alignment target.
 
-   * Log: screen ID, mesh count, emulsion batch, exposure time, alignment target.
 2. **Printing**
+   - Select **bundle(s)** or sub-batch, pick **ink type** (plastisol/water-based/anti-migration), **coats**, squeegee durometer.
+   - Log **ink grams** consumed.
 
-   * Select **bundle(s)** or sub-batch, pick **ink type** (plastisol/water-based/anti-migration), **coats**, squeegee durometer.
-   * Log **ink grams** consumed.
 3. **Curing**
+   - Log dryer **temp/time** (and path speed).
 
-   * Log dryer **temp/time** (and path speed).
 4. **QC sample**: cracks, wash test, registration, placement.
 
 ### 4.1.2 Extra tables
@@ -1145,25 +1191,24 @@ create table curing_logs (
 
 ### 4.1.3 Ashley checks & calculations
 
-* **Expected ink grams**
+- **Expected ink grams**
   `expected_ink_g = Σ(area_cm2(placement) × coats × coverage_factor(mesh, ink_type))`
-  (coverage\_factor \~ 0.006–0.012 g/cm²)
-* **Cure verification**
+  (coverage_factor \~ 0.006–0.012 g/cm²)
+- **Cure verification**
+  - Plastisol: **\~160–170°C** core temp; seconds according to ink spec.
+  - If `curing_logs.temp_c * seconds` below threshold → **WARN: undercure risk**.
 
-  * Plastisol: **\~160–170°C** core temp; seconds according to ink spec.
-  * If `curing_logs.temp_c * seconds` below threshold → **WARN: undercure risk**.
-* **Registration drift**
+- **Registration drift**
+  - If bundle output shows rising rejects for MISALIGNMENT → prompt check screen tension.
 
-  * If bundle output shows rising rejects for MISALIGNMENT → prompt check screen tension.
-* **Option B route guard**
-
-  * If **Sew → Print** chosen **and** placement area crosses seam → **BLOCK** until route changed.
+- **Option B route guard**
+  - If **Sew → Print** chosen **and** placement area crosses seam → **BLOCK** until route changed.
 
 ### 4.1.4 Acceptance tests
 
-* Run with 3 coats; ink usage within ±15% of expected → PASS
-* Under-cured log (low temp/seconds) → Ashley flags **RED**
-* Printing after sewing with AOP → route check **BLOCKS** completion
+- Run with 3 coats; ink usage within ±15% of expected → PASS
+- Under-cured log (low temp/seconds) → Ashley flags **RED**
+- Printing after sewing with AOP → route check **BLOCKS** completion
 
 ---
 
@@ -1172,11 +1217,11 @@ create table curing_logs (
 ### 4.2.1 Steps/UX
 
 1. **Print to Transfer Paper**
+   - Log: printer, paper area (m²), ink grams.
 
-   * Log: printer, paper area (m²), ink grams.
 2. **Heat Press Transfer**
+   - Log: press **temp/time/pressure**, press count.
 
-   * Log: press **temp/time/pressure**, press count.
 3. If AOP route chosen: **Print/Heat first**, then **Cut → Sew**.
 
 ### 4.2.2 Extra tables
@@ -1205,21 +1250,20 @@ create table heat_press_logs (
 
 ### 4.2.3 Ashley checks & calculations
 
-* **Transfer adequacy**
+- **Transfer adequacy**
+  - Standard: **\~200°C**, **\~60s**, **medium** pressure → else **WARN**.
 
-  * Standard: **\~200°C**, **\~60s**, **medium** pressure → else **WARN**.
-* **Paper utilization**
+- **Paper utilization**
+  - Compute waste ratio: used area / printed area; if high, suggest nest optimization.
 
-  * Compute waste ratio: used area / printed area; if high, suggest nest optimization.
-* **AOP route guard**
-
-  * If route customized to **Cut before Heat Press** on AOP → **WARN** misalignment risk.
+- **AOP route guard**
+  - If route customized to **Cut before Heat Press** on AOP → **WARN** misalignment risk.
 
 ### 4.2.4 Acceptance tests
 
-* Press logs inside spec → PASS
-* Paper m² unusually high for qty → **WARN**: nesting inefficiency
-* AOP cut before press → Ashley **WARN**
+- Press logs inside spec → PASS
+- Paper m² unusually high for qty → **WARN**: nesting inefficiency
+- AOP cut before press → Ashley **WARN**
 
 ---
 
@@ -1255,14 +1299,14 @@ create table dtf_powder_cures (
 
 ### 4.3.3 Ashley checks
 
-* **Adhesion readiness**: if cure temp/time below spec → **WARN: peel risk**
-* **Film usage efficiency**: nest optimization hints
-* **Press settings** per fabric type (poly/cotton) – mismatch → **WARN**
+- **Adhesion readiness**: if cure temp/time below spec → **WARN: peel risk**
+- **Film usage efficiency**: nest optimization hints
+- **Press settings** per fabric type (poly/cotton) – mismatch → **WARN**
 
 ### 4.3.4 Acceptance tests
 
-* Cure within spec; press within spec → PASS
-* Low cure → Ashley **RED**; high peel rejects logged
+- Cure within spec; press within spec → PASS
+- Low cure → Ashley **RED**; high peel rejects logged
 
 ---
 
@@ -1294,15 +1338,15 @@ create table embroidery_runs (
 
 ### 4.4.3 Ashley checks & calculations
 
-* **Runtime estimate**: `stitch_count / machine_spm / eff_factor`
+- **Runtime estimate**: `stitch_count / machine_spm / eff_factor`
   Compare to actual runtime → if far off, flag machine maintenance or tension issues.
-* **Density vs fabric**: if stitches/cm² exceeds threshold → **WARN: puckering risk**
-* **Color mismatch**: if palette deviates from approved → **WARN**
+- **Density vs fabric**: if stitches/cm² exceeds threshold → **WARN: puckering risk**
+- **Color mismatch**: if palette deviates from approved → **WARN**
 
 ### 4.4.4 Acceptance tests
 
-* Runtime within ±20% of estimate → PASS
-* Excessive thread breaks (> N per 100k stitches) → **WARN** and suggest needle/tension check
+- Runtime within ±20% of estimate → PASS
+- Excessive thread breaks (> N per 100k stitches) → **WARN** and suggest needle/tension check
 
 ---
 
@@ -1312,34 +1356,34 @@ create table embroidery_runs (
 
 ## 5.1 Actors & Permissions
 
-* Sewing Operator (`sew.run`, `sew.bundle.scan`, `sew.reject`)
-* Line Leader (`sew.assign`, `sew.rebalance`)
-* Manager (`sew.override`)
-* Ashley: read-only analytics (rate, defects, fatigue)
+- Sewing Operator (`sew.run`, `sew.bundle.scan`, `sew.reject`)
+- Line Leader (`sew.assign`, `sew.rebalance`)
+- Manager (`sew.override`)
+- Ashley: read-only analytics (rate, defects, fatigue)
 
 ## 5.2 UX / Flow
 
 **A) “Scan Bundle & Start”**
 
-* Operator scans **bundle QR** → system checks step readiness (dependencies done).
-* Shows operation: e.g., “Join shoulders”, “Attach collar”, “Side seams”, “Hem”, “Final assembly”.
-* Buttons: **Start**, **Pause**, **Complete**, **Reject**.
+- Operator scans **bundle QR** → system checks step readiness (dependencies done).
+- Shows operation: e.g., “Join shoulders”, “Attach collar”, “Side seams”, “Hem”, “Final assembly”.
+- Buttons: **Start**, **Pause**, **Complete**, **Reject**.
 
 **B) “Complete Operation”**
 
-* Enter **qty completed** (default = bundle qty minus prior rejects).
-* Optional: partial completion; remaining qty stays in bundle.
-* Log **time on task** (auto; can edit if allowed).
-* If rejects → add reason + photo.
+- Enter **qty completed** (default = bundle qty minus prior rejects).
+- Optional: partial completion; remaining qty stays in bundle.
+- Log **time on task** (auto; can edit if allowed).
+- If rejects → add reason + photo.
 
 **C) Parallel sub-assemblies**
 
-* Example: After **Cutting**, routing spawns:
+- Example: After **Cutting**, routing spawns:
+  - **Sew Sleeves Sub-assembly**
+  - **Sew Collars Sub-assembly**
 
-  * **Sew Sleeves Sub-assembly**
-  * **Sew Collars Sub-assembly**
-* Final assembly step **depends\_on** both sub-assemblies complete (**AND-join**).
-* Gantt shows parallel lanes; planner balances operators.
+- Final assembly step **depends_on** both sub-assemblies complete (**AND-join**).
+- Gantt shows parallel lanes; planner balances operators.
 
 ## 5.3 Data Model
 
@@ -1409,51 +1453,51 @@ Body { sewing_run_id, new_operator_id }
 
 **A) Operator rate & payroll accrual**
 
-* **Earned minutes** = `qty_good × SMV`
-* **Piece-rate pay** =
+- **Earned minutes** = `qty_good × SMV`
+- **Piece-rate pay** =
+  - If operation has explicit `piece_rate` → `qty_good × piece_rate`
+  - Else look up **brand/operation** in `piece_rates` with effective date.
 
-  * If operation has explicit `piece_rate` → `qty_good × piece_rate`
-  * Else look up **brand/operation** in `piece_rates` with effective date.
-* Store line-item accrual per run for payroll integration.
+- Store line-item accrual per run for payroll integration.
 
 **B) Line efficiency**
 
-* **Actual rate** = `qty_good / (ended_at - started_at)`
-* **Efficiency %** = `(SMV × qty_good) / actual_minutes × 100`
+- **Actual rate** = `qty_good / (ended_at - started_at)`
+- **Efficiency %** = `(SMV × qty_good) / actual_minutes × 100`
 
 **C) Bundle state machine**
 
-* `CREATED → IN_SEWING → DONE` (if multiple ops, track per-op progress in a `bundle_progress` JSON)
+- `CREATED → IN_SEWING → DONE` (if multiple ops, track per-op progress in a `bundle_progress` JSON)
 
 ## 5.6 Ashley checks
 
-* **Under/Over speed**:
+- **Under/Over speed**:
+  - If **efficiency %** < threshold (e.g., 70%) → **WARN** (training/material problem).
+  - If **efficiency %** > 150% with elevated rejects → **WARN** (rushing).
 
-  * If **efficiency %** < threshold (e.g., 70%) → **WARN** (training/material problem).
-  * If **efficiency %** > 150% with elevated rejects → **WARN** (rushing).
-* **Fatigue**: long continuous sessions without breaks → **PROMPT** line leader.
-* **Defect clustering**: repeated rejects on same op/operator → recommend skill coaching.
-* **Parallel routing completeness**: ensure all required sub-assemblies done before final join (AND-join enforcement).
-* **Load balancing**: suggest reassigning operators to remove bottlenecks.
+- **Fatigue**: long continuous sessions without breaks → **PROMPT** line leader.
+- **Defect clustering**: repeated rejects on same op/operator → recommend skill coaching.
+- **Parallel routing completeness**: ensure all required sub-assemblies done before final join (AND-join enforcement).
+- **Load balancing**: suggest reassigning operators to remove bottlenecks.
 
 ## 5.7 Events & Edge cases
 
 **Events**
 
-* `ash.sewing.run.started`, `ash.sewing.run.completed`, `ash.sewing.reject.logged`
-* `ash.bundle.status.changed`
-* `ash.ashley.sewing.analytics.computed`
+- `ash.sewing.run.started`, `ash.sewing.run.completed`, `ash.sewing.reject.logged`
+- `ash.bundle.status.changed`
+- `ash.ashley.sewing.analytics.computed`
 
 **Edge cases**
 
-* **Partial bundle completion**: create another sewing\_run for remainder automatically.
-* **Wrong bundle scanned**: block start if routing\_step mismatch (dependencies not met).
-* **Rework**: create a **rework run** linked to prior reject (separate tag).
+- **Partial bundle completion**: create another sewing_run for remainder automatically.
+- **Wrong bundle scanned**: block start if routing_step mismatch (dependencies not met).
+- **Rework**: create a **rework run** linked to prior reject (separate tag).
 
 ## 5.8 Acceptance tests
 
 1. Scan correct bundle → run can start; wrong step → blocked.
-2. Complete operation with qty\_good = bundle qty → bundle step marked done.
+2. Complete operation with qty_good = bundle qty → bundle step marked done.
 3. Piece-rate accrual calculated and posted to payroll staging.
 4. Efficiency < 60% → Ashley **WARN**; repeat rejects → **ALERT** CAPA.
 5. Parallel sub-assemblies not yet complete → final assembly step stays **BLOCKED** until both are done.
@@ -1462,37 +1506,35 @@ Body { sewing_run_id, new_operator_id }
 
 ## 🔗 How Stage 4 ↔ Stage 5 connect
 
-* **If Printing precedes Sewing** (Silkscreen Option A / Sublimation default / DTF printing then press / Embroidery on panels):
+- **If Printing precedes Sewing** (Silkscreen Option A / Sublimation default / DTF printing then press / Embroidery on panels):
+  - Sewing steps **depend_on** printing steps in `routing_steps`.
+  - Bundles produced in Cutting carry forward; after Printing, same bundle IDs continue to Sewing.
 
-  * Sewing steps **depend\_on** printing steps in `routing_steps`.
-  * Bundles produced in Cutting carry forward; after Printing, same bundle IDs continue to Sewing.
-* **If Sewing precedes Printing** (Silkscreen Option B, limited cases):
-
-  * Ashley guards route; large/full placements **BLOCKED**.
-  * Printing operates **on sewn garments** (not panels), and curing/QC must pass before Packing.
+- **If Sewing precedes Printing** (Silkscreen Option B, limited cases):
+  - Ashley guards route; large/full placements **BLOCKED**.
+  - Printing operates **on sewn garments** (not panels), and curing/QC must pass before Packing.
 
 ---
 
 ## 🧭 Planner & Capacity (for both stages)
 
-* **Workcenters** (PRINTING, HEAT\_PRESS, EMB, SEWING\_SUB, SEWING\_FINAL) each have capacity pools:
+- **Workcenters** (PRINTING, HEAT_PRESS, EMB, SEWING_SUB, SEWING_FINAL) each have capacity pools:
   operators × machine throughput × utilization.
-* Scheduler marks steps **READY** when dependencies are DONE; assigns earliest slot.
-* On delay, Ashley recomputes **critical path** and suggests:
-
-  * add overtime, split batches, subcontract, or route switch (where allowed).
+- Scheduler marks steps **READY** when dependencies are DONE; assigns earliest slot.
+- On delay, Ashley recomputes **critical path** and suggests:
+  - add overtime, split batches, subcontract, or route switch (where allowed).
 
 # 🔹 Stage 6 – Quality Control (QC) — Developer Spec
 
 ## 6.1 Actors & Permissions
 
-* **QC Inspector**: create inspections, sample, record defects, pass/fail, attach photos.
+- **QC Inspector**: create inspections, sample, record defects, pass/fail, attach photos.
   Scopes: `qc.create`, `qc.sample`, `qc.defect.log`, `qc.passfail.set`
-* **Line/Dept Manager**: set AQL plan, approve rework/waivers, open CAPA tasks.
+- **Line/Dept Manager**: set AQL plan, approve rework/waivers, open CAPA tasks.
   Scopes: `qc.plan.set`, `qc.capa.create`, `qc.override`
-* **Admin**: define defect codes, checklists, sampling defaults.
+- **Admin**: define defect codes, checklists, sampling defaults.
   Scopes: `qc.codes.manage`, `qc.checklist.manage`
-* **Ashley (AI)**: compute trends (p-chart), flags spikes, recommends training/CAPA.
+- **Ashley (AI)**: compute trends (p-chart), flags spikes, recommends training/CAPA.
 
 ---
 
@@ -1500,39 +1542,37 @@ Body { sewing_run_id, new_operator_id }
 
 ### A) Create Inspection
 
-* Entry points:
+- Entry points:
+  - **Inline QC** (at printing / sewing / embroidery step), or
+  - **Final QC** (before packing).
 
-  * **Inline QC** (at printing / sewing / embroidery step), or
-  * **Final QC** (before packing).
-* Fields:
+- Fields:
+  - PO, brand, method, stage (Printing/Sewing/Final), lot size (qty to inspect), **AQL** (e.g., 2.5), **Inspection Level** (G II default), **Checklist** (by product/method), **Sample plan** (auto-calculated).
 
-  * PO, brand, method, stage (Printing/Sewing/Final), lot size (qty to inspect), **AQL** (e.g., 2.5), **Inspection Level** (G II default), **Checklist** (by product/method), **Sample plan** (auto-calculated).
-* Actions: **Start Inspection** (generates sample size, acceptance/ rejection numbers).
+- Actions: **Start Inspection** (generates sample size, acceptance/ rejection numbers).
 
 ### B) Sampling & Checks
 
-* The app guides inspector through **N sampled units**:
-
-  * Scan bundle/carton (if applicable) → system records which units sampled.
-  * Checklist items (toggle/score): print alignment, color match, seams, measurements, embroidery puckering, etc.
-  * Log **defects**: choose **severity** (Critical/Major/Minor), reason code, photos, unit id/bundle id, notes.
+- The app guides inspector through **N sampled units**:
+  - Scan bundle/carton (if applicable) → system records which units sampled.
+  - Checklist items (toggle/score): print alignment, color match, seams, measurements, embroidery puckering, etc.
+  - Log **defects**: choose **severity** (Critical/Major/Minor), reason code, photos, unit id/bundle id, notes.
 
 ### C) Disposition
 
-* Auto compute **Pass / Fail** using selected AQL plan:
+- Auto compute **Pass / Fail** using selected AQL plan:
+  - If **defects ≤ acceptance number (Ac)** → **PASS**
+  - If **defects ≥ rejection number (Re)** → **FAIL**
 
-  * If **defects ≤ acceptance number (Ac)** → **PASS**
-  * If **defects ≥ rejection number (Re)** → **FAIL**
-* Actions on **FAIL**:
-
-  * **Create Rework Order** (auto-generate tasks linked to failed stage)
-  * **Raise CAPA** (root cause, owner, due date)
-  * **Hold Shipment** flag (blocks Stage 7 until cleared)
+- Actions on **FAIL**:
+  - **Create Rework Order** (auto-generate tasks linked to failed stage)
+  - **Raise CAPA** (root cause, owner, due date)
+  - **Hold Shipment** flag (blocks Stage 7 until cleared)
 
 ### D) Close Inspection
 
-* Inspector signs, Manager optionally reviews/approves.
-* Client-visible summary (optional) pushed to portal.
+- Inspector signs, Manager optionally reviews/approves.
+- Client-visible summary (optional) pushed to portal.
 
 ---
 
@@ -1645,28 +1685,28 @@ Body { disposition: "PASSED" | "FAILED" }
 
 ## 6.5 Sampling & Calculations
 
-* Use ANSI/ASQ Z1.4 **General Inspection Level II** by default.
-* Map **lot\_size → code letter → sample\_size** and **Ac/Re** tables stored in a reference JSON (configurable).
-* Example (illustrative):
+- Use ANSI/ASQ Z1.4 **General Inspection Level II** by default.
+- Map **lot_size → code letter → sample_size** and **Ac/Re** tables stored in a reference JSON (configurable).
+- Example (illustrative):
+  - Lot 1,201–3,200 → Code **K**, sample **125**, **AQL 2.5** → **Ac=7**, **Re=8**.
 
-  * Lot 1,201–3,200 → Code **K**, sample **125**, **AQL 2.5** → **Ac=7**, **Re=8**.
-* **Pass** if total (Major+Critical weighted per policy) ≤ **Ac**.
-* **Fail** if ≥ **Re**.
+- **Pass** if total (Major+Critical weighted per policy) ≤ **Ac**.
+- **Fail** if ≥ **Re**.
 
 **Optional rules**
 
-* **Skip-lot** for consistently good lots (Ashley suggests reducing frequency).
-* **Tightened inspection** after consecutive fails.
+- **Skip-lot** for consistently good lots (Ashley suggests reducing frequency).
+- **Tightened inspection** after consecutive fails.
 
 ---
 
 ## 6.6 Ashley Checks (Analytics)
 
-* **p-chart** of defect rate by stage/operator/time; alert on spikes (Western Electric rules).
-* **Top 3 defects** heatmap per method (e.g., DTF peel, silkscreen misalign).
-* **Root cause hints** from patterns (e.g., misalign ↑ when Screen Mesh=80 → recommend 120).
-* **Training prompts** for operators with repeated MAJOR defects.
-* **Supplier attribution** trends (e.g., specific fabric lot linked to color bleed).
+- **p-chart** of defect rate by stage/operator/time; alert on spikes (Western Electric rules).
+- **Top 3 defects** heatmap per method (e.g., DTF peel, silkscreen misalign).
+- **Root cause hints** from patterns (e.g., misalign ↑ when Screen Mesh=80 → recommend 120).
+- **Training prompts** for operators with repeated MAJOR defects.
+- **Supplier attribution** trends (e.g., specific fabric lot linked to color bleed).
 
 ---
 
@@ -1677,20 +1717,20 @@ Body { disposition: "PASSED" | "FAILED" }
 
 **Notifications**
 
-* Manager: “Final QC FAILED (PO …), Ac=7, found=11. Shipment on hold.”
-* Operator/Dept lead: “MAJOR defects trend ↑ — schedule refresher training.”
+- Manager: “Final QC FAILED (PO …), Ac=7, found=11. Shipment on hold.”
+- Operator/Dept lead: “MAJOR defects trend ↑ — schedule refresher training.”
 
 **Edge Cases**
 
-* **Partial rework pass**: allow Re-inspection referencing original inspection.
-* **Photo required** policy for Critical defects.
-* **Client-required AQL** override per brand/customer.
+- **Partial rework pass**: allow Re-inspection referencing original inspection.
+- **Photo required** policy for Critical defects.
+- **Client-required AQL** override per brand/customer.
 
 ---
 
 ## 6.8 Acceptance Tests
 
-1. Create inspection → system computes sample\_size/Ac/Re from AQL table.
+1. Create inspection → system computes sample_size/Ac/Re from AQL table.
 2. Log defects exceeding **Re** → disposition auto = **FAILED**.
 3. On FAIL: Stage 7 blocked until `capa_tasks` created and inspection passed.
 4. Ashley p-chart flags a spike vs baseline and posts alert.
@@ -1702,13 +1742,13 @@ Body { disposition: "PASSED" | "FAILED" }
 
 ## 7.1 Actors & Permissions
 
-* **Finishing Operator**: thread trimming, ironing/steam, lint clean, tag attach.
+- **Finishing Operator**: thread trimming, ironing/steam, lint clean, tag attach.
   Scopes: `finish.run`, `finish.material.log`
-* **Packing Operator**: fold, polybag, size sticker, barcode, cartonization.
+- **Packing Operator**: fold, polybag, size sticker, barcode, cartonization.
   Scopes: `pack.unit`, `pack.carton`, `pack.close`
-* **Logistics/Planner**: build shipments, assign driver/3PL, generate docs.
+- **Logistics/Planner**: build shipments, assign driver/3PL, generate docs.
   Scopes: `ship.create`, `ship.label`, `ship.assign`
-* **Ashley**: carton fill optimization, courier cost comparison, ETA suggestions.
+- **Ashley**: carton fill optimization, courier cost comparison, ETA suggestions.
 
 ---
 
@@ -1716,34 +1756,33 @@ Body { disposition: "PASSED" | "FAILED" }
 
 ### A) Finishing
 
-* **Select PO / bundles** ready from QC.
-* Tasks checklist (configurable per product/brand):
+- **Select PO / bundles** ready from QC.
+- Tasks checklist (configurable per product/brand):
+  - Trim threads, iron/steam, lint roll, add neck label/size label, attach brand hangtag, attach care label.
 
-  * Trim threads, iron/steam, lint roll, add neck label/size label, attach brand hangtag, attach care label.
-* **Log materials**: hangtags, polybags, size stickers, barcode labels (auto-deduct inventory).
-* **Mark garments finished** (WIP → Finished Goods).
+- **Log materials**: hangtags, polybags, size stickers, barcode labels (auto-deduct inventory).
+- **Mark garments finished** (WIP → Finished Goods).
 
 ### B) Packing (Unit → Carton → Shipment)
 
 1. **Unit Packing**
+   - Scan finished bundle or unit → assign **SKU/size/color** to **pack unit**.
+   - Auto-generate or scan **retail barcode** if needed.
 
-   * Scan finished bundle or unit → assign **SKU/size/color** to **pack unit**.
-   * Auto-generate or scan **retail barcode** if needed.
 2. **Cartonization (Carton Builder UI)**
+   - Create carton → enter dimensions (L×W×H), tare weight.
+   - Add units (drag or scan) until capacity reached.
+   - System computes **carton weight**, **dim weight**, and **fill %**; Ashley suggests best packing mix.
+   - Print **Carton QR/Label**.
 
-   * Create carton → enter dimensions (L×W×H), tare weight.
-   * Add units (drag or scan) until capacity reached.
-   * System computes **carton weight**, **dim weight**, and **fill %**; Ashley suggests best packing mix.
-   * Print **Carton QR/Label**.
 3. **Close Carton**
+   - Locks content; generates **Carton ID** and **Packing List** row.
 
-   * Locks content; generates **Carton ID** and **Packing List** row.
 4. **Build Shipment**
-
-   * Select cartons → create **Shipment** (consignee, address, incoterms, COD flag).
-   * Choose **Driver** or **3PL (rate cards/API)**; get **ETA** and cost.
-   * Generate **Documents**: Packing List, Delivery Receipt, 3PL label (if API), Invoice copy (optional).
-   * Status: **READY\_FOR\_PICKUP** → **IN\_TRANSIT** after scan-out.
+   - Select cartons → create **Shipment** (consignee, address, incoterms, COD flag).
+   - Choose **Driver** or **3PL (rate cards/API)**; get **ETA** and cost.
+   - Generate **Documents**: Packing List, Delivery Receipt, 3PL label (if API), Invoice copy (optional).
+   - Status: **READY_FOR_PICKUP** → **IN_TRANSIT** after scan-out.
 
 ---
 
@@ -1866,27 +1905,27 @@ Body {
 
 **A) Finished Goods conversion**
 
-* When a bundle passes **Final QC**, create **finished\_units** rows per SKU/size; decrement WIP; increment FG.
+- When a bundle passes **Final QC**, create **finished_units** rows per SKU/size; decrement WIP; increment FG.
 
 **B) Carton metrics**
 
-* **Actual weight** = tare + Σ(unit weights)
-* **Dim weight (kg)** = `(L × W × H) / divisor` (divisor per carrier, e.g., 5000 or 6000)
-* **Chargeable weight** = `max(actual, dim)`
-* **Fill %** = `used volume / carton volume × 100`
+- **Actual weight** = tare + Σ(unit weights)
+- **Dim weight (kg)** = `(L × W × H) / divisor` (divisor per carrier, e.g., 5000 or 6000)
+- **Chargeable weight** = `max(actual, dim)`
+- **Fill %** = `used volume / carton volume × 100`
 
 **C) Packaging materials**
 
-* Deduct hangtags, polybags, stickers from inventory via `finishing_runs.materials`.
+- Deduct hangtags, polybags, stickers from inventory via `finishing_runs.materials`.
 
 ---
 
 ## 7.6 Ashley (AI) Suggestions
 
-* **Cartonization optimizer**: suggests unit mixes to hit target **fill %** and minimize chargeable weight.
-* **Carrier choice**: compares **Driver vs 3PL** cost and ETA using historical rates & API quotes.
-* **Late risk**: if packing finishes close to cutoff time, suggests **next-day pickup** or **priority booking**.
-* **Labeling QA**: flags SKUs with common barcode scan failures.
+- **Cartonization optimizer**: suggests unit mixes to hit target **fill %** and minimize chargeable weight.
+- **Carrier choice**: compares **Driver vs 3PL** cost and ETA using historical rates & API quotes.
+- **Late risk**: if packing finishes close to cutoff time, suggests **next-day pickup** or **priority booking**.
+- **Labeling QA**: flags SKUs with common barcode scan failures.
 
 ---
 
@@ -1897,15 +1936,15 @@ Body {
 
 **Notifications**
 
-* To Logistics: “PO … 8 cartons closed; shipment draft ready.”
-* To Client: “Your order is packed and ready for pickup/shipping.”
+- To Logistics: “PO … 8 cartons closed; shipment draft ready.”
+- To Client: “Your order is packed and ready for pickup/shipping.”
 
 **Edge Cases**
 
-* **Reopen carton** (audit required): allow only for **OPEN/CLOSED** within same day by Manager.
-* **Mixed-brand block**: prevent adding units from different `brand_id` unless Admin override.
-* **COD**: ensure invoice balance equals COD amount before allowing shipment creation.
-* **Hazmat/pressurized**: (future) special handling flags.
+- **Reopen carton** (audit required): allow only for **OPEN/CLOSED** within same day by Manager.
+- **Mixed-brand block**: prevent adding units from different `brand_id` unless Admin override.
+- **COD**: ensure invoice balance equals COD amount before allowing shipment creation.
+- **Hazmat/pressurized**: (future) special handling flags.
 
 ---
 
@@ -1921,22 +1960,23 @@ Body {
 
 ## 🔗 Stage 6 ↔ Stage 7 Hand-off
 
-* **QC PASS** sets routing step **DONE**; **Final QC PASS** flips WIP → FG (`finished_units`).
-* **QC FAIL** sets **HOLD\_SHIPMENT** flag on the order; Packing/Shipment APIs must reject until the hold is cleared or re-inspection passes.
-* **CAPA linkage**: finishing runs can reference `capa_tasks` if additional containment actions are required.
+- **QC PASS** sets routing step **DONE**; **Final QC PASS** flips WIP → FG (`finished_units`).
+- **QC FAIL** sets **HOLD_SHIPMENT** flag on the order; Packing/Shipment APIs must reject until the hold is cleared or re-inspection passes.
+- **CAPA linkage**: finishing runs can reference `capa_tasks` if additional containment actions are required.
+
 # 🔹 Stage 8 – Delivery (Developer Spec)
 
 ## 8.1 Actors & Permissions
 
-* **Logistics Coordinator / Dispatcher**: create & assign shipments, book 3PL, monitor delivery.
+- **Logistics Coordinator / Dispatcher**: create & assign shipments, book 3PL, monitor delivery.
   Scopes: `ship.create`, `ship.assign`, `ship.book_3pl`, `ship.update_status`
-* **Driver**: start trip, scan-out cartons, capture Proof of Delivery (POD), log expenses.
+- **Driver**: start trip, scan-out cartons, capture Proof of Delivery (POD), log expenses.
   Scopes: `driver.trip.start`, `driver.scan`, `driver.pod.upload`, `driver.expense.log`
-* **Warehouse**: handover cartons (scan-out).
+- **Warehouse**: handover cartons (scan-out).
   Scopes: `wh.scan_out`
-* **Client (Portal)**: track delivery, confirm receipt, rate delivery.
+- **Client (Portal)**: track delivery, confirm receipt, rate delivery.
   Scopes: portal-only
-* **Ashley (AI)**: cost/ETA comparison, route/slot recommendations, on-time risk.
+- **Ashley (AI)**: cost/ETA comparison, route/slot recommendations, on-time risk.
 
 ---
 
@@ -1944,39 +1984,38 @@ Body {
 
 ### A) Dispatch Board (Coordinator)
 
-* Filter by: **Ready for Pickup**, **In Transit**, **Delivered**, **Failed**.
-* Select **cartons** → **Create Shipment** (consignee, address, COD yes/no).
-* Choose method:
-
-  * **Driver**: assign driver + vehicle, plan **stops** (multi-drop supported).
-  * **3PL**: get quotes (rate card/API), pick carrier, book.
+- Filter by: **Ready for Pickup**, **In Transit**, **Delivered**, **Failed**.
+- Select **cartons** → **Create Shipment** (consignee, address, COD yes/no).
+- Choose method:
+  - **Driver**: assign driver + vehicle, plan **stops** (multi-drop supported).
+  - **3PL**: get quotes (rate card/API), pick carrier, book.
 
 ### B) Warehouse Handover
 
-* **Scan Out** each **Carton QR** to link it to **Shipment** and mark `warehouse_out_at`.
+- **Scan Out** each **Carton QR** to link it to **Shipment** and mark `warehouse_out_at`.
 
 ### C) Driver App
 
-* Start Trip (odometer start, fuel level).
-* See stops list with maps & contact info.
-* At each stop:
+- Start Trip (odometer start, fuel level).
+- See stops list with maps & contact info.
+- At each stop:
+  - **Scan cartons** → mark **Delivered** or **Failed** (reason codes).
+  - **POD**: photo, recipient name/signature, timestamp, geotag.
+  - **COD**: collect amount; log **cash received** (with photo of receipt) or **GCash ref**.
 
-  * **Scan cartons** → mark **Delivered** or **Failed** (reason codes).
-  * **POD**: photo, recipient name/signature, timestamp, geotag.
-  * **COD**: collect amount; log **cash received** (with photo of receipt) or **GCash ref**.
-* End Trip (odometer end).
-* **Expenses**: fuel/toll/parking/repair with receipt photo.
+- End Trip (odometer end).
+- **Expenses**: fuel/toll/parking/repair with receipt photo.
 
 ### D) 3PL Flow
 
-* API quote → **book** → get **waybill** / label.
-* Status updates via **webhooks**; show on board.
-* If **failed** attempt, set next attempt window.
+- API quote → **book** → get **waybill** / label.
+- Status updates via **webhooks**; show on board.
+- If **failed** attempt, set next attempt window.
 
 ### E) Client Portal
 
-* Live tracking status (In Transit → Delivered).
-* View POD, rate experience (1–5), add comment.
+- Live tracking status (In Transit → Delivered).
+- View POD, rate experience (1–5), add comment.
 
 ---
 
@@ -2147,24 +2186,23 @@ Body { shipment_id, provider }
 
 ## 8.5 Calculations & Rules
 
-* **Chargeable weight** per shipment: `max(actual_weight, dimensional_weight)` (computed at Stage 7 per carton; sum at shipment).
-* **Driver cost model**: (km × fuel rate × adj) + (driver time × hourly) + tolls/parking – used for **Driver vs 3PL** comparison.
-* **On-time KPI**: `delivered_at ≤ promised_date`.
-* **Delivery success rate**: delivered / total attempts.
-* **COD handling**:
-
-  * Collected amount must equal **invoice balance** before shipment closes as **DELIVERED**.
-  * On driver trip end: create **payment** (cash) record → Finance review & deposit reconciliation.
+- **Chargeable weight** per shipment: `max(actual_weight, dimensional_weight)` (computed at Stage 7 per carton; sum at shipment).
+- **Driver cost model**: (km × fuel rate × adj) + (driver time × hourly) + tolls/parking – used for **Driver vs 3PL** comparison.
+- **On-time KPI**: `delivered_at ≤ promised_date`.
+- **Delivery success rate**: delivered / total attempts.
+- **COD handling**:
+  - Collected amount must equal **invoice balance** before shipment closes as **DELIVERED**.
+  - On driver trip end: create **payment** (cash) record → Finance review & deposit reconciliation.
 
 ---
 
 ## 8.6 Ashley (AI) Checks
 
-* **Method choice**: recommends **Driver vs 3PL** using cost & ETA.
-* **Slot suggestion**: “Book Lalamove between 2–4 PM to avoid surge.”
-* **Route optimization**: re-order stops for shortest travel time (if allowed).
-* **Risk alerts**: heavy traffic / weather → ETA slips; auto-notify client with new ETA.
-* **Failed delivery patterns**: flag addresses with repeated misses; suggest pre-call.
+- **Method choice**: recommends **Driver vs 3PL** using cost & ETA.
+- **Slot suggestion**: “Book Lalamove between 2–4 PM to avoid surge.”
+- **Route optimization**: re-order stops for shortest travel time (if allowed).
+- **Risk alerts**: heavy traffic / weather → ETA slips; auto-notify client with new ETA.
+- **Failed delivery patterns**: flag addresses with repeated misses; suggest pre-call.
 
 ---
 
@@ -2175,22 +2213,22 @@ Body { shipment_id, provider }
 
 **Notifications**
 
-* Client: “Out for delivery” → “Delivered (POD attached)”
-* Manager: “Shipment failed at Stop 2 (reason: recipient unavailable). Reattempt tomorrow?”
+- Client: “Out for delivery” → “Delivered (POD attached)”
+- Manager: “Shipment failed at Stop 2 (reason: recipient unavailable). Reattempt tomorrow?”
 
 **Edge cases**
 
-* **Partial delivery**: some cartons delivered, others failed → keep trip open; schedule reattempt or split to new shipment.
-* **Wrong carton scanned**: block if not in shipment.
-* **Address correction**: coordinator edits stop address mid-trip; driver app fetches update.
-* **3PL webhook retries**: idempotent upserts with provider event IDs.
+- **Partial delivery**: some cartons delivered, others failed → keep trip open; schedule reattempt or split to new shipment.
+- **Wrong carton scanned**: block if not in shipment.
+- **Address correction**: coordinator edits stop address mid-trip; driver app fetches update.
+- **3PL webhook retries**: idempotent upserts with provider event IDs.
 
 ---
 
 ## 8.8 Acceptance Tests
 
-1. Create shipment → assign driver with two stops → scan-out cartons → deliver Stop 1 with POD → status moves to **IN\_TRANSIT/DELIVERED (Stop 1)**.
-2. Stop 2 fails → reason logged; shipment remains **IN\_TRANSIT** with pending cartons.
+1. Create shipment → assign driver with two stops → scan-out cartons → deliver Stop 1 with POD → status moves to **IN_TRANSIT/DELIVERED (Stop 1)**.
+2. Stop 2 fails → reason logged; shipment remains **IN_TRANSIT** with pending cartons.
 3. End trip → trip expenses recorded; Finance sees COD cash pending deposit.
 4. 3PL booking returns waybill & label; webhook updates shipment to **DELIVERED**.
 5. Ashley suggests 3PL over Driver when volumetric weight makes in-house cost higher.
@@ -2201,13 +2239,13 @@ Body { shipment_id, provider }
 
 ## 9.1 Actors & Permissions
 
-* **Finance/Accounting**: invoices, receipts/payments, AP bills, refunds, payroll review, exports.
+- **Finance/Accounting**: invoices, receipts/payments, AP bills, refunds, payroll review, exports.
   Scopes: `ar.create`, `ar.apply_payment`, `ap.create`, `ap.pay`, `refund.create`, `export.gl`
-* **Manager**: approvals over thresholds.
+- **Manager**: approvals over thresholds.
   Scopes: `finance.approve`
-* **Admin**: tax tables, rates, lock periods.
+- **Admin**: tax tables, rates, lock periods.
   Scopes: `finance.settings`
-* **Ashley (AI)**: margin & cashflow forecasts, channel P\&L, variance alerts.
+- **Ashley (AI)**: margin & cashflow forecasts, channel P\&L, variance alerts.
 
 ---
 
@@ -2215,30 +2253,30 @@ Body { shipment_id, provider }
 
 ### A) AR (Accounts Receivable)
 
-* **Invoices**: create from PO (or multiple POs), add lines (products/services), tax mode (VAT inc/ex), discounts.
-* **Payments**: apply cash/bank/GCash/Stripe; support **partial** payments; allocate across invoices.
-* **Credit Notes / Refunds**: create against invoices; reason codes.
-* **Aging Report**: 0–30, 31–60, 61–90, 90+; with brand & client filters.
+- **Invoices**: create from PO (or multiple POs), add lines (products/services), tax mode (VAT inc/ex), discounts.
+- **Payments**: apply cash/bank/GCash/Stripe; support **partial** payments; allocate across invoices.
+- **Credit Notes / Refunds**: create against invoices; reason codes.
+- **Aging Report**: 0–30, 31–60, 61–90, 90+; with brand & client filters.
 
 ### B) AP (Accounts Payable)
 
-* **Bills**: supplier invoices (fabric, ink, utilities, 3PL).
-* **Payments**: schedule & pay vendors; attach receipts.
-* **Withholding** (PH optional): compute and store 2307 data.
+- **Bills**: supplier invoices (fabric, ink, utilities, 3PL).
+- **Payments**: schedule & pay vendors; attach receipts.
+- **Withholding** (PH optional): compute and store 2307 data.
 
 ### C) Costing & P\&L
 
-* **PO Cost Sheet**: BOM + labor (payroll accruals) + overhead → **COGS**.
-* **Brand/Channel P\&L**: revenue – COGS – returns – platform fees – ad spend.
-* **Settlement Imports**: Shopee/TikTok statements → fees & payouts.
+- **PO Cost Sheet**: BOM + labor (payroll accruals) + overhead → **COGS**.
+- **Brand/Channel P\&L**: revenue – COGS – returns – platform fees – ad spend.
+- **Settlement Imports**: Shopee/TikTok statements → fees & payouts.
 
 ### D) Payroll Integration (from HR)
 
-* **Payroll Runs** feed **labor cost** into COGS by PO/brand/month.
+- **Payroll Runs** feed **labor cost** into COGS by PO/brand/month.
 
 ### E) Compliance & Exports
 
-* **BIR-style exports** (sales book, purchases book), **SSS/PhilHealth/Pag-IBIG** schedules, **CSV/Excel** for GL.
+- **BIR-style exports** (sales book, purchases book), **SSS/PhilHealth/Pag-IBIG** schedules, **CSV/Excel** for GL.
 
 ---
 
@@ -2422,50 +2460,50 @@ Body { brand_id, channel, period_start, period_end, ref_file_url }
 
 **A) Invoice totals**
 
-* `line_total = qty × unit_price`
-* `subtotal = Σ line_total`
-* `vat_amount`
+- `line_total = qty × unit_price`
+- `subtotal = Σ line_total`
+- `vat_amount`
+  - If `VAT_INCLUSIVE`: `vat = subtotal × (rate / (100 + rate))`
+  - If `VAT_EXCLUSIVE`: `vat = subtotal × (rate/100)`
 
-  * If `VAT_INCLUSIVE`: `vat = subtotal × (rate / (100 + rate))`
-  * If `VAT_EXCLUSIVE`: `vat = subtotal × (rate/100)`
-* `total = subtotal + (VAT_EXCLUSIVE ? vat : 0) - discount`
-* `balance = total - Σ allocations`
+- `total = subtotal + (VAT_EXCLUSIVE ? vat : 0) - discount`
+- `balance = total - Σ allocations`
 
 **B) AR Aging**
 
-* Bucket by `due_date` vs **today**: 0–30 / 31–60 / 61–90 / 90+.
+- Bucket by `due_date` vs **today**: 0–30 / 31–60 / 61–90 / 90+.
 
 **C) PO Costing (cogs)**
 
-* `materials_cost` = Σ inventory issues (fabric/ink/etc.) to the order at **standard cost** or **batch actual**.
-* `labor_cost` = Σ payroll accruals from **sewing\_runs** (and optionally printing) mapped to the order.
-* `overhead_cost` = allocation rule (e.g., rate per labor minute or % of materials).
-* `cogs = materials + labor + overhead − returns_adjustments`.
+- `materials_cost` = Σ inventory issues (fabric/ink/etc.) to the order at **standard cost** or **batch actual**.
+- `labor_cost` = Σ payroll accruals from **sewing_runs** (and optionally printing) mapped to the order.
+- `overhead_cost` = allocation rule (e.g., rate per labor minute or % of materials).
+- `cogs = materials + labor + overhead − returns_adjustments`.
 
 **D) Channel P\&L**
 
-* `Gross Margin = Revenue − COGS`
-* `Channel P&L = Gross Margin − platform_fees − shipping_fees − ads_spend`.
+- `Gross Margin = Revenue − COGS`
+- `Channel P&L = Gross Margin − platform_fees − shipping_fees − ads_spend`.
 
 **E) Cashflow Forecast (30/60/90)**
 
-* Inflows: **open invoices** expected on **due\_date** (probability-weighted by client payment behavior).
-* Outflows: **open bills**, **payroll** (per schedule), **rent/utilities** recurring.
-* Net cash at horizon = `opening_cash + Σ inflows − Σ outflows`.
+- Inflows: **open invoices** expected on **due_date** (probability-weighted by client payment behavior).
+- Outflows: **open bills**, **payroll** (per schedule), **rent/utilities** recurring.
+- Net cash at horizon = `opening_cash + Σ inflows − Σ outflows`.
 
 **F) Withholding (optional PH)**
 
-* For supplier bills marked **subject\_to\_wht**, compute WHT at rate table; generate 2307 CSV.
+- For supplier bills marked **subject_to_wht**, compute WHT at rate table; generate 2307 CSV.
 
 ---
 
 ## 9.6 Ashley (AI) Insights
 
-* **Margin erosion**: alerts when actual **COGS** > estimated; show variance by materials/labor/overhead.
-* **Cash gap**: predicts negative balance in T+N days; suggests actions (collect AR, delay AP, request deposit).
-* **Client risk**: late payment pattern → recommend **proforma invoice** or higher deposit next time.
-* **Channel ROI**: highlights unprofitable channels/campaigns; suggests budget reallocation.
-* **Price floor**: warns CSR if quoted price < cost + min margin (brand policy).
+- **Margin erosion**: alerts when actual **COGS** > estimated; show variance by materials/labor/overhead.
+- **Cash gap**: predicts negative balance in T+N days; suggests actions (collect AR, delay AP, request deposit).
+- **Client risk**: late payment pattern → recommend **proforma invoice** or higher deposit next time.
+- **Channel ROI**: highlights unprofitable channels/campaigns; suggests budget reallocation.
+- **Price floor**: warns CSR if quoted price < cost + min margin (brand policy).
 
 ---
 
@@ -2476,16 +2514,16 @@ Body { brand_id, channel, period_start, period_end, ref_file_url }
 
 **Notifications**
 
-* Finance: “Invoice REEF-2025-00321 due tomorrow (₱124,500).”
-* Manager: “PO#00123 margin dropped to 22% (< 28% floor) due to labor overrun.”
+- Finance: “Invoice REEF-2025-00321 due tomorrow (₱124,500).”
+- Manager: “PO#00123 margin dropped to 22% (< 28% floor) due to labor overrun.”
 
 **Edge Cases**
 
-* **Currency**: default PHP; allow FX for export clients with stored FX rate on invoice date.
-* **Over-allocation**: block if allocation > invoice balance.
-* **Refunds**: produce **credit note**; if cash refund, create **negative payment** row linked to payout.
-* **Lock period**: prevent edits to closed months; require Admin unlock with audit reason.
-* **Settlement mismatch**: if platform payout < expected, open a **variance task**.
+- **Currency**: default PHP; allow FX for export clients with stored FX rate on invoice date.
+- **Over-allocation**: block if allocation > invoice balance.
+- **Refunds**: produce **credit note**; if cash refund, create **negative payment** row linked to payout.
+- **Lock period**: prevent edits to closed months; require Admin unlock with audit reason.
+- **Settlement mismatch**: if platform payout < expected, open a **variance task**.
 
 ---
 
@@ -2501,24 +2539,24 @@ Body { brand_id, channel, period_start, period_end, ref_file_url }
 
 ## 🔗 Stage 8 ↔ Stage 9 Hand-off
 
-* **Delivery → Finance**
+- **Delivery → Finance**
+  - On **Delivered** (with POD): auto-trigger **invoice generation** (if not issued).
+  - **COD**: driver cash/GCash becomes **payment** pending Finance verification; upon approval, allocate to invoice.
+  - **Failed delivery**: no invoice; if pre-invoiced, keep **unearned** flag until success.
 
-  * On **Delivered** (with POD): auto-trigger **invoice generation** (if not issued).
-  * **COD**: driver cash/GCash becomes **payment** pending Finance verification; upon approval, allocate to invoice.
-  * **Failed delivery**: no invoice; if pre-invoiced, keep **unearned** flag until success.
   # 🔹 Stage 10 – HR (Attendance, Payroll, Compliance) — Developer Spec
 
 ## 10.1 Actors & Permissions
 
-* **HR Staff**: manage employees, shifts, leaves, time corrections, payroll runs.
+- **HR Staff**: manage employees, shifts, leaves, time corrections, payroll runs.
   Scopes: `hr.employee.manage`, `hr.attendance.approve`, `hr.payroll.run`, `hr.payroll.adjust`
-* **Managers/Leads**: approve OT/leave, see team attendance, request payroll delegation when needed.
+- **Managers/Leads**: approve OT/leave, see team attendance, request payroll delegation when needed.
   Scopes: `hr.attendance.view`, `hr.leave.approve`, `payroll.run` (via delegation)
-* **Employees/Operators**: clock in/out, view payslips, request corrections/leaves.
+- **Employees/Operators**: clock in/out, view payslips, request corrections/leaves.
   Scopes: `self.attendance.log`, `self.payslip.view`, `self.leave.request`
-* **Finance**: review payroll journal, post to GL, disburse.
+- **Finance**: review payroll journal, post to GL, disburse.
   Scopes: `finance.payroll.review`, `finance.disburse`
-* **Ashley (AI)**: fatigue/OT risk, anomaly detection, training suggestions, cost projections.
+- **Ashley (AI)**: fatigue/OT risk, anomaly detection, training suggestions, cost projections.
 
 ---
 
@@ -2526,43 +2564,43 @@ Body { brand_id, channel, period_start, period_end, ref_file_url }
 
 ### A) Employee Master
 
-* Profile: name, contact, role, brand assignments, department, rate type (hourly/daily/piece-rate/mixed), base rates & allowances, bank/GCash info, emergency contact.
-* Documents: IDs, contracts, NDAs (file links).
-* Status: Active/Inactive; effectivity dates.
+- Profile: name, contact, role, brand assignments, department, rate type (hourly/daily/piece-rate/mixed), base rates & allowances, bank/GCash info, emergency contact.
+- Documents: IDs, contracts, NDAs (file links).
+- Status: Active/Inactive; effectivity dates.
 
 ### B) Attendance Capture (PWA, offline-first)
 
 Supported methods (enable per site/role):
 
-* **QR/NFC kiosk** (tablet at gate)
-* **Face/selfie + geofence** (optional, privacy-aware)
-* **Supervisor batch clock** (line leader clocks a team on shared device)
-* **Webhook** (from turnstile or biometric device if available)
+- **QR/NFC kiosk** (tablet at gate)
+- **Face/selfie + geofence** (optional, privacy-aware)
+- **Supervisor batch clock** (line leader clocks a team on shared device)
+- **Webhook** (from turnstile or biometric device if available)
 
 Clock States & Rules:
 
-* Clock-in/out, break-start/end; geofence & selfie verification if enabled.
-* Offline queue → sync when online; conflict resolution (first-write wins with HR override).
+- Clock-in/out, break-start/end; geofence & selfie verification if enabled.
+- Offline queue → sync when online; conflict resolution (first-write wins with HR override).
 
 ### C) Time Corrections & Overtime
 
-* Employee files a **Time Correction** (TC) with photo/note; manager approves.
-* OT requests with reason; pre-approval route configurable per brand/site.
-* Night diff/holiday premiums pulled from **rate tables** (configurable; not hardcoded law).
+- Employee files a **Time Correction** (TC) with photo/note; manager approves.
+- OT requests with reason; pre-approval route configurable per brand/site.
+- Night diff/holiday premiums pulled from **rate tables** (configurable; not hardcoded law).
 
 ### D) Leaves
 
-* Balances per type (SL/VL/EL/Unpaid); accrual rules per brand.
-* Request → Approve/Reject → post to attendance with appropriate pay code.
+- Balances per type (SL/VL/EL/Unpaid); accrual rules per brand.
+- Request → Approve/Reject → post to attendance with appropriate pay code.
 
 ### E) Payroll Run (Cutoff-based)
 
-* Choose Pay Period (e.g., **1–15**, **16–EOM**).
-* **Compile**: attendance, leaves, OT, night diff, holiday, **piece-rate accruals** (from Sewing/Printing runs), fixed allowances, loans, deductions.
-* **Preview**: per-employee line items, variances vs prior run.
-* **Adjust**: ad-hoc earnings/deductions (e.g., per diem, tardiness penalty).
-* **Lock & Generate Payslips** (PDF) + **Exports** (CSV bank file, GCash disbursement, journal).
-* **Post to Finance**: payroll expense & liabilities; map labor cost to **PO/brand** (for COGS).
+- Choose Pay Period (e.g., **1–15**, **16–EOM**).
+- **Compile**: attendance, leaves, OT, night diff, holiday, **piece-rate accruals** (from Sewing/Printing runs), fixed allowances, loans, deductions.
+- **Preview**: per-employee line items, variances vs prior run.
+- **Adjust**: ad-hoc earnings/deductions (e.g., per diem, tardiness penalty).
+- **Lock & Generate Payslips** (PDF) + **Exports** (CSV bank file, GCash disbursement, journal).
+- **Post to Finance**: payroll expense & liabilities; map labor cost to **PO/brand** (for COGS).
 
 ---
 
@@ -2742,25 +2780,25 @@ POST /hr/payroll/post-to-finance → creates journal; distributes labor to COGS
 
 **A) Work time**
 
-* Per day: `(ClockOut − ClockIn) − breaks` (guard against overlaps & duplicates).
-* Late/Early/Absence from schedule definitions (shift templates per role/site).
+- Per day: `(ClockOut − ClockIn) − breaks` (guard against overlaps & duplicates).
+- Late/Early/Absence from schedule definitions (shift templates per role/site).
 
 **B) Premiums** (from `pay_rate_tables`)
 
-* OT pay = `OT hours × base_hourly × ot_multiplier`
-* Night diff = `night_hours × base_hourly × night_diff`
-* Holiday = according to configured multipliers (regular/special); stack with OT where policy allows.
+- OT pay = `OT hours × base_hourly × ot_multiplier`
+- Night diff = `night_hours × base_hourly × night_diff`
+- Holiday = according to configured multipliers (regular/special); stack with OT where policy allows.
 
 **C) Piece-rate**
 
-* From `sewing_runs` (and optional printing runs), group by employee & period:
+- From `sewing_runs` (and optional printing runs), group by employee & period:
   `piece_pay = Σ(qty_good × op_rate)`
-* Optionally enforce **min guarantee** (if net piece < daily minimum).
+- Optionally enforce **min guarantee** (if net piece < daily minimum).
 
 **D) Gov contributions & tax**
 
-* **SSS/PhilHealth/Pag-IBIG** and **withholding tax** computed from **configurable rate tables** with **effective dates**; do **not hardcode** statutory numbers (they change).
-* Ashley alerts if new tables are uploaded/updated.
+- **SSS/PhilHealth/Pag-IBIG** and **withholding tax** computed from **configurable rate tables** with **effective dates**; do **not hardcode** statutory numbers (they change).
+- Ashley alerts if new tables are uploaded/updated.
 
 **E) Net pay**
 `Gross = Σ earnings`
@@ -2769,18 +2807,18 @@ POST /hr/payroll/post-to-finance → creates journal; distributes labor to COGS
 
 **F) Cost allocation to COGS**
 
-* Option 1 (accurate): allocate labor to orders using **run meta** (minutes/SMV per PO).
-* Option 2 (simple): allocate by brand proportionally to output qty for the period.
+- Option 1 (accurate): allocate labor to orders using **run meta** (minutes/SMV per PO).
+- Option 2 (simple): allocate by brand proportionally to output qty for the period.
 
 ---
 
 ## 10.6 Ashley (AI) Checks
 
-* **Fatigue risk**: consecutive long shifts or OT > threshold → prompt manager.
-* **Anomaly**: clock entries far outside geofence/schedule → flag for review.
-* **Under/over productivity**: compare piece-rate earnings vs expected baseline.
-* **Cost projection**: before cutoff, forecast payroll cost vs cashflow (Stage 9) and warn if tight.
-* **Training suggestions**: link high reject rates to specific operators/ops and propose training tasks.
+- **Fatigue risk**: consecutive long shifts or OT > threshold → prompt manager.
+- **Anomaly**: clock entries far outside geofence/schedule → flag for review.
+- **Under/over productivity**: compare piece-rate earnings vs expected baseline.
+- **Cost projection**: before cutoff, forecast payroll cost vs cashflow (Stage 9) and warn if tight.
+- **Training suggestions**: link high reject rates to specific operators/ops and propose training tasks.
 
 ---
 
@@ -2792,16 +2830,16 @@ POST /hr/payroll/post-to-finance → creates journal; distributes labor to COGS
 
 **Notifications**
 
-* Manager: “OT request awaiting approval for 3 staff (today 5PM).”
-* HR: “Payroll preview variance +18% vs last period.”
-* Employee: “Payslip ready.”
+- Manager: “OT request awaiting approval for 3 staff (today 5PM).”
+- HR: “Payroll preview variance +18% vs last period.”
+- Employee: “Payslip ready.”
 
 **Edge Cases**
 
-* **Offline clocks**: queue with device timestamp, mark `source='OFFLINE'`.
-* **Duplicate clocks**: auto-merge heuristics; HR can fix.
-* **Backpay/retro**: allow adjustments tied to prior period with audit.
-* **Delegation**: Admin grants `payroll.run` to Manager temporarily (as we designed).
+- **Offline clocks**: queue with device timestamp, mark `source='OFFLINE'`.
+- **Duplicate clocks**: auto-merge heuristics; HR can fix.
+- **Backpay/retro**: allow adjustments tied to prior period with audit.
+- **Delegation**: Admin grants `payroll.run` to Manager temporarily (as we designed).
 
 ---
 
@@ -2809,7 +2847,7 @@ POST /hr/payroll/post-to-finance → creates journal; distributes labor to COGS
 
 1. Compile payroll → earnings include piece-rate + OT/night/holiday correctly from tables.
 2. Finalize run → payslips generated; edits blocked unless run reopened by Admin.
-3. Export **BANK\_CSV/GCASH** files validate against sample templates.
+3. Export **BANK_CSV/GCASH** files validate against sample templates.
 4. Post to Finance → creates payroll expense & liabilities; labor pushes to **PO COGS** correctly.
 5. Ashley flags employee far from geofence at clock-in and marks entry for HR review.
 
@@ -2819,15 +2857,15 @@ POST /hr/payroll/post-to-finance → creates journal; distributes labor to COGS
 
 ## 11.1 Actors & Permissions
 
-* **Maintenance Tech / Mechanic**: log PM/repairs, parts used, close work orders (WOs).
+- **Maintenance Tech / Mechanic**: log PM/repairs, parts used, close work orders (WOs).
   Scopes: `mnt.wo.create`, `mnt.wo.complete`, `mnt.parts.consume`
-* **Planner**: create schedules (time-based & meter-based), assign WOs, set service vendors.
+- **Planner**: create schedules (time-based & meter-based), assign WOs, set service vendors.
   Scopes: `mnt.schedule.manage`, `mnt.assign`
-* **Driver/Operator**: submit fault reports, odometer/runtime updates, upload photos.
+- **Driver/Operator**: submit fault reports, odometer/runtime updates, upload photos.
   Scopes: `mnt.report.issue`, `mnt.update.meter`
-* **Finance**: review costs, capitalize if needed, post to GL.
+- **Finance**: review costs, capitalize if needed, post to GL.
   Scopes: `finance.mnt.review`
-* **Ashley (AI)**: failure prediction, PM reminders, warranty/registration/insurance alerts.
+- **Ashley (AI)**: failure prediction, PM reminders, warranty/registration/insurance alerts.
 
 ---
 
@@ -2835,27 +2873,27 @@ POST /hr/payroll/post-to-finance → creates journal; distributes labor to COGS
 
 ### A) Asset Registry
 
-* **Machines**: embroidery heads, heat presses, dryers, printers, compressors.
-* **Vehicles**: plate, brand/model, fuel, renewal dates (registration/insurance).
-* **Meters**: hour meter, stitch counter, press cycles, odometer; update via operator or automatic (if device API).
+- **Machines**: embroidery heads, heat presses, dryers, printers, compressors.
+- **Vehicles**: plate, brand/model, fuel, renewal dates (registration/insurance).
+- **Meters**: hour meter, stitch counter, press cycles, odometer; update via operator or automatic (if device API).
 
 ### B) Schedules & Work Orders
 
-* **Time-based PM**: every N months (e.g., oil change every 6 months).
-* **Meter-based PM**: every X hours/cycles/stitches/km.
-* System **auto-creates Work Orders** (WO) when due or predicted.
-* Planner assigns WO to tech or vendor; sets due date and priority.
+- **Time-based PM**: every N months (e.g., oil change every 6 months).
+- **Meter-based PM**: every X hours/cycles/stitches/km.
+- System **auto-creates Work Orders** (WO) when due or predicted.
+- Planner assigns WO to tech or vendor; sets due date and priority.
 
 ### C) Fault/Breakdown
 
-* Any user can **Report Issue** with photo/video; creates **Corrective WO**.
-* SLA timers; Ashley suggests severity & potential root cause from history.
+- Any user can **Report Issue** with photo/video; creates **Corrective WO**.
+- SLA timers; Ashley suggests severity & potential root cause from history.
 
 ### D) Execute WO
 
-* Tech starts WO, logs **labor hours**, **parts used** (inventory deduction), **notes**, **photos**.
-* Close WO → prompts meter update & test run.
-* For vehicles: log **fuel**, **toll**, **repairs** (already integrated in Stage 8 trips).
+- Tech starts WO, logs **labor hours**, **parts used** (inventory deduction), **notes**, **photos**.
+- Close WO → prompts meter update & test run.
+- For vehicles: log **fuel**, **toll**, **repairs** (already integrated in Stage 8 trips).
 
 ---
 
@@ -2982,13 +3020,13 @@ POST /mnt/downtime                → start/stop downtime timer
 
 **B) Next Due (Meter-based)**
 
-* For each meter key (hours/cycles/km), due when `current_meter − last_done_meter >= interval.value`.
-* Ashley projects date of due using **usage rate** (moving average of recent meter logs).
+- For each meter key (hours/cycles/km), due when `current_meter − last_done_meter >= interval.value`.
+- Ashley projects date of due using **usage rate** (moving average of recent meter logs).
 
 **C) WO Cost**
 `wo_total = Σ parts.cost + Σ labor.cost`
 
-* Post to Finance as **Repair & Maintenance expense** (or **CapEx** if policy says capitalize).
+- Post to Finance as **Repair & Maintenance expense** (or **CapEx** if policy says capitalize).
 
 **D) Downtime**
 `downtime_hours = (ended_at − started_at)` per WO → asset availability KPI.
@@ -2997,11 +3035,11 @@ POST /mnt/downtime                → start/stop downtime timer
 
 ## 11.6 Ashley (AI) Predictions & Alerts
 
-* **Predictive PM**: if stitch-breaks or print head clogs trend upward, bring PM forward.
-* **Registration/Insurance**: 30/15/7/1-day reminders for vehicles.
-* **Battery/consumables**: model expected replacement from historical intervals.
-* **Vendor choice**: recommend supplier for parts based on price/lead time history.
-* **Cost anomaly**: alert when WO cost deviates > X% from median for same task.
+- **Predictive PM**: if stitch-breaks or print head clogs trend upward, bring PM forward.
+- **Registration/Insurance**: 30/15/7/1-day reminders for vehicles.
+- **Battery/consumables**: model expected replacement from historical intervals.
+- **Vendor choice**: recommend supplier for parts based on price/lead time history.
+- **Cost anomaly**: alert when WO cost deviates > X% from median for same task.
 
 ---
 
@@ -3012,16 +3050,16 @@ POST /mnt/downtime                → start/stop downtime timer
 
 **Notifications**
 
-* Planner: “PM due this week for 3 assets; predicted downtime 6h.”
-* Driver: “Vehicle ABC-123 registration due in 7 days.”
-* Finance: “WO #1023 exceeded typical cost by 42%.”
+- Planner: “PM due this week for 3 assets; predicted downtime 6h.”
+- Driver: “Vehicle ABC-123 registration due in 7 days.”
+- Finance: “WO #1023 exceeded typical cost by 42%.”
 
 **Edge Cases**
 
-* **Meter rollback** (wrong input): require manager correction with audit.
-* **Parts not in stock**: auto-create **PR** to Purchasing; block WO close until resolved or override set.
-* **Warranty active**: Ashley suggests **vendor warranty claim** route instead of internal repair.
-* **Concurrent WOs** on same asset: block start if a **blocking** WO is still open (configurable).
+- **Meter rollback** (wrong input): require manager correction with audit.
+- **Parts not in stock**: auto-create **PR** to Purchasing; block WO close until resolved or override set.
+- **Warranty active**: Ashley suggests **vendor warranty claim** route instead of internal repair.
+- **Concurrent WOs** on same asset: block start if a **blocking** WO is still open (configurable).
 
 ---
 
@@ -3037,28 +3075,29 @@ POST /mnt/downtime                → start/stop downtime timer
 
 ## 🔗 Stage 10 ↔ Stage 11 ↔ Finance/Production
 
-* **HR → Finance**: Payroll postings (liabilities/expenses) & labor cost allocated to **PO COGS**.
-* **Maintenance → Finance**: WO costs posted; large repairs optionally capitalized per policy.
-* **Maintenance → Production**: Assets in **IN\_REPAIR** reduce available capacity; planner re-schedules routing steps; Ashley recomputes critical path & ETA.
+- **HR → Finance**: Payroll postings (liabilities/expenses) & labor cost allocated to **PO COGS**.
+- **Maintenance → Finance**: WO costs posted; large repairs optionally capitalized per policy.
+- **Maintenance → Production**: Assets in **IN_REPAIR** reduce available capacity; planner re-schedules routing steps; Ashley recomputes critical path & ETA.
+
 # 🔹 Stage 12 – Client Portal (Tracking, Approvals, Payments, Reorders)
 
 ## 12.1 Actors & Permissions
 
-* **Client (Portal user)**: view orders, approve designs, pay invoices, reorder, message CSR.
+- **Client (Portal user)**: view orders, approve designs, pay invoices, reorder, message CSR.
   Scopes (portal-only): `portal.order.view`, `portal.design.approve`, `portal.invoice.pay`, `portal.reorder`
-* **CSR/Manager**: impersonate/read-only for support; send links.
+- **CSR/Manager**: impersonate/read-only for support; send links.
   Scopes: `portal.support.view`, `portal.link.issue`
-* **Ashley (AI)**: suggest upsells, nudge late approvals, detect churn risk.
+- **Ashley (AI)**: suggest upsells, nudge late approvals, detect churn risk.
 
 ## 12.2 UX / Flows
 
-* **Access**: magic-link email/SMS (no password) or SSO (optional). Brand-themed UI.
-* **Order Tracker**: timeline (Design → Cutting → Printing/Emb → Sewing → QC → Packing → Delivery).
-* **Design Approval**: preview mockup (zoom), Approve/Request Changes + comment, e-sign if required.
-* **Invoices & Payments**: list invoices; pay via **GCash / cards (Stripe/PayMongo)**; partial payments allowed.
-* **Reorder**: 1-click reorder from past POs (edit qty/size curve/colorway); Ashley proposes defaults.
-* **Messaging**: chat with CSR (attachments allowed); SLA timer & canned replies.
-* **Notifications**: email/SMS/Messenger for key events (design ready, shipped, payment posted).
+- **Access**: magic-link email/SMS (no password) or SSO (optional). Brand-themed UI.
+- **Order Tracker**: timeline (Design → Cutting → Printing/Emb → Sewing → QC → Packing → Delivery).
+- **Design Approval**: preview mockup (zoom), Approve/Request Changes + comment, e-sign if required.
+- **Invoices & Payments**: list invoices; pay via **GCash / cards (Stripe/PayMongo)**; partial payments allowed.
+- **Reorder**: 1-click reorder from past POs (edit qty/size curve/colorway); Ashley proposes defaults.
+- **Messaging**: chat with CSR (attachments allowed); SLA timer & canned replies.
+- **Notifications**: email/SMS/Messenger for key events (design ready, shipped, payment posted).
 
 ## 12.3 Data Model (SQL)
 
@@ -3130,23 +3169,22 @@ Body { order_id, body, file_url? }       → 201
 
 ## 12.5 Validations & Rules
 
-* **Magic links**: single-use, 30–60 min TTL, brand-scoped; rotate on use.
-* **Approvals**: update `design_approvals` + `design_assets.status`; lock on production start.
-* **Payments**: on webhook `SUCCESS`, create `payments` row and allocate to invoice; partial allowed.
-* **Reorder**: clones PO header (brand/client/method/placements) with editable qty/curve; Ashley checks capacity & BOM.
+- **Magic links**: single-use, 30–60 min TTL, brand-scoped; rotate on use.
+- **Approvals**: update `design_approvals` + `design_assets.status`; lock on production start.
+- **Payments**: on webhook `SUCCESS`, create `payments` row and allocate to invoice; partial allowed.
+- **Reorder**: clones PO header (brand/client/method/placements) with editable qty/curve; Ashley checks capacity & BOM.
 
 ## 12.6 Ashley (AI)
 
-* **Nudges**: client hasn’t approved after N days → polite reminder; offer timeslot for quick call.
-* **Upsell**: based on brand history → recommend complementary items (e.g., caps with hoodies).
-* **Churn signal**: declining order frequency → suggest reactivation promo to CSR.
+- **Nudges**: client hasn’t approved after N days → polite reminder; offer timeslot for quick call.
+- **Upsell**: based on brand history → recommend complementary items (e.g., caps with hoodies).
+- **Churn signal**: declining order frequency → suggest reactivation promo to CSR.
 
 ## 12.7 Events, Edge Cases, Acceptance Tests
 
-* **Events**: `ash.portal.link.sent`, `ash.portal.design.approved`, `ash.portal.payment.success`, `ash.portal.reorder.created`
-* **Edge**: expired link → regenerate; refunds → show credit note; multi-brand clients see only their brand scope.
-* **Tests**:
-
+- **Events**: `ash.portal.link.sent`, `ash.portal.design.approved`, `ash.portal.payment.success`, `ash.portal.reorder.created`
+- **Edge**: expired link → regenerate; refunds → show credit note; multi-brand clients see only their brand scope.
+- **Tests**:
   1. Magic link grants access only to the brand’s orders.
   2. Approval updates order status and locks version.
   3. GCash/Stripe webhook creates payment & reduces invoice balance.
@@ -3160,15 +3198,15 @@ Body { order_id, body, file_url? }       → 201
 
 Turn sales history + design performance into **actionable merchandising**:
 
-* What to **reprint** (qty/size curve/color split)
-* What **theme to design next** (style/palette/placement) from a best-seller image
+- What to **reprint** (qty/size curve/color split)
+- What **theme to design next** (style/palette/placement) from a best-seller image
 
 ## 13.2 Inputs & Signals
 
-* `sales_orders`, `live_sales`, `channel_settlements` (velocity, returns, margin, fees)
-* `design_assets` + `design_versions` (placements, palette)
-* Inventory & capacity (for feasible recommendations)
-* Seasonality/calendar (drops, holidays)
+- `sales_orders`, `live_sales`, `channel_settlements` (velocity, returns, margin, fees)
+- `design_assets` + `design_versions` (placements, palette)
+- Inventory & capacity (for feasible recommendations)
+- Seasonality/calendar (drops, holidays)
 
 ## 13.3 Data Model (SQL)
 
@@ -3238,37 +3276,36 @@ POST /merch/recommendations/{id}/reject   → 200
 
 **A) Reprint Qty**
 
-* **Velocity**: EMA or 4–8 week moving average; adjust for seasonality (holiday multipliers).
-* **Service level**: choose target stock-out risk (e.g., 90%); compute suggested qty = `forecast_demand − on_hand + safety_stock`.
-* **Size curve**: weighted average of last N orders for this design/product/region.
-* **Color split**: last N’s distribution; bias to top 2 colors; cap tail colors.
-* **Feasibility**: check capacity and lead times; split into batches if needed.
+- **Velocity**: EMA or 4–8 week moving average; adjust for seasonality (holiday multipliers).
+- **Service level**: choose target stock-out risk (e.g., 90%); compute suggested qty = `forecast_demand − on_hand + safety_stock`.
+- **Size curve**: weighted average of last N orders for this design/product/region.
+- **Color split**: last N’s distribution; bias to top 2 colors; cap tail colors.
+- **Feasibility**: check capacity and lead times; split into batches if needed.
 
 **B) BOM & Margin**
 
-* BOM from product template + placements + ink/film/thread estimators (from Stages 4/5).
-* COGS = materials + labor + overhead; **Forecast margin** = `(price − COGS)/price`.
-* Block if below brand’s **margin floor**.
+- BOM from product template + placements + ink/film/thread estimators (from Stages 4/5).
+- COGS = materials + labor + overhead; **Forecast margin** = `(price − COGS)/price`.
+- Block if below brand’s **margin floor**.
 
 **C) Theme Recommendation**
 
-* Extract **visual features** (palette, contrast, motifs) via embeddings (e.g., CLIP) — store tags.
-* Match against **trending tags** (internal sales + public trend list you curate).
-* Output: theme tags, palette, placements, product suggestions, **test\_run\_qty** (e.g., 120 pcs).
-* Attach **prompt/moodboard** links for GA.
+- Extract **visual features** (palette, contrast, motifs) via embeddings (e.g., CLIP) — store tags.
+- Match against **trending tags** (internal sales + public trend list you curate).
+- Output: theme tags, palette, placements, product suggestions, **test_run_qty** (e.g., 120 pcs).
+- Attach **prompt/moodboard** links for GA.
 
 ## 13.6 Ashley (AI) Behavior
 
-* Triggers automatically when a design hits **best-seller** thresholds (sell-through days < X, margin > Y).
-* Suggests **test vs full reprint** depending on recent returns/stockouts.
-* Alerts CSR: “Reefer Alien Hoodie likely to sell 450 units next 30d; approve 350 now, 100 in 2 weeks?”
+- Triggers automatically when a design hits **best-seller** thresholds (sell-through days < X, margin > Y).
+- Suggests **test vs full reprint** depending on recent returns/stockouts.
+- Alerts CSR: “Reefer Alien Hoodie likely to sell 450 units next 30d; approve 350 now, 100 in 2 weeks?”
 
 ## 13.7 Events, Edge Cases, Acceptance Tests
 
-* **Events**: `ash.merch.reprint.drafted`, `ash.merch.theme.drafted`, `ash.merch.rec.accepted`
-* **Edge**: sparse data → fall back to product-level curves; conflicting channels → weight by margin.
-* **Tests**:
-
+- **Events**: `ash.merch.reprint.drafted`, `ash.merch.theme.drafted`, `ash.merch.rec.accepted`
+- **Edge**: sparse data → fall back to product-level curves; conflicting channels → weight by margin.
+- **Tests**:
   1. High-velocity design returns a positive reprint with rationales & BOM.
   2. Low margin blocks suggestion (requires price/COGS tweak).
   3. Theme rec produces tags/palette/placement + test qty.
@@ -3283,11 +3320,11 @@ Central engine for **scheduled tasks, rule-based alerts, and notifications** to 
 
 ## 14.2 Concepts
 
-* **Triggers**: time-based (cron), event-based (order status change), condition-based (query returning true).
-* **Jobs**: unit of work (send message, create CAPA, draft PR).
-* **Channels**: Email, SMS, Messenger, in-app.
-* **Preferences**: per user/client quiet hours, opt-ins, escalation rules.
-* **Deduping & Rate limits**: don’t spam.
+- **Triggers**: time-based (cron), event-based (order status change), condition-based (query returning true).
+- **Jobs**: unit of work (send message, create CAPA, draft PR).
+- **Channels**: Email, SMS, Messenger, in-app.
+- **Preferences**: per user/client quiet hours, opt-ins, escalation rules.
+- **Deduping & Rate limits**: don’t spam.
 
 ## 14.3 Data Model (SQL)
 
@@ -3362,30 +3399,29 @@ GET  /outbox?status=PENDING → list for worker service; worker dispatches and u
 
 ## 14.5 Built-in Automations (examples)
 
-* **Design follow-up**: EVENT=`ash.design.approval.sent` → if no action in 48h → notify CSR & client.
-* **QC fail hold**: EVENT=`ash.qc.closed` with status FAIL → notify Manager + create CAPA task.
-* **Cashflow warning**: CRON daily 08:00 → if forecast < 0 in 30d → notify Owner + Finance.
-* **Vehicle renewal**: CONDITION weekly → `assets where registration_due <= now()+interval '15 days'`.
-* **Invoice due**: CRON daily 09:00 → clients with due tomorrow → send branded reminder (respects comm\_prefs).
+- **Design follow-up**: EVENT=`ash.design.approval.sent` → if no action in 48h → notify CSR & client.
+- **QC fail hold**: EVENT=`ash.qc.closed` with status FAIL → notify Manager + create CAPA task.
+- **Cashflow warning**: CRON daily 08:00 → if forecast < 0 in 30d → notify Owner + Finance.
+- **Vehicle renewal**: CONDITION weekly → `assets where registration_due <= now()+interval '15 days'`.
+- **Invoice due**: CRON daily 09:00 → clients with due tomorrow → send branded reminder (respects comm_prefs).
 
 ## 14.6 Rules: Dedup, Quiet Hours, Escalation
 
-* **Dedup**: identical `dedupe_key` dropped within 24h (configurable).
-* **Quiet hours**: queue until window ends for each recipient.
-* **Escalation**: if not acknowledged (e.g., QC fail) in 4h → escalate to next role.
+- **Dedup**: identical `dedupe_key` dropped within 24h (configurable).
+- **Quiet hours**: queue until window ends for each recipient.
+- **Escalation**: if not acknowledged (e.g., QC fail) in 4h → escalate to next role.
 
 ## 14.7 Ashley (AI) Enhancements
 
-* **Smart channel**: pick email vs SMS vs Messenger by historical open/reply rates per client.
-* **Batching**: group notifications (single digest per morning).
-* **Language tone**: friendlier tone for clients, concise for staff; brand voice templates.
+- **Smart channel**: pick email vs SMS vs Messenger by historical open/reply rates per client.
+- **Batching**: group notifications (single digest per morning).
+- **Language tone**: friendlier tone for clients, concise for staff; brand voice templates.
 
 ## 14.8 Events, Edge Cases, Acceptance Tests
 
-* **Events**: `ash.automation.fired`, `ash.notification.sent`, `ash.notification.failed`
-* **Edge**: respects opt-out; invalid contact → mark FAILED and alert CSR; webhook retries with backoff.
-* **Tests**:
-
+- **Events**: `ash.automation.fired`, `ash.notification.sent`, `ash.notification.failed`
+- **Edge**: respects opt-out; invalid contact → mark FAILED and alert CSR; webhook retries with backoff.
+- **Tests**:
   1. QC fail triggers CAPA + notifications with dedupe.
   2. Invoice reminder respects client quiet hours.
   3. Condition SQL returns rows → outbox populated; rate limits enforced.
@@ -3395,9 +3431,9 @@ GET  /outbox?status=PENDING → list for worker service; worker dispatches and u
 
 ## ✅ What your developer gets from Stages 12–14
 
-* **Precise schemas & APIs** to implement portal access, payments, reorders.
-* **Actionable ML-lite methods** for reprint & theme recommendations, ready to upgrade to full ML later.
-* **A robust automation framework** with triggers, templates, dedupe, and preferences.
+- **Precise schemas & APIs** to implement portal access, payments, reorders.
+- **Actionable ML-lite methods** for reprint & theme recommendations, ready to upgrade to full ML later.
+- **A robust automation framework** with triggers, templates, dedupe, and preferences.
 
 <!-- 
 

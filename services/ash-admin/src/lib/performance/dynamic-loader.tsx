@@ -3,15 +3,19 @@
  * Lazy loading for heavy components to reduce initial bundle size
  */
 
-'use client'
+"use client";
 
-import dynamic from 'next/dynamic'
-import React from 'react'
+import dynamic from "next/dynamic";
+import React from "react";
 
 /**
  * Loading fallback component
  */
-export function LoadingSpinner({ message = 'Loading...' }: { message?: string }) {
+export function LoadingSpinner({
+  message = "Loading...",
+}: {
+  message?: string;
+}) {
   return (
     <div className="flex items-center justify-center p-8">
       <div className="text-center">
@@ -19,7 +23,7 @@ export function LoadingSpinner({ message = 'Loading...' }: { message?: string })
         <p className="mt-2 text-sm text-muted-foreground">{message}</p>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -33,7 +37,7 @@ export function ErrorFallback({ error }: { error: Error }) {
         <p className="text-sm">{error.message}</p>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -46,7 +50,7 @@ export function createLazyComponent<T extends React.ComponentType<any>>(
   return dynamic(importFn, {
     loading: () => <LoadingSpinner message={loadingMessage} />,
     ssr: false, // Disable SSR for lazy components
-  })
+  });
 }
 
 /**
@@ -56,18 +60,18 @@ export function createLazyComponent<T extends React.ComponentType<any>>(
 // Heavy chart/visualization components
 export const LazyChartLoader = {
   LineChart: createLazyComponent(
-    () => import('recharts').then(mod => ({ default: mod.LineChart as any })),
-    'Loading chart...'
+    () => import("recharts").then(mod => ({ default: mod.LineChart as any })),
+    "Loading chart..."
   ),
   BarChart: createLazyComponent(
-    () => import('recharts').then(mod => ({ default: mod.BarChart as any })),
-    'Loading chart...'
+    () => import("recharts").then(mod => ({ default: mod.BarChart as any })),
+    "Loading chart..."
   ),
   PieChart: createLazyComponent(
-    () => import('recharts').then(mod => ({ default: mod.PieChart as any })),
-    'Loading chart...'
+    () => import("recharts").then(mod => ({ default: mod.PieChart as any })),
+    "Loading chart..."
   ),
-}
+};
 
 /**
  * Lazy load modal/dialog components
@@ -78,7 +82,7 @@ export function lazyModal<T extends React.ComponentType<any>>(
   return dynamic(importFn, {
     loading: () => null, // No loading state for modals (they open instantly)
     ssr: false,
-  })
+  });
 }
 
 /**
@@ -89,9 +93,11 @@ export function lazyRoute<T extends React.ComponentType<any>>(
   loadingMessage?: string
 ) {
   return dynamic(importFn, {
-    loading: () => <LoadingSpinner message={loadingMessage || 'Loading page...'} />,
+    loading: () => (
+      <LoadingSpinner message={loadingMessage || "Loading page..."} />
+    ),
     ssr: true, // Enable SSR for routes
-  })
+  });
 }
 
 /**
@@ -104,7 +110,7 @@ export function lazyOnVisible<T extends React.ComponentType<any>>(
   return dynamic(importFn, {
     loading: () => <LoadingSpinner message={loadingMessage} />,
     ssr: false,
-  })
+  });
 }
 
 /**
@@ -115,7 +121,7 @@ export function preloadComponent<T extends React.ComponentType<any>>(
   importFn: () => Promise<{ default: T }>
 ) {
   // Start loading the component
-  importFn().catch(err => console.error('Preload failed:', err))
+  importFn().catch(err => console.error("Preload failed:", err));
 }
 
 /**

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { SMS_TEMPLATES } from '@/lib/sms/types'
+import { NextRequest, NextResponse } from "next/server";
+import { SMS_TEMPLATES } from "@/lib/sms/types";
 
 // GET /api/sms/templates - Get all SMS templates
 export async function GET() {
@@ -7,43 +7,52 @@ export async function GET() {
     const templates = Object.entries(SMS_TEMPLATES).map(([key, template]) => ({
       id: key,
       ...template,
-    }))
+    }));
 
     return NextResponse.json({
       success: true,
       templates,
       count: templates.length,
-    })
+    });
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Failed to get templates', details: error.message },
+      { error: "Failed to get templates", details: error.message },
       { status: 500 }
-    )
+    );
   }
 }
 
 // POST /api/sms/templates - Preview template with variables
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { template_id, variables } = body
+    const body = await request.json();
+    const { template_id, variables } = body;
 
     if (!template_id) {
-      return NextResponse.json({ error: 'template_id is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: "template_id is required" },
+        { status: 400 }
+      );
     }
 
-    const template = SMS_TEMPLATES[template_id as keyof typeof SMS_TEMPLATES]
+    const template = SMS_TEMPLATES[template_id as keyof typeof SMS_TEMPLATES];
 
     if (!template) {
-      return NextResponse.json({ error: 'Template not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: "Template not found" },
+        { status: 404 }
+      );
     }
 
     // Replace variables in template
-    let preview = template.message
+    let preview = template.message;
     if (variables) {
-      Object.keys(variables).forEach((key) => {
-        preview = preview.replace(new RegExp(`\\{${key}\\}`, 'g'), variables[key])
-      })
+      Object.keys(variables).forEach(key => {
+        preview = preview.replace(
+          new RegExp(`\\{${key}\\}`, "g"),
+          variables[key]
+        );
+      });
     }
 
     return NextResponse.json({
@@ -55,11 +64,11 @@ export async function POST(request: NextRequest) {
         preview,
         variables: template.variables,
       },
-    })
+    });
   } catch (error: any) {
     return NextResponse.json(
-      { error: 'Failed to preview template', details: error.message },
+      { error: "Failed to preview template", details: error.message },
       { status: 500 }
-    )
+    );
   }
 }

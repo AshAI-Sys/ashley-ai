@@ -1,4 +1,10 @@
-import { cache, userCache, orderCache, clientCache, inventoryCache } from './cache'
+import {
+  cache,
+  userCache,
+  orderCache,
+  clientCache,
+  inventoryCache,
+} from "./cache";
 
 /**
  * Caching Strategies and TTL Constants
@@ -25,7 +31,7 @@ export const CacheTTL = {
   SYSTEM_CONFIG: 7200, // 2 hours
   STATIC_DATA: 86400, // 24 hours
   REPORTS: 43200, // 12 hours
-} as const
+} as const;
 
 /**
  * Cache key generators
@@ -58,31 +64,37 @@ export const CacheKeys = {
   orderMetrics: (period: string) => `orders:metrics:${period}`,
 
   // API Response caching
-  apiResponse: (endpoint: string, params: string) => `api:${endpoint}:${params}`,
+  apiResponse: (endpoint: string, params: string) =>
+    `api:${endpoint}:${params}`,
 
   // Rate limiting
-  rateLimit: (identifier: string, endpoint: string) => `ratelimit:${identifier}:${endpoint}`,
-} as const
+  rateLimit: (identifier: string, endpoint: string) =>
+    `ratelimit:${identifier}:${endpoint}`,
+} as const;
 
 /**
  * User caching strategy
  */
 export async function cacheUser(userId: string, user: any) {
-  await userCache.set(CacheKeys.user(userId), user, CacheTTL.USER_PROFILE)
+  await userCache.set(CacheKeys.user(userId), user, CacheTTL.USER_PROFILE);
   if (user.email) {
-    await userCache.set(CacheKeys.userByEmail(user.email), user, CacheTTL.USER_PROFILE)
+    await userCache.set(
+      CacheKeys.userByEmail(user.email),
+      user,
+      CacheTTL.USER_PROFILE
+    );
   }
 }
 
 export async function getCachedUser(userId: string) {
-  return await userCache.get(CacheKeys.user(userId))
+  return await userCache.get(CacheKeys.user(userId));
 }
 
 export async function invalidateUser(userId: string, email?: string) {
-  await userCache.delete(CacheKeys.user(userId))
-  await userCache.delete(CacheKeys.userPermissions(userId))
+  await userCache.delete(CacheKeys.user(userId));
+  await userCache.delete(CacheKeys.userPermissions(userId));
   if (email) {
-    await userCache.delete(CacheKeys.userByEmail(email))
+    await userCache.delete(CacheKeys.userByEmail(email));
   }
 }
 
@@ -90,80 +102,101 @@ export async function invalidateUser(userId: string, email?: string) {
  * Order caching strategy
  */
 export async function cacheOrder(orderId: string, order: any) {
-  await orderCache.set(CacheKeys.order(orderId), order, CacheTTL.ORDER_STATUS)
-  await orderCache.set(CacheKeys.orderStatus(orderId), order.status, CacheTTL.ORDER_STATUS)
+  await orderCache.set(CacheKeys.order(orderId), order, CacheTTL.ORDER_STATUS);
+  await orderCache.set(
+    CacheKeys.orderStatus(orderId),
+    order.status,
+    CacheTTL.ORDER_STATUS
+  );
 }
 
 export async function getCachedOrder(orderId: string) {
-  return await orderCache.get(CacheKeys.order(orderId))
+  return await orderCache.get(CacheKeys.order(orderId));
 }
 
 export async function invalidateOrder(orderId: string, clientId?: string) {
-  await orderCache.delete(CacheKeys.order(orderId))
-  await orderCache.delete(CacheKeys.orderStatus(orderId))
+  await orderCache.delete(CacheKeys.order(orderId));
+  await orderCache.delete(CacheKeys.orderStatus(orderId));
   if (clientId) {
-    await orderCache.delete(CacheKeys.ordersByClient(clientId))
+    await orderCache.delete(CacheKeys.ordersByClient(clientId));
   }
   // Invalidate all order lists
-  await orderCache.invalidatePattern('orders:list:*')
+  await orderCache.invalidatePattern("orders:list:*");
 }
 
 /**
  * Client caching strategy
  */
 export async function cacheClient(clientId: string, client: any) {
-  await clientCache.set(CacheKeys.client(clientId), client, CacheTTL.CLIENT_DATA)
+  await clientCache.set(
+    CacheKeys.client(clientId),
+    client,
+    CacheTTL.CLIENT_DATA
+  );
 }
 
 export async function getCachedClient(clientId: string) {
-  return await clientCache.get(CacheKeys.client(clientId))
+  return await clientCache.get(CacheKeys.client(clientId));
 }
 
 export async function invalidateClient(clientId: string) {
-  await clientCache.delete(CacheKeys.client(clientId))
-  await clientCache.delete(CacheKeys.clientList())
-  await orderCache.delete(CacheKeys.ordersByClient(clientId))
+  await clientCache.delete(CacheKeys.client(clientId));
+  await clientCache.delete(CacheKeys.clientList());
+  await orderCache.delete(CacheKeys.ordersByClient(clientId));
 }
 
 /**
  * Inventory caching strategy
  */
 export async function cacheInventory(itemId: string, inventory: any) {
-  await inventoryCache.set(CacheKeys.inventory(itemId), inventory, CacheTTL.STOCK_LEVELS)
+  await inventoryCache.set(
+    CacheKeys.inventory(itemId),
+    inventory,
+    CacheTTL.STOCK_LEVELS
+  );
 }
 
 export async function getCachedInventory(itemId: string) {
-  return await inventoryCache.get(CacheKeys.inventory(itemId))
+  return await inventoryCache.get(CacheKeys.inventory(itemId));
 }
 
 export async function invalidateInventory(itemId?: string) {
   if (itemId) {
-    await inventoryCache.delete(CacheKeys.inventory(itemId))
+    await inventoryCache.delete(CacheKeys.inventory(itemId));
   }
-  await inventoryCache.delete(CacheKeys.inventoryLevels())
-  await inventoryCache.delete(CacheKeys.lowStock())
+  await inventoryCache.delete(CacheKeys.inventoryLevels());
+  await inventoryCache.delete(CacheKeys.lowStock());
 }
 
 /**
  * Dashboard caching strategy
  */
 export async function cacheDashboardStats(workspaceId: string, stats: any) {
-  await cache.set(CacheKeys.dashboardStats(workspaceId), stats, CacheTTL.DASHBOARD_STATS)
+  await cache.set(
+    CacheKeys.dashboardStats(workspaceId),
+    stats,
+    CacheTTL.DASHBOARD_STATS
+  );
 }
 
 export async function getCachedDashboardStats(workspaceId: string) {
-  return await cache.get(CacheKeys.dashboardStats(workspaceId))
+  return await cache.get(CacheKeys.dashboardStats(workspaceId));
 }
 
 /**
  * API response caching
  */
-export async function cacheAPIResponse(endpoint: string, params: string, response: any, ttl: number) {
-  await cache.set(CacheKeys.apiResponse(endpoint, params), response, ttl)
+export async function cacheAPIResponse(
+  endpoint: string,
+  params: string,
+  response: any,
+  ttl: number
+) {
+  await cache.set(CacheKeys.apiResponse(endpoint, params), response, ttl);
 }
 
 export async function getCachedAPIResponse(endpoint: string, params: string) {
-  return await cache.get(CacheKeys.apiResponse(endpoint, params))
+  return await cache.get(CacheKeys.apiResponse(endpoint, params));
 }
 
 /**
@@ -175,27 +208,31 @@ export async function checkRateLimit(
   maxRequests: number,
   windowSeconds: number
 ): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
-  const key = CacheKeys.rateLimit(identifier, endpoint)
+  const key = CacheKeys.rateLimit(identifier, endpoint);
 
   try {
-    const count = await cache.increment(key)
+    const count = await cache.increment(key);
 
     if (count === 1) {
       // First request, set expiry
-      await cache.expire(key, windowSeconds)
+      await cache.expire(key, windowSeconds);
     }
 
-    const ttl = await cache.ttl(key)
-    const resetAt = Date.now() + ttl * 1000
+    const ttl = await cache.ttl(key);
+    const resetAt = Date.now() + ttl * 1000;
 
     return {
       allowed: count <= maxRequests,
       remaining: Math.max(0, maxRequests - count),
       resetAt,
-    }
+    };
   } catch (error) {
-    console.error('Rate limit check error:', error)
-    return { allowed: true, remaining: maxRequests, resetAt: Date.now() + windowSeconds * 1000 }
+    console.error("Rate limit check error:", error);
+    return {
+      allowed: true,
+      remaining: maxRequests,
+      resetAt: Date.now() + windowSeconds * 1000,
+    };
   }
 }
 
@@ -203,21 +240,31 @@ export async function checkRateLimit(
  * Session management with Redis
  */
 export async function cacheSession(sessionId: string, sessionData: any) {
-  await cache.set(CacheKeys.userSession(sessionId), sessionData, CacheTTL.USER_SESSION)
+  await cache.set(
+    CacheKeys.userSession(sessionId),
+    sessionData,
+    CacheTTL.USER_SESSION
+  );
 }
 
 export async function getCachedSession(sessionId: string) {
-  return await cache.get(CacheKeys.userSession(sessionId))
+  return await cache.get(CacheKeys.userSession(sessionId));
 }
 
 export async function invalidateSession(sessionId: string) {
-  await cache.delete(CacheKeys.userSession(sessionId))
+  await cache.delete(CacheKeys.userSession(sessionId));
 }
 
-export async function extendSession(sessionId: string, additionalSeconds: number) {
-  const ttl = await cache.ttl(CacheKeys.userSession(sessionId))
+export async function extendSession(
+  sessionId: string,
+  additionalSeconds: number
+) {
+  const ttl = await cache.ttl(CacheKeys.userSession(sessionId));
   if (ttl > 0) {
-    await cache.expire(CacheKeys.userSession(sessionId), ttl + additionalSeconds)
+    await cache.expire(
+      CacheKeys.userSession(sessionId),
+      ttl + additionalSeconds
+    );
   }
 }
 
@@ -225,21 +272,21 @@ export async function extendSession(sessionId: string, additionalSeconds: number
  * Batch invalidation utilities
  */
 export async function invalidateAllUserData(userId: string) {
-  await userCache.invalidatePattern(`user:${userId}:*`)
-  await userCache.delete(CacheKeys.user(userId))
+  await userCache.invalidatePattern(`user:${userId}:*`);
+  await userCache.delete(CacheKeys.user(userId));
 }
 
 export async function invalidateAllOrderData(clientId?: string) {
-  await orderCache.invalidatePattern('orders:*')
+  await orderCache.invalidatePattern("orders:*");
   if (clientId) {
-    await orderCache.delete(CacheKeys.ordersByClient(clientId))
+    await orderCache.delete(CacheKeys.ordersByClient(clientId));
   }
 }
 
 export async function invalidateAllDashboards() {
-  await cache.invalidatePattern('dashboard:*')
-  await cache.invalidatePattern('production:metrics:*')
-  await cache.invalidatePattern('orders:metrics:*')
+  await cache.invalidatePattern("dashboard:*");
+  await cache.invalidatePattern("production:metrics:*");
+  await cache.invalidatePattern("orders:metrics:*");
 }
 
 /**
@@ -247,7 +294,7 @@ export async function invalidateAllDashboards() {
  */
 export async function warmCache(workspaceId: string) {
   // This can be called on app start or periodically
-  console.log(`Warming cache for workspace ${workspaceId}...`)
+  console.log(`Warming cache for workspace ${workspaceId}...`);
 
   // Preload dashboard stats, active orders, etc.
   // Implementation depends on your specific needs
@@ -257,18 +304,18 @@ export async function warmCache(workspaceId: string) {
  * Cache statistics
  */
 export async function getCacheStats() {
-  const redis = (await import('./client')).getRedisClient()
+  const redis = (await import("./client")).getRedisClient();
 
   try {
-    const info = await redis.info('stats')
-    const keyspace = await redis.info('keyspace')
+    const info = await redis.info("stats");
+    const keyspace = await redis.info("keyspace");
 
     return {
       info,
       keyspace,
       totalKeys: await redis.dbsize(),
-    }
+    };
   } catch (error) {
-    return null
+    return null;
   }
 }

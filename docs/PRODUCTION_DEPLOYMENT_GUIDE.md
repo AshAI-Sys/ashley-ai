@@ -39,6 +39,7 @@
 ### System Requirements
 
 **Production Server:**
+
 - **CPU**: 4+ cores recommended
 - **RAM**: 8GB minimum, 16GB recommended
 - **Storage**: 50GB+ SSD
@@ -55,6 +56,7 @@
 ### Step 1: Install PostgreSQL
 
 **Using Docker (Recommended):**
+
 ```bash
 # Start PostgreSQL and Redis containers
 docker-compose up -d postgres redis
@@ -64,6 +66,7 @@ docker-compose ps
 ```
 
 **Manual Installation (Ubuntu):**
+
 ```bash
 # Install PostgreSQL 16
 sudo apt update
@@ -93,12 +96,14 @@ ALTER DATABASE ashley_ai_production OWNER TO ashley_admin;
 ### Step 3: Run Migration Script
 
 **Windows:**
+
 ```powershell
 # Run PowerShell migration script
 .\scripts\migrate-to-postgres.ps1
 ```
 
 **Linux/macOS:**
+
 ```bash
 # Make script executable
 chmod +x scripts/migrate-to-postgres.sh
@@ -108,6 +113,7 @@ chmod +x scripts/migrate-to-postgres.sh
 ```
 
 **Manual Migration:**
+
 ```bash
 # Navigate to database package
 cd packages/database
@@ -139,6 +145,7 @@ If you have existing data in SQLite that needs to be migrated:
 ### Step 1: Create Production Environment File
 
 Copy the template:
+
 ```bash
 cp .env.production .env.production.local
 ```
@@ -193,11 +200,13 @@ ASH_LOG_LEVEL=info
 ### 1. Stripe (Payment Processing)
 
 **Sign Up:**
+
 1. Go to [stripe.com](https://stripe.com)
 2. Create account or sign in
 3. Navigate to Developers → API Keys
 
 **Configuration:**
+
 ```bash
 STRIPE_SECRET_KEY="sk_live_..."
 STRIPE_PUBLISHABLE_KEY="pk_live_..."
@@ -205,10 +214,12 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_live_..."
 ```
 
 **Webhook Setup:**
+
 1. Go to Developers → Webhooks
 2. Add endpoint: `https://admin.ashleyai.com/api/webhooks/stripe`
 3. Select events: `payment_intent.succeeded`, `charge.failed`, etc.
 4. Copy webhook secret:
+
 ```bash
 STRIPE_WEBHOOK_SECRET="whsec_..."
 ```
@@ -216,11 +227,13 @@ STRIPE_WEBHOOK_SECRET="whsec_..."
 ### 2. Resend (Email Service)
 
 **Sign Up:**
+
 1. Go to [resend.com](https://resend.com)
 2. Create account and verify domain
 3. Get API key from dashboard
 
 **Configuration:**
+
 ```bash
 RESEND_API_KEY="re_..."
 EMAIL_FROM="Ashley AI <noreply@ashleyai.com>"
@@ -228,12 +241,14 @@ EMAIL_REPLY_TO="support@ashleyai.com"
 ```
 
 **Domain Verification:**
+
 - Add DNS records provided by Resend
 - Verify SPF, DKIM, and DMARC records
 
 ### 3. Twilio / Semaphore (SMS)
 
 **For Philippines (Recommended - Semaphore):**
+
 1. Go to [semaphore.co](https://semaphore.co)
 2. Create account and get API key
 
@@ -244,6 +259,7 @@ ASH_SMS_PROVIDER="semaphore"
 ```
 
 **For International (Twilio):**
+
 1. Go to [twilio.com](https://twilio.com)
 2. Create account and get credentials
 
@@ -257,12 +273,14 @@ ASH_SMS_PROVIDER="twilio"
 ### 4. AWS S3 (File Storage)
 
 **Setup:**
+
 1. Create AWS account
 2. Create S3 bucket: `ashley-ai-production-files`
 3. Create IAM user with S3 permissions
 4. Generate access keys
 
 **Configuration:**
+
 ```bash
 ASH_STORAGE_PROVIDER="aws"
 ASH_AWS_REGION="ap-southeast-1"
@@ -272,6 +290,7 @@ ASH_AWS_SECRET_ACCESS_KEY="..."
 ```
 
 **Bucket Policy (Public Read for uploads):**
+
 ```json
 {
   "Version": "2012-10-17",
@@ -290,11 +309,13 @@ ASH_AWS_SECRET_ACCESS_KEY="..."
 ### 5. OpenAI (Ashley AI Features)
 
 **Setup:**
+
 1. Go to [platform.openai.com](https://platform.openai.com)
 2. Create account and add payment method
 3. Generate API key
 
 **Configuration:**
+
 ```bash
 ASH_OPENAI_API_KEY="sk-..."
 OPENAI_MODEL="gpt-4"
@@ -304,11 +325,13 @@ ASHLEY_AI_ENABLED=true
 ### 6. Sentry (Error Tracking)
 
 **Setup:**
+
 1. Go to [sentry.io](https://sentry.io)
 2. Create project (Next.js)
 3. Get DSN
 
 **Configuration:**
+
 ```bash
 SENTRY_DSN="https://...@sentry.io/..."
 SENTRY_ENVIRONMENT=production
@@ -318,11 +341,13 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 ### 7. Mixpanel (Analytics)
 
 **Setup:**
+
 1. Go to [mixpanel.com](https://mixpanel.com)
 2. Create project
 3. Get token
 
 **Configuration:**
+
 ```bash
 MIXPANEL_TOKEN="..."
 NEXT_PUBLIC_MIXPANEL_TOKEN="..."
@@ -335,6 +360,7 @@ NEXT_PUBLIC_MIXPANEL_TOKEN="..."
 ### Option 1: Vercel (Recommended for Next.js)
 
 **Advantages:**
+
 - Optimized for Next.js
 - Auto-scaling
 - Global CDN
@@ -342,12 +368,14 @@ NEXT_PUBLIC_MIXPANEL_TOKEN="..."
 - Built-in SSL
 
 **Steps:**
+
 1. Push code to GitHub
 2. Import project in Vercel
 3. Configure environment variables
 4. Deploy
 
 **Vercel Configuration:**
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -364,6 +392,7 @@ vercel --prod
 ### Option 2: AWS (Full Control)
 
 **Architecture:**
+
 - **EC2**: Application servers
 - **RDS**: PostgreSQL database
 - **ElastiCache**: Redis
@@ -373,6 +402,7 @@ vercel --prod
 - **ALB**: Load balancer
 
 **Steps:**
+
 1. Launch RDS PostgreSQL instance
 2. Launch ElastiCache Redis cluster
 3. Create S3 bucket
@@ -384,6 +414,7 @@ vercel --prod
 ### Option 3: DigitalOcean (Simplicity + Control)
 
 **Setup:**
+
 ```bash
 # Create droplet (Ubuntu 22.04, 4GB RAM)
 # SSH into droplet
@@ -448,6 +479,7 @@ Edit authentication files to remove demo mode bypass:
 ### 2. Enable HTTPS Only
 
 **Nginx Configuration:**
+
 ```nginx
 server {
     listen 80;
@@ -493,6 +525,7 @@ sudo ufw deny 6379/tcp
 ### 4. Set Up SSL Certificates
 
 **Using Let's Encrypt (Free):**
+
 ```bash
 # Install Certbot
 sudo apt install certbot python3-certbot-nginx
@@ -507,6 +540,7 @@ sudo systemctl enable certbot.timer
 ### 5. Enable Rate Limiting
 
 Already built into the system via Redis. Configure in `.env`:
+
 ```bash
 ENABLE_RATE_LIMITING=true
 RATE_LIMIT_WINDOW_MS=900000
@@ -526,11 +560,13 @@ CORS_ORIGINS="https://admin.ashleyai.com,https://portal.ashleyai.com"
 ### 1. Application Monitoring
 
 **Sentry Integration:**
+
 - Automatic error tracking
 - Performance monitoring
 - Release tracking
 
 **Custom Health Checks:**
+
 ```bash
 # Health endpoint
 curl https://admin.ashleyai.com/api/health
@@ -539,6 +575,7 @@ curl https://admin.ashleyai.com/api/health
 ### 2. Database Monitoring
 
 **PostgreSQL Stats:**
+
 ```sql
 -- Active connections
 SELECT count(*) FROM pg_stat_activity;
@@ -569,6 +606,7 @@ MONITOR
 ### 4. Server Monitoring
 
 **Using PM2:**
+
 ```bash
 # Install PM2
 npm install -g pm2
@@ -581,6 +619,7 @@ pm2 install pm2-server-monit
 ```
 
 **Using Grafana + Prometheus (Advanced):**
+
 - Set up Prometheus for metrics collection
 - Configure Grafana dashboards
 - Monitor CPU, memory, disk, network
@@ -592,6 +631,7 @@ pm2 install pm2-server-monit
 ### 1. Database Backups
 
 **Automated Daily Backups:**
+
 ```bash
 #!/bin/bash
 # /scripts/backup-database.sh
@@ -613,6 +653,7 @@ echo "Backup completed: $FILENAME"
 ```
 
 **Cron Schedule:**
+
 ```bash
 # Run daily at 2 AM
 0 2 * * * /scripts/backup-database.sh
@@ -635,6 +676,7 @@ aws s3api put-bucket-versioning \
 **Recovery Point Objective (RPO):** < 24 hours
 
 **Recovery Steps:**
+
 1. Provision new server/infrastructure
 2. Restore latest database backup
 3. Deploy application code
@@ -656,6 +698,7 @@ CACHE_TTL_DEFAULT=3600
 ### 2. Enable CDN
 
 Configure CloudFront or Cloudflare:
+
 ```bash
 CDN_URL="https://cdn.ashleyai.com"
 ENABLE_CDN=true
@@ -664,6 +707,7 @@ ENABLE_CDN=true
 ### 3. Database Optimization
 
 **PostgreSQL Configuration:**
+
 ```sql
 -- Increase shared buffers
 ALTER SYSTEM SET shared_buffers = '2GB';
@@ -679,6 +723,7 @@ SELECT pg_reload_conf();
 ```
 
 **Prisma Connection Pooling:**
+
 ```bash
 DATABASE_URL="postgresql://...?connection_limit=10&pool_timeout=20"
 ```
@@ -738,17 +783,20 @@ k6 run tests/load/production-test.js
 ### Regular Maintenance
 
 **Weekly:**
+
 - Review error logs in Sentry
 - Check database performance
 - Review security alerts
 
 **Monthly:**
+
 - Update dependencies (`pnpm update`)
 - Review and rotate API keys
 - Test backup restoration
 - Review access logs
 
 **Quarterly:**
+
 - Security audit
 - Performance optimization
 - Capacity planning review
@@ -783,6 +831,7 @@ curl https://admin.ashleyai.com/api/health
 ### Common Issues
 
 **Database Connection Errors:**
+
 ```bash
 # Check PostgreSQL status
 sudo systemctl status postgresql
@@ -792,6 +841,7 @@ psql -U ashley_admin -d ashley_ai_production -h localhost
 ```
 
 **Redis Connection Errors:**
+
 ```bash
 # Check Redis status
 sudo systemctl status redis
@@ -801,6 +851,7 @@ redis-cli -a YOUR_PASSWORD ping
 ```
 
 **Application Not Starting:**
+
 ```bash
 # Check logs
 pm2 logs ashley-admin

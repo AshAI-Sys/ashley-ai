@@ -9,6 +9,7 @@
 ## 👋 Welcome to Ashley AI Client Portal
 
 Your portal gives you 24/7 access to:
+
 - ✅ Real-time order tracking
 - ✅ Design approvals
 - ✅ Payment management
@@ -24,11 +25,13 @@ Your portal gives you 24/7 access to:
 ### First-Time Access
 
 **You'll receive an email with**:
+
 - Subject: "Your Ashley AI Portal Access"
 - A magic link (click to login - no password needed!)
 - Link expires in 72 hours
 
 **Steps**:
+
 1. Check your email (and spam folder)
 2. Click the magic link
 3. Portal opens automatically
@@ -37,12 +40,14 @@ Your portal gives you 24/7 access to:
 ### Returning Users
 
 **Option 1: Magic Link** (Recommended)
+
 - Click "Send Me a Login Link"
 - Enter your email
 - Check email for new magic link
 - Click link to access
 
 **Option 2: Password** (If you set one)
+
 - Enter your email and password
 - Click "Sign In"
 
@@ -53,12 +58,14 @@ Your portal gives you 24/7 access to:
 After logging in, your dashboard shows:
 
 ### Quick Stats
+
 - **Active Orders**: Currently in production
 - **Pending Approvals**: Designs awaiting your review
 - **Outstanding Payments**: Amount due
 - **Recent Deliveries**: Last completed orders
 
 ### Order Status Summary
+
 - Orders by stage (Design, Production, Shipping, etc.)
 - Visual progress bars
 - Expected completion dates
@@ -71,12 +78,14 @@ After logging in, your dashboard shows:
 ### Order List
 
 **View Options**:
+
 - All Orders
 - Active Orders Only
 - Past Orders
 - By Brand (if you have multiple)
 
 **Search & Filter**:
+
 - Search by order number or PO
 - Filter by status
 - Filter by date range
@@ -87,6 +96,7 @@ After logging in, your dashboard shows:
 Click any order to see:
 
 **1. Order Information**
+
 - Order number
 - Your PO reference
 - Product details
@@ -95,6 +105,7 @@ Click any order to see:
 - Target delivery date
 
 **2. Production Progress**
+
 - Real-time status across 7 stages:
   1. ✅ Order Confirmed
   2. 🎨 Design Approval
@@ -110,6 +121,7 @@ Click any order to see:
   - Estimated completion date
 
 **3. Documents**
+
 - Quotation/Proforma Invoice
 - Design files
 - Packing list (when ready)
@@ -117,6 +129,7 @@ Click any order to see:
 - Delivery receipt
 
 **4. Communication**
+
 - Message thread with your account manager
 - Order notes and updates
 - Important notifications
@@ -128,6 +141,7 @@ Click any order to see:
 ### When You Receive a Design
 
 **Email Notification**:
+
 ```
 Subject: "Design Ready for Approval - Order #ORD-2025-001"
 
@@ -137,6 +151,7 @@ Click link to view and approve/reject design
 ### Reviewing Design
 
 **Steps**:
+
 1. Click email link or go to Portal
 2. Navigate to order
 3. Click "Review Design" button
@@ -150,12 +165,14 @@ Click link to view and approve/reject design
 ### Design Actions
 
 **Option 1: Approve**
+
 1. Click "Approve Design"
 2. Add any final notes (optional)
 3. Click "Confirm Approval"
 4. Production starts immediately!
 
 **Option 2: Request Changes**
+
 1. Click "Request Changes"
 2. Describe what needs modification:
    - Move logo 2cm to the left
@@ -169,11 +186,13 @@ Click link to view and approve/reject design
 
 **Option 3: Reject**
 (Rarely used - prefer "Request Changes")
+
 1. Click "Reject Design"
 2. Explain reason
 3. Discuss alternatives with account manager
 
 ### Design Version History
+
 - View all versions submitted
 - See what changed between versions
 - Reference previous iterations
@@ -186,10 +205,12 @@ Click link to view and approve/reject design
 ### Viewing Invoices
 
 **Access**:
+
 - Dashboard → Payments tab
 - Or click invoice in order details
 
 **Invoice Shows**:
+
 - Invoice number and date
 - Itemized charges
 - Subtotal, tax, discounts
@@ -209,6 +230,7 @@ Click link to view and approve/reject design
 ### Making Payment
 
 **Option 1: Online Payment** (if enabled)
+
 1. Open invoice
 2. Click "Pay Now"
 3. Choose payment method:
@@ -220,6 +242,7 @@ Click link to view and approve/reject design
 5. Receive confirmation
 
 **Option 2: Bank Transfer**
+
 1. View bank details on invoice
 2. Make transfer via your bank
 3. Upload proof of payment:
@@ -231,11 +254,13 @@ Click link to view and approve/reject design
 5. Receipt issued
 
 **Option 3: Other Methods**
+
 - Cash payment at office
 - Check payment
 - Payment pickup by sales representative
 
 ### Payment History
+
 - View all payments made
 - Download receipts
 - See payment allocation (which invoices)
@@ -248,6 +273,7 @@ Click link to view and approve/reject design
 ### Shipment Notifications
 
 **You'll receive updates**:
+
 - "Order Packed & Ready for Shipment"
 - "Order Dispatched for Delivery"
 - "Order Out for Delivery Today"
@@ -256,6 +282,7 @@ Click link to view and approve/reject design
 ### Track Your Delivery
 
 **Real-Time Tracking**:
+
 1. Go to order details
 2. Click "Track Delivery"
 3. See:
@@ -266,6 +293,7 @@ Click link to view and approve/reject design
    - Courier tracking number (if 3PL)
 
 **External Courier Tracking**:
+
 - If delivered by courier (LBC, J&T, etc.)
 - Click tracking number
 - Opens courier's tracking page
@@ -274,6 +302,7 @@ Click link to view and approve/reject design
 ### Delivery Confirmation
 
 **When Delivered**:
+
 - You receive notification
 - Can view:
   - Delivery photo
@@ -282,6 +311,7 @@ Click link to view and approve/reject design
   - Exact delivery time
 
 **If Issues**:
+
 - Damaged items
 - Missing items
 - Wrong items
@@ -296,6 +326,7 @@ Click link to view and approve/reject design
 ### Quick Reorder
 
 **For Repeat Orders**:
+
 1. Go to Past Orders
 2. Find order to repeat
 3. Click "Reorder"
@@ -314,6 +345,7 @@ Click link to view and approve/reject design
 ### New Order Request
 
 **For New/Custom Orders**:
+
 1. Click "New Order Request"
 2. Fill in details:
    - Product type
@@ -334,11 +366,13 @@ Click link to view and approve/reject design
 ### Communicate with Your Team
 
 **Message Center**:
+
 - Access via Messages icon
 - See all conversations
 - Organized by order
 
 **Sending Messages**:
+
 1. Click "New Message" or reply to existing
 2. Type your message
 3. Attach files if needed (designs, references, etc.)
@@ -346,11 +380,13 @@ Click link to view and approve/reject design
 5. Receive response (usually within 24 hours)
 
 **Notification**:
+
 - Email alert when you receive new message
 - In-portal notification badge
 - Mobile push (if app installed)
 
 ### What You Can Ask
+
 - Order status updates
 - Design modifications
 - Delivery arrangements
@@ -366,18 +402,21 @@ Click link to view and approve/reject design
 ### Your Dashboard Analytics
 
 **Order Summary**:
+
 - Orders this month/quarter/year
 - Total spend
 - Average order size
 - Repeat order rate
 
 **Performance Metrics**:
+
 - On-time delivery rate
 - Quality acceptance rate
 - Your order trends
 - Popular products
 
 **Export Reports**:
+
 - Download order history (CSV/Excel)
 - Print invoices in batch
 - Export for your accounting
@@ -389,6 +428,7 @@ Click link to view and approve/reject design
 ### What You'll Be Notified About
 
 **Order Updates**:
+
 - Order confirmed
 - Design ready for approval
 - Production milestones reached
@@ -396,12 +436,14 @@ Click link to view and approve/reject design
 - Order delivered
 
 **Financial**:
+
 - Invoice issued
 - Payment received
 - Payment due reminders
 - Payment overdue
 
 **Important**:
+
 - Design requires action
 - Delivery rescheduled
 - Issue with order
@@ -412,6 +454,7 @@ Click link to view and approve/reject design
 **Settings → Notifications**
 
 **Choose**:
+
 - Email notifications (on/off per type)
 - SMS notifications (if available)
 - In-portal notifications
@@ -424,12 +467,14 @@ Click link to view and approve/reject design
 ### Using on Phone/Tablet
 
 **Portal is mobile-responsive**:
+
 - Access same URL on mobile browser
 - Automatic layout adjustment
 - All features available
 - Touch-friendly interface
 
 **Mobile App** (if available):
+
 - Download from App Store/Play Store
 - Faster performance
 - Offline access to order history
@@ -442,6 +487,7 @@ Click link to view and approve/reject design
 ### Your Profile
 
 **Update Information**:
+
 - Name and contact details
 - Company information
 - Billing address
@@ -449,16 +495,19 @@ Click link to view and approve/reject design
 - Email preferences
 
 **Password** (optional):
+
 - Set password for regular login
 - Change existing password
 - Enable/disable magic link
 
 **Notifications**:
+
 - Configure notification preferences
 - Email, SMS, push settings
 - Frequency controls
 
 **Brands** (if multiple):
+
 - View your brands
 - Set default brand
 - Request new brand setup
@@ -542,6 +591,7 @@ A: Go to Orders → Export → Select format → Download.
 ## 📞 Contact & Support
 
 ### Your Account Manager
+
 - **Primary contact** for orders, quotations, general inquiries
 - Name: [Assigned to your account]
 - Email: [account manager email]
@@ -549,6 +599,7 @@ A: Go to Orders → Export → Select format → Download.
 - Available: Mon-Fri, 8AM-5PM
 
 ### Customer Support
+
 - **Technical issues** with portal
 - **Payment inquiries**
 - **After-hours urgent matters**
@@ -557,6 +608,7 @@ A: Go to Orders → Export → Select format → Download.
 - Available: 24/7 for urgent matters
 
 ### Office Location
+
 ```
 Ashley AI Manufacturing
 [Your factory address]
@@ -575,6 +627,7 @@ Sunday: Closed
 ### Getting the Most from Your Portal
 
 **✅ Do's**:
+
 - Login regularly to stay updated
 - Respond to design approvals promptly (keeps production on schedule)
 - Upload high-quality design files
@@ -584,6 +637,7 @@ Sunday: Closed
 - Update your contact info when it changes
 
 **❌ Don'ts**:
+
 - Don't ignore email notifications
 - Don't share your magic link (security risk)
 - Don't wait until last minute for urgent orders
@@ -593,18 +647,21 @@ Sunday: Closed
 ### Building a Great Partnership
 
 **Communication**:
+
 - Be clear and specific in requests
 - Provide reference images when possible
 - Give advance notice for large orders
 - Ask questions if anything is unclear
 
 **Planning**:
+
 - Order ahead for peak seasons
 - Schedule regular production slots
 - Keep buffer time for approvals
 - Coordinate deliveries with your schedule
 
 **Feedback**:
+
 - Let us know what you love
 - Report any issues promptly
 - Suggest improvements
@@ -617,6 +674,7 @@ Sunday: Closed
 We're excited to work with you and help bring your designs to life.
 
 **Our Promise**:
+
 - Quality products every time
 - Transparent communication
 - On-time delivery
@@ -630,10 +688,12 @@ We're excited to work with you and help bring your designs to life.
 ## 📝 Quick Reference
 
 ### Portal URLs
+
 - **Login**: http://localhost:3003 (or your assigned URL)
 - **Support**: support@ashleyai.com
 
 ### Important Pages
+
 - Dashboard: Your home base
 - Orders: Track all orders
 - Designs: Approve/review
@@ -642,6 +702,7 @@ We're excited to work with you and help bring your designs to life.
 - Settings: Your preferences
 
 ### Need Help?
+
 - ❓ In-portal help: Click ? icon
 - 📧 Email: support@ashleyai.com
 - 📞 Phone: [Your number]
@@ -651,4 +712,4 @@ We're excited to work with you and help bring your designs to life.
 
 **Document End**
 
-*Thank you for choosing Ashley AI! We look forward to a successful partnership.*
+_Thank you for choosing Ashley AI! We look forward to a successful partnership._

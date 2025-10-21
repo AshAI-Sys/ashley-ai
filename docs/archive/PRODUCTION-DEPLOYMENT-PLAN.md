@@ -1,4 +1,5 @@
 # Ashley AI - Production Deployment Plan
+
 **Goal:** Transform Ashley AI into a production-ready, real-world website
 
 ---
@@ -8,10 +9,13 @@
 ### Priority 1: Security & Authentication
 
 #### ✅ **Task 1.1: Implement 2FA (Two-Factor Authentication)**
+
 **Estimated Time:** 2-3 days
 
 **What to do:**
+
 1. Install packages:
+
    ```bash
    pnpm add qrcode speakeasy
    pnpm add -D @types/qrcode @types/speakeasy
@@ -30,6 +34,7 @@
 4. Database already ready ✅
 
 **Files to create:**
+
 - `services/ash-admin/src/app/settings/security/page.tsx`
 - `services/ash-admin/src/lib/2fa.ts`
 - `services/ash-admin/src/app/api/auth/2fa/setup/route.ts`
@@ -38,23 +43,26 @@
 ---
 
 #### ✅ **Task 1.2: Enhance Security Headers**
+
 **Estimated Time:** 1 day
 
 **What to do:**
+
 1. Add security headers in `next.config.js`:
+
    ```js
    headers: [
      {
-       source: '/:path*',
+       source: "/:path*",
        headers: [
-         { key: 'X-DNS-Prefetch-Control', value: 'on' },
-         { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
-         { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-         { key: 'X-Content-Type-Options', value: 'nosniff' },
-         { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
-       ]
-     }
-   ]
+         { key: "X-DNS-Prefetch-Control", value: "on" },
+         { key: "Strict-Transport-Security", value: "max-age=31536000" },
+         { key: "X-Frame-Options", value: "SAMEORIGIN" },
+         { key: "X-Content-Type-Options", value: "nosniff" },
+         { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+       ],
+     },
+   ];
    ```
 
 2. Enable CSRF protection
@@ -66,21 +74,25 @@
 ### Priority 2: File Storage & Media
 
 #### ✅ **Task 2.1: Setup Cloud Storage (AWS S3 or Cloudinary)**
+
 **Estimated Time:** 1 day
 
 **Options:**
 
 **Option A: AWS S3 (Recommended for production)**
+
 ```bash
 pnpm add @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
 ```
 
 **Option B: Cloudinary (Easier, has free tier)**
+
 ```bash
 pnpm add cloudinary next-cloudinary
 ```
 
 **Implementation:**
+
 1. Create upload API endpoint: `/api/upload`
 2. Generate signed URLs for secure uploads
 3. Store URLs in database
@@ -89,9 +101,11 @@ pnpm add cloudinary next-cloudinary
 ---
 
 #### ✅ **Task 2.2: Complete Photo Upload for QC Defects**
+
 **Estimated Time:** 1 day
 
 **What to do:**
+
 1. Add camera/file input in QC inspection form
 2. Upload to S3/Cloudinary
 3. Save URL to `photo_urls` field
@@ -99,6 +113,7 @@ pnpm add cloudinary next-cloudinary
 5. Add image viewer/lightbox
 
 **Files to update:**
+
 - `services/ash-admin/src/app/quality-control/[id]/page.tsx`
 - Add photo gallery component
 
@@ -107,17 +122,20 @@ pnpm add cloudinary next-cloudinary
 ### Priority 3: Database & Infrastructure
 
 #### ✅ **Task 3.1: Migrate to Production Database (PostgreSQL)**
+
 **Estimated Time:** 1 day
 
 **Why:** SQLite is for development only, PostgreSQL for production
 
 **Steps:**
+
 1. Setup PostgreSQL database:
    - **Option A:** Neon.tech (Free tier, serverless)
    - **Option B:** Supabase (Free tier, includes auth)
    - **Option C:** Railway.app (Paid, $5/month)
 
 2. Update `schema.prisma`:
+
    ```prisma
    datasource db {
      provider = "postgresql"
@@ -126,6 +144,7 @@ pnpm add cloudinary next-cloudinary
    ```
 
 3. Run migration:
+
    ```bash
    cd packages/database
    npx prisma migrate deploy
@@ -138,14 +157,17 @@ pnpm add cloudinary next-cloudinary
 ---
 
 #### ✅ **Task 3.2: Setup Automated Backups**
+
 **Estimated Time:** 0.5 day
 
 **For PostgreSQL:**
+
 - Neon/Supabase: Automatic backups included ✅
 - Railway: Configure daily backups
 - Custom: Setup cron job with `pg_dump`
 
 **For File Storage:**
+
 - S3: Enable versioning
 - Cloudinary: Automatic backups included
 
@@ -158,6 +180,7 @@ pnpm add cloudinary next-cloudinary
 #### **Recommended: Vercel (Easiest for Next.js)**
 
 **Pros:**
+
 - ✅ Zero-config Next.js deployment
 - ✅ Automatic HTTPS/SSL
 - ✅ Global CDN
@@ -166,12 +189,14 @@ pnpm add cloudinary next-cloudinary
 - ✅ Environment variables UI
 
 **Setup:**
+
 1. Push code to GitHub
 2. Connect Vercel to repository
 3. Configure environment variables
 4. Deploy with one click
 
 **Alternative Options:**
+
 - **Railway.app** - Full-stack hosting (DB + App)
 - **AWS Amplify** - Enterprise-grade
 - **DigitalOcean App Platform** - Developer-friendly
@@ -179,11 +204,13 @@ pnpm add cloudinary next-cloudinary
 ---
 
 #### ✅ **Task 4.1: Prepare for Vercel Deployment**
+
 **Estimated Time:** 1 day
 
 **Files to create/update:**
 
 1. **vercel.json** (root):
+
 ```json
 {
   "version": 2,
@@ -220,6 +247,7 @@ pnpm add cloudinary next-cloudinary
 ```
 
 2. **Update package.json scripts:**
+
 ```json
 {
   "scripts": {
@@ -236,9 +264,11 @@ pnpm add cloudinary next-cloudinary
 ### Priority 5: Domain & SSL
 
 #### ✅ **Task 5.1: Setup Custom Domain**
+
 **Estimated Time:** 0.5 day
 
 **Options:**
+
 1. **Buy domain:** Namecheap, GoDaddy, Google Domains
    - Recommended: `ashleyai.app` or `yourbusiness.com`
 
@@ -261,6 +291,7 @@ pnpm add cloudinary next-cloudinary
 ### Priority 6: Environment Configuration
 
 #### ✅ **Task 6.1: Setup Production Environment Variables**
+
 **Estimated Time:** 0.5 day
 
 **Required Environment Variables:**
@@ -302,6 +333,7 @@ APP_URL="https://yourdomain.com"
 ```
 
 **Where to add:**
+
 - Vercel: Dashboard → Project → Settings → Environment Variables
 - Railway: Dashboard → Variables tab
 - `.env.production` for self-hosted
@@ -313,6 +345,7 @@ APP_URL="https://yourdomain.com"
 ### Priority 7: Error Tracking & Monitoring
 
 #### ✅ **Task 7.1: Setup Sentry (Error Tracking)**
+
 **Estimated Time:** 1 day
 
 ```bash
@@ -320,12 +353,14 @@ pnpm add @sentry/nextjs
 ```
 
 **Benefits:**
+
 - Real-time error alerts
 - Stack traces
 - User context
 - Performance monitoring
 
 **Setup:**
+
 1. Create account at sentry.io
 2. Get DSN
 3. Add to `sentry.client.config.js` and `sentry.server.config.js`
@@ -334,21 +369,25 @@ pnpm add @sentry/nextjs
 ---
 
 #### ✅ **Task 7.2: Setup Application Monitoring**
+
 **Estimated Time:** 0.5 day
 
 **Options:**
 
 **Option A: Vercel Analytics** (Built-in)
+
 - Page views
 - Web vitals
 - Performance metrics
 
 **Option B: Google Analytics**
+
 ```bash
 pnpm add @next/third-parties
 ```
 
 **Option C: PostHog** (Product analytics)
+
 - User behavior tracking
 - Feature flags
 - A/B testing
@@ -358,6 +397,7 @@ pnpm add @next/third-parties
 ### Priority 8: Performance Optimization
 
 #### ✅ **Task 8.1: Optimize Images**
+
 **Estimated Time:** 1 day
 
 1. Use Next.js Image component everywhere
@@ -366,6 +406,7 @@ pnpm add @next/third-parties
 4. Lazy load images
 
 #### ✅ **Task 8.2: Enable Caching**
+
 **Estimated Time:** 0.5 day
 
 1. Setup Redis for session storage:
@@ -383,6 +424,7 @@ pnpm add @next/third-parties
 ### Priority 9: Pre-Launch Checklist
 
 #### ✅ **Task 9.1: Security Audit**
+
 - [ ] Enable 2FA for all admin accounts
 - [ ] Remove demo/test accounts
 - [ ] Change all default passwords
@@ -392,6 +434,7 @@ pnpm add @next/third-parties
 - [ ] Verify HTTPS everywhere
 
 #### ✅ **Task 9.2: Data Migration**
+
 - [ ] Backup SQLite data
 - [ ] Migrate to PostgreSQL
 - [ ] Verify data integrity
@@ -399,6 +442,7 @@ pnpm add @next/third-parties
 - [ ] Setup automated backups
 
 #### ✅ **Task 9.3: Performance Testing**
+
 - [ ] Load testing (k6 or Artillery)
 - [ ] Test with 100+ concurrent users
 - [ ] Verify API response times < 300ms
@@ -406,6 +450,7 @@ pnpm add @next/third-parties
 - [ ] Optimize slow queries
 
 #### ✅ **Task 9.4: User Acceptance Testing (UAT)**
+
 - [ ] Create test accounts for beta users
 - [ ] Document test scenarios
 - [ ] Get feedback from real users
@@ -413,6 +458,7 @@ pnpm add @next/third-parties
 - [ ] Update documentation
 
 #### ✅ **Task 9.5: Documentation**
+
 - [ ] User manual/guide
 - [ ] Admin documentation
 - [ ] API documentation
@@ -453,6 +499,7 @@ pnpm add @next/third-parties
 ## 💰 Cost Estimate (Monthly)
 
 ### Free Tier Setup (Good for small business):
+
 - **Hosting:** Vercel Free ($0)
 - **Database:** Neon/Supabase Free ($0)
 - **Storage:** Cloudinary Free ($0)
@@ -461,6 +508,7 @@ pnpm add @next/third-parties
 - **Total:** ~$1/month
 
 ### Production Setup (Recommended):
+
 - **Hosting:** Vercel Pro ($20)
 - **Database:** Railway PostgreSQL ($10)
 - **Storage:** AWS S3 ($5-10)
@@ -469,6 +517,7 @@ pnpm add @next/third-parties
 - **Total:** ~$65-70/month
 
 ### Enterprise Setup:
+
 - **Hosting:** Vercel Enterprise ($150+)
 - **Database:** AWS RDS ($50+)
 - **Storage:** AWS S3 ($20+)

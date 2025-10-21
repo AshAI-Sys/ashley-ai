@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const inspectionId = searchParams.get('inspection_id')
+    const { searchParams } = new URL(request.url);
+    const inspectionId = searchParams.get("inspection_id");
 
-    const where: any = {}
+    const where: any = {};
     if (inspectionId) {
-      where.inspection_id = inspectionId
+      where.inspection_id = inspectionId;
     }
 
     const defects = await prisma.qCDefect.findMany({
@@ -17,26 +17,29 @@ export async function GET(request: NextRequest) {
         defect_code: true,
         sample: true,
         operator: {
-          select: { first_name: true, last_name: true }
-        }
+          select: { first_name: true, last_name: true },
+        },
       },
-      orderBy: { created_at: 'desc' }
-    })
+      orderBy: { created_at: "desc" },
+    });
 
-    return NextResponse.json(defects)
+    return NextResponse.json(defects);
   } catch (error) {
-    console.error('Error fetching defects:', error)
-    return NextResponse.json({ error: 'Failed to fetch defects' }, { status: 500 })
+    console.error("Error fetching defects:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch defects" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json()
+    const data = await request.json();
 
     const defect = await prisma.qCDefect.create({
       data: {
-        workspace_id: data.workspace_id || 'default',
+        workspace_id: data.workspace_id || "default",
         inspection_id: data.inspection_id,
         sample_id: data.sample_id,
         defect_code_id: data.defect_code_id,
@@ -47,55 +50,58 @@ export async function POST(request: NextRequest) {
         description: data.description,
         photo_url: data.photo_url,
         operator_id: data.operator_id,
-        root_cause: data.root_cause
+        root_cause: data.root_cause,
       },
       include: {
         defect_code: true,
-        sample: true
-      }
-    })
+        sample: true,
+      },
+    });
 
     // Update inspection defect counts
-    await updateInspectionDefectCounts(data.inspection_id)
+    await updateInspectionDefectCounts(data.inspection_id);
 
-    return NextResponse.json(defect, { status: 201 })
+    return NextResponse.json(defect, { status: 201 });
   } catch (error) {
-    console.error('Error creating defect:', error)
-    return NextResponse.json({ error: 'Failed to create defect' }, { status: 500 })
+    console.error("Error creating defect:", error);
+    return NextResponse.json(
+      { error: "Failed to create defect" },
+      { status: 500 }
+    );
   }
 }
 
 async function updateInspectionDefectCounts(inspectionId: string) {
   const defects = await prisma.qCDefect.findMany({
     where: { inspection_id: inspectionId },
-    select: { severity: true, quantity: true }
-  })
+    select: { severity: true, quantity: true },
+  });
 
   const criticalFound = defects
-    .filter(d => d.severity === 'CRITICAL')
-    .reduce((sum, d) => sum + d.quantity, 0)
+    .filter(d => d.severity === "CRITICAL")
+    .reduce((sum, d) => sum + d.quantity, 0);
 
   const majorFound = defects
-    .filter(d => d.severity === 'MAJOR')
-    .reduce((sum, d) => sum + d.quantity, 0)
+    .filter(d => d.severity === "MAJOR")
+    .reduce((sum, d) => sum + d.quantity, 0);
 
   const minorFound = defects
-    .filter(d => d.severity === 'MINOR')
-    .reduce((sum, d) => sum + d.quantity, 0)
+    .filter(d => d.severity === "MINOR")
+    .reduce((sum, d) => sum + d.quantity, 0);
 
   // Determine result based on AQL
   const inspection = await prisma.qCInspection.findUnique({
     where: { id: inspectionId },
-    select: { acceptance: true, rejection: true }
-  })
+    select: { acceptance: true, rejection: true },
+  });
 
-  let result = 'PENDING_REVIEW'
+  let result = "PENDING_REVIEW";
   if (inspection) {
-    const totalDefects = criticalFound + majorFound + minorFound
+    const totalDefects = criticalFound + majorFound + minorFound;
     if (totalDefects <= inspection.acceptance) {
-      result = 'ACCEPT'
+      result = "ACCEPT";
     } else if (totalDefects >= inspection.rejection) {
-      result = 'REJECT'
+      result = "REJECT";
     }
   }
 
@@ -106,7 +112,7 @@ async function updateInspectionDefectCounts(inspectionId: string) {
       major_found: majorFound,
       minor_found: minorFound,
       result,
-      updated_at: new Date()
-    }
-  })
+      updated_at: new Date(),
+    },
+  });
 }

@@ -15,6 +15,7 @@ Migrating Ashley AI from SQLite (development) to PostgreSQL (production) for bet
 ## Why PostgreSQL?
 
 ### SQLite Limitations (Development Only)
+
 - ❌ Single file database (not suitable for concurrent users)
 - ❌ Limited data types (no native JSON, arrays)
 - ❌ No user management or access control
@@ -22,6 +23,7 @@ Migrating Ashley AI from SQLite (development) to PostgreSQL (production) for bet
 - ❌ Not designed for production workloads
 
 ### PostgreSQL Advantages (Production Ready)
+
 - ✅ Multi-user concurrent access
 - ✅ Native JSON/JSONB support
 - ✅ Advanced indexing and query optimization
@@ -35,17 +37,20 @@ Migrating Ashley AI from SQLite (development) to PostgreSQL (production) for bet
 ## Migration Options
 
 ### Option 1: Local PostgreSQL (Recommended for Development)
+
 - Install PostgreSQL on your machine
 - Full control and no internet required
 - Free and unlimited
 
 ### Option 2: Neon PostgreSQL (Recommended for Production)
+
 - Serverless PostgreSQL in the cloud
 - Auto-scaling and backups
 - Free tier: 512 MB storage, 100 hours compute
 - Already configured in your .env
 
 ### Option 3: Other Cloud Providers
+
 - **Supabase**: PostgreSQL + real-time subscriptions
 - **Railway**: Simple deployment with PostgreSQL
 - **AWS RDS**: Enterprise-grade PostgreSQL
@@ -58,6 +63,7 @@ Migrating Ashley AI from SQLite (development) to PostgreSQL (production) for bet
 ### Step 1: Install PostgreSQL (Local)
 
 **Windows:**
+
 ```bash
 # Download from https://www.postgresql.org/download/windows/
 # Or use Chocolatey
@@ -68,12 +74,14 @@ scoop install postgresql
 ```
 
 **macOS:**
+
 ```bash
 brew install postgresql
 brew services start postgresql
 ```
 
 **Linux:**
+
 ```bash
 sudo apt-get update
 sudo apt-get install postgresql postgresql-contrib
@@ -83,6 +91,7 @@ sudo systemctl start postgresql
 ### Step 2: Create Database
 
 **Local PostgreSQL:**
+
 ```bash
 # Connect to PostgreSQL
 psql -U postgres
@@ -99,12 +108,14 @@ GRANT ALL PRIVILEGES ON DATABASE ashley_ai TO ashley_admin;
 ```
 
 **Neon PostgreSQL (Cloud):**
+
 - Already set up! Use the connection string in .env
 - No installation needed
 
 ### Step 3: Update Configuration
 
 **Already done! Check your .env:**
+
 ```bash
 # Local PostgreSQL
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ashley_ai?schema=public"
@@ -135,6 +146,7 @@ npx prisma migrate deploy
 If you have existing data in SQLite:
 
 **Option A: Fresh Start (Recommended)**
+
 ```bash
 # Just run migrations - starts with empty database
 npx prisma migrate dev --name init
@@ -144,6 +156,7 @@ npx prisma db seed
 ```
 
 **Option B: Export and Import Data**
+
 ```bash
 # Export from SQLite (create export script)
 node scripts/export-sqlite-data.js
@@ -169,11 +182,13 @@ npx prisma studio
 ### Improved Data Types
 
 **Before (SQLite):**
+
 ```prisma
 settings String? // JSON as string for SQLite
 ```
 
 **After (PostgreSQL):**
+
 ```prisma
 settings Json? // Native JSON type (faster queries)
 ```
@@ -181,16 +196,19 @@ settings Json? // Native JSON type (faster queries)
 ### PostgreSQL-Specific Features
 
 **Arrays:**
+
 ```prisma
 tags String[] // Native array support
 ```
 
 **JSONB (faster than JSON):**
+
 ```prisma
 metadata Json @db.JsonB // Binary JSON for better performance
 ```
 
 **Better Indexes:**
+
 ```prisma
 @@index([client_id, status]) // Composite indexes
 @@index([created_at(sort: Desc)]) // Sorted indexes
@@ -201,6 +219,7 @@ metadata Json @db.JsonB // Binary JSON for better performance
 ## Database Connection Strings
 
 ### Local PostgreSQL
+
 ```bash
 # Format
 postgresql://[user]:[password]@[host]:[port]/[database]?schema=public
@@ -210,17 +229,20 @@ postgresql://postgres:postgres@localhost:5432/ashley_ai?schema=public
 ```
 
 ### Neon PostgreSQL (Cloud)
+
 ```bash
 # Already configured (from your account)
 postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 ```
 
 ### Supabase
+
 ```bash
 postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT].supabase.co:5432/postgres
 ```
 
 ### Railway
+
 ```bash
 # Auto-generated when you add PostgreSQL plugin
 postgresql://postgres:password@containers-us-west-xxx.railway.app:5432/railway
@@ -233,17 +255,18 @@ postgresql://postgres:password@containers-us-west-xxx.railway.app:5432/railway
 ### Export SQLite Data (if needed)
 
 Create `scripts/export-sqlite-data.js`:
+
 ```javascript
-const { PrismaClient } = require('@ash-ai/database')
-const fs = require('fs')
+const { PrismaClient } = require("@ash-ai/database");
+const fs = require("fs");
 
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: 'file:../packages/database/prisma/dev.db'
-    }
-  }
-})
+      url: "file:../packages/database/prisma/dev.db",
+    },
+  },
+});
 
 async function exportData() {
   const data = {
@@ -252,46 +275,47 @@ async function exportData() {
     clients: await prisma.client.findMany(),
     orders: await prisma.order.findMany(),
     // ... export all tables
-  }
+  };
 
-  fs.writeFileSync('data-export.json', JSON.stringify(data, null, 2))
-  console.log('✅ Data exported to data-export.json')
+  fs.writeFileSync("data-export.json", JSON.stringify(data, null, 2));
+  console.log("✅ Data exported to data-export.json");
 }
 
 exportData()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(() => prisma.$disconnect());
 ```
 
 ### Import to PostgreSQL
 
 Create `scripts/import-to-postgres.js`:
-```javascript
-const { PrismaClient } = require('@ash-ai/database')
-const fs = require('fs')
 
-const prisma = new PrismaClient()
+```javascript
+const { PrismaClient } = require("@ash-ai/database");
+const fs = require("fs");
+
+const prisma = new PrismaClient();
 
 async function importData() {
-  const data = JSON.parse(fs.readFileSync('data-export.json', 'utf-8'))
+  const data = JSON.parse(fs.readFileSync("data-export.json", "utf-8"));
 
   // Import in order (respecting foreign keys)
   for (const workspace of data.workspaces) {
-    await prisma.workspace.create({ data: workspace })
+    await prisma.workspace.create({ data: workspace });
   }
 
   for (const user of data.users) {
-    await prisma.user.create({ data: user })
+    await prisma.user.create({ data: user });
   }
 
   // ... import all tables
 
-  console.log('✅ Data imported successfully')
+  console.log("✅ Data imported successfully");
 }
 
 importData()
   .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .finally(() => prisma.$disconnect());
 ```
 
 ---
@@ -299,6 +323,7 @@ importData()
 ## Troubleshooting
 
 ### Error: "Can't reach database server"
+
 ```bash
 # Check if PostgreSQL is running
 # Windows
@@ -314,6 +339,7 @@ brew services restart postgresql
 ```
 
 ### Error: "Database does not exist"
+
 ```bash
 # Create database
 createdb ashley_ai
@@ -324,6 +350,7 @@ CREATE DATABASE ashley_ai;
 ```
 
 ### Error: "Authentication failed"
+
 ```bash
 # Update password in .env
 DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/ashley_ai"
@@ -334,12 +361,14 @@ ALTER USER postgres WITH PASSWORD 'newpassword';
 ```
 
 ### Error: "SSL connection required"
+
 ```bash
 # For Neon/cloud databases, ensure SSL is in URL
 DATABASE_URL="postgresql://...?sslmode=require"
 ```
 
 ### Error: "Migration failed"
+
 ```bash
 # Reset database (WARNING: deletes all data)
 npx prisma migrate reset
@@ -355,8 +384,9 @@ npx prisma migrate dev --name init
 ### Connection Pooling
 
 Update Prisma Client initialization:
+
 ```typescript
-import { PrismaClient } from '@ash-ai/database'
+import { PrismaClient } from "@ash-ai/database";
 
 const prisma = new PrismaClient({
   datasources: {
@@ -364,8 +394,8 @@ const prisma = new PrismaClient({
       url: process.env.DATABASE_URL,
     },
   },
-  log: ['query', 'error', 'warn'],
-})
+  log: ["query", "error", "warn"],
+});
 
 // Connection pool settings (for production)
 // Add to DATABASE_URL: ?connection_limit=10&pool_timeout=20
@@ -374,6 +404,7 @@ const prisma = new PrismaClient({
 ### Indexes for Better Performance
 
 Add indexes to frequently queried fields:
+
 ```prisma
 model Order {
   // ... fields
@@ -398,16 +429,19 @@ VACUUM ANALYZE;
 ## Environment-Specific Configuration
 
 ### Development (.env.development)
+
 ```bash
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ashley_ai_dev"
 ```
 
 ### Testing (.env.test)
+
 ```bash
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ashley_ai_test"
 ```
 
 ### Production (.env.production)
+
 ```bash
 DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
 ```
@@ -417,6 +451,7 @@ DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4m
 ## Cloud PostgreSQL Setup
 
 ### Neon (Already Configured)
+
 1. Database already exists at Neon
 2. Connection string is in your .env
 3. Just run migrations:
@@ -425,6 +460,7 @@ DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4m
    ```
 
 ### Supabase (Alternative)
+
 1. Sign up at https://supabase.com
 2. Create new project
 3. Get connection string from Settings → Database
@@ -432,6 +468,7 @@ DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4m
 5. Run migrations
 
 ### Railway (Alternative)
+
 1. Sign up at https://railway.app
 2. Create new project
 3. Add PostgreSQL plugin
@@ -443,26 +480,29 @@ DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4m
 ## Testing the Migration
 
 ### 1. Verify Schema
+
 ```bash
 npx prisma db pull
 npx prisma studio
 ```
 
 ### 2. Test Queries
+
 ```typescript
 // Test basic operations
 const workspace = await prisma.workspace.create({
   data: {
-    name: 'Test Workspace',
-    slug: 'test-workspace',
+    name: "Test Workspace",
+    slug: "test-workspace",
   },
-})
+});
 
-const workspaces = await prisma.workspace.findMany()
-console.log(workspaces)
+const workspaces = await prisma.workspace.findMany();
+console.log(workspaces);
 ```
 
 ### 3. Run Application
+
 ```bash
 cd services/ash-admin
 pnpm dev
@@ -477,11 +517,13 @@ pnpm dev
 If migration fails, rollback to SQLite:
 
 1. Update .env:
+
    ```bash
    DATABASE_URL="file:C:/Users/Khell/Desktop/Ashley AI/packages/database/prisma/dev.db"
    ```
 
 2. Update schema.prisma:
+
    ```prisma
    datasource db {
      provider = "sqlite"
@@ -501,6 +543,7 @@ If migration fails, rollback to SQLite:
 **Choose your database:**
 
 ### Option 1: Use Neon PostgreSQL (Cloud - Already Set Up)
+
 ```bash
 # 1. Update .env (already done)
 DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
@@ -518,6 +561,7 @@ pnpm dev
 ```
 
 ### Option 2: Use Local PostgreSQL
+
 ```bash
 # 1. Install PostgreSQL
 choco install postgresql
@@ -561,17 +605,20 @@ pnpm dev
 ## Next Steps After Migration
 
 1. **Run Migrations**:
+
    ```bash
    cd packages/database
    npx prisma migrate dev --name init
    ```
 
 2. **Generate Prisma Client**:
+
    ```bash
    npx prisma generate
    ```
 
 3. **Test Application**:
+
    ```bash
    cd ../../services/ash-admin
    pnpm dev
@@ -588,6 +635,7 @@ pnpm dev
 **PostgreSQL migration is READY!**
 
 Choose your preferred database:
+
 - **Neon PostgreSQL** (Cloud, already configured)
 - **Local PostgreSQL** (Full control, offline)
 

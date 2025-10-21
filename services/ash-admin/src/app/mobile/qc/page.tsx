@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 import {
   Camera,
   CheckCircle,
@@ -10,13 +10,15 @@ import {
   ChevronLeft,
   Save,
   Search,
-  Package
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+  Package,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function MobileQCPage() {
-  const [step, setStep] = useState<'search' | 'inspect' | 'defects' | 'summary'>('search');
-  const [bundleCode, setBundleCode] = useState('');
+  const [step, setStep] = useState<
+    "search" | "inspect" | "defects" | "summary"
+  >("search");
+  const [bundleCode, setBundleCode] = useState("");
   const [bundle, setBundle] = useState<any>(null);
   const [inspectionData, setInspectionData] = useState({
     sample_size: 0,
@@ -25,8 +27,8 @@ export default function MobileQCPage() {
     failed: 0,
     defects: [] as any[],
     photos: [] as string[],
-    notes: '',
-    inspector_name: '',
+    notes: "",
+    inspector_name: "",
   });
   const [loading, setLoading] = useState(false);
   const [defectTypes, setDefectTypes] = useState<any[]>([]);
@@ -39,9 +41,9 @@ export default function MobileQCPage() {
 
   const fetchDefectTypes = async () => {
     try {
-      const response = await fetch('/api/qc/defect-types', {
+      const response = await fetch("/api/qc/defect-types", {
         headers: {
-          'x-workspace-id': 'default-workspace',
+          "x-workspace-id": "default-workspace",
         },
       });
       const data = await response.json();
@@ -49,7 +51,7 @@ export default function MobileQCPage() {
         setDefectTypes(data.defectTypes || []);
       }
     } catch (error) {
-      console.error('Error fetching defect types:', error);
+      console.error("Error fetching defect types:", error);
     }
   };
 
@@ -60,7 +62,7 @@ export default function MobileQCPage() {
     try {
       const response = await fetch(`/api/bundles/scan?code=${bundleCode}`, {
         headers: {
-          'x-workspace-id': 'default-workspace',
+          "x-workspace-id": "default-workspace",
         },
       });
 
@@ -70,13 +72,13 @@ export default function MobileQCPage() {
         // Calculate AQL sample size based on quantity
         const sampleSize = calculateAQLSampleSize(data.bundle.quantity);
         setInspectionData(prev => ({ ...prev, sample_size: sampleSize }));
-        setStep('inspect');
+        setStep("inspect");
       } else {
-        alert('Bundle not found');
+        alert("Bundle not found");
       }
     } catch (error) {
-      console.error('Bundle search error:', error);
-      alert('Failed to find bundle');
+      console.error("Bundle search error:", error);
+      alert("Failed to find bundle");
     } finally {
       setLoading(false);
     }
@@ -120,7 +122,7 @@ export default function MobileQCPage() {
   };
 
   const recordFail = () => {
-    setStep('defects');
+    setStep("defects");
   };
 
   const handlePhotoCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,12 +144,12 @@ export default function MobileQCPage() {
   const submitInspection = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/mobile/qc/submit', {
-        method: 'POST',
+      const response = await fetch("/api/mobile/qc/submit", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-workspace-id': 'default-workspace',
-          'x-user-id': 'mobile-qc',
+          "Content-Type": "application/json",
+          "x-workspace-id": "default-workspace",
+          "x-user-id": "mobile-qc",
         },
         body: JSON.stringify({
           bundle_id: bundle.id,
@@ -158,9 +160,9 @@ export default function MobileQCPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert('QC Inspection submitted successfully!');
+        alert("QC Inspection submitted successfully!");
         // Reset
-        setBundleCode('');
+        setBundleCode("");
         setBundle(null);
         setInspectionData({
           sample_size: 0,
@@ -169,39 +171,41 @@ export default function MobileQCPage() {
           failed: 0,
           defects: [],
           photos: [],
-          notes: '',
-          inspector_name: '',
+          notes: "",
+          inspector_name: "",
         });
-        setStep('search');
+        setStep("search");
       } else {
-        alert('Failed to submit inspection');
+        alert("Failed to submit inspection");
       }
     } catch (error) {
-      console.error('Submit error:', error);
-      alert('Failed to submit inspection');
+      console.error("Submit error:", error);
+      alert("Failed to submit inspection");
     } finally {
       setLoading(false);
     }
   };
 
-  const defectRate = inspectionData.inspected > 0
-    ? ((inspectionData.failed / inspectionData.inspected) * 100).toFixed(1)
-    : '0.0';
+  const defectRate =
+    inspectionData.inspected > 0
+      ? ((inspectionData.failed / inspectionData.inspected) * 100).toFixed(1)
+      : "0.0";
 
-  const progress = inspectionData.sample_size > 0
-    ? (inspectionData.inspected / inspectionData.sample_size) * 100
-    : 0;
+  const progress =
+    inspectionData.sample_size > 0
+      ? (inspectionData.inspected / inspectionData.sample_size) * 100
+      : 0;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white pb-20">
+    <div className="min-h-screen bg-gray-900 pb-20 text-white">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
+      <div className="border-b border-gray-700 bg-gray-800 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {step !== 'search' && (
+            {step !== "search" && (
               <button
-                onClick={() => setStep('search')}
-                className="p-2 hover:bg-gray-700 rounded-lg"
+                onClick={() => setStep("search")}
+                className="rounded-lg p-2 hover:bg-gray-700"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -209,8 +213,8 @@ export default function MobileQCPage() {
             <h1 className="text-xl font-bold">Mobile QC</h1>
           </div>
           <button
-            onClick={() => router.push('/mobile/dashboard')}
-            className="text-gray-400 hover:text-white text-sm"
+            onClick={() => router.push("/mobile/dashboard")}
+            className="text-sm text-gray-400 hover:text-white"
           >
             Dashboard
           </button>
@@ -218,12 +222,14 @@ export default function MobileQCPage() {
       </div>
 
       {/* Search Step */}
-      {step === 'search' && (
-        <div className="p-4 space-y-4">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="text-center mb-6">
-              <Package className="h-16 w-16 text-blue-400 mx-auto mb-3" />
-              <h2 className="text-lg font-semibold mb-2">Start QC Inspection</h2>
+      {step === "search" && (
+        <div className="space-y-4 p-4">
+          <div className="rounded-lg bg-gray-800 p-6">
+            <div className="mb-6 text-center">
+              <Package className="mx-auto mb-3 h-16 w-16 text-blue-400" />
+              <h2 className="mb-2 text-lg font-semibold">
+                Start QC Inspection
+              </h2>
               <p className="text-sm text-gray-400">
                 Enter bundle code or scan QR code
               </p>
@@ -234,20 +240,20 @@ export default function MobileQCPage() {
                 <input
                   type="text"
                   value={bundleCode}
-                  onChange={(e) => setBundleCode(e.target.value)}
+                  onChange={e => setBundleCode(e.target.value)}
                   placeholder="Enter bundle code..."
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-                  onKeyPress={(e) => e.key === 'Enter' && searchBundle()}
+                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
+                  onKeyPress={e => e.key === "Enter" && searchBundle()}
                 />
               </div>
 
               <button
                 onClick={searchBundle}
                 disabled={loading || !bundleCode.trim()}
-                className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-600"
               >
                 <Search className="h-5 w-5" />
-                <span>{loading ? 'Searching...' : 'Find Bundle'}</span>
+                <span>{loading ? "Searching..." : "Find Bundle"}</span>
               </button>
 
               <div className="relative">
@@ -260,8 +266,8 @@ export default function MobileQCPage() {
               </div>
 
               <button
-                onClick={() => router.push('/mobile/scanner')}
-                className="w-full flex items-center justify-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                onClick={() => router.push("/mobile/scanner")}
+                className="flex w-full items-center justify-center space-x-2 rounded-lg bg-gray-700 px-6 py-3 font-medium text-white transition-colors hover:bg-gray-600"
               >
                 <Camera className="h-5 w-5" />
                 <span>Scan QR Code</span>
@@ -270,9 +276,9 @@ export default function MobileQCPage() {
           </div>
 
           {/* Instructions */}
-          <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-            <h3 className="font-medium mb-2">How to inspect:</h3>
-            <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+          <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
+            <h3 className="mb-2 font-medium">How to inspect:</h3>
+            <ol className="list-inside list-decimal space-y-1 text-sm text-gray-300">
               <li>Find and scan the bundle</li>
               <li>Inspect sample units one by one</li>
               <li>Mark each unit as Pass or Fail</li>
@@ -284,18 +290,18 @@ export default function MobileQCPage() {
       )}
 
       {/* Inspection Step */}
-      {step === 'inspect' && bundle && (
-        <div className="p-4 space-y-4">
+      {step === "inspect" && bundle && (
+        <div className="space-y-4 p-4">
           {/* Bundle Info */}
-          <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-blue-500">
-            <div className="flex justify-between items-start mb-2">
+          <div className="rounded-lg border-l-4 border-blue-500 bg-gray-800 p-4">
+            <div className="mb-2 flex items-start justify-between">
               <div>
                 <p className="font-medium">{bundle.bundle_number}</p>
                 <p className="text-sm text-gray-400">
-                  Order: {bundle.order?.order_number || 'N/A'}
+                  Order: {bundle.order?.order_number || "N/A"}
                 </p>
               </div>
-              <span className="px-2 py-1 bg-blue-900 text-blue-200 text-xs rounded-full">
+              <span className="rounded-full bg-blue-900 px-2 py-1 text-xs text-blue-200">
                 {bundle.quantity} units
               </span>
             </div>
@@ -305,16 +311,16 @@ export default function MobileQCPage() {
           </div>
 
           {/* Progress */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-2">
+          <div className="rounded-lg bg-gray-800 p-4">
+            <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-medium">Inspection Progress</span>
               <span className="text-sm text-gray-400">
                 {inspectionData.inspected} / {inspectionData.sample_size}
               </span>
             </div>
-            <div className="bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div className="h-3 overflow-hidden rounded-full bg-gray-700">
               <div
-                className="bg-blue-500 h-full transition-all"
+                className="h-full bg-blue-500 transition-all"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
@@ -322,39 +328,43 @@ export default function MobileQCPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-green-900 bg-opacity-30 border border-green-700 rounded-lg p-3 text-center">
+            <div className="rounded-lg border border-green-700 bg-green-900 bg-opacity-30 p-3 text-center">
               <p className="text-2xl font-bold text-green-400">
                 {inspectionData.passed}
               </p>
               <p className="text-xs text-green-300">Passed</p>
             </div>
-            <div className="bg-red-900 bg-opacity-30 border border-red-700 rounded-lg p-3 text-center">
+            <div className="rounded-lg border border-red-700 bg-red-900 bg-opacity-30 p-3 text-center">
               <p className="text-2xl font-bold text-red-400">
                 {inspectionData.failed}
               </p>
               <p className="text-xs text-red-300">Failed</p>
             </div>
-            <div className="bg-yellow-900 bg-opacity-30 border border-yellow-700 rounded-lg p-3 text-center">
-              <p className="text-2xl font-bold text-yellow-400">{defectRate}%</p>
+            <div className="rounded-lg border border-yellow-700 bg-yellow-900 bg-opacity-30 p-3 text-center">
+              <p className="text-2xl font-bold text-yellow-400">
+                {defectRate}%
+              </p>
               <p className="text-xs text-yellow-300">Defect Rate</p>
             </div>
           </div>
 
           {/* Inspection Actions */}
           {inspectionData.inspected < inspectionData.sample_size && (
-            <div className="bg-gray-800 rounded-lg p-4">
-              <h3 className="font-medium mb-4">Inspect Unit #{inspectionData.inspected + 1}</h3>
+            <div className="rounded-lg bg-gray-800 p-4">
+              <h3 className="mb-4 font-medium">
+                Inspect Unit #{inspectionData.inspected + 1}
+              </h3>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={recordPass}
-                  className="bg-green-600 hover:bg-green-700 rounded-lg py-6 flex flex-col items-center justify-center space-y-2 transition-colors"
+                  className="flex flex-col items-center justify-center space-y-2 rounded-lg bg-green-600 py-6 transition-colors hover:bg-green-700"
                 >
                   <CheckCircle className="h-12 w-12" />
                   <span className="font-medium">PASS</span>
                 </button>
                 <button
                   onClick={recordFail}
-                  className="bg-red-600 hover:bg-red-700 rounded-lg py-6 flex flex-col items-center justify-center space-y-2 transition-colors"
+                  className="flex flex-col items-center justify-center space-y-2 rounded-lg bg-red-600 py-6 transition-colors hover:bg-red-700"
                 >
                   <XCircle className="h-12 w-12" />
                   <span className="font-medium">FAIL</span>
@@ -365,25 +375,31 @@ export default function MobileQCPage() {
 
           {/* Defects List */}
           {inspectionData.defects.length > 0 && (
-            <div className="bg-gray-800 rounded-lg p-4">
-              <h3 className="font-medium mb-3">Recorded Defects ({inspectionData.defects.length})</h3>
+            <div className="rounded-lg bg-gray-800 p-4">
+              <h3 className="mb-3 font-medium">
+                Recorded Defects ({inspectionData.defects.length})
+              </h3>
               <div className="space-y-2">
-                {inspectionData.defects.map((defect) => (
+                {inspectionData.defects.map(defect => (
                   <div
                     key={defect.id}
-                    className="bg-gray-700 rounded-lg p-3 flex items-center justify-between"
+                    className="flex items-center justify-between rounded-lg bg-gray-700 p-3"
                   >
                     <div>
-                      <p className="font-medium text-sm">{defect.defect_name}</p>
-                      <p className="text-xs text-gray-400">{defect.defect_code}</p>
+                      <p className="text-sm font-medium">
+                        {defect.defect_name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {defect.defect_code}
+                      </p>
                     </div>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        defect.severity === 'CRITICAL'
-                          ? 'bg-red-900 text-red-200'
-                          : defect.severity === 'MAJOR'
-                          ? 'bg-orange-900 text-orange-200'
-                          : 'bg-yellow-900 text-yellow-200'
+                      className={`rounded-full px-2 py-1 text-xs font-medium ${
+                        defect.severity === "CRITICAL"
+                          ? "bg-red-900 text-red-200"
+                          : defect.severity === "MAJOR"
+                            ? "bg-orange-900 text-orange-200"
+                            : "bg-yellow-900 text-yellow-200"
                       }`}
                     >
                       {defect.severity}
@@ -397,8 +413,8 @@ export default function MobileQCPage() {
           {/* Complete Inspection */}
           {inspectionData.inspected >= inspectionData.sample_size && (
             <button
-              onClick={() => setStep('summary')}
-              className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-medium transition-colors"
+              onClick={() => setStep("summary")}
+              className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-4 font-medium text-white transition-colors hover:bg-blue-700"
             >
               <Save className="h-5 w-5" />
               <span>Continue to Summary</span>
@@ -408,10 +424,10 @@ export default function MobileQCPage() {
       )}
 
       {/* Defects Step */}
-      {step === 'defects' && (
-        <div className="p-4 space-y-4">
-          <div className="bg-red-900 bg-opacity-20 border border-red-700 rounded-lg p-4">
-            <div className="flex items-center space-x-3 mb-2">
+      {step === "defects" && (
+        <div className="space-y-4 p-4">
+          <div className="rounded-lg border border-red-700 bg-red-900 bg-opacity-20 p-4">
+            <div className="mb-2 flex items-center space-x-3">
               <AlertTriangle className="h-6 w-6 text-red-400" />
               <h3 className="font-medium text-red-200">Record Defect</h3>
             </div>
@@ -420,33 +436,33 @@ export default function MobileQCPage() {
             </p>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h3 className="font-medium mb-3">Defect Types</h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {defectTypes.map((defectType) => (
+          <div className="rounded-lg bg-gray-800 p-4">
+            <h3 className="mb-3 font-medium">Defect Types</h3>
+            <div className="max-h-96 space-y-2 overflow-y-auto">
+              {defectTypes.map(defectType => (
                 <button
                   key={defectType.id}
                   onClick={() => {
                     recordDefect(defectType);
-                    setStep('inspect');
+                    setStep("inspect");
                   }}
-                  className="w-full bg-gray-700 hover:bg-gray-600 rounded-lg p-4 text-left transition-colors"
+                  className="w-full rounded-lg bg-gray-700 p-4 text-left transition-colors hover:bg-gray-600"
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">{defectType.name}</p>
                       <p className="text-sm text-gray-400">{defectType.code}</p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="mt-1 text-xs text-gray-500">
                         {defectType.description}
                       </p>
                     </div>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        defectType.default_severity === 'CRITICAL'
-                          ? 'bg-red-900 text-red-200'
-                          : defectType.default_severity === 'MAJOR'
-                          ? 'bg-orange-900 text-orange-200'
-                          : 'bg-yellow-900 text-yellow-200'
+                      className={`rounded-full px-2 py-1 text-xs font-medium ${
+                        defectType.default_severity === "CRITICAL"
+                          ? "bg-red-900 text-red-200"
+                          : defectType.default_severity === "MAJOR"
+                            ? "bg-orange-900 text-orange-200"
+                            : "bg-yellow-900 text-yellow-200"
                       }`}
                     >
                       {defectType.default_severity}
@@ -458,8 +474,8 @@ export default function MobileQCPage() {
           </div>
 
           <button
-            onClick={() => setStep('inspect')}
-            className="w-full bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            onClick={() => setStep("inspect")}
+            className="w-full rounded-lg bg-gray-700 px-6 py-3 font-medium text-white transition-colors hover:bg-gray-600"
           >
             Back to Inspection
           </button>
@@ -467,31 +483,35 @@ export default function MobileQCPage() {
       )}
 
       {/* Summary Step */}
-      {step === 'summary' && (
-        <div className="p-4 space-y-4">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4 text-center">
+      {step === "summary" && (
+        <div className="space-y-4 p-4">
+          <div className="rounded-lg bg-gray-800 p-6">
+            <h2 className="mb-4 text-center text-lg font-semibold">
               Inspection Summary
             </h2>
 
             <div className="space-y-4">
               {/* Results */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-700 rounded-lg p-4">
+                <div className="rounded-lg bg-gray-700 p-4">
                   <p className="text-sm text-gray-400">Inspected</p>
-                  <p className="text-2xl font-bold">{inspectionData.inspected}</p>
+                  <p className="text-2xl font-bold">
+                    {inspectionData.inspected}
+                  </p>
                 </div>
-                <div className="bg-gray-700 rounded-lg p-4">
+                <div className="rounded-lg bg-gray-700 p-4">
                   <p className="text-sm text-gray-400">Sample Size</p>
-                  <p className="text-2xl font-bold">{inspectionData.sample_size}</p>
+                  <p className="text-2xl font-bold">
+                    {inspectionData.sample_size}
+                  </p>
                 </div>
-                <div className="bg-green-900 bg-opacity-30 border border-green-700 rounded-lg p-4">
+                <div className="rounded-lg border border-green-700 bg-green-900 bg-opacity-30 p-4">
                   <p className="text-sm text-green-300">Passed</p>
                   <p className="text-2xl font-bold text-green-400">
                     {inspectionData.passed}
                   </p>
                 </div>
-                <div className="bg-red-900 bg-opacity-30 border border-red-700 rounded-lg p-4">
+                <div className="rounded-lg border border-red-700 bg-red-900 bg-opacity-30 p-4">
                   <p className="text-sm text-red-300">Failed</p>
                   <p className="text-2xl font-bold text-red-400">
                     {inspectionData.failed}
@@ -503,22 +523,26 @@ export default function MobileQCPage() {
               <div
                 className={`rounded-lg p-6 text-center ${
                   parseFloat(defectRate) <= 2.5
-                    ? 'bg-green-900 bg-opacity-30 border border-green-700'
-                    : 'bg-red-900 bg-opacity-30 border border-red-700'
+                    ? "border border-green-700 bg-green-900 bg-opacity-30"
+                    : "border border-red-700 bg-red-900 bg-opacity-30"
                 }`}
               >
                 {parseFloat(defectRate) <= 2.5 ? (
                   <>
-                    <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-3" />
-                    <h3 className="text-xl font-bold text-green-200 mb-2">PASS</h3>
+                    <CheckCircle className="mx-auto mb-3 h-16 w-16 text-green-400" />
+                    <h3 className="mb-2 text-xl font-bold text-green-200">
+                      PASS
+                    </h3>
                     <p className="text-sm text-green-300">
                       Defect rate: {defectRate}% (Acceptable)
                     </p>
                   </>
                 ) : (
                   <>
-                    <XCircle className="h-16 w-16 text-red-400 mx-auto mb-3" />
-                    <h3 className="text-xl font-bold text-red-200 mb-2">FAIL</h3>
+                    <XCircle className="mx-auto mb-3 h-16 w-16 text-red-400" />
+                    <h3 className="mb-2 text-xl font-bold text-red-200">
+                      FAIL
+                    </h3>
                     <p className="text-sm text-red-300">
                       Defect rate: {defectRate}% (Exceeds limit)
                     </p>
@@ -528,11 +552,13 @@ export default function MobileQCPage() {
 
               {/* Photos */}
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium">Photos ({inspectionData.photos.length})</h3>
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="font-medium">
+                    Photos ({inspectionData.photos.length})
+                  </h3>
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-blue-400 hover:text-blue-300 text-sm flex items-center space-x-1"
+                    className="flex items-center space-x-1 text-sm text-blue-400 hover:text-blue-300"
                   >
                     <Camera className="h-4 w-4" />
                     <span>Add Photo</span>
@@ -553,7 +579,7 @@ export default function MobileQCPage() {
                         key={index}
                         src={photo}
                         alt={`Defect ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg"
+                        className="h-24 w-full rounded-lg object-cover"
                       />
                     ))}
                   </div>
@@ -562,33 +588,39 @@ export default function MobileQCPage() {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="mb-2 block text-sm font-medium">
                   Inspector Notes
                 </label>
                 <textarea
                   value={inspectionData.notes}
-                  onChange={(e) =>
-                    setInspectionData(prev => ({ ...prev, notes: e.target.value }))
+                  onChange={e =>
+                    setInspectionData(prev => ({
+                      ...prev,
+                      notes: e.target.value,
+                    }))
                   }
                   rows={3}
                   placeholder="Add any additional notes..."
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
               {/* Inspector Name */}
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="mb-2 block text-sm font-medium">
                   Inspector Name
                 </label>
                 <input
                   type="text"
                   value={inspectionData.inspector_name}
-                  onChange={(e) =>
-                    setInspectionData(prev => ({ ...prev, inspector_name: e.target.value }))
+                  onChange={e =>
+                    setInspectionData(prev => ({
+                      ...prev,
+                      inspector_name: e.target.value,
+                    }))
                   }
                   placeholder="Enter your name..."
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-gray-600 bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -598,10 +630,10 @@ export default function MobileQCPage() {
           <button
             onClick={submitInspection}
             disabled={loading}
-            className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-6 py-4 rounded-lg font-medium transition-colors"
+            className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-4 font-medium text-white transition-colors hover:bg-blue-700 disabled:bg-gray-600"
           >
             <Save className="h-5 w-5" />
-            <span>{loading ? 'Submitting...' : 'Submit Inspection'}</span>
+            <span>{loading ? "Submitting..." : "Submit Inspection"}</span>
           </button>
         </div>
       )}

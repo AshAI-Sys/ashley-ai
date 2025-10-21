@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { getWorkspaceIdFromRequest } from '@/lib/workspace';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 
 const ActivityLogSchema = z.object({
-  event_type: z.string().min(1, 'Event type is required'),
-  title: z.string().min(1, 'Title is required'),
+  event_type: z.string().min(1, "Event type is required"),
+  title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
   performed_by: z.string().optional(),
   metadata: z.string().optional(), // JSON string
@@ -18,14 +18,14 @@ export async function GET(
   try {
     const orderId = params.id;
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = parseInt(searchParams.get("limit") || "50");
 
     const activities = await prisma.orderActivityLog.findMany({
       where: {
         order_id: orderId,
       },
       orderBy: {
-        created_at: 'desc',
+        created_at: "desc",
       },
       take: limit,
     });
@@ -35,9 +35,9 @@ export async function GET(
       data: { activities },
     });
   } catch (error) {
-    console.error('Error fetching activity logs:', error);
+    console.error("Error fetching activity logs:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch activity logs' },
+      { success: false, error: "Failed to fetch activity logs" },
       { status: 500 }
     );
   }
@@ -69,7 +69,7 @@ export async function POST(
       {
         success: true,
         data: { activityLog },
-        message: 'Activity log created successfully',
+        message: "Activity log created successfully",
       },
       { status: 201 }
     );
@@ -78,16 +78,16 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: 'Validation failed',
+          error: "Validation failed",
           details: error.errors,
         },
         { status: 400 }
       );
     }
 
-    console.error('Error creating activity log:', error);
+    console.error("Error creating activity log:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create activity log' },
+      { success: false, error: "Failed to create activity log" },
       { status: 500 }
     );
   }

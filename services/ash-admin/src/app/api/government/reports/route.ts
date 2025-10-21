@@ -1,30 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/database';
-import { birService } from '@/lib/government/bir'
-import { sssService } from '@/lib/government/sss'
-import { philHealthService } from '@/lib/government/philhealth'
-import { pagIBIGService } from '@/lib/government/pagibig'
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
+import { birService } from "@/lib/government/bir";
+import { sssService } from "@/lib/government/sss";
+import { philHealthService } from "@/lib/government/philhealth";
+import { pagIBIGService } from "@/lib/government/pagibig";
 
-const prisma = db
+const prisma = db;
 
 // POST /api/government/reports - Generate government remittance reports
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { agency, period, workspace_id, employer_details, employee_ids } = body
+    const body = await request.json();
+    const { agency, period, workspace_id, employer_details, employee_ids } =
+      body;
 
     if (!agency || !period || !workspace_id) {
       return NextResponse.json(
-        { error: 'agency, period, and workspace_id are required' },
+        { error: "agency, period, and workspace_id are required" },
         { status: 400 }
-      )
+      );
     }
 
     // Fetch employees
     const employees = await prisma.employee.findMany({
       where: {
         workspace_id,
-        ...(employee_ids && employee_ids.length > 0 ? { id: { in: employee_ids } } : {}),
+        ...(employee_ids && employee_ids.length > 0
+          ? { id: { in: employee_ids } }
+          : {}),
         is_active: true,
       },
       select: {
@@ -36,24 +39,27 @@ export async function POST(request: NextRequest) {
         piece_rate: true,
         salary_type: true,
       },
-    })
+    });
 
     if (employees.length === 0) {
-      return NextResponse.json({ error: 'No active employees found' }, { status: 404 })
+      return NextResponse.json(
+        { error: "No active employees found" },
+        { status: 404 }
+      );
     }
 
-    let report: any = null
+    let report: any = null;
 
     // Parse contact_info JSON to extract government IDs
     const employeesWithGovIds = employees.map(emp => {
-      let contactInfo: any = {}
+      let contactInfo: any = {};
       try {
-        contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {}
+        contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
       } catch (e) {
         // If parsing fails, use empty object
       }
 
-      const monthlySalary = emp.base_salary || emp.piece_rate || 0
+      const monthlySalary = emp.base_salary || emp.piece_rate || 0;
 
       return {
         ...emp,
@@ -61,75 +67,78 @@ export async function POST(request: NextRequest) {
         philhealth_number: contactInfo.philhealth_number || null,
         pagibig_number: contactInfo.pagibig_number || null,
         monthly_salary: monthlySalary,
-      }
-    })
+      };
+    });
 
     switch (agency.toUpperCase()) {
-      case 'SSS':
+      case "SSS":
         const sssEmployees = employeesWithGovIds
-          .filter((emp) => emp.sss_number)
-          .map((emp) => ({
+          .filter(emp => emp.sss_number)
+          .map(emp => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             sss_number: emp.sss_number!,
             monthly_salary: emp.monthly_salary,
-          }))
+          }));
 
         report = await sssService.generateRemittanceReport(
           period,
           employer_details || {
-            sss_number: '00-0000000-0',
-            name: 'Ashley AI Manufacturing',
-            address: 'Philippines',
+            sss_number: "00-0000000-0",
+            name: "Ashley AI Manufacturing",
+            address: "Philippines",
           },
           sssEmployees
-        )
-        break
+        );
+        break;
 
-      case 'PHILHEALTH':
+      case "PHILHEALTH":
         const philhealthEmployees = employeesWithGovIds
-          .filter((emp) => emp.philhealth_number)
-          .map((emp) => ({
+          .filter(emp => emp.philhealth_number)
+          .map(emp => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             philhealth_number: emp.philhealth_number!,
             monthly_salary: emp.monthly_salary,
-          }))
+          }));
 
         report = await philHealthService.generateRemittanceReport(
           period,
           employer_details || {
-            pen: '00-000000000-0',
-            name: 'Ashley AI Manufacturing',
-            address: 'Philippines',
+            pen: "00-000000000-0",
+            name: "Ashley AI Manufacturing",
+            address: "Philippines",
           },
           philhealthEmployees
-        )
-        break
+        );
+        break;
 
-      case 'PAGIBIG':
+      case "PAGIBIG":
         const pagibigEmployees = employeesWithGovIds
-          .filter((emp) => emp.pagibig_number)
-          .map((emp) => ({
+          .filter(emp => emp.pagibig_number)
+          .map(emp => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             pagibig_number: emp.pagibig_number!,
             monthly_salary: emp.monthly_salary,
-          }))
+          }));
 
         report = await pagIBIGService.generateRemittanceReport(
           period,
           employer_details || {
-            employer_id: '0000-0000-0000',
-            name: 'Ashley AI Manufacturing',
-            address: 'Philippines',
+            employer_id: "0000-0000-0000",
+            name: "Ashley AI Manufacturing",
+            address: "Philippines",
           },
           pagibigEmployees
-        )
-        break
+        );
+        break;
 
       default:
-        return NextResponse.json({ error: 'Invalid agency. Must be SSS, PHILHEALTH, or PAGIBIG' }, { status: 400 })
+        return NextResponse.json(
+          { error: "Invalid agency. Must be SSS, PHILHEALTH, or PAGIBIG" },
+          { status: 400 }
+        );
     }
 
     return NextResponse.json({
@@ -137,41 +146,50 @@ export async function POST(request: NextRequest) {
       agency,
       period,
       report,
-    })
+    });
   } catch (error: any) {
-    console.error('Error generating government report:', error)
+    console.error("Error generating government report:", error);
     return NextResponse.json(
-      { error: 'Failed to generate report', details: error.message },
+      { error: "Failed to generate report", details: error.message },
       { status: 500 }
-    )
+    );
   }
 }
 
 // GET /api/government/reports - Get contribution calculations for a single employee
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const employee_id = searchParams.get('employee_id')
-    const monthly_salary = searchParams.get('monthly_salary')
+    const { searchParams } = new URL(request.url);
+    const employee_id = searchParams.get("employee_id");
+    const monthly_salary = searchParams.get("monthly_salary");
 
     if (!monthly_salary) {
-      return NextResponse.json({ error: 'monthly_salary is required' }, { status: 400 })
+      return NextResponse.json(
+        { error: "monthly_salary is required" },
+        { status: 400 }
+      );
     }
 
-    const salary = parseFloat(monthly_salary)
+    const salary = parseFloat(monthly_salary);
 
     // Calculate all contributions
-    const sss = sssService.calculateContribution(salary)
-    const philhealth = philHealthService.calculateContribution(salary)
-    const pagibig = pagIBIGService.calculateContribution(salary)
+    const sss = sssService.calculateContribution(salary);
+    const philhealth = philHealthService.calculateContribution(salary);
+    const pagibig = pagIBIGService.calculateContribution(salary);
 
     // Total deductions
-    const totalEE = sss.ee_contribution + philhealth.ee_contribution + pagibig.ee_contribution
-    const totalER = sss.er_contribution + philhealth.er_contribution + pagibig.er_contribution
-    const grandTotal = totalEE + totalER
+    const totalEE =
+      sss.ee_contribution +
+      philhealth.ee_contribution +
+      pagibig.ee_contribution;
+    const totalER =
+      sss.er_contribution +
+      philhealth.er_contribution +
+      pagibig.er_contribution;
+    const grandTotal = totalEE + totalER;
 
     // Get employee details if ID provided
-    let employee = null
+    let employee = null;
     if (employee_id) {
       const emp = await prisma.employee.findUnique({
         where: { id: employee_id },
@@ -181,12 +199,12 @@ export async function GET(request: NextRequest) {
           last_name: true,
           contact_info: true,
         },
-      })
+      });
 
       if (emp) {
-        let contactInfo: any = {}
+        let contactInfo: any = {};
         try {
-          contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {}
+          contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
         } catch (e) {
           // If parsing fails, use empty object
         }
@@ -198,7 +216,7 @@ export async function GET(request: NextRequest) {
           sss_number: contactInfo.sss_number || null,
           philhealth_number: contactInfo.philhealth_number || null,
           pagibig_number: contactInfo.pagibig_number || null,
-        }
+        };
       }
     }
 
@@ -232,12 +250,12 @@ export async function GET(request: NextRequest) {
         total_employer_contribution: Math.round(totalER * 100) / 100,
         grand_total: Math.round(grandTotal * 100) / 100,
       },
-    })
+    });
   } catch (error: any) {
-    console.error('Error calculating contributions:', error)
+    console.error("Error calculating contributions:", error);
     return NextResponse.json(
-      { error: 'Failed to calculate contributions', details: error.message },
+      { error: "Failed to calculate contributions", details: error.message },
       { status: 500 }
-    )
+    );
   }
 }

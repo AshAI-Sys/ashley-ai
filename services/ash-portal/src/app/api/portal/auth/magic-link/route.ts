@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@ash-ai/database'
-import crypto from 'crypto'
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@ash-ai/database";
+import crypto from "crypto";
 
-const prisma = db
+const prisma = db;
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json()
+    const { email } = await request.json();
 
     if (!email) {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
     // Find client by email across all workspaces
@@ -20,28 +20,29 @@ export async function POST(request: NextRequest) {
       },
       include: {
         workspace: true,
-      }
-    })
+      },
+    });
 
     if (!client) {
       // For security, don't reveal if email exists or not
       return NextResponse.json({
         success: true,
-        message: 'If your email is registered, you will receive a magic link shortly.'
-      })
+        message:
+          "If your email is registered, you will receive a magic link shortly.",
+      });
     }
 
     // Generate magic token
-    const magicToken = crypto.randomBytes(32).toString('hex')
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+    const magicToken = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     // Create or update client session
     await prisma.clientSession.upsert({
       where: {
         workspace_id_magic_token: {
           workspace_id: client.workspace_id,
-          magic_token: magicToken
-        }
+          magic_token: magicToken,
+        },
       },
       create: {
         workspace_id: client.workspace_id,
@@ -53,38 +54,43 @@ export async function POST(request: NextRequest) {
       update: {
         is_used: false,
         expires_at: expiresAt,
-      }
-    })
+      },
+    });
 
     // TODO: Send actual email with magic link
     // For now, we'll return the magic link in development
-    const magicLink = `${process.env.NEXT_PUBLIC_PORTAL_URL || 'http://localhost:3003'}/auth/verify?token=${magicToken}`
+    const magicLink = `${process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:3003"}/auth/verify?token=${magicToken}`;
 
-    console.log('🔗 Magic Link for', email, ':', magicLink)
+    console.log("🔗 Magic Link for", email, ":", magicLink);
 
     // Log client activity
     await prisma.clientActivity.create({
       data: {
         workspace_id: client.workspace_id,
         client_id: client.id,
-        activity_type: 'MAGIC_LINK_REQUESTED',
+        activity_type: "MAGIC_LINK_REQUESTED",
         description: `Magic link requested for ${email}`,
-        ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
-        user_agent: request.headers.get('user-agent') || 'unknown',
-      }
-    })
+        ip_address:
+          request.headers.get("x-forwarded-for") ||
+          request.headers.get("x-real-ip") ||
+          "unknown",
+        user_agent: request.headers.get("user-agent") || "unknown",
+      },
+    });
 
     return NextResponse.json({
       success: true,
-      message: 'Magic link sent to your email!',
+      message: "Magic link sent to your email!",
       // Remove this in production
-      ...(process.env.NODE_ENV === 'development' && { magicLink })
-    })
-
+      ...(process.env.NODE_ENV === "development" && { magicLink }),
+    });
   } catch (error) {
-    console.error('Magic link error:', error)
-    return NextResponse.json({
-      error: 'Failed to send magic link'
-    }, { status: 500 })
+    console.error("Magic link error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to send magic link",
+      },
+      { status: 500 }
+    );
   }
 }

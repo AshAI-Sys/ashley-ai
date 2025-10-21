@@ -1,4 +1,4 @@
-import { SMSMessage, SMSResponse } from '../types'
+import { SMSMessage, SMSResponse } from "../types";
 
 /**
  * Semaphore SMS Provider
@@ -6,34 +6,35 @@ import { SMSMessage, SMSResponse } from '../types'
  * https://semaphore.co
  */
 export class SemaphoreProvider {
-  private apiKey: string
-  private senderName: string
-  private baseUrl = 'https://api.semaphore.co/api/v4'
+  private apiKey: string;
+  private senderName: string;
+  private baseUrl = "https://api.semaphore.co/api/v4";
 
   constructor() {
-    this.apiKey = process.env.SEMAPHORE_API_KEY || ''
-    this.senderName = process.env.SEMAPHORE_SENDER_NAME || 'ASHLEY AI'
+    this.apiKey = process.env.SEMAPHORE_API_KEY || "";
+    this.senderName = process.env.SEMAPHORE_SENDER_NAME || "ASHLEY AI";
   }
 
   isConfigured(): boolean {
-    return !!this.apiKey
+    return !!this.apiKey;
   }
 
   async sendSMS(message: SMSMessage): Promise<SMSResponse> {
     if (!this.isConfigured()) {
       return {
         success: false,
-        provider: 'SEMAPHORE',
-        error: 'Semaphore is not configured. Set SEMAPHORE_API_KEY in your .env file.',
-      }
+        provider: "SEMAPHORE",
+        error:
+          "Semaphore is not configured. Set SEMAPHORE_API_KEY in your .env file.",
+      };
     }
 
     try {
       // Semaphore API: Send message
       const response = await fetch(`${this.baseUrl}/messages`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           apikey: this.apiKey,
@@ -41,61 +42,63 @@ export class SemaphoreProvider {
           message: message.message,
           sendername: this.senderName,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok || data.error) {
-        throw new Error(data.message || data.error || 'Semaphore API error')
+        throw new Error(data.message || data.error || "Semaphore API error");
       }
 
       return {
         success: true,
-        provider: 'SEMAPHORE',
+        provider: "SEMAPHORE",
         message_id: data[0]?.message_id,
-        status: 'sent',
-      }
+        status: "sent",
+      };
     } catch (error: any) {
-      console.error('Semaphore SMS error:', error)
+      console.error("Semaphore SMS error:", error);
       return {
         success: false,
-        provider: 'SEMAPHORE',
+        provider: "SEMAPHORE",
         error: error.message,
-      }
+      };
     }
   }
 
   async getBalance(): Promise<number> {
     try {
-      const response = await fetch(`${this.baseUrl}/account?apikey=${this.apiKey}`)
-      const data = await response.json()
-      return parseFloat(data.credit_balance || '0')
+      const response = await fetch(
+        `${this.baseUrl}/account?apikey=${this.apiKey}`
+      );
+      const data = await response.json();
+      return parseFloat(data.credit_balance || "0");
     } catch (error) {
-      console.error('Error getting Semaphore balance:', error)
-      return 0
+      console.error("Error getting Semaphore balance:", error);
+      return 0;
     }
   }
 
   async getMessageStatus(messageId: string): Promise<{
-    status: string
-    network?: string
-    created_at?: string
+    status: string;
+    network?: string;
+    created_at?: string;
   }> {
     try {
       const response = await fetch(
         `${this.baseUrl}/messages/${messageId}?apikey=${this.apiKey}`
-      )
-      const data = await response.json()
+      );
+      const data = await response.json();
 
       return {
-        status: data.status || 'unknown',
+        status: data.status || "unknown",
         network: data.network,
         created_at: data.created_at,
-      }
+      };
     } catch (error) {
-      return { status: 'error' }
+      return { status: "error" };
     }
   }
 }
 
-export const semaphoreProvider = new SemaphoreProvider()
+export const semaphoreProvider = new SemaphoreProvider();

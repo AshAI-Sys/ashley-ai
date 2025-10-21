@@ -4,7 +4,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
-import { UserRole, Permission, ROLE_PERMISSIONS, PermissionContext } from "./types";
+import {
+  UserRole,
+  Permission,
+  ROLE_PERMISSIONS,
+  PermissionContext,
+} from "./types";
 
 // Password utilities
 export async function hashPassword(password: string): Promise<string> {
@@ -12,21 +17,33 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, saltRounds);
 }
 
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+export async function verifyPassword(
+  password: string,
+  hashedPassword: string
+): Promise<boolean> {
   return bcrypt.compare(password, hashedPassword);
 }
 
 // Permission utilities
-export function hasPermission(userRole: UserRole, permission: Permission): boolean {
+export function hasPermission(
+  userRole: UserRole,
+  permission: Permission
+): boolean {
   const rolePermissions = ROLE_PERMISSIONS[userRole];
   return rolePermissions.includes(permission);
 }
 
-export function hasAnyPermission(userRole: UserRole, permissions: Permission[]): boolean {
+export function hasAnyPermission(
+  userRole: UserRole,
+  permissions: Permission[]
+): boolean {
   return permissions.some(permission => hasPermission(userRole, permission));
 }
 
-export function hasAllPermissions(userRole: UserRole, permissions: Permission[]): boolean {
+export function hasAllPermissions(
+  userRole: UserRole,
+  permissions: Permission[]
+): boolean {
   return permissions.every(permission => hasPermission(userRole, permission));
 }
 
@@ -49,7 +66,10 @@ export function checkPermission(
   }
 
   // Check workspace isolation
-  if (opts.requireSameWorkspace && resource?.workspace_id !== user.workspace_id) {
+  if (
+    opts.requireSameWorkspace &&
+    resource?.workspace_id !== user.workspace_id
+  ) {
     return false;
   }
 
@@ -88,7 +108,9 @@ export function generateRefreshToken(): string {
   return nanoid(64);
 }
 
-export function verifyAccessToken(token: string): Record<string, unknown> | null {
+export function verifyAccessToken(
+  token: string
+): Record<string, unknown> | null {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET environment variable is required");
@@ -120,7 +142,10 @@ export function isHigherRole(role1: UserRole, role2: UserRole): boolean {
   return hierarchy[role1] > hierarchy[role2];
 }
 
-export function canManageUser(managerRole: UserRole, targetRole: UserRole): boolean {
+export function canManageUser(
+  managerRole: UserRole,
+  targetRole: UserRole
+): boolean {
   // Admins can manage everyone except other admins
   if (managerRole === UserRole.ADMIN) {
     return targetRole !== UserRole.ADMIN;
@@ -176,7 +201,10 @@ export function isRateLimited(
 }
 
 // Audit logging helpers
-export function createAuditLog(action: string, details: Record<string, unknown>) {
+export function createAuditLog(
+  action: string,
+  details: Record<string, unknown>
+) {
   return {
     action,
     timestamp: new Date().toISOString(),
@@ -202,14 +230,19 @@ export const DEFAULT_PASSWORD_POLICY: PasswordPolicy = {
   requireSpecialChars: true,
 };
 
-export function validatePassword(password: string, policy = DEFAULT_PASSWORD_POLICY): {
+export function validatePassword(
+  password: string,
+  policy = DEFAULT_PASSWORD_POLICY
+): {
   valid: boolean;
   errors: string[];
 } {
   const errors: string[] = [];
 
   if (password.length < policy.minLength) {
-    errors.push(`Password must be at least ${policy.minLength} characters long`);
+    errors.push(
+      `Password must be at least ${policy.minLength} characters long`
+    );
   }
 
   if (policy.requireUppercase && !/[A-Z]/.test(password)) {
@@ -239,11 +272,14 @@ const tokenBlacklist = new Set<string>();
 
 export function blacklistToken(tokenJti: string): void {
   tokenBlacklist.add(tokenJti);
-  
+
   // Clean up expired tokens periodically
-  setTimeout(() => {
-    tokenBlacklist.delete(tokenJti);
-  }, 24 * 60 * 60 * 1000); // 24 hours
+  setTimeout(
+    () => {
+      tokenBlacklist.delete(tokenJti);
+    },
+    24 * 60 * 60 * 1000
+  ); // 24 hours
 }
 
 export function isTokenBlacklisted(tokenJti: string): boolean {

@@ -3,6 +3,7 @@
 Complete guide for deploying Ashley AI to Vercel, Railway, or any cloud platform with email verification enabled.
 
 ## 📋 Table of Contents
+
 - [Pre-Deployment Checklist](#pre-deployment-checklist)
 - [Vercel Deployment](#vercel-deployment)
 - [Railway Deployment](#railway-deployment)
@@ -42,6 +43,7 @@ Before deploying, ensure you have accounts for:
 Go to **Settings → Environment Variables** and add these:
 
 #### **REQUIRED** Variables
+
 ```bash
 # Database
 DATABASE_URL=postgresql://user:password@host:port/database?sslmode=require
@@ -70,6 +72,7 @@ CLOUDINARY_API_SECRET=your-api-secret
 ```
 
 #### **RECOMMENDED** Variables
+
 ```bash
 # Redis Caching
 REDIS_URL=rediss://default:xxx@xxx.upstash.io:6379
@@ -178,6 +181,7 @@ NEXT_PUBLIC_APP_URL=https://yourdomain.com  # Your production URL
 ### Email Templates
 
 Ashley AI includes pre-built email templates:
+
 - ✅ Welcome email with verification link
 - ✅ Email verification reminder
 - ✅ Password reset email
@@ -209,17 +213,20 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 #### 1. PostgreSQL Database
 
 **Options:**
+
 - **Vercel Postgres** (Vercel native, auto-configures)
 - **Neon** (https://neon.tech) - Serverless PostgreSQL
 - **Supabase** (https://supabase.com) - PostgreSQL + Auth + Storage
 - **Railway Postgres** (Railway native, auto-configures)
 
 **Connection String Format:**
+
 ```
 postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 ```
 
 **Free Tiers:**
+
 - Vercel Postgres: 256MB, 60 hours compute
 - Neon: 0.5GB storage, shared compute
 - Supabase: 500MB database, 50,000 requests/month
@@ -233,6 +240,7 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 - **Pricing**: $0.10 per 1,000 emails after free tier
 
 **Setup:**
+
 1. Sign up and verify domain
 2. Get API key
 3. Add to `RESEND_API_KEY` environment variable
@@ -246,6 +254,7 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 - **Pricing**: Pay-as-you-go after free tier
 
 **Setup:**
+
 1. Sign up for account
 2. Get credentials from dashboard (Cloud Name, API Key, API Secret)
 3. Add to environment variables
@@ -259,6 +268,7 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 - **Use Cases**: Rate limiting, session caching, API response caching
 
 **Setup:**
+
 1. Create Redis database (choose region near your app)
 2. Copy connection string (starts with `rediss://`)
 3. Add to `REDIS_URL` environment variable
@@ -272,6 +282,7 @@ postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
 After deploying, run database migrations:
 
 #### Vercel
+
 ```bash
 # Pull environment variables
 vercel env pull
@@ -284,6 +295,7 @@ npx prisma db push
 ```
 
 #### Railway
+
 ```bash
 # Using Railway CLI
 railway run npx prisma db push
@@ -346,6 +358,7 @@ npx prisma db push && npm start
 ### Email Verification Not Sending
 
 **Check:**
+
 ```bash
 ✅ RESEND_API_KEY is set correctly (starts with re_)
 ✅ EMAIL_FROM matches verified domain in Resend
@@ -354,11 +367,13 @@ npx prisma db push && npm start
 ```
 
 **Common Issues:**
+
 - **Domain not verified**: Check Resend dashboard, DNS records may need time to propagate
 - **Wrong EMAIL_FROM**: Must match verified domain (e.g., `noreply@yourdomain.com`)
 - **Wrong BASE_URL**: Verification links will point to wrong domain
 
 **Debug:**
+
 ```bash
 # Check deployment logs for email errors
 vercel logs --follow  # Vercel
@@ -372,6 +387,7 @@ railway logs          # Railway
 ### Emails Going to Spam
 
 **Fix:**
+
 1. Complete SPF/DKIM setup in Resend (done automatically)
 2. Add DMARC record to DNS:
    ```
@@ -383,6 +399,7 @@ railway logs          # Railway
 ### Database Connection Errors
 
 **Check:**
+
 ```bash
 ✅ DATABASE_URL is correct format
 ✅ Database accepts connections from deployment platform IPs
@@ -391,17 +408,20 @@ railway logs          # Railway
 ```
 
 **Common Issues:**
+
 - **Connection refused**: Database may require IP whitelisting
 - **SSL error**: Add `?sslmode=require` to connection string
 - **Timeout**: Database may be paused (free tiers auto-sleep)
 
 **Vercel-specific:**
+
 ```bash
 # Use Vercel Postgres for seamless integration
 # Or whitelist Vercel IPs in external database
 ```
 
 **Railway-specific:**
+
 ```bash
 # Use Railway Postgres for seamless integration
 # Or use private networking if database is in Railway
@@ -410,12 +430,14 @@ railway logs          # Railway
 ### Build Failures
 
 **Check build logs:**
+
 ```bash
 vercel logs --output  # Vercel
 railway logs          # Railway
 ```
 
 **Common fixes:**
+
 - **Missing dependencies**: Ensure `pnpm install` runs before build
 - **TypeScript errors**: Fix type errors in code
 - **Environment variables**: Ensure required vars are set for build
@@ -424,11 +446,13 @@ railway logs          # Railway
 ### Missing Environment Variables
 
 **Symptoms:**
+
 - "NEXTAUTH_SECRET must be provided"
 - "DATABASE_URL is required"
 - Emails not sending (no error, just silent failure)
 
 **Fix:**
+
 1. Check variables are set in deployment platform dashboard
 2. Ensure variables are set for **Production** environment
 3. Redeploy after adding new variables
@@ -441,21 +465,23 @@ railway logs          # Railway
 ### Vercel
 
 1. **Use Edge Functions** for static routes:
+
    ```ts
    export const config = {
-     runtime: 'edge'
-   }
+     runtime: "edge",
+   };
    ```
 
 2. **Enable ISR** (Incremental Static Regeneration):
+
    ```ts
-   export const revalidate = 60  // Revalidate every 60 seconds
+   export const revalidate = 60; // Revalidate every 60 seconds
    ```
 
 3. **Optimize Images**:
    ```tsx
-   import Image from 'next/image'
-   <Image src="..." alt="..." width={500} height={300} />
+   import Image from "next/image";
+   <Image src="..." alt="..." width={500} height={300} />;
    ```
 
 ### Railway
@@ -503,18 +529,21 @@ railway logs          # Railway
 ## 🆘 Getting Help
 
 **Check deployment logs first:**
+
 ```bash
 vercel logs --follow  # Vercel
 railway logs          # Railway
 ```
 
 **Common log locations:**
+
 - Build errors: Build logs in platform dashboard
 - Runtime errors: Function logs (Vercel) or Service logs (Railway)
 - Database errors: Check Prisma client errors
 - Email errors: Look for Resend API errors
 
 **Still stuck?**
+
 1. Review this guide's troubleshooting section
 2. Check platform status pages (status.vercel.com, railway.app/status)
 3. Contact platform support (Vercel/Railway have excellent support)

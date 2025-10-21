@@ -1,19 +1,19 @@
-export type ProductionStage = 
-  | "INTAKE" 
-  | "DESIGN" 
-  | "CUT" 
-  | "PRINT" 
-  | "SEW" 
-  | "QC" 
-  | "PACK" 
+export type ProductionStage =
+  | "INTAKE"
+  | "DESIGN"
+  | "CUT"
+  | "PRINT"
+  | "SEW"
+  | "QC"
+  | "PACK"
   | "DELIVERY";
 
-export type WorkflowStatus = 
-  | "PLANNED" 
-  | "IN_PROGRESS" 
-  | "PAUSED" 
-  | "COMPLETED" 
-  | "DELAYED" 
+export type WorkflowStatus =
+  | "PLANNED"
+  | "IN_PROGRESS"
+  | "PAUSED"
+  | "COMPLETED"
+  | "DELAYED"
   | "CANCELLED";
 
 export type Priority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
@@ -121,9 +121,9 @@ export interface ProductionMetrics {
 }
 
 export interface WorkflowEvent {
-  type: 
+  type:
     | "WORKFLOW_CREATED"
-    | "WORKFLOW_STARTED" 
+    | "WORKFLOW_STARTED"
     | "WORKFLOW_PAUSED"
     | "WORKFLOW_RESUMED"
     | "WORKFLOW_COMPLETED"
@@ -160,7 +160,7 @@ export interface ProductionOptimization {
   optimizedMetrics: ProductionMetrics;
   improvements: {
     timeReduction: number; // percentage
-    costReduction: number; // percentage  
+    costReduction: number; // percentage
     qualityImprovement: number; // percentage
     efficiencyGain: number; // percentage
   };

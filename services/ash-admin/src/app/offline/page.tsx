@@ -1,44 +1,45 @@
-'use client';
+"use client";
 
-import { WifiOff, RefreshCw } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { WifiOff, RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function OfflinePage() {
   const router = useRouter();
 
   const handleRetry = () => {
     if (navigator.onLine) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     } else {
       window.location.reload();
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
         <div className="mb-6">
-          <WifiOff className="h-24 w-24 mx-auto text-gray-400" />
+          <WifiOff className="mx-auto h-24 w-24 text-gray-400" />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="mb-2 text-2xl font-bold text-gray-900">
           You're Offline
         </h1>
 
-        <p className="text-gray-600 mb-6">
-          It looks like you've lost your internet connection. Some features may not be available.
+        <p className="mb-6 text-gray-600">
+          It looks like you've lost your internet connection. Some features may
+          not be available.
         </p>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
           <p className="text-sm text-blue-800">
-            <strong>Don't worry!</strong> Your work is safe. Any changes you make will be synced
-            when you're back online.
+            <strong>Don't worry!</strong> Your work is safe. Any changes you
+            make will be synced when you're back online.
           </p>
         </div>
 
         <button
           onClick={handleRetry}
-          className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
         >
           <RefreshCw className="h-5 w-5" />
           <span>Try Again</span>

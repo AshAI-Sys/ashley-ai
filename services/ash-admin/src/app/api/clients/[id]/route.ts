@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/database';
-import { getWorkspaceIdFromRequest } from '@/lib/workspace';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
+import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 
-const prisma = db
+const prisma = db;
 
 // GET /api/clients/[id] - Get single client
 export async function GET(
@@ -25,7 +25,7 @@ export async function GET(
             is_active: true,
             created_at: true,
           },
-          orderBy: { created_at: 'desc' },
+          orderBy: { created_at: "desc" },
         },
         orders: {
           select: {
@@ -37,7 +37,7 @@ export async function GET(
             delivery_date: true,
             created_at: true,
           },
-          orderBy: { created_at: 'desc' },
+          orderBy: { created_at: "desc" },
           take: 10,
         },
         _count: {
@@ -47,25 +47,25 @@ export async function GET(
           },
         },
       },
-    })
+    });
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Client not found' },
+        { success: false, error: "Client not found" },
         { status: 404 }
-      )
+      );
     }
 
     return NextResponse.json({
       success: true,
       data: client,
-    })
+    });
   } catch (error) {
-    console.error('Failed to fetch client:', error)
+    console.error("Failed to fetch client:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch client' },
+      { success: false, error: "Failed to fetch client" },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -75,12 +75,13 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await request.json()
+    const body = await request.json();
 
     // Convert address object to JSON string if it's an object
-    const addressData = body.address && typeof body.address === 'object'
-      ? JSON.stringify(body.address)
-      : body.address
+    const addressData =
+      body.address && typeof body.address === "object"
+        ? JSON.stringify(body.address)
+        : body.address;
 
     const client = await prisma.client.update({
       where: { id: params.id },
@@ -103,19 +104,19 @@ export async function PUT(
           },
         },
       },
-    })
+    });
 
     return NextResponse.json({
       success: true,
       data: client,
-      message: 'Client updated successfully',
-    })
+      message: "Client updated successfully",
+    });
   } catch (error) {
-    console.error('Failed to update client:', error)
+    console.error("Failed to update client:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update client' },
+      { success: false, error: "Failed to update client" },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -127,17 +128,17 @@ export async function DELETE(
   try {
     await prisma.client.delete({
       where: { id: params.id },
-    })
+    });
 
     return NextResponse.json({
       success: true,
-      message: 'Client deleted successfully',
-    })
+      message: "Client deleted successfully",
+    });
   } catch (error) {
-    console.error('Failed to delete client:', error)
+    console.error("Failed to delete client:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete client' },
+      { success: false, error: "Failed to delete client" },
       { status: 500 }
-    )
+    );
   }
 }

@@ -1,27 +1,31 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 // Create reusable transporter using Gmail SMTP
 let transporter: nodemailer.Transporter | null = null;
 
 function getTransporter(): nodemailer.Transporter | null {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-    console.warn('⚠️ Gmail credentials not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env');
+    console.warn(
+      "⚠️ Gmail credentials not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env"
+    );
     return null;
   }
 
   // Check for placeholder credentials - fail fast
   if (
-    process.env.GMAIL_USER.includes('your-email') ||
-    process.env.GMAIL_APP_PASSWORD.includes('your-') ||
+    process.env.GMAIL_USER.includes("your-email") ||
+    process.env.GMAIL_APP_PASSWORD.includes("your-") ||
     process.env.GMAIL_APP_PASSWORD.length < 16
   ) {
-    console.warn('⚠️ Gmail credentials are placeholder values. Email sending disabled.');
+    console.warn(
+      "⚠️ Gmail credentials are placeholder values. Email sending disabled."
+    );
     return null;
   }
 
   if (!transporter) {
     transporter = nodemailer.createTransporter({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD, // Use App Password, not regular password
@@ -61,14 +65,19 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 
     // If Gmail is not configured, log to console (development mode)
     if (!transport) {
-      console.warn('⚠️ Gmail not configured. Email will be logged to console only.');
-      console.log('📧 Email would be sent:', {
+      console.warn(
+        "⚠️ Gmail not configured. Email will be logged to console only."
+      );
+      console.log("📧 Email would be sent:", {
         to: options.to,
         subject: options.subject,
         from: options.from || process.env.GMAIL_USER,
       });
-      console.log('📧 Verification link:', options.html.match(/https?:\/\/[^\s"<]+/)?.[0]);
-      return { success: true, messageId: 'dev-mode-' + Date.now() };
+      console.log(
+        "📧 Verification link:",
+        options.html.match(/https?:\/\/[^\s"<]+/)?.[0]
+      );
+      return { success: true, messageId: "dev-mode-" + Date.now() };
     }
 
     const mailOptions = {
@@ -80,10 +89,10 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     };
 
     const info = await transport.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', info.messageId);
+    console.log("✅ Email sent successfully:", info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {
-    console.error('❌ Error sending email:', error);
+    console.error("❌ Error sending email:", error);
     return { success: false, error: error.message };
   }
 }
@@ -161,7 +170,7 @@ Ashley AI - Manufacturing ERP System
 
   return sendEmail({
     to,
-    subject: 'Welcome to Ashley AI - Verify Your Email ✅',
+    subject: "Welcome to Ashley AI - Verify Your Email ✅",
     html,
     text,
   });
@@ -233,7 +242,7 @@ Ashley AI - Manufacturing ERP System
 
   return sendEmail({
     to,
-    subject: 'Verify Your Email - Ashley AI 📧',
+    subject: "Verify Your Email - Ashley AI 📧",
     html,
     text,
   });
@@ -248,16 +257,17 @@ export async function testEmailConfig(): Promise<EmailResult> {
   if (!transport) {
     return {
       success: false,
-      error: 'Gmail credentials not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env'
+      error:
+        "Gmail credentials not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env",
     };
   }
 
   try {
     await transport.verify();
-    console.log('✅ Gmail SMTP configuration is valid');
-    return { success: true, messageId: 'config-test-success' };
+    console.log("✅ Gmail SMTP configuration is valid");
+    return { success: true, messageId: "config-test-success" };
   } catch (error: any) {
-    console.error('❌ Gmail SMTP configuration error:', error);
+    console.error("❌ Gmail SMTP configuration error:", error);
     return { success: false, error: error.message };
   }
 }

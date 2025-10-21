@@ -1,6 +1,7 @@
 # Railway Deployment - Workspace Issue Fix
 
 ## Problem
+
 Railway CLI can't create projects in "Personal" workspace. This is a common issue with Railway's free tier or workspace permissions.
 
 ## Solution: Create Project via Railway Dashboard
@@ -8,9 +9,11 @@ Railway CLI can't create projects in "Personal" workspace. This is a common issu
 ### Step 1: Create Project in Railway Dashboard
 
 1. Open Railway dashboard:
+
    ```powershell
    railway open
    ```
+
    OR visit: https://railway.app/dashboard
 
 2. Click **"New Project"** button
@@ -51,6 +54,7 @@ railway variables set PORT=3001
 ```
 
 **OR** use the Railway dashboard:
+
 1. Go to your project
 2. Click **"Variables"** tab
 3. Add each variable manually
@@ -107,6 +111,7 @@ railway domain
 ## Why This Happened
 
 Railway has different workspace types:
+
 - **Personal**: Limited, may not allow CLI project creation on free tier
 - **Team/Organization**: Allows project creation
 

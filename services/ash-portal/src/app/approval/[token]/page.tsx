@@ -1,14 +1,20 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@ash-ai/ui/card'
-import { Button } from '@ash-ai/ui/button'
-import { Badge } from '@ash-ai/ui/badge'
-import { Separator } from '@ash-ai/ui/separator'
-import { Textarea } from '@ash-ai/ui/textarea'
-import { Input } from '@ash-ai/ui/input'
-import { Label } from '@ash-ai/ui/label'
-import { 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ash-ai/ui/card";
+import { Button } from "@ash-ai/ui/button";
+import { Badge } from "@ash-ai/ui/badge";
+import { Separator } from "@ash-ai/ui/separator";
+import { Textarea } from "@ash-ai/ui/textarea";
+import { Input } from "@ash-ai/ui/input";
+import { Label } from "@ash-ai/ui/label";
+import {
   CheckCircle,
   XCircle,
   MessageCircle,
@@ -26,213 +32,228 @@ import {
   Paperclip,
   Star,
   ThumbsUp,
-  ThumbsDown
-} from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
+  ThumbsDown,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface ApprovalData {
-  id: string
-  status: string
-  version: number
-  comments: string
-  expires_at: string
-  created_at: string
+  id: string;
+  status: string;
+  version: number;
+  comments: string;
+  expires_at: string;
+  created_at: string;
   design_asset: {
-    id: string
-    name: string
-    method: string
+    id: string;
+    name: string;
+    method: string;
     order: {
-      order_number: string
+      order_number: string;
       client: {
-        name: string
-      }
-    }
+        name: string;
+      };
+    };
     brand: {
-      name: string
-      code: string
-    }
-  }
+      name: string;
+      code: string;
+    };
+  };
   design_version: {
-    id: string
-    version: number
-    files: string
-    placements: string
-    palette: string
-    meta: string
-  }
+    id: string;
+    version: number;
+    files: string;
+    placements: string;
+    palette: string;
+    meta: string;
+  };
   client: {
-    name: string
-    email: string
-  }
+    name: string;
+    email: string;
+  };
 }
 
 export default function ClientApprovalPage() {
-  const params = useParams()
-  const router = useRouter()
-  const [approvalData, setApprovalData] = useState<ApprovalData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [decision, setDecision] = useState<'approved' | 'changes_requested' | ''>('')
-  const [feedback, setFeedback] = useState('')
-  const [approverName, setApproverName] = useState('')
-  const [mockupZoom, setMockupZoom] = useState(100)
-  const [selectedVariant, setSelectedVariant] = useState(0)
-  const [attachments, setAttachments] = useState<File[]>([])
-  const [imageError, setImageError] = useState(false)
+  const params = useParams();
+  const router = useRouter();
+  const [approvalData, setApprovalData] = useState<ApprovalData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [decision, setDecision] = useState<
+    "approved" | "changes_requested" | ""
+  >("");
+  const [feedback, setFeedback] = useState("");
+  const [approverName, setApproverName] = useState("");
+  const [mockupZoom, setMockupZoom] = useState(100);
+  const [selectedVariant, setSelectedVariant] = useState(0);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (params?.token) {
-      fetchApprovalData(params.token as string)
+      fetchApprovalData(params.token as string);
     }
-  }, [params?.token])
+  }, [params?.token]);
 
   const fetchApprovalData = async (token: string) => {
     try {
-      setLoading(true)
-      const response = await fetch(`/api/portal/approval/${token}`)
-      const data = await response.json()
-      
+      setLoading(true);
+      const response = await fetch(`/api/portal/approval/${token}`);
+      const data = await response.json();
+
       if (data.success) {
-        setApprovalData(data.data)
-        
+        setApprovalData(data.data);
+
         // Pre-fill client name if available
         if (data.data.client.name) {
-          setApproverName(data.data.client.name)
+          setApproverName(data.data.client.name);
         }
       } else {
-        toast.error(data.message || 'Failed to load approval request')
-        router.push('/error')
+        toast.error(data.message || "Failed to load approval request");
+        router.push("/error");
       }
     } catch (error) {
-      console.error('Failed to fetch approval data:', error)
-      toast.error('Failed to load approval request')
-      router.push('/error')
+      console.error("Failed to fetch approval data:", error);
+      toast.error("Failed to load approval request");
+      router.push("/error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmitDecision = async () => {
     if (!approvalData || !decision) {
-      toast.error('Please select approve or request changes')
-      return
+      toast.error("Please select approve or request changes");
+      return;
     }
 
-    if (decision === 'changes_requested' && !feedback.trim()) {
-      toast.error('Please provide feedback for requested changes')
-      return
+    if (decision === "changes_requested" && !feedback.trim()) {
+      toast.error("Please provide feedback for requested changes");
+      return;
     }
 
     if (!approverName.trim()) {
-      toast.error('Please provide your name')
-      return
+      toast.error("Please provide your name");
+      return;
     }
 
     try {
-      setSubmitting(true)
-      
+      setSubmitting(true);
+
       // Create form data for file upload if there are attachments
-      const formData = new FormData()
-      formData.append('decision', decision)
-      formData.append('feedback', feedback)
-      formData.append('approver_name', approverName)
-      
+      const formData = new FormData();
+      formData.append("decision", decision);
+      formData.append("feedback", feedback);
+      formData.append("approver_name", approverName);
+
       attachments.forEach((file, index) => {
-        formData.append(`attachment_${index}`, file)
-      })
+        formData.append(`attachment_${index}`, file);
+      });
 
-      const response = await fetch(`/api/portal/approval/${params?.token}/submit`, {
-        method: 'POST',
-        body: formData
-      })
+      const response = await fetch(
+        `/api/portal/approval/${params?.token}/submit`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
         toast.success(
-          decision === 'approved' 
-            ? 'Design approved successfully!' 
-            : 'Feedback submitted successfully!'
-        )
-        
+          decision === "approved"
+            ? "Design approved successfully!"
+            : "Feedback submitted successfully!"
+        );
+
         // Refresh the page to show updated status
         if (params?.token) {
-          await fetchApprovalData(params.token as string)
+          await fetchApprovalData(params.token as string);
         }
       } else {
-        toast.error(result.message || 'Failed to submit decision')
+        toast.error(result.message || "Failed to submit decision");
       }
     } catch (error) {
-      console.error('Failed to submit decision:', error)
-      toast.error('Failed to submit decision')
+      console.error("Failed to submit decision:", error);
+      toast.error("Failed to submit decision");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
+    const files = event.target.files;
     if (files) {
-      const newFiles = Array.from(files)
-      setAttachments(prev => [...prev, ...newFiles])
+      const newFiles = Array.from(files);
+      setAttachments(prev => [...prev, ...newFiles]);
     }
-  }
+  };
 
   const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index))
-  }
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
 
   const getStatusColor = (status: string) => {
-    if (!status) return 'bg-gray-100 text-gray-800'
+    if (!status) return "bg-gray-100 text-gray-800";
 
     switch (status.toUpperCase()) {
-      case 'SENT': return 'bg-blue-100 text-blue-800'
-      case 'APPROVED': return 'bg-green-100 text-green-800'
-      case 'CHANGES_REQUESTED': return 'bg-yellow-100 text-yellow-800'
-      case 'EXPIRED': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case "SENT":
+        return "bg-blue-100 text-blue-800";
+      case "APPROVED":
+        return "bg-green-100 text-green-800";
+      case "CHANGES_REQUESTED":
+        return "bg-yellow-100 text-yellow-800";
+      case "EXPIRED":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const getMethodColor = (method: string) => {
-    if (!method) return 'bg-gray-100 text-gray-800'
+    if (!method) return "bg-gray-100 text-gray-800";
 
     switch (method.toUpperCase()) {
-      case 'SILKSCREEN': return 'bg-purple-100 text-purple-800'
-      case 'SUBLIMATION': return 'bg-cyan-100 text-cyan-800'
-      case 'DTF': return 'bg-orange-100 text-orange-800'
-      case 'EMBROIDERY': return 'bg-pink-100 text-pink-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case "SILKSCREEN":
+        return "bg-purple-100 text-purple-800";
+      case "SUBLIMATION":
+        return "bg-cyan-100 text-cyan-800";
+      case "DTF":
+        return "bg-orange-100 text-orange-800";
+      case "EMBROIDERY":
+        return "bg-pink-100 text-pink-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="text-gray-600">Loading approval request...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!approvalData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md">
           <CardContent className="py-12 text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Approval Not Found</h2>
+            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+            <h2 className="mb-2 text-xl font-semibold">Approval Not Found</h2>
             <p className="text-muted-foreground mb-6">
               This approval link is invalid or has expired.
             </p>
@@ -240,32 +261,39 @@ export default function ClientApprovalPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
-  const files = JSON.parse(approvalData.design_version.files)
-  const placements = JSON.parse(approvalData.design_version.placements)
-  const palette = approvalData.design_version.palette ? JSON.parse(approvalData.design_version.palette) : []
-  const isExpired = new Date(approvalData.expires_at) < new Date()
-  const isCompleted = approvalData.status !== 'SENT'
+  const files = JSON.parse(approvalData.design_version.files);
+  const placements = JSON.parse(approvalData.design_version.placements);
+  const palette = approvalData.design_version.palette
+    ? JSON.parse(approvalData.design_version.palette)
+    : [];
+  const isExpired = new Date(approvalData.expires_at) < new Date();
+  const isCompleted = approvalData.status !== "SENT";
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="border-b bg-white shadow-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Design Approval</h1>
-              <p className="text-gray-600 mt-1">
-                {approvalData.design_asset.name} • {approvalData.design_asset.order.order_number}
+              <h1 className="text-2xl font-bold text-gray-900">
+                Design Approval
+              </h1>
+              <p className="mt-1 text-gray-600">
+                {approvalData.design_asset.name} •{" "}
+                {approvalData.design_asset.order.order_number}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Badge className={getStatusColor(approvalData.status)}>
-                {approvalData.status?.replace('_', ' ') || 'Unknown'}
+                {approvalData.status?.replace("_", " ") || "Unknown"}
               </Badge>
-              <Badge className={getMethodColor(approvalData.design_asset.method)}>
+              <Badge
+                className={getMethodColor(approvalData.design_asset.method)}
+              >
                 {approvalData.design_asset.method}
               </Badge>
             </div>
@@ -279,11 +307,14 @@ export default function ClientApprovalPage() {
           <Card className="mb-6 border-red-200 bg-red-50">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600" />
+                <AlertCircle className="h-5 w-5 text-red-600" />
                 <div>
-                  <p className="font-medium text-red-800">This approval request has expired</p>
+                  <p className="font-medium text-red-800">
+                    This approval request has expired
+                  </p>
                   <p className="text-sm text-red-600">
-                    Expired on {new Date(approvalData.expires_at).toLocaleDateString()}
+                    Expired on{" "}
+                    {new Date(approvalData.expires_at).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -296,19 +327,20 @@ export default function ClientApprovalPage() {
           <Card className="mb-6 border-green-200 bg-green-50">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
-                {approvalData.status === 'APPROVED' ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                {approvalData.status === "APPROVED" ? (
+                  <CheckCircle className="h-5 w-5 text-green-600" />
                 ) : (
-                  <MessageCircle className="w-5 h-5 text-yellow-600" />
+                  <MessageCircle className="h-5 w-5 text-yellow-600" />
                 )}
                 <div>
                   <p className="font-medium text-green-800">
-                    {approvalData.status === 'APPROVED' 
-                      ? 'Thank you! This design has been approved.' 
-                      : 'Thank you for your feedback! Changes have been requested.'}
+                    {approvalData.status === "APPROVED"
+                      ? "Thank you! This design has been approved."
+                      : "Thank you for your feedback! Changes have been requested."}
                   </p>
                   <p className="text-sm text-green-600">
-                    Submitted on {new Date(approvalData.created_at).toLocaleDateString()}
+                    Submitted on{" "}
+                    {new Date(approvalData.created_at).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -316,34 +348,40 @@ export default function ClientApprovalPage() {
           </Card>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Design Preview */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
-                    <Image className="w-5 h-5" />
+                    <Image className="h-5 w-5" />
                     Design Mockup
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setMockupZoom(Math.max(50, mockupZoom - 25))}
+                      onClick={() =>
+                        setMockupZoom(Math.max(50, mockupZoom - 25))
+                      }
                       disabled={mockupZoom <= 50}
                     >
-                      <ZoomOut className="w-4 h-4" />
+                      <ZoomOut className="h-4 w-4" />
                     </Button>
-                    <span className="text-sm font-mono px-2">{mockupZoom}%</span>
+                    <span className="px-2 font-mono text-sm">
+                      {mockupZoom}%
+                    </span>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setMockupZoom(Math.min(200, mockupZoom + 25))}
+                      onClick={() =>
+                        setMockupZoom(Math.min(200, mockupZoom + 25))
+                      }
                       disabled={mockupZoom >= 200}
                     >
-                      <ZoomIn className="w-4 h-4" />
+                      <ZoomIn className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -351,42 +389,48 @@ export default function ClientApprovalPage() {
               <CardContent>
                 {files.mockup_url && !imageError ? (
                   <div className="text-center">
-                    <img 
+                    <img
                       src={files.mockup_url}
                       alt="Design mockup"
-                      className="max-w-full h-auto mx-auto rounded-lg shadow-lg transition-transform duration-200"
-                      style={{ 
+                      className="mx-auto h-auto max-w-full rounded-lg shadow-lg transition-transform duration-200"
+                      style={{
                         transform: `scale(${mockupZoom / 100})`,
-                        transformOrigin: 'center top'
+                        transformOrigin: "center top",
                       }}
                       onError={() => setImageError(true)}
                     />
                     <div className="mt-4 flex justify-center gap-2">
                       <Button size="sm" variant="outline" asChild>
-                        <a href={files.mockup_url} target="_blank" rel="noopener noreferrer">
-                          <Eye className="w-4 h-4 mr-1" />
+                        <a
+                          href={files.mockup_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Eye className="mr-1 h-4 w-4" />
                           View Full Size
                         </a>
                       </Button>
                       <Button size="sm" variant="outline" asChild>
                         <a href={files.mockup_url} download>
-                          <Download className="w-4 h-4 mr-1" />
+                          <Download className="mr-1 h-4 w-4" />
                           Download
                         </a>
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <Image className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500">Design preview not available</p>
+                  <div className="py-12 text-center">
+                    <Image className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <p className="text-gray-500">
+                      Design preview not available
+                    </p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             {/* Design Details */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
               {/* Placements */}
               {placements.length > 0 && (
                 <Card>
@@ -396,17 +440,19 @@ export default function ClientApprovalPage() {
                   <CardContent>
                     <div className="space-y-3">
                       {placements.map((placement: any, index: number) => (
-                        <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
+                        <div key={index} className="rounded-lg bg-gray-50 p-3">
+                          <div className="mb-2 flex items-center justify-between">
                             <h4 className="font-medium capitalize">
-                              {placement.area?.replace('_', ' ') || 'Unknown Area'}
+                              {placement.area?.replace("_", " ") ||
+                                "Unknown Area"}
                             </h4>
                             <span className="text-sm text-gray-600">
                               {placement.width_cm} × {placement.height_cm} cm
                             </span>
                           </div>
                           <div className="text-sm text-gray-600">
-                            Position: X {placement.offset_x}cm, Y {placement.offset_y}cm
+                            Position: X {placement.offset_x}cm, Y{" "}
+                            {placement.offset_y}cm
                           </div>
                         </div>
                       ))}
@@ -419,8 +465,8 @@ export default function ClientApprovalPage() {
               {palette.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Palette className="w-5 h-5" />
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Palette className="h-5 w-5" />
                       Colors Used
                     </CardTitle>
                   </CardHeader>
@@ -428,11 +474,11 @@ export default function ClientApprovalPage() {
                     <div className="grid grid-cols-2 gap-3">
                       {palette.map((color: string, index: number) => (
                         <div key={index} className="flex items-center gap-2">
-                          <div 
-                            className="w-8 h-8 border border-gray-300 rounded flex-shrink-0"
+                          <div
+                            className="h-8 w-8 flex-shrink-0 rounded border border-gray-300"
                             style={{ backgroundColor: color }}
                           />
-                          <span className="text-sm font-mono">{color}</span>
+                          <span className="font-mono text-sm">{color}</span>
                         </div>
                       ))}
                     </div>
@@ -447,7 +493,8 @@ export default function ClientApprovalPage() {
                 <CardHeader>
                   <CardTitle className="text-xl">Your Decision</CardTitle>
                   <CardDescription>
-                    Please review the design carefully and provide your approval or feedback.
+                    Please review the design carefully and provide your approval
+                    or feedback.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -457,7 +504,7 @@ export default function ClientApprovalPage() {
                     <Input
                       id="approver_name"
                       value={approverName}
-                      onChange={(e) => setApproverName(e.target.value)}
+                      onChange={e => setApproverName(e.target.value)}
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -468,20 +515,26 @@ export default function ClientApprovalPage() {
                     <div className="flex gap-3">
                       <Button
                         size="lg"
-                        variant={decision === 'approved' ? 'default' : 'outline'}
-                        className={`flex-1 ${decision === 'approved' ? 'bg-green-600 hover:bg-green-700' : ''}`}
-                        onClick={() => setDecision('approved')}
+                        variant={
+                          decision === "approved" ? "default" : "outline"
+                        }
+                        className={`flex-1 ${decision === "approved" ? "bg-green-600 hover:bg-green-700" : ""}`}
+                        onClick={() => setDecision("approved")}
                       >
-                        <ThumbsUp className="w-5 h-5 mr-2" />
+                        <ThumbsUp className="mr-2 h-5 w-5" />
                         Approve Design
                       </Button>
                       <Button
                         size="lg"
-                        variant={decision === 'changes_requested' ? 'default' : 'outline'}
-                        className={`flex-1 ${decision === 'changes_requested' ? 'bg-yellow-600 hover:bg-yellow-700' : ''}`}
-                        onClick={() => setDecision('changes_requested')}
+                        variant={
+                          decision === "changes_requested"
+                            ? "default"
+                            : "outline"
+                        }
+                        className={`flex-1 ${decision === "changes_requested" ? "bg-yellow-600 hover:bg-yellow-700" : ""}`}
+                        onClick={() => setDecision("changes_requested")}
                       >
-                        <ThumbsDown className="w-5 h-5 mr-2" />
+                        <ThumbsDown className="mr-2 h-5 w-5" />
                         Request Changes
                       </Button>
                     </div>
@@ -490,19 +543,25 @@ export default function ClientApprovalPage() {
                   {/* Feedback */}
                   <div>
                     <Label htmlFor="feedback">
-                      {decision === 'changes_requested' ? 'What changes would you like? *' : 'Additional Comments (Optional)'}
+                      {decision === "changes_requested"
+                        ? "What changes would you like? *"
+                        : "Additional Comments (Optional)"}
                     </Label>
                     <Textarea
                       id="feedback"
                       value={feedback}
-                      onChange={(e) => setFeedback(e.target.value)}
+                      onChange={e => setFeedback(e.target.value)}
                       placeholder={
-                        decision === 'changes_requested'
+                        decision === "changes_requested"
                           ? "Please be specific about what changes you'd like to see..."
                           : "Any additional comments or notes..."
                       }
                       rows={4}
-                      className={decision === 'changes_requested' ? 'border-yellow-300' : ''}
+                      className={
+                        decision === "changes_requested"
+                          ? "border-yellow-300"
+                          : ""
+                      }
                     />
                   </div>
 
@@ -520,19 +579,25 @@ export default function ClientApprovalPage() {
                           id="file-upload"
                         />
                         <Button variant="outline" asChild>
-                          <label htmlFor="file-upload" className="cursor-pointer">
-                            <Paperclip className="w-4 h-4 mr-2" />
+                          <label
+                            htmlFor="file-upload"
+                            className="cursor-pointer"
+                          >
+                            <Paperclip className="mr-2 h-4 w-4" />
                             Add Files
                           </label>
                         </Button>
                       </div>
-                      
+
                       {attachments.length > 0 && (
                         <div className="space-y-2">
                           {attachments.map((file, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                            <div
+                              key={index}
+                              className="flex items-center justify-between rounded bg-gray-50 p-2"
+                            >
                               <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-gray-500" />
+                                <FileText className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm">{file.name}</span>
                                 <span className="text-xs text-gray-500">
                                   ({formatFileSize(file.size)})
@@ -543,7 +608,7 @@ export default function ClientApprovalPage() {
                                 variant="ghost"
                                 onClick={() => removeAttachment(index)}
                               >
-                                <XCircle className="w-4 h-4 text-red-500" />
+                                <XCircle className="h-4 w-4 text-red-500" />
                               </Button>
                             </div>
                           ))}
@@ -556,16 +621,20 @@ export default function ClientApprovalPage() {
                   <Button
                     size="lg"
                     onClick={handleSubmitDecision}
-                    disabled={submitting || !decision || !approverName.trim() || (decision === 'changes_requested' && !feedback.trim())}
+                    disabled={
+                      submitting ||
+                      !decision ||
+                      !approverName.trim() ||
+                      (decision === "changes_requested" && !feedback.trim())
+                    }
                     className="w-full"
                   >
-                    <Send className="w-5 h-5 mr-2" />
-                    {submitting 
-                      ? 'Submitting...' 
-                      : decision === 'approved' 
-                        ? 'Submit Approval' 
-                        : 'Submit Feedback'
-                    }
+                    <Send className="mr-2 h-5 w-5" />
+                    {submitting
+                      ? "Submitting..."
+                      : decision === "approved"
+                        ? "Submit Approval"
+                        : "Submit Feedback"}
                   </Button>
                 </CardContent>
               </Card>
@@ -581,41 +650,52 @@ export default function ClientApprovalPage() {
               </CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div>
-                  <strong>Order Number:</strong><br />
+                  <strong>Order Number:</strong>
+                  <br />
                   {approvalData.design_asset.order.order_number}
                 </div>
                 <Separator />
                 <div>
-                  <strong>Client:</strong><br />
+                  <strong>Client:</strong>
+                  <br />
                   {approvalData.design_asset.order.client.name}
                 </div>
                 <Separator />
                 <div>
-                  <strong>Brand:</strong><br />
+                  <strong>Brand:</strong>
+                  <br />
                   {approvalData.design_asset.brand.name}
                 </div>
                 <Separator />
                 <div>
-                  <strong>Print Method:</strong><br />
-                  <Badge className={getMethodColor(approvalData.design_asset.method)} variant="outline">
+                  <strong>Print Method:</strong>
+                  <br />
+                  <Badge
+                    className={getMethodColor(approvalData.design_asset.method)}
+                    variant="outline"
+                  >
                     {approvalData.design_asset.method}
                   </Badge>
                 </div>
                 <Separator />
                 <div>
-                  <strong>Design Version:</strong><br />
-                  v{approvalData.version}
+                  <strong>Design Version:</strong>
+                  <br />v{approvalData.version}
                 </div>
                 <Separator />
                 <div>
-                  <strong>Approval Sent:</strong><br />
+                  <strong>Approval Sent:</strong>
+                  <br />
                   {new Date(approvalData.created_at).toLocaleDateString()}
                 </div>
                 {approvalData.expires_at && (
                   <>
                     <div>
-                      <strong>Expires:</strong><br />
-                      <span className={isExpired ? 'text-red-600' : 'text-gray-900'}>
+                      <strong>Expires:</strong>
+                      <br />
+                      <span
+                        className={isExpired ? "text-red-600" : "text-gray-900"}
+                      >
                         {new Date(approvalData.expires_at).toLocaleDateString()}
                       </span>
                     </div>
@@ -631,11 +711,16 @@ export default function ClientApprovalPage() {
               </CardHeader>
               <CardContent className="text-sm">
                 <p className="mb-3">
-                  If you have questions about this design or need clarification, please contact us:
+                  If you have questions about this design or need clarification,
+                  please contact us:
                 </p>
                 <div className="space-y-2">
-                  <p><strong>Email:</strong> support@ashleyai.com</p>
-                  <p><strong>Phone:</strong> +63 123 456 7890</p>
+                  <p>
+                    <strong>Email:</strong> support@ashleyai.com
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> +63 123 456 7890
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -644,22 +729,22 @@ export default function ClientApprovalPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-500" />
+                  <Star className="h-5 w-5 text-yellow-500" />
                   Quality Promise
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-sm">
                 <ul className="space-y-2">
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                     <span>AI-validated print quality</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                     <span>Color accuracy guaranteed</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-green-500" />
                     <span>Professional production standards</span>
                   </li>
                 </ul>
@@ -669,5 +754,5 @@ export default function ClientApprovalPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

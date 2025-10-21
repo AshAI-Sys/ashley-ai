@@ -5,6 +5,7 @@
 Your deployment is **FAILING** because of incorrect Root Directory setting in Render dashboard.
 
 **Error you're seeing**:
+
 ```
 Module not found: Can't resolve '@/components/dashboard-layout'
 Module not found: Can't resolve '@/components/PermissionGate'
@@ -71,6 +72,7 @@ Build failed because of webpack errors
 ## What Should Happen After Fix
 
 Once you save the changes, Render will:
+
 1. ✅ Build from the correct directory (`services/ash-admin`)
 2. ✅ Resolve all `@/components` path aliases correctly
 3. ✅ Complete the build successfully
@@ -81,11 +83,11 @@ Once you save the changes, Render will:
 
 ## Summary of Changes
 
-| Setting | OLD (Wrong) | NEW (Correct) |
-|---------|-------------|---------------|
-| **Root Directory** | *(blank)* | `services/ash-admin` |
-| **Build Command** | `pnpm install --frozen-lockfile=false && cd packages/database && npx prisma generate...` | `cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build` |
-| **Start Command** | `cd services/ash-admin && pnpm start` | `pnpm start` |
+| Setting            | OLD (Wrong)                                                                              | NEW (Correct)                                                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Root Directory** | _(blank)_                                                                                | `services/ash-admin`                                                                                                       |
+| **Build Command**  | `pnpm install --frozen-lockfile=false && cd packages/database && npx prisma generate...` | `cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build` |
+| **Start Command**  | `cd services/ash-admin && pnpm start`                                                    | `pnpm start`                                                                                                               |
 
 ---
 
@@ -126,6 +128,7 @@ If you still see errors after making these changes:
 3. **Send the screenshot** so we can diagnose further
 
 But with these settings, it **SHOULD WORK** because:
+
 - ✅ Root Directory is now correct
 - ✅ Build command runs from the right location
 - ✅ Path aliases will resolve correctly

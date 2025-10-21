@@ -1,13 +1,13 @@
 // Multi-Tenant Management System
 // Handles workspace creation, isolation, and tenant-specific configurations
 
-import { prisma } from '@/lib/database';
+import { prisma } from "@/lib/database";
 
 export interface TenantConfig {
   workspace_id: string;
   name: string;
   slug: string;
-  subscription_tier: 'FREE' | 'BASIC' | 'PROFESSIONAL' | 'ENTERPRISE';
+  subscription_tier: "FREE" | "BASIC" | "PROFESSIONAL" | "ENTERPRISE";
   max_users: number;
   max_orders_per_month: number;
   features_enabled: string[]; // Array of feature flags
@@ -35,7 +35,9 @@ export interface TenantLimits {
 
 export class TenantManager {
   // Create new tenant workspace
-  async createTenant(config: Omit<TenantConfig, 'workspace_id'>): Promise<{ workspace_id: string; success: boolean }> {
+  async createTenant(
+    config: Omit<TenantConfig, "workspace_id">
+  ): Promise<{ workspace_id: string; success: boolean }> {
     try {
       // Check if slug is available
       const existing = await prisma.workspace.findUnique({
@@ -76,7 +78,7 @@ export class TenantManager {
         success: true,
       };
     } catch (error: any) {
-      console.error('Tenant creation error:', error);
+      console.error("Tenant creation error:", error);
       throw new Error(`Failed to create tenant: ${error.message}`);
     }
   }
@@ -96,7 +98,7 @@ export class TenantManager {
         workspace_id: workspace.id,
         name: workspace.name,
         slug: workspace.slug,
-        subscription_tier: settings.subscription_tier || 'FREE',
+        subscription_tier: settings.subscription_tier || "FREE",
         max_users: settings.max_users || 5,
         max_orders_per_month: settings.max_orders_per_month || 50,
         features_enabled: settings.features_enabled || [],
@@ -106,23 +108,37 @@ export class TenantManager {
         billing: settings.billing,
       };
     } catch (error: any) {
-      console.error('Get tenant config error:', error);
+      console.error("Get tenant config error:", error);
       return null;
     }
   }
 
   // Update tenant configuration
-  async updateTenantConfig(workspace_id: string, updates: Partial<TenantConfig>): Promise<boolean> {
+  async updateTenantConfig(
+    workspace_id: string,
+    updates: Partial<TenantConfig>
+  ): Promise<boolean> {
     try {
       const currentConfig = await this.getTenantConfig(workspace_id);
-      if (!currentConfig) throw new Error('Workspace not found');
+      if (!currentConfig) throw new Error("Workspace not found");
 
       const updatedSettings = {
-        subscription_tier: updates.subscription_tier || currentConfig.subscription_tier,
-        max_users: updates.max_users !== undefined ? updates.max_users : currentConfig.max_users,
-        max_orders_per_month: updates.max_orders_per_month !== undefined ? updates.max_orders_per_month : currentConfig.max_orders_per_month,
-        features_enabled: updates.features_enabled || currentConfig.features_enabled,
-        storage_quota_gb: updates.storage_quota_gb !== undefined ? updates.storage_quota_gb : currentConfig.storage_quota_gb,
+        subscription_tier:
+          updates.subscription_tier || currentConfig.subscription_tier,
+        max_users:
+          updates.max_users !== undefined
+            ? updates.max_users
+            : currentConfig.max_users,
+        max_orders_per_month:
+          updates.max_orders_per_month !== undefined
+            ? updates.max_orders_per_month
+            : currentConfig.max_orders_per_month,
+        features_enabled:
+          updates.features_enabled || currentConfig.features_enabled,
+        storage_quota_gb:
+          updates.storage_quota_gb !== undefined
+            ? updates.storage_quota_gb
+            : currentConfig.storage_quota_gb,
         custom_domain: updates.custom_domain || currentConfig.custom_domain,
         branding: { ...currentConfig.branding, ...updates.branding },
         billing: { ...currentConfig.billing, ...updates.billing },
@@ -139,7 +155,7 @@ export class TenantManager {
 
       return true;
     } catch (error: any) {
-      console.error('Update tenant config error:', error);
+      console.error("Update tenant config error:", error);
       return false;
     }
   }
@@ -148,7 +164,7 @@ export class TenantManager {
   async checkLimits(workspace_id: string): Promise<TenantLimits> {
     const config = await this.getTenantConfig(workspace_id);
     if (!config) {
-      throw new Error('Workspace not found');
+      throw new Error("Workspace not found");
     }
 
     // Count current users
@@ -191,7 +207,10 @@ export class TenantManager {
   }
 
   // Check if feature is enabled for tenant
-  async isFeatureEnabled(workspace_id: string, feature: string): Promise<boolean> {
+  async isFeatureEnabled(
+    workspace_id: string,
+    feature: string
+  ): Promise<boolean> {
     const config = await this.getTenantConfig(workspace_id);
     if (!config) return false;
 
@@ -199,7 +218,10 @@ export class TenantManager {
   }
 
   // Validate tenant access (middleware helper)
-  async validateTenantAccess(workspace_id: string, user_id?: string): Promise<{
+  async validateTenantAccess(
+    workspace_id: string,
+    user_id?: string
+  ): Promise<{
     valid: boolean;
     reason?: string;
     workspace?: any;
@@ -211,11 +233,11 @@ export class TenantManager {
       });
 
       if (!workspace) {
-        return { valid: false, reason: 'Workspace not found' };
+        return { valid: false, reason: "Workspace not found" };
       }
 
       if (!workspace.is_active) {
-        return { valid: false, reason: 'Workspace is inactive' };
+        return { valid: false, reason: "Workspace is inactive" };
       }
 
       // If user_id provided, check user belongs to workspace
@@ -225,18 +247,18 @@ export class TenantManager {
         });
 
         if (!user || user.workspace_id !== workspace_id) {
-          return { valid: false, reason: 'User does not belong to workspace' };
+          return { valid: false, reason: "User does not belong to workspace" };
         }
 
         if (!user.is_active) {
-          return { valid: false, reason: 'User account is inactive' };
+          return { valid: false, reason: "User account is inactive" };
         }
       }
 
       return { valid: true, workspace };
     } catch (error: any) {
-      console.error('Validate tenant access error:', error);
-      return { valid: false, reason: 'Validation error' };
+      console.error("Validate tenant access error:", error);
+      return { valid: false, reason: "Validation error" };
     }
   }
 
@@ -263,7 +285,7 @@ export class TenantManager {
     });
 
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw new Error("Workspace not found");
     }
 
     const daysActive = Math.floor(
@@ -274,7 +296,8 @@ export class TenantManager {
       total_users: workspace.users.length,
       active_users: workspace.users.filter(u => u.is_active).length,
       total_orders: workspace.orders.length,
-      active_orders: workspace.orders.filter(o => o.status === 'IN_PRODUCTION').length,
+      active_orders: workspace.orders.filter(o => o.status === "IN_PRODUCTION")
+        .length,
       total_clients: workspace.clients.length,
       total_employees: workspace.employees.length,
       storage_used_gb: 0.5, // Placeholder
@@ -292,11 +315,13 @@ export class TenantManager {
       });
 
       // Log suspension (would implement audit log in production)
-      console.log(`Workspace ${workspace_id} suspended. Reason: ${reason || 'Not specified'}`);
+      console.log(
+        `Workspace ${workspace_id} suspended. Reason: ${reason || "Not specified"}`
+      );
 
       return true;
     } catch (error: any) {
-      console.error('Suspend tenant error:', error);
+      console.error("Suspend tenant error:", error);
       return false;
     }
   }
@@ -310,53 +335,60 @@ export class TenantManager {
 
       return true;
     } catch (error: any) {
-      console.error('Activate tenant error:', error);
+      console.error("Activate tenant error:", error);
       return false;
     }
   }
 
   // Delete tenant (soft delete - requires confirmation)
-  async deleteTenant(workspace_id: string, confirmation: string): Promise<boolean> {
+  async deleteTenant(
+    workspace_id: string,
+    confirmation: string
+  ): Promise<boolean> {
     const workspace = await prisma.workspace.findUnique({
       where: { id: workspace_id },
     });
 
     if (!workspace) {
-      throw new Error('Workspace not found');
+      throw new Error("Workspace not found");
     }
 
     // Require exact slug match as confirmation
     if (confirmation !== workspace.slug) {
-      throw new Error('Confirmation failed - slug does not match');
+      throw new Error("Confirmation failed - slug does not match");
     }
 
     try {
       // In production, would implement soft delete or archive
       // For now, just deactivate
-      await this.suspendTenant(workspace_id, 'DELETED BY USER');
+      await this.suspendTenant(workspace_id, "DELETED BY USER");
 
       return true;
     } catch (error: any) {
-      console.error('Delete tenant error:', error);
+      console.error("Delete tenant error:", error);
       return false;
     }
   }
 
   // Private helper methods
 
-  private async createDefaultAdmin(workspace_id: string, workspaceName: string): Promise<void> {
+  private async createDefaultAdmin(
+    workspace_id: string,
+    workspaceName: string
+  ): Promise<void> {
     // Create default admin user
-    const bcrypt = await import('bcryptjs');
-    const defaultPassword = 'ChangeMe123!'; // Force password change on first login
+    const bcrypt = await import("bcryptjs");
+    const defaultPassword = "ChangeMe123!"; // Force password change on first login
 
     await prisma.user.create({
       data: {
         workspace_id,
-        email: 'admin@' + workspaceName.toLowerCase().replace(/\s/g, '') + '.com',
-        first_name: 'Admin',
-        last_name: 'User',
+        email:
+          "admin@" + workspaceName.toLowerCase().replace(/\s/g, "") + ".com",
+        first_name: "Admin",
+        last_name: "User",
         password_hash: await bcrypt.hash(defaultPassword, 10),
-        role: 'ADMIN',
+        role: "ADMIN",
         is_active: true,
       },
     });
@@ -365,11 +397,36 @@ export class TenantManager {
   private async initializeDefaults(workspace_id: string): Promise<void> {
     // Create default defect codes
     const defaultDefectCodes = [
-      { code: 'STAIN', description: 'Fabric staining', severity: 'MAJOR', category: 'FABRIC' },
-      { code: 'HOLE', description: 'Hole or tear', severity: 'CRITICAL', category: 'FABRIC' },
-      { code: 'SKIP_STITCH', description: 'Skipped stitches', severity: 'MAJOR', category: 'SEWING' },
-      { code: 'LOOSE_THREAD', description: 'Loose threads', severity: 'MINOR', category: 'SEWING' },
-      { code: 'PRINT_MISALIGN', description: 'Print misalignment', severity: 'CRITICAL', category: 'PRINT' },
+      {
+        code: "STAIN",
+        description: "Fabric staining",
+        severity: "MAJOR",
+        category: "FABRIC",
+      },
+      {
+        code: "HOLE",
+        description: "Hole or tear",
+        severity: "CRITICAL",
+        category: "FABRIC",
+      },
+      {
+        code: "SKIP_STITCH",
+        description: "Skipped stitches",
+        severity: "MAJOR",
+        category: "SEWING",
+      },
+      {
+        code: "LOOSE_THREAD",
+        description: "Loose threads",
+        severity: "MINOR",
+        category: "SEWING",
+      },
+      {
+        code: "PRINT_MISALIGN",
+        description: "Print misalignment",
+        severity: "CRITICAL",
+        category: "PRINT",
+      },
     ];
 
     for (const defect of defaultDefectCodes) {

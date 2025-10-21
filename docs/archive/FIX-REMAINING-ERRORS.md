@@ -19,6 +19,7 @@ You have **164 errors already fixed** (53% reduction). The remaining 143 errors 
 Run these commands from `services/ash-admin/` directory:
 
 ### Step 1: Fix Model Names
+
 ```bash
 # Fix qualityControlCheck → qCInspection
 find src -name "*.ts" -type f -exec sed -i 's/prisma\.qualityControlCheck/prisma.qCInspection/g' {} +
@@ -31,6 +32,7 @@ find src -name "*.ts" -type f -exec sed -i 's/prisma\.cuttingRun/prisma.cutLay/g
 ```
 
 **Windows PowerShell Alternative**:
+
 ```powershell
 # Fix qualityControlCheck → qCInspection
 Get-ChildItem -Path src -Filter *.ts -Recurse | ForEach-Object {
@@ -49,6 +51,7 @@ Get-ChildItem -Path src -Filter *.ts -Recurse | ForEach-Object {
 ```
 
 ### Step 2: Test Compilation
+
 ```bash
 npx tsc --noEmit 2>&1 | grep "error TS" | wc -l
 ```
@@ -64,6 +67,7 @@ npx tsc --noEmit 2>&1 | grep "error TS" | wc -l
 Fix these 10 files in order:
 
 #### 1. `src/app/api/ai/defect-detection/route.ts`
+
 ```typescript
 // Line 28: Change
 await prisma.qualityControlCheck.create({
@@ -112,72 +116,78 @@ await prisma.qCDefectType.upsert({
 ```
 
 #### 2. `src/app/api/ai/bottleneck/route.ts`
+
 ```typescript
 // Line 73: Change
-const printDefects = run.quantity - run.good_quantity
+const printDefects = run.quantity - run.good_quantity;
 // To:
-const printDefects = 0 // PrintRun doesn't have quantity field
+const printDefects = 0; // PrintRun doesn't have quantity field
 
 // Line 93: Change
-run.pieces_completed
+run.pieces_completed;
 // To:
-run.qty_good
+run.qty_good;
 
 // Line 94: Change
-run.target_pieces
+run.target_pieces;
 // To:
-run.qty_good + run.qty_reject
+run.qty_good + run.qty_reject;
 ```
 
 #### 3. `src/app/api/employee/stats/[id]/route.ts`
+
 ```typescript
 // Lines 48, 53, 58: Change all
-pieces_completed
+pieces_completed;
 // To:
-qty_good
+qty_good;
 ```
 
 #### 4. `src/app/api/3pl/book/route.ts`
+
 ```typescript
 // Line 41: Change
-tracking_number: response.tracking_number
+tracking_number: response.tracking_number;
 // To:
-tracking_code: response.tracking_number
+tracking_code: response.tracking_number;
 ```
 
 #### 5. `src/app/api/admin/users/route.ts`
+
 ```typescript
 // Line 154: Add workspace relation
 const user = await prisma.user.create({
   data: {
     workspace: {
-      connect: { id: workspace_id }
+      connect: { id: workspace_id },
     },
     password_hash,
     email,
     //... other fields
-  }
+  },
 });
 ```
 
 #### 6. `src/app/api/brands/route.ts`
+
 ```typescript
 // Line 133: Add required relations
 const brand = await prisma.brand.create({
   data: {
     workspace: {
-      connect: { id: workspace_id }
+      connect: { id: workspace_id },
     },
     client: {
-      connect: { id: client_id }
+      connect: { id: client_id },
     },
     name,
     // ... other fields
-  }
+  },
 });
 ```
 
 #### 7. `src/app/api/bundles/scan/route.ts`
+
 ```typescript
 // Line 26: Remove bundle_number filter
 where: {
@@ -196,6 +206,7 @@ include: {
 ```
 
 #### 8. `src/app/api/cutting/bundles/route.ts`
+
 ```typescript
 // Line 151: Fix field name
 order_id: orderId, // Change from orderId
@@ -205,19 +216,21 @@ order_id: orderId, // Change from orderId
 ```
 
 #### 9. `src/app/api/ai/bottleneck/trends/route.ts`
+
 ```typescript
 // Line 27: Change
-prisma.cuttingRun.groupBy
+prisma.cuttingRun.groupBy;
 // To:
-prisma.cutLay.groupBy
+prisma.cutLay.groupBy;
 
 // Line 43: Change
-prisma.qualityControlCheck.groupBy
+prisma.qualityControlCheck.groupBy;
 // To:
-prisma.qCInspection.groupBy
+prisma.qCInspection.groupBy;
 ```
 
 #### 10. `src/app/api/automation/execute/route.ts`
+
 ```typescript
 // Line 313: Remove 'details' field
 await prisma.auditLog.create({
@@ -225,7 +238,7 @@ await prisma.auditLog.create({
     // Remove: details: executionData,
     metadata: JSON.stringify(executionData), // Use metadata instead
     // ... other fields
-  }
+  },
 });
 ```
 
@@ -234,12 +247,14 @@ await prisma.auditLog.create({
 20 files with 1-3 errors each. Common fixes:
 
 **Pattern**: Remove non-existent fields
+
 - Remove `company` from Client selects
 - Remove `description` from Workspace
 - Remove `status` from Expense where clauses
 - Fix `createdAt` → `created_at` everywhere
 
 **Files**:
+
 - `src/app/api/clients/[id]/brands/[brandId]/route.ts`
 - `src/app/api/employees/route.ts`
 - `src/app/api/employees/setup/route.ts`
@@ -251,6 +266,7 @@ await prisma.auditLog.create({
 ### Phase 3: UI Components (30 errors - 20 min)
 
 #### Fix Badge Component
+
 ```typescript
 // Remove 'size' prop from all Badge components
 // Find: <Badge size="sm"
@@ -262,6 +278,7 @@ await prisma.auditLog.create({
 ```
 
 #### Fix Role Type Comparisons
+
 ```typescript
 // src/components/dashboard/role-activities.tsx
 // Lines 321-342
@@ -278,6 +295,7 @@ case 'cutting_operator':
 ```
 
 #### Fix Workflow Enums
+
 ```typescript
 // src/components/printing/*Workflow.tsx
 
@@ -308,11 +326,13 @@ function generateEmail(): string {
 Since all critical systems work, you can:
 
 1. **Add TypeScript ignore comments** to non-critical files:
+
 ```typescript
 // @ts-nocheck
 ```
 
 2. **Update tsconfig.json** to be less strict:
+
 ```json
 {
   "compilerOptions": {
@@ -343,14 +363,14 @@ npx tsc --noEmit 2>&1 | grep "error TS" | cut -d'(' -f1 | sort | uniq -c | sort 
 
 ## Expected Results
 
-| Phase | Errors Fixed | Time | Remaining |
-|-------|-------------|------|-----------|
-| **Start** | - | - | 143 |
-| Automated (Option 1) | ~43 | 15 min | ~100 |
-| Phase 1 (Manual) | ~40 | 30 min | ~60 |
-| Phase 2 (Manual) | ~60 | 30 min | ~0-10 |
-| Phase 3 (UI) | ~30 | 20 min | 0 |
-| Phase 4 (Tests) | ~5 | 10 min | 0 |
+| Phase                | Errors Fixed | Time   | Remaining |
+| -------------------- | ------------ | ------ | --------- |
+| **Start**            | -            | -      | 143       |
+| Automated (Option 1) | ~43          | 15 min | ~100      |
+| Phase 1 (Manual)     | ~40          | 30 min | ~60       |
+| Phase 2 (Manual)     | ~60          | 30 min | ~0-10     |
+| Phase 3 (UI)         | ~30          | 20 min | 0         |
+| Phase 4 (Tests)      | ~5           | 10 min | 0         |
 
 **Total Time for 0 Errors**: ~90 minutes (manual approach)
 **Total Time with Automation**: ~60 minutes

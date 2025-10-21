@@ -1,34 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { z } from "zod";
 
 const BundleConfigSchema = z.object({
-  sizeCode: z.string().min(1, 'Size code is required'),
-  totalPieces: z.number().int().positive('Total pieces must be positive'),
-  piecesPerBundle: z.number().int().positive('Pieces per bundle must be positive'),
+  sizeCode: z.string().min(1, "Size code is required"),
+  totalPieces: z.number().int().positive("Total pieces must be positive"),
+  piecesPerBundle: z
+    .number()
+    .int()
+    .positive("Pieces per bundle must be positive"),
 });
 
 const CreateBundlesSchema = z.object({
-  orderId: z.string().min(1, 'Order ID is required'),
-  cutLayId: z.string().min(1, 'Cut lay ID is required'),
-  bundleConfigs: z.array(BundleConfigSchema).min(1, 'At least one bundle configuration is required'),
+  orderId: z.string().min(1, "Order ID is required"),
+  cutLayId: z.string().min(1, "Cut lay ID is required"),
+  bundleConfigs: z
+    .array(BundleConfigSchema)
+    .min(1, "At least one bundle configuration is required"),
 });
 
 const UpdateBundleSchema = z.object({
-  bundleId: z.string().min(1, 'Bundle ID is required'),
-  status: z.enum(['CREATED', 'IN_SEWING', 'DONE', 'REJECTED']),
+  bundleId: z.string().min(1, "Bundle ID is required"),
+  status: z.enum(["CREATED", "IN_SEWING", "DONE", "REJECTED"]),
   notes: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const orderId = searchParams.get('orderId') || '';
-    const cutLayId = searchParams.get('cutLayId') || '';
-    const status = searchParams.get('status') || '';
-    const sizeCode = searchParams.get('sizeCode') || '';
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const orderId = searchParams.get("orderId") || "";
+    const cutLayId = searchParams.get("cutLayId") || "";
+    const status = searchParams.get("status") || "";
+    const sizeCode = searchParams.get("sizeCode") || "";
 
     const skip = (page - 1) * limit;
 
@@ -38,7 +43,7 @@ export async function GET(request: NextRequest) {
         cutLayId ? { cutLayId } : {},
         status ? { status } : {},
         sizeCode ? { sizeCode } : {},
-      ]
+      ],
     };
 
     const [bundles, total] = await Promise.all([
@@ -54,14 +59,14 @@ export async function GET(request: NextRequest) {
               client: {
                 select: {
                   name: true,
-                }
+                },
               },
               brand: {
                 select: {
                   name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           lay: {
             select: {
@@ -69,15 +74,15 @@ export async function GET(request: NextRequest) {
               marker_name: true,
               lay_length_m: true,
               plies: true,
-            }
+            },
           },
           _count: {
             select: {
               sewing_runs: true,
-            }
-          }
+            },
+          },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { created_at: "desc" },
       }),
       prisma.bundle.count({ where }),
     ]);
@@ -91,13 +96,13 @@ export async function GET(request: NextRequest) {
           limit,
           total,
           pages: Math.ceil(total / limit),
-        }
-      }
+        },
+      },
     });
   } catch (error) {
-    console.error('Error fetching bundles:', error);
+    console.error("Error fetching bundles:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch bundles' },
+      { success: false, error: "Failed to fetch bundles" },
       { status: 500 }
     );
   }
@@ -110,24 +115,24 @@ export async function POST(request: NextRequest) {
 
     // Check if order exists
     const order = await prisma.order.findUnique({
-      where: { id: validatedData.orderId }
+      where: { id: validatedData.orderId },
     });
 
     if (!order) {
       return NextResponse.json(
-        { success: false, error: 'Order not found' },
+        { success: false, error: "Order not found" },
         { status: 404 }
       );
     }
 
     // Check if cut lay exists
     const cutLay = await prisma.cutLay.findUnique({
-      where: { id: validatedData.cutLayId }
+      where: { id: validatedData.cutLayId },
     });
 
     if (!cutLay) {
       return NextResponse.json(
-        { success: false, error: 'Cut lay not found' },
+        { success: false, error: "Cut lay not found" },
         { status: 404 }
       );
     }
@@ -135,16 +140,27 @@ export async function POST(request: NextRequest) {
     const createdBundles = [];
 
     // Create bundles in a transaction
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       for (const config of validatedData.bundleConfigs) {
-        const bundlesCount = Math.ceil(config.totalPieces / config.piecesPerBundle);
+        const bundlesCount = Math.ceil(
+          config.totalPieces / config.piecesPerBundle
+        );
 
         for (let bundleNum = 1; bundleNum <= bundlesCount; bundleNum++) {
-          const remainingPieces = config.totalPieces - ((bundleNum - 1) * config.piecesPerBundle);
-          const currentBundlePieces = Math.min(config.piecesPerBundle, remainingPieces);
+          const remainingPieces =
+            config.totalPieces - (bundleNum - 1) * config.piecesPerBundle;
+          const currentBundlePieces = Math.min(
+            config.piecesPerBundle,
+            remainingPieces
+          );
 
-          const qrCode = generateQRCode(validatedData.orderId, validatedData.cutLayId, config.sizeCode, bundleNum);
-          const bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, '0')}`;
+          const qrCode = generateQRCode(
+            validatedData.orderId,
+            validatedData.cutLayId,
+            config.sizeCode,
+            bundleNum
+          );
+          const bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
 
           const bundle = await tx.bundle.create({
             data: {
@@ -153,7 +169,7 @@ export async function POST(request: NextRequest) {
               size_code: config.sizeCode,
               qty: currentBundlePieces,
               qr_code: qrCode,
-              status: 'CREATED',
+              status: "CREATED",
             },
             include: {
               order: {
@@ -163,14 +179,14 @@ export async function POST(request: NextRequest) {
                   client: {
                     select: {
                       name: true,
-                    }
+                    },
                   },
                   brand: {
                     select: {
                       name: true,
-                    }
-                  }
-                }
+                    },
+                  },
+                },
               },
               lay: {
                 select: {
@@ -178,9 +194,9 @@ export async function POST(request: NextRequest) {
                   marker_name: true,
                   lay_length_m: true,
                   plies: true,
-                }
-              }
-            }
+                },
+              },
+            },
           });
 
           createdBundles.push(bundle);
@@ -188,40 +204,48 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({
-      success: true,
-      data: createdBundles,
-      message: `Successfully created ${createdBundles.length} bundles`
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: createdBundles,
+        message: `Successfully created ${createdBundles.length} bundles`,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error('Error creating bundles:', error);
+    console.error("Error creating bundles:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create bundles' },
+      { success: false, error: "Failed to create bundles" },
       { status: 500 }
     );
   }
 }
 
-function generateQRCode(orderId: string, layId: string, sizeCode: string, bundleNumber: number): string {
-  const timestamp = new Date().getTime()
-  return `ASH-${orderId}-${layId}-${sizeCode}-${String(bundleNumber).padStart(3, '0')}-${timestamp}`
+function generateQRCode(
+  orderId: string,
+  layId: string,
+  sizeCode: string,
+  bundleNumber: number
+): string {
+  const timestamp = new Date().getTime();
+  return `ASH-${orderId}-${layId}-${sizeCode}-${String(bundleNumber).padStart(3, "0")}-${timestamp}`;
 }
 
 export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Bundle ID is required' },
+        { success: false, error: "Bundle ID is required" },
         { status: 400 }
       );
     }
@@ -231,12 +255,12 @@ export async function PUT(request: NextRequest) {
 
     // Check if bundle exists
     const existingBundle = await prisma.bundle.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!existingBundle) {
       return NextResponse.json(
-        { success: false, error: 'Bundle not found' },
+        { success: false, error: "Bundle not found" },
         { status: 404 }
       );
     }
@@ -255,14 +279,14 @@ export async function PUT(request: NextRequest) {
             client: {
               select: {
                 name: true,
-              }
+              },
             },
             brand: {
               select: {
                 name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         lay: {
           select: {
@@ -270,27 +294,27 @@ export async function PUT(request: NextRequest) {
             marker_name: true,
             lay_length_m: true,
             plies: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: bundle,
-      message: 'Bundle updated successfully'
+      message: "Bundle updated successfully",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error('Error updating bundle:', error);
+    console.error("Error updating bundle:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update bundle' },
+      { success: false, error: "Failed to update bundle" },
       { status: 500 }
     );
   }

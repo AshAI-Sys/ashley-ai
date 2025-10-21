@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { requireAuth } from '@/lib/auth-middleware'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 /**
  * Mobile Scan API
@@ -8,29 +8,26 @@ import { requireAuth } from '@/lib/auth-middleware'
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const { code, format } = await request.json()
+    const { code, format } = await request.json();
 
     if (!code) {
       return NextResponse.json(
         {
           success: false,
-          type: 'unknown',
-          message: 'No code provided',
+          type: "unknown",
+          message: "No code provided",
         },
         { status: 400 }
-      )
+      );
     }
 
     // Try to identify what was scanned based on code format and database lookup
 
     // 1. Check if it's a Bundle (format: BDL-YYYYMMDD-XXXX or similar)
-    if (code.includes('BDL-') || code.includes('BUNDLE-')) {
+    if (code.includes("BDL-") || code.includes("BUNDLE-")) {
       const bundle = await prisma.bundle.findFirst({
         where: {
-          OR: [
-            { qr_code: code },
-            { id: code },
-          ],
+          OR: [{ qr_code: code }, { id: code }],
         },
         include: {
           lay: {
@@ -46,12 +43,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      })
+      });
 
       if (bundle) {
         return NextResponse.json({
           success: true,
-          type: 'bundle',
+          type: "bundle",
           data: {
             id: bundle.id,
             bundle_number: bundle.qr_code,
@@ -63,12 +60,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             client_name: bundle.lay?.order?.client?.name,
           },
           message: `Bundle ${bundle.qr_code} found - ${bundle.qty} pieces`,
-        })
+        });
       }
     }
 
     // 2. Check if it's an Order (format: ORD-YYYY-XXXXXX)
-    if (code.includes('ORD-') || code.includes('ORDER-')) {
+    if (code.includes("ORD-") || code.includes("ORDER-")) {
       const order = await prisma.order.findFirst({
         where: {
           order_number: code,
@@ -92,12 +89,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      })
+      });
 
       if (order) {
         return NextResponse.json({
           success: true,
-          type: 'order',
+          type: "order",
           data: {
             id: order.id,
             order_number: order.order_number,
@@ -108,18 +105,15 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             line_items_count: order._count.line_items,
           },
           message: `Order ${order.order_number} - ${order.client.name}`,
-        })
+        });
       }
     }
 
     // 3. Check if it's a Finished Unit (format: FU-XXXXXX or SKU-XXXXXX)
-    if (code.includes('FU-') || code.includes('SKU-')) {
+    if (code.includes("FU-") || code.includes("SKU-")) {
       const finishedUnit = await prisma.finishedUnit.findFirst({
         where: {
-          OR: [
-            { sku: code },
-            { id: code },
-          ],
+          OR: [{ sku: code }, { id: code }],
         },
         include: {
           order: {
@@ -139,33 +133,30 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      })
+      });
 
       if (finishedUnit) {
         return NextResponse.json({
           success: true,
-          type: 'finished_unit',
+          type: "finished_unit",
           data: {
             id: finishedUnit.id,
             sku: finishedUnit.sku,
             quantity: 1, // FinishedUnit doesn't have quantity field
-            warehouse_location: finishedUnit.packed ? 'PACKED' : 'UNPACKED',
+            warehouse_location: finishedUnit.packed ? "PACKED" : "UNPACKED",
             order_number: finishedUnit.order?.order_number,
             carton: finishedUnit.carton_contents[0]?.carton,
           },
           message: `Finished Unit ${finishedUnit.sku} - 1 piece`,
-        })
+        });
       }
     }
 
     // 4. Check if it's a Carton (format: CTN-XXXXXX)
-    if (code.includes('CTN-') || code.includes('CARTON-')) {
+    if (code.includes("CTN-") || code.includes("CARTON-")) {
       const carton = await prisma.carton.findFirst({
         where: {
-          OR: [
-            { qr_code: code },
-            { id: code },
-          ],
+          OR: [{ qr_code: code }, { id: code }],
         },
         include: {
           order: {
@@ -182,12 +173,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      })
+      });
 
       if (carton) {
         return NextResponse.json({
           success: true,
-          type: 'carton',
+          type: "carton",
           data: {
             id: carton.id,
             carton_number: String(carton.carton_no),
@@ -202,7 +193,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
           message: `Carton ${carton.carton_no} - ${carton._count.contents} units`,
-        })
+        });
       }
     }
 
@@ -213,14 +204,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       prisma.order.findUnique({ where: { id: code } }),
       prisma.finishedUnit.findUnique({ where: { id: code } }),
       prisma.carton.findUnique({ where: { id: code } }),
-    ])
+    ]);
 
-    const [bundle, order, finishedUnit, carton] = results
+    const [bundle, order, finishedUnit, carton] = results;
 
     if (bundle) {
       return NextResponse.json({
         success: true,
-        type: 'bundle',
+        type: "bundle",
         data: {
           id: bundle.id,
           bundle_number: bundle.qr_code,
@@ -229,62 +220,62 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: bundle.status,
         },
         message: `Bundle ${bundle.qr_code} found`,
-      })
+      });
     }
 
     if (order) {
       return NextResponse.json({
         success: true,
-        type: 'order',
+        type: "order",
         data: {
           id: order.id,
           order_number: order.order_number,
           status: order.status,
         },
         message: `Order ${order.order_number} found`,
-      })
+      });
     }
 
     if (finishedUnit) {
       return NextResponse.json({
         success: true,
-        type: 'finished_unit',
+        type: "finished_unit",
         data: {
           id: finishedUnit.id,
           sku: finishedUnit.sku,
           quantity: 1,
         },
         message: `Finished Unit ${finishedUnit.sku} found`,
-      })
+      });
     }
 
     if (carton) {
       return NextResponse.json({
         success: true,
-        type: 'carton',
+        type: "carton",
         data: {
           id: carton.id,
           carton_number: String(carton.carton_no),
         },
         message: `Carton ${carton.carton_no} found`,
-      })
+      });
     }
 
     // Nothing found
     return NextResponse.json({
       success: false,
-      type: 'unknown',
+      type: "unknown",
       message: `Code "${code}" not found in the system. Please verify and try again.`,
-    })
+    });
   } catch (error) {
-    console.error('Mobile scan error:', error)
+    console.error("Mobile scan error:", error);
     return NextResponse.json(
       {
         success: false,
-        type: 'unknown',
-        message: 'An error occurred while processing the scan',
+        type: "unknown",
+        message: "An error occurred while processing the scan",
       },
       { status: 500 }
-    )
+    );
   }
-})
+});

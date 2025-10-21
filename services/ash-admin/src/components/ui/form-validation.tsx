@@ -1,6 +1,6 @@
-import React from 'react'
-import { cn } from '@/lib/utils'
-import { AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react'
+import React from "react";
+import { cn } from "@/lib/utils";
+import { AlertCircle, CheckCircle2, Info, AlertTriangle } from "lucide-react";
 
 /**
  * Form Field with Validation
@@ -8,15 +8,15 @@ import { AlertCircle, CheckCircle2, Info, AlertTriangle } from 'lucide-react'
  */
 
 interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string
-  error?: string
-  success?: string
-  hint?: string
-  required?: boolean
+  label: string;
+  error?: string;
+  success?: string;
+  hint?: string;
+  required?: boolean;
   /**
    * Show validation icons
    */
-  showIcons?: boolean
+  showIcons?: boolean;
 }
 
 export function FormField({
@@ -29,8 +29,8 @@ export function FormField({
   className,
   ...props
 }: FormFieldProps) {
-  const hasError = !!error
-  const hasSuccess = !!success && !error
+  const hasError = !!error;
+  const hasSuccess = !!success && !error;
 
   return (
     <div className="space-y-2">
@@ -42,14 +42,15 @@ export function FormField({
       <div className="relative">
         <input
           className={cn(
-            'flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm',
-            'ring-offset-background file:border-0 file:bg-transparent',
-            'file:text-sm file:font-medium placeholder:text-muted-foreground',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            hasError && 'border-destructive focus-visible:ring-destructive pr-10',
-            hasSuccess && 'border-green-500 focus-visible:ring-green-500 pr-10',
-            !hasError && !hasSuccess && 'border-input',
+            "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm",
+            "ring-offset-background file:border-0 file:bg-transparent",
+            "file:text-sm file:font-medium placeholder:text-muted-foreground",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            hasError &&
+              "border-destructive pr-10 focus-visible:ring-destructive",
+            hasSuccess && "border-green-500 pr-10 focus-visible:ring-green-500",
+            !hasError && !hasSuccess && "border-input",
             className
           )}
           aria-invalid={hasError}
@@ -62,10 +63,16 @@ export function FormField({
         {showIcons && (hasError || hasSuccess) && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             {hasError && (
-              <AlertCircle className="h-4 w-4 text-destructive" aria-hidden="true" />
+              <AlertCircle
+                className="h-4 w-4 text-destructive"
+                aria-hidden="true"
+              />
             )}
             {hasSuccess && (
-              <CheckCircle2 className="h-4 w-4 text-green-500" aria-hidden="true" />
+              <CheckCircle2
+                className="h-4 w-4 text-green-500"
+                aria-hidden="true"
+              />
             )}
           </div>
         )}
@@ -74,17 +81,17 @@ export function FormField({
       {error && (
         <p
           id={`${props.id}-error`}
-          className="text-sm font-medium text-destructive flex items-start gap-1.5"
+          className="flex items-start gap-1.5 text-sm font-medium text-destructive"
           role="alert"
         >
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{error}</span>
         </p>
       )}
 
       {success && !error && (
-        <p className="text-sm text-green-600 dark:text-green-400 flex items-start gap-1.5">
-          <CheckCircle2 className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <p className="flex items-start gap-1.5 text-sm text-green-600 dark:text-green-400">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{success}</span>
         </p>
       )}
@@ -92,26 +99,27 @@ export function FormField({
       {hint && !error && !success && (
         <p
           id={`${props.id}-hint`}
-          className="text-sm text-muted-foreground flex items-start gap-1.5"
+          className="flex items-start gap-1.5 text-sm text-muted-foreground"
         >
-          <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{hint}</span>
         </p>
       )}
     </div>
-  )
+  );
 }
 
 /**
  * Form Select with Validation
  */
-interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label: string
-  error?: string
-  hint?: string
-  required?: boolean
-  options: Array<{ value: string; label: string }>
-  placeholder?: string
+interface FormSelectProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label: string;
+  error?: string;
+  hint?: string;
+  required?: boolean;
+  options: Array<{ value: string; label: string }>;
+  placeholder?: string;
 }
 
 export function FormSelect({
@@ -120,11 +128,11 @@ export function FormSelect({
   hint,
   required,
   options,
-  placeholder = 'Select an option',
+  placeholder = "Select an option",
   className,
   ...props
 }: FormSelectProps) {
-  const hasError = !!error
+  const hasError = !!error;
 
   return (
     <div className="space-y-2">
@@ -135,12 +143,12 @@ export function FormSelect({
 
       <select
         className={cn(
-          'flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm',
-          'ring-offset-background focus-visible:outline-none focus-visible:ring-2',
-          'focus-visible:ring-ring focus-visible:ring-offset-2',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          hasError && 'border-destructive focus-visible:ring-destructive',
-          !hasError && 'border-input',
+          "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm",
+          "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
+          "focus-visible:ring-ring focus-visible:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          hasError && "border-destructive focus-visible:ring-destructive",
+          !hasError && "border-input",
           className
         )}
         aria-invalid={hasError}
@@ -150,7 +158,7 @@ export function FormSelect({
         {...props}
       >
         <option value="">{placeholder}</option>
-        {options.map((option) => (
+        {options.map(option => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
@@ -160,10 +168,10 @@ export function FormSelect({
       {error && (
         <p
           id={`${props.id}-error`}
-          className="text-sm font-medium text-destructive flex items-start gap-1.5"
+          className="flex items-start gap-1.5 text-sm font-medium text-destructive"
           role="alert"
         >
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{error}</span>
         </p>
       )}
@@ -171,32 +179,33 @@ export function FormSelect({
       {hint && !error && (
         <p
           id={`${props.id}-hint`}
-          className="text-sm text-muted-foreground flex items-start gap-1.5"
+          className="flex items-start gap-1.5 text-sm text-muted-foreground"
         >
-          <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{hint}</span>
         </p>
       )}
     </div>
-  )
+  );
 }
 
 /**
  * Form Textarea with Validation
  */
-interface FormTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label: string
-  error?: string
-  hint?: string
-  required?: boolean
+interface FormTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label: string;
+  error?: string;
+  hint?: string;
+  required?: boolean;
   /**
    * Show character count
    */
-  showCharCount?: boolean
+  showCharCount?: boolean;
   /**
    * Maximum characters
    */
-  maxLength?: number
+  maxLength?: number;
 }
 
 export function FormTextarea({
@@ -210,8 +219,8 @@ export function FormTextarea({
   value,
   ...props
 }: FormTextareaProps) {
-  const hasError = !!error
-  const charCount = typeof value === 'string' ? value.length : 0
+  const hasError = !!error;
+  const charCount = typeof value === "string" ? value.length : 0;
 
   return (
     <div className="space-y-2">
@@ -223,8 +232,8 @@ export function FormTextarea({
         {showCharCount && maxLength && (
           <span
             className={cn(
-              'text-xs text-muted-foreground',
-              charCount > maxLength && 'text-destructive'
+              "text-xs text-muted-foreground",
+              charCount > maxLength && "text-destructive"
             )}
           >
             {charCount}/{maxLength}
@@ -234,12 +243,12 @@ export function FormTextarea({
 
       <textarea
         className={cn(
-          'flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm',
-          'ring-offset-background placeholder:text-muted-foreground',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          hasError && 'border-destructive focus-visible:ring-destructive',
-          !hasError && 'border-input',
+          "flex min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm",
+          "ring-offset-background placeholder:text-muted-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          hasError && "border-destructive focus-visible:ring-destructive",
+          !hasError && "border-input",
           className
         )}
         aria-invalid={hasError}
@@ -254,10 +263,10 @@ export function FormTextarea({
       {error && (
         <p
           id={`${props.id}-error`}
-          className="text-sm font-medium text-destructive flex items-start gap-1.5"
+          className="flex items-start gap-1.5 text-sm font-medium text-destructive"
           role="alert"
         >
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{error}</span>
         </p>
       )}
@@ -265,14 +274,14 @@ export function FormTextarea({
       {hint && !error && (
         <p
           id={`${props.id}-hint`}
-          className="text-sm text-muted-foreground flex items-start gap-1.5"
+          className="flex items-start gap-1.5 text-sm text-muted-foreground"
         >
-          <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0" />
           <span>{hint}</span>
         </p>
       )}
     </div>
-  )
+  );
 }
 
 /**
@@ -280,42 +289,43 @@ export function FormTextarea({
  * Shows all validation errors at once
  */
 interface FormValidationSummaryProps {
-  errors: Array<{ field: string; message: string }>
-  className?: string
+  errors: Array<{ field: string; message: string }>;
+  className?: string;
 }
 
 export function FormValidationSummary({
   errors,
-  className
+  className,
 }: FormValidationSummaryProps) {
-  if (errors.length === 0) return null
+  if (errors.length === 0) return null;
 
   return (
     <div
       className={cn(
-        'rounded-md border border-destructive/50 bg-destructive/10 p-4',
+        "rounded-md border border-destructive/50 bg-destructive/10 p-4",
         className
       )}
       role="alert"
       aria-live="polite"
     >
       <div className="flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+        <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
         <div className="flex-1 space-y-1">
           <h3 className="text-sm font-semibold text-destructive">
             Please fix the following errors:
           </h3>
-          <ul className="list-disc list-inside space-y-1">
+          <ul className="list-inside list-disc space-y-1">
             {errors.map((error, index) => (
               <li key={index} className="text-sm text-destructive/90">
-                <span className="font-medium">{error.field}:</span> {error.message}
+                <span className="font-medium">{error.field}:</span>{" "}
+                {error.message}
               </li>
             ))}
           </ul>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -323,46 +333,46 @@ export function FormValidationSummary({
  * Lightweight validation feedback
  */
 interface ValidationMessageProps {
-  type: 'error' | 'success' | 'warning' | 'info'
-  message: string
-  className?: string
+  type: "error" | "success" | "warning" | "info";
+  message: string;
+  className?: string;
 }
 
 export function ValidationMessage({
   type,
   message,
-  className
+  className,
 }: ValidationMessageProps) {
   const styles = {
     error: {
       icon: AlertCircle,
-      className: 'text-destructive'
+      className: "text-destructive",
     },
     success: {
       icon: CheckCircle2,
-      className: 'text-green-600 dark:text-green-400'
+      className: "text-green-600 dark:text-green-400",
     },
     warning: {
       icon: AlertTriangle,
-      className: 'text-yellow-600 dark:text-yellow-400'
+      className: "text-yellow-600 dark:text-yellow-400",
     },
     info: {
       icon: Info,
-      className: 'text-blue-600 dark:text-blue-400'
-    }
-  }
+      className: "text-blue-600 dark:text-blue-400",
+    },
+  };
 
-  const { icon: Icon, className: typeClass } = styles[type]
+  const { icon: Icon, className: typeClass } = styles[type];
 
   return (
     <p
-      className={cn('text-sm flex items-start gap-1.5', typeClass, className)}
-      role={type === 'error' ? 'alert' : 'status'}
+      className={cn("flex items-start gap-1.5 text-sm", typeClass, className)}
+      role={type === "error" ? "alert" : "status"}
     >
-      <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+      <Icon className="mt-0.5 h-4 w-4 flex-shrink-0" />
       <span>{message}</span>
     </p>
-  )
+  );
 }
 
 /**
@@ -370,27 +380,29 @@ export function ValidationMessage({
  * Shows completion status of multi-step forms
  */
 interface FormProgressProps {
-  currentStep: number
-  totalSteps: number
-  steps?: Array<{ label: string; completed?: boolean }>
-  className?: string
+  currentStep: number;
+  totalSteps: number;
+  steps?: Array<{ label: string; completed?: boolean }>;
+  className?: string;
 }
 
 export function FormProgress({
   currentStep,
   totalSteps,
   steps,
-  className
+  className,
 }: FormProgressProps) {
-  const progress = (currentStep / totalSteps) * 100
+  const progress = (currentStep / totalSteps) * 100;
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn("space-y-3", className)}>
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium">
           Step {currentStep} of {totalSteps}
         </span>
-        <span className="text-muted-foreground">{Math.round(progress)}% Complete</span>
+        <span className="text-muted-foreground">
+          {Math.round(progress)}% Complete
+        </span>
       </div>
 
       <div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
@@ -406,18 +418,19 @@ export function FormProgress({
             <div
               key={index}
               className={cn(
-                'flex flex-col items-center gap-1',
-                index + 1 < currentStep && 'text-green-600',
-                index + 1 === currentStep && 'text-primary font-medium',
-                index + 1 > currentStep && 'text-muted-foreground'
+                "flex flex-col items-center gap-1",
+                index + 1 < currentStep && "text-green-600",
+                index + 1 === currentStep && "font-medium text-primary",
+                index + 1 > currentStep && "text-muted-foreground"
               )}
             >
               <div
                 className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-full border-2',
-                  index + 1 < currentStep && 'border-green-600 bg-green-50 dark:bg-green-950',
-                  index + 1 === currentStep && 'border-primary bg-primary/10',
-                  index + 1 > currentStep && 'border-muted bg-background'
+                  "flex h-8 w-8 items-center justify-center rounded-full border-2",
+                  index + 1 < currentStep &&
+                    "border-green-600 bg-green-50 dark:bg-green-950",
+                  index + 1 === currentStep && "border-primary bg-primary/10",
+                  index + 1 > currentStep && "border-muted bg-background"
                 )}
               >
                 {step.completed ? (
@@ -426,7 +439,7 @@ export function FormProgress({
                   <span className="text-xs">{index + 1}</span>
                 )}
               </div>
-              <span className="text-xs max-w-[80px] text-center truncate">
+              <span className="max-w-[80px] truncate text-center text-xs">
                 {step.label}
               </span>
             </div>
@@ -434,5 +447,5 @@ export function FormProgress({
         </div>
       )}
     </div>
-  )
+  );
 }

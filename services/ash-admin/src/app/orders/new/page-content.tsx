@@ -1,136 +1,144 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 // Import all the new order intake components
-import { ClientBrandSection } from '@/components/order-intake/client-brand-section'
-import { ProductDesignSection } from '@/components/order-intake/product-design-section'
-import { QuantitiesSizeSection } from '@/components/order-intake/quantities-size-section'
-import { VariantsAddonsSection } from '@/components/order-intake/variants-addons-section'
-import { DatesSLAsSection } from '@/components/order-intake/dates-slas-section'
-import { CommercialsSection } from '@/components/order-intake/commercials-section'
-import { ProductionRouteSection } from '@/components/order-intake/production-route-section'
-import { FilesNotesSection } from '@/components/order-intake/files-notes-section'
-import { SubmitSection } from '@/components/order-intake/submit-section'
-import { OrderDetailsSection } from '@/components/order-intake/order-details-section'
-import { GraphicEditingSection } from '@/components/order-intake/graphic-editing-section'
+import { ClientBrandSection } from "@/components/order-intake/client-brand-section";
+import { ProductDesignSection } from "@/components/order-intake/product-design-section";
+import { QuantitiesSizeSection } from "@/components/order-intake/quantities-size-section";
+import { VariantsAddonsSection } from "@/components/order-intake/variants-addons-section";
+import { DatesSLAsSection } from "@/components/order-intake/dates-slas-section";
+import { CommercialsSection } from "@/components/order-intake/commercials-section";
+import { ProductionRouteSection } from "@/components/order-intake/production-route-section";
+import { FilesNotesSection } from "@/components/order-intake/files-notes-section";
+import { SubmitSection } from "@/components/order-intake/submit-section";
+import { OrderDetailsSection } from "@/components/order-intake/order-details-section";
+import { GraphicEditingSection } from "@/components/order-intake/graphic-editing-section";
 
 // UI Components
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Progress } from '@/components/ui/progress'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 
 // Types
 interface Client {
-  id: string
-  name: string
-  company?: string
-  email?: string
-  phone?: string
+  id: string;
+  name: string;
+  company?: string;
+  email?: string;
+  phone?: string;
   brands: Array<{
-    id: string
-    name: string
-    code: string
-  }>
+    id: string;
+    name: string;
+    code: string;
+  }>;
 }
 
 interface DesignFile {
-  id: string
-  file: File
-  name: string
-  size: string
-  type: string
-  preview?: string
-  uploadProgress?: number
-  uploaded?: boolean
-  ashleyValidation?: any
+  id: string;
+  file: File;
+  name: string;
+  size: string;
+  type: string;
+  preview?: string;
+  uploadProgress?: number;
+  uploaded?: boolean;
+  ashleyValidation?: any;
 }
 
 interface SizeCurve {
-  [key: string]: number
+  [key: string]: number;
 }
 
 interface ColorVariant {
-  id: string
-  name: string
-  hexCode: string
-  percentage: number
-  quantity: number
+  id: string;
+  name: string;
+  hexCode: string;
+  percentage: number;
+  quantity: number;
 }
 
 interface UploadedFile {
-  id: string
-  file: File
-  name: string
-  size: string
-  type: string
-  category: string
-  preview?: string
-  uploadProgress?: number
-  uploaded?: boolean
-  ashleyAnalysis?: any
+  id: string;
+  file: File;
+  name: string;
+  size: string;
+  type: string;
+  category: string;
+  preview?: string;
+  uploadProgress?: number;
+  uploaded?: boolean;
+  ashleyAnalysis?: any;
 }
 
 interface CommercialsData {
-  unitPrice: number
-  subtotal: number
-  addOnsCost: number
-  colorVariantsCost: number
-  rushSurcharge: number
-  quantityDiscount: number
-  depositPercentage: number
-  paymentTerms: string
-  taxInclusive: boolean
-  currency: string
-  finalTotal: number
-  depositAmount: number
-  balanceAmount: number
+  unitPrice: number;
+  subtotal: number;
+  addOnsCost: number;
+  colorVariantsCost: number;
+  rushSurcharge: number;
+  quantityDiscount: number;
+  depositPercentage: number;
+  paymentTerms: string;
+  taxInclusive: boolean;
+  currency: string;
+  finalTotal: number;
+  depositAmount: number;
+  balanceAmount: number;
 }
 
 export default function NewOrderPageContent() {
-  const router = useRouter()
+  const router = useRouter();
 
   // Loading and submission states
-  const [loading, setLoading] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Client data
-  const [clients, setClients] = useState<Client[]>([])
+  const [clients, setClients] = useState<Client[]>([]);
 
   // Form state - Section A: Client & Brand
-  const [selectedClientId, setSelectedClientId] = useState('')
-  const [selectedBrandId, setSelectedBrandId] = useState('')
-  const [channel, setChannel] = useState('')
+  const [selectedClientId, setSelectedClientId] = useState("");
+  const [selectedBrandId, setSelectedBrandId] = useState("");
+  const [channel, setChannel] = useState("");
 
   // Form state - Section B: Product & Design
-  const [garmentType, setGarmentType] = useState('')
-  const [printingMethod, setPrintingMethod] = useState('')
-  const [designFiles, setDesignFiles] = useState<DesignFile[]>([])
+  const [garmentType, setGarmentType] = useState("");
+  const [printingMethod, setPrintingMethod] = useState("");
+  const [designFiles, setDesignFiles] = useState<DesignFile[]>([]);
 
   // Form state - Section C: Quantities & Size Curve
-  const [totalQuantity, setTotalQuantity] = useState(0)
+  const [totalQuantity, setTotalQuantity] = useState(0);
   const [sizeCurve, setSizeCurve] = useState<SizeCurve>({
-    XS: 0, S: 0, M: 0, L: 0, XL: 0, XXL: 0, XXXL: 0
-  })
+    XS: 0,
+    S: 0,
+    M: 0,
+    L: 0,
+    XL: 0,
+    XXL: 0,
+    XXXL: 0,
+  });
 
   // Form state - Section D: Variants & Add-ons
-  const [colorVariants, setColorVariants] = useState<ColorVariant[]>([{
-    id: '1',
-    name: '',
-    hexCode: '#000000',
-    percentage: 100,
-    quantity: 0
-  }])
-  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([])
-  const [addOnsCost, setAddOnsCost] = useState(0)
-  const [colorVariantsCost, setColorVariantsCost] = useState(0)
+  const [colorVariants, setColorVariants] = useState<ColorVariant[]>([
+    {
+      id: "1",
+      name: "",
+      hexCode: "#000000",
+      percentage: 100,
+      quantity: 0,
+    },
+  ]);
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const [addOnsCost, setAddOnsCost] = useState(0);
+  const [colorVariantsCost, setColorVariantsCost] = useState(0);
 
   // Form state - Section E: Dates & SLAs
-  const [deliveryDate, setDeliveryDate] = useState('')
-  const [rushSurchargePercent, setRushSurchargePercent] = useState(0)
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [rushSurchargePercent, setRushSurchargePercent] = useState(0);
 
   // Form state - Section F: Commercials
   const [commercials, setCommercials] = useState<CommercialsData>({
@@ -141,39 +149,39 @@ export default function NewOrderPageContent() {
     rushSurcharge: 0,
     quantityDiscount: 0,
     depositPercentage: 50,
-    paymentTerms: 'net_15',
+    paymentTerms: "net_15",
     taxInclusive: true,
-    currency: 'PHP',
+    currency: "PHP",
     finalTotal: 0,
     depositAmount: 0,
-    balanceAmount: 0
-  })
+    balanceAmount: 0,
+  });
 
   // Form state - Section G: Production Route
-  const [selectedRoute, setSelectedRoute] = useState('')
+  const [selectedRoute, setSelectedRoute] = useState("");
 
   // Form state - Section H: Files & Notes
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [specialInstructions, setSpecialInstructions] = useState('')
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [specialInstructions, setSpecialInstructions] = useState("");
 
   // Form state - New Order Details fields
-  const [poNumber, setPoNumber] = useState('')
-  const [orderType, setOrderType] = useState('NEW')
-  const [designName, setDesignName] = useState('')
-  const [fabricType, setFabricType] = useState('')
-  const [sizeDistributionType, setSizeDistributionType] = useState('')
+  const [poNumber, setPoNumber] = useState("");
+  const [orderType, setOrderType] = useState("NEW");
+  const [designName, setDesignName] = useState("");
+  const [fabricType, setFabricType] = useState("");
+  const [sizeDistributionType, setSizeDistributionType] = useState("");
 
   // Form state - Graphic Editing Section
-  const [artistFilename, setArtistFilename] = useState('')
-  const [mockupImageUrl, setMockupImageUrl] = useState('')
-  const [notesRemarks, setNotesRemarks] = useState('')
-  const [printLocations, setPrintLocations] = useState<any[]>([])
+  const [artistFilename, setArtistFilename] = useState("");
+  const [mockupImageUrl, setMockupImageUrl] = useState("");
+  const [notesRemarks, setNotesRemarks] = useState("");
+  const [printLocations, setPrintLocations] = useState<any[]>([]);
 
   // Load clients on component mount
   useEffect(() => {
-    fetchClients()
-    loadDraft()
-  }, [])
+    fetchClients();
+    loadDraft();
+  }, []);
 
   // Auto-save draft every time form data changes
   useEffect(() => {
@@ -199,12 +207,12 @@ export default function NewOrderPageContent() {
       mockupImageUrl,
       notesRemarks,
       commercials,
-      timestamp: new Date().toISOString()
-    }
+      timestamp: new Date().toISOString(),
+    };
 
     // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('orderFormDraft', JSON.stringify(draftData))
+    if (typeof window !== "undefined") {
+      localStorage.setItem("orderFormDraft", JSON.stringify(draftData));
     }
   }, [
     selectedClientId,
@@ -227,134 +235,142 @@ export default function NewOrderPageContent() {
     artistFilename,
     mockupImageUrl,
     notesRemarks,
-    commercials
-  ])
+    commercials,
+  ]);
 
   const loadDraft = () => {
-    if (typeof window === 'undefined') return
+    if (typeof window === "undefined") return;
 
     try {
-      const savedDraft = localStorage.getItem('orderFormDraft')
+      const savedDraft = localStorage.getItem("orderFormDraft");
       if (savedDraft) {
-        const draft = JSON.parse(savedDraft)
+        const draft = JSON.parse(savedDraft);
 
         // Restore all form fields
-        if (draft.selectedClientId) setSelectedClientId(draft.selectedClientId)
-        if (draft.selectedBrandId) setSelectedBrandId(draft.selectedBrandId)
-        if (draft.channel) setChannel(draft.channel)
-        if (draft.garmentType) setGarmentType(draft.garmentType)
-        if (draft.printingMethod) setPrintingMethod(draft.printingMethod)
-        if (draft.totalQuantity) setTotalQuantity(draft.totalQuantity)
-        if (draft.sizeCurve) setSizeCurve(draft.sizeCurve)
-        if (draft.colorVariants) setColorVariants(draft.colorVariants)
-        if (draft.selectedAddOns) setSelectedAddOns(draft.selectedAddOns)
-        if (draft.deliveryDate) setDeliveryDate(draft.deliveryDate)
-        if (draft.selectedRoute) setSelectedRoute(draft.selectedRoute)
-        if (draft.specialInstructions) setSpecialInstructions(draft.specialInstructions)
-        if (draft.poNumber) setPoNumber(draft.poNumber)
-        if (draft.orderType) setOrderType(draft.orderType)
-        if (draft.designName) setDesignName(draft.designName)
-        if (draft.fabricType) setFabricType(draft.fabricType)
-        if (draft.sizeDistributionType) setSizeDistributionType(draft.sizeDistributionType)
-        if (draft.artistFilename) setArtistFilename(draft.artistFilename)
-        if (draft.mockupImageUrl) setMockupImageUrl(draft.mockupImageUrl)
-        if (draft.notesRemarks) setNotesRemarks(draft.notesRemarks)
-        if (draft.commercials) setCommercials(draft.commercials)
+        if (draft.selectedClientId) setSelectedClientId(draft.selectedClientId);
+        if (draft.selectedBrandId) setSelectedBrandId(draft.selectedBrandId);
+        if (draft.channel) setChannel(draft.channel);
+        if (draft.garmentType) setGarmentType(draft.garmentType);
+        if (draft.printingMethod) setPrintingMethod(draft.printingMethod);
+        if (draft.totalQuantity) setTotalQuantity(draft.totalQuantity);
+        if (draft.sizeCurve) setSizeCurve(draft.sizeCurve);
+        if (draft.colorVariants) setColorVariants(draft.colorVariants);
+        if (draft.selectedAddOns) setSelectedAddOns(draft.selectedAddOns);
+        if (draft.deliveryDate) setDeliveryDate(draft.deliveryDate);
+        if (draft.selectedRoute) setSelectedRoute(draft.selectedRoute);
+        if (draft.specialInstructions)
+          setSpecialInstructions(draft.specialInstructions);
+        if (draft.poNumber) setPoNumber(draft.poNumber);
+        if (draft.orderType) setOrderType(draft.orderType);
+        if (draft.designName) setDesignName(draft.designName);
+        if (draft.fabricType) setFabricType(draft.fabricType);
+        if (draft.sizeDistributionType)
+          setSizeDistributionType(draft.sizeDistributionType);
+        if (draft.artistFilename) setArtistFilename(draft.artistFilename);
+        if (draft.mockupImageUrl) setMockupImageUrl(draft.mockupImageUrl);
+        if (draft.notesRemarks) setNotesRemarks(draft.notesRemarks);
+        if (draft.commercials) setCommercials(draft.commercials);
 
-        toast.success('Draft restored! Continue where you left off.')
+        toast.success("Draft restored! Continue where you left off.");
       }
     } catch (error) {
-      console.error('Failed to load draft:', error)
+      console.error("Failed to load draft:", error);
     }
-  }
+  };
 
   const clearDraft = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('orderFormDraft')
-      toast.success('Draft cleared')
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("orderFormDraft");
+      toast.success("Draft cleared");
     }
-  }
+  };
 
   const fetchClients = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch('/api/clients?include=brands')
-      const data = await response.json()
+      const response = await fetch("/api/clients?include=brands");
+      const data = await response.json();
       if (data.data && data.data.clients) {
-        setClients(data.data.clients)
+        setClients(data.data.clients);
       }
     } catch (error) {
-      console.error('Failed to fetch clients:', error)
-      toast.error('Failed to load clients')
+      console.error("Failed to fetch clients:", error);
+      toast.error("Failed to load clients");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Event handlers
   const handleClientCreated = (newClient: Client) => {
-    setClients(prev => [...prev, newClient])
-  }
+    setClients(prev => [...prev, newClient]);
+  };
 
-  const handlePricingUpdate = (addOnsTotal: number, colorVariantsTotal: number) => {
-    setAddOnsCost(addOnsTotal)
-    setColorVariantsCost(colorVariantsTotal)
-  }
+  const handlePricingUpdate = (
+    addOnsTotal: number,
+    colorVariantsTotal: number
+  ) => {
+    setAddOnsCost(addOnsTotal);
+    setColorVariantsCost(colorVariantsTotal);
+  };
 
   const handleTimelineValidation = (validation: any) => {
     // Handle timeline validation results
-    console.log('Timeline validation:', validation)
-  }
+    console.log("Timeline validation:", validation);
+  };
 
   const handleRushSurcharge = (percent: number) => {
-    setRushSurchargePercent(percent)
-  }
+    setRushSurchargePercent(percent);
+  };
 
   const handleRouteOptimized = (optimization: any) => {
     // Handle route optimization results
-    console.log('Route optimization:', optimization)
-  }
+    console.log("Route optimization:", optimization);
+  };
 
   // Form validation
   const validateForm = (): boolean => {
-    const errors: string[] = []
+    const errors: string[] = [];
 
     // Required field validations
-    if (!selectedClientId) errors.push('Please select a client')
-    if (!selectedBrandId) errors.push('Please select a brand')
-    if (!garmentType) errors.push('Please select garment type')
-    if (!printingMethod) errors.push('Please select printing method')
-    if (totalQuantity === 0) errors.push('Please set total quantity')
-    if (!deliveryDate) errors.push('Please set delivery date')
-    if (commercials.unitPrice === 0) errors.push('Please set unit price')
-    if (!selectedRoute) errors.push('Please select production route')
+    if (!selectedClientId) errors.push("Please select a client");
+    if (!selectedBrandId) errors.push("Please select a brand");
+    if (!garmentType) errors.push("Please select garment type");
+    if (!printingMethod) errors.push("Please select printing method");
+    if (totalQuantity === 0) errors.push("Please set total quantity");
+    if (!deliveryDate) errors.push("Please set delivery date");
+    if (commercials.unitPrice === 0) errors.push("Please set unit price");
+    if (!selectedRoute) errors.push("Please select production route");
 
     // Size curve validation
-    const sizeCurveTotal = Object.values(sizeCurve).reduce((sum, qty) => sum + qty, 0)
+    const sizeCurveTotal = Object.values(sizeCurve).reduce(
+      (sum, qty) => sum + qty,
+      0
+    );
     if (sizeCurveTotal !== totalQuantity) {
-      errors.push('Size breakdown must equal total quantity')
+      errors.push("Size breakdown must equal total quantity");
     }
 
     // Design files validation
     if (designFiles.length === 0) {
-      errors.push('Please upload at least one design file')
+      errors.push("Please upload at least one design file");
     }
 
     if (errors.length > 0) {
-      errors.forEach(error => toast.error(error))
-      return false
+      errors.forEach(error => toast.error(error));
+      return false;
     }
 
-    return true
-  }
+    return true;
+  };
 
   // Form submission
-  const handleSubmit = async (action: 'draft' | 'submit') => {
-    if (action === 'submit' && !validateForm()) {
-      return
+  const handleSubmit = async (action: "draft" | "submit") => {
+    if (action === "submit" && !validateForm()) {
+      return;
     }
 
-    setSubmitting(true)
+    setSubmitting(true);
     try {
       const orderData = {
         // Client & Brand
@@ -375,7 +391,7 @@ export default function NewOrderPageContent() {
         design_files: designFiles.map(f => ({
           name: f.name,
           size: f.size,
-          type: f.type
+          type: f.type,
         })),
 
         // Graphic Editing (NEW)
@@ -413,98 +429,119 @@ export default function NewOrderPageContent() {
         additional_files: uploadedFiles.map(f => ({
           name: f.name,
           category: f.category,
-          size: f.size
+          size: f.size,
         })),
         special_instructions: specialInstructions,
 
         // Status
-        status: action === 'draft' ? 'DRAFT' : 'PENDING_APPROVAL'
-      }
+        status: action === "draft" ? "DRAFT" : "PENDING_APPROVAL",
+      };
 
-      console.log("Order data being sent:", orderData)
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      })
+      console.log("Order data being sent:", orderData);
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
-        toast.success(`Order ${action === 'draft' ? 'saved as draft' : 'submitted for processing'}`)
+        toast.success(
+          `Order ${action === "draft" ? "saved as draft" : "submitted for processing"}`
+        );
         // Clear draft on successful submission
-        clearDraft()
+        clearDraft();
         // API returns { success: true, data: { order: { id: ... } } }
-        const orderId = result.data?.order?.id || result.id
-        router.push(`/orders/${orderId}`)
+        const orderId = result.data?.order?.id || result.id;
+        router.push(`/orders/${orderId}`);
       } else {
-        toast.error(result.message || 'Failed to create order')
+        toast.error(result.message || "Failed to create order");
       }
     } catch (error) {
-      console.error('Submit error:', error)
-      toast.error('Failed to create order')
+      console.error("Submit error:", error);
+      toast.error("Failed to create order");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   // Calculate completion percentage
   const calculateProgress = (): number => {
-    let completed = 0
-    const total = 9 // Total sections
+    let completed = 0;
+    const total = 9; // Total sections
 
-    if (selectedClientId && selectedBrandId) completed++
-    if (garmentType && printingMethod && designFiles.length > 0) completed++
-    if (totalQuantity > 0 && Object.values(sizeCurve).reduce((sum, qty) => sum + qty, 0) === totalQuantity) completed++
-    if (colorVariants.length > 0) completed++
-    if (deliveryDate) completed++
-    if (commercials.unitPrice > 0) completed++
-    if (selectedRoute) completed++
-    completed++ // Files & Notes (optional)
-    completed++ // Submit section (always available)
+    if (selectedClientId && selectedBrandId) completed++;
+    if (garmentType && printingMethod && designFiles.length > 0) completed++;
+    if (
+      totalQuantity > 0 &&
+      Object.values(sizeCurve).reduce((sum, qty) => sum + qty, 0) ===
+        totalQuantity
+    )
+      completed++;
+    if (colorVariants.length > 0) completed++;
+    if (deliveryDate) completed++;
+    if (commercials.unitPrice > 0) completed++;
+    if (selectedRoute) completed++;
+    completed++; // Files & Notes (optional)
+    completed++; // Submit section (always available)
 
-    return Math.round((completed / total) * 100)
-  }
+    return Math.round((completed / total) * 100);
+  };
 
-  const progress = calculateProgress()
+  const progress = calculateProgress();
 
   if (loading) {
     return (
       <div className="container mx-auto py-6">
         <div className="text-center">Loading...</div>
       </div>
-    )
+    );
   }
 
-  const hasDraft = typeof window !== 'undefined' && localStorage.getItem('orderFormDraft')
+  const hasDraft =
+    typeof window !== "undefined" && localStorage.getItem("orderFormDraft");
 
   return (
     <div className="container mx-auto py-6">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex justify-between items-start">
+        <div className="flex items-start justify-between">
           <div className="flex items-start gap-4">
             {/* Back Button */}
             <button
-              onClick={() => router.push('/orders')}
-              className="mt-1 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              onClick={() => router.push("/orders")}
+              className="mt-1 rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
               title="Back to Orders"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
               </svg>
             </button>
 
             <div>
               <h1 className="text-3xl font-bold">New Production Order</h1>
-              <p className="text-muted-foreground">Create a comprehensive production order with Ashley AI assistance</p>
+              <p className="text-muted-foreground">
+                Create a comprehensive production order with Ashley AI
+                assistance
+              </p>
             </div>
           </div>
 
           {hasDraft && (
             <button
               onClick={clearDraft}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="rounded-md border border-gray-300 px-4 py-2 text-sm transition-colors hover:bg-gray-50"
             >
               Clear Draft
             </button>
@@ -513,19 +550,30 @@ export default function NewOrderPageContent() {
 
         {/* Draft Indicator */}
         {hasDraft && (
-          <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2">
-            <svg className="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <div className="mt-3 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3">
+            <svg
+              className="h-5 w-5 flex-shrink-0 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
-            <span className="text-sm text-blue-900 font-medium break-words">
-              Draft auto-saved • Your progress is preserved even if you navigate away
+            <span className="break-words text-sm font-medium text-blue-900">
+              Draft auto-saved • Your progress is preserved even if you navigate
+              away
             </span>
           </div>
         )}
 
         {/* Progress Bar */}
         <div className="mt-4">
-          <div className="flex justify-between items-center mb-2">
+          <div className="mb-2 flex items-center justify-between">
             <span className="text-sm font-medium">Completion Progress</span>
             <span className="text-sm text-muted-foreground">{progress}%</span>
           </div>
@@ -533,10 +581,9 @@ export default function NewOrderPageContent() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Form */}
-        <div className="lg:col-span-2 space-y-6">
-
+        <div className="space-y-6 lg:col-span-2">
           {/* A. Client & Brand */}
           <ClientBrandSection
             clients={clients}
@@ -640,7 +687,7 @@ export default function NewOrderPageContent() {
               printingMethod,
               totalQuantity,
               deliveryDate,
-              commercials
+              commercials,
             }}
             onSubmit={handleSubmit}
             isSubmitting={submitting}
@@ -669,22 +716,30 @@ export default function NewOrderPageContent() {
             <CardContent className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm">Total Quantity:</span>
-                <span className="text-sm font-medium">{totalQuantity.toLocaleString()}</span>
+                <span className="text-sm font-medium">
+                  {totalQuantity.toLocaleString()}
+                </span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-sm">Design Files:</span>
-                <span className="text-sm font-medium">{designFiles.length}</span>
+                <span className="text-sm font-medium">
+                  {designFiles.length}
+                </span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-sm">Color Variants:</span>
-                <span className="text-sm font-medium">{colorVariants.filter(v => v.quantity > 0).length}</span>
+                <span className="text-sm font-medium">
+                  {colorVariants.filter(v => v.quantity > 0).length}
+                </span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-sm">Add-ons:</span>
-                <span className="text-sm font-medium">{selectedAddOns.length}</span>
+                <span className="text-sm font-medium">
+                  {selectedAddOns.length}
+                </span>
               </div>
 
               <Separator />
@@ -695,7 +750,7 @@ export default function NewOrderPageContent() {
               </div>
 
               <div className="text-xs text-muted-foreground">
-                {commercials.taxInclusive ? 'Tax inclusive' : 'Plus 12% VAT'}
+                {commercials.taxInclusive ? "Tax inclusive" : "Plus 12% VAT"}
               </div>
             </CardContent>
           </Card>
@@ -707,7 +762,7 @@ export default function NewOrderPageContent() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="text-sm">
-                <div className="flex justify-between mb-1">
+                <div className="mb-1 flex justify-between">
                   <span>Form Completion:</span>
                   <span>{progress}%</span>
                 </div>
@@ -716,25 +771,44 @@ export default function NewOrderPageContent() {
 
               <Separator />
 
-              <div className="text-sm space-y-2">
+              <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
-                  <Badge variant={selectedClientId ? "default" : "secondary"} className="w-3 h-3 rounded-full p-0" />
+                  <Badge
+                    variant={selectedClientId ? "default" : "secondary"}
+                    className="h-3 w-3 rounded-full p-0"
+                  />
                   <span>Client & Brand</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={garmentType && printingMethod ? "default" : "secondary"} className="w-3 h-3 rounded-full p-0" />
+                  <Badge
+                    variant={
+                      garmentType && printingMethod ? "default" : "secondary"
+                    }
+                    className="h-3 w-3 rounded-full p-0"
+                  />
                   <span>Product & Design</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={totalQuantity > 0 ? "default" : "secondary"} className="w-3 h-3 rounded-full p-0" />
+                  <Badge
+                    variant={totalQuantity > 0 ? "default" : "secondary"}
+                    className="h-3 w-3 rounded-full p-0"
+                  />
                   <span>Quantities & Sizes</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={deliveryDate ? "default" : "secondary"} className="w-3 h-3 rounded-full p-0" />
+                  <Badge
+                    variant={deliveryDate ? "default" : "secondary"}
+                    className="h-3 w-3 rounded-full p-0"
+                  />
                   <span>Delivery Date</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={commercials.unitPrice > 0 ? "default" : "secondary"} className="w-3 h-3 rounded-full p-0" />
+                  <Badge
+                    variant={
+                      commercials.unitPrice > 0 ? "default" : "secondary"
+                    }
+                    className="h-3 w-3 rounded-full p-0"
+                  />
                   <span>Pricing</span>
                 </div>
               </div>
@@ -743,5 +817,5 @@ export default function NewOrderPageContent() {
         </div>
       </div>
     </div>
-  )
+  );
 }

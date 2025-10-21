@@ -1,46 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/database';
-import { verify2FA } from '@/lib/2fa-server'
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
+import { verify2FA } from "@/lib/2fa-server";
 
-const prisma = db
+const prisma = db;
 
 // POST /api/auth/2fa/verify - Verify 2FA token and enable 2FA
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { user_id, token, enable_2fa = false } = body
+    const body = await request.json();
+    const { user_id, token, enable_2fa = false } = body;
 
     if (!user_id || !token) {
       return NextResponse.json(
-        { error: 'user_id and token are required' },
+        { error: "user_id and token are required" },
         { status: 400 }
-      )
+      );
     }
 
     // Get user with 2FA settings
     const user = await prisma.user.findUnique({
       where: { id: user_id },
-    })
+    });
 
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (!user.two_factor_secret) {
       return NextResponse.json(
-        { error: '2FA not setup for this user. Call /api/auth/2fa/setup first' },
+        {
+          error: "2FA not setup for this user. Call /api/auth/2fa/setup first",
+        },
         { status: 400 }
-      )
+      );
     }
 
     // Parse encrypted secret
-    const secretData = JSON.parse(user.two_factor_secret)
+    const secretData = JSON.parse(user.two_factor_secret);
     const backupCodes = user.two_factor_backup_codes
       ? JSON.parse(user.two_factor_backup_codes)
-      : []
+      : [];
 
     // Verify token
     const result = await verify2FA(
@@ -48,24 +47,24 @@ export async function POST(request: NextRequest) {
       secretData.iv,
       token,
       backupCodes
-    )
+    );
 
     if (!result.valid) {
       return NextResponse.json(
-        { error: 'Invalid verification code' },
+        { error: "Invalid verification code" },
         { status: 401 }
-      )
+      );
     }
 
     // If backup code was used, remove it from the list
     if (result.usedBackupCode && result.backupCodeIndex !== undefined) {
-      backupCodes.splice(result.backupCodeIndex, 1)
+      backupCodes.splice(result.backupCodeIndex, 1);
       await prisma.user.update({
         where: { id: user_id },
         data: {
           two_factor_backup_codes: JSON.stringify(backupCodes),
         },
-      })
+      });
     }
 
     // If this is the first verification (enabling 2FA), enable it now
@@ -75,7 +74,7 @@ export async function POST(request: NextRequest) {
         data: {
           two_factor_enabled: true,
         },
-      })
+      });
     }
 
     return NextResponse.json({
@@ -83,17 +82,17 @@ export async function POST(request: NextRequest) {
       used_backup_code: result.usedBackupCode,
       remaining_backup_codes: backupCodes.length,
       message: result.usedBackupCode
-        ? 'Backup code verified. Please generate new backup codes.'
-        : '2FA code verified successfully',
-    })
+        ? "Backup code verified. Please generate new backup codes."
+        : "2FA code verified successfully",
+    });
   } catch (error: any) {
-    console.error('Error verifying 2FA:', error)
+    console.error("Error verifying 2FA:", error);
     return NextResponse.json(
       {
-        error: 'Failed to verify 2FA code',
-        details: error.message
+        error: "Failed to verify 2FA code",
+        details: error.message,
       },
       { status: 500 }
-    )
+    );
   }
 }

@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
 
 const PrintLocationSchema = z.object({
-  location: z.string().min(1, 'Location is required'),
+  location: z.string().min(1, "Location is required"),
   location_label: z.string().optional(),
   design_file_url: z.string().optional(),
   width_cm: z.number().optional(),
@@ -25,7 +25,7 @@ export async function GET(
         design_asset_id: designAssetId,
       },
       orderBy: {
-        created_at: 'asc',
+        created_at: "asc",
       },
     });
 
@@ -34,9 +34,9 @@ export async function GET(
       data: { printLocations },
     });
   } catch (error) {
-    console.error('Error fetching print locations:', error);
+    console.error("Error fetching print locations:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch print locations' },
+      { success: false, error: "Failed to fetch print locations" },
       { status: 500 }
     );
   }
@@ -69,7 +69,7 @@ export async function POST(
       {
         success: true,
         data: { printLocation },
-        message: 'Print location created successfully',
+        message: "Print location created successfully",
       },
       { status: 201 }
     );
@@ -78,16 +78,16 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: 'Validation failed',
+          error: "Validation failed",
           details: error.errors,
         },
         { status: 400 }
       );
     }
 
-    console.error('Error creating print location:', error);
+    console.error("Error creating print location:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create print location' },
+      { success: false, error: "Failed to create print location" },
       { status: 500 }
     );
   }
@@ -99,11 +99,11 @@ export async function PUT(
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const locationId = searchParams.get('locationId');
+    const locationId = searchParams.get("locationId");
 
     if (!locationId) {
       return NextResponse.json(
-        { success: false, error: 'Location ID is required' },
+        { success: false, error: "Location ID is required" },
         { status: 400 }
       );
     }
@@ -129,23 +129,23 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       data: { printLocation },
-      message: 'Print location updated successfully',
+      message: "Print location updated successfully",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Validation failed',
+          error: "Validation failed",
           details: error.errors,
         },
         { status: 400 }
       );
     }
 
-    console.error('Error updating print location:', error);
+    console.error("Error updating print location:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update print location' },
+      { success: false, error: "Failed to update print location" },
       { status: 500 }
     );
   }
@@ -157,11 +157,11 @@ export async function DELETE(
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const locationId = searchParams.get('locationId');
+    const locationId = searchParams.get("locationId");
 
     if (!locationId) {
       return NextResponse.json(
-        { success: false, error: 'Location ID is required' },
+        { success: false, error: "Location ID is required" },
         { status: 400 }
       );
     }
@@ -174,12 +174,12 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Print location deleted successfully',
+      message: "Print location deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting print location:', error);
+    console.error("Error deleting print location:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete print location' },
+      { success: false, error: "Failed to delete print location" },
       { status: 500 }
     );
   }

@@ -75,7 +75,7 @@ test.describe("Orders CRUD Operations", () => {
 
       // Should show validation errors
       await expect(
-        page.locator('text=/required|please enter|cannot be empty/i').first()
+        page.locator("text=/required|please enter|cannot be empty/i").first()
       ).toBeVisible({ timeout: 5000 });
     }
   });
@@ -98,7 +98,10 @@ test.describe("Orders CRUD Operations", () => {
         'input[name="quantity"], input[type="number"]'
       );
       if (
-        await quantityInput.first().isVisible({ timeout: 1000 }).catch(() => false)
+        await quantityInput
+          .first()
+          .isVisible({ timeout: 1000 })
+          .catch(() => false)
       ) {
         await quantityInput.first().fill("100");
       }
@@ -111,7 +114,7 @@ test.describe("Orders CRUD Operations", () => {
 
       // Should show success message
       await expect(
-        page.locator('text=/success|created|saved/i').first()
+        page.locator("text=/success|created|saved/i").first()
       ).toBeVisible({ timeout: 10000 });
     }
   });
@@ -122,7 +125,10 @@ test.describe("Orders CRUD Operations", () => {
     );
 
     if (
-      await searchInput.first().isVisible({ timeout: 2000 }).catch(() => false)
+      await searchInput
+        .first()
+        .isVisible({ timeout: 2000 })
+        .catch(() => false)
     ) {
       await searchInput.first().fill("test");
       await page.waitForTimeout(1000); // Wait for debounce
@@ -155,7 +161,7 @@ test.describe("Orders CRUD Operations", () => {
 
       // Should show order details
       await expect(
-        page.locator('text=/order.*details|order id|client/i').first()
+        page.locator("text=/order.*details|order id|client/i").first()
       ).toBeVisible({ timeout: 5000 });
     }
   });
@@ -181,7 +187,7 @@ test.describe("Orders CRUD Operations", () => {
 
         // Should show error message
         await expect(
-          page.locator('text=/error|failed|network|offline/i').first()
+          page.locator("text=/error|failed|network|offline/i").first()
         ).toBeVisible({ timeout: 5000 });
       }
     }
@@ -202,7 +208,9 @@ test.describe("Orders CRUD Operations", () => {
       expect(labels).toBeGreaterThan(0);
 
       // Each input should have associated label
-      const inputs = await page.locator('input[type="text"], input[type="number"]').all();
+      const inputs = await page
+        .locator('input[type="text"], input[type="number"]')
+        .all();
       for (const input of inputs.slice(0, 3)) {
         const id = await input.getAttribute("id");
         const name = await input.getAttribute("name");

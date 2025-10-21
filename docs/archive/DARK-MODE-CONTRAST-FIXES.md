@@ -13,6 +13,7 @@ Ang placeholder text at ibang text elements ay hindi mabasa sa dark mode dahil s
 ### 1. Registration Page (`/register`)
 
 **Fixed Elements:**
+
 - ✅ **Page Title**: `dark:text-white` → `dark:!text-white` (forced with !important)
 - ✅ **Subtitle**: `dark:text-gray-400` → `dark:!text-gray-300` (lighter gray)
 - ✅ **Section Headers**: `text-sm font-semibold` → `text-base font-bold dark:!text-white`
@@ -22,26 +23,32 @@ Ang placeholder text at ibang text elements ay hindi mabasa sa dark mode dahil s
 - ✅ **Placeholder text**: `dark:placeholder-gray-500` → `dark:placeholder-gray-400`
 
 **Before:**
+
 ```tsx
 // MABABA ANG CONTRAST - HINDI MAKITA
-className="... dark:bg-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+className =
+  "... dark:bg-gray-700 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500";
 ```
 
 **After:**
+
 ```tsx
 // MALINAW NA MAKITA - HIGH CONTRAST
-className="... dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+className =
+  "... dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400";
 ```
 
 **Affected Elements (Registration Page):**
 
 **Headers & Titles:**
+
 - ✅ "Create Admin Account" (h1) - `dark:!text-white` with !important
 - ✅ "Set up your workspace..." (subtitle) - `dark:!text-gray-300`
 - ✅ "Workspace Information" (section header) - `dark:!text-white`, larger font
 - ✅ "Admin User Information" (section header) - `dark:!text-white`, larger font
 
 **Input Fields:**
+
 - ✅ Company/Workspace Name
 - ✅ Workspace Slug
 - ✅ First Name
@@ -53,9 +60,11 @@ className="... dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeh
 ### 2. Login Page (`/login`)
 
 **Fixed Elements:**
+
 - ✅ Placeholder text contrast improved
 
 **Changes:**
+
 ```tsx
 // Before: placeholder-gray-400 dark:placeholder-gray-500 (mababa contrast)
 // After:  placeholder-gray-500 dark:placeholder-gray-400 (mataas contrast)
@@ -65,23 +74,23 @@ className="... dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeh
 
 ### WCAG 2.1 Guidelines
 
-| Element Type | Minimum Ratio | Target Ratio | Status |
-|--------------|---------------|--------------|--------|
-| Normal Text | 4.5:1 | 7:1 | ✅ PASS |
-| Large Text | 3:1 | 4.5:1 | ✅ PASS |
-| UI Components | 3:1 | 4.5:1 | ✅ PASS |
-| Placeholder Text | 4.5:1 | 7:1 | ✅ PASS |
+| Element Type     | Minimum Ratio | Target Ratio | Status  |
+| ---------------- | ------------- | ------------ | ------- |
+| Normal Text      | 4.5:1         | 7:1          | ✅ PASS |
+| Large Text       | 3:1           | 4.5:1        | ✅ PASS |
+| UI Components    | 3:1           | 4.5:1        | ✅ PASS |
+| Placeholder Text | 4.5:1         | 7:1          | ✅ PASS |
 
 ### Ashley AI Color Palette (Dark Mode)
 
-| Element | Color | Hex | Contrast vs bg-gray-900 |
-|---------|-------|-----|-------------------------|
-| Background | bg-gray-900 | #111827 | N/A |
-| Input Background | bg-gray-800 | #1F2937 | 1.2:1 |
-| White Text | text-white | #FFFFFF | 18.5:1 ✅ |
-| Gray-300 Labels | text-gray-300 | #D1D5DB | 11.2:1 ✅ |
-| Gray-400 Placeholder | text-gray-400 | #9CA3AF | 6.8:1 ✅ |
-| Gray-500 Text | text-gray-500 | #6B7280 | 4.7:1 ✅ |
+| Element              | Color         | Hex     | Contrast vs bg-gray-900 |
+| -------------------- | ------------- | ------- | ----------------------- |
+| Background           | bg-gray-900   | #111827 | N/A                     |
+| Input Background     | bg-gray-800   | #1F2937 | 1.2:1                   |
+| White Text           | text-white    | #FFFFFF | 18.5:1 ✅               |
+| Gray-300 Labels      | text-gray-300 | #D1D5DB | 11.2:1 ✅               |
+| Gray-400 Placeholder | text-gray-400 | #9CA3AF | 6.8:1 ✅                |
+| Gray-500 Text        | text-gray-500 | #6B7280 | 4.7:1 ✅                |
 
 ## 🔍 Testing Checklist
 
@@ -100,6 +109,7 @@ className="... dark:bg-gray-800 dark:text-white placeholder-gray-500 dark:placeh
 ### Input Fields (Dark Mode)
 
 **DO ✅:**
+
 ```tsx
 className="
   dark:bg-gray-800         // Darker background for contrast
@@ -110,6 +120,7 @@ className="
 ```
 
 **DON'T ❌:**
+
 ```tsx
 className="
   dark:bg-gray-700         // Too close to bg-gray-900
@@ -129,12 +140,14 @@ className="
 ## 📝 General Rules
 
 ### 1. Contrast Calculation
+
 ```
 Contrast Ratio = (L1 + 0.05) / (L2 + 0.05)
 Where L1 = lighter color, L2 = darker color
 ```
 
 ### 2. Minimum Requirements
+
 - **Body text**: 4.5:1 minimum (AAA: 7:1)
 - **Large text** (18pt+): 3:1 minimum (AAA: 4.5:1)
 - **Interactive elements**: 3:1 minimum
@@ -142,11 +155,13 @@ Where L1 = lighter color, L2 = darker color
 ### 3. Color Selection Strategy
 
 **Light Mode:**
+
 - Background: White/Light Gray
 - Text: Dark Gray/Black
 - Placeholders: Medium Gray
 
 **Dark Mode:**
+
 - Background: Very Dark Gray (#111827, #1E1E1E)
 - Text: White/Very Light Gray
 - Placeholders: Light Gray (mas maliwanag kaysa light mode!)
@@ -176,6 +191,7 @@ Where L1 = lighter color, L2 = darker color
 ## ✅ Verification
 
 Run the app and check:
+
 ```bash
 pnpm --filter @ash/admin dev
 ```
@@ -189,6 +205,7 @@ pnpm --filter @ash/admin dev
 ## 📞 Contact
 
 For questions about dark mode contrast:
+
 - Check WCAG 2.1 guidelines
 - Review this document
 - Test with actual users in dark environments

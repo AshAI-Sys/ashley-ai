@@ -16,14 +16,6 @@
       "@ash/*": ["packages/*/src"]
     }
   },
-  "include": [
-    "packages/*/src/**/*",
-    "services/*/src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "include": ["packages/*/src/**/*", "services/*/src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

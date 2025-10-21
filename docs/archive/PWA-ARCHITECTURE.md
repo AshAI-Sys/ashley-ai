@@ -9,14 +9,17 @@
 ## 🎯 Core Features
 
 ### **1. QR/Barcode Scanner** 📷
+
 **Purpose**: Scan bundles, cartons, assets, work orders
 **Technology**: HTML5 getUserMedia API + ZXing library
 **Supported Codes**:
+
 - QR codes (bundles, cartons)
 - Barcodes (EAN-13, UPC, Code 128)
 - Data Matrix codes (small labels)
 
 **Use Cases**:
+
 - Scan bundle to see cutting lay details
 - Scan carton to view contents
 - Scan work order to start production
@@ -24,9 +27,11 @@
 - Scan employee badge for attendance
 
 ### **2. Offline-First Architecture** 🔌
+
 **Purpose**: Work without internet connection
 **Technology**: IndexedDB + Service Worker + Background Sync
 **Offline Capabilities**:
+
 - View recent orders and bundles
 - Scan and queue operations (cutting, sewing, QC)
 - Record attendance logs
@@ -34,6 +39,7 @@
 - Auto-sync when connection returns
 
 **Data Sync Strategy**:
+
 ```
 1. Online: Direct API calls, cache responses
 2. Offline: Store mutations in IndexedDB queue
@@ -42,8 +48,10 @@
 ```
 
 ### **3. Touch-Optimized UI** 👆
+
 **Purpose**: Easy to use with gloves on production floor
 **Design Principles**:
+
 - Large touch targets (minimum 44x44px)
 - High contrast colors (readable in factory lighting)
 - Simple, focused screens (one task per screen)
@@ -51,6 +59,7 @@
 - Minimal text entry (use scanning/selection)
 
 **UI Components**:
+
 - Large action buttons (50px+ height)
 - Bottom navigation bar (thumb-friendly)
 - Floating action button (primary action)
@@ -58,8 +67,10 @@
 - Toast notifications (quick feedback)
 
 ### **4. Production Operator Mode** 👷
+
 **Purpose**: Simplified interface for production workers
 **Features**:
+
 - Quick actions dashboard
 - My active tasks list
 - Scan to start/complete tasks
@@ -68,14 +79,17 @@
 - Clock in/out with QR badge scan
 
 **Screens**:
+
 1. **Home**: Active tasks + quick actions
 2. **Scan**: Camera view with instructions
 3. **Task Detail**: Current task info + actions
 4. **Performance**: Today's stats + weekly trend
 
 ### **5. Push Notifications** 🔔
+
 **Purpose**: Real-time alerts for production events
 **Notification Types**:
+
 - New work order assigned
 - QC inspection needed
 - Bundle ready for next operation
@@ -84,6 +98,7 @@
 - Break time notification
 
 **Implementation**:
+
 - Web Push API (no app store needed)
 - Notification permission on first login
 - User preferences for notification types
@@ -96,6 +111,7 @@
 ### **Production Floor Mode Screens**
 
 #### **1. Dashboard (Home)**
+
 ```
 ┌─────────────────────────────┐
 │ 👤 John Doe      🔔 [3]     │ ← Header
@@ -124,6 +140,7 @@
 ```
 
 #### **2. Scanner View**
+
 ```
 ┌─────────────────────────────┐
 │ ← Back          [Flash] ⚡  │ ← Header
@@ -148,6 +165,7 @@
 ```
 
 #### **3. Task Detail View**
+
 ```
 ┌─────────────────────────────┐
 │ ← Back        Bundle #B-1234│ ← Header
@@ -177,6 +195,7 @@
 ```
 
 #### **4. Active Task (In Progress)**
+
 ```
 ┌─────────────────────────────┐
 │ Bundle #B-1234    ⏱️ 45:30  │ ← Header + Timer
@@ -203,6 +222,7 @@
 ```
 
 #### **5. QC Inspection**
+
 ```
 ┌─────────────────────────────┐
 │ ← Back      QC Inspection   │ ← Header
@@ -245,20 +265,20 @@
 // Store structure
 const stores = {
   // Cached data (read-only while offline)
-  'orders': { keyPath: 'id', indexes: ['status', 'client_id'] },
-  'bundles': { keyPath: 'id', indexes: ['order_id', 'status'] },
-  'tasks': { keyPath: 'id', indexes: ['employee_id', 'status'] },
-  'employees': { keyPath: 'id', indexes: ['department'] },
+  orders: { keyPath: "id", indexes: ["status", "client_id"] },
+  bundles: { keyPath: "id", indexes: ["order_id", "status"] },
+  tasks: { keyPath: "id", indexes: ["employee_id", "status"] },
+  employees: { keyPath: "id", indexes: ["department"] },
 
   // Pending mutations (queue for sync)
-  'pending_scans': { keyPath: 'id', autoIncrement: true },
-  'pending_tasks': { keyPath: 'id', autoIncrement: true },
-  'pending_qc': { keyPath: 'id', autoIncrement: true },
-  'pending_attendance': { keyPath: 'id', autoIncrement: true },
+  pending_scans: { keyPath: "id", autoIncrement: true },
+  pending_tasks: { keyPath: "id", autoIncrement: true },
+  pending_qc: { keyPath: "id", autoIncrement: true },
+  pending_attendance: { keyPath: "id", autoIncrement: true },
 
   // Media files (photos)
-  'photos': { keyPath: 'id', autoIncrement: true },
-}
+  photos: { keyPath: "id", autoIncrement: true },
+};
 ```
 
 ### **Sync Queue Example**
@@ -290,28 +310,28 @@ const stores = {
 
 ```javascript
 // Register sync when mutation queued
-await registration.sync.register('sync-bundle-scan')
+await registration.sync.register("sync-bundle-scan");
 
 // Handle sync in service worker
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-bundle-scan') {
-    event.waitUntil(syncBundleScans())
+self.addEventListener("sync", event => {
+  if (event.tag === "sync-bundle-scan") {
+    event.waitUntil(syncBundleScans());
   }
-})
+});
 
 async function syncBundleScans() {
-  const db = await openDB()
-  const pending = await db.getAll('pending_scans')
+  const db = await openDB();
+  const pending = await db.getAll("pending_scans");
 
   for (const scan of pending) {
     try {
-      const response = await fetch('/api/mobile/scan', {
-        method: 'POST',
-        body: JSON.stringify(scan.data)
-      })
+      const response = await fetch("/api/mobile/scan", {
+        method: "POST",
+        body: JSON.stringify(scan.data),
+      });
 
       if (response.ok) {
-        await db.delete('pending_scans', scan.id)
+        await db.delete("pending_scans", scan.id);
       }
     } catch (error) {
       // Retry later
@@ -342,36 +362,36 @@ async function syncBundleScans() {
 
 ```typescript
 // Request permission
-const permission = await Notification.requestPermission()
+const permission = await Notification.requestPermission();
 
-if (permission === 'granted') {
+if (permission === "granted") {
   // Subscribe to push
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: VAPID_PUBLIC_KEY
-  })
+    applicationServerKey: VAPID_PUBLIC_KEY,
+  });
 
   // Send subscription to server
-  await fetch('/api/push/subscribe', {
-    method: 'POST',
-    body: JSON.stringify(subscription)
-  })
+  await fetch("/api/push/subscribe", {
+    method: "POST",
+    body: JSON.stringify(subscription),
+  });
 }
 
 // Service worker handles push
-self.addEventListener('push', (event) => {
-  const data = event.data.json()
+self.addEventListener("push", event => {
+  const data = event.data.json();
 
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/badge-72x72.png',
+      icon: "/icons/icon-192x192.png",
+      badge: "/icons/badge-72x72.png",
       vibrate: [200, 100, 200],
-      data: { url: data.url }
+      data: { url: data.url },
     })
-  )
-})
+  );
+});
 ```
 
 ---
@@ -430,13 +450,13 @@ self.addEventListener('push', (event) => {
 ```css
 /* High contrast for factory lighting */
 :root {
-  --production-primary: #2563eb;    /* Blue (actions) */
-  --production-success: #16a34a;    /* Green (complete) */
-  --production-warning: #ea580c;    /* Orange (alert) */
-  --production-danger: #dc2626;     /* Red (error) */
-  --production-bg: #f9fafb;         /* Light gray bg */
-  --production-surface: #ffffff;    /* White cards */
-  --production-text: #111827;       /* Dark text */
+  --production-primary: #2563eb; /* Blue (actions) */
+  --production-success: #16a34a; /* Green (complete) */
+  --production-warning: #ea580c; /* Orange (alert) */
+  --production-danger: #dc2626; /* Red (error) */
+  --production-bg: #f9fafb; /* Light gray bg */
+  --production-surface: #ffffff; /* White cards */
+  --production-text: #111827; /* Dark text */
   --production-text-light: #6b7280; /* Gray text */
 }
 
@@ -453,20 +473,21 @@ self.addEventListener('push', (event) => {
 
 ## 🚀 Performance Targets
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| **First Contentful Paint** | <1.5s | TBD | ⏳ |
-| **Time to Interactive** | <3.0s | TBD | ⏳ |
-| **Lighthouse Score** | >90 | TBD | ⏳ |
-| **Offline Load Time** | <1.0s | TBD | ⏳ |
-| **Camera Open Time** | <500ms | TBD | ⏳ |
-| **Scan Success Rate** | >95% | TBD | ⏳ |
+| Metric                     | Target | Current | Status |
+| -------------------------- | ------ | ------- | ------ |
+| **First Contentful Paint** | <1.5s  | TBD     | ⏳     |
+| **Time to Interactive**    | <3.0s  | TBD     | ⏳     |
+| **Lighthouse Score**       | >90    | TBD     | ⏳     |
+| **Offline Load Time**      | <1.0s  | TBD     | ⏳     |
+| **Camera Open Time**       | <500ms | TBD     | ⏳     |
+| **Scan Success Rate**      | >95%   | TBD     | ⏳     |
 
 ---
 
 ## ✅ Implementation Checklist
 
 ### **Phase 1: Core PWA Setup**
+
 - [ ] Update manifest.json (enhanced)
 - [ ] Improve service worker (offline strategies)
 - [ ] Add install prompt
@@ -474,6 +495,7 @@ self.addEventListener('push', (event) => {
 - [ ] Test iOS Safari + Android Chrome
 
 ### **Phase 2: QR/Barcode Scanner**
+
 - [ ] Install ZXing library (@zxing/browser)
 - [ ] Create scanner component
 - [ ] Add camera permissions handling
@@ -482,6 +504,7 @@ self.addEventListener('push', (event) => {
 - [ ] Test various code types
 
 ### **Phase 3: Offline Architecture**
+
 - [ ] Set up IndexedDB wrapper
 - [ ] Create sync queue system
 - [ ] Implement background sync
@@ -490,6 +513,7 @@ self.addEventListener('push', (event) => {
 - [ ] Test offline→online transitions
 
 ### **Phase 4: Touch-Optimized UI**
+
 - [ ] Create production floor layout
 - [ ] Build large button components
 - [ ] Add swipe gestures
@@ -498,6 +522,7 @@ self.addEventListener('push', (event) => {
 - [ ] Test on actual devices
 
 ### **Phase 5: Production Operator Mode**
+
 - [ ] Build operator dashboard
 - [ ] Create task list view
 - [ ] Implement scan-to-start flow
@@ -506,6 +531,7 @@ self.addEventListener('push', (event) => {
 - [ ] Add clock in/out
 
 ### **Phase 6: Push Notifications**
+
 - [ ] Set up VAPID keys
 - [ ] Create subscription endpoint
 - [ ] Implement notification service

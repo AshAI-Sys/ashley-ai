@@ -7,19 +7,19 @@ interface ProductionJob {
   client_name: string;
   garment_type: string;
   quantity: number;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  priority: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
   deadline: Date;
   estimated_hours: number;
   required_skills: string[];
   dependencies?: string[]; // IDs of jobs that must complete first
-  current_stage: 'CUTTING' | 'PRINTING' | 'SEWING' | 'FINISHING';
-  status: 'PENDING' | 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED';
+  current_stage: "CUTTING" | "PRINTING" | "SEWING" | "FINISHING";
+  status: "PENDING" | "SCHEDULED" | "IN_PROGRESS" | "COMPLETED";
 }
 
 interface Resource {
   id: string;
   name: string;
-  type: 'MACHINE' | 'OPERATOR' | 'STATION';
+  type: "MACHINE" | "OPERATOR" | "STATION";
   skills: string[];
   capacity_hours_per_day: number;
   availability_schedule?: Array<{
@@ -58,7 +58,7 @@ interface ScheduleOptimizationResult {
   conflicts: Array<{
     type: string;
     description: string;
-    severity: 'LOW' | 'MEDIUM' | 'HIGH';
+    severity: "LOW" | "MEDIUM" | "HIGH";
   }>;
 }
 
@@ -74,15 +74,18 @@ export class SmartSchedulingAI {
 
     const schedule: ScheduledTask[] = [];
     const unscheduledJobs: ProductionJob[] = [];
-    const conflicts: ScheduleOptimizationResult['conflicts'] = [];
+    const conflicts: ScheduleOptimizationResult["conflicts"] = [];
 
     // Track resource availability
-    const resourceTimelines: Map<string, Array<{ start: Date; end: Date }>> = new Map();
+    const resourceTimelines: Map<
+      string,
+      Array<{ start: Date; end: Date }>
+    > = new Map();
     resources.forEach(r => resourceTimelines.set(r.id, []));
 
     // Schedule each job
     for (const job of sortedJobs) {
-      if (job.status === 'COMPLETED') continue;
+      if (job.status === "COMPLETED") continue;
 
       // Find suitable resources
       const suitableResources = this.findSuitableResources(job, resources);
@@ -90,9 +93,9 @@ export class SmartSchedulingAI {
       if (suitableResources.length === 0) {
         unscheduledJobs.push(job);
         conflicts.push({
-          type: 'NO_RESOURCE',
+          type: "NO_RESOURCE",
           description: `No suitable resource found for job ${job.id} (${job.garment_type})`,
-          severity: 'HIGH',
+          severity: "HIGH",
         });
         continue;
       }
@@ -101,9 +104,9 @@ export class SmartSchedulingAI {
       const dependenciesMet = this.checkDependencies(job, schedule);
       if (!dependenciesMet.met) {
         conflicts.push({
-          type: 'DEPENDENCY',
-          description: `Job ${job.id} has unmet dependencies: ${dependenciesMet.missing.join(', ')}`,
-          severity: 'MEDIUM',
+          type: "DEPENDENCY",
+          description: `Job ${job.id} has unmet dependencies: ${dependenciesMet.missing.join(", ")}`,
+          severity: "MEDIUM",
         });
         // Still try to schedule but later
       }
@@ -120,7 +123,9 @@ export class SmartSchedulingAI {
       if (assignment) {
         schedule.push(assignment);
         // Update resource timeline
-        const timeline = resourceTimelines.get(assignment.assigned_resource_id)!;
+        const timeline = resourceTimelines.get(
+          assignment.assigned_resource_id
+        )!;
         timeline.push({
           start: assignment.start_time,
           end: assignment.end_time,
@@ -129,9 +134,9 @@ export class SmartSchedulingAI {
       } else {
         unscheduledJobs.push(job);
         conflicts.push({
-          type: 'CAPACITY',
+          type: "CAPACITY",
           description: `No available time slot for job ${job.id} before deadline`,
-          severity: job.priority === 'URGENT' ? 'HIGH' : 'MEDIUM',
+          severity: job.priority === "URGENT" ? "HIGH" : "MEDIUM",
         });
       }
     }
@@ -140,13 +145,24 @@ export class SmartSchedulingAI {
     const metrics = this.calculateMetrics(schedule, jobs, resources, startDate);
 
     // Calculate optimization score
-    const optimizationScore = this.calculateOptimizationScore(metrics, unscheduledJobs.length, jobs.length);
+    const optimizationScore = this.calculateOptimizationScore(
+      metrics,
+      unscheduledJobs.length,
+      jobs.length
+    );
 
     // Generate recommendations
-    const recommendations = this.generateRecommendations(schedule, unscheduledJobs, metrics, conflicts);
+    const recommendations = this.generateRecommendations(
+      schedule,
+      unscheduledJobs,
+      metrics,
+      conflicts
+    );
 
     return {
-      schedule: schedule.sort((a, b) => a.start_time.getTime() - b.start_time.getTime()),
+      schedule: schedule.sort(
+        (a, b) => a.start_time.getTime() - b.start_time.getTime()
+      ),
       total_jobs: jobs.length,
       scheduled_jobs: schedule.length,
       unscheduled_jobs: unscheduledJobs,
@@ -167,7 +183,8 @@ export class SmartSchedulingAI {
       score += priorityScores[job.priority] * 0.4;
 
       // Deadline urgency (40%)
-      const daysUntilDeadline = (job.deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+      const daysUntilDeadline =
+        (job.deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
       if (daysUntilDeadline < 3) score += 100 * 0.4;
       else if (daysUntilDeadline < 7) score += 75 * 0.4;
       else if (daysUntilDeadline < 14) score += 50 * 0.4;
@@ -185,7 +202,10 @@ export class SmartSchedulingAI {
   }
 
   // Find suitable resources for a job
-  private findSuitableResources(job: ProductionJob, resources: Resource[]): Resource[] {
+  private findSuitableResources(
+    job: ProductionJob,
+    resources: Resource[]
+  ): Resource[] {
     return resources.filter(resource => {
       // Check if resource has required skills
       const hasRequiredSkills = job.required_skills.every(skill =>
@@ -208,7 +228,9 @@ export class SmartSchedulingAI {
       return { met: true, missing: [], earliestStart: null };
     }
 
-    const scheduledDeps = schedule.filter(task => job.dependencies!.includes(task.job_id));
+    const scheduledDeps = schedule.filter(task =>
+      job.dependencies!.includes(task.job_id)
+    );
     const missing = job.dependencies.filter(
       depId => !scheduledDeps.find(task => task.job_id === depId)
     );
@@ -312,7 +334,10 @@ export class SmartSchedulingAI {
         );
 
         // Check gap before first conflict
-        if (sortedConflicts[0].start.getTime() - dayStart.getTime() >= durationHours * 60 * 60 * 1000) {
+        if (
+          sortedConflicts[0].start.getTime() - dayStart.getTime() >=
+          durationHours * 60 * 60 * 1000
+        ) {
           const slotEnd = new Date(dayStart);
           slotEnd.setHours(dayStart.getHours() + durationHours);
           return { start: dayStart, end: slotEnd };
@@ -322,7 +347,8 @@ export class SmartSchedulingAI {
         for (let i = 0; i < sortedConflicts.length - 1; i++) {
           const gapStart = sortedConflicts[i].end;
           const gapEnd = sortedConflicts[i + 1].start;
-          const gapHours = (gapEnd.getTime() - gapStart.getTime()) / (1000 * 60 * 60);
+          const gapHours =
+            (gapEnd.getTime() - gapStart.getTime()) / (1000 * 60 * 60);
 
           if (gapHours >= durationHours) {
             const slotEnd = new Date(gapStart);
@@ -361,7 +387,10 @@ export class SmartSchedulingAI {
     else score -= 50; // Penalty for missing deadline
 
     // Resource utilization balance (30%)
-    const utilizationScore = resource.current_utilization < 80 ? 100 : (100 - resource.current_utilization);
+    const utilizationScore =
+      resource.current_utilization < 80
+        ? 100
+        : 100 - resource.current_utilization;
     score += utilizationScore * 0.3;
 
     return score;
@@ -373,22 +402,33 @@ export class SmartSchedulingAI {
     allJobs: ProductionJob[],
     resources: Resource[],
     startDate: Date
-  ): ScheduleOptimizationResult['metrics'] {
+  ): ScheduleOptimizationResult["metrics"] {
     // Average resource utilization
     const resourceHours: Map<string, number> = new Map();
     resources.forEach(r => resourceHours.set(r.id, 0));
 
     schedule.forEach(task => {
       const current = resourceHours.get(task.assigned_resource_id) || 0;
-      resourceHours.set(task.assigned_resource_id, current + task.estimated_duration_hours);
+      resourceHours.set(
+        task.assigned_resource_id,
+        current + task.estimated_duration_hours
+      );
     });
 
-    const totalCapacity = resources.reduce((sum, r) => sum + r.capacity_hours_per_day * 30, 0); // 30 days
-    const totalUsed = Array.from(resourceHours.values()).reduce((sum, h) => sum + h, 0);
+    const totalCapacity = resources.reduce(
+      (sum, r) => sum + r.capacity_hours_per_day * 30,
+      0
+    ); // 30 days
+    const totalUsed = Array.from(resourceHours.values()).reduce(
+      (sum, h) => sum + h,
+      0
+    );
     const avgResourceUtilization = (totalUsed / totalCapacity) * 100;
 
     // On-time completion rate
-    const onTimeJobs = schedule.filter(task => task.end_time <= task.job_details.deadline).length;
+    const onTimeJobs = schedule.filter(
+      task => task.end_time <= task.job_details.deadline
+    ).length;
     const onTimeCompletionRate = (onTimeJobs / schedule.length) * 100;
 
     // Total makespan
@@ -396,7 +436,8 @@ export class SmartSchedulingAI {
       (latest, task) => (task.end_time > latest ? task.end_time : latest),
       startDate
     );
-    const totalMakespanHours = (lastEndTime.getTime() - startDate.getTime()) / (1000 * 60 * 60);
+    const totalMakespanHours =
+      (lastEndTime.getTime() - startDate.getTime()) / (1000 * 60 * 60);
 
     // Wasted capacity
     const wastedCapacityHours = totalCapacity - totalUsed;
@@ -411,7 +452,7 @@ export class SmartSchedulingAI {
 
   // Calculate optimization score
   private calculateOptimizationScore(
-    metrics: ScheduleOptimizationResult['metrics'],
+    metrics: ScheduleOptimizationResult["metrics"],
     unscheduledCount: number,
     totalJobs: number
   ): number {
@@ -426,16 +467,20 @@ export class SmartSchedulingAI {
 
     // Resource utilization (20%) - optimal is 70-85%
     const utilizationScore =
-      metrics.avg_resource_utilization >= 70 && metrics.avg_resource_utilization <= 85
+      metrics.avg_resource_utilization >= 70 &&
+      metrics.avg_resource_utilization <= 85
         ? 100
         : metrics.avg_resource_utilization < 70
-        ? metrics.avg_resource_utilization * 1.43 // Scale 0-70 to 0-100
-        : (100 - (metrics.avg_resource_utilization - 85) * 2); // Penalty for over-utilization
+          ? metrics.avg_resource_utilization * 1.43 // Scale 0-70 to 0-100
+          : 100 - (metrics.avg_resource_utilization - 85) * 2; // Penalty for over-utilization
 
     score += utilizationScore * 0.2;
 
     // Efficiency (10%) - lower makespan is better
-    const efficiencyScore = Math.max(100 - metrics.total_makespan_hours / 10, 0);
+    const efficiencyScore = Math.max(
+      100 - metrics.total_makespan_hours / 10,
+      0
+    );
     score += efficiencyScore * 0.1;
 
     return Math.round(Math.min(score, 100) * 100) / 100;
@@ -445,8 +490,8 @@ export class SmartSchedulingAI {
   private generateRecommendations(
     schedule: ScheduledTask[],
     unscheduled: ProductionJob[],
-    metrics: ScheduleOptimizationResult['metrics'],
-    conflicts: ScheduleOptimizationResult['conflicts']
+    metrics: ScheduleOptimizationResult["metrics"],
+    conflicts: ScheduleOptimizationResult["conflicts"]
   ): string[] {
     const recommendations: string[] = [];
 
@@ -476,7 +521,9 @@ export class SmartSchedulingAI {
     }
 
     // Conflicts
-    const highSeverityConflicts = conflicts.filter(c => c.severity === 'HIGH').length;
+    const highSeverityConflicts = conflicts.filter(
+      c => c.severity === "HIGH"
+    ).length;
     if (highSeverityConflicts > 0) {
       recommendations.push(
         `⚠️ ${highSeverityConflicts} high-severity scheduling conflict(s) detected - immediate attention required`
@@ -491,7 +538,9 @@ export class SmartSchedulingAI {
     }
 
     if (recommendations.length === 0) {
-      recommendations.push('✅ Schedule is well-optimized with no major issues');
+      recommendations.push(
+        "✅ Schedule is well-optimized with no major issues"
+      );
     }
 
     return recommendations;
@@ -501,7 +550,7 @@ export class SmartSchedulingAI {
   async analyzeScenario(
     baseSchedule: ScheduleOptimizationResult,
     scenario: {
-      type: 'ADD_JOB' | 'REMOVE_JOB' | 'ADD_RESOURCE' | 'CHANGE_DEADLINE';
+      type: "ADD_JOB" | "REMOVE_JOB" | "ADD_RESOURCE" | "CHANGE_DEADLINE";
       job?: ProductionJob;
       job_id?: string;
       resource?: Resource;
@@ -522,73 +571,79 @@ export class SmartSchedulingAI {
   }> {
     let modifiedJobs = [...jobs];
     let modifiedResources = [...resources];
-    let scenarioName = '';
-    let impact = '';
+    let scenarioName = "";
+    let impact = "";
 
     switch (scenario.type) {
-      case 'ADD_JOB':
+      case "ADD_JOB":
         if (scenario.job) {
           modifiedJobs.push(scenario.job);
           scenarioName = `Add Job: ${scenario.job.garment_type}`;
-          impact = 'Analyzes impact of adding new urgent job';
+          impact = "Analyzes impact of adding new urgent job";
         }
         break;
-      case 'REMOVE_JOB':
+      case "REMOVE_JOB":
         if (scenario.job_id) {
           modifiedJobs = modifiedJobs.filter(j => j.id !== scenario.job_id);
           scenarioName = `Remove Job: ${scenario.job_id}`;
-          impact = 'Analyzes freed capacity after job removal';
+          impact = "Analyzes freed capacity after job removal";
         }
         break;
-      case 'ADD_RESOURCE':
+      case "ADD_RESOURCE":
         if (scenario.resource) {
           modifiedResources.push(scenario.resource);
           scenarioName = `Add Resource: ${scenario.resource.name}`;
-          impact = 'Analyzes capacity increase from new resource';
+          impact = "Analyzes capacity increase from new resource";
         }
         break;
-      case 'CHANGE_DEADLINE':
+      case "CHANGE_DEADLINE":
         if (scenario.job_id && scenario.new_deadline) {
           const jobIdx = modifiedJobs.findIndex(j => j.id === scenario.job_id);
           if (jobIdx >= 0) {
             modifiedJobs[jobIdx].deadline = scenario.new_deadline;
             scenarioName = `Extend Deadline: ${scenario.job_id}`;
-            impact = 'Analyzes scheduling flexibility from deadline extension';
+            impact = "Analyzes scheduling flexibility from deadline extension";
           }
         }
         break;
     }
 
     // Generate new schedule
-    const newSchedule = await this.optimizeSchedule(modifiedJobs, modifiedResources);
+    const newSchedule = await this.optimizeSchedule(
+      modifiedJobs,
+      modifiedResources
+    );
 
     // Compare metrics
     const comparison = [
       {
-        metric: 'Scheduled Jobs',
+        metric: "Scheduled Jobs",
         before: baseSchedule.scheduled_jobs,
         after: newSchedule.scheduled_jobs,
         change: newSchedule.scheduled_jobs - baseSchedule.scheduled_jobs,
       },
       {
-        metric: 'Optimization Score',
+        metric: "Optimization Score",
         before: baseSchedule.optimization_score,
         after: newSchedule.optimization_score,
-        change: newSchedule.optimization_score - baseSchedule.optimization_score,
+        change:
+          newSchedule.optimization_score - baseSchedule.optimization_score,
       },
       {
-        metric: 'Resource Utilization %',
+        metric: "Resource Utilization %",
         before: baseSchedule.metrics.avg_resource_utilization,
         after: newSchedule.metrics.avg_resource_utilization,
         change:
-          newSchedule.metrics.avg_resource_utilization - baseSchedule.metrics.avg_resource_utilization,
+          newSchedule.metrics.avg_resource_utilization -
+          baseSchedule.metrics.avg_resource_utilization,
       },
       {
-        metric: 'On-Time Rate %',
+        metric: "On-Time Rate %",
         before: baseSchedule.metrics.on_time_completion_rate,
         after: newSchedule.metrics.on_time_completion_rate,
         change:
-          newSchedule.metrics.on_time_completion_rate - baseSchedule.metrics.on_time_completion_rate,
+          newSchedule.metrics.on_time_completion_rate -
+          baseSchedule.metrics.on_time_completion_rate,
       },
     ];
 

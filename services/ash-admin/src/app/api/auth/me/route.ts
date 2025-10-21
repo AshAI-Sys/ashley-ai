@@ -1,8 +1,8 @@
-import { NextRequest } from 'next/server'
-import { requireAuth } from '../../../../lib/auth-guards'
-import { apiSuccess, apiServerError } from '../../../../lib/api-response'
-import { authLogger } from '../../../../lib/logger'
-import { prisma } from '../../../../lib/db'
+import { NextRequest } from "next/server";
+import { requireAuth } from "../../../../lib/auth-guards";
+import { apiSuccess, apiServerError } from "../../../../lib/api-response";
+import { authLogger } from "../../../../lib/logger";
+import { prisma } from "../../../../lib/db";
 
 /**
  * GET /api/auth/me
@@ -11,12 +11,12 @@ import { prisma } from '../../../../lib/db'
 export async function GET(request: NextRequest) {
   try {
     // Use auth guard to verify authentication
-    const userOrResponse = await requireAuth(request)
+    const userOrResponse = await requireAuth(request);
     if (userOrResponse instanceof Response) {
-      return userOrResponse
+      return userOrResponse;
     }
 
-    const authUser = userOrResponse
+    const authUser = userOrResponse;
 
     // Fetch full user details from database
     const user = await prisma.user.findUnique({
@@ -33,15 +33,15 @@ export async function GET(request: NextRequest) {
         is_active: true,
         created_at: true,
         last_login_at: true,
-      }
-    })
+      },
+    });
 
     if (!user) {
-      authLogger.warn('User not found in database', { userId: authUser.id })
-      return apiServerError('User not found')
+      authLogger.warn("User not found in database", { userId: authUser.id });
+      return apiServerError("User not found");
     }
 
-    authLogger.debug('User authenticated successfully', { userId: user.id })
+    authLogger.debug("User authenticated successfully", { userId: user.id });
 
     return apiSuccess({
       id: user.id,
@@ -53,10 +53,9 @@ export async function GET(request: NextRequest) {
       workspaceId: user.workspace_id,
       isActive: user.is_active,
       lastLoginAt: user.last_login_at,
-    })
-
+    });
   } catch (error) {
-    authLogger.error('Auth verification error', error)
-    return apiServerError(error)
+    authLogger.error("Auth verification error", error);
+    return apiServerError(error);
   }
 }

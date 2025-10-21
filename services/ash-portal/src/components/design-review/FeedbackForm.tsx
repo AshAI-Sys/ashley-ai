@@ -1,48 +1,68 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@ash-ai/ui/card'
-import { Button } from '@ash-ai/ui/button'
-import { Textarea } from '@ash-ai/ui/textarea'
-import { Input } from '@ash-ai/ui/input'
-import { Label } from '@ash-ai/ui/label'
-import { Badge } from '@ash-ai/ui/badge'
-import { 
-  MessageCircle, 
-  Paperclip, 
-  X, 
-  FileText, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@ash-ai/ui/card";
+import { Button } from "@ash-ai/ui/button";
+import { Textarea } from "@ash-ai/ui/textarea";
+import { Input } from "@ash-ai/ui/input";
+import { Label } from "@ash-ai/ui/label";
+import { Badge } from "@ash-ai/ui/badge";
+import {
+  MessageCircle,
+  Paperclip,
+  X,
+  FileText,
   Image as ImageIcon,
   Send,
   Star,
   ThumbsUp,
   ThumbsDown,
-  AlertTriangle
-} from 'lucide-react'
+  AlertTriangle,
+} from "lucide-react";
 
 interface FeedbackFormProps {
-  designName: string
-  version: number
-  onSubmit: (data: FeedbackData) => void
-  submitting?: boolean
-  disabled?: boolean
-  className?: string
+  designName: string;
+  version: number;
+  onSubmit: (data: FeedbackData) => void;
+  submitting?: boolean;
+  disabled?: boolean;
+  className?: string;
 }
 
 interface FeedbackData {
-  rating?: number
-  feedback: string
-  change_requests?: string[]
-  attachments: File[]
-  priority: 'low' | 'normal' | 'high' | 'urgent'
+  rating?: number;
+  feedback: string;
+  change_requests?: string[];
+  attachments: File[];
+  priority: "low" | "normal" | "high" | "urgent";
 }
 
 const PRIORITY_OPTIONS = [
-  { value: 'low', label: 'Low Priority', color: 'bg-gray-100 text-gray-800', icon: '🔵' },
-  { value: 'normal', label: 'Normal', color: 'bg-blue-100 text-blue-800', icon: '🟡' },
-  { value: 'high', label: 'High Priority', color: 'bg-orange-100 text-orange-800', icon: '🟠' },
-  { value: 'urgent', label: 'Urgent', color: 'bg-red-100 text-red-800', icon: '🔴' }
-]
+  {
+    value: "low",
+    label: "Low Priority",
+    color: "bg-gray-100 text-gray-800",
+    icon: "🔵",
+  },
+  {
+    value: "normal",
+    label: "Normal",
+    color: "bg-blue-100 text-blue-800",
+    icon: "🟡",
+  },
+  {
+    value: "high",
+    label: "High Priority",
+    color: "bg-orange-100 text-orange-800",
+    icon: "🟠",
+  },
+  {
+    value: "urgent",
+    label: "Urgent",
+    color: "bg-red-100 text-red-800",
+    icon: "🔴",
+  },
+];
 
 const QUICK_FEEDBACK_OPTIONS = [
   "The colors look great!",
@@ -54,92 +74,94 @@ const QUICK_FEEDBACK_OPTIONS = [
   "Move the design to the center",
   "Use a different font style",
   "Add more contrast",
-  "Remove the background element"
-]
+  "Remove the background element",
+];
 
-export function FeedbackForm({ 
-  designName, 
-  version, 
-  onSubmit, 
-  submitting = false, 
+export function FeedbackForm({
+  designName,
+  version,
+  onSubmit,
+  submitting = false,
   disabled = false,
-  className = '' 
+  className = "",
 }: FeedbackFormProps) {
-  const [rating, setRating] = useState<number | undefined>()
-  const [feedback, setFeedback] = useState('')
-  const [changeRequests, setChangeRequests] = useState<string[]>([])
-  const [newChangeRequest, setNewChangeRequest] = useState('')
-  const [attachments, setAttachments] = useState<File[]>([])
-  const [priority, setPriority] = useState<'low' | 'normal' | 'high' | 'urgent'>('normal')
+  const [rating, setRating] = useState<number | undefined>();
+  const [feedback, setFeedback] = useState("");
+  const [changeRequests, setChangeRequests] = useState<string[]>([]);
+  const [newChangeRequest, setNewChangeRequest] = useState("");
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [priority, setPriority] = useState<
+    "low" | "normal" | "high" | "urgent"
+  >("normal");
 
   const handleSubmit = () => {
-    if (!feedback.trim()) return
+    if (!feedback.trim()) return;
 
     const data: FeedbackData = {
       rating,
       feedback: feedback.trim(),
       change_requests: changeRequests.filter(req => req.trim()),
       attachments,
-      priority
-    }
+      priority,
+    };
 
-    onSubmit(data)
-  }
+    onSubmit(data);
+  };
 
   const addChangeRequest = () => {
     if (newChangeRequest.trim()) {
-      setChangeRequests(prev => [...prev, newChangeRequest.trim()])
-      setNewChangeRequest('')
+      setChangeRequests(prev => [...prev, newChangeRequest.trim()]);
+      setNewChangeRequest("");
     }
-  }
+  };
 
   const removeChangeRequest = (index: number) => {
-    setChangeRequests(prev => prev.filter((_, i) => i !== index))
-  }
+    setChangeRequests(prev => prev.filter((_, i) => i !== index));
+  };
 
   const addQuickFeedback = (text: string) => {
     if (feedback.trim()) {
-      setFeedback(prev => prev + '\n' + text)
+      setFeedback(prev => prev + "\n" + text);
     } else {
-      setFeedback(text)
+      setFeedback(text);
     }
-  }
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
+    const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files).filter(file => {
         // Limit file size to 10MB
         if (file.size > 10 * 1024 * 1024) {
-          alert(`File "${file.name}" is too large. Maximum size is 10MB.`)
-          return false
+          alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+          return false;
         }
-        return true
-      })
-      setAttachments(prev => [...prev, ...newFiles])
+        return true;
+      });
+      setAttachments(prev => [...prev, ...newFiles]);
     }
-  }
+  };
 
   const removeAttachment = (index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index))
-  }
+    setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
 
-  const isSubmitDisabled = disabled || submitting || !feedback.trim()
-  const selectedPriority = PRIORITY_OPTIONS.find(p => p.value === priority)
+  const isSubmitDisabled = disabled || submitting || !feedback.trim();
+  const selectedPriority = PRIORITY_OPTIONS.find(p => p.value === priority);
 
   return (
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
+          <MessageCircle className="h-5 w-5" />
           Your Feedback
           <Badge variant="outline">v{version}</Badge>
         </CardTitle>
@@ -147,28 +169,30 @@ export function FeedbackForm({
       <CardContent className="space-y-6">
         {/* Rating */}
         <div>
-          <Label className="text-base font-medium mb-3 block">
+          <Label className="mb-3 block text-base font-medium">
             How do you feel about this design? (Optional)
           </Label>
           <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
+            {[1, 2, 3, 4, 5].map(star => (
               <button
                 key={star}
                 type="button"
                 onClick={() => setRating(rating === star ? undefined : star)}
-                className={`p-2 rounded transition-colors ${
-                  rating && rating >= star 
-                    ? 'text-yellow-500 hover:text-yellow-600' 
-                    : 'text-gray-300 hover:text-yellow-400'
+                className={`rounded p-2 transition-colors ${
+                  rating && rating >= star
+                    ? "text-yellow-500 hover:text-yellow-600"
+                    : "text-gray-300 hover:text-yellow-400"
                 }`}
                 disabled={disabled}
               >
-                <Star className={`w-6 h-6 ${rating && rating >= star ? 'fill-current' : ''}`} />
+                <Star
+                  className={`h-6 w-6 ${rating && rating >= star ? "fill-current" : ""}`}
+                />
               </button>
             ))}
           </div>
           {rating && (
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2 text-sm">
               {rating === 1 && "We'll work on improvements"}
               {rating === 2 && "Thanks for the feedback"}
               {rating === 3 && "Good to know your thoughts"}
@@ -180,7 +204,9 @@ export function FeedbackForm({
 
         {/* Quick Feedback Options */}
         <div>
-          <Label className="text-sm font-medium mb-2 block">Quick Feedback</Label>
+          <Label className="mb-2 block text-sm font-medium">
+            Quick Feedback
+          </Label>
           <div className="flex flex-wrap gap-2">
             {QUICK_FEEDBACK_OPTIONS.map((option, index) => (
               <Button
@@ -206,32 +232,32 @@ export function FeedbackForm({
           <Textarea
             id="feedback"
             value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
+            onChange={e => setFeedback(e.target.value)}
             placeholder="Please share your thoughts about this design. Be as specific as possible to help us understand what you'd like to see..."
             rows={6}
             disabled={disabled}
             className="mt-2"
           />
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-xs">
             {feedback.length}/1000 characters
           </p>
         </div>
 
         {/* Change Requests */}
         <div>
-          <Label className="text-base font-medium mb-2 block">
+          <Label className="mb-2 block text-base font-medium">
             Specific Change Requests (Optional)
           </Label>
           <div className="space-y-3">
             <div className="flex gap-2">
               <Input
                 value={newChangeRequest}
-                onChange={(e) => setNewChangeRequest(e.target.value)}
+                onChange={e => setNewChangeRequest(e.target.value)}
                 placeholder="e.g., Make the logo 20% bigger"
                 disabled={disabled}
-                onKeyPress={(e) => e.key === 'Enter' && addChangeRequest()}
+                onKeyPress={e => e.key === "Enter" && addChangeRequest()}
               />
-              <Button 
+              <Button
                 type="button"
                 onClick={addChangeRequest}
                 disabled={disabled || !newChangeRequest.trim()}
@@ -240,11 +266,14 @@ export function FeedbackForm({
                 Add
               </Button>
             </div>
-            
+
             {changeRequests.length > 0 && (
               <div className="space-y-2">
                 {changeRequests.map((request, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded border border-yellow-200 bg-yellow-50 p-2"
+                  >
                     <span className="text-sm">{request}</span>
                     <Button
                       type="button"
@@ -253,7 +282,7 @@ export function FeedbackForm({
                       onClick={() => removeChangeRequest(index)}
                       disabled={disabled}
                     >
-                      <X className="w-4 h-4" />
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
@@ -264,25 +293,23 @@ export function FeedbackForm({
 
         {/* Priority */}
         <div>
-          <Label className="text-base font-medium mb-3 block">
+          <Label className="mb-3 block text-base font-medium">
             Priority Level
           </Label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {PRIORITY_OPTIONS.map((option) => (
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+            {PRIORITY_OPTIONS.map(option => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => setPriority(option.value as any)}
                 disabled={disabled}
-                className={`
-                  p-3 border rounded-lg text-center transition-colors
-                  ${priority === option.value 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 hover:border-gray-300'
-                  }
-                `}
+                className={`rounded-lg border p-3 text-center transition-colors ${
+                  priority === option.value
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                } `}
               >
-                <div className="text-lg mb-1">{option.icon}</div>
+                <div className="mb-1 text-lg">{option.icon}</div>
                 <div className="text-xs font-medium">{option.label}</div>
               </button>
             ))}
@@ -291,7 +318,7 @@ export function FeedbackForm({
 
         {/* File Attachments */}
         <div>
-          <Label className="text-base font-medium mb-2 block">
+          <Label className="mb-2 block text-base font-medium">
             Attachments (Optional)
           </Label>
           <div className="space-y-3">
@@ -307,28 +334,31 @@ export function FeedbackForm({
               />
               <Button variant="outline" asChild disabled={disabled}>
                 <label htmlFor="file-upload" className="cursor-pointer">
-                  <Paperclip className="w-4 h-4 mr-2" />
+                  <Paperclip className="mr-2 h-4 w-4" />
                   Add Files
                 </label>
               </Button>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-muted-foreground mt-1 text-xs">
                 Max 10MB per file. Images, PDFs, and documents only.
               </p>
             </div>
-            
+
             {attachments.length > 0 && (
               <div className="space-y-2">
                 {attachments.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 border rounded">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded border bg-gray-50 p-2"
+                  >
                     <div className="flex items-center gap-2">
-                      {file.type.startsWith('image/') ? (
-                        <ImageIcon className="w-4 h-4 text-blue-500" />
+                      {file.type.startsWith("image/") ? (
+                        <ImageIcon className="h-4 w-4 text-blue-500" />
                       ) : (
-                        <FileText className="w-4 h-4 text-gray-500" />
+                        <FileText className="h-4 w-4 text-gray-500" />
                       )}
                       <div>
                         <div className="text-sm font-medium">{file.name}</div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {formatFileSize(file.size)}
                         </div>
                       </div>
@@ -340,7 +370,7 @@ export function FeedbackForm({
                       onClick={() => removeAttachment(index)}
                       disabled={disabled}
                     >
-                      <X className="w-4 h-4 text-red-500" />
+                      <X className="h-4 w-4 text-red-500" />
                     </Button>
                   </div>
                 ))}
@@ -350,25 +380,28 @@ export function FeedbackForm({
         </div>
 
         {/* Submit Button */}
-        <div className="pt-4 border-t">
+        <div className="border-t pt-4">
           <Button
             onClick={handleSubmit}
             disabled={isSubmitDisabled}
             size="lg"
             className="w-full"
           >
-            <Send className="w-5 h-5 mr-2" />
-            {submitting ? 'Submitting Feedback...' : 'Submit Feedback'}
+            <Send className="mr-2 h-5 w-5" />
+            {submitting ? "Submitting Feedback..." : "Submit Feedback"}
           </Button>
-          
-          {selectedPriority && priority !== 'normal' && (
-            <div className={`mt-3 p-3 rounded-lg ${selectedPriority.color}`}>
+
+          {selectedPriority && priority !== "normal" && (
+            <div className={`mt-3 rounded-lg p-3 ${selectedPriority.color}`}>
               <div className="flex items-center gap-2">
-                {priority === 'urgent' && <AlertTriangle className="w-4 h-4" />}
+                {priority === "urgent" && <AlertTriangle className="h-4 w-4" />}
                 <span className="text-sm font-medium">
-                  {priority === 'high' && 'High priority feedback will be reviewed within 4 hours'}
-                  {priority === 'urgent' && 'Urgent feedback will be reviewed immediately'}
-                  {priority === 'low' && 'Low priority feedback will be reviewed within 24 hours'}
+                  {priority === "high" &&
+                    "High priority feedback will be reviewed within 4 hours"}
+                  {priority === "urgent" &&
+                    "Urgent feedback will be reviewed immediately"}
+                  {priority === "low" &&
+                    "Low priority feedback will be reviewed within 24 hours"}
                 </span>
               </div>
             </div>
@@ -376,5 +409,5 @@ export function FeedbackForm({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

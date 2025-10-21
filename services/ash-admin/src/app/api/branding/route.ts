@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { brandingManager } from '@/lib/white-label/branding-manager';
+import { NextRequest, NextResponse } from "next/server";
+import { brandingManager } from "@/lib/white-label/branding-manager";
 
 // GET /api/branding?workspace_id=xxx - Get branding configuration
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const workspace_id = searchParams.get('workspace_id');
-    const format = searchParams.get('format'); // 'json' | 'css' | 'preview'
+    const workspace_id = searchParams.get("workspace_id");
+    const format = searchParams.get("format"); // 'json' | 'css' | 'preview'
 
     if (!workspace_id) {
       return NextResponse.json(
-        { error: 'workspace_id parameter required' },
+        { error: "workspace_id parameter required" },
         { status: 400 }
       );
     }
@@ -19,23 +19,23 @@ export async function GET(req: NextRequest) {
 
     // Return in requested format
     switch (format) {
-      case 'css':
+      case "css":
         const css = brandingManager.generateCSSVariables(branding);
         return new NextResponse(css, {
           headers: {
-            'Content-Type': 'text/css',
+            "Content-Type": "text/css",
           },
         });
 
-      case 'preview':
+      case "preview":
         const html = brandingManager.generatePreviewHTML(branding);
         return new NextResponse(html, {
           headers: {
-            'Content-Type': 'text/html',
+            "Content-Type": "text/html",
           },
         });
 
-      case 'json':
+      case "json":
       default:
         return NextResponse.json({
           success: true,
@@ -43,9 +43,9 @@ export async function GET(req: NextRequest) {
         });
     }
   } catch (error: any) {
-    console.error('Get branding error:', error);
+    console.error("Get branding error:", error);
     return NextResponse.json(
-      { error: 'Failed to get branding', details: error.message },
+      { error: "Failed to get branding", details: error.message },
       { status: 500 }
     );
   }
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     if (!workspace_id) {
       return NextResponse.json(
-        { error: 'workspace_id is required' },
+        { error: "workspace_id is required" },
         { status: 400 }
       );
     }
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     if (!success) {
       return NextResponse.json(
-        { error: 'Failed to update branding' },
+        { error: "Failed to update branding" },
         { status: 500 }
       );
     }
@@ -77,13 +77,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Branding updated successfully',
+      message: "Branding updated successfully",
       branding,
     });
   } catch (error: any) {
-    console.error('Update branding error:', error);
+    console.error("Update branding error:", error);
     return NextResponse.json(
-      { error: 'Failed to update branding', details: error.message },
+      { error: "Failed to update branding", details: error.message },
       { status: 500 }
     );
   }

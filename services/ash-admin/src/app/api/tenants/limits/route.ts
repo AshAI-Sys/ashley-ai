@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { tenantManager } from '@/lib/multi-tenant/tenant-manager';
+import { NextRequest, NextResponse } from "next/server";
+import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
 
 // GET /api/tenants/limits?workspace_id=xxx - Check tenant limits
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const workspace_id = searchParams.get('workspace_id');
+    const workspace_id = searchParams.get("workspace_id");
 
     if (!workspace_id) {
       return NextResponse.json(
-        { error: 'workspace_id parameter required' },
+        { error: "workspace_id parameter required" },
         { status: 400 }
       );
     }
@@ -18,14 +18,18 @@ export async function GET(req: NextRequest) {
 
     // Calculate percentages
     const usersPercent = (limits.users.current / limits.users.max) * 100;
-    const ordersPercent = (limits.orders.current_month / limits.orders.max) * 100;
-    const storagePercent = (limits.storage.used_gb / limits.storage.max_gb) * 100;
+    const ordersPercent =
+      (limits.orders.current_month / limits.orders.max) * 100;
+    const storagePercent =
+      (limits.storage.used_gb / limits.storage.max_gb) * 100;
 
     // Determine warnings
     const warnings: string[] = [];
 
     if (usersPercent >= 90) {
-      warnings.push(`User limit almost reached (${limits.users.current}/${limits.users.max})`);
+      warnings.push(
+        `User limit almost reached (${limits.users.current}/${limits.users.max})`
+      );
     }
 
     if (ordersPercent >= 90) {
@@ -52,9 +56,9 @@ export async function GET(req: NextRequest) {
       needs_upgrade: warnings.length > 0,
     });
   } catch (error: any) {
-    console.error('Check limits error:', error);
+    console.error("Check limits error:", error);
     return NextResponse.json(
-      { error: 'Failed to check limits', details: error.message },
+      { error: "Failed to check limits", details: error.message },
       { status: 500 }
     );
   }

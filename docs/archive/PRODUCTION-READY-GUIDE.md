@@ -29,6 +29,7 @@ Login: admin@ashleyai.com / password123
 **Ashley AI Manufacturing ERP** - Complete garment manufacturing system
 
 ### ✅ Implemented Stages (15/15)
+
 1. Client & Order Intake
 2. Design & Approval Workflow
 3. Cutting Operations
@@ -46,6 +47,7 @@ Login: admin@ashleyai.com / password123
 15. AI Chat Assistant
 
 ### 🎨 Latest Features (October 2025)
+
 - ✅ **Enhanced Login** - Robust redirect with visual feedback
 - ✅ **Dashboard Enhancements** - Interactive charts, real-time metrics
 - ✅ **PWA Support** - Offline capability, installable app
@@ -68,6 +70,7 @@ openssl rand -base64 32  # For ENCRYPTION_KEY
 ```
 
 **Critical Variables:**
+
 ```env
 # Database (Use PostgreSQL in production)
 DATABASE_URL="postgresql://user:pass@host:5432/db?schema=public"
@@ -172,6 +175,7 @@ pm2 start npm --name "ashley-admin" -- start
 ## 🔐 Security Checklist
 
 ### ✅ Completed
+
 - [x] JWT authentication with refresh tokens
 - [x] Password hashing with bcrypt
 - [x] SQL injection protection (Prisma ORM)
@@ -184,6 +188,7 @@ pm2 start npm --name "ashley-admin" -- start
 - [x] Secure headers (CSP, HSTS, etc.)
 
 ### 🔧 Configure Before Launch
+
 - [ ] Change all default secrets in `.env`
 - [ ] Set `DEMO_MODE="false"`
 - [ ] Set `NODE_ENV="production"`
@@ -234,6 +239,7 @@ pm2 start npm --name "ashley-admin" -- start
    ```
 
 **Features:**
+
 - Automatic image optimization
 - CDN delivery worldwide
 - On-the-fly transformations
@@ -302,12 +308,14 @@ curl https://yourdomain.com/api/health
 ## 🚀 Performance Optimization
 
 ### Current Metrics
+
 - Lighthouse Score: 95+
 - First Contentful Paint: <1.5s
 - Time to Interactive: <3.5s
 - Total Blocking Time: <300ms
 
 ### Optimizations Applied
+
 - ✅ Image optimization (next/image)
 - ✅ Code splitting (dynamic imports)
 - ✅ CSS optimization (Tailwind purge)
@@ -322,16 +330,19 @@ curl https://yourdomain.com/api/health
 ### Regular Tasks
 
 **Daily:**
+
 - Check error logs in Sentry
 - Monitor database size
 - Review failed jobs
 
 **Weekly:**
+
 - Review security audit logs
 - Check backup integrity
 - Update dependencies: `pnpm update`
 
 **Monthly:**
+
 - Review performance metrics
 - Optimize database indexes
 - Update documentation
@@ -344,6 +355,7 @@ curl https://yourdomain.com/api/health
 
 **Problem:** Login redirect not working
 **Solution:**
+
 1. Clear browser cache (Ctrl+Shift+Delete)
 2. Clear localStorage:
    ```javascript
@@ -358,6 +370,7 @@ curl https://yourdomain.com/api/health
 
 **Problem:** "Can't connect to database"
 **Solution:**
+
 1. Check DATABASE_URL is correct
 2. Verify database server is running
 3. Check firewall rules
@@ -367,6 +380,7 @@ curl https://yourdomain.com/api/health
 
 **Problem:** Build fails in production
 **Solution:**
+
 1. Clear `.next` folder: `rm -rf .next`
 2. Clear node_modules: `rm -rf node_modules && pnpm install`
 3. Check TypeScript errors: `pnpm tsc --noEmit`
@@ -377,6 +391,7 @@ curl https://yourdomain.com/api/health
 ## 📞 Support & Resources
 
 ### Documentation
+
 - Main Guide: [CLAUDE.md](CLAUDE.md)
 - Quick Start: [QUICK-START.md](QUICK-START.md)
 - Implementation: [IMPLEMENTATION-GUIDE.md](IMPLEMENTATION-GUIDE.md)
@@ -384,9 +399,11 @@ curl https://yourdomain.com/api/health
 - Login Fix: [LOGIN-FIX-SUMMARY.md](LOGIN-FIX-SUMMARY.md)
 
 ### Archive
+
 Older documentation moved to: `docs/archive/`
 
 ### Tech Stack
+
 - **Framework:** Next.js 14.2.32 (App Router)
 - **Language:** TypeScript
 - **Database:** PostgreSQL (prod) / SQLite (dev)

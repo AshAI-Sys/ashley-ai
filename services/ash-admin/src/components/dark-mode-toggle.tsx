@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { Moon, Sun } from 'lucide-react'
-import { useTheme } from '../lib/theme-context'
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "../lib/theme-context";
 
 export default function DarkModeToggle() {
-  const { theme, toggleTheme } = useTheme()
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <button
@@ -12,11 +12,11 @@ export default function DarkModeToggle() {
       className="dark-mode-toggle group"
       aria-label="Toggle dark mode"
     >
-      {theme === 'light' ? (
-        <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300 transition-colors group-hover:text-primary" />
+      {theme === "light" ? (
+        <Moon className="h-5 w-5 text-gray-700 transition-colors group-hover:text-primary dark:text-gray-300" />
       ) : (
-        <Sun className="w-5 h-5 text-gray-300 transition-colors group-hover:text-accent" />
+        <Sun className="h-5 w-5 text-gray-300 transition-colors group-hover:text-accent" />
       )}
     </button>
-  )
+  );
 }

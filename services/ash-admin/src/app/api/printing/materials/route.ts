@@ -1,35 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const type = searchParams.get('type')
-    const search = searchParams.get('search')
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+    const search = searchParams.get("search");
 
     // Build where clause for material inventory search
-    const where: any = {}
-    
+    const where: any = {};
+
     // Filter by material type if provided
     if (type) {
-      where.material_type = type
+      where.material_type = type;
     }
-    
+
     // Search by name if provided
     if (search) {
       where.OR = [
-        { material_name: { contains: search, mode: 'insensitive' } },
-        { supplier: { contains: search, mode: 'insensitive' } }
-      ]
+        { material_name: { contains: search, mode: "insensitive" } },
+        { supplier: { contains: search, mode: "insensitive" } },
+      ];
     }
 
     const materials = await prisma.materialInventory.findMany({
       where,
-      orderBy: [
-        { material_type: 'asc' },
-        { material_name: 'asc' }
-      ]
-    })
+      orderBy: [{ material_type: "asc" }, { material_name: "asc" }],
+    });
 
     // Transform data for frontend
     const transformedMaterials = materials.map(material => ({
@@ -44,62 +41,54 @@ export async function GET(request: NextRequest) {
       cost_per_unit: material.cost_per_unit,
       batch_number: material.batch_number,
       expiry_date: material.expiry_date,
-      location: material.location
-    }))
+      location: material.location,
+    }));
 
     return NextResponse.json({
       success: true,
-      data: transformedMaterials
-    })
-
+      data: transformedMaterials,
+    });
   } catch (error) {
-    console.error('Materials API error:', error)
+    console.error("Materials API error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch materials' },
+      { success: false, error: "Failed to fetch materials" },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const {
-      run_id,
-      materials
-    } = body
+    const body = await request.json();
+    const { run_id, materials } = body;
 
     if (!run_id || !materials || !Array.isArray(materials)) {
       return NextResponse.json(
-        { success: false, error: 'Run ID and materials array are required' },
+        { success: false, error: "Run ID and materials array are required" },
         { status: 400 }
-      )
+      );
     }
 
     // Process material consumption in transaction
-    const result = await prisma.$transaction(async (tx) => {
-      const consumptionRecords = []
+    const result = await prisma.$transaction(async tx => {
+      const consumptionRecords = [];
 
       for (const material of materials) {
-        const {
-          material_id,
-          quantity,
-          unit,
-          batch_id,
-          notes
-        } = material
+        const { material_id, quantity, unit, batch_id, notes } = material;
 
         // Check if material exists and has sufficient stock
         const materialRecord = await tx.materialInventory.findUnique({
-          where: { id: material_id }
-        })
+          where: { id: material_id },
+        });
 
         if (!materialRecord) {
-          throw new Error(`Material ${material_id} not found`)
+          throw new Error(`Material ${material_id} not found`);
         }
 
         if (materialRecord.available_stock < quantity) {
-          throw new Error(`Insufficient stock for ${materialRecord.material_name}. Available: ${materialRecord.available_stock}, Required: ${quantity}`)
+          throw new Error(
+            `Insufficient stock for ${materialRecord.material_name}. Available: ${materialRecord.available_stock}, Required: ${quantity}`
+          );
         }
 
         // Create consumption record
@@ -109,55 +98,60 @@ export async function POST(request: NextRequest) {
             item_id: material_id,
             uom: unit,
             qty: quantity,
-            source_batch_id: batch_id || null
-          }
-        })
+            source_batch_id: batch_id || null,
+          },
+        });
 
         // Update inventory - reduce available stock
         await tx.materialInventory.update({
           where: { id: material_id },
           data: {
             reserved_stock: {
-              increment: quantity
+              increment: quantity,
             },
             available_stock: {
-              decrement: quantity
-            }
-          }
-        })
+              decrement: quantity,
+            },
+          },
+        });
 
         // Create material transaction record
         await tx.materialTransaction.create({
           data: {
-            workspace_id: 'default', // Should come from session
+            workspace_id: "default", // Should come from session
             material_inventory_id: material_id,
-            transaction_type: 'OUT',
+            transaction_type: "OUT",
             quantity: quantity,
-            reference_type: 'PRINT_RUN',
+            reference_type: "PRINT_RUN",
             reference_id: run_id,
             notes: notes || `Material consumption for print run ${run_id}`,
-            created_by: 'system' // Should come from auth
-          }
-        })
+            created_by: "system", // Should come from auth
+          },
+        });
 
-        consumptionRecords.push(consumptionRecord)
+        consumptionRecords.push(consumptionRecord);
       }
 
-      return consumptionRecords
-    })
+      return consumptionRecords;
+    });
 
     return NextResponse.json({
       success: true,
       data: result,
-      message: `${materials.length} material(s) consumed and inventory updated`
-    })
-
+      message: `${materials.length} material(s) consumed and inventory updated`,
+    });
   } catch (error) {
-    console.error('Material consumption error:', error)
+    console.error("Material consumption error:", error);
     return NextResponse.json(
-      { success: false, error: error instanceof Error ? error.message : 'Failed to process material consumption' },
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to process material consumption",
+      },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -166,23 +160,22 @@ export async function OPTIONS(request: NextRequest) {
   try {
     const materialTypes = await prisma.materialInventory.findMany({
       select: {
-        material_type: true
+        material_type: true,
       },
-      distinct: ['material_type']
-    })
+      distinct: ["material_type"],
+    });
 
-    const types = materialTypes.map(m => m.material_type)
+    const types = materialTypes.map(m => m.material_type);
 
     return NextResponse.json({
       success: true,
-      data: types
-    })
-
+      data: types,
+    });
   } catch (error) {
-    console.error('Material types API error:', error)
+    console.error("Material types API error:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch material types' },
+      { success: false, error: "Failed to fetch material types" },
       { status: 500 }
-    )
+    );
   }
 }

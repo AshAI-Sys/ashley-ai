@@ -18,21 +18,27 @@ export interface SizeCurveInputProps {
 const DEFAULT_SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
 
 const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
-  ({ 
-    value = {}, 
-    onChange, 
-    totalQuantity = 0,
-    availableSizes = DEFAULT_SIZES,
-    className,
-    error,
-    disabled,
-    ...props 
-  }, ref) => {
+  (
+    {
+      value = {},
+      onChange,
+      totalQuantity = 0,
+      availableSizes = DEFAULT_SIZES,
+      className,
+      error,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
     const [customSize, setCustomSize] = React.useState("");
-    
-    const currentTotal = Object.values(value).reduce((sum, qty) => sum + qty, 0);
+
+    const currentTotal = Object.values(value).reduce(
+      (sum, qty) => sum + qty,
+      0
+    );
     const isValidTotal = totalQuantity === 0 || currentTotal === totalQuantity;
-    
+
     const updateSize = (size: string, quantity: number) => {
       const newValue = { ...value };
       if (quantity <= 0) {
@@ -42,31 +48,33 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
       }
       onChange(newValue);
     };
-    
+
     const addCustomSize = () => {
       if (customSize && !value[customSize]) {
         updateSize(customSize, 1);
         setCustomSize("");
       }
     };
-    
+
     const removeSize = (size: string) => {
       const newValue = { ...value };
       delete newValue[size];
       onChange(newValue);
     };
-    
+
     // Quick fill buttons for common distributions
     const quickFillOptions = [
       {
         label: "Equal Distribution",
         action: () => {
-          const activeSizes = Object.keys(value).filter(size => value[size] > 0);
+          const activeSizes = Object.keys(value).filter(
+            size => value[size] > 0
+          );
           if (activeSizes.length === 0 || totalQuantity === 0) return;
-          
+
           const perSize = Math.floor(totalQuantity / activeSizes.length);
           const remainder = totalQuantity % activeSizes.length;
-          
+
           const newValue: Record<string, number> = {};
           activeSizes.forEach((size, index) => {
             newValue[size] = perSize + (index < remainder ? 1 : 0);
@@ -78,44 +86,49 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
         label: "Bell Curve (M/L Heavy)",
         action: () => {
           if (totalQuantity === 0) return;
-          
+
           const distribution: Record<string, number> = {
             XS: 0.05,
             S: 0.15,
             M: 0.25,
             L: 0.25,
-            XL: 0.20,
-            "2XL": 0.10,
+            XL: 0.2,
+            "2XL": 0.1,
           };
-          
+
           const newValue: Record<string, number> = {};
           Object.entries(distribution).forEach(([size, percentage]) => {
             newValue[size] = Math.round(totalQuantity * percentage);
           });
-          
+
           // Adjust for rounding differences
-          const actualTotal = Object.values(newValue).reduce((sum, qty) => sum + qty, 0);
+          const actualTotal = Object.values(newValue).reduce(
+            (sum, qty) => sum + qty,
+            0
+          );
           if (actualTotal !== totalQuantity) {
             newValue.M += totalQuantity - actualTotal;
           }
-          
+
           onChange(newValue);
         },
       },
     ];
-    
+
     return (
       <div ref={ref} className={cn("space-y-4", className)} {...props}>
         {/* Size Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-          {availableSizes.map((size) => (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+          {availableSizes.map(size => (
             <div key={size} className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">{size}</label>
+              <label className="text-sm font-medium text-gray-700">
+                {size}
+              </label>
               <Input
                 type="number"
                 min="0"
                 value={value[size] || ""}
-                onChange={(e) => updateSize(size, parseInt(e.target.value) || 0)}
+                onChange={e => updateSize(size, parseInt(e.target.value) || 0)}
                 placeholder="0"
                 className="text-center"
                 disabled={disabled}
@@ -124,15 +137,15 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
             </div>
           ))}
         </div>
-        
+
         {/* Custom Size Input */}
         {!disabled && (
           <div className="flex gap-2">
             <Input
               placeholder="Custom size (e.g., 4XL)"
               value={customSize}
-              onChange={(e) => setCustomSize(e.target.value.toUpperCase())}
-              onKeyPress={(e) => e.key === "Enter" && addCustomSize()}
+              onChange={e => setCustomSize(e.target.value.toUpperCase())}
+              onKeyPress={e => e.key === "Enter" && addCustomSize()}
               className="flex-1"
             />
             <Button
@@ -146,18 +159,23 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
             </Button>
           </div>
         )}
-        
+
         {/* Custom Sizes */}
-        {Object.keys(value).filter(size => !availableSizes.includes(size)).length > 0 && (
+        {Object.keys(value).filter(size => !availableSizes.includes(size))
+          .length > 0 && (
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Custom Sizes</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <label className="text-sm font-medium text-gray-700">
+              Custom Sizes
+            </label>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {Object.keys(value)
                 .filter(size => !availableSizes.includes(size))
-                .map((size) => (
+                .map(size => (
                   <div key={size} className="relative">
-                    <div className="flex items-center gap-1 mb-1">
-                      <span className="text-sm font-medium text-gray-700">{size}</span>
+                    <div className="mb-1 flex items-center gap-1">
+                      <span className="text-sm font-medium text-gray-700">
+                        {size}
+                      </span>
                       {!disabled && (
                         <Button
                           type="button"
@@ -174,7 +192,9 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
                       type="number"
                       min="0"
                       value={value[size] || ""}
-                      onChange={(e) => updateSize(size, parseInt(e.target.value) || 0)}
+                      onChange={e =>
+                        updateSize(size, parseInt(e.target.value) || 0)
+                      }
                       placeholder="0"
                       className="text-center"
                       disabled={disabled}
@@ -185,9 +205,9 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
             </div>
           </div>
         )}
-        
+
         {/* Summary */}
-        <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-gray-50 rounded-lg">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-gray-50 p-3">
           <div className="flex items-center gap-4">
             <div className="text-sm">
               <span className="font-medium">Total: </span>
@@ -196,14 +216,14 @@ const SizeCurveInput = React.forwardRef<HTMLDivElement, SizeCurveInputProps>(
                 {totalQuantity > 0 && ` / ${totalQuantity}`}
               </Badge>
             </div>
-            
+
             {!isValidTotal && totalQuantity > 0 && (
               <div className="text-sm text-red-600">
                 Difference: {currentTotal - totalQuantity}
               </div>
             )}
           </div>
-          
+
           {/* Quick Fill Buttons */}
           {!disabled && totalQuantity > 0 && (
             <div className="flex gap-2">

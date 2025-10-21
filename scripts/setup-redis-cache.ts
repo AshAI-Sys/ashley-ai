@@ -5,7 +5,7 @@
  * Includes connection setup, caching helpers, and session management.
  */
 
-import { Redis } from 'ioredis';
+import { Redis } from "ioredis";
 
 // ========================================
 // Redis Client Configuration
@@ -18,7 +18,10 @@ let redisClient: Redis | null = null;
  */
 export function getRedisClient(): Redis {
   if (!redisClient) {
-    const redisUrl = process.env.REDIS_URL || process.env.ASH_REDIS_URL || 'redis://localhost:6379';
+    const redisUrl =
+      process.env.REDIS_URL ||
+      process.env.ASH_REDIS_URL ||
+      "redis://localhost:6379";
 
     redisClient = new Redis(redisUrl, {
       maxRetriesPerRequest: 3,
@@ -27,7 +30,7 @@ export function getRedisClient(): Redis {
         return delay;
       },
       reconnectOnError(err) {
-        const targetError = 'READONLY';
+        const targetError = "READONLY";
         if (err.message.includes(targetError)) {
           // Only reconnect when the error contains "READONLY"
           return true;
@@ -36,16 +39,16 @@ export function getRedisClient(): Redis {
       },
     });
 
-    redisClient.on('connect', () => {
-      console.log('✓ Redis connected successfully');
+    redisClient.on("connect", () => {
+      console.log("✓ Redis connected successfully");
     });
 
-    redisClient.on('error', (err) => {
-      console.error('✗ Redis connection error:', err.message);
+    redisClient.on("error", err => {
+      console.error("✗ Redis connection error:", err.message);
     });
 
-    redisClient.on('reconnecting', () => {
-      console.log('⟳ Redis reconnecting...');
+    redisClient.on("reconnecting", () => {
+      console.log("⟳ Redis reconnecting...");
     });
   }
 
@@ -75,7 +78,7 @@ export const CacheKeys = {
   // Orders
   order: (orderId: string) => `order:${orderId}`,
   orderList: (workspaceId: string, filters?: string) =>
-    `orders:${workspaceId}${filters ? `:${filters}` : ''}`,
+    `orders:${workspaceId}${filters ? `:${filters}` : ""}`,
 
   // Clients
   client: (clientId: string) => `client:${clientId}`,
@@ -89,7 +92,7 @@ export const CacheKeys = {
   // Quality Control
   qcInspection: (inspectionId: string) => `qc:${inspectionId}`,
   qcStats: (workspaceId: string, period?: string) =>
-    `qc_stats:${workspaceId}${period ? `:${period}` : ''}`,
+    `qc_stats:${workspaceId}${period ? `:${period}` : ""}`,
 
   // Ashley AI
   aiPrediction: (type: string, id: string) => `ai:${type}:${id}`,
@@ -102,7 +105,8 @@ export const CacheKeys = {
     `finance:${workspaceId}:${period}`,
 
   // Analytics
-  dashboard: (workspaceId: string, role: string) => `dashboard:${workspaceId}:${role}`,
+  dashboard: (workspaceId: string, role: string) =>
+    `dashboard:${workspaceId}:${role}`,
   metrics: (type: string, period: string) => `metrics:${type}:${period}`,
 };
 
@@ -135,7 +139,11 @@ export class CacheService {
   /**
    * Set value in cache with TTL
    */
-  async set(key: string, value: any, ttl: number = this.defaultTTL): Promise<boolean> {
+  async set(
+    key: string,
+    value: any,
+    ttl: number = this.defaultTTL
+  ): Promise<boolean> {
     try {
       const serialized = JSON.stringify(value);
       await this.redis.setex(key, ttl, serialized);
@@ -347,11 +355,15 @@ export class SessionService {
     const sessionId = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const key = CacheKeys.userSession(sessionId);
 
-    await this.cache.set(key, {
-      userId,
-      ...sessionData,
-      createdAt: new Date().toISOString(),
-    }, this.sessionTTL);
+    await this.cache.set(
+      key,
+      {
+        userId,
+        ...sessionData,
+        createdAt: new Date().toISOString(),
+      },
+      this.sessionTTL
+    );
 
     return sessionId;
   }
@@ -373,11 +385,15 @@ export class SessionService {
 
     if (!existing) return false;
 
-    return await this.cache.set(key, {
-      ...existing,
-      ...data,
-      updatedAt: new Date().toISOString(),
-    }, this.sessionTTL);
+    return await this.cache.set(
+      key,
+      {
+        ...existing,
+        ...data,
+        updatedAt: new Date().toISOString(),
+      },
+      this.sessionTTL
+    );
   }
 
   /**
@@ -434,7 +450,7 @@ export class RateLimiter {
 
       return { allowed, remaining, resetAt };
     } catch (error) {
-      console.error('Rate limit check error:', error);
+      console.error("Rate limit check error:", error);
       // Fail open (allow request) on error
       return { allowed: true, remaining: maxRequests, resetAt: new Date() };
     }

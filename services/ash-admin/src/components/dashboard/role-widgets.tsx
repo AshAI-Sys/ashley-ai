@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { User } from '../../lib/permissions'
+import { User } from "../../lib/permissions";
 import {
   Package,
   Scissors,
@@ -13,21 +13,23 @@ import {
   Wrench,
   BarChart3,
   Clock,
-  AlertTriangle
-} from 'lucide-react'
+  AlertTriangle,
+} from "lucide-react";
 
 interface RoleWidgetsProps {
-  user: User
+  user: User;
 }
 
 // Admin Dashboard Widgets
 function AdminWidgets() {
   return (
     <>
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">System Overview</h3>
-          <BarChart3 className="w-5 h-5 text-blue-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            System Overview
+          </h3>
+          <BarChart3 className="h-5 w-5 text-blue-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -45,10 +47,12 @@ function AdminWidgets() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Department Status</h3>
-          <Package className="w-5 h-5 text-green-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Department Status
+          </h3>
+          <Package className="h-5 w-5 text-green-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -66,10 +70,12 @@ function AdminWidgets() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Financial Summary</h3>
-          <DollarSign className="w-5 h-5 text-blue-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Financial Summary
+          </h3>
+          <DollarSign className="h-5 w-5 text-blue-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -87,17 +93,19 @@ function AdminWidgets() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 // Manager Dashboard Widgets
 function ManagerWidgets({ user }: { user: User }) {
   return (
     <>
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Department: {user.department}</h3>
-          <Package className="w-5 h-5 text-blue-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Department: {user.department}
+          </h3>
+          <Package className="h-5 w-5 text-blue-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -115,10 +123,12 @@ function ManagerWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Team Performance</h3>
-          <Users className="w-5 h-5 text-green-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Team Performance
+          </h3>
+          <Users className="h-5 w-5 text-green-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -136,10 +146,12 @@ function ManagerWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Quality Metrics</h3>
-          <CheckCircle className="w-5 h-5 text-green-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Quality Metrics
+          </h3>
+          <CheckCircle className="h-5 w-5 text-green-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -157,28 +169,37 @@ function ManagerWidgets({ user }: { user: User }) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 // Supervisor Dashboard Widgets
 function SupervisorWidgets({ user }: { user: User }) {
   const getDepartmentIcon = (dept: string) => {
     switch (dept) {
-      case 'Cutting': return <Scissors className="w-5 h-5 text-blue-600" />
-      case 'Printing': return <Printer className="w-5 h-5 text-purple-600" />
-      case 'Sewing': return <PocketKnife className="w-5 h-5 text-green-600" />
-      case 'Quality': return <CheckCircle className="w-5 h-5 text-yellow-600" />
-      case 'Delivery': return <Truck className="w-5 h-5 text-red-600" />
-      case 'Maintenance': return <Wrench className="w-5 h-5 text-gray-600" />
-      default: return <Package className="w-5 h-5 text-blue-600" />
+      case "Cutting":
+        return <Scissors className="h-5 w-5 text-blue-600" />;
+      case "Printing":
+        return <Printer className="h-5 w-5 text-purple-600" />;
+      case "Sewing":
+        return <PocketKnife className="h-5 w-5 text-green-600" />;
+      case "Quality":
+        return <CheckCircle className="h-5 w-5 text-yellow-600" />;
+      case "Delivery":
+        return <Truck className="h-5 w-5 text-red-600" />;
+      case "Maintenance":
+        return <Wrench className="h-5 w-5 text-gray-600" />;
+      default:
+        return <Package className="h-5 w-5 text-blue-600" />;
     }
-  }
+  };
 
   return (
     <>
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">My Department</h3>
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            My Department
+          </h3>
           {getDepartmentIcon(user.department)}
         </div>
         <div className="space-y-2">
@@ -197,10 +218,12 @@ function SupervisorWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Active Work Orders</h3>
-          <Clock className="w-5 h-5 text-amber-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Active Work Orders
+          </h3>
+          <Clock className="h-5 w-5 text-amber-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -218,10 +241,12 @@ function SupervisorWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Alerts & Issues</h3>
-          <AlertTriangle className="w-5 h-5 text-red-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Alerts & Issues
+          </h3>
+          <AlertTriangle className="h-5 w-5 text-red-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -239,17 +264,17 @@ function SupervisorWidgets({ user }: { user: User }) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 // Operator Dashboard Widgets
 function OperatorWidgets({ user }: { user: User }) {
   return (
     <>
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-semibold text-gray-700">My Tasks</h3>
-          <Package className="w-5 h-5 text-blue-600" />
+          <Package className="h-5 w-5 text-blue-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -267,10 +292,10 @@ function OperatorWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-semibold text-gray-700">Performance</h3>
-          <BarChart3 className="w-5 h-5 text-green-600" />
+          <BarChart3 className="h-5 w-5 text-green-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -288,10 +313,12 @@ function OperatorWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Department: {user.department}</h3>
-          <Clock className="w-5 h-5 text-blue-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Department: {user.department}
+          </h3>
+          <Clock className="h-5 w-5 text-blue-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -309,17 +336,19 @@ function OperatorWidgets({ user }: { user: User }) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 // Employee Dashboard Widgets
 function EmployeeWidgets({ user }: { user: User }) {
   return (
     <>
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">My Information</h3>
-          <Users className="w-5 h-5 text-blue-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            My Information
+          </h3>
+          <Users className="h-5 w-5 text-blue-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -337,10 +366,10 @@ function EmployeeWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-semibold text-gray-700">Attendance</h3>
-          <Clock className="w-5 h-5 text-green-600" />
+          <Clock className="h-5 w-5 text-green-600" />
         </div>
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
@@ -358,10 +387,12 @@ function EmployeeWidgets({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-semibold text-gray-700">Announcements</h3>
-          <AlertTriangle className="w-5 h-5 text-amber-600" />
+      <div className="rounded-lg bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-gray-700">
+            Announcements
+          </h3>
+          <AlertTriangle className="h-5 w-5 text-amber-600" />
         </div>
         <div className="space-y-2">
           <div className="text-sm text-gray-600">
@@ -376,29 +407,29 @@ function EmployeeWidgets({ user }: { user: User }) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default function RoleWidgets({ user }: RoleWidgetsProps) {
   switch (user.role) {
-    case 'admin':
-      return <AdminWidgets />
-    case 'manager':
-      return <ManagerWidgets user={user} />
-    case 'designer':
-      return <SupervisorWidgets user={user} />
-    case 'sewing_operator':
-    case 'cutting_operator':
-    case 'printing_operator':
-    case 'finishing_operator':
-      return <OperatorWidgets user={user} />
-    case 'qc_inspector':
-    case 'warehouse_staff':
-    case 'finance_staff':
-    case 'hr_staff':
-    case 'maintenance_tech':
-      return <EmployeeWidgets user={user} />
+    case "admin":
+      return <AdminWidgets />;
+    case "manager":
+      return <ManagerWidgets user={user} />;
+    case "designer":
+      return <SupervisorWidgets user={user} />;
+    case "sewing_operator":
+    case "cutting_operator":
+    case "printing_operator":
+    case "finishing_operator":
+      return <OperatorWidgets user={user} />;
+    case "qc_inspector":
+    case "warehouse_staff":
+    case "finance_staff":
+    case "hr_staff":
+    case "maintenance_tech":
+      return <EmployeeWidgets user={user} />;
     default:
-      return <EmployeeWidgets user={user} />
+      return <EmployeeWidgets user={user} />;
   }
 }

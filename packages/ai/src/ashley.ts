@@ -1,17 +1,22 @@
 import { db } from "@ash-ai/database";
-import { BaseAIProvider, OpenAIProvider, AnthropicProvider, type AIProviderConfig } from "./providers";
-import { 
-  ValidationContextSchema, 
-  OrderIntakeDataSchema, 
-  ClientDataSchema, 
-  ProductionDataSchema 
+import {
+  BaseAIProvider,
+  OpenAIProvider,
+  AnthropicProvider,
+  type AIProviderConfig,
+} from "./providers";
+import {
+  ValidationContextSchema,
+  OrderIntakeDataSchema,
+  ClientDataSchema,
+  ProductionDataSchema,
 } from "./validation";
-import type { 
-  ValidationContext, 
-  AshleyAnalysis, 
-  ProductionValidation, 
-  ClientRiskAssessment, 
-  OrderAnalysis 
+import type {
+  ValidationContext,
+  AshleyAnalysis,
+  ProductionValidation,
+  ClientRiskAssessment,
+  OrderAnalysis,
 } from "./types";
 
 export interface AshleyConfig {
@@ -43,12 +48,12 @@ export class Ashley {
   }
 
   async validateOrderIntake(
-    workspaceId: string, 
-    userId: string, 
+    workspaceId: string,
+    userId: string,
     orderData: unknown
   ): Promise<OrderAnalysis> {
     const validatedData = OrderIntakeDataSchema.parse(orderData);
-    
+
     const context: ValidationContext = {
       workspaceId,
       userId,
@@ -58,7 +63,7 @@ export class Ashley {
     };
 
     const analysis = await this.getOrCreateAnalysis(context);
-    
+
     // Convert to OrderAnalysis format
     return {
       feasibility: analysis.risk,
@@ -74,12 +79,12 @@ export class Ashley {
   }
 
   async assessClientRisk(
-    workspaceId: string, 
-    userId: string, 
+    workspaceId: string,
+    userId: string,
     clientData: unknown
   ): Promise<ClientRiskAssessment> {
     const validatedData = ClientDataSchema.parse(clientData);
-    
+
     const context: ValidationContext = {
       workspaceId,
       userId,
@@ -89,10 +94,13 @@ export class Ashley {
     };
 
     const analysis = await this.getOrCreateAnalysis(context);
-    
+
     // Get historical data for client scoring
-    const historyScore = await this.calculateClientHistoryScore(workspaceId, validatedData);
-    
+    const historyScore = await this.calculateClientHistoryScore(
+      workspaceId,
+      validatedData
+    );
+
     return {
       creditRisk: analysis.risk,
       historyScore,
@@ -102,12 +110,12 @@ export class Ashley {
   }
 
   async validateProduction(
-    workspaceId: string, 
-    userId: string, 
+    workspaceId: string,
+    userId: string,
     productionData: unknown
   ): Promise<ProductionValidation> {
     const validatedData = ProductionDataSchema.parse(productionData);
-    
+
     const context: ValidationContext = {
       workspaceId,
       userId,
@@ -117,21 +125,21 @@ export class Ashley {
     };
 
     const analysis = await this.getOrCreateAnalysis(context);
-    
+
     return {
       isValid: analysis.risk !== "RED",
       risk: analysis.risk,
-      estimatedDays: analysis.metadata.estimatedDays as number || 30,
-      estimatedCost: analysis.metadata.estimatedCost as number || 50000,
-      complexity: analysis.metadata.complexity as any || "MEDIUM",
+      estimatedDays: (analysis.metadata.estimatedDays as number) || 30,
+      estimatedCost: (analysis.metadata.estimatedCost as number) || 50000,
+      complexity: (analysis.metadata.complexity as any) || "MEDIUM",
       issues: analysis.issues,
       recommendations: analysis.recommendations,
     };
   }
 
   async analyzeDesignFeasibility(
-    workspaceId: string, 
-    userId: string, 
+    workspaceId: string,
+    userId: string,
     designData: unknown
   ): Promise<AshleyAnalysis> {
     const context: ValidationContext = {
@@ -146,8 +154,8 @@ export class Ashley {
   }
 
   async performQualityCheck(
-    workspaceId: string, 
-    userId: string, 
+    workspaceId: string,
+    userId: string,
     qcData: unknown
   ): Promise<AshleyAnalysis> {
     const context: ValidationContext = {
@@ -161,9 +169,11 @@ export class Ashley {
     return this.getOrCreateAnalysis(context);
   }
 
-  private async getOrCreateAnalysis(context: ValidationContext): Promise<AshleyAnalysis> {
+  private async getOrCreateAnalysis(
+    context: ValidationContext
+  ): Promise<AshleyAnalysis> {
     const validatedContext = ValidationContextSchema.parse(context);
-    
+
     // Check cache if enabled
     if (this.enableCaching) {
       const cached = await this.getCachedAnalysis(validatedContext);
@@ -174,7 +184,7 @@ export class Ashley {
 
     // Perform AI analysis
     const analysis = await this.performAnalysis(validatedContext);
-    
+
     // Cache result and save to database
     await Promise.all([
       this.cacheAnalysis(validatedContext, analysis),
@@ -184,7 +194,9 @@ export class Ashley {
     return analysis;
   }
 
-  private async performAnalysis(context: ValidationContext): Promise<AshleyAnalysis> {
+  private async performAnalysis(
+    context: ValidationContext
+  ): Promise<AshleyAnalysis> {
     switch (context.entity) {
       case "order":
         return this.provider.validateOrder(context);
@@ -201,10 +213,12 @@ export class Ashley {
     }
   }
 
-  private async getCachedAnalysis(context: ValidationContext): Promise<AshleyAnalysis | null> {
+  private async getCachedAnalysis(
+    context: ValidationContext
+  ): Promise<AshleyAnalysis | null> {
     try {
       const cacheKey = this.generateCacheKey(context);
-      
+
       // Check database cache (could also use Redis)
       const cached = await db.aiAnalysis.findFirst({
         where: {
@@ -227,12 +241,15 @@ export class Ashley {
     }
   }
 
-  private async cacheAnalysis(context: ValidationContext, analysis: AshleyAnalysis): Promise<void> {
+  private async cacheAnalysis(
+    context: ValidationContext,
+    analysis: AshleyAnalysis
+  ): Promise<void> {
     if (!this.enableCaching) return;
 
     try {
       const cacheKey = this.generateCacheKey(context);
-      
+
       await db.aiAnalysis.create({
         data: {
           workspaceId: context.workspaceId,
@@ -250,7 +267,10 @@ export class Ashley {
     }
   }
 
-  private async saveAnalysis(context: ValidationContext, analysis: AshleyAnalysis): Promise<void> {
+  private async saveAnalysis(
+    context: ValidationContext,
+    analysis: AshleyAnalysis
+  ): Promise<void> {
     // This would save the analysis result for audit/history purposes
     // Implementation depends on your database schema
   }
@@ -263,8 +283,10 @@ export class Ashley {
 
   private calculateTimelineRisk(orderData: any): "GREEN" | "AMBER" | "RED" {
     const deadline = new Date(orderData.deadline);
-    const daysUntilDeadline = Math.ceil((deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    
+    const daysUntilDeadline = Math.ceil(
+      (deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+
     // Simple timeline risk calculation
     if (daysUntilDeadline > 30) return "GREEN";
     if (daysUntilDeadline > 14) return "AMBER";
@@ -273,10 +295,12 @@ export class Ashley {
 
   private calculateCostRisk(orderData: any): "GREEN" | "AMBER" | "RED" {
     // Simple cost risk based on target price vs quantity
-    const pricePerUnit = orderData.targetPrice ? orderData.targetPrice / orderData.quantity : 0;
-    
-    if (pricePerUnit > 500) return "GREEN";  // Premium pricing
-    if (pricePerUnit > 200) return "AMBER";  // Mid-range
+    const pricePerUnit = orderData.targetPrice
+      ? orderData.targetPrice / orderData.quantity
+      : 0;
+
+    if (pricePerUnit > 500) return "GREEN"; // Premium pricing
+    if (pricePerUnit > 200) return "AMBER"; // Mid-range
     return "RED"; // Low margin
   }
 
@@ -294,13 +318,18 @@ export class Ashley {
     return baseTime + quantityFactor;
   }
 
-  private async calculateClientHistoryScore(workspaceId: string, clientData: any): Promise<number> {
+  private async calculateClientHistoryScore(
+    workspaceId: string,
+    clientData: any
+  ): Promise<number> {
     // This would calculate based on historical orders, payments, etc.
     // For now, return a placeholder
     return 85;
   }
 
-  private determinePaymentPattern(historyScore: number): "EXCELLENT" | "GOOD" | "FAIR" | "POOR" {
+  private determinePaymentPattern(
+    historyScore: number
+  ): "EXCELLENT" | "GOOD" | "FAIR" | "POOR" {
     if (historyScore >= 90) return "EXCELLENT";
     if (historyScore >= 75) return "GOOD";
     if (historyScore >= 60) return "FAIR";

@@ -1,23 +1,25 @@
-import { db } from '@/lib/database';
-import { NextRequest } from 'next/server'
+import { db } from "@/lib/database";
+import { NextRequest } from "next/server";
 
-const prisma = db
+const prisma = db;
 
 // Check if running in Edge runtime (middleware, edge routes)
 const isEdgeRuntime = () => {
-  return typeof EdgeRuntime !== 'undefined' || process.env.NEXT_RUNTIME === 'edge'
-}
+  return (
+    typeof EdgeRuntime !== "undefined" || process.env.NEXT_RUNTIME === "edge"
+  );
+};
 
 export interface AuditLogEntry {
-  workspaceId: string
-  userId?: string
-  action: string
-  resource: string
-  resourceId: string
-  oldValues?: Record<string, any>
-  newValues?: Record<string, any>
-  ipAddress?: string
-  userAgent?: string
+  workspaceId: string;
+  userId?: string;
+  action: string;
+  resource: string;
+  resourceId: string;
+  oldValues?: Record<string, any>;
+  newValues?: Record<string, any>;
+  ipAddress?: string;
+  userAgent?: string;
 }
 
 /**
@@ -26,8 +28,8 @@ export interface AuditLogEntry {
 export async function logAudit(entry: AuditLogEntry): Promise<void> {
   // Skip logging in Edge runtime (Prisma not supported)
   if (isEdgeRuntime()) {
-    console.log('[Edge Runtime] Skipping audit log:', entry.action)
-    return
+    console.log("[Edge Runtime] Skipping audit log:", entry.action);
+    return;
   }
 
   try {
@@ -42,10 +44,10 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
         new_values: entry.newValues ? JSON.stringify(entry.newValues) : null,
         ip_address: entry.ipAddress,
         user_agent: entry.userAgent,
-      }
-    })
+      },
+    });
   } catch (error) {
-    console.error('Failed to log audit event:', error)
+    console.error("Failed to log audit event:", error);
     // Don't throw - logging failures shouldn't break the application
   }
 }
@@ -54,42 +56,58 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
  * Log authentication events (login, logout, failed attempts)
  */
 export async function logAuthEvent(
-  action: 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'LOGIN_BLOCKED_LOCKED' | 'TOKEN_REFRESH' | '2FA_ENABLED' | '2FA_DISABLED' | 'REGISTER' | 'REGISTER_FAILED',
+  action:
+    | "LOGIN"
+    | "LOGOUT"
+    | "LOGIN_FAILED"
+    | "LOGIN_BLOCKED_LOCKED"
+    | "TOKEN_REFRESH"
+    | "2FA_ENABLED"
+    | "2FA_DISABLED"
+    | "REGISTER"
+    | "REGISTER_FAILED",
   workspaceId: string,
   userId?: string,
   request?: NextRequest,
   metadata?: Record<string, any>
 ): Promise<void> {
-  const ipAddress = request?.ip || request?.headers.get('x-forwarded-for') || 'unknown'
-  const userAgent = request?.headers.get('user-agent') || 'unknown'
+  const ipAddress =
+    request?.ip || request?.headers.get("x-forwarded-for") || "unknown";
+  const userAgent = request?.headers.get("user-agent") || "unknown";
 
   await logAudit({
     workspaceId,
     userId,
     action: `AUTH_${action}`,
-    resource: 'authentication',
-    resourceId: userId || 'anonymous',
+    resource: "authentication",
+    resourceId: userId || "anonymous",
     newValues: metadata,
     ipAddress,
     userAgent,
-  })
+  });
 }
 
 /**
  * Log security events (rate limit, IP block, suspicious activity)
  */
 export async function logSecurityEvent(
-  action: 'RATE_LIMIT_EXCEEDED' | 'IP_BLOCKED' | 'INVALID_TOKEN' | 'SUSPICIOUS_ACTIVITY' | 'CSRF_VIOLATION',
+  action:
+    | "RATE_LIMIT_EXCEEDED"
+    | "IP_BLOCKED"
+    | "INVALID_TOKEN"
+    | "SUSPICIOUS_ACTIVITY"
+    | "CSRF_VIOLATION",
   request: NextRequest,
   metadata?: Record<string, any>
 ): Promise<void> {
-  const ipAddress = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
-  const userAgent = request.headers.get('user-agent') || 'unknown'
+  const ipAddress =
+    request.ip || request.headers.get("x-forwarded-for") || "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
 
   await logAudit({
-    workspaceId: 'system',
+    workspaceId: "system",
     action: `SECURITY_${action}`,
-    resource: 'security',
+    resource: "security",
     resourceId: ipAddress,
     newValues: {
       ...metadata,
@@ -98,7 +116,7 @@ export async function logSecurityEvent(
     },
     ipAddress,
     userAgent,
-  })
+  });
 }
 
 /**
@@ -111,13 +129,14 @@ export async function logAPIRequest(
   responseStatus?: number,
   duration?: number
 ): Promise<void> {
-  const ipAddress = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
-  const userAgent = request.headers.get('user-agent') || 'unknown'
+  const ipAddress =
+    request.ip || request.headers.get("x-forwarded-for") || "unknown";
+  const userAgent = request.headers.get("user-agent") || "unknown";
 
   await logAudit({
-    workspaceId: workspaceId || 'system',
+    workspaceId: workspaceId || "system",
     userId,
-    action: 'API_REQUEST',
+    action: "API_REQUEST",
     resource: request.nextUrl.pathname,
     resourceId: `${request.method}_${Date.now()}`,
     newValues: {
@@ -129,14 +148,14 @@ export async function logAPIRequest(
     },
     ipAddress,
     userAgent,
-  })
+  });
 }
 
 /**
  * Log data changes (create, update, delete)
  */
 export async function logDataChange(
-  action: 'CREATE' | 'UPDATE' | 'DELETE',
+  action: "CREATE" | "UPDATE" | "DELETE",
   resource: string,
   resourceId: string,
   workspaceId: string,
@@ -152,46 +171,46 @@ export async function logDataChange(
     resourceId,
     oldValues,
     newValues,
-  })
+  });
 }
 
 /**
  * Get recent audit logs with filtering
  */
 export async function getAuditLogs(options: {
-  workspaceId?: string
-  userId?: string
-  action?: string
-  resource?: string
-  limit?: number
-  offset?: number
-  startDate?: Date
-  endDate?: Date
+  workspaceId?: string;
+  userId?: string;
+  action?: string;
+  resource?: string;
+  limit?: number;
+  offset?: number;
+  startDate?: Date;
+  endDate?: Date;
 }) {
-  const where: any = {}
+  const where: any = {};
 
-  if (options.workspaceId) where.workspace_id = options.workspaceId
-  if (options.userId) where.user_id = options.userId
-  if (options.action) where.action = { contains: options.action }
-  if (options.resource) where.resource = { contains: options.resource }
+  if (options.workspaceId) where.workspace_id = options.workspaceId;
+  if (options.userId) where.user_id = options.userId;
+  if (options.action) where.action = { contains: options.action };
+  if (options.resource) where.resource = { contains: options.resource };
 
   if (options.startDate || options.endDate) {
-    where.created_at = {}
-    if (options.startDate) where.created_at.gte = options.startDate
-    if (options.endDate) where.created_at.lte = options.endDate
+    where.created_at = {};
+    if (options.startDate) where.created_at.gte = options.startDate;
+    if (options.endDate) where.created_at.lte = options.endDate;
   }
 
   const [logs, total] = await Promise.all([
     prisma.auditLog.findMany({
       where,
-      orderBy: { created_at: 'desc' },
+      orderBy: { created_at: "desc" },
       take: options.limit || 100,
       skip: options.offset || 0,
     }),
     prisma.auditLog.count({ where }),
-  ])
+  ]);
 
-  return { logs, total }
+  return { logs, total };
 }
 
 /**
@@ -201,27 +220,27 @@ export async function getSecurityAlerts(
   workspaceId: string,
   hours: number = 24
 ): Promise<any[]> {
-  const since = new Date(Date.now() - hours * 60 * 60 * 1000)
+  const since = new Date(Date.now() - hours * 60 * 60 * 1000);
 
   const alerts = await prisma.auditLog.findMany({
     where: {
       workspace_id: workspaceId,
       action: {
         in: [
-          'AUTH_LOGIN_FAILED',
-          'SECURITY_RATE_LIMIT_EXCEEDED',
-          'SECURITY_IP_BLOCKED',
-          'SECURITY_INVALID_TOKEN',
-          'SECURITY_SUSPICIOUS_ACTIVITY',
+          "AUTH_LOGIN_FAILED",
+          "SECURITY_RATE_LIMIT_EXCEEDED",
+          "SECURITY_IP_BLOCKED",
+          "SECURITY_INVALID_TOKEN",
+          "SECURITY_SUSPICIOUS_ACTIVITY",
         ],
       },
       created_at: {
         gte: since,
       },
     },
-    orderBy: { created_at: 'desc' },
+    orderBy: { created_at: "desc" },
     take: 50,
-  })
+  });
 
-  return alerts
+  return alerts;
 }

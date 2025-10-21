@@ -7,6 +7,7 @@
 ## 🚀 Overview
 
 Gagawin nating **LIVE** ang Ashley AI with:
+
 - ✅ Real website accessible from anywhere (not just localhost)
 - ✅ Real email authentication (email verification, password reset)
 - ✅ Production-grade PostgreSQL database
@@ -30,6 +31,7 @@ Gagawin nating **LIVE** ang Ashley AI with:
 ### **STEP 1: Setup GitHub Repository**
 
 1. **Create GitHub Repository**
+
    ```bash
    cd "C:\Users\Khell\Desktop\Ashley AI"
    git init
@@ -62,6 +64,7 @@ Gagawin nating **LIVE** ang Ashley AI with:
    - Go to "Connection Details"
    - Copy the **Pooled connection string** (mas mabilis ito)
    - Example format:
+
    ```
    postgresql://username:password@ep-xxx.neon.tech/ashleyai?sslmode=require
    ```
@@ -109,11 +112,13 @@ Gagawin nating **LIVE** ang Ashley AI with:
 3. **Configure Build Settings**
 
    **Build Command:**
+
    ```bash
    cd ../.. && pnpm install && cd packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm build
    ```
 
    **Install Command:**
+
    ```bash
    cd ../.. && pnpm install
    ```
@@ -150,6 +155,7 @@ Gagawin nating **LIVE** ang Ashley AI with:
    ```
 
 3. **Generate JWT Secrets** (Run locally):
+
    ```bash
    # Generate JWT_SECRET
    openssl rand -base64 32
@@ -163,6 +169,7 @@ Gagawin nating **LIVE** ang Ashley AI with:
 ### **STEP 6: Run Database Migrations**
 
 1. **Update Local .env**
+
    ```bash
    # Copy production .env example
    cp services/ash-admin/.env.production.example services/ash-admin/.env.production
@@ -171,6 +178,7 @@ Gagawin nating **LIVE** ang Ashley AI with:
 2. **Edit .env.production** - add your Neon database URL
 
 3. **Run Prisma Migrations**
+
    ```bash
    cd packages/database
    npx prisma migrate deploy --schema=./prisma/schema.prisma
@@ -222,26 +230,31 @@ Gagawin nating **LIVE** ang Ashley AI with:
 ## 📧 Email Features Available
 
 ### ✅ **1. Welcome Email with Verification**
+
 - Sent when user creates account
 - Contains email verification link (24-hour expiry)
 - Professional Ashley AI branding
 
 ### ✅ **2. Email Verification**
+
 - Endpoint: `/auth/verify-email?token=xxx`
 - Validates email address
 - Activates user account
 
 ### ✅ **3. Password Reset**
+
 - User clicks "Forgot Password"
 - Email sent with reset link (1-hour expiry)
 - Secure password reset flow
 
 ### ✅ **4. Order Notifications**
+
 - Order confirmation emails
 - Status update notifications
 - Delivery tracking notifications
 
 ### ✅ **5. Invoice Emails**
+
 - Automated invoice generation
 - Payment reminders
 - Receipt confirmations
@@ -251,12 +264,14 @@ Gagawin nating **LIVE** ang Ashley AI with:
 ## 💰 Cost Breakdown (Monthly)
 
 ### **Free Tier (Recommended for Testing)**
+
 - Vercel Hosting: **FREE** (100GB bandwidth)
 - Neon Database: **FREE** (0.5GB storage, 1GB compute)
 - Resend Emails: **FREE** (3,000 emails/month)
 - **Total: ₱0/month**
 
 ### **Paid Tier (For Production Scale)**
+
 - Vercel Pro: $20/month (~₱1,100)
 - Neon Scale: $19/month (~₱1,050) - unlimited compute
 - Resend Pro: $20/month (~₱1,100) - 50,000 emails
@@ -290,6 +305,7 @@ Before going live, verify:
 Kapag na-complete mo lahat ng steps, **LIVE NA** ang Ashley AI production website with real email authentication!
 
 Your users can now:
+
 - ✅ Access the website from anywhere
 - ✅ Create real accounts with email verification
 - ✅ Receive real emails (welcome, verification, password reset)

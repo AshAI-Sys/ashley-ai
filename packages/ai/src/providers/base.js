@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseAIProvider = void 0;
 class BaseAIProvider {
-    constructor(config) {
-        this.config = config;
-    }
-    buildSystemPrompt(entity, stage) {
-        return `You are Ashley AI, an expert AI assistant specialized in apparel manufacturing in the Philippines.
+  constructor(config) {
+    this.config = config;
+  }
+  buildSystemPrompt(entity, stage) {
+    return `You are Ashley AI, an expert AI assistant specialized in apparel manufacturing in the Philippines.
 
 Your role is to analyze ${entity} data for the ${stage} stage and provide:
 1. Risk assessment (GREEN/AMBER/RED)
@@ -39,9 +39,9 @@ Respond in JSON format with the following structure:
     "complexity": "MEDIUM"
   }
 }`;
-    }
-    buildUserPrompt(context) {
-        return `Analyze this ${context.entity} data for ${context.stage}:
+  }
+  buildUserPrompt(context) {
+    return `Analyze this ${context.entity} data for ${context.stage}:
 
 Data: ${JSON.stringify(context.data, null, 2)}
 
@@ -49,6 +49,6 @@ Workspace: ${context.workspaceId}
 User: ${context.userId}
 
 Please provide your analysis focusing on Philippine manufacturing context.`;
-    }
+  }
 }
 exports.BaseAIProvider = BaseAIProvider;

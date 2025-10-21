@@ -6,27 +6,31 @@ import { AshleyAI } from "@ash-ai/ai";
 import type {
   ApprovalStatus,
   DesignWorkflowStage,
-  CollaborationEvent
+  CollaborationEvent,
 } from "./types";
 
 const CreateWorkflowSchema = z.object({
   workspaceId: z.string(),
   designAssetId: z.string(),
   approvers: z.array(z.string()),
-  stages: z.array(z.object({
-    name: z.string(),
-    requiredRole: z.string().optional(),
-    approvalRequired: z.boolean().default(true),
-    autoAdvance: z.boolean().default(false)
-  })),
+  stages: z.array(
+    z.object({
+      name: z.string(),
+      requiredRole: z.string().optional(),
+      approvalRequired: z.boolean().default(true),
+      autoAdvance: z.boolean().default(false),
+    })
+  ),
   dueDate: z.date().optional(),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM")
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
 });
 
 const UpdateWorkflowSchema = z.object({
-  status: z.enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"]).optional(),
+  status: z
+    .enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"])
+    .optional(),
   currentStage: z.string().optional(),
-  notes: z.string().optional()
+  notes: z.string().optional(),
 });
 
 export class DesignApprovalWorkflow extends EventEmitter {
@@ -48,13 +52,15 @@ export class DesignApprovalWorkflow extends EventEmitter {
 
   async createWorkflow(data: z.infer<typeof CreateWorkflowSchema>) {
     const validated = CreateWorkflowSchema.parse(data);
-    
+
     try {
       // Get Ashley AI analysis for optimal workflow configuration
       const ashleyAnalysis = await this.ashley.analyzeDesignWorkflow({
         designAssetId: validated.designAssetId,
-        approverRoles: validated.stages.map(s => s.requiredRole).filter(Boolean),
-        priority: validated.priority
+        approverRoles: validated.stages
+          .map(s => s.requiredRole)
+          .filter(Boolean),
+        priority: validated.priority,
       });
 
       // Create the workflow with AI-optimized settings
@@ -76,20 +82,20 @@ export class DesignApprovalWorkflow extends EventEmitter {
           ashleyRecommendations: JSON.stringify(ashleyAnalysis.recommendations),
           createdBy: "system", // TODO: Get from context
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         include: {
           workspace: true,
           designAsset: true,
-          approvals: true
-        }
+          approvals: true,
+        },
       });
 
       // Create initial approval records for each stage
       for (let i = 0; i < validated.stages.length; i++) {
         const stage = validated.stages[i];
         const stageApprovers = validated.approvers; // Simplification - in reality, filter by role
-        
+
         for (const approverId of stageApprovers) {
           await this.db.designApproval.create({
             data: {
@@ -103,14 +109,14 @@ export class DesignApprovalWorkflow extends EventEmitter {
               status: i === 0 ? "PENDING" : "WAITING", // Only first stage is pending
               isRequired: stage.approvalRequired,
               requestedAt: i === 0 ? new Date() : undefined,
-              createdAt: new Date()
-            }
+              createdAt: new Date(),
+            },
           });
         }
       }
 
       this.emit("workflow:created", { workflow, ashleyAnalysis });
-      
+
       return workflow;
     } catch (error) {
       console.error("Failed to create design workflow:", error);
@@ -118,25 +124,29 @@ export class DesignApprovalWorkflow extends EventEmitter {
     }
   }
 
-  async requestApproval(workflowId: string, stageNumber: number, requesterId: string) {
+  async requestApproval(
+    workflowId: string,
+    stageNumber: number,
+    requesterId: string
+  ) {
     try {
       // Update approval records to pending status
       await this.db.designApproval.updateMany({
         where: {
           workflowId,
           stageNumber,
-          status: "WAITING"
+          status: "WAITING",
         },
         data: {
           status: "PENDING",
-          requestedAt: new Date()
-        }
+          requestedAt: new Date(),
+        },
       });
 
       // Get workflow info for notifications
       const workflow = await this.db.designApprovalWorkflow.findUnique({
         where: { id: workflowId },
-        include: { designAsset: true, approvals: true }
+        include: { designAsset: true, approvals: true },
       });
 
       if (!workflow) {
@@ -147,7 +157,9 @@ export class DesignApprovalWorkflow extends EventEmitter {
         workflow,
         stageNumber,
         requesterId,
-        approvals: workflow.approvals.filter(a => a.stageNumber === stageNumber)
+        approvals: workflow.approvals.filter(
+          a => a.stageNumber === stageNumber
+        ),
       });
 
       return workflow;
@@ -158,7 +170,7 @@ export class DesignApprovalWorkflow extends EventEmitter {
   }
 
   async processApproval(
-    approvalId: string, 
+    approvalId: string,
     status: ApprovalStatus,
     feedback?: string,
     approverId?: string
@@ -171,27 +183,27 @@ export class DesignApprovalWorkflow extends EventEmitter {
           status,
           feedback,
           approvedAt: status === "APPROVED" ? new Date() : undefined,
-          approvedBy: approverId
+          approvedBy: approverId,
         },
         include: {
           workflow: {
             include: {
               designAsset: true,
-              approvals: true
-            }
-          }
-        }
+              approvals: true,
+            },
+          },
+        },
       });
 
       // Check if all approvals for this stage are complete
       const stageApprovals = approval.workflow.approvals.filter(
         a => a.stageNumber === approval.stageNumber
       );
-      
-      const allApproved = stageApprovals.every(a => 
-        a.status === "APPROVED" || !a.isRequired
+
+      const allApproved = stageApprovals.every(
+        a => a.status === "APPROVED" || !a.isRequired
       );
-      
+
       const anyRejected = stageApprovals.some(a => a.status === "REJECTED");
 
       if (anyRejected) {
@@ -200,22 +212,22 @@ export class DesignApprovalWorkflow extends EventEmitter {
           where: { id: approval.workflowId },
           data: {
             status: "REVISION_REQUIRED",
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         });
 
         this.emit("approval:rejected", {
           workflow: approval.workflow,
           approval,
-          feedback
+          feedback,
         });
       } else if (allApproved) {
         // Advance to next stage or complete workflow
         await this.advanceWorkflow(approval.workflowId, approval.stageNumber);
-        
+
         this.emit("approval:granted", {
           workflow: approval.workflow,
-          stageNumber: approval.stageNumber
+          stageNumber: approval.stageNumber,
         });
       }
 
@@ -229,7 +241,7 @@ export class DesignApprovalWorkflow extends EventEmitter {
   async advanceWorkflow(workflowId: string, currentStage: number) {
     const workflow = await this.db.designApprovalWorkflow.findUnique({
       where: { id: workflowId },
-      include: { approvals: true }
+      include: { approvals: true },
     });
 
     if (!workflow) {
@@ -246,27 +258,27 @@ export class DesignApprovalWorkflow extends EventEmitter {
         data: {
           status: "COMPLETED",
           completedAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       });
 
       // Update design asset status
       await this.db.designAsset.update({
         where: { id: workflow.designAssetId },
-        data: { status: "APPROVED" }
+        data: { status: "APPROVED" },
       });
 
       this.emit("workflow:completed", { workflow });
     } else {
       // Advance to next stage
       const nextStageName = stages[nextStage - 1]?.name || `Stage ${nextStage}`;
-      
+
       await this.db.designApprovalWorkflow.update({
         where: { id: workflowId },
         data: {
           currentStage: nextStageName,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       });
 
       // Activate next stage approvals
@@ -274,19 +286,19 @@ export class DesignApprovalWorkflow extends EventEmitter {
         where: {
           workflowId,
           stageNumber: nextStage,
-          status: "WAITING"
+          status: "WAITING",
         },
         data: {
           status: "PENDING",
-          requestedAt: new Date()
-        }
+          requestedAt: new Date(),
+        },
       });
 
       this.emit("stage:advanced", {
         workflow,
         previousStage: currentStage,
         newStage: nextStage,
-        stageName: nextStageName
+        stageName: nextStageName,
       });
     }
   }
@@ -299,11 +311,11 @@ export class DesignApprovalWorkflow extends EventEmitter {
         designAsset: true,
         approvals: {
           include: {
-            approver: true
+            approver: true,
           },
-          orderBy: { stageNumber: "asc" }
-        }
-      }
+          orderBy: { stageNumber: "asc" },
+        },
+      },
     });
   }
 
@@ -311,16 +323,16 @@ export class DesignApprovalWorkflow extends EventEmitter {
     return await this.db.designApproval.findMany({
       where: {
         approverId,
-        status: "PENDING"
+        status: "PENDING",
       },
       include: {
         workflow: {
           include: {
-            designAsset: true
-          }
-        }
+            designAsset: true,
+          },
+        },
       },
-      orderBy: { requestedAt: "asc" }
+      orderBy: { requestedAt: "asc" },
     });
   }
 
@@ -331,7 +343,9 @@ export class DesignApprovalWorkflow extends EventEmitter {
   }
 
   private async handleApprovalRequested(data: any) {
-    console.log(`Approval requested for workflow: ${data.workflow.id}, stage: ${data.stageNumber}`);
+    console.log(
+      `Approval requested for workflow: ${data.workflow.id}, stage: ${data.stageNumber}`
+    );
     // TODO: Send notification emails/messages
   }
 
@@ -346,7 +360,9 @@ export class DesignApprovalWorkflow extends EventEmitter {
   }
 
   private async handleStageAdvanced(data: any) {
-    console.log(`Workflow ${data.workflow.id} advanced to stage ${data.newStage}`);
+    console.log(
+      `Workflow ${data.workflow.id} advanced to stage ${data.newStage}`
+    );
     // TODO: Send stage advancement notifications
   }
 }

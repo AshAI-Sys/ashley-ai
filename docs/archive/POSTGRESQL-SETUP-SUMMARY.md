@@ -19,6 +19,7 @@
 ### Option 1: Local PostgreSQL (Recommended for Development)
 
 **Windows (PowerShell):**
+
 ```powershell
 # 1. Install PostgreSQL
 choco install postgresql
@@ -31,6 +32,7 @@ pnpm --filter @ash/admin dev
 ```
 
 **Windows (Batch):**
+
 ```batch
 # 1. Install PostgreSQL
 choco install postgresql
@@ -43,6 +45,7 @@ pnpm --filter @ash/admin dev
 ```
 
 **Mac/Linux:**
+
 ```bash
 # 1. Install PostgreSQL
 brew install postgresql  # macOS
@@ -60,6 +63,7 @@ pnpm --filter @ash/admin dev
 ### Option 2: Neon PostgreSQL (Cloud - Already Configured)
 
 **No installation needed! Just run:**
+
 ```bash
 # 1. Ensure DATABASE_URL is set to Neon in .env
 DATABASE_URL="postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
@@ -81,6 +85,7 @@ pnpm dev
 ## 📁 Files Created
 
 ### Configuration Files
+
 1. **packages/database/prisma/schema.prisma** (Updated)
    - Changed provider from `sqlite` to `postgresql`
 
@@ -88,12 +93,14 @@ pnpm dev
    - Added PostgreSQL connection strings (local + Neon)
 
 ### Scripts
+
 3. **scripts/setup-postgres.sh** - Linux/Mac setup script
 4. **scripts/setup-postgres.ps1** - Windows PowerShell setup script
 5. **scripts/setup-postgres.bat** - Windows Batch setup script
 6. **scripts/migrate-to-postgres.js** - Data migration script
 
 ### Documentation
+
 7. **POSTGRESQL-MIGRATION.md** - Complete migration guide
 8. **POSTGRESQL-SETUP-SUMMARY.md** - This file (quick reference)
 
@@ -102,11 +109,13 @@ pnpm dev
 ## 🔗 Connection Strings
 
 ### Local PostgreSQL
+
 ```
 postgresql://postgres:postgres@localhost:5432/ashley_ai?schema=public
 ```
 
 ### Neon PostgreSQL (Cloud)
+
 ```
 postgresql://neondb_owner:npg_Il0Wxopyjv5n@ep-snowy-firefly-a1wq4mcr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 ```
@@ -140,11 +149,13 @@ node scripts/migrate-to-postgres.js
 ## ❌ Rollback to SQLite (If Needed)
 
 1. Update `.env`:
+
    ```
    DATABASE_URL="file:C:/Users/Khell/Desktop/Ashley AI/packages/database/prisma/dev.db"
    ```
 
 2. Update `schema.prisma`:
+
    ```prisma
    datasource db {
      provider = "sqlite"
@@ -178,6 +189,7 @@ After PostgreSQL is set up:
 **Current**: PostgreSQL Migration
 
 ### ✅ Completed:
+
 1. Cloud Storage (Cloudinary)
 2. QC Photo Upload
 3. POD (Proof of Delivery)
@@ -189,6 +201,7 @@ After PostgreSQL is set up:
 9. **PostgreSQL Migration** ← YOU ARE HERE
 
 ### ⏳ Remaining:
+
 10. Vercel Deployment
 11. Security Headers & CSRF
 12. Sentry Error Tracking
@@ -204,16 +217,19 @@ After PostgreSQL is set up:
 ## 💡 Tips
 
 ### Performance
+
 - Use connection pooling (already configured)
 - Add indexes to frequently queried fields
 - Use JSONB for better JSON query performance
 
 ### Security
+
 - Use strong passwords in production
 - Enable SSL for cloud databases
 - Restrict database access by IP
 
 ### Maintenance
+
 - Run `VACUUM ANALYZE` periodically
 - Monitor database size and performance
 - Set up automated backups
@@ -223,6 +239,7 @@ After PostgreSQL is set up:
 ## 🆘 Troubleshooting
 
 ### PostgreSQL not found
+
 ```bash
 # Windows
 choco install postgresql
@@ -235,6 +252,7 @@ sudo apt install postgresql
 ```
 
 ### Connection refused
+
 ```bash
 # Check if PostgreSQL is running
 # Windows
@@ -248,6 +266,7 @@ sudo systemctl status postgresql
 ```
 
 ### Migration failed
+
 ```bash
 # Reset database
 cd packages/database
@@ -264,6 +283,7 @@ npx prisma migrate dev --name init
 **PostgreSQL migration is READY!**
 
 Choose your path:
+
 - **Quick & Easy**: Use Neon PostgreSQL (cloud, already configured)
 - **Full Control**: Install local PostgreSQL and run setup scripts
 

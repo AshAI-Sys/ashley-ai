@@ -8,6 +8,7 @@
 Ashley AI has been upgraded from demo mode to **production-ready** with real authentication and security:
 
 ### What Changed:
+
 - ❌ **Removed** demo mode authentication bypass
 - ❌ **Removed** hardcoded `demo-workspace-1` fallback
 - ❌ **Removed** automatic demo user login
@@ -23,6 +24,7 @@ Ashley AI has been upgraded from demo mode to **production-ready** with real aut
 ### Step 1: Database Setup
 
 #### Option A: Using Environment Variables (Recommended for CI/CD)
+
 ```bash
 # Set environment variables
 export DATABASE_URL="postgresql://user:password@localhost:5432/ashleyai"
@@ -41,6 +43,7 @@ pnpm init-db
 ```
 
 #### Option B: Interactive Setup (Recommended for First-Time Setup)
+
 ```bash
 # Run database migrations
 cd packages/database
@@ -100,13 +103,15 @@ Access the application at: `http://localhost:3001`
 ## 🔐 Password Requirements
 
 For security, passwords must meet these requirements:
+
 - Minimum 8 characters long
 - At least one uppercase letter (A-Z)
 - At least one lowercase letter (a-z)
 - At least one number (0-9)
-- At least one special character (!@#$%^&*()_+-=[]{}|;:,.<>?)
+- At least one special character (!@#$%^&\*()\_+-=[]{}|;:,.<>?)
 
 **Example valid passwords:**
+
 - `SecurePass123!`
 - `MyP@ssw0rd`
 - `Admin2024#Strong`
@@ -171,26 +176,26 @@ All API routes now require authentication:
 
 ```typescript
 // Example: Protected API route
-import { requireAuth } from '@/lib/auth-middleware'
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request, user) => {
   // user.workspaceId is automatically available
   const data = await prisma.order.findMany({
-    where: { workspace_id: user.workspaceId }
-  })
-  return NextResponse.json({ data })
-})
+    where: { workspace_id: user.workspaceId },
+  });
+  return NextResponse.json({ data });
+});
 ```
 
 ### Frontend Authentication
 
 ```typescript
 // Login
-const { user, login } = useAuth()
-await login('admin@company.com', 'SecurePass123!')
+const { user, login } = useAuth();
+await login("admin@company.com", "SecurePass123!");
 
 // Logout
-logout()
+logout();
 
 // Check auth status
 if (!user) {
@@ -270,6 +275,7 @@ npx prisma db pull
 
 **Cause**: Another process using port 3001
 **Solution**:
+
 ```bash
 # Windows
 netstat -ano | findstr :3001
@@ -319,6 +325,7 @@ For issues or questions:
 ## 🔐 Security Notice
 
 **IMPORTANT**:
+
 - Never commit `.env` file to version control
 - Change all default credentials immediately
 - Use strong, unique passwords for each user

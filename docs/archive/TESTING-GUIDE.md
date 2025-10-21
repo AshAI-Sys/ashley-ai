@@ -18,6 +18,7 @@
 ## Overview
 
 Ashley AI uses a comprehensive testing strategy covering:
+
 - **Unit Tests**: Individual functions and utilities
 - **Integration Tests**: API endpoints and workflows
 - **E2E Tests**: Complete user workflows
@@ -40,6 +41,7 @@ Security Tests: 40 tests (require server)
 ### Framework: Jest
 
 Jest is configured with the following key features:
+
 - TypeScript support via Babel
 - React Testing Library integration
 - JSDOM environment for browser APIs
@@ -118,6 +120,7 @@ Test individual functions and utilities in isolation.
 **Location**: `tests/unit/`
 
 **Examples**:
+
 - `auth.test.ts` - Authentication utilities
 - `security.test.ts` - Security functions (password validation, file validation, CSRF, rate limiting)
 
@@ -135,6 +138,7 @@ Test API endpoints and data workflows with mocked or real HTTP calls.
 **Location**: `tests/integration/`
 
 **Examples**:
+
 - `api.test.ts` - Mock API tests for all major endpoints
 - `api-real.test.ts` - Real HTTP calls to live development server
 
@@ -156,6 +160,7 @@ Test complete user workflows from start to finish.
 **Location**: `tests/e2e/`
 
 **Examples**:
+
 - `dashboard.test.ts` - Dashboard navigation and interactions
 
 **Coverage**: ~13 tests
@@ -172,6 +177,7 @@ Test security mechanisms including account lockout, rate limiting, and password 
 **Location**: `tests/security/`
 
 **Examples**:
+
 - `account-lockout.test.ts` - Account lockout after failed attempts
 - `rate-limiting.test.ts` - API rate limiting enforcement
 - `password-complexity.test.ts` - Password complexity validation
@@ -210,89 +216,89 @@ k6 run tests/performance/load-test.js
 ### Unit Test Example
 
 ```typescript
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from "@jest/globals";
 
-describe('MyUtility', () => {
-  it('should do something correctly', () => {
-    const result = myFunction('input')
-    expect(result).toBe('expected output')
-  })
+describe("MyUtility", () => {
+  it("should do something correctly", () => {
+    const result = myFunction("input");
+    expect(result).toBe("expected output");
+  });
 
-  it('should handle edge cases', () => {
-    const result = myFunction(null)
-    expect(result).toBeNull()
-  })
-})
+  it("should handle edge cases", () => {
+    const result = myFunction(null);
+    expect(result).toBeNull();
+  });
+});
 ```
 
 ### Integration Test Example (Mock)
 
 ```typescript
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from "@jest/globals";
 
-describe('Orders API', () => {
-  it('should create order successfully', async () => {
+describe("Orders API", () => {
+  it("should create order successfully", async () => {
     const orderData = {
-      client_id: 'client-1',
-      order_number: 'ORD-001',
-      status: 'PENDING'
-    }
+      client_id: "client-1",
+      order_number: "ORD-001",
+      status: "PENDING",
+    };
 
     // Mock implementation
     const mockResponse = {
-      id: 'order-1',
+      id: "order-1",
       ...orderData,
-      created_at: new Date().toISOString()
-    }
+      created_at: new Date().toISOString(),
+    };
 
-    expect(mockResponse.id).toBeTruthy()
-    expect(mockResponse.status).toBe('PENDING')
-  })
-})
+    expect(mockResponse.id).toBeTruthy();
+    expect(mockResponse.status).toBe("PENDING");
+  });
+});
 ```
 
 ### Integration Test Example (Real HTTP)
 
 ```typescript
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from "@jest/globals";
 
-const API_BASE = 'http://localhost:3001'
+const API_BASE = "http://localhost:3001";
 
-describe('Real API Tests', () => {
-  it('should return health check', async () => {
-    const response = await fetch(`${API_BASE}/api/health`)
-    const data = await response.json()
+describe("Real API Tests", () => {
+  it("should return health check", async () => {
+    const response = await fetch(`${API_BASE}/api/health`);
+    const data = await response.json();
 
-    expect(response.status).toBe(200)
-    expect(data.status).toBe('healthy')
-  })
-})
+    expect(response.status).toBe(200);
+    expect(data.status).toBe("healthy");
+  });
+});
 ```
 
 ### E2E Test Example
 
 ```typescript
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from "@jest/globals";
 
-describe('Dashboard Workflow', () => {
-  it('should complete full user workflow', async () => {
+describe("Dashboard Workflow", () => {
+  it("should complete full user workflow", async () => {
     // 1. Login
-    const loginSuccess = true
-    expect(loginSuccess).toBe(true)
+    const loginSuccess = true;
+    expect(loginSuccess).toBe(true);
 
     // 2. Navigate to dashboard
-    const dashboardLoaded = true
-    expect(dashboardLoaded).toBe(true)
+    const dashboardLoaded = true;
+    expect(dashboardLoaded).toBe(true);
 
     // 3. Create order
-    const orderCreated = true
-    expect(orderCreated).toBe(true)
+    const orderCreated = true;
+    expect(orderCreated).toBe(true);
 
     // 4. Verify order appears in list
-    const orderInList = true
-    expect(orderInList).toBe(true)
-  })
-})
+    const orderInList = true;
+    expect(orderInList).toBe(true);
+  });
+});
 ```
 
 ## Coverage Reports
@@ -378,10 +384,10 @@ Use descriptive test names that explain what is being tested:
 
 ```typescript
 // ✅ Good
-it('should reject password shorter than 12 characters')
+it("should reject password shorter than 12 characters");
 
 // ❌ Bad
-it('test password')
+it("test password");
 ```
 
 ### 2. AAA Pattern
@@ -389,16 +395,16 @@ it('test password')
 Structure tests using Arrange-Act-Assert:
 
 ```typescript
-it('should calculate total correctly', () => {
+it("should calculate total correctly", () => {
   // Arrange
-  const items = [{ price: 10 }, { price: 20 }]
+  const items = [{ price: 10 }, { price: 20 }];
 
   // Act
-  const total = calculateTotal(items)
+  const total = calculateTotal(items);
 
   // Assert
-  expect(total).toBe(30)
-})
+  expect(total).toBe(30);
+});
 ```
 
 ### 3. Test Independence
@@ -436,14 +442,14 @@ Mock external services and APIs:
 
 ```typescript
 // Mock Prisma
-jest.mock('@ash-ai/database', () => ({
+jest.mock("@ash-ai/database", () => ({
   prisma: {
     order: {
       findMany: jest.fn().mockResolvedValue([]),
-      create: jest.fn().mockResolvedValue({ id: '1' })
-    }
-  }
-}))
+      create: jest.fn().mockResolvedValue({ id: "1" }),
+    },
+  },
+}));
 ```
 
 ### 5. Test Edge Cases
@@ -451,23 +457,23 @@ jest.mock('@ash-ai/database', () => ({
 Always test edge cases and error conditions:
 
 ```typescript
-describe('divideNumbers', () => {
-  it('should divide numbers correctly', () => {
-    expect(divideNumbers(10, 2)).toBe(5)
-  })
+describe("divideNumbers", () => {
+  it("should divide numbers correctly", () => {
+    expect(divideNumbers(10, 2)).toBe(5);
+  });
 
-  it('should handle division by zero', () => {
-    expect(() => divideNumbers(10, 0)).toThrow('Division by zero')
-  })
+  it("should handle division by zero", () => {
+    expect(() => divideNumbers(10, 0)).toThrow("Division by zero");
+  });
 
-  it('should handle negative numbers', () => {
-    expect(divideNumbers(-10, 2)).toBe(-5)
-  })
+  it("should handle negative numbers", () => {
+    expect(divideNumbers(-10, 2)).toBe(-5);
+  });
 
-  it('should handle decimal results', () => {
-    expect(divideNumbers(5, 2)).toBe(2.5)
-  })
-})
+  it("should handle decimal results", () => {
+    expect(divideNumbers(5, 2)).toBe(2.5);
+  });
+});
 ```
 
 ### 6. Keep Tests Fast
@@ -482,13 +488,13 @@ Use specific assertions:
 
 ```typescript
 // ✅ Good
-expect(user.email).toBe('admin@ashleyai.com')
-expect(orders).toHaveLength(5)
-expect(result).toEqual({ status: 'success', data: expect.any(Array) })
+expect(user.email).toBe("admin@ashleyai.com");
+expect(orders).toHaveLength(5);
+expect(result).toEqual({ status: "success", data: expect.any(Array) });
 
 // ❌ Bad
-expect(user).toBeTruthy()
-expect(orders.length > 0).toBe(true)
+expect(user).toBeTruthy();
+expect(orders.length > 0).toBe(true);
 ```
 
 ## Troubleshooting
@@ -499,8 +505,8 @@ The `fetch` polyfill is configured in jest.setup.js. If you see "fetch is not de
 
 ```typescript
 // tests/setup/jest.setup.js already includes:
-import fetch from 'node-fetch'
-global.fetch = fetch
+import fetch from "node-fetch";
+global.fetch = fetch;
 ```
 
 ### Tests Timing Out
@@ -508,9 +514,9 @@ global.fetch = fetch
 Increase timeout for slow tests:
 
 ```typescript
-it('should complete long operation', async () => {
+it("should complete long operation", async () => {
   // Test code
-}, 30000) // 30 second timeout
+}, 30000); // 30 second timeout
 ```
 
 ### Database Connection Issues
@@ -520,13 +526,13 @@ For tests requiring database access:
 ```typescript
 beforeAll(async () => {
   // Setup test database
-  await prisma.$connect()
-})
+  await prisma.$connect();
+});
 
 afterAll(async () => {
   // Cleanup
-  await prisma.$disconnect()
-})
+  await prisma.$disconnect();
+});
 ```
 
 ### Import Path Issues

@@ -5,21 +5,21 @@
  * Use these guards in API routes to ensure proper authentication and authorization.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { apiUnauthorized, apiForbidden } from './api-response'
-import { authLogger } from './logger'
+import { NextRequest, NextResponse } from "next/server";
+import { apiUnauthorized, apiForbidden } from "./api-response";
+import { authLogger } from "./logger";
 
 /**
  * User roles in the system
  */
 export enum UserRole {
-  SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  MANAGER = 'manager',
-  SUPERVISOR = 'supervisor',
-  OPERATOR = 'operator',
-  CLIENT = 'client',
-  VIEWER = 'viewer',
+  SUPER_ADMIN = "super_admin",
+  ADMIN = "admin",
+  MANAGER = "manager",
+  SUPERVISOR = "supervisor",
+  OPERATOR = "operator",
+  CLIENT = "client",
+  VIEWER = "viewer",
 }
 
 /**
@@ -27,38 +27,38 @@ export enum UserRole {
  */
 export enum Permission {
   // Order permissions
-  ORDERS_VIEW = 'orders.view',
-  ORDERS_CREATE = 'orders.create',
-  ORDERS_UPDATE = 'orders.update',
-  ORDERS_DELETE = 'orders.delete',
+  ORDERS_VIEW = "orders.view",
+  ORDERS_CREATE = "orders.create",
+  ORDERS_UPDATE = "orders.update",
+  ORDERS_DELETE = "orders.delete",
 
   // Client permissions
-  CLIENTS_VIEW = 'clients.view',
-  CLIENTS_CREATE = 'clients.create',
-  CLIENTS_UPDATE = 'clients.update',
-  CLIENTS_DELETE = 'clients.delete',
+  CLIENTS_VIEW = "clients.view",
+  CLIENTS_CREATE = "clients.create",
+  CLIENTS_UPDATE = "clients.update",
+  CLIENTS_DELETE = "clients.delete",
 
   // Finance permissions
-  FINANCE_VIEW = 'finance.view',
-  FINANCE_CREATE = 'finance.create',
-  FINANCE_UPDATE = 'finance.update',
-  FINANCE_DELETE = 'finance.delete',
+  FINANCE_VIEW = "finance.view",
+  FINANCE_CREATE = "finance.create",
+  FINANCE_UPDATE = "finance.update",
+  FINANCE_DELETE = "finance.delete",
 
   // HR permissions
-  HR_VIEW = 'hr.view',
-  HR_CREATE = 'hr.create',
-  HR_UPDATE = 'hr.update',
-  HR_DELETE = 'hr.delete',
+  HR_VIEW = "hr.view",
+  HR_CREATE = "hr.create",
+  HR_UPDATE = "hr.update",
+  HR_DELETE = "hr.delete",
 
   // Production permissions
-  PRODUCTION_VIEW = 'production.view',
-  PRODUCTION_CREATE = 'production.create',
-  PRODUCTION_UPDATE = 'production.update',
+  PRODUCTION_VIEW = "production.view",
+  PRODUCTION_CREATE = "production.create",
+  PRODUCTION_UPDATE = "production.update",
 
   // Admin permissions
-  ADMIN_VIEW = 'admin.view',
-  ADMIN_MANAGE_USERS = 'admin.manage_users',
-  ADMIN_MANAGE_SETTINGS = 'admin.manage_settings',
+  ADMIN_VIEW = "admin.view",
+  ADMIN_MANAGE_USERS = "admin.manage_users",
+  ADMIN_MANAGE_SETTINGS = "admin.manage_settings",
 }
 
 /**
@@ -123,68 +123,74 @@ const RolePermissions: Record<UserRole, Permission[]> = {
     Permission.CLIENTS_VIEW,
     Permission.PRODUCTION_VIEW,
   ],
-}
+};
 
 /**
  * User interface from session/token
  */
 export interface AuthUser {
-  id: string
-  email: string
-  role: UserRole
-  workspace_id: string
-  permissions?: Permission[]
+  id: string;
+  email: string;
+  role: UserRole;
+  workspace_id: string;
+  permissions?: Permission[];
 }
 
 /**
  * Extract user from request with JWT verification
  */
-export async function getUserFromRequest(request: NextRequest): Promise<AuthUser | null> {
+export async function getUserFromRequest(
+  request: NextRequest
+): Promise<AuthUser | null> {
   try {
     // Import JWT utilities
-    const { verifyAccessToken, extractTokenFromHeader } = await import('./jwt')
+    const { verifyAccessToken, extractTokenFromHeader } = await import("./jwt");
 
     // Check for Authorization header
-    const authHeader = request.headers.get('Authorization')
+    const authHeader = request.headers.get("Authorization");
     if (authHeader) {
-      const token = extractTokenFromHeader(authHeader)
+      const token = extractTokenFromHeader(authHeader);
       if (token) {
-        const payload = verifyAccessToken(token)
+        const payload = verifyAccessToken(token);
         if (payload) {
-          authLogger.debug('User authenticated via JWT token', { userId: payload.userId })
+          authLogger.debug("User authenticated via JWT token", {
+            userId: payload.userId,
+          });
           return {
             id: payload.userId,
             email: payload.email,
             role: payload.role,
             workspace_id: payload.workspaceId,
-          }
+          };
         } else {
-          authLogger.warn('Invalid or expired JWT token')
+          authLogger.warn("Invalid or expired JWT token");
         }
       }
     }
 
     // Check for session cookie with JWT
-    const sessionCookie = request.cookies.get('auth_token')
+    const sessionCookie = request.cookies.get("auth_token");
     if (sessionCookie?.value) {
-      const payload = verifyAccessToken(sessionCookie.value)
+      const payload = verifyAccessToken(sessionCookie.value);
       if (payload) {
-        authLogger.debug('User authenticated via session cookie', { userId: payload.userId })
+        authLogger.debug("User authenticated via session cookie", {
+          userId: payload.userId,
+        });
         return {
           id: payload.userId,
           email: payload.email,
           role: payload.role,
           workspace_id: payload.workspaceId,
-        }
+        };
       }
     }
 
     // Production mode: require valid authentication
-    authLogger.debug('No valid authentication found')
-    return null
+    authLogger.debug("No valid authentication found");
+    return null;
   } catch (error) {
-    authLogger.error('Failed to extract user from request', error)
-    return null
+    authLogger.error("Failed to extract user from request", error);
+    return null;
   }
 }
 
@@ -194,44 +200,52 @@ export async function getUserFromRequest(request: NextRequest): Promise<AuthUser
 export function hasPermission(user: AuthUser, permission: Permission): boolean {
   // Use custom permissions if provided
   if (user.permissions) {
-    return user.permissions.includes(permission)
+    return user.permissions.includes(permission);
   }
 
   // Otherwise check role-based permissions
-  const rolePermissions = RolePermissions[user.role] || []
-  return rolePermissions.includes(permission)
+  const rolePermissions = RolePermissions[user.role] || [];
+  return rolePermissions.includes(permission);
 }
 
 /**
  * Check if user has any of the specified permissions
  */
-export function hasAnyPermission(user: AuthUser, permissions: Permission[]): boolean {
-  return permissions.some((permission) => hasPermission(user, permission))
+export function hasAnyPermission(
+  user: AuthUser,
+  permissions: Permission[]
+): boolean {
+  return permissions.some(permission => hasPermission(user, permission));
 }
 
 /**
  * Check if user has all of the specified permissions
  */
-export function hasAllPermissions(user: AuthUser, permissions: Permission[]): boolean {
-  return permissions.every((permission) => hasPermission(user, permission))
+export function hasAllPermissions(
+  user: AuthUser,
+  permissions: Permission[]
+): boolean {
+  return permissions.every(permission => hasPermission(user, permission));
 }
 
 /**
  * Require authentication middleware
  * Returns user if authenticated, otherwise returns 401 response
  */
-export async function requireAuth(request: NextRequest): Promise<AuthUser | NextResponse> {
-  const user = await getUserFromRequest(request)
+export async function requireAuth(
+  request: NextRequest
+): Promise<AuthUser | NextResponse> {
+  const user = await getUserFromRequest(request);
 
   if (!user) {
-    authLogger.warn('Unauthenticated request', {
+    authLogger.warn("Unauthenticated request", {
       path: request.nextUrl.pathname,
       method: request.method,
-    })
-    return apiUnauthorized('Authentication required')
+    });
+    return apiUnauthorized("Authentication required");
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -242,29 +256,29 @@ export async function requirePermission(
   request: NextRequest,
   permission: Permission
 ): Promise<AuthUser | NextResponse> {
-  const user = await getUserFromRequest(request)
+  const user = await getUserFromRequest(request);
 
   if (!user) {
-    authLogger.warn('Unauthenticated request', {
+    authLogger.warn("Unauthenticated request", {
       path: request.nextUrl.pathname,
       method: request.method,
       permission,
-    })
-    return apiUnauthorized('Authentication required')
+    });
+    return apiUnauthorized("Authentication required");
   }
 
   if (!hasPermission(user, permission)) {
-    authLogger.warn('Unauthorized request', {
+    authLogger.warn("Unauthorized request", {
       path: request.nextUrl.pathname,
       method: request.method,
       userId: user.id,
       userRole: user.role,
       permission,
-    })
-    return apiForbidden('Insufficient permissions')
+    });
+    return apiForbidden("Insufficient permissions");
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -274,22 +288,22 @@ export async function requireAnyPermission(
   request: NextRequest,
   permissions: Permission[]
 ): Promise<AuthUser | NextResponse> {
-  const user = await getUserFromRequest(request)
+  const user = await getUserFromRequest(request);
 
   if (!user) {
-    return apiUnauthorized('Authentication required')
+    return apiUnauthorized("Authentication required");
   }
 
   if (!hasAnyPermission(user, permissions)) {
-    authLogger.warn('Unauthorized request - missing any permission', {
+    authLogger.warn("Unauthorized request - missing any permission", {
       userId: user.id,
       userRole: user.role,
       requiredPermissions: permissions,
-    })
-    return apiForbidden('Insufficient permissions')
+    });
+    return apiForbidden("Insufficient permissions");
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -299,22 +313,22 @@ export async function requireAllPermissions(
   request: NextRequest,
   permissions: Permission[]
 ): Promise<AuthUser | NextResponse> {
-  const user = await getUserFromRequest(request)
+  const user = await getUserFromRequest(request);
 
   if (!user) {
-    return apiUnauthorized('Authentication required')
+    return apiUnauthorized("Authentication required");
   }
 
   if (!hasAllPermissions(user, permissions)) {
-    authLogger.warn('Unauthorized request - missing all permissions', {
+    authLogger.warn("Unauthorized request - missing all permissions", {
       userId: user.id,
       userRole: user.role,
       requiredPermissions: permissions,
-    })
-    return apiForbidden('Insufficient permissions')
+    });
+    return apiForbidden("Insufficient permissions");
   }
 
-  return user
+  return user;
 }
 
 /**
@@ -324,24 +338,24 @@ export async function requireRole(
   request: NextRequest,
   roles: UserRole | UserRole[]
 ): Promise<AuthUser | NextResponse> {
-  const user = await getUserFromRequest(request)
+  const user = await getUserFromRequest(request);
 
   if (!user) {
-    return apiUnauthorized('Authentication required')
+    return apiUnauthorized("Authentication required");
   }
 
-  const allowedRoles = Array.isArray(roles) ? roles : [roles]
+  const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
   if (!allowedRoles.includes(user.role)) {
-    authLogger.warn('Unauthorized request - invalid role', {
+    authLogger.warn("Unauthorized request - invalid role", {
       userId: user.id,
       userRole: user.role,
       requiredRoles: allowedRoles,
-    })
-    return apiForbidden('Insufficient permissions')
+    });
+    return apiForbidden("Insufficient permissions");
   }
 
-  return user
+  return user;
 }
 
 /**

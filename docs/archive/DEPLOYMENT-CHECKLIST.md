@@ -3,6 +3,7 @@
 ## Pre-Deployment Checklist
 
 ### 1. Environment Configuration ✅
+
 - [ ] Copy `.env.example` to `.env`
 - [ ] Set `NODE_ENV=production`
 - [ ] Set `DEMO_MODE=false`
@@ -15,6 +16,7 @@
 - [ ] Review and set all required environment variables
 
 ### 2. Database Setup ✅
+
 - [ ] Create production database (PostgreSQL recommended)
 - [ ] Run database migrations: `npx prisma migrate deploy`
 - [ ] Generate Prisma client: `npx prisma generate`
@@ -24,6 +26,7 @@
 - [ ] Configure database connection pooling
 
 ### 3. Security Hardening ✅
+
 - [ ] Review all authentication endpoints
 - [ ] Verify JWT token expiration settings
 - [ ] Test rate limiting configuration
@@ -36,6 +39,7 @@
 - [ ] Enable 2FA for admin accounts (if available)
 
 ### 4. Code Quality ✅
+
 - [ ] Run TypeScript compiler: `pnpm build`
 - [ ] Fix any TypeScript errors
 - [ ] Run linter: `pnpm lint`
@@ -46,6 +50,7 @@
 - [ ] Check for hardcoded credentials or secrets
 
 ### 5. Testing ✅
+
 - [ ] Test user registration and login
 - [ ] Test order creation workflow
 - [ ] Test client management
@@ -59,6 +64,7 @@
 - [ ] Load test critical endpoints
 
 ### 6. Performance Optimization ✅
+
 - [ ] Enable production build optimizations
 - [ ] Configure Redis for caching (recommended)
 - [ ] Review database indexes
@@ -69,6 +75,7 @@
 - [ ] Enable gzip/brotli compression
 
 ### 7. Monitoring & Logging ✅
+
 - [ ] Configure production logging service (optional: Sentry, Logtail)
 - [ ] Set up error tracking
 - [ ] Configure application monitoring (optional: DataDog, New Relic)
@@ -78,6 +85,7 @@
 - [ ] Test log aggregation
 
 ### 8. Backup & Recovery ✅
+
 - [ ] Set up automated database backups
 - [ ] Test database restore procedure
 - [ ] Document backup schedule
@@ -86,6 +94,7 @@
 - [ ] Document rollback procedures
 
 ### 9. Documentation ✅
+
 - [ ] Update README.md with production setup
 - [ ] Document environment variables
 - [ ] Document deployment process
@@ -95,6 +104,7 @@
 - [ ] Create API documentation (optional: Swagger/OpenAPI)
 
 ### 10. Final Checks ✅
+
 - [ ] Review all feature flags
 - [ ] Verify all external integrations (email, SMS, 3PL)
 - [ ] Test email notifications
@@ -112,16 +122,19 @@
 ### Option 1: Vercel (Recommended for Next.js)
 
 1. **Install Vercel CLI**
+
    ```bash
    npm i -g vercel
    ```
 
 2. **Login to Vercel**
+
    ```bash
    vercel login
    ```
 
 3. **Deploy**
+
    ```bash
    cd services/ash-admin
    vercel --prod
@@ -144,11 +157,13 @@
 ### Option 2: Docker Deployment
 
 1. **Build Docker Image**
+
    ```bash
    docker build -t ashley-ai-admin .
    ```
 
 2. **Run Container**
+
    ```bash
    docker run -d \
      -p 3001:3001 \
@@ -166,6 +181,7 @@
 1. **Set up server** (Ubuntu 22.04 LTS recommended)
 
 2. **Install dependencies**
+
    ```bash
    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
    sudo apt-get install -y nodejs
@@ -173,28 +189,33 @@
    ```
 
 3. **Clone repository**
+
    ```bash
    git clone <your-repo>
    cd ashley-ai/services/ash-admin
    ```
 
 4. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 5. **Configure environment**
+
    ```bash
    cp .env.example .env
    nano .env  # Edit with production values
    ```
 
 6. **Build application**
+
    ```bash
    pnpm build
    ```
 
 7. **Run with PM2**
+
    ```bash
    pm2 start npm --name "ashley-ai" -- start
    pm2 save
@@ -202,6 +223,7 @@
    ```
 
 8. **Set up Nginx reverse proxy**
+
    ```nginx
    server {
        listen 80;
@@ -229,6 +251,7 @@
 ## Post-Deployment Verification
 
 ### 1. Smoke Tests
+
 ```bash
 # Health check
 curl https://yourdomain.com/api/health
@@ -244,6 +267,7 @@ curl https://yourdomain.com/api/orders \
 ```
 
 ### 2. Monitoring
+
 - [ ] Verify application is accessible
 - [ ] Check server resource usage (CPU, memory, disk)
 - [ ] Monitor error logs for first 24 hours
@@ -252,6 +276,7 @@ curl https://yourdomain.com/api/orders \
 - [ ] Monitor API response times
 
 ### 3. User Acceptance Testing
+
 - [ ] Have team test all critical workflows
 - [ ] Gather feedback on performance
 - [ ] Document any issues discovered
@@ -264,11 +289,13 @@ curl https://yourdomain.com/api/orders \
 If issues are discovered after deployment:
 
 1. **Immediate Rollback (Vercel)**
+
    ```bash
    vercel rollback
    ```
 
 2. **Manual Rollback (VPS)**
+
    ```bash
    # Stop current version
    pm2 stop ashley-ai
@@ -292,17 +319,20 @@ If issues are discovered after deployment:
 ## Production Maintenance
 
 ### Daily Checks
+
 - [ ] Monitor error logs
 - [ ] Check system resource usage
 - [ ] Review API response times
 
 ### Weekly Checks
+
 - [ ] Review database performance
 - [ ] Check backup integrity
 - [ ] Review security alerts
 - [ ] Update dependencies (security patches)
 
 ### Monthly Checks
+
 - [ ] Review and rotate logs
 - [ ] Database optimization (VACUUM, ANALYZE)
 - [ ] Review and update documentation
@@ -312,10 +342,10 @@ If issues are discovered after deployment:
 
 ## Emergency Contacts
 
-**System Administrator**: _________________
-**Database Administrator**: _________________
-**Security Contact**: _________________
-**On-Call Developer**: _________________
+**System Administrator**: ********\_********
+**Database Administrator**: ********\_********
+**Security Contact**: ********\_********
+**On-Call Developer**: ********\_********
 
 ---
 

@@ -35,6 +35,7 @@ PORT=3001
 ```
 
 **Click "Deploy"** - Railway will automatically:
+
 - ✅ Install pnpm dependencies
 - ✅ Generate Prisma client
 - ✅ Build Next.js app
@@ -60,6 +61,7 @@ railway init
 ```
 
 Choose:
+
 - Create new project: **ashley-ai**
 - Environment: **production**
 
@@ -108,17 +110,20 @@ Railway will build and deploy automatically!
 ## After Deployment:
 
 Railway will give you a URL like:
+
 ```
 https://ashley-ai.up.railway.app
 ```
 
 Update your environment variables:
+
 ```bash
 railway variables set NEXTAUTH_URL="https://ashley-ai.up.railway.app"
 railway variables set APP_URL="https://ashley-ai.up.railway.app"
 ```
 
 Redeploy:
+
 ```bash
 railway up --detach
 ```
@@ -128,12 +133,15 @@ railway up --detach
 ## Troubleshooting:
 
 ### Build fails:
+
 Check logs: `railway logs`
 
 ### Database connection error:
+
 Verify DATABASE_URL is correct
 
 ### Port binding error:
+
 Make sure PORT=3001 is set
 
 ---
@@ -141,11 +149,13 @@ Make sure PORT=3001 is set
 ## Cost Estimate:
 
 **Free Tier**:
+
 - $5 one-time credit
 - $5/month free usage
 - Good for small-medium traffic
 
 **Hobby Plan** ($5/month):
+
 - $5 credit + usage beyond that
 - Perfect for Ashley AI!
 

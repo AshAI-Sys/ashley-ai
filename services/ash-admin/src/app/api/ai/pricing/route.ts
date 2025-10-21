@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { dynamicPricingAI } from '@/lib/ai/dynamic-pricing';
-import { prisma } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
+import { prisma } from "@/lib/db";
 
 // POST /api/ai/pricing - Get pricing recommendation
 export async function POST(req: NextRequest) {
@@ -17,9 +17,15 @@ export async function POST(req: NextRequest) {
     } = await req.json();
 
     // Validate required fields
-    if (!client_id || !product_type || !quantity || !material_cost || !labor_hours_estimate) {
+    if (
+      !client_id ||
+      !product_type ||
+      !quantity ||
+      !material_cost ||
+      !labor_hours_estimate
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -41,7 +47,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!client) {
-      return NextResponse.json({ error: 'Client not found' }, { status: 404 });
+      return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 
     // Calculate client history metrics
@@ -55,17 +61,19 @@ export async function POST(req: NextRequest) {
     }, 0);
 
     const totalCost = client.orders.reduce((sum, order) => {
-      return sum + (parseFloat(order.total_amount.toString()) * 0.7); // Estimate 70% cost ratio
+      return sum + parseFloat(order.total_amount.toString()) * 0.7; // Estimate 70% cost ratio
     }, 0);
 
-    const averageMargin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 30;
+    const averageMargin =
+      totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 30;
 
     // Calculate payment reliability
     const totalInvoices = client.orders.flatMap(o => o.invoices).length;
     const paidInvoices = client.orders
       .flatMap(o => o.invoices)
-      .filter(inv => inv.status === 'PAID').length;
-    const paymentReliability = totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 100;
+      .filter(inv => inv.status === "PAID").length;
+    const paymentReliability =
+      totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 100;
 
     const clientHistory = {
       total_orders: totalOrders,
@@ -85,18 +93,18 @@ export async function POST(req: NextRequest) {
 
     const demandLevel =
       allOrders.length > 50
-        ? 'VERY_HIGH'
+        ? "VERY_HIGH"
         : allOrders.length > 30
-        ? 'HIGH'
-        : allOrders.length > 15
-        ? 'NORMAL'
-        : 'LOW';
+          ? "HIGH"
+          : allOrders.length > 15
+            ? "NORMAL"
+            : "LOW";
 
     // Estimate capacity utilization (simplified)
     const activeSewingRuns = await prisma.sewingRun.count({
       where: {
         status: {
-          in: ['PENDING', 'IN_PROGRESS'],
+          in: ["PENDING", "IN_PROGRESS"],
         },
       },
     });
@@ -104,10 +112,11 @@ export async function POST(req: NextRequest) {
     const capacityUtilization = Math.min((activeSewingRuns / 20) * 100, 100);
 
     const marketConditions = {
-      demand_level: demandLevel as 'LOW' | 'NORMAL' | 'HIGH' | 'VERY_HIGH',
+      demand_level: demandLevel as "LOW" | "NORMAL" | "HIGH" | "VERY_HIGH",
       capacity_utilization: capacityUtilization,
-      material_price_trend: 'STABLE' as 'FALLING' | 'STABLE' | 'RISING',
-      seasonal_multiplier: season === 'PEAK' ? 1.15 : season === 'LOW' ? 0.90 : 1.0,
+      material_price_trend: "STABLE" as "FALLING" | "STABLE" | "RISING",
+      seasonal_multiplier:
+        season === "PEAK" ? 1.15 : season === "LOW" ? 0.9 : 1.0,
     };
 
     // Calculate pricing recommendation
@@ -116,7 +125,7 @@ export async function POST(req: NextRequest) {
         client_id,
         product_type,
         quantity,
-        complexity: complexity || 'MODERATE',
+        complexity: complexity || "MODERATE",
         material_cost,
         labor_hours_estimate,
         deadline_days: deadline_days || 30,
@@ -133,9 +142,9 @@ export async function POST(req: NextRequest) {
       market_conditions: marketConditions,
     });
   } catch (error: any) {
-    console.error('Pricing calculation error:', error);
+    console.error("Pricing calculation error:", error);
     return NextResponse.json(
-      { error: 'Failed to calculate pricing', details: error.message },
+      { error: "Failed to calculate pricing", details: error.message },
       { status: 500 }
     );
   }
@@ -145,15 +154,21 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const client_id = searchParams.get('client_id');
-    const product_type = searchParams.get('product_type');
-    const quantity = parseInt(searchParams.get('quantity') || '0');
-    const material_cost = parseFloat(searchParams.get('material_cost') || '0');
-    const labor_hours = parseFloat(searchParams.get('labor_hours') || '0');
+    const client_id = searchParams.get("client_id");
+    const product_type = searchParams.get("product_type");
+    const quantity = parseInt(searchParams.get("quantity") || "0");
+    const material_cost = parseFloat(searchParams.get("material_cost") || "0");
+    const labor_hours = parseFloat(searchParams.get("labor_hours") || "0");
 
-    if (!client_id || !product_type || !quantity || !material_cost || !labor_hours) {
+    if (
+      !client_id ||
+      !product_type ||
+      !quantity ||
+      !material_cost ||
+      !labor_hours
+    ) {
       return NextResponse.json(
-        { error: 'Missing required parameters' },
+        { error: "Missing required parameters" },
         { status: 400 }
       );
     }
@@ -175,7 +190,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!client) {
-      return NextResponse.json({ error: 'Client not found' }, { status: 404 });
+      return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 
     const totalOrders = client.orders.length;
@@ -188,16 +203,18 @@ export async function GET(req: NextRequest) {
     }, 0);
 
     const totalCost = client.orders.reduce((sum, order) => {
-      return sum + (parseFloat(order.total_amount.toString()) * 0.7);
+      return sum + parseFloat(order.total_amount.toString()) * 0.7;
     }, 0);
 
-    const averageMargin = totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 30;
+    const averageMargin =
+      totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 30;
 
     const totalInvoices = client.orders.flatMap(o => o.invoices).length;
     const paidInvoices = client.orders
       .flatMap(o => o.invoices)
-      .filter(inv => inv.status === 'PAID').length;
-    const paymentReliability = totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 100;
+      .filter(inv => inv.status === "PAID").length;
+    const paymentReliability =
+      totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 100;
 
     const clientHistory = {
       total_orders: totalOrders,
@@ -217,17 +234,17 @@ export async function GET(req: NextRequest) {
 
     const demandLevel =
       allOrders.length > 50
-        ? 'VERY_HIGH'
+        ? "VERY_HIGH"
         : allOrders.length > 30
-        ? 'HIGH'
-        : allOrders.length > 15
-        ? 'NORMAL'
-        : 'LOW';
+          ? "HIGH"
+          : allOrders.length > 15
+            ? "NORMAL"
+            : "LOW";
 
     const activeSewingRuns = await prisma.sewingRun.count({
       where: {
         status: {
-          in: ['PENDING', 'IN_PROGRESS'],
+          in: ["PENDING", "IN_PROGRESS"],
         },
       },
     });
@@ -235,9 +252,9 @@ export async function GET(req: NextRequest) {
     const capacityUtilization = Math.min((activeSewingRuns / 20) * 100, 100);
 
     const marketConditions = {
-      demand_level: demandLevel as 'LOW' | 'NORMAL' | 'HIGH' | 'VERY_HIGH',
+      demand_level: demandLevel as "LOW" | "NORMAL" | "HIGH" | "VERY_HIGH",
       capacity_utilization: capacityUtilization,
-      material_price_trend: 'STABLE' as 'FALLING' | 'STABLE' | 'RISING',
+      material_price_trend: "STABLE" as "FALLING" | "STABLE" | "RISING",
       seasonal_multiplier: 1.0,
     };
 
@@ -247,7 +264,7 @@ export async function GET(req: NextRequest) {
         client_id,
         product_type,
         quantity,
-        complexity: 'MODERATE',
+        complexity: "MODERATE",
         material_cost,
         labor_hours_estimate: labor_hours,
         deadline_days: 30,
@@ -263,9 +280,9 @@ export async function GET(req: NextRequest) {
       market_conditions: marketConditions,
     });
   } catch (error: any) {
-    console.error('Pricing scenarios error:', error);
+    console.error("Pricing scenarios error:", error);
     return NextResponse.json(
-      { error: 'Failed to calculate scenarios', details: error.message },
+      { error: "Failed to calculate scenarios", details: error.message },
       { status: 500 }
     );
   }

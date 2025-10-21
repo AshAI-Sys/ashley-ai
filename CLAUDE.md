@@ -7,6 +7,7 @@
 ## Quick Start Commands
 
 ### Start Development Servers
+
 ```bash
 # Start Admin Interface (localhost:3001)
 pnpm --filter @ash/admin dev
@@ -26,6 +27,7 @@ fix-changes.bat
 ```
 
 ### Access URLs
+
 - **Admin Interface**: http://localhost:3001
 - **Client Portal**: http://localhost:3003
 - **Finance Operations**: http://localhost:3001/finance
@@ -33,6 +35,7 @@ fix-changes.bat
 - **Automation & Reminders**: http://localhost:3001/automation
 
 ### 🔐 **PRODUCTION AUTHENTICATION** (NEW - Oct 19, 2025)
+
 - ❌ **Demo mode REMOVED** - No more automatic demo user access
 - ✅ **Real authentication required** - Must create account via `pnpm init-db`
 - ✅ **Login**: Use credentials created during database initialization
@@ -41,10 +44,13 @@ fix-changes.bat
 ## Current System Status
 
 ### ✅ **COMPLETED STAGES (14/14)**
+
 **All 14 Stages** are fully implemented and functional - Manufacturing ERP System Complete
 
 ### 🚀 **SYSTEM STATUS - REAL-WORLD PRODUCTION READY**
+
 **Complete system testing successful - Production-grade authentication active**
+
 - ✅ Development server running stable (Next.js 14.2.32)
 - ✅ Database configured and operational (SQLite with Prisma ORM)
 - ✅ All core pages tested and functional (100% success rate)
@@ -60,6 +66,7 @@ fix-changes.bat
 - ✅ **Production deployment script** - Secure database initialization (`pnpm init-db`)
 
 ## Project Structure
+
 ```
 Ashley AI/
 ├── services/
@@ -73,34 +80,40 @@ Ashley AI/
 ## Implemented Manufacturing Stages
 
 ### ✅ Stage 1 - Client & Order Intake
+
 - Client management system
 - Order creation and tracking
 - Order status workflow
 
-### ✅ Stage 2 - Design & Approval Workflow  
+### ✅ Stage 2 - Design & Approval Workflow
+
 - Design asset upload and management
 - Client approval system with tokens
 - Version control for designs
 
 ### ✅ Stage 3 - Cutting Operations
+
 - Lay creation and fabric issuing
 - Bundle generation with QR codes
 - Cutting efficiency calculations
 - Ashley AI optimization
 
 ### ✅ Stage 4 - Printing Operations
+
 - Multi-method printing (Silkscreen, Sublimation, DTF, Embroidery)
 - Print run management
 - Quality control integration
 - Ashley AI print optimization
 
 ### ✅ Stage 5 - Sewing Operations
+
 - Sewing run creation and management
 - Operator tracking with piece rates
 - Real-time production monitoring
 - Ashley AI sewing optimization
 
 ### ✅ Stage 6 - Quality Control (QC)
+
 - QC inspection creation with AQL sampling plans
 - Defect code management and severity tracking
 - Photo uploads for defects
@@ -109,6 +122,7 @@ Ashley AI/
 - Integration with existing order workflow
 
 ### ✅ Stage 7 - Finishing & Packing
+
 - Finishing run management with task tracking
 - Material usage tracking (JSON-based)
 - Finished unit creation with SKU generation
@@ -117,6 +131,7 @@ Ashley AI/
 - Shipment preparation workflow
 
 ### ✅ Stage 8 - Delivery Operations
+
 - Shipment creation and management with carton linking
 - Multi-method delivery support (Driver, 3PL providers)
 - Real-time delivery tracking with status updates
@@ -127,6 +142,7 @@ Ashley AI/
 - Live tracking interface for monitoring deliveries
 
 ### ✅ Stage 9 - Finance Operations
+
 - Invoice generation and management with line items
 - Payment processing and tracking with multiple methods
 - Credit notes for returns and adjustments
@@ -139,6 +155,7 @@ Ashley AI/
 - Real-time financial KPIs and metrics
 
 ### ✅ Stage 10 - HR & Payroll
+
 - Employee management with comprehensive profiles and contact information
 - Attendance tracking with time_in/time_out, breaks, and overtime
 - Payroll calculation and processing for multiple salary types (DAILY, HOURLY, PIECE, MONTHLY)
@@ -149,6 +166,7 @@ Ashley AI/
 - Compliance and reporting capabilities
 
 ### ✅ Stage 11 - Maintenance Management
+
 - Asset management with comprehensive tracking and lifecycle management
 - Work order creation and management with priority-based assignment
 - Preventive maintenance scheduling with frequency-based automation
@@ -159,6 +177,7 @@ Ashley AI/
 - Integration with existing production workflow and quality control systems
 
 ### ✅ Stage 12 - Client Portal
+
 - Magic link authentication system for secure client access
 - Comprehensive order tracking with 7-stage production progress indicators
 - Real-time notifications and activity logging for client engagement
@@ -167,7 +186,8 @@ Ashley AI/
 - Responsive design optimized for mobile and desktop client access
 - Integration with existing order management and invoicing systems
 
-### ✅ Stage 13 - Merchandising AI *(Latest - Sept 16, 2025)*
+### ✅ Stage 13 - Merchandising AI _(Latest - Sept 16, 2025)_
+
 - AI-powered demand forecasting with seasonal and trend adjustments
 - Intelligent product recommendation engine (cross-sell, up-sell, reorder, trending)
 - Advanced market trend analysis with fashion and color intelligence
@@ -176,7 +196,8 @@ Ashley AI/
 - AI model performance tracking and accuracy monitoring with versioning
 - Real-time competitive intelligence and opportunity scoring
 
-### ✅ Stage 14 - Automation & Reminders *(Completed - Sept 17, 2025)*
+### ✅ Stage 14 - Automation & Reminders _(Completed - Sept 17, 2025)_
+
 - Workflow automation rules engine with condition evaluation and action execution
 - Advanced notification system with template management and multi-channel delivery
 - Comprehensive alert management with escalation and resolution tracking
@@ -184,7 +205,8 @@ Ashley AI/
 - Real-time automation dashboard with performance monitoring and activity tracking
 - Intelligent rule execution engine with retry logic and error handling
 
-### ✅ Stage 15 - AI Chat Assistant *(Completed - Oct 2, 2025)*
+### ✅ Stage 15 - AI Chat Assistant _(Completed - Oct 2, 2025)_
+
 - **Conversational AI chatbot** - Talk to Ashley AI like ChatGPT for manufacturing help
 - **Multi-provider support** - Works with Anthropic Claude or OpenAI GPT
 - **Real-time chat interface** - Beautiful floating chat widget on all pages
@@ -195,6 +217,7 @@ Ashley AI/
 - **Message feedback** - Rate AI responses to improve quality
 
 ## Key Features
+
 - **QR Code System**: Track bundles throughout production
 - **Ashley AI Integration**: Efficiency calculations and recommendations
 - **Real-time Monitoring**: Live production dashboards
@@ -202,7 +225,9 @@ Ashley AI/
 - **Authentication**: Local auth system (bypasses external service)
 
 ## Database Schema
+
 Located in `packages/database/prisma/schema.prisma` with models for:
+
 - **Core**: Clients, Orders, DesignAssets
 - **Production**: Lays, Bundles, CuttingRuns, PrintRuns, SewingRuns
 - **Quality**: QualityControlChecks, Inspections, DefectCodes, CAPA
@@ -220,6 +245,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 ## Recent Updates Log
 
 ### 2025-10-19 - DEMO TO PRODUCTION MIGRATION - REAL-WORLD READY 🚀🔐
+
 - ✅ **Removed Demo Mode**: Eliminated all demo/mock authentication bypasses and hardcoded credentials
 - ✅ **Real Authentication System**: Implemented JWT-based auth with bcrypt password hashing (12 rounds)
 - ✅ **Workspace Multi-Tenancy**: Enforced workspace isolation across all API endpoints and data queries
@@ -236,6 +262,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: Ashley AI transformed from demo system to production-grade enterprise application
 
 ### 2025-10-16 - SYSTEM OPTIMIZATION & FEATURE ENHANCEMENTS - ENTERPRISE READY 🚀
+
 - ✅ **UI/UX Improvements** - Created comprehensive loading skeleton library (9 specialized components)
 - ✅ **Mobile Responsiveness** - Built responsive component system (8 utility components for all screen sizes)
 - ✅ **Form Validation Enhanced** - Professional form components with inline validation and icons (6 components)
@@ -252,6 +279,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: Ashley AI upgraded to enterprise-grade production system with world-class UX and performance
 
 ### 2025-10-08 - ENHANCED ORDER INTAKE SYSTEM - 14 NEW FEATURES ADDED
+
 - ✅ **Color Variants System**: Percentage-based distribution with "Distribute Equally" functionality
 - ✅ **Print Locations**: 13 location options (Body Front/Back, Sleeves, Pockets, Legs, Hood) with dimensions
 - ✅ **Garment Add-ons**: Custom Neck Tags (₱12/pc), Custom Size Labels (₱8/pc), Custom Care Labels (₱6/pc)
@@ -270,6 +298,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: Complete order intake enhancement system ready for production use
 
 ### 2025-10-02 - SECURITY: A+ GRADE ACHIEVED (98/100) - PRODUCTION READY 🎉
+
 - ✅ **PERFECT SCORE A+ (98/100)**: Improved from B+ (87/100) - +11 point increase
 - ✅ **Content Security Policy**: 100/100 PERFECT - Removed unsafe-eval/unsafe-inline, nonce-based CSP
 - ✅ **File Upload Security**: 100/100 PERFECT - Multi-layer validation with magic byte checking (was 60/100)
@@ -285,6 +314,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: World-class security posture, exceeds industry standards, PRODUCTION READY ✅
 
 ### 2025-10-02 - SECURITY AUDIT & REMEDIATION PLAN - B+ GRADE (87/100)
+
 - ✅ **Comprehensive Security Audit**: OWASP Top 10 2021 + industry best practices assessment
 - ✅ **90+ API Endpoints Reviewed**: Complete codebase security analysis
 - ✅ **Security Scorecard**: 14 categories evaluated with detailed scoring
@@ -301,6 +331,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: Strong security posture with clear path to A grade (95+) for production
 
 ### 2025-10-02 - LOAD TESTING & PERFORMANCE OPTIMIZATION - PRODUCTION READY
+
 - ✅ **Comprehensive Load Testing Framework**: k6-based testing with 3 complete test suites
 - ✅ **Test Scenarios**: Smoke, Load, Stress, Spike, and Soak testing (30s to 30min)
 - ✅ **API Endpoints Test**: 13 critical endpoints with response time monitoring
@@ -317,6 +348,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: Production-ready system with comprehensive performance validation (2,559 lines committed)
 
 ### 2025-10-02 - STAGE 15: AI CHAT ASSISTANT - CONVERSATIONAL AI IMPLEMENTED
+
 - ✅ **Conversational AI Chatbot**: ChatGPT-style assistant integrated into the system
 - ✅ **Database Models**: Added 4 new tables (AIChatConversation, AIChatMessage, AIChatSuggestion, AIChatKnowledge)
 - ✅ **Multi-AI Support**: Works with both Anthropic Claude and OpenAI GPT-4
@@ -328,8 +360,8 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ **Message Feedback**: Users can rate AI responses for quality improvement
 - 🎯 **Result**: Users can now talk to Ashley AI like ChatGPT for instant help with manufacturing operations
 
-
 ### 2025-09-29 - COMPLETE SYSTEM TESTING & LIVE DEPLOYMENT - PRODUCTION READY
+
 - ✅ **Port Conflict Resolution**: Fixed multiple Node.js development servers conflicting on port 3001
 - ✅ **Database Setup**: Configured SQLite database with Prisma ORM, updated schema from PostgreSQL to SQLite
 - ✅ **Live Website Testing**: Comprehensive testing of all core pages and functionality
@@ -351,6 +383,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: Ashley AI is now FULLY OPERATIONAL and accessible at http://localhost:3001
 
 ### 2025-09-29 - System Compilation & Infrastructure Fixes - MAJOR IMPROVEMENTS
+
 - ✅ **Database Package**: Fixed TypeScript compilation errors and Prisma client generation
 - ✅ **Duplicate File Cleanup**: Removed all duplicate .js files from portal and admin services
 - ✅ **Dependencies**: Installed missing dependencies (@radix-ui/react-label, react-hot-toast, clsx, tailwind-merge)
@@ -364,6 +397,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - 🎯 **Result**: System moved from 50+ compilation errors to near-compilation ready state
 
 ### 2025-09-17 - Stage 14 Automation & Reminders - SYSTEM COMPLETE
+
 - ✅ Added comprehensive automation database models (7 new tables: AutomationRule, AutomationExecution, NotificationTemplate, Notification, Alert, Integration, IntegrationSyncLog)
 - ✅ Implemented intelligent workflow automation rules engine with trigger evaluation and condition processing
 - ✅ Built advanced notification system with template management and multi-channel delivery (EMAIL, SMS, IN_APP, PUSH, SLACK)
@@ -376,6 +410,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ **MILESTONE: All 14 manufacturing stages successfully implemented - Complete Manufacturing ERP System**
 
 ### 2025-09-16 - Stage 13 Merchandising AI
+
 - ✅ Added comprehensive AI/ML database models (6 new tables: DemandForecasts, ProductRecommendations, MarketTrends, InventoryInsights, AIModelMetrics, CustomerSegments)
 - ✅ Implemented AI-powered demand forecasting with seasonal and trend factor analysis
 - ✅ Built intelligent product recommendation engine with 4 recommendation types (cross-sell, up-sell, reorder, trending)
@@ -387,6 +422,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ Added real-time competitive intelligence and business opportunity scoring
 
 ### 2025-09-16 - Stage 12 Client Portal
+
 - ✅ Added comprehensive client portal database models (5 new tables: ClientSessions, ClientNotifications, ClientActivities, ClientMessages, ClientPortalSettings)
 - ✅ Implemented magic link authentication system for secure passwordless client access
 - ✅ Built real-time order tracking with 7-stage production progress indicators
@@ -398,6 +434,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ Created comprehensive client activity tracking and security monitoring
 
 ### 2025-09-16 - Stage 11 Maintenance Management
+
 - ✅ Added comprehensive maintenance database models (3 new tables: Assets, WorkOrders, MaintenanceSchedules)
 - ✅ Implemented asset management with lifecycle tracking and status monitoring
 - ✅ Built work order management with priority-based assignment and status workflow
@@ -409,6 +446,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ Created comprehensive maintenance statistics and reporting capabilities
 
 ### 2025-09-16 - Stage 10 HR & Payroll
+
 - ✅ Added comprehensive employee management with salary types (DAILY, HOURLY, PIECE, MONTHLY)
 - ✅ Implemented attendance tracking with time_in/time_out, breaks, and overtime
 - ✅ Created payroll period and earnings management system
@@ -421,6 +459,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ Fixed database connection paths and environment configuration
 
 ### 2025-09-16 - Stage 9 Finance Operations
+
 - ✅ Added comprehensive finance database models (14 new tables)
 - ✅ Implemented invoice management with line items and status tracking
 - ✅ Built payment processing with multiple payment methods
@@ -433,6 +472,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ Added tax settings and compliance features
 
 ### 2025-09-16 - Stage 8 Delivery Operations
+
 - ✅ Added 7 new API endpoints for delivery management
 - ✅ Implemented dispatch board with real-time shipment tracking
 - ✅ Built 3PL integration with quote comparison
@@ -442,7 +482,9 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - ✅ Committed 1,779 lines of new code
 
 ### Auto-Update System
+
 This CLAUDE.md file will be automatically updated whenever:
+
 - New stages are implemented
 - Major features are added
 - Database schema changes
@@ -451,11 +493,13 @@ This CLAUDE.md file will be automatically updated whenever:
 ## Troubleshooting
 
 ### Authentication Issues
+
 - Auth is handled locally in `/api/auth/` endpoints
 - No external auth service required
 - Use any credentials to login
 
 ### Port Conflicts
+
 ```bash
 # Check what's running on ports
 netstat -ano | findstr :3001
@@ -466,6 +510,7 @@ taskkill /PID [PID_NUMBER] /F
 ```
 
 ## Development Notes
+
 - Uses Next.js 14 with App Router
 - TypeScript throughout
 - Prisma ORM with SQLite (configured for local development)
@@ -475,13 +520,16 @@ taskkill /PID [PID_NUMBER] /F
 - Database file: packages/database/dev.db
 
 ## Live System Access
+
 - **Main URL**: http://localhost:3001
 - **Login Credentials**: Any email/password (demo mode)
 - **Recommended**: admin@ashleyai.com / password123
 - **Status**: Fully operational and tested
 
 ## Commander Role Context
+
 This system was built with Claude Code acting as a supervisor, implementing a complete 14-stage manufacturing ERP system called "ASH AI" (Apparel Smart Hub - Artificial Intelligence). All stages follow the specifications in CLIENT_UPDATED_PLAN.md.
 
 The implementation focuses on real-world manufacturing workflows with AI-powered optimization and efficiency tracking throughout the production pipeline.
+
 - Memorize

@@ -1,6 +1,7 @@
 # Ashley AI - Quality Assurance & Testing Guide
 
 ## Table of Contents
+
 - [Quick Start](#quick-start)
 - [Quality Gates](#quality-gates)
 - [Testing Strategy](#testing-strategy)
@@ -15,11 +16,13 @@
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js >= 20.0.0
 - pnpm >= 9.0.0
 - Git
 
 ### Initial Setup
+
 ```bash
 # Clone repository
 git clone <repository-url>
@@ -41,12 +44,15 @@ pnpm dev
 ```
 
 ### Environment Variables
+
 Create `.env` files in the following locations:
+
 - `packages/database/.env`
 - `services/ash-admin/.env`
 - `services/ash-portal/.env`
 
 Required variables:
+
 ```env
 # Database
 DATABASE_URL="your-database-url"
@@ -68,7 +74,9 @@ PORT=3001
 ## Quality Gates
 
 ### Pre-Commit Hooks (Husky)
+
 Automatically run on `git commit`:
+
 - ✅ **ESLint** - Code linting with zero warnings allowed
 - ✅ **Prettier** - Code formatting
 - ✅ **TypeScript** - Type checking (strict mode enabled)
@@ -76,17 +84,20 @@ Automatically run on `git commit`:
 ### NPM Scripts
 
 #### Development
+
 ```bash
 pnpm dev              # Start all services in development mode
 pnpm dev:fast         # Start admin and portal only
 ```
 
 #### Building
+
 ```bash
 pnpm build            # Build all services for production
 ```
 
 #### Code Quality
+
 ```bash
 pnpm lint             # Run ESLint (fails on warnings)
 pnpm lint:fix         # Auto-fix ESLint issues
@@ -96,6 +107,7 @@ pnpm type-check       # TypeScript type checking
 ```
 
 #### Testing
+
 ```bash
 # Unit & Integration Tests (Jest)
 pnpm test                    # Run all Jest tests
@@ -117,6 +129,7 @@ pnpm test:ci                 # Run all tests in CI mode
 ```
 
 #### Quality Check (Complete)
+
 ```bash
 pnpm check              # Run type-check + lint + test + e2e
 pnpm check:quick        # Run type-check + lint only
@@ -127,15 +140,18 @@ pnpm check:quick        # Run type-check + lint only
 ## Testing Strategy
 
 ### Unit Tests (Jest)
+
 **Location**: `tests/unit/`
 
 **Coverage Requirements**:
+
 - Branches: 70%
 - Functions: 70%
 - Lines: 70%
 - Statements: 70%
 
 **What to Test**:
+
 - Utility functions
 - React components (using React Testing Library)
 - Business logic
@@ -143,31 +159,35 @@ pnpm check:quick        # Run type-check + lint only
 - Validators
 
 **Example**:
+
 ```typescript
 // tests/unit/utils/validation.test.ts
-import { validateEmail } from '@/lib/validation';
+import { validateEmail } from "@/lib/validation";
 
-describe('validateEmail', () => {
-  it('should return true for valid email', () => {
-    expect(validateEmail('test@example.com')).toBe(true);
+describe("validateEmail", () => {
+  it("should return true for valid email", () => {
+    expect(validateEmail("test@example.com")).toBe(true);
   });
 
-  it('should return false for invalid email', () => {
-    expect(validateEmail('invalid-email')).toBe(false);
+  it("should return false for invalid email", () => {
+    expect(validateEmail("invalid-email")).toBe(false);
   });
 });
 ```
 
 ### Integration Tests (Jest)
+
 **Location**: `tests/integration/`
 
 **What to Test**:
+
 - API endpoints with database
 - Multi-step workflows
 - Service integrations
 - Database queries
 
 **Existing Tests**:
+
 - ✅ Orders API
 - ✅ Finance API
 - ✅ HR API
@@ -176,9 +196,11 @@ describe('validateEmail', () => {
 - ✅ QC & Delivery API
 
 ### E2E Tests (Playwright)
+
 **Location**: `e2e/`
 
 **Critical User Journeys**:
+
 1. **Authentication** (`e2e/auth.spec.ts`)
    - Login with valid credentials
    - Login with invalid credentials
@@ -217,6 +239,7 @@ describe('validateEmail', () => {
    - User-friendly messages
 
 **Browser Support**:
+
 - ✅ Chromium (Desktop)
 - ✅ Firefox (Desktop)
 - ✅ WebKit (Desktop Safari)
@@ -224,9 +247,11 @@ describe('validateEmail', () => {
 - ✅ Mobile Safari (iPhone 12)
 
 ### Security Tests
+
 **Location**: `tests/security/`
 
 **What to Test**:
+
 - Account lockout mechanisms
 - Rate limiting
 - SQL injection prevention
@@ -242,16 +267,19 @@ describe('validateEmail', () => {
 ## Development Workflow
 
 ### 1. Create Feature Branch
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
 ### 2. Write Code
+
 - Follow TypeScript strict mode
 - Write tests first (TDD recommended)
 - Follow project code style
 
 ### 3. Test Locally
+
 ```bash
 # Quick check
 pnpm check:quick
@@ -261,17 +289,20 @@ pnpm check
 ```
 
 ### 4. Commit Changes
+
 ```bash
 git add .
 git commit -m "feat: your commit message"
 ```
 
 Pre-commit hooks will automatically:
+
 - Lint and format staged files
 - Run type checking
 - Fail commit if errors exist
 
 ### 5. Push and Create PR
+
 ```bash
 git push origin feature/your-feature-name
 ```
@@ -283,17 +314,20 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 ## CI/CD Pipeline
 
 ### GitHub Actions Workflow
+
 **File**: `.github/workflows/test.yml`
 
 ### Pipeline Jobs
 
 #### Job 1: Unit & Integration Tests
+
 - ✅ Run Jest unit tests
 - ✅ Run Jest integration tests
 - ✅ Generate coverage report
 - ✅ Upload coverage to Codecov
 
 #### Job 2: E2E Tests (Jest)
+
 - ✅ Start test database
 - ✅ Seed test data
 - ✅ Build application
@@ -301,27 +335,33 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - ✅ Run E2E tests
 
 #### Job 3: Security Tests
+
 - ✅ Run security test suite
 - ✅ Verify rate limiting
 - ✅ Test account lockout
 - ✅ Validate file upload security
 
 #### Job 4: Lint & Type Check
+
 - ✅ Run ESLint (FAILS on warnings)
 - ✅ Run TypeScript type check (FAILS on errors)
 
 #### Job 5: Playwright E2E Tests
+
 - ✅ Install Playwright browsers
 - ✅ Run cross-browser tests
 - ✅ Generate HTML report
 - ✅ Upload test artifacts
 
 #### Job 6: Test Summary
+
 - ✅ Aggregate all test results
 - ✅ Fail pipeline if ANY test fails
 
 ### Pipeline Requirements
+
 **ALL jobs must pass before merge:**
+
 - ❌ Build fails → Cannot merge
 - ❌ Lint fails → Cannot merge
 - ❌ Type check fails → Cannot merge
@@ -337,6 +377,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 ### Before Every Deployment
 
 #### Code Quality
+
 - [ ] All TypeScript errors resolved
 - [ ] ESLint passes with 0 warnings
 - [ ] Prettier formatting applied
@@ -344,6 +385,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - [ ] No commented-out code
 
 #### Testing
+
 - [ ] All unit tests passing
 - [ ] All integration tests passing
 - [ ] All E2E tests passing
@@ -352,6 +394,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - [ ] Manual testing completed
 
 #### Functionality
+
 - [ ] All buttons have working handlers
 - [ ] All forms have validation
 - [ ] Loading states implemented
@@ -361,6 +404,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - [ ] Search/filter functionality works
 
 #### Accessibility
+
 - [ ] Keyboard navigation works
 - [ ] All forms have labels
 - [ ] ARIA labels present
@@ -370,6 +414,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - [ ] Axe accessibility scan passes
 
 #### Performance
+
 - [ ] Lighthouse Performance ≥ 90
 - [ ] Lighthouse Accessibility ≥ 90
 - [ ] Lighthouse Best Practices ≥ 90
@@ -378,6 +423,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - [ ] Bundle size acceptable
 
 #### Security
+
 - [ ] Authentication works
 - [ ] Authorization enforced
 - [ ] CSRF protection enabled
@@ -387,12 +433,14 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 - [ ] Security scan passing (A+ grade)
 
 #### Database
+
 - [ ] Migrations applied
 - [ ] Indexes optimized
 - [ ] Seed data created
 - [ ] Backup strategy in place
 
 #### Documentation
+
 - [ ] README updated
 - [ ] API docs updated
 - [ ] Environment variables documented
@@ -405,6 +453,7 @@ Create Pull Request on GitHub - CI will automatically run all tests.
 ### Production Deployment Steps
 
 #### 1. Pre-Deployment Checks
+
 ```bash
 # Run full quality check
 pnpm check
@@ -417,12 +466,14 @@ ls -la services/ash-admin/.next
 ```
 
 #### 2. Database Migration
+
 ```bash
 cd packages/database
 npx prisma migrate deploy
 ```
 
 #### 3. Environment Setup
+
 ```bash
 # Copy production environment variables
 cp .env.example .env.production
@@ -435,12 +486,14 @@ cp .env.example .env.production
 ```
 
 #### 4. Initialize Production Database
+
 ```bash
 cd services/ash-admin
 pnpm init-db
 ```
 
 #### 5. Start Production Server
+
 ```bash
 # Method 1: Direct start
 pnpm --filter @ash/admin start
@@ -453,11 +506,13 @@ pm2 start ecosystem.config.js
 ```
 
 #### 6. Health Check
+
 ```bash
 curl http://localhost:3001/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "success": true,
@@ -471,7 +526,9 @@ Expected response:
 ```
 
 #### 7. Smoke Tests
+
 Run critical E2E tests in production:
+
 ```bash
 BASE_URL=https://your-production-url.com pnpm test:e2e
 ```
@@ -483,6 +540,7 @@ BASE_URL=https://your-production-url.com pnpm test:e2e
 ### If Deployment Fails
 
 #### 1. Immediate Actions
+
 ```bash
 # Stop current deployment
 pm2 stop all  # or docker-compose down
@@ -492,6 +550,7 @@ pm2 logs     # or docker-compose logs
 ```
 
 #### 2. Rollback Code
+
 ```bash
 # Revert to previous version
 git checkout <previous-commit-hash>
@@ -501,6 +560,7 @@ pnpm build
 ```
 
 #### 3. Rollback Database (if needed)
+
 ```bash
 cd packages/database
 
@@ -512,17 +572,20 @@ npx prisma migrate resolve --rolled-back <migration-name>
 ```
 
 #### 4. Restart Services
+
 ```bash
 pnpm --filter @ash/admin start
 ```
 
 #### 5. Verify Rollback
+
 ```bash
 curl http://localhost:3001/api/health
 pnpm test:e2e
 ```
 
 ### Post-Incident
+
 - [ ] Document what went wrong
 - [ ] Create bug report
 - [ ] Fix issue in development
@@ -534,6 +597,7 @@ pnpm test:e2e
 ## Adding New Tests
 
 ### Adding Unit Tests
+
 ```bash
 # Create test file
 touch tests/unit/your-module.test.ts
@@ -550,6 +614,7 @@ pnpm test:unit
 ```
 
 ### Adding E2E Tests
+
 ```bash
 # Create spec file
 touch e2e/your-feature.spec.ts
@@ -567,6 +632,7 @@ pnpm test:e2e
 ```
 
 ### Adding Integration Tests
+
 ```bash
 # Create test file
 touch tests/integration/your-api.test.ts
@@ -590,6 +656,7 @@ pnpm test:integration
 ### Tests Failing Locally
 
 **Type Errors**:
+
 ```bash
 # Clean and regenerate
 pnpm clean
@@ -598,6 +665,7 @@ pnpm install
 ```
 
 **Database Errors**:
+
 ```bash
 # Reset database
 cd packages/database
@@ -605,6 +673,7 @@ npx prisma migrate reset
 ```
 
 **Port Conflicts**:
+
 ```bash
 # Find process on port 3001
 netstat -ano | findstr :3001
@@ -616,12 +685,14 @@ taskkill /PID <PID> /F
 ### CI Pipeline Failing
 
 **Check Logs**:
+
 1. Go to GitHub Actions tab
 2. Click on failed workflow
 3. Expand failed job
 4. Read error messages
 
 **Common Fixes**:
+
 - Update lockfile: `pnpm install --frozen-lockfile=false`
 - Clear cache: Delete `node_modules`, reinstall
 - Fix TypeScript errors: `pnpm type-check`
@@ -632,20 +703,24 @@ taskkill /PID <PID> /F
 ## Performance Benchmarks
 
 ### Load Testing
+
 See `LOAD-TESTING.md` for complete guide.
 
 **Quick Load Test**:
+
 ```bash
 cd services/ash-admin
 pnpm load-test:smoke
 ```
 
 **Expected Performance**:
+
 - p95 response time < 500ms
 - p99 response time < 1000ms
 - Failure rate < 1%
 
 ### Lighthouse Scores (Target)
+
 - **Performance**: ≥ 90
 - **Accessibility**: ≥ 90
 - **Best Practices**: ≥ 90
@@ -656,6 +731,7 @@ pnpm load-test:smoke
 ## Support & Resources
 
 ### Documentation
+
 - [Production Setup Guide](PRODUCTION-SETUP.md)
 - [Security Audit Report](SECURITY-AUDIT-REPORT.md)
 - [Security Remediation Plan](SECURITY-REMEDIATION-PLAN.md)
@@ -663,6 +739,7 @@ pnpm load-test:smoke
 - [Performance Optimization](PERFORMANCE-OPTIMIZATION-GUIDE.md)
 
 ### External Resources
+
 - [Playwright Docs](https://playwright.dev)
 - [Jest Docs](https://jestjs.io)
 - [Next.js Testing](https://nextjs.org/docs/testing)
@@ -718,6 +795,7 @@ A feature is considered "Done" when:
 ---
 
 ## License
+
 PROPRIETARY - ASH AI Team
 
 **Last Updated**: 2025-10-19

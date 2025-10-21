@@ -1,85 +1,94 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     // Count active sewing runs
     const activeRuns = await prisma.sewingRun.count({
       where: {
-        status: 'IN_PROGRESS'
-      }
-    })
+        status: "IN_PROGRESS",
+      },
+    });
 
     // Count completed runs today
     const todaysCompleted = await prisma.sewingRun.count({
       where: {
-        status: 'DONE',
+        status: "DONE",
         created_at: {
-          gte: today
-        }
-      }
-    })
+          gte: today,
+        },
+      },
+    });
 
     // Count unique operators working today
     const operatorsWorkingResult = await prisma.sewingRun.findMany({
       where: {
         status: {
-          in: ['IN_PROGRESS', 'DONE']
+          in: ["IN_PROGRESS", "DONE"],
         },
         created_at: {
-          gte: today
-        }
+          gte: today,
+        },
       },
       select: {
-        operator_id: true
+        operator_id: true,
       },
-      distinct: ['operator_id']
-    })
-    const operatorsWorking = operatorsWorkingResult.length
+      distinct: ["operator_id"],
+    });
+    const operatorsWorking = operatorsWorkingResult.length;
 
     // Calculate average efficiency
     const runsWithEfficiency = await prisma.sewingRun.findMany({
       where: {
         efficiency_pct: {
-          not: null
+          not: null,
         },
         created_at: {
-          gte: today
-        }
+          gte: today,
+        },
       },
       select: {
-        efficiency_pct: true
-      }
-    })
+        efficiency_pct: true,
+      },
+    });
 
-    const avgEfficiency = runsWithEfficiency.length > 0
-      ? Math.round(runsWithEfficiency.reduce((sum, run) => sum + (run.efficiency_pct || 0), 0) / runsWithEfficiency.length)
-      : 0
+    const avgEfficiency =
+      runsWithEfficiency.length > 0
+        ? Math.round(
+            runsWithEfficiency.reduce(
+              (sum, run) => sum + (run.efficiency_pct || 0),
+              0
+            ) / runsWithEfficiency.length
+          )
+        : 0;
 
     // Count pending bundles (runs not started yet)
     const pendingBundles = await prisma.sewingRun.count({
       where: {
-        status: 'PENDING'
-      }
-    })
+        status: "PENDING",
+      },
+    });
 
     // Calculate total pieces completed today
     const completedRuns = await prisma.sewingRun.findMany({
       where: {
-        status: 'DONE',
+        status: "DONE",
         created_at: {
-          gte: today
-        }
+          gte: today,
+        },
       },
       select: {
-        qty_good: true
-      }
-    })
+        qty_good: true,
+      },
+    });
 
-    const totalPiecesToday = completedRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0)
+    const totalPiecesToday = completedRuns.reduce(
+      (sum, run) => sum + (run.qty_good || 0),
+      0
+    );
 
     return NextResponse.json({
       success: true,
@@ -89,14 +98,14 @@ export async function GET(request: NextRequest) {
         operators_working: operatorsWorking,
         avg_efficiency: avgEfficiency,
         pending_bundles: pendingBundles,
-        total_pieces_today: totalPiecesToday
-      }
-    })
+        total_pieces_today: totalPiecesToday,
+      },
+    });
   } catch (error) {
-    console.error('Error fetching sewing dashboard stats:', error)
+    console.error("Error fetching sewing dashboard stats:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch dashboard stats' },
+      { success: false, error: "Failed to fetch dashboard stats" },
       { status: 500 }
-    )
+    );
   }
 }

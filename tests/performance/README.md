@@ -7,21 +7,25 @@ Comprehensive load testing suite for Ashley AI Manufacturing ERP system.
 ### Install K6
 
 **Windows** (using Chocolatey):
+
 ```bash
 choco install k6
 ```
 
 **Windows** (using Scoop):
+
 ```bash
 scoop install k6
 ```
 
 **macOS**:
+
 ```bash
 brew install k6
 ```
 
 **Linux**:
+
 ```bash
 sudo gpg -k
 sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
@@ -33,9 +37,11 @@ sudo apt-get install k6
 ## Test Scenarios
 
 ### 1. API Load Test (`k6-api-load-test.js`)
+
 Tests various load scenarios on API endpoints.
 
 **Scenarios:**
+
 - **Smoke Test** (30s, 1 VU) - Verify basic functionality
 - **Load Test** (5m, 0→10→0 VUs) - Normal expected load
 - **Stress Test** (16m, 0→10→50→100→0 VUs) - Push beyond capacity
@@ -43,29 +49,35 @@ Tests various load scenarios on API endpoints.
 - **Soak Test** (30m, 20 VUs) - Sustained load over time
 
 **Run Smoke Test:**
+
 ```bash
 k6 run -e SCENARIO=smoke tests/performance/k6-api-load-test.js
 ```
 
 **Run Load Test:**
+
 ```bash
 k6 run -e SCENARIO=load tests/performance/k6-api-load-test.js
 ```
 
 **Run Stress Test:**
+
 ```bash
 k6 run -e SCENARIO=stress tests/performance/k6-api-load-test.js
 ```
 
 **Run All (default - load test):**
+
 ```bash
 k6 run tests/performance/k6-api-load-test.js
 ```
 
 ### 2. Manufacturing Workflow Test (`k6-manufacturing-workflow.js`)
+
 Tests complete manufacturing workflow through all production stages.
 
 **Workflow:**
+
 1. Order Management
 2. Cutting Operations
 3. Printing Operations
@@ -74,11 +86,13 @@ Tests complete manufacturing workflow through all production stages.
 6. Finance
 
 **Run:**
+
 ```bash
 k6 run tests/performance/k6-manufacturing-workflow.js
 ```
 
 **Customize:**
+
 ```bash
 # Custom VUs and duration
 k6 run --vus 20 --duration 10m tests/performance/k6-manufacturing-workflow.js
@@ -90,12 +104,14 @@ k6 run -e API_URL=https://your-server.com tests/performance/k6-manufacturing-wor
 ## Performance Thresholds
 
 ### API Load Test
+
 - **P95 Duration**: < 500ms
 - **P99 Duration**: < 1000ms
 - **Error Rate**: < 1%
 - **Failed Requests**: < 5%
 
 ### Manufacturing Workflow
+
 - **Workflow Success Rate**: > 95%
 - **Stage Latency P95**: < 1000ms
 - **Request Duration P95**: < 500ms
@@ -103,6 +119,7 @@ k6 run -e API_URL=https://your-server.com tests/performance/k6-manufacturing-wor
 ## Interpreting Results
 
 ### Key Metrics
+
 - **http_req_duration**: Time to complete requests
 - **http_req_waiting**: Time to first byte
 - **http_reqs**: Total requests per second
@@ -111,6 +128,7 @@ k6 run -e API_URL=https://your-server.com tests/performance/k6-manufacturing-wor
 - **workflow_success**: Percentage of completed workflows
 
 ### Success Criteria
+
 ✅ **All thresholds passing** - System performing well
 ⚠️ **Some thresholds failing** - Optimization needed
 ❌ **Many thresholds failing** - Performance issues
@@ -141,21 +159,25 @@ workflow_success...............: 96.00% ✓ 48   ✗ 2
 ## Advanced Usage
 
 ### Custom Thresholds
+
 ```bash
 k6 run --threshold http_req_duration=p(95)<300 tests/performance/k6-api-load-test.js
 ```
 
 ### Output to JSON
+
 ```bash
 k6 run --out json=results.json tests/performance/k6-api-load-test.js
 ```
 
 ### Cloud Testing (k6 Cloud)
+
 ```bash
 k6 cloud tests/performance/k6-api-load-test.js
 ```
 
 ### Summary Export
+
 ```bash
 k6 run --summary-export=summary.json tests/performance/k6-api-load-test.js
 ```
@@ -194,15 +216,18 @@ Add to GitHub Actions:
 ## Troubleshooting
 
 ### Connection Refused
+
 - Ensure server is running on localhost:3001
 - Set custom API_URL: `k6 run -e API_URL=http://your-server:port`
 
 ### High Error Rates
+
 - Check server logs
 - Reduce VUs or duration
 - Increase server resources
 
 ### Slow Response Times
+
 - Profile application code
 - Check database queries
 - Review network latency

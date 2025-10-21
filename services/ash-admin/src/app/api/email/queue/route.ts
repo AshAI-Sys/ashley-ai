@@ -1,23 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { emailQueue } from '@/lib/email/queue'
+import { NextRequest, NextResponse } from "next/server";
+import { emailQueue } from "@/lib/email/queue";
 
 /**
  * GET /api/email/queue - Get queue statistics
  */
 export async function GET(request: NextRequest) {
   try {
-    const stats = await emailQueue.getStats()
+    const stats = await emailQueue.getStats();
 
     return NextResponse.json({
       success: true,
-      stats
-    })
+      stats,
+    });
   } catch (error: any) {
-    console.error('Error getting email queue stats:', error)
+    console.error("Error getting email queue stats:", error);
     return NextResponse.json(
-      { error: 'Failed to get queue statistics', details: error.message },
+      { error: "Failed to get queue statistics", details: error.message },
       { status: 500 }
-    )
+    );
   }
 }
 
@@ -26,30 +26,30 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const { type, to, data, scheduledFor, maxAttempts } = await request.json()
+    const { type, to, data, scheduledFor, maxAttempts } = await request.json();
 
     if (!type || !to) {
       return NextResponse.json(
-        { error: 'type and to are required' },
+        { error: "type and to are required" },
         { status: 400 }
-      )
+      );
     }
 
     const jobId = await emailQueue.enqueue(type, to, data, {
       scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
-      maxAttempts
-    })
+      maxAttempts,
+    });
 
     return NextResponse.json({
       success: true,
       jobId,
-      message: 'Email queued for delivery'
-    })
+      message: "Email queued for delivery",
+    });
   } catch (error: any) {
-    console.error('Error queueing email:', error)
+    console.error("Error queueing email:", error);
     return NextResponse.json(
-      { error: 'Failed to queue email', details: error.message },
+      { error: "Failed to queue email", details: error.message },
       { status: 500 }
-    )
+    );
   }
 }

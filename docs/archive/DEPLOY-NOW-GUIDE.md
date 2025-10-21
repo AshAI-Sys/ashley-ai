@@ -32,6 +32,7 @@ When the script asks you to link to a project, you'll see something like:
 ## Step 3: Wait for Deployment
 
 The script will:
+
 1. Upload your code
 2. Install dependencies (pnpm install)
 3. Generate Prisma client
@@ -52,6 +53,7 @@ railway domain
 ```
 
 This will show your live URL, something like:
+
 ```
 https://ashley-ai-production.up.railway.app
 ```
@@ -61,6 +63,7 @@ https://ashley-ai-production.up.railway.app
 ## Step 5: Test Your App
 
 Visit your URL and login:
+
 - **Email**: admin@ashleyai.com
 - **Password**: password123
 
@@ -75,21 +78,25 @@ Your Ashley AI Manufacturing ERP is now live!
 ## Helpful Commands
 
 ### View Deployment Dashboard
+
 ```powershell
 railway open
 ```
 
 ### Check Deployment Logs
+
 ```powershell
 railway logs
 ```
 
 ### Check Deployment Status
+
 ```powershell
 railway status
 ```
 
 ### Redeploy (After Making Changes)
+
 ```powershell
 railway up
 ```
@@ -99,6 +106,7 @@ railway up
 ## If Something Goes Wrong
 
 ### Error: "No linked project found"
+
 ```powershell
 # Run this first
 railway link
@@ -108,6 +116,7 @@ railway up
 ```
 
 ### Error: "Build failed"
+
 ```powershell
 # Check logs
 railway logs
@@ -117,6 +126,7 @@ railway variables
 ```
 
 ### Error: "Database connection failed"
+
 ```powershell
 # Check if PostgreSQL is added
 railway add --database postgresql

@@ -1,38 +1,47 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { requireAuth } from '@/lib/auth-middleware'
+import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Stub API for appearance preferences
 // TODO: Implement database storage for appearance preferences
+
+// Force dynamic route (don't pre-render during build)
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   return requireAuth(async (request: NextRequest, user) => {
     try {
       // Return default appearance settings
       const settings = {
-        theme: 'system',
-        color_scheme: 'blue',
+        theme: "system",
+        color_scheme: "blue",
         compact_mode: false,
         show_avatars: true,
-        font_size: 'medium'
-      }
+        font_size: "medium",
+      };
 
-      return NextResponse.json(settings)
+      return NextResponse.json(settings);
     } catch (error) {
-      console.error('Error fetching appearance settings:', error)
-      return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
+      console.error("Error fetching appearance settings:", error);
+      return NextResponse.json(
+        { error: "Failed to fetch settings" },
+        { status: 500 }
+      );
     }
-  })
+  });
 }
 
 export async function PUT(request: NextRequest) {
   return requireAuth(async (request: NextRequest, user) => {
     try {
-      const body = await request.json()
+      const body = await request.json();
       // TODO: Save to database
-      return NextResponse.json({ success: true })
+      return NextResponse.json({ success: true });
     } catch (error) {
-      console.error('Error updating appearance settings:', error)
-      return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
+      console.error("Error updating appearance settings:", error);
+      return NextResponse.json(
+        { error: "Failed to update settings" },
+        { status: 500 }
+      );
     }
-  })
+  });
 }

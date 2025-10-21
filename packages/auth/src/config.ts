@@ -20,7 +20,11 @@ export const authOptions: NextAuthOptions = {
         workspace_id: { label: "Workspace ID", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !credentials?.workspace_id) {
+        if (
+          !credentials?.email ||
+          !credentials?.password ||
+          !credentials?.workspace_id
+        ) {
           return null;
         }
 

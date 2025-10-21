@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import React from 'react'
-import toast, { Toaster, ToastBar, Toast as HotToast } from 'react-hot-toast'
+import React from "react";
+import toast, { Toaster, ToastBar, Toast as HotToast } from "react-hot-toast";
 import {
   CheckCircle2,
   XCircle,
@@ -9,15 +9,15 @@ import {
   Info,
   X,
   Loader2,
-} from 'lucide-react'
-import { useTheme } from '@/contexts/ThemeContext'
+} from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 /**
  * Enhanced Toast Provider with beautiful styled toasts
  * Supports: success, error, warning, info, loading variants
  */
 export function ToastProvider() {
-  const { effectiveTheme } = useTheme()
+  const { effectiveTheme } = useTheme();
 
   return (
     <Toaster
@@ -25,45 +25,46 @@ export function ToastProvider() {
       toastOptions={{
         duration: 4000,
         style: {
-          background: effectiveTheme === 'dark' ? '#1f2937' : '#ffffff',
-          color: effectiveTheme === 'dark' ? '#f3f4f6' : '#111827',
-          border: `1px solid ${effectiveTheme === 'dark' ? '#374151' : '#e5e7eb'}`,
-          padding: '16px',
-          borderRadius: '8px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-          maxWidth: '500px',
+          background: effectiveTheme === "dark" ? "#1f2937" : "#ffffff",
+          color: effectiveTheme === "dark" ? "#f3f4f6" : "#111827",
+          border: `1px solid ${effectiveTheme === "dark" ? "#374151" : "#e5e7eb"}`,
+          padding: "16px",
+          borderRadius: "8px",
+          boxShadow:
+            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          maxWidth: "500px",
         },
         success: {
           iconTheme: {
-            primary: '#10b981',
-            secondary: '#ffffff',
+            primary: "#10b981",
+            secondary: "#ffffff",
           },
         },
         error: {
           iconTheme: {
-            primary: '#ef4444',
-            secondary: '#ffffff',
+            primary: "#ef4444",
+            secondary: "#ffffff",
           },
         },
       }}
     >
-      {(t) => (
+      {t => (
         <ToastBar toast={t}>
           {({ icon, message }) => (
-            <div className="flex items-start gap-3 w-full">
+            <div className="flex w-full items-start gap-3">
               {/* Icon */}
-              <div className="flex-shrink-0 mt-0.5">{icon}</div>
+              <div className="mt-0.5 flex-shrink-0">{icon}</div>
 
               {/* Message */}
-              <div className="flex-1 min-w-0">{message}</div>
+              <div className="min-w-0 flex-1">{message}</div>
 
               {/* Dismiss Button */}
-              {t.type !== 'loading' && (
+              {t.type !== "loading" && (
                 <button
                   onClick={() => toast.dismiss(t.id)}
-                  className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" />
                 </button>
               )}
             </div>
@@ -71,7 +72,7 @@ export function ToastProvider() {
         </ToastBar>
       )}
     </Toaster>
-  )
+  );
 }
 
 /**
@@ -83,31 +84,31 @@ export const showToast = {
    */
   success: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      (t) => (
+      t => (
         <div
           className={`${
-            t.visible ? 'animate-fade-in' : 'animate-fade-out'
-          } bg-card border border-border rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md`}
+            t.visible ? "animate-fade-in" : "animate-fade-out"
+          } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground mb-1">Success</h4>
+          <div className="min-w-0 flex-1">
+            <h4 className="mb-1 font-semibold text-foreground">Success</h4>
             <p className="text-sm text-muted-foreground">{message}</p>
           </div>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
       ),
       { duration: options?.duration || 4000 }
-    )
+    );
   },
 
   /**
@@ -115,31 +116,31 @@ export const showToast = {
    */
   error: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      (t) => (
+      t => (
         <div
           className={`${
-            t.visible ? 'animate-fade-in' : 'animate-fade-out'
-          } bg-card border border-border rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md`}
+            t.visible ? "animate-fade-in" : "animate-fade-out"
+          } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-              <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+              <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground mb-1">Error</h4>
+          <div className="min-w-0 flex-1">
+            <h4 className="mb-1 font-semibold text-foreground">Error</h4>
             <p className="text-sm text-muted-foreground">{message}</p>
           </div>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
       ),
       { duration: options?.duration || 6000 }
-    )
+    );
   },
 
   /**
@@ -147,31 +148,31 @@ export const showToast = {
    */
   warning: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      (t) => (
+      t => (
         <div
           className={`${
-            t.visible ? 'animate-fade-in' : 'animate-fade-out'
-          } bg-card border border-border rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md`}
+            t.visible ? "animate-fade-in" : "animate-fade-out"
+          } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground mb-1">Warning</h4>
+          <div className="min-w-0 flex-1">
+            <h4 className="mb-1 font-semibold text-foreground">Warning</h4>
             <p className="text-sm text-muted-foreground">{message}</p>
           </div>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
       ),
       { duration: options?.duration || 5000 }
-    )
+    );
   },
 
   /**
@@ -179,31 +180,31 @@ export const showToast = {
    */
   info: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      (t) => (
+      t => (
         <div
           className={`${
-            t.visible ? 'animate-fade-in' : 'animate-fade-out'
-          } bg-card border border-border rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md`}
+            t.visible ? "animate-fade-in" : "animate-fade-out"
+          } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-              <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+              <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground mb-1">Info</h4>
+          <div className="min-w-0 flex-1">
+            <h4 className="mb-1 font-semibold text-foreground">Info</h4>
             <p className="text-sm text-muted-foreground">{message}</p>
           </div>
           <button
             onClick={() => toast.dismiss(t.id)}
-            className="flex-shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
       ),
       { duration: options?.duration || 4000 }
-    )
+    );
   },
 
   /**
@@ -211,22 +212,22 @@ export const showToast = {
    */
   loading: (message: string) => {
     return toast.custom(
-      (t) => (
+      t => (
         <div
           className={`${
-            t.visible ? 'animate-fade-in' : 'animate-fade-out'
-          } bg-card border border-border rounded-lg shadow-lg p-4 flex items-start gap-3 max-w-md`}
+            t.visible ? "animate-fade-in" : "animate-fade-out"
+          } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <Loader2 className="w-5 h-5 text-primary animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin text-primary" />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="text-sm text-foreground">{message}</p>
           </div>
         </div>
       ),
       { duration: Infinity }
-    )
+    );
   },
 
   /**
@@ -235,58 +236,58 @@ export const showToast = {
   promise: <T,>(
     promise: Promise<T>,
     messages: {
-      loading: string
-      success: string | ((data: T) => string)
-      error: string | ((error: Error) => string)
+      loading: string;
+      success: string | ((data: T) => string);
+      error: string | ((error: Error) => string);
     }
   ) => {
     return toast.promise(
       promise,
       {
         loading: messages.loading,
-        success: (data) =>
-          typeof messages.success === 'function'
+        success: data =>
+          typeof messages.success === "function"
             ? messages.success(data)
             : messages.success,
-        error: (error) =>
-          typeof messages.error === 'function'
+        error: error =>
+          typeof messages.error === "function"
             ? messages.error(error)
             : messages.error,
       },
       {
         success: {
           duration: 4000,
-          icon: <CheckCircle2 className="w-5 h-5 text-green-600" />,
+          icon: <CheckCircle2 className="h-5 w-5 text-green-600" />,
         },
         error: {
           duration: 6000,
-          icon: <XCircle className="w-5 h-5 text-red-600" />,
+          icon: <XCircle className="h-5 w-5 text-red-600" />,
         },
         loading: {
-          icon: <Loader2 className="w-5 h-5 animate-spin text-primary" />,
+          icon: <Loader2 className="h-5 w-5 animate-spin text-primary" />,
         },
       }
-    )
+    );
   },
 
   /**
    * Dismiss toast by ID
    */
   dismiss: (toastId?: string) => {
-    toast.dismiss(toastId)
+    toast.dismiss(toastId);
   },
 
   /**
    * Dismiss all toasts
    */
   dismissAll: () => {
-    toast.dismiss()
+    toast.dismiss();
   },
-}
+};
 
 /**
  * Hook to use toast notifications
  */
 export function useToast() {
-  return showToast
+  return showToast;
 }

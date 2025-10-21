@@ -1,9 +1,11 @@
 # AI Chat Assistant - Setup Guide
 
 ## Overview
+
 Ashley AI now includes a **conversational AI chatbot** similar to ChatGPT that helps with manufacturing operations, production planning, orders, finance, HR, and more!
 
 ## Features
+
 - 💬 **ChatGPT-style interface** - Talk naturally with the AI assistant
 - 🎨 **Floating chat widget** - Appears on all pages in bottom-right corner
 - 💾 **Conversation history** - Save and resume your conversations
@@ -17,6 +19,7 @@ Ashley AI now includes a **conversational AI chatbot** similar to ChatGPT that h
 Choose ONE of these providers:
 
 #### Option A: Anthropic Claude (Recommended)
+
 1. Visit: https://console.anthropic.com/
 2. Sign up for an account
 3. Go to "API Keys" section
@@ -24,6 +27,7 @@ Choose ONE of these providers:
 5. Copy the key (starts with `sk-ant-`)
 
 #### Option B: OpenAI GPT
+
 1. Visit: https://platform.openai.com/
 2. Sign up for an account
 3. Go to "API keys" section
@@ -67,11 +71,13 @@ pnpm --filter @ash/admin dev
 ## API Endpoints
 
 ### Check Configuration Status
+
 ```bash
 GET /api/ai-chat/chat
 ```
 
 ### Send a Chat Message
+
 ```bash
 POST /api/ai-chat/chat
 {
@@ -83,11 +89,13 @@ POST /api/ai-chat/chat
 ```
 
 ### Get All Conversations
+
 ```bash
 GET /api/ai-chat/conversations?workspace_id=xxx
 ```
 
 ### Get Specific Conversation
+
 ```bash
 GET /api/ai-chat/conversations/:id
 ```
@@ -104,11 +112,13 @@ The AI Chat Assistant uses 4 new database tables:
 ## Pricing Information
 
 ### Anthropic Claude
+
 - **Claude 3.5 Sonnet**: ~$3 per 1M input tokens, ~$15 per 1M output tokens
 - Typical chat message: ~$0.01-0.05 per interaction
 - More info: https://www.anthropic.com/pricing
 
 ### OpenAI GPT
+
 - **GPT-4 Turbo**: ~$10 per 1M input tokens, ~$30 per 1M output tokens
 - Typical chat message: ~$0.02-0.10 per interaction
 - More info: https://openai.com/pricing
@@ -116,16 +126,19 @@ The AI Chat Assistant uses 4 new database tables:
 ## Troubleshooting
 
 ### Chat button doesn't appear
+
 - Check if API key is set in `.env`
 - Restart the development server
 - Check browser console for errors
 
 ### "No AI provider configured" error
+
 - Make sure you set either `ASH_ANTHROPIC_API_KEY` or `ASH_OPENAI_API_KEY`
 - Verify the key format (starts with `sk-ant-` or `sk-`)
 - Restart the server after adding the key
 
 ### API rate limits exceeded
+
 - Anthropic: 50 requests/min (free tier)
 - OpenAI: Varies by account tier
 - Consider implementing caching or rate limiting
@@ -133,6 +146,7 @@ The AI Chat Assistant uses 4 new database tables:
 ## Security Notes
 
 ⚠️ **IMPORTANT**:
+
 - Never commit your API keys to Git
 - Keep `.env` file in `.gitignore`
 - Use different keys for development and production
@@ -142,6 +156,7 @@ The AI Chat Assistant uses 4 new database tables:
 ## Future Enhancements
 
 Planned features for the AI Chat Assistant:
+
 - 🔊 Voice input/output
 - 📊 Data visualization in chat
 - 🔗 Direct actions (create orders, update status)

@@ -23,11 +23,13 @@ Ang Ashley AI registration system ay **PRODUCTION-READY** na at may automatic de
 ## 🔧 How It Works
 
 ### Development Mode (Auto-Verified)
+
 ```
 User registers → Account created → Email AUTO-VERIFIED → Can login immediately!
 ```
 
 ### Production Mode (Email Verification Required)
+
 ```
 User registers → Account created → Email sent → User verifies → Can login!
 ```
@@ -39,6 +41,7 @@ User registers → Account created → Email sent → User verifies → Can logi
 ### 1. User Submits Registration Form
 
 **Required Fields:**
+
 - ✅ **Company/Workspace Name** - e.g., "Acme Manufacturing"
 - ✅ **Workspace Slug** - e.g., "acme-mfg" (auto-generated, editable)
 - ✅ **First Name** - Admin's first name
@@ -48,6 +51,7 @@ User registers → Account created → Email sent → User verifies → Can logi
 - ✅ **Confirm Password** - Must match
 
 **Optional Fields:**
+
 - Company Address
 - Company Phone
 
@@ -58,6 +62,7 @@ User registers → Account created → Email sent → User verifies → Can logi
 **API Endpoint:** `POST /api/auth/register`
 
 **Validations:**
+
 ```typescript
 1. ✅ All required fields present
 2. ✅ Email format valid
@@ -77,6 +82,7 @@ User registers → Account created → Email sent → User verifies → Can logi
 ### 3. Account Creation
 
 **Database Transaction:**
+
 ```sql
 START TRANSACTION;
 
@@ -101,12 +107,14 @@ COMMIT;
 ### 4. Email Verification
 
 **Development Mode:**
+
 ```javascript
-email_verified: true  // Auto-verified!
-autoVerified: true    // Flag returned to UI
+email_verified: true; // Auto-verified!
+autoVerified: true; // Flag returned to UI
 ```
 
 **Production Mode:**
+
 ```javascript
 email_verified: false
 email_verification_token: "abc123..."
@@ -119,6 +127,7 @@ email_verification_expires: Date (24 hours)
 ### 5. Success Response
 
 **Development Response:**
+
 ```json
 {
   "success": true,
@@ -140,6 +149,7 @@ email_verification_expires: Date (24 hours)
 ```
 
 **Production Response:**
+
 ```json
 {
   "success": true,
@@ -219,11 +229,13 @@ email_verification_expires: Date (24 hours)
 ```
 
 **Valid Examples:**
+
 - ✅ `SecurePass123!`
 - ✅ `MyP@ssw0rd`
 - ✅ `Admin2024#Strong`
 
 **Invalid Examples:**
+
 - ❌ `password` (too weak)
 - ❌ `PASSWORD123` (no lowercase)
 - ❌ `Password` (no number)
@@ -235,10 +247,10 @@ email_verification_expires: Date (24 hours)
 
 ```typescript
 // 32-byte random token
-const verificationToken = crypto.randomBytes(32).toString('hex')
+const verificationToken = crypto.randomBytes(32).toString("hex");
 
 // 24-hour expiration
-const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000)
+const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 ```
 
 ---
@@ -247,7 +259,7 @@ const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000)
 
 ```typescript
 // bcrypt with 12 salt rounds (very secure)
-const password_hash = await bcrypt.hash(password, 12)
+const password_hash = await bcrypt.hash(password, 12);
 ```
 
 ---
@@ -256,10 +268,10 @@ const password_hash = await bcrypt.hash(password, 12)
 
 ```typescript
 // All registration events logged
-await logAuthEvent('REGISTER', workspace.id, user.id, request, {
+await logAuthEvent("REGISTER", workspace.id, user.id, request, {
   email: user.email,
   role: user.role,
-})
+});
 ```
 
 ---
@@ -267,6 +279,7 @@ await logAuthEvent('REGISTER', workspace.id, user.id, request, {
 ## 📊 Database Schema
 
 ### Workspace Table
+
 ```sql
 CREATE TABLE workspaces (
   id TEXT PRIMARY KEY,
@@ -280,6 +293,7 @@ CREATE TABLE workspaces (
 ```
 
 ### User Table
+
 ```sql
 CREATE TABLE users (
   id TEXT PRIMARY KEY,
@@ -373,12 +387,14 @@ Workspace Slug: ashley-ai
 ## 🚀 Deployment Checklist
 
 ### Development Environment
+
 - [x] Auto-verify emails (email_verified = true)
 - [x] Show verification URL in response
 - [x] Display "Auto-Verified" notice on success page
 - [x] Allow immediate login
 
 ### Production Environment
+
 - [ ] Require email verification (email_verified = false)
 - [ ] Configure email service (Resend, SendGrid, etc.)
 - [ ] Send verification emails
@@ -483,4 +499,3 @@ The registration system is **FULLY FUNCTIONAL** and ready for real-world use!
 **Last Updated**: 2025-10-20
 **Tested**: ✅ All test cases passing
 **Status**: 🚀 Ready to Deploy
-

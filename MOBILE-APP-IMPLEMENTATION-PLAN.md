@@ -13,6 +13,7 @@ Complete mobile application for Ashley AI Manufacturing ERP system with producti
 ## ✅ COMPLETED FEATURES (Options 4, 6, 8)
 
 ### **Option 6: UI/UX Enhancements** - COMPLETE ✅
+
 1. ✅ **Dark Mode System**
    - ThemeContext with Light/Dark/System preferences
    - ThemeToggle component in navigation sidebar
@@ -38,6 +39,7 @@ Complete mobile application for Ashley AI Manufacturing ERP system with producti
    - Integrated in root layout
 
 ### **Option 8: Security Hardening** - COMPLETE ✅
+
 1. ✅ **Two-Factor Authentication (2FA)**
    - Database fields: two_factor_secret, two_factor_enabled, backup_codes
    - Implementation files: `lib/auth/2fa.ts`, `lib/2fa-server.ts`
@@ -60,6 +62,7 @@ Complete mobile application for Ashley AI Manufacturing ERP system with producti
 ## Mobile App Architecture
 
 ### **Technology Stack**
+
 - **Framework**: React Native 0.73+
 - **Language**: TypeScript
 - **State Management**: React Query + Context API
@@ -71,36 +74,42 @@ Complete mobile application for Ashley AI Manufacturing ERP system with producti
 ### **Core Features**
 
 #### 1. **Authentication**
+
 - Login with email/password
 - Biometric authentication (fingerprint/Face ID)
 - Session management with JWT tokens
 - Auto-logout on timeout
 
 #### 2. **Production Floor Scanner**
+
 - QR code scanning for bundles
 - Barcode scanning for products
 - Bundle tracking and status updates
 - Operator check-in/check-out
 
 #### 3. **Production Tracking**
+
 - Real-time production status
 - Sewing run progress
 - Quality control inspections
 - Efficiency metrics
 
 #### 4. **Order Management**
+
 - View orders list
 - Order details with line items
 - Production stage progress
 - Client information
 
 #### 5. **Quality Control**
+
 - QC inspection forms
 - Photo capture for defects
 - Defect code selection
 - CAPA task creation
 
 #### 6. **Notifications**
+
 - Push notifications for alerts
 - Production milestones
 - Quality issues
@@ -171,12 +180,14 @@ mobile-app/
 ## Implementation Phases
 
 ### **Phase 1: Project Setup** (Day 1)
+
 - [ ] Initialize React Native project with TypeScript
 - [ ] Install dependencies (React Navigation, React Query, Camera)
 - [ ] Configure navigation structure
 - [ ] Setup API client with authentication
 
 ### **Phase 2: Authentication** (Day 2)
+
 - [ ] Login screen UI
 - [ ] Authentication API integration
 - [ ] JWT token storage and refresh
@@ -184,6 +195,7 @@ mobile-app/
 - [ ] Auth context and guards
 
 ### **Phase 3: Core UI Components** (Day 3)
+
 - [ ] Button, Input, Card components
 - [ ] Loading states and skeletons
 - [ ] Error boundaries
@@ -191,6 +203,7 @@ mobile-app/
 - [ ] Theme system (light/dark)
 
 ### **Phase 4: QR Scanner** (Day 4-5)
+
 - [ ] Camera permissions
 - [ ] QR code scanner component
 - [ ] Barcode scanner integration
@@ -198,6 +211,7 @@ mobile-app/
 - [ ] Bundle lookup API
 
 ### **Phase 5: Production Features** (Day 6-8)
+
 - [ ] Dashboard with stats
 - [ ] Order list screen
 - [ ] Order details screen
@@ -206,6 +220,7 @@ mobile-app/
 - [ ] Sewing run management
 
 ### **Phase 6: Quality Control** (Day 9-10)
+
 - [ ] QC inspection form
 - [ ] Camera for defect photos
 - [ ] Defect code selection
@@ -213,6 +228,7 @@ mobile-app/
 - [ ] CAPA task creation
 
 ### **Phase 7: Polish & Testing** (Day 11-12)
+
 - [ ] Push notifications
 - [ ] Offline mode support
 - [ ] Error handling improvements
@@ -224,6 +240,7 @@ mobile-app/
 ## API Endpoints Required
 
 ### **Authentication**
+
 ```
 POST   /api/auth/login
 POST   /api/auth/refresh
@@ -232,6 +249,7 @@ GET    /api/auth/me
 ```
 
 ### **Orders**
+
 ```
 GET    /api/orders?page=1&limit=20
 GET    /api/orders/:id
@@ -239,6 +257,7 @@ GET    /api/orders/:id/line-items
 ```
 
 ### **Production**
+
 ```
 GET    /api/bundles/:qr_code
 POST   /api/sewing-runs
@@ -247,6 +266,7 @@ GET    /api/production/stats
 ```
 
 ### **Quality Control**
+
 ```
 POST   /api/qc/inspections
 POST   /api/qc/defects
@@ -283,6 +303,7 @@ POST   /api/capa/tasks
 ## Screen Mockups
 
 ### **1. Login Screen**
+
 ```
 ┌─────────────────────┐
 │   Ashley AI Logo    │
@@ -301,6 +322,7 @@ POST   /api/capa/tasks
 ```
 
 ### **2. Dashboard**
+
 ```
 ┌─────────────────────┐
 │ 📊 Dashboard        │
@@ -320,6 +342,7 @@ Nav: 🏠 📦 🔍 👤
 ```
 
 ### **3. QR Scanner**
+
 ```
 ┌─────────────────────┐
 │ 📷 Scan Bundle QR   │
@@ -343,6 +366,7 @@ Nav: 🏠 📦 🔍 👤
 ## Development Commands
 
 ### **Initialize Project**
+
 ```bash
 # Create new React Native project
 npx react-native@latest init AshleyAIMobile --template react-native-template-typescript
@@ -390,18 +414,21 @@ ENABLE_OFFLINE_MODE=true
 ## Testing Strategy
 
 ### **Unit Tests**
+
 - API client functions
 - Utility functions
 - Form validation
 - Authentication logic
 
 ### **Integration Tests**
+
 - API endpoint integration
 - Navigation flows
 - QR scanner functionality
 - Data persistence
 
 ### **E2E Tests (Detox)**
+
 - Login flow
 - QR scanning flow
 - Production tracking flow
@@ -412,12 +439,14 @@ ENABLE_OFFLINE_MODE=true
 ## Deployment
 
 ### **iOS App Store**
+
 1. Configure signing certificates
 2. Update version in Info.plist
 3. Build release version
 4. Submit via App Store Connect
 
 ### **Google Play Store**
+
 1. Generate signed APK/Bundle
 2. Update versionCode in build.gradle
 3. Upload to Play Console

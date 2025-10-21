@@ -79,6 +79,7 @@ Validates NIST-compliant password policies:
 Validates comprehensive file upload protection:
 
 **File Type Validation:**
+
 - ✅ Magic byte (file signature) verification
 - ✅ MIME type validation
 - ✅ Executable file rejection (.exe, .dll, .so)
@@ -87,22 +88,26 @@ Validates comprehensive file upload protection:
 - ✅ Double extension attack prevention
 
 **File Size Validation:**
+
 - ✅ Maximum file size enforcement (10MB)
 - ✅ Zero-byte file rejection
 - ✅ Minimum file size requirements
 
 **Filename Sanitization:**
+
 - ✅ Path traversal prevention (../, ..\\)
-- ✅ Special character removal (<, >, |, *, ?, ", :)
+- ✅ Special character removal (<, >, |, \*, ?, ", :)
 - ✅ Unicode filename handling
 - ✅ Long filename truncation (255 char limit)
 
 **Content Security:**
+
 - ✅ EXIF data script injection prevention
 - ✅ ZIP bomb protection
 - ✅ Polyglot file detection
 
 **Access Control:**
+
 - ✅ Authentication requirement
 - ✅ Authorization validation
 - ✅ Upload rate limiting
@@ -114,29 +119,34 @@ Validates comprehensive file upload protection:
 Validates DDoS and abuse prevention:
 
 **Endpoint Rate Limiting:**
+
 - ✅ Login endpoint limiting (brute force prevention)
 - ✅ API endpoint limiting (GET/POST)
 - ✅ Different limits for read vs write operations
 - ✅ CSRF token generation limits
 
 **Tracking Methods:**
+
 - ✅ IP-based rate limiting
 - ✅ User-based rate limiting
 - ✅ Distributed rate limiting (Redis)
 - ✅ Rate limit window expiry and reset
 
 **Response Headers:**
+
 - ✅ X-RateLimit-Limit header
 - ✅ X-RateLimit-Remaining header
 - ✅ X-RateLimit-Reset header
 - ✅ Retry-After header on 429 responses
 
 **DDoS Protection:**
+
 - ✅ Burst traffic handling (200+ requests)
 - ✅ Service availability during attack
 - ✅ Graceful degradation under load
 
 **Bypass Prevention:**
+
 - ✅ User-Agent rotation bypass prevention
 - ✅ Referer header bypass prevention
 - ✅ IP spoofing bypass prevention
@@ -207,26 +217,26 @@ Test accounts and credentials:
 
 ```typescript
 // Default test account
-email: 'admin@ashleyai.com'
-password: 'password123'
+email: "admin@ashleyai.com";
+password: "password123";
 
 // Generated test accounts (auto-created)
-email: 'test-[random]@example.com'
-password: 'Test123!@#$%'
+email: "test-[random]@example.com";
+password: "Test123!@#$%";
 ```
 
 ## 🛡️ Security Features Validated
 
-| Feature | Score | Implementation |
-|---------|-------|---------------|
-| Content Security Policy | 100/100 | Nonce-based CSP, no unsafe-eval/unsafe-inline |
-| Account Lockout | 100/100 | 5 attempts, 30min lockout, audit logging |
-| Password Complexity | 100/100 | 12 char min, NIST guidelines, common password detection |
-| File Upload Security | 100/100 | Magic byte validation, MIME checking, sanitization |
-| Rate Limiting | 95/100 | Redis-based distributed rate limiting |
-| SQL Injection | 100/100 | Prisma ORM with parameterized queries |
-| Authentication | 100/100 | JWT tokens, secure session management |
-| CSRF Protection | 100/100 | Token-based CSRF protection |
+| Feature                 | Score   | Implementation                                          |
+| ----------------------- | ------- | ------------------------------------------------------- |
+| Content Security Policy | 100/100 | Nonce-based CSP, no unsafe-eval/unsafe-inline           |
+| Account Lockout         | 100/100 | 5 attempts, 30min lockout, audit logging                |
+| Password Complexity     | 100/100 | 12 char min, NIST guidelines, common password detection |
+| File Upload Security    | 100/100 | Magic byte validation, MIME checking, sanitization      |
+| Rate Limiting           | 95/100  | Redis-based distributed rate limiting                   |
+| SQL Injection           | 100/100 | Prisma ORM with parameterized queries                   |
+| Authentication          | 100/100 | JWT tokens, secure session management                   |
+| CSRF Protection         | 100/100 | Token-based CSRF protection                             |
 
 **Overall Security Score: A+ (98/100)**
 
@@ -239,6 +249,7 @@ Error: connect ECONNREFUSED 127.0.0.1:3001
 ```
 
 **Solution:** Start the development server:
+
 ```bash
 cd services/ash-admin
 pnpm run dev
@@ -251,6 +262,7 @@ Error: Redis connection failed
 ```
 
 **Solution:** Rate limiting tests require Redis. Start Redis server or skip rate limiting tests:
+
 ```bash
 npm run test -- --testPathIgnorePatterns=rate-limiting
 ```
@@ -262,6 +274,7 @@ Timeout - Async callback was not invoked within the 30000 ms timeout
 ```
 
 **Solution:** Increase timeout in `jest.config.js`:
+
 ```javascript
 testTimeout: 60000, // 60 seconds
 ```

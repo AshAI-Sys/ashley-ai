@@ -1,33 +1,36 @@
-import React from 'react'
-import { cn } from '@/lib/utils'
+import React from "react";
+import { cn } from "@/lib/utils";
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-gray-200 dark:bg-gray-700', className)}
+      className={cn(
+        "animate-pulse rounded-md bg-gray-200 dark:bg-gray-700",
+        className
+      )}
       {...props}
     />
-  )
+  );
 }
 
 export function SkeletonCard() {
   return (
-    <div className="border rounded-lg p-6 space-y-4">
+    <div className="space-y-4 rounded-lg border p-6">
       <div className="flex items-start justify-between">
-        <div className="space-y-3 flex-1">
+        <div className="flex-1 space-y-3">
           <div className="flex items-center gap-3">
             <Skeleton className="h-5 w-5" />
             <Skeleton className="h-6 w-48" />
             <Skeleton className="h-5 w-16" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Skeleton className="h-4 w-32" />
             <Skeleton className="h-4 w-40" />
             <Skeleton className="h-4 w-36" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
             <Skeleton className="h-12 w-full" />
@@ -40,7 +43,7 @@ export function SkeletonCard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function SkeletonTable() {
@@ -50,5 +53,5 @@ export function SkeletonTable() {
         <SkeletonCard key={i} />
       ))}
     </div>
-  )
+  );
 }

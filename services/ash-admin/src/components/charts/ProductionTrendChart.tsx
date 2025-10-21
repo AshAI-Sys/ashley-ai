@@ -1,7 +1,13 @@
-'use client'
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   LineChart,
   Line,
@@ -13,97 +19,120 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  TooltipProps
-} from 'recharts'
-import { Download, TrendingUp, Calendar } from 'lucide-react'
-import { format, subDays } from 'date-fns'
-import { useState } from 'react'
+  TooltipProps,
+} from "recharts";
+import { Download, TrendingUp, Calendar } from "lucide-react";
+import { format, subDays } from "date-fns";
+import { useState } from "react";
 
 interface ProductionData {
-  date: string
-  cutting: number
-  printing: number
-  sewing: number
-  finishing: number
-  target: number
+  date: string;
+  cutting: number;
+  printing: number;
+  sewing: number;
+  finishing: number;
+  target: number;
 }
 
 interface ProductionTrendChartProps {
-  data?: ProductionData[]
-  onExport?: () => void
-  showTarget?: boolean
-  timeRange?: '7d' | '30d' | '90d'
-  onTimeRangeChange?: (range: '7d' | '30d' | '90d') => void
+  data?: ProductionData[];
+  onExport?: () => void;
+  showTarget?: boolean;
+  timeRange?: "7d" | "30d" | "90d";
+  onTimeRangeChange?: (range: "7d" | "30d" | "90d") => void;
 }
 
-const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-3">
-        <p className="text-white font-medium mb-2">{label}</p>
+      <div className="rounded-lg border border-gray-700 bg-gray-800 p-3 shadow-lg">
+        <p className="mb-2 font-medium text-white">{label}</p>
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-sm">
+          <div
+            key={index}
+            className="flex items-center justify-between gap-4 text-sm"
+          >
             <span style={{ color: entry.color }}>{entry.name}:</span>
-            <span className="text-white font-medium">{entry.value} units</span>
+            <span className="font-medium text-white">{entry.value} units</span>
           </div>
         ))}
       </div>
-    )
+    );
   }
-  return null
-}
+  return null;
+};
 
 export default function ProductionTrendChart({
   data,
   onExport,
   showTarget = true,
-  timeRange = '30d',
-  onTimeRangeChange
+  timeRange = "30d",
+  onTimeRangeChange,
 }: ProductionTrendChartProps) {
-  const [chartType, setChartType] = useState<'line' | 'area'>('area')
+  const [chartType, setChartType] = useState<"line" | "area">("area");
 
   // Generate sample data if none provided
-  const chartData = data || Array.from({ length: 30 }, (_, i) => {
-    const date = subDays(new Date(), 29 - i)
-    return {
-      date: format(date, 'MMM dd'),
-      cutting: Math.floor(Math.random() * 200) + 100,
-      printing: Math.floor(Math.random() * 180) + 90,
-      sewing: Math.floor(Math.random() * 160) + 80,
-      finishing: Math.floor(Math.random() * 150) + 70,
-      target: 250
-    }
-  })
+  const chartData =
+    data ||
+    Array.from({ length: 30 }, (_, i) => {
+      const date = subDays(new Date(), 29 - i);
+      return {
+        date: format(date, "MMM dd"),
+        cutting: Math.floor(Math.random() * 200) + 100,
+        printing: Math.floor(Math.random() * 180) + 90,
+        sewing: Math.floor(Math.random() * 160) + 80,
+        finishing: Math.floor(Math.random() * 150) + 70,
+        target: 250,
+      };
+    });
 
   const exportToCSV = () => {
-    const headers = ['Date', 'Cutting', 'Printing', 'Sewing', 'Finishing', 'Target']
+    const headers = [
+      "Date",
+      "Cutting",
+      "Printing",
+      "Sewing",
+      "Finishing",
+      "Target",
+    ];
     const csvContent = [
-      headers.join(','),
+      headers.join(","),
       ...chartData.map(row =>
-        [row.date, row.cutting, row.printing, row.sewing, row.finishing, row.target].join(',')
-      )
-    ].join('\n')
+        [
+          row.date,
+          row.cutting,
+          row.printing,
+          row.sewing,
+          row.finishing,
+          row.target,
+        ].join(",")
+      ),
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `production-trends-${format(new Date(), 'yyyy-MM-dd')}.csv`
-    a.click()
-    window.URL.revokeObjectURL(url)
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `production-trends-${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
 
-    if (onExport) onExport()
-  }
+    if (onExport) onExport();
+  };
 
-  const ChartComponent = chartType === 'area' ? AreaChart : LineChart
+  const ChartComponent = chartType === "area" ? AreaChart : LineChart;
 
   return (
-    <Card className="dark:bg-gray-800 dark:border-gray-700">
+    <Card className="dark:border-gray-700 dark:bg-gray-800">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="dark:text-white flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-blue-500" />
+            <CardTitle className="flex items-center gap-2 dark:text-white">
+              <TrendingUp className="h-5 w-5 text-blue-500" />
               Production Trends
             </CardTitle>
             <CardDescription className="dark:text-gray-400">
@@ -112,15 +141,15 @@ export default function ProductionTrendChart({
           </div>
           <div className="flex gap-2">
             {/* Time Range Selector */}
-            <div className="flex border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
-              {(['7d', '30d', '90d'] as const).map((range) => (
+            <div className="flex overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
+              {(["7d", "30d", "90d"] as const).map(range => (
                 <button
                   key={range}
                   onClick={() => onTimeRangeChange?.(range)}
                   className={`px-3 py-1.5 text-xs font-medium transition-colors ${
                     timeRange === range
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                      ? "bg-blue-600 text-white"
+                      : "bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                   }`}
                 >
                   {range.toUpperCase()}
@@ -129,23 +158,23 @@ export default function ProductionTrendChart({
             </div>
 
             {/* Chart Type Toggle */}
-            <div className="flex border border-gray-300 dark:border-gray-600 rounded-md overflow-hidden">
+            <div className="flex overflow-hidden rounded-md border border-gray-300 dark:border-gray-600">
               <button
-                onClick={() => setChartType('line')}
+                onClick={() => setChartType("line")}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                  chartType === 'line'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                  chartType === "line"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                 }`}
               >
                 Line
               </button>
               <button
-                onClick={() => setChartType('area')}
+                onClick={() => setChartType("area")}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                  chartType === 'area'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                  chartType === "area"
+                    ? "bg-blue-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                 }`}
               >
                 Area
@@ -157,9 +186,9 @@ export default function ProductionTrendChart({
               variant="outline"
               size="sm"
               onClick={exportToCSV}
-              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600"
+              className="dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
             >
-              <Download className="w-4 h-4 mr-1" />
+              <Download className="mr-1 h-4 w-4" />
               Export
             </Button>
           </div>
@@ -170,38 +199,35 @@ export default function ProductionTrendChart({
           <ChartComponent data={chartData}>
             <defs>
               <linearGradient id="colorCutting" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="colorPrinting" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#10B981" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#10B981" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="colorSewing" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="colorFinishing" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis
               dataKey="date"
-              tick={{ fontSize: 11, fill: '#9CA3AF' }}
+              tick={{ fontSize: 11, fill: "#9CA3AF" }}
               angle={-45}
               textAnchor="end"
               height={80}
             />
-            <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} />
+            <YAxis tick={{ fontSize: 11, fill: "#9CA3AF" }} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend
-              wrapperStyle={{ paddingTop: '10px' }}
-              iconType="circle"
-            />
+            <Legend wrapperStyle={{ paddingTop: "10px" }} iconType="circle" />
 
-            {chartType === 'area' ? (
+            {chartType === "area" ? (
               <>
                 <Area
                   type="monotone"
@@ -296,21 +322,43 @@ export default function ProductionTrendChart({
         </ResponsiveContainer>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-6 grid grid-cols-4 gap-4 border-t border-gray-200 pt-6 dark:border-gray-700">
           {[
-            { label: 'Cutting', value: chartData[chartData.length - 1]?.cutting || 0, color: 'text-blue-600' },
-            { label: 'Printing', value: chartData[chartData.length - 1]?.printing || 0, color: 'text-green-600' },
-            { label: 'Sewing', value: chartData[chartData.length - 1]?.sewing || 0, color: 'text-yellow-600' },
-            { label: 'Finishing', value: chartData[chartData.length - 1]?.finishing || 0, color: 'text-purple-600' }
-          ].map((stat) => (
+            {
+              label: "Cutting",
+              value: chartData[chartData.length - 1]?.cutting || 0,
+              color: "text-blue-600",
+            },
+            {
+              label: "Printing",
+              value: chartData[chartData.length - 1]?.printing || 0,
+              color: "text-green-600",
+            },
+            {
+              label: "Sewing",
+              value: chartData[chartData.length - 1]?.sewing || 0,
+              color: "text-yellow-600",
+            },
+            {
+              label: "Finishing",
+              value: chartData[chartData.length - 1]?.finishing || 0,
+              color: "text-purple-600",
+            },
+          ].map(stat => (
             <div key={stat.label} className="text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{stat.label}</p>
-              <p className={`text-2xl font-bold ${stat.color} dark:opacity-90`}>{stat.value}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">units today</p>
+              <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                {stat.label}
+              </p>
+              <p className={`text-2xl font-bold ${stat.color} dark:opacity-90`}>
+                {stat.value}
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                units today
+              </p>
             </div>
           ))}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

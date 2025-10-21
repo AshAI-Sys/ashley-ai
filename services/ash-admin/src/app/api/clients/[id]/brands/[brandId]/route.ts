@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { z } from "zod";
 
 const UpdateBrandSchema = z.object({
-  name: z.string().min(1, 'Brand name is required').optional(),
+  name: z.string().min(1, "Brand name is required").optional(),
   code: z.string().optional(),
   logo_url: z.string().optional(),
   settings: z.string().optional(),
@@ -29,7 +29,7 @@ export async function GET(
             name: true,
             company: true,
             email: true,
-          }
+          },
         },
         orders: {
           select: {
@@ -39,32 +39,32 @@ export async function GET(
             total_amount: true,
             created_at: true,
           },
-          orderBy: { created_at: 'desc' },
+          orderBy: { created_at: "desc" },
           take: 10,
         },
         _count: {
           select: {
             orders: true,
-          }
-        }
+          },
+        },
       },
     });
 
     if (!brand) {
       return NextResponse.json(
-        { success: false, error: 'Brand not found' },
+        { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      data: brand
+      data: brand,
     });
   } catch (error) {
-    console.error('Error fetching brand:', error);
+    console.error("Error fetching brand:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch brand' },
+      { success: false, error: "Failed to fetch brand" },
       { status: 500 }
     );
   }
@@ -81,19 +81,19 @@ export async function PUT(
 
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
-      where: { id: brandId }
+      where: { id: brandId },
     });
 
     if (!existingBrand) {
       return NextResponse.json(
-        { success: false, error: 'Brand not found' },
+        { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
 
     if (existingBrand.client_id !== clientId) {
       return NextResponse.json(
-        { success: false, error: 'Brand does not belong to this client' },
+        { success: false, error: "Brand does not belong to this client" },
         { status: 403 }
       );
     }
@@ -104,13 +104,16 @@ export async function PUT(
         where: {
           name: validatedData.name,
           client_id: clientId,
-          id: { not: brandId }
-        }
+          id: { not: brandId },
+        },
       });
 
       if (nameExists) {
         return NextResponse.json(
-          { success: false, error: 'Brand with this name already exists for this client' },
+          {
+            success: false,
+            error: "Brand with this name already exists for this client",
+          },
           { status: 400 }
         );
       }
@@ -131,32 +134,32 @@ export async function PUT(
             id: true,
             name: true,
             email: true,
-          }
+          },
         },
         _count: {
           select: {
             orders: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     return NextResponse.json({
       success: true,
       data: brand,
-      message: 'Brand updated successfully'
+      message: "Brand updated successfully",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error('Error updating brand:', error);
+    console.error("Error updating brand:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update brand' },
+      { success: false, error: "Failed to update brand" },
       { status: 500 }
     );
   }
@@ -176,21 +179,21 @@ export async function DELETE(
         _count: {
           select: {
             orders: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     if (!existingBrand) {
       return NextResponse.json(
-        { success: false, error: 'Brand not found' },
+        { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
 
     if (existingBrand.client_id !== clientId) {
       return NextResponse.json(
-        { success: false, error: 'Brand does not belong to this client' },
+        { success: false, error: "Brand does not belong to this client" },
         { status: 403 }
       );
     }
@@ -200,17 +203,17 @@ export async function DELETE(
       where: { id: brandId },
       data: {
         deleted_at: new Date(),
-      }
+      },
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Brand deleted successfully'
+      message: "Brand deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting brand:', error);
+    console.error("Error deleting brand:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete brand' },
+      { success: false, error: "Failed to delete brand" },
       { status: 500 }
     );
   }

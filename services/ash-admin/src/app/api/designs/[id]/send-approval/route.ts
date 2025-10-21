@@ -1,30 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { tokenService } from '@/lib/tokenService'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { tokenService } from "@/lib/tokenService";
 // import { emailService } from '@/lib/emailService'
 // import { notificationService } from '@/lib/notificationService'
-
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await request.json()
-    const { 
-      version, 
-      email_subject, 
-      message, 
-      expiry_days = 7, 
-      _template_id 
-    } = body
+    const body = await request.json();
+    const {
+      version,
+      email_subject,
+      message,
+      expiry_days = 7,
+      _template_id,
+    } = body;
 
     // Validate input
     if (!version || !email_subject || !message) {
       return NextResponse.json(
-        { success: false, message: 'Missing required fields' },
+        { success: false, message: "Missing required fields" },
         { status: 400 }
-      )
+      );
     }
 
     // Get the design asset with related data
@@ -33,33 +32,33 @@ export async function POST(
       include: {
         order: {
           include: {
-            client: true
-          }
+            client: true,
+          },
         },
         brand: true,
         versions: {
-          where: { version }
-        }
-      }
-    })
+          where: { version },
+        },
+      },
+    });
 
     if (!designAsset) {
       return NextResponse.json(
-        { success: false, message: 'Design not found' },
+        { success: false, message: "Design not found" },
         { status: 404 }
-      )
+      );
     }
 
     if (designAsset.versions.length === 0) {
       return NextResponse.json(
-        { success: false, message: 'Design version not found' },
+        { success: false, message: "Design version not found" },
         { status: 404 }
-      )
+      );
     }
 
     // Generate secure token and expiry date
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + expiry_days)
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expiry_days);
 
     // Create approval record first (without token)
     const approval = await prisma.designApproval.create({
@@ -67,13 +66,13 @@ export async function POST(
         workspace_id: designAsset.workspace_id,
         asset_id: designAsset.id,
         version: version,
-        status: 'SENT',
+        status: "SENT",
         client_id: designAsset.order.client_id,
         comments: message,
         expires_at: expiresAt,
-        approver_email: designAsset.order.client.email
-      }
-    })
+        approver_email: designAsset.order.client.email,
+      },
+    });
 
     // Generate secure token after approval is created
     const secureToken = tokenService.generateApprovalToken({
@@ -82,14 +81,14 @@ export async function POST(
       designId: designAsset.id,
       version: version,
       expiresAt: expiresAt,
-      permissions: ['view', 'approve', 'request_changes']
-    })
+      permissions: ["view", "approve", "request_changes"],
+    });
 
     // Update approval with the secure token
     await prisma.designApproval.update({
       where: { id: approval.id },
-      data: { portal_token: secureToken }
-    })
+      data: { portal_token: secureToken },
+    });
 
     // Generate secure approval link
     const approvalLink = tokenService.generateSignedApprovalUrl({
@@ -97,12 +96,12 @@ export async function POST(
       clientId: designAsset.order.client_id,
       designId: designAsset.id,
       version: version,
-      expiresAt: expiresAt
-    })
+      expiresAt: expiresAt,
+    });
 
     // Prepare email data
     const emailData = {
-      to: designAsset.order.client.email || '',
+      to: designAsset.order.client.email || "",
       subject: email_subject,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -110,7 +109,7 @@ export async function POST(
           <p>Hi ${designAsset.order.client.name},</p>
           
           <div style="white-space: pre-line; margin: 20px 0;">
-            ${message.replace('{{approval_link}}', approvalLink)}
+            ${message.replace("{{approval_link}}", approvalLink)}
           </div>
           
           <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -137,48 +136,47 @@ export async function POST(
             <p>Best regards,<br>Ashley AI Team</p>
           </div>
         </div>
-      `
-    }
+      `,
+    };
 
     // TODO: Integrate with email service (SendGrid, AWS SES, etc.)
     // For now, we'll just simulate sending the email
-    console.log('Email would be sent:', emailData)
+    console.log("Email would be sent:", emailData);
 
     // Create audit log entry
     await prisma.auditLog.create({
       data: {
         workspace_id: designAsset.workspace_id,
-        user_id: 'system', // TODO: Get from session
-        action: 'APPROVAL_SENT',
-        resource: 'design_approval',
+        user_id: "system", // TODO: Get from session
+        action: "APPROVAL_SENT",
+        resource: "design_approval",
         resource_id: approval.id,
         new_values: JSON.stringify({
           design_id: designAsset.id,
           version,
           client_email: designAsset.order.client.email,
-          expires_at: expiresAt
-        })
-      }
-    })
+          expires_at: expiresAt,
+        }),
+      },
+    });
 
     return NextResponse.json({
       success: true,
-      message: 'Approval request sent successfully',
+      message: "Approval request sent successfully",
       data: {
         approval_id: approval.id,
         portal_token: secureToken,
         approval_link: approvalLink,
-        expires_at: expiresAt
-      }
-    })
-
+        expires_at: expiresAt,
+      },
+    });
   } catch (error) {
-    console.error('Error sending approval:', error)
+    console.error("Error sending approval:", error);
     return NextResponse.json(
-      { success: false, message: 'Internal server error' },
+      { success: false, message: "Internal server error" },
       { status: 500 }
-    )
+    );
   } finally {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   }
 }

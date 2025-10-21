@@ -57,32 +57,36 @@ export class MaterialRequirementPlanner {
   async generateMRPPlan(orderId?: string): Promise<MRPResult[]> {
     // Get material demands from orders
     const demands = await this.getMaterialDemands(orderId);
-    
+
     // Get current inventory levels
     const inventory = await this.getCurrentInventory();
-    
+
     // Get planned supplies (existing purchase orders)
     const supplies = await this.getPlannedSupplies();
-    
+
     // Group demands by material
     const demandsByMaterial = this.groupDemandsByMaterial(demands);
-    
+
     const mrpResults: MRPResult[] = [];
-    
-    for (const [materialId, materialDemands] of Object.entries(demandsByMaterial)) {
+
+    for (const [materialId, materialDemands] of Object.entries(
+      demandsByMaterial
+    )) {
       const currentInventory = inventory.find(inv => inv.id === materialId);
-      const materialSupplies = supplies.filter(supply => supply.materialId === materialId);
-      
+      const materialSupplies = supplies.filter(
+        supply => supply.materialId === materialId
+      );
+
       const result = await this.calculateMaterialRequirement(
         materialId,
         materialDemands,
         currentInventory,
         materialSupplies
       );
-      
+
       mrpResults.push(result);
     }
-    
+
     return mrpResults.sort((a, b) => {
       // Sort by urgency and shortfall
       if (a.shortfall > 0 && b.shortfall <= 0) return -1;
@@ -94,7 +98,7 @@ export class MaterialRequirementPlanner {
   async projectStockLevels(materialId: string): Promise<StockProjection[]> {
     const startDate = new Date();
     const endDate = addDays(startDate, this.planningHorizon);
-    
+
     // Get current stock
     const inventory = await db.materialInventory.findFirst({
       where: {
@@ -102,37 +106,54 @@ export class MaterialRequirementPlanner {
         id: materialId,
       },
     });
-    
+
     if (!inventory) {
       throw new Error("Material not found");
     }
-    
+
     // Get demands and supplies for the period
-    const demands = await this.getMaterialDemandsForPeriod(materialId, startDate, endDate);
-    const supplies = await this.getPlannedSuppliesForPeriod(materialId, startDate, endDate);
-    
+    const demands = await this.getMaterialDemandsForPeriod(
+      materialId,
+      startDate,
+      endDate
+    );
+    const supplies = await this.getPlannedSuppliesForPeriod(
+      materialId,
+      startDate,
+      endDate
+    );
+
     // Generate daily projections
     const projections: StockProjection[] = [];
     let runningStock = inventory.current_stock;
-    
+
     for (let date = startDate; date <= endDate; date = addDays(date, 1)) {
       const dateStr = format(date, "yyyy-MM-dd");
-      
-      const dayDemands = demands.filter(d => 
-        format(d.requiredDate, "yyyy-MM-dd") === dateStr
+
+      const dayDemands = demands.filter(
+        d => format(d.requiredDate, "yyyy-MM-dd") === dateStr
       );
-      
-      const daySupplies = supplies.filter(s => 
-        format(s.plannedDate, "yyyy-MM-dd") === dateStr
+
+      const daySupplies = supplies.filter(
+        s => format(s.plannedDate, "yyyy-MM-dd") === dateStr
       );
-      
-      const totalDemand = dayDemands.reduce((sum, d) => sum + d.requiredQuantity, 0);
-      const totalSupply = daySupplies.reduce((sum, s) => sum + s.plannedQuantity, 0);
-      
+
+      const totalDemand = dayDemands.reduce(
+        (sum, d) => sum + d.requiredQuantity,
+        0
+      );
+      const totalSupply = daySupplies.reduce(
+        (sum, s) => sum + s.plannedQuantity,
+        0
+      );
+
       const beginningStock = runningStock;
       const endingStock = beginningStock + totalSupply - totalDemand;
-      const shortfall = Math.max(0, totalDemand - (beginningStock + totalSupply));
-      
+      const shortfall = Math.max(
+        0,
+        totalDemand - (beginningStock + totalSupply)
+      );
+
       const actions: string[] = [];
       if (shortfall > 0) {
         actions.push(`Order ${shortfall} ${inventory.unit} immediately`);
@@ -143,7 +164,7 @@ export class MaterialRequirementPlanner {
       if (endingStock < inventory.reorder_point) {
         actions.push("Reached reorder point");
       }
-      
+
       projections.push({
         date: dateStr,
         beginningStock,
@@ -153,10 +174,10 @@ export class MaterialRequirementPlanner {
         shortfall,
         actions,
       });
-      
+
       runningStock = endingStock;
     }
-    
+
     return projections;
   }
 
@@ -168,19 +189,19 @@ export class MaterialRequirementPlanner {
   ): Promise<string> {
     // In a real implementation, this would create a purchase requisition
     // For now, we'll create a planned supply record
-    
+
     const material = await db.materialInventory.findFirst({
       where: { id: materialId, workspace_id: this.workspaceId },
     });
-    
+
     if (!material) {
       throw new Error("Material not found");
     }
-    
+
     // Calculate lead time and order date
     const leadTime = 7; // Default 7 days lead time
     const orderDate = subDays(requiredDate, leadTime);
-    
+
     // Create material transaction record for planned receipt
     await db.materialTransaction.create({
       data: {
@@ -194,7 +215,7 @@ export class MaterialRequirementPlanner {
         created_by: "system", // TODO: Use actual user ID
       },
     });
-    
+
     return `PR-${Date.now()}`;
   }
 
@@ -217,49 +238,55 @@ export class MaterialRequirementPlanner {
   }> {
     // Group materials by supplier for consolidation
     const materialsBySupplier: Record<string, MRPResult[]> = {};
-    
+
     for (const result of mrpResults.filter(r => r.shortfall > 0)) {
       // Get material details to find preferred supplier
       const material = await db.materialInventory.findFirst({
         where: { id: result.materialId, workspace_id: this.workspaceId },
       });
-      
+
       const supplier = material?.supplier || "Default Supplier";
-      
+
       if (!materialsBySupplier[supplier]) {
         materialsBySupplier[supplier] = [];
       }
       materialsBySupplier[supplier].push(result);
     }
-    
+
     // Create consolidated orders
-    const consolidatedOrders = Object.entries(materialsBySupplier).map(([supplier, materials]) => {
-      const orderMaterials = materials.map(material => ({
-        materialId: material.materialId,
-        quantity: material.shortfall,
-        estimatedCost: material.shortfall * 10, // Placeholder cost
-      }));
-      
-      const totalCost = orderMaterials.reduce((sum, m) => sum + m.estimatedCost, 0);
-      
-      // Find the most urgent required date
-      const urgentDate = new Date();
-      urgentDate.setDate(urgentDate.getDate() + 7); // Default 7 days
-      
-      return {
-        supplier,
-        materials: orderMaterials,
-        totalCost,
-        recommendedDate: urgentDate,
-      };
-    });
-    
+    const consolidatedOrders = Object.entries(materialsBySupplier).map(
+      ([supplier, materials]) => {
+        const orderMaterials = materials.map(material => ({
+          materialId: material.materialId,
+          quantity: material.shortfall,
+          estimatedCost: material.shortfall * 10, // Placeholder cost
+        }));
+
+        const totalCost = orderMaterials.reduce(
+          (sum, m) => sum + m.estimatedCost,
+          0
+        );
+
+        // Find the most urgent required date
+        const urgentDate = new Date();
+        urgentDate.setDate(urgentDate.getDate() + 7); // Default 7 days
+
+        return {
+          supplier,
+          materials: orderMaterials,
+          totalCost,
+          recommendedDate: urgentDate,
+        };
+      }
+    );
+
     // Calculate potential savings
     const consolidationSavings = consolidatedOrders.length * 50; // $50 per consolidated order
-    const bulkDiscountSavings = consolidatedOrders.reduce((sum, order) => 
-      order.totalCost > 1000 ? order.totalCost * 0.05 : 0, 0
+    const bulkDiscountSavings = consolidatedOrders.reduce(
+      (sum, order) => (order.totalCost > 1000 ? order.totalCost * 0.05 : 0),
+      0
     ); // 5% bulk discount for orders over $1000
-    
+
     return {
       consolidatedOrders,
       savings: {
@@ -270,11 +297,13 @@ export class MaterialRequirementPlanner {
     };
   }
 
-  private async getMaterialDemands(orderId?: string): Promise<MaterialDemand[]> {
-    const whereClause = orderId 
+  private async getMaterialDemands(
+    orderId?: string
+  ): Promise<MaterialDemand[]> {
+    const whereClause = orderId
       ? { order_id: orderId, workspace_id: this.workspaceId }
       : { workspace_id: this.workspaceId };
-    
+
     const requirements = await db.materialRequirement.findMany({
       where: whereClause,
       include: {
@@ -282,7 +311,7 @@ export class MaterialRequirementPlanner {
         material_inventory: true,
       },
     });
-    
+
     return requirements.map(req => ({
       materialId: req.material_inventory_id,
       materialName: req.material_inventory.material_name,
@@ -315,7 +344,7 @@ export class MaterialRequirementPlanner {
         material_inventory: true,
       },
     });
-    
+
     return transactions.map(tx => ({
       materialId: tx.material_inventory_id,
       plannedQuantity: tx.quantity,
@@ -327,13 +356,16 @@ export class MaterialRequirementPlanner {
   }
 
   private groupDemandsByMaterial(demands: MaterialDemand[]) {
-    return demands.reduce((acc, demand) => {
-      if (!acc[demand.materialId]) {
-        acc[demand.materialId] = [];
-      }
-      acc[demand.materialId].push(demand);
-      return acc;
-    }, {} as Record<string, MaterialDemand[]>);
+    return demands.reduce(
+      (acc, demand) => {
+        if (!acc[demand.materialId]) {
+          acc[demand.materialId] = [];
+        }
+        acc[demand.materialId].push(demand);
+        return acc;
+      },
+      {} as Record<string, MaterialDemand[]>
+    );
   }
 
   private async calculateMaterialRequirement(
@@ -347,7 +379,7 @@ export class MaterialRequirementPlanner {
     const plannedSupply = supplies.reduce((sum, s) => s.plannedQuantity, 0);
     const projectedStock = currentStock + plannedSupply - totalDemand;
     const shortfall = Math.max(0, -projectedStock);
-    
+
     // Determine recommended action
     let recommendedAction: MRPResult["recommendedAction"] = "ADEQUATE";
     if (shortfall > 0) {
@@ -357,24 +389,32 @@ export class MaterialRequirementPlanner {
     } else if (projectedStock > currentStock * 2) {
       recommendedAction = "EXCESS";
     }
-    
+
     // Find urgent orders
     const urgentOrders = demands
-      .filter(d => d.priority === "URGENT" || differenceInDays(d.requiredDate, new Date()) < 7)
+      .filter(
+        d =>
+          d.priority === "URGENT" ||
+          differenceInDays(d.requiredDate, new Date()) < 7
+      )
       .map(d => d.orderId);
-    
+
     // Generate recommendations
     const recommendations: string[] = [];
     if (shortfall > 0) {
-      recommendations.push(`Order ${shortfall} ${inventory?.unit || 'units'} immediately`);
+      recommendations.push(
+        `Order ${shortfall} ${inventory?.unit || "units"} immediately`
+      );
     }
     if (urgentOrders.length > 0) {
-      recommendations.push(`${urgentOrders.length} urgent orders require this material`);
+      recommendations.push(
+        `${urgentOrders.length} urgent orders require this material`
+      );
     }
     if (projectedStock < (inventory?.reorder_point || 0)) {
       recommendations.push("Stock level below reorder point");
     }
-    
+
     return {
       materialId,
       materialName: inventory?.material_name || "Unknown Material",
@@ -390,8 +430,8 @@ export class MaterialRequirementPlanner {
   }
 
   private async getMaterialDemandsForPeriod(
-    materialId: string, 
-    startDate: Date, 
+    materialId: string,
+    startDate: Date,
     endDate: Date
   ): Promise<MaterialDemand[]> {
     // Get all demands for the material within the period
@@ -400,8 +440,8 @@ export class MaterialRequirementPlanner {
   }
 
   private async getPlannedSuppliesForPeriod(
-    materialId: string, 
-    startDate: Date, 
+    materialId: string,
+    startDate: Date,
     endDate: Date
   ): Promise<SupplyPlan[]> {
     // Get all planned supplies for the material within the period

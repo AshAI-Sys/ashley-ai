@@ -22,6 +22,7 @@ Successfully implemented comprehensive Philippine government compliance APIs for
 ### Core Service Libraries
 
 #### 1. `services/ash-admin/src/lib/government/types.ts`
+
 - **Lines**: 193
 - **Purpose**: TypeScript type definitions for all government agencies
 - **Key Types**:
@@ -32,6 +33,7 @@ Successfully implemented comprehensive Philippine government compliance APIs for
   - Export: `ExportOptions`, `GovernmentReport`
 
 #### 2. `services/ash-admin/src/lib/government/bir.ts`
+
 - **Lines**: 221
 - **Purpose**: BIR tax calculation service
 - **Key Features**:
@@ -43,6 +45,7 @@ Successfully implemented comprehensive Philippine government compliance APIs for
   - CSV export functionality
 
 #### 3. `services/ash-admin/src/lib/government/sss.ts`
+
 - **Lines**: 140
 - **Purpose**: SSS contribution calculation service
 - **Key Features**:
@@ -53,6 +56,7 @@ Successfully implemented comprehensive Philippine government compliance APIs for
   - SSS number validation (10 digits: XX-XXXXXXX-X)
 
 #### 4. `services/ash-admin/src/lib/government/philhealth.ts`
+
 - **Lines**: 168
 - **Purpose**: PhilHealth contribution calculation service
 - **Key Features**:
@@ -65,6 +69,7 @@ Successfully implemented comprehensive Philippine government compliance APIs for
   - Historical rate tracking (2023-2026)
 
 #### 5. `services/ash-admin/src/lib/government/pagibig.ts`
+
 - **Lines**: 200
 - **Purpose**: Pag-IBIG contribution calculation service
 - **Key Features**:
@@ -76,6 +81,7 @@ Successfully implemented comprehensive Philippine government compliance APIs for
   - Annual contribution calculator
 
 #### 6. `services/ash-admin/src/lib/government/index.ts`
+
 - **Lines**: 68
 - **Purpose**: Main government service export and documentation
 
@@ -84,10 +90,12 @@ Successfully implemented comprehensive Philippine government compliance APIs for
 ### API Endpoints
 
 #### 7. `services/ash-admin/src/app/api/government/reports/route.ts`
+
 - **Lines**: 150
 - **Purpose**: Government remittance report generation API
 
 **POST /api/government/reports** - Generate remittance reports
+
 ```typescript
 Request Body:
 {
@@ -108,6 +116,7 @@ Response:
 ```
 
 **GET /api/government/reports** - Calculate contributions for single employee
+
 ```typescript
 Query Params: ?monthly_salary=25000&employee_id=xxx
 
@@ -129,10 +138,12 @@ Response:
 ```
 
 #### 8. `services/ash-admin/src/app/api/government/bir/route.ts`
+
 - **Lines**: 150
 - **Purpose**: BIR tax calculation and reporting API
 
 **POST /api/government/bir** - Generate BIR reports
+
 ```typescript
 Request Body:
 {
@@ -144,6 +155,7 @@ Request Body:
 ```
 
 **GET /api/government/bir** - Calculate VAT/withholding
+
 ```typescript
 Query Params Examples:
 - ?operation=calculate_vat&amount=11200
@@ -157,6 +169,7 @@ Query Params Examples:
 ### User Interface
 
 #### 9. `services/ash-admin/src/app/government/page.tsx`
+
 - **Lines**: 270
 - **Purpose**: Government compliance dashboard UI
 - **Tabs**:
@@ -165,6 +178,7 @@ Query Params Examples:
   3. **BIR** - Sales Book, Purchase Book, Form 2307
 
 **Features**:
+
 - Live contribution calculator with breakdown
 - VAT calculator (extract or add VAT)
 - One-click report generation for SSS, PhilHealth, Pag-IBIG
@@ -176,6 +190,7 @@ Query Params Examples:
 ### Navigation Integration
 
 #### 10. `services/ash-admin/src/components/Sidebar.tsx` (Modified)
+
 - **Added**: Government Reports menu item
 - **Icon**: `Landmark` (government building icon)
 - **Department**: Finance
@@ -186,6 +201,7 @@ Query Params Examples:
 ## Calculation Examples
 
 ### SSS Contribution (₱25,000 salary)
+
 ```
 Salary Bracket: ₱19,750 - ₱29,999.99
 Monthly Salary Credit: ₱20,000
@@ -196,6 +212,7 @@ Total: ₱2,910
 ```
 
 ### PhilHealth Contribution (₱25,000 salary)
+
 ```
 Salary Credit: ₱25,000
 Premium Rate: 5%
@@ -205,6 +222,7 @@ Employer Share (50%): ₱625
 ```
 
 ### Pag-IBIG Contribution (₱25,000 salary)
+
 ```
 Employee Rate: 2%
 Employer Rate: 2%
@@ -214,6 +232,7 @@ Total: ₱400
 ```
 
 ### BIR VAT Calculation (₱11,200 gross)
+
 ```
 Gross Amount: ₱11,200
 VAT Rate: 12%
@@ -222,6 +241,7 @@ VAT Amount: ₱1,200
 ```
 
 ### Total Deductions (₱25,000 salary)
+
 ```
 SSS Employee: ₱900
 PhilHealth Employee: ₱625
@@ -242,38 +262,42 @@ Grand Total: ₱4,560
 
 ## BIR ATC Codes Supported
 
-| ATC Code | Description | Rate |
-|----------|-------------|------|
-| WI010 | Professional fees (doctors, lawyers) | 1% |
-| WI020 | Professional fees | 2% |
-| WI030 | Rental | 5% |
-| WI050 | Royalties | 10% |
-| WI070 | Interest | 15% |
-| WI080 | Dividends | 20% |
-| WI156 | Contractor payments | 1% |
-| WI157 | Contractor payments | 2% |
-| WI158 | Income payments | 5% |
+| ATC Code | Description                          | Rate |
+| -------- | ------------------------------------ | ---- |
+| WI010    | Professional fees (doctors, lawyers) | 1%   |
+| WI020    | Professional fees                    | 2%   |
+| WI030    | Rental                               | 5%   |
+| WI050    | Royalties                            | 10%  |
+| WI070    | Interest                             | 15%  |
+| WI080    | Dividends                            | 20%  |
+| WI156    | Contractor payments                  | 1%   |
+| WI157    | Contractor payments                  | 2%   |
+| WI158    | Income payments                      | 5%   |
 
 ---
 
 ## Number Format Validation
 
 ### TIN (Tax Identification Number)
+
 - **Format**: `XXX-XXX-XXX-XXX` or `XXXXXXXXXXXX`
 - **Length**: 9-12 digits
 - **Example**: `123-456-789-000`
 
 ### SSS Number
+
 - **Format**: `XX-XXXXXXX-X`
 - **Length**: 10 digits
 - **Example**: `34-1234567-8`
 
 ### PhilHealth Number
+
 - **Format**: `XX-XXXXXXXXX-X`
 - **Length**: 12 digits
 - **Example**: `12-345678901-2`
 
 ### Pag-IBIG Number
+
 - **Format**: `XXXX-XXXX-XXXX`
 - **Length**: 12 digits
 - **Example**: `1234-5678-9012`
@@ -283,18 +307,21 @@ Grand Total: ₱4,560
 ## Integration with Existing System
 
 ### Database Integration
+
 - Fetches employee data from `Employee` model
 - Filters by `sss_number`, `philhealth_number`, `pagibig_number`
 - Uses `workspace_id` for multi-tenant support
 - Generates reports for active employees only
 
 ### Finance Integration
+
 - Sales Book: Generated from `Invoice` model
 - Purchase Book: Generated from `Expense` model
 - Automatic VAT extraction from amounts
 - Period-based filtering (from/to dates)
 
 ### Export Capabilities
+
 - **Current**: JSON export
 - **Ready for**: CSV, Excel, PDF generation
 - Template-based report formatting
@@ -311,21 +338,25 @@ No additional environment variables required. Uses existing database connection.
 ## Testing Endpoints
 
 ### Test Contribution Calculation
+
 ```bash
 curl "http://localhost:3001/api/government/reports?monthly_salary=25000"
 ```
 
 ### Test VAT Calculation
+
 ```bash
 curl "http://localhost:3001/api/government/bir?operation=calculate_vat&amount=11200"
 ```
 
 ### Test Withholding Tax
+
 ```bash
 curl "http://localhost:3001/api/government/bir?operation=withholding&amount=50000&atc_code=WI010"
 ```
 
 ### Generate SSS Report
+
 ```bash
 curl -X POST http://localhost:3001/api/government/reports \
   -H "Content-Type: application/json" \
@@ -407,6 +438,7 @@ curl -X POST http://localhost:3001/api/government/reports \
 **Government APIs implementation is COMPLETE and fully functional!**
 
 The system now provides comprehensive Philippine government compliance tools for:
+
 - Tax calculations and reporting (BIR)
 - Social security contributions (SSS)
 - Health insurance premiums (PhilHealth)

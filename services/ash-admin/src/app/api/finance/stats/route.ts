@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 // Finance statistics API endpoint
 export async function GET(request: NextRequest) {
   try {
-    const today = new Date()
-    const yearStart = new Date(today.getFullYear(), 0, 1)
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+    const today = new Date();
+    const yearStart = new Date(today.getFullYear(), 0, 1);
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
     // Run all queries in parallel for better performance
     const [
@@ -14,110 +14,112 @@ export async function GET(request: NextRequest) {
       outstandingInvoicesResult,
       overdueInvoicesResult,
       ytdRevenueResult,
-      lastMonthRevenueResult
+      lastMonthRevenueResult,
     ] = await Promise.all([
       // Total revenue (current month)
       prisma.invoice.aggregate({
         where: {
-          status: 'paid',
+          status: "paid",
           issue_date: {
             gte: monthStart,
-            lt: new Date(today.getFullYear(), today.getMonth() + 1, 1)
-          }
+            lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
+          },
         },
-        _sum: { total_amount: true }
+        _sum: { total_amount: true },
       }),
 
       // Outstanding invoices
       prisma.invoice.aggregate({
         where: {
-          status: { in: ['sent', 'pending'] }
+          status: { in: ["sent", "pending"] },
         },
-        _sum: { total_amount: true }
+        _sum: { total_amount: true },
       }),
 
       // Overdue invoices
       prisma.invoice.aggregate({
         where: {
-          status: { in: ['sent', 'pending', 'overdue'] },
-          due_date: { lt: today }
+          status: { in: ["sent", "pending", "overdue"] },
+          due_date: { lt: today },
         },
-        _sum: { total_amount: true }
+        _sum: { total_amount: true },
       }),
 
       // YTD Revenue
       prisma.invoice.aggregate({
         where: {
-          status: 'paid',
+          status: "paid",
           issue_date: {
             gte: yearStart,
-            lt: new Date(today.getFullYear() + 1, 0, 1)
-          }
+            lt: new Date(today.getFullYear() + 1, 0, 1),
+          },
         },
-        _sum: { total_amount: true }
+        _sum: { total_amount: true },
       }),
 
       // Last month revenue for growth calculation
       prisma.invoice.aggregate({
         where: {
-          status: 'paid',
+          status: "paid",
           issue_date: {
             gte: new Date(today.getFullYear(), today.getMonth() - 1, 1),
-            lt: monthStart
-          }
+            lt: monthStart,
+          },
         },
-        _sum: { total_amount: true }
-      })
-    ])
+        _sum: { total_amount: true },
+      }),
+    ]);
 
-    const currentRevenue = totalRevenueResult._sum.total_amount || 0
-    const ytdRevenue = ytdRevenueResult._sum.total_amount || 0
-    const totalCogs = 0 // Will be calculated from actual cost data later
-    const lastMonthRevenue = lastMonthRevenueResult._sum.total_amount || 1 // Avoid division by zero
+    const currentRevenue = totalRevenueResult._sum.total_amount || 0;
+    const ytdRevenue = ytdRevenueResult._sum.total_amount || 0;
+    const totalCogs = 0; // Will be calculated from actual cost data later
+    const lastMonthRevenue = lastMonthRevenueResult._sum.total_amount || 1; // Avoid division by zero
 
     // Calculate gross margin
-    const grossMargin = ytdRevenue > 0 ? ((ytdRevenue - totalCogs) / ytdRevenue) * 100 : 0
+    const grossMargin =
+      ytdRevenue > 0 ? ((ytdRevenue - totalCogs) / ytdRevenue) * 100 : 0;
 
     // Calculate revenue growth
-    const revenueGrowth = ((currentRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
+    const revenueGrowth =
+      ((currentRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
 
     // Get top clients by revenue
     const topClients = await prisma.invoice.groupBy({
-      by: ['client_id'],
+      by: ["client_id"],
       where: {
-        status: 'paid',
+        status: "paid",
         issue_date: {
-          gte: yearStart
-        }
+          gte: yearStart,
+        },
       },
       _sum: {
-        total_amount: true
+        total_amount: true,
       },
       orderBy: {
         _sum: {
-          total_amount: 'desc'
-        }
+          total_amount: "desc",
+        },
       },
-      take: 5
-    })
+      take: 5,
+    });
 
     // Get client names for top clients
-    const clientIds = topClients.map(client => client.client_id)
+    const clientIds = topClients.map(client => client.client_id);
     const clients = await prisma.client.findMany({
       where: { id: { in: clientIds } },
       take: 10, // Limit to 10 clients (should match clientIds length from topClients)
-      select: { id: true, name: true }
-    })
+      select: { id: true, name: true },
+    });
 
     const topClientsWithNames = topClients.map(client => {
-      const clientInfo = clients.find(c => c.id === client.client_id)
+      const clientInfo = clients.find(c => c.id === client.client_id);
       return {
-        client_name: clientInfo?.name || 'Unknown',
-        revenue: client._sum.total_amount || 0
-      }
-    })
+        client_name: clientInfo?.name || "Unknown",
+        revenue: client._sum.total_amount || 0,
+      };
+    });
 
-    const cashFlow = 0 // Will be calculated from payments later
+    const cashFlow = 0; // Will be calculated from payments later
 
     return NextResponse.json({
       success: true,
@@ -132,15 +134,14 @@ export async function GET(request: NextRequest) {
         cash_flow: cashFlow,
         revenue_growth: Math.round(revenueGrowth * 10) / 10,
         payment_distribution: [],
-        top_clients: topClientsWithNames
-      }
-    })
-
+        top_clients: topClientsWithNames,
+      },
+    });
   } catch (error) {
-    console.error('Error calculating finance stats:', error)
+    console.error("Error calculating finance stats:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to calculate finance statistics' },
+      { success: false, error: "Failed to calculate finance statistics" },
       { status: 500 }
-    )
+    );
   }
 }

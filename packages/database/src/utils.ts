@@ -73,7 +73,7 @@ export async function generatePONumber(brandId: string): Promise<string> {
   }
 
   const currentYear = new Date().getFullYear();
-  
+
   // Get the next sequence number for this brand/year
   const lastOrder = await db.order.findFirst({
     where: {
@@ -106,9 +106,11 @@ export function generateBundleQR(bundleId: string): string {
 }
 
 // Ashley AI analysis helpers
-export function parseAshleyAnalysis(jsonString: string | null): AshleyAnalysis | null {
+export function parseAshleyAnalysis(
+  jsonString: string | null
+): AshleyAnalysis | null {
   if (!jsonString) return null;
-  
+
   try {
     return JSON.parse(jsonString) as AshleyAnalysis;
   } catch {
@@ -128,7 +130,7 @@ export async function softDelete(
   userId?: string
 ) {
   const tableName = model.toString();
-  
+
   // Type assertion needed here due to dynamic model access
   const result = await (db[model] as any).update({
     where: { id, workspace_id: workspaceId },
@@ -150,7 +152,7 @@ export async function softDelete(
 // JSON field helpers for PostgreSQL
 export function parseJsonField<T>(jsonString: string | null): T | null {
   if (!jsonString) return null;
-  
+
   try {
     return JSON.parse(jsonString) as T;
   } catch {

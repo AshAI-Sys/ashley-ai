@@ -1,12 +1,5 @@
 {
-  "*.{js,jsx,ts,tsx}": [
-    "eslint --fix --max-warnings=0",
-    "prettier --write"
-  ],
-  "*.{json,md,yml,yaml}": [
-    "prettier --write"
-  ],
-  "**/*.ts?(x)": [
-    "bash -c 'pnpm type-check'"
-  ]
+  "*.{js,jsx,ts,tsx}": ["eslint --fix --max-warnings=0", "prettier --write"],
+  "*.{json,md,yml,yaml}": ["prettier --write"],
+  "**/*.ts?(x)": ["bash -c 'pnpm type-check'"]
 }

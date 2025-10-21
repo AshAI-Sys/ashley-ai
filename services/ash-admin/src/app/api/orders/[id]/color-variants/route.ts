@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { prisma } from '@/lib/db';
-import { getWorkspaceIdFromRequest } from '@/lib/workspace';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 
 const ColorVariantSchema = z.object({
-  line_item_id: z.string().min(1, 'Line item ID is required'),
-  color_name: z.string().min(1, 'Color name is required'),
-  color_code: z.string().min(1, 'Color code is required'),
+  line_item_id: z.string().min(1, "Line item ID is required"),
+  color_name: z.string().min(1, "Color name is required"),
+  color_code: z.string().min(1, "Color code is required"),
   percentage: z.number().min(0).max(100),
   quantity: z.number().int().min(0),
 });
@@ -26,7 +26,7 @@ export async function GET(
       include: {
         color_variants: {
           orderBy: {
-            created_at: 'asc',
+            created_at: "asc",
           },
         },
       },
@@ -37,9 +37,9 @@ export async function GET(
       data: { lineItems },
     });
   } catch (error) {
-    console.error('Error fetching color variants:', error);
+    console.error("Error fetching color variants:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch color variants' },
+      { success: false, error: "Failed to fetch color variants" },
       { status: 500 }
     );
   }
@@ -67,7 +67,7 @@ export async function POST(
       {
         success: true,
         data: { colorVariant },
-        message: 'Color variant created successfully',
+        message: "Color variant created successfully",
       },
       { status: 201 }
     );
@@ -76,16 +76,16 @@ export async function POST(
       return NextResponse.json(
         {
           success: false,
-          error: 'Validation failed',
+          error: "Validation failed",
           details: error.errors,
         },
         { status: 400 }
       );
     }
 
-    console.error('Error creating color variant:', error);
+    console.error("Error creating color variant:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create color variant' },
+      { success: false, error: "Failed to create color variant" },
       { status: 500 }
     );
   }
@@ -97,11 +97,11 @@ export async function DELETE(
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const variantId = searchParams.get('variantId');
+    const variantId = searchParams.get("variantId");
 
     if (!variantId) {
       return NextResponse.json(
-        { success: false, error: 'Variant ID is required' },
+        { success: false, error: "Variant ID is required" },
         { status: 400 }
       );
     }
@@ -114,12 +114,12 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Color variant deleted successfully',
+      message: "Color variant deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting color variant:', error);
+    console.error("Error deleting color variant:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete color variant' },
+      { success: false, error: "Failed to delete color variant" },
       { status: 500 }
     );
   }

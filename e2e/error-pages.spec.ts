@@ -6,7 +6,7 @@ test.describe("Error Pages", () => {
 
     // Should show 404 page
     await expect(
-      page.locator('text=/404|not found|page.*not.*found/i').first()
+      page.locator("text=/404|not found|page.*not.*found/i").first()
     ).toBeVisible({ timeout: 5000 });
 
     // Should have a way to get back home
@@ -45,7 +45,7 @@ test.describe("Error Pages", () => {
 
     // Should show error message to user
     await expect(
-      page.locator('text=/error|failed|something went wrong/i').first()
+      page.locator("text=/error|failed|something went wrong/i").first()
     ).toBeVisible({ timeout: 10000 });
   });
 
@@ -119,7 +119,7 @@ test.describe("Error Pages", () => {
 
     // Should show user-friendly message, not raw error
     const errorText = await page
-      .locator('text=/error|failed|permission/i')
+      .locator("text=/error|failed|permission/i")
       .first()
       .textContent({ timeout: 10000 })
       .catch(() => "");

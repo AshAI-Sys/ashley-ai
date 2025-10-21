@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { whatsappService } from '@/lib/integrations/whatsapp';
-import { smsService } from '@/lib/integrations/sms';
-import { slackService, teamsService } from '@/lib/integrations/slack';
-import { emailService } from '@/lib/integrations/email';
-import { webhookService } from '@/lib/integrations/webhooks';
+import { NextRequest, NextResponse } from "next/server";
+import { whatsappService } from "@/lib/integrations/whatsapp";
+import { smsService } from "@/lib/integrations/sms";
+import { slackService, teamsService } from "@/lib/integrations/slack";
+import { emailService } from "@/lib/integrations/email";
+import { webhookService } from "@/lib/integrations/webhooks";
 
 // POST /api/integrations/notify - Send notifications through all configured channels
 export async function POST(req: NextRequest) {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     if (!event || !channels || !data) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -26,10 +26,10 @@ export async function POST(req: NextRequest) {
     const results: Record<string, boolean> = {};
 
     // WhatsApp notifications
-    if (channels.includes('whatsapp') && recipients.whatsapp) {
+    if (channels.includes("whatsapp") && recipients.whatsapp) {
       try {
         switch (event) {
-          case 'order.created':
+          case "order.created":
             results.whatsapp = await whatsappService.sendOrderConfirmation(
               data.order_number,
               recipients.whatsapp,
@@ -37,21 +37,21 @@ export async function POST(req: NextRequest) {
               data.total_amount
             );
             break;
-          case 'production.update':
+          case "production.update":
             results.whatsapp = await whatsappService.sendProductionUpdate(
               recipients.whatsapp,
               data.order_number,
               data.status
             );
             break;
-          case 'delivery.dispatched':
+          case "delivery.dispatched":
             results.whatsapp = await whatsappService.sendDeliveryNotification(
               recipients.whatsapp,
               data.order_number,
               data.tracking_url
             );
             break;
-          case 'payment.due':
+          case "payment.due":
             results.whatsapp = await whatsappService.sendInvoice(
               recipients.whatsapp,
               data.invoice_number,
@@ -64,37 +64,37 @@ export async function POST(req: NextRequest) {
             results.whatsapp = false;
         }
       } catch (error) {
-        console.error('WhatsApp error:', error);
+        console.error("WhatsApp error:", error);
         results.whatsapp = false;
       }
     }
 
     // SMS notifications
-    if (channels.includes('sms') && recipients.sms) {
+    if (channels.includes("sms") && recipients.sms) {
       try {
         switch (event) {
-          case 'production.delay':
+          case "production.delay":
             results.sms = await smsService.sendProductionDelayAlert(
               recipients.sms,
               data.order_number,
               data.delay_hours
             );
             break;
-          case 'qc.failed':
+          case "qc.failed":
             results.sms = await smsService.sendQualityIssueAlert(
               recipients.sms,
               data.bundle_number,
               data.defect_rate
             );
             break;
-          case 'inventory.low':
+          case "inventory.low":
             results.sms = await smsService.sendStockShortageAlert(
               recipients.sms,
               data.material_name,
               data.current_stock
             );
             break;
-          case 'machine.breakdown':
+          case "machine.breakdown":
             results.sms = await smsService.sendMachineBreakdownAlert(
               recipients.sms,
               data.machine_name,
@@ -105,20 +105,20 @@ export async function POST(req: NextRequest) {
             results.sms = await smsService.sendCustomAlert(
               recipients.sms,
               data.message,
-              data.priority || 'medium'
+              data.priority || "medium"
             );
         }
       } catch (error) {
-        console.error('SMS error:', error);
+        console.error("SMS error:", error);
         results.sms = false;
       }
     }
 
     // Slack notifications
-    if (channels.includes('slack')) {
+    if (channels.includes("slack")) {
       try {
         switch (event) {
-          case 'order.approval':
+          case "order.approval":
             results.slack = await slackService.requestOrderApproval(
               data.order_number,
               data.client_name,
@@ -126,27 +126,27 @@ export async function POST(req: NextRequest) {
               data.approval_url
             );
             break;
-          case 'production.milestone':
+          case "production.milestone":
             results.slack = await slackService.notifyProductionMilestone(
               data.order_number,
               data.milestone
             );
             break;
-          case 'system.critical':
+          case "system.critical":
             results.slack = await slackService.alertCriticalIssue(
               data.title,
               data.description,
               data.affected_orders
             );
             break;
-          case 'qc.failed':
+          case "qc.failed":
             results.slack = await slackService.notifyQualityIssue(
               data.bundle_number,
               data.defect_rate,
               data.details
             );
             break;
-          case 'daily.summary':
+          case "daily.summary":
             results.slack = await slackService.sendDailySummary(data.stats);
             break;
           default:
@@ -157,16 +157,16 @@ export async function POST(req: NextRequest) {
             );
         }
       } catch (error) {
-        console.error('Slack error:', error);
+        console.error("Slack error:", error);
         results.slack = false;
       }
     }
 
     // Microsoft Teams notifications
-    if (channels.includes('teams')) {
+    if (channels.includes("teams")) {
       try {
         switch (event) {
-          case 'order.approval':
+          case "order.approval":
             results.teams = await teamsService.requestOrderApproval(
               data.order_number,
               data.client_name,
@@ -174,13 +174,13 @@ export async function POST(req: NextRequest) {
               data.approval_url
             );
             break;
-          case 'production.milestone':
+          case "production.milestone":
             results.teams = await teamsService.notifyProductionMilestone(
               data.order_number,
               data.milestone
             );
             break;
-          case 'system.critical':
+          case "system.critical":
             results.teams = await teamsService.alertCriticalIssue(
               data.title,
               data.description
@@ -190,16 +190,16 @@ export async function POST(req: NextRequest) {
             results.teams = false;
         }
       } catch (error) {
-        console.error('Teams error:', error);
+        console.error("Teams error:", error);
         results.teams = false;
       }
     }
 
     // Email notifications
-    if (channels.includes('email') && recipients.email) {
+    if (channels.includes("email") && recipients.email) {
       try {
         switch (event) {
-          case 'invoice.sent':
+          case "invoice.sent":
             results.email = await emailService.sendInvoice(
               recipients.email,
               data.client_name,
@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
               data.pdf_buffer
             );
             break;
-          case 'payment.reminder':
+          case "payment.reminder":
             results.email = await emailService.sendPaymentReminder(
               recipients.email,
               data.client_name,
@@ -218,7 +218,7 @@ export async function POST(req: NextRequest) {
               data.days_overdue
             );
             break;
-          case 'order.confirmed':
+          case "order.confirmed":
             results.email = await emailService.sendOrderConfirmation(
               recipients.email,
               data.client_name,
@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
               data.order_details
             );
             break;
-          case 'production.update':
+          case "production.update":
             results.email = await emailService.sendProductionUpdate(
               recipients.email,
               data.client_name,
@@ -235,7 +235,7 @@ export async function POST(req: NextRequest) {
               data.estimated_completion
             );
             break;
-          case 'delivery.shipped':
+          case "delivery.shipped":
             results.email = await emailService.sendDeliveryNotification(
               recipients.email,
               data.client_name,
@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
               data.tracking_url
             );
             break;
-          case 'weekly.report':
+          case "weekly.report":
             results.email = await emailService.sendWeeklyReport(
               recipients.email,
               data.stats
@@ -254,13 +254,13 @@ export async function POST(req: NextRequest) {
             results.email = false;
         }
       } catch (error) {
-        console.error('Email error:', error);
+        console.error("Email error:", error);
         results.email = false;
       }
     }
 
     // Webhook notifications
-    if (channels.includes('webhook') && data.webhook_subscriptions) {
+    if (channels.includes("webhook") && data.webhook_subscriptions) {
       try {
         await webhookService.triggerCustomEvent(
           event,
@@ -270,7 +270,7 @@ export async function POST(req: NextRequest) {
         );
         results.webhook = true;
       } catch (error) {
-        console.error('Webhook error:', error);
+        console.error("Webhook error:", error);
         results.webhook = false;
       }
     }
@@ -278,10 +278,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       results,
-      message: 'Notifications sent',
+      message: "Notifications sent",
     });
   } catch (error: any) {
-    console.error('Integration notify error:', error);
+    console.error("Integration notify error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

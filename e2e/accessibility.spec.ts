@@ -131,7 +131,9 @@ test.describe("Accessibility Tests", () => {
       await page.waitForTimeout(1000);
 
       const inputs = await page
-        .locator('input[type="text"], input[type="email"], input[type="number"]')
+        .locator(
+          'input[type="text"], input[type="email"], input[type="number"]'
+        )
         .all();
 
       for (const input of inputs.slice(0, 3)) {
@@ -210,9 +212,7 @@ test.describe("Accessibility Tests", () => {
       .getByRole("button", { name: /dark mode|theme/i })
       .first();
 
-    if (
-      await darkModeToggle.isVisible({ timeout: 2000 }).catch(() => false)
-    ) {
+    if (await darkModeToggle.isVisible({ timeout: 2000 }).catch(() => false)) {
       await darkModeToggle.click();
       await page.waitForTimeout(500);
 

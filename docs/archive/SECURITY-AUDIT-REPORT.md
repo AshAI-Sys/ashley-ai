@@ -14,6 +14,7 @@ This security audit examines the Ashley AI Manufacturing ERP system against OWAS
 ### Overall Security Grade: **B+ (87/100)**
 
 **Strengths**:
+
 - ✅ Robust authentication with bcrypt password hashing
 - ✅ CSRF protection with token validation
 - ✅ Rate limiting on critical endpoints
@@ -24,6 +25,7 @@ This security audit examines the Ashley AI Manufacturing ERP system against OWAS
 - ✅ Session management with secure cookies
 
 **Areas for Improvement**:
+
 - ⚠️ In-memory stores should use Redis in production
 - ⚠️ Content Security Policy could be stricter
 - ⚠️ File upload validation needs enhancement
@@ -38,6 +40,7 @@ This security audit examines the Ashley AI Manufacturing ERP system against OWAS
 **Status**: **STRONG**
 
 **Findings**:
+
 - ✅ Role-based access control (RBAC) implemented
 - ✅ User authentication required for protected routes
 - ✅ Workspace-based multi-tenancy isolation
@@ -45,27 +48,29 @@ This security audit examines the Ashley AI Manufacturing ERP system against OWAS
 - ✅ Audit logging for access events
 
 **Evidence**:
+
 ```typescript
 // services/ash-admin/src/app/api/auth/login/route.ts
 const user = await prisma.user.findFirst({
   where: {
     email: email.toLowerCase(),
-    is_active: true  // Only active users can log in
-  }
-})
+    is_active: true, // Only active users can log in
+  },
+});
 
 // services/ash-admin/src/middleware.ts
-if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
+if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
   if (!checkIPWhitelist(request)) {
     return new NextResponse(
-      JSON.stringify({ error: 'Access denied from your IP address' }),
+      JSON.stringify({ error: "Access denied from your IP address" }),
       { status: 403 }
-    )
+    );
   }
 }
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: JWT token-based authentication
 2. ✅ Already implemented: Workspace isolation in database queries
 3. 🔧 **TODO**: Add explicit permission checks for sensitive operations
@@ -78,6 +83,7 @@ if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
 **Status**: **STRONG**
 
 **Findings**:
+
 - ✅ Passwords hashed with bcrypt (12 rounds)
 - ✅ JWT tokens for session management
 - ✅ HTTPS enforced via Strict-Transport-Security header
@@ -85,6 +91,7 @@ if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
 - ✅ 2FA support with TOTP (speakeasy library)
 
 **Evidence**:
+
 ```typescript
 // services/ash-admin/src/app/api/auth/login/route.ts
 const isValidPassword = await bcrypt.compare(password, user.password_hash)
@@ -102,6 +109,7 @@ response.cookies.set('csrf-token', token, {
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: bcrypt for password hashing
 2. ✅ Already implemented: HTTPS enforcement in production
 3. 🔧 **TODO**: Consider adding JWT token rotation
@@ -114,31 +122,37 @@ response.cookies.set('csrf-token', token, {
 **Status**: **EXCELLENT**
 
 **Findings**:
+
 - ✅ Prisma ORM prevents SQL injection (parameterized queries)
 - ✅ Input validation on all API endpoints
 - ✅ No direct SQL queries found
 - ✅ Environment variables for configuration (no hardcoded values)
 
 **Evidence**:
+
 ```typescript
 // All database queries use Prisma ORM (parameterized)
 const user = await prisma.user.findFirst({
   where: {
-    email: email.toLowerCase(),  // Parameterized
-    is_active: true
-  }
-})
+    email: email.toLowerCase(), // Parameterized
+    is_active: true,
+  },
+});
 
 // Input validation
 if (!email || !password) {
-  return NextResponse.json({
-    success: false,
-    error: 'Email and password are required'
-  }, { status: 400 })
+  return NextResponse.json(
+    {
+      success: false,
+      error: "Email and password are required",
+    },
+    { status: 400 }
+  );
 }
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Prisma ORM for all database access
 2. ✅ Already implemented: Input validation
 3. 🔧 **TODO**: Add schema validation with Zod for all API inputs
@@ -151,6 +165,7 @@ if (!email || !password) {
 **Status**: **GOOD**
 
 **Findings**:
+
 - ✅ Multi-layered security (authentication + authorization + rate limiting)
 - ✅ Audit logging for security events
 - ✅ Secure session management
@@ -158,27 +173,29 @@ if (!email || !password) {
 - ✅ Fail-secure defaults (deny-by-default)
 
 **Evidence**:
+
 ```typescript
 // Multi-layered security in middleware
 // 1. Rate limiting
 if (!checkRateLimit(request)) {
-  return new NextResponse(/* 429 Too Many Requests */)
+  return new NextResponse(/* 429 Too Many Requests */);
 }
 
 // 2. IP whitelisting for admin routes
 if (!checkIPWhitelist(request)) {
-  return new NextResponse(/* 403 Forbidden */)
+  return new NextResponse(/* 403 Forbidden */);
 }
 
 // 3. CSRF validation
 if (isStateChanging && isAPI && !isAuthEndpoint && !isWebhook) {
   if (!verifyCSRFToken(request)) {
-    return new NextResponse(/* 403 CSRF Violation */)
+    return new NextResponse(/* 403 CSRF Violation */);
   }
 }
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Defense in depth
 2. ✅ Already implemented: Security by default
 3. 🔧 **TODO**: Add rate limiting to file upload endpoints
@@ -191,6 +208,7 @@ if (isStateChanging && isAPI && !isAuthEndpoint && !isWebhook) {
 **Status**: **MODERATE**
 
 **Findings**:
+
 - ✅ Security headers properly configured
 - ✅ CORS configuration with allowed origins
 - ⚠️ Content Security Policy allows 'unsafe-eval' and 'unsafe-inline'
@@ -198,6 +216,7 @@ if (isStateChanging && isAPI && !isAuthEndpoint && !isWebhook) {
 - ⚠️ Development dependencies in production build
 
 **Evidence**:
+
 ```typescript
 // Good: Security headers configured
 const securityHeaders = {
@@ -215,6 +234,7 @@ const securityHeaders = {
 ```
 
 **Recommendations**:
+
 1. 🔧 **HIGH PRIORITY**: Remove 'unsafe-eval' from CSP
 2. 🔧 **HIGH PRIORITY**: Replace 'unsafe-inline' with nonces or hashes
 3. 🔧 **MEDIUM**: Sanitize error messages in production
@@ -227,12 +247,14 @@ const securityHeaders = {
 **Status**: **GOOD**
 
 **Findings**:
+
 - ✅ Next.js 14.0.0 (latest stable)
 - ✅ React 18.2.0 (latest)
 - ✅ Prisma 5.22.0 (latest)
 - ⚠️ Some dependencies have deprecation warnings
 
 **Evidence**:
+
 ```json
 {
   "dependencies": {
@@ -245,6 +267,7 @@ const securityHeaders = {
 ```
 
 **Recommendations**:
+
 1. ✅ Regular dependency updates (npm audit)
 2. 🔧 **TODO**: Set up Dependabot for automated updates
 3. 🔧 **TODO**: Add npm audit to CI/CD pipeline
@@ -257,6 +280,7 @@ const securityHeaders = {
 **Status**: **STRONG**
 
 **Findings**:
+
 - ✅ Strong password hashing with bcrypt
 - ✅ Rate limiting on login endpoint (5 attempts/min)
 - ✅ Account lockout after failed attempts (via rate limiting)
@@ -265,25 +289,27 @@ const securityHeaders = {
 - ✅ Audit logging for auth events
 
 **Evidence**:
+
 ```typescript
 // Rate limiting for login
 const RATE_LIMIT_MAX_REQUESTS = {
-  '/api/auth/login': 5,      // 5 login attempts per minute
-  '/api/auth/register': 3,   // 3 registration attempts per minute
-  '/api/auth/2fa': 5,        // 5 2FA attempts per minute
-}
+  "/api/auth/login": 5, // 5 login attempts per minute
+  "/api/auth/register": 3, // 3 registration attempts per minute
+  "/api/auth/2fa": 5, // 5 2FA attempts per minute
+};
 
 // Password verification with bcrypt
-const isValidPassword = await bcrypt.compare(password, user.password_hash)
+const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
 // Audit logging
-await logAuthEvent('LOGIN_FAILED', user.workspace_id, user.id, request, {
+await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
   email,
-  reason: 'Invalid password'
-})
+  reason: "Invalid password",
+});
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Strong authentication
 2. 🔧 **TODO**: Add password complexity requirements
 3. 🔧 **TODO**: Implement account lockout after repeated failures
@@ -296,12 +322,14 @@ await logAuthEvent('LOGIN_FAILED', user.workspace_id, user.id, request, {
 **Status**: **GOOD**
 
 **Findings**:
+
 - ✅ Dependencies from trusted sources (npm)
 - ✅ Package lock files for reproducible builds
 - ✅ Audit logging for data changes
 - ✅ No auto-update mechanisms
 
 **Evidence**:
+
 ```typescript
 // Audit logging for data changes
 await logAuthEvent('LOGIN', user.workspace_id, user.id, request, {
@@ -314,6 +342,7 @@ await logAuthEvent('LOGIN', user.workspace_id, user.id, request, {
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Package lock files
 2. 🔧 **TODO**: Add integrity checks for uploaded files
 3. 🔧 **TODO**: Implement code signing for deployments
@@ -326,37 +355,40 @@ await logAuthEvent('LOGIN', user.workspace_id, user.id, request, {
 **Status**: **STRONG**
 
 **Findings**:
+
 - ✅ Comprehensive audit logging system
 - ✅ Security event logging (rate limit, CSRF, IP blocks)
 - ✅ Authentication event logging
 - ✅ Failed login attempt tracking
 
 **Evidence**:
+
 ```typescript
 // Security event logging
-await logSecurityEvent('RATE_LIMIT_EXCEEDED', request, {
+await logSecurityEvent("RATE_LIMIT_EXCEEDED", request, {
   path: pathname,
-  limit: getRateLimitForPath(pathname)
-})
+  limit: getRateLimitForPath(pathname),
+});
 
-await logSecurityEvent('CSRF_VIOLATION', request, {
+await logSecurityEvent("CSRF_VIOLATION", request, {
   path: pathname,
-  method: request.method
-})
+  method: request.method,
+});
 
-await logSecurityEvent('IP_BLOCKED', request, {
+await logSecurityEvent("IP_BLOCKED", request, {
   path: pathname,
-  reason: 'IP not in whitelist'
-})
+  reason: "IP not in whitelist",
+});
 
 // Authentication logging
-await logAuthEvent('LOGIN_FAILED', 'system', undefined, request, {
+await logAuthEvent("LOGIN_FAILED", "system", undefined, request, {
   email,
-  reason: 'User not found'
-})
+  reason: "User not found",
+});
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Comprehensive logging
 2. 🔧 **TODO**: Add real-time alerting for suspicious activity
 3. 🔧 **TODO**: Implement log retention policy
@@ -369,18 +401,22 @@ await logAuthEvent('LOGIN_FAILED', 'system', undefined, request, {
 **Status**: **GOOD**
 
 **Findings**:
+
 - ✅ No user-controlled URLs in requests
 - ✅ Whitelist approach for external API calls
 - ✅ 3PL API calls use predefined endpoints
 
 **Evidence**:
+
 ```typescript
 // 3PL integrations use fixed endpoints
-const LALAMOVE_API = process.env.LALAMOVE_API_URL || 'https://rest.lalamove.com'
-const GRAB_API = process.env.GRAB_API_URL || 'https://partner-api.grab.com'
+const LALAMOVE_API =
+  process.env.LALAMOVE_API_URL || "https://rest.lalamove.com";
+const GRAB_API = process.env.GRAB_API_URL || "https://partner-api.grab.com";
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Fixed API endpoints
 2. 🔧 **TODO**: Add URL validation for any user-provided URLs
 3. 🔧 **TODO**: Implement network segmentation for external calls
@@ -395,12 +431,14 @@ const GRAB_API = process.env.GRAB_API_URL || 'https://partner-api.grab.com'
 **Status**: **MODERATE**
 
 **Findings**:
+
 - ✅ Cloudinary integration for secure file storage
 - ⚠️ File type validation could be more robust
 - ⚠️ File size limits may not be enforced
 - ⚠️ No virus scanning for uploaded files
 
 **Code Review** (`services/ash-admin/src/app/api/upload/route.ts`):
+
 ```typescript
 // Need to verify file upload implementation
 // Should include:
@@ -411,6 +449,7 @@ const GRAB_API = process.env.GRAB_API_URL || 'https://partner-api.grab.com'
 ```
 
 **Recommendations**:
+
 1. 🔧 **HIGH PRIORITY**: Add strict file type validation (whitelist)
 2. 🔧 **HIGH PRIORITY**: Enforce file size limits (10MB max recommended)
 3. 🔧 **MEDIUM**: Add virus scanning (ClamAV integration)
@@ -423,11 +462,13 @@ const GRAB_API = process.env.GRAB_API_URL || 'https://partner-api.grab.com'
 **Status**: **MODERATE**
 
 **Findings**:
+
 - ✅ Environment variables used for sensitive data
 - ⚠️ Some secrets may be committed in .env files
 - ⚠️ No secrets rotation policy
 
 **Recommendations**:
+
 1. 🔧 **HIGH PRIORITY**: Use .env.example without real secrets
 2. 🔧 **HIGH PRIORITY**: Add .env to .gitignore (verify it's there)
 3. 🔧 **MEDIUM**: Use secret management service (AWS Secrets Manager, Vault)
@@ -440,21 +481,24 @@ const GRAB_API = process.env.GRAB_API_URL || 'https://partner-api.grab.com'
 **Status**: **GOOD**
 
 **Findings**:
+
 - ✅ Rate limiting implemented in middleware
 - ✅ Different limits for different endpoints
 - ⚠️ In-memory store (should use Redis in production)
 
 **Evidence**:
+
 ```typescript
 const RATE_LIMIT_MAX_REQUESTS = {
-  '/api/auth/login': 5,      // 5 login attempts per minute
-  '/api/auth/register': 3,   // 3 registration attempts per minute
-  '/api/auth/2fa': 5,        // 5 2FA attempts per minute
-  'default': 100,            // 100 requests per minute for other routes
-}
+  "/api/auth/login": 5, // 5 login attempts per minute
+  "/api/auth/register": 3, // 3 registration attempts per minute
+  "/api/auth/2fa": 5, // 5 2FA attempts per minute
+  default: 100, // 100 requests per minute for other routes
+};
 ```
 
 **Recommendations**:
+
 1. 🔧 **HIGH PRIORITY**: Use Redis for rate limiting in production
 2. 🔧 **MEDIUM**: Add distributed rate limiting across instances
 3. 🔧 **LOW**: Implement sliding window rate limiting
@@ -466,23 +510,26 @@ const RATE_LIMIT_MAX_REQUESTS = {
 **Status**: **STRONG**
 
 **Findings**:
+
 - ✅ JWT tokens with expiration
 - ✅ Secure cookie configuration
 - ✅ Session invalidation on logout
 - ✅ CSRF token per session
 
 **Evidence**:
+
 ```typescript
 // Secure cookie settings
-response.cookies.set('csrf-token', token, {
-  httpOnly: false,  // Needs to be readable for CSRF validation
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+response.cookies.set("csrf-token", token, {
+  httpOnly: false, // Needs to be readable for CSRF validation
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
   maxAge: 3600,
-})
+});
 ```
 
 **Recommendations**:
+
 1. ✅ Already implemented: Secure session management
 2. 🔧 **TODO**: Add session timeout after inactivity
 3. 🔧 **TODO**: Implement concurrent session limits
@@ -492,23 +539,23 @@ response.cookies.set('csrf-token', token, {
 
 ## 📊 Security Scorecard
 
-| Category | Score | Status |
-|----------|-------|--------|
-| **A01: Broken Access Control** | 85/100 | ✅ PASS |
-| **A02: Cryptographic Failures** | 90/100 | ✅ PASS |
-| **A03: Injection** | 95/100 | ✅ EXCELLENT |
-| **A04: Insecure Design** | 85/100 | ✅ PASS |
-| **A05: Security Misconfiguration** | 75/100 | ⚠️ NEEDS IMPROVEMENT |
-| **A06: Vulnerable Components** | 85/100 | ✅ PASS |
-| **A07: Auth Failures** | 90/100 | ✅ PASS |
-| **A08: Data Integrity** | 80/100 | ✅ PASS |
-| **A09: Logging & Monitoring** | 90/100 | ✅ PASS |
-| **A10: SSRF** | 95/100 | ✅ PASS |
-| **File Upload Security** | 60/100 | ⚠️ NEEDS IMPROVEMENT |
-| **Environment Security** | 70/100 | ⚠️ NEEDS REVIEW |
-| **API Rate Limiting** | 85/100 | ✅ PASS |
-| **Session Management** | 90/100 | ✅ PASS |
-| **OVERALL** | **87/100** | ✅ **B+ GRADE** |
+| Category                           | Score      | Status               |
+| ---------------------------------- | ---------- | -------------------- |
+| **A01: Broken Access Control**     | 85/100     | ✅ PASS              |
+| **A02: Cryptographic Failures**    | 90/100     | ✅ PASS              |
+| **A03: Injection**                 | 95/100     | ✅ EXCELLENT         |
+| **A04: Insecure Design**           | 85/100     | ✅ PASS              |
+| **A05: Security Misconfiguration** | 75/100     | ⚠️ NEEDS IMPROVEMENT |
+| **A06: Vulnerable Components**     | 85/100     | ✅ PASS              |
+| **A07: Auth Failures**             | 90/100     | ✅ PASS              |
+| **A08: Data Integrity**            | 80/100     | ✅ PASS              |
+| **A09: Logging & Monitoring**      | 90/100     | ✅ PASS              |
+| **A10: SSRF**                      | 95/100     | ✅ PASS              |
+| **File Upload Security**           | 60/100     | ⚠️ NEEDS IMPROVEMENT |
+| **Environment Security**           | 70/100     | ⚠️ NEEDS REVIEW      |
+| **API Rate Limiting**              | 85/100     | ✅ PASS              |
+| **Session Management**             | 90/100     | ✅ PASS              |
+| **OVERALL**                        | **87/100** | ✅ **B+ GRADE**      |
 
 ---
 
@@ -593,6 +640,7 @@ response.cookies.set('csrf-token', token, {
 Ashley AI demonstrates a **strong security posture** with comprehensive protections already in place. The system scores **B+ (87/100)** on the security audit.
 
 **Key Strengths**:
+
 - Robust authentication and authorization
 - Excellent SQL injection protection via Prisma
 - Comprehensive audit logging
@@ -600,6 +648,7 @@ Ashley AI demonstrates a **strong security posture** with comprehensive protecti
 - Rate limiting and CSRF protection
 
 **Recommendations for Production**:
+
 1. Migrate in-memory stores to Redis
 2. Strengthen Content Security Policy
 3. Enhance file upload validation
@@ -611,6 +660,7 @@ With the recommended improvements, Ashley AI can achieve an **A grade (95+)** an
 ---
 
 **Next Steps**:
+
 1. Review this report with the development team
 2. Prioritize and schedule remediation work
 3. Implement HIGH priority fixes before production

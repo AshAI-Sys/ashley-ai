@@ -1,53 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
-import { requireAuth, validateWorkspaceAccess } from '@/lib/auth-middleware'
-import { validateRequired, validateNumber, validateEnum, createValidationErrorResponse } from '@/lib/validation'
-
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
+import {
+  validateRequired,
+  validateNumber,
+  validateEnum,
+  createValidationErrorResponse,
+} from "@/lib/validation";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const { searchParams } = new URL(request.url)
-    const workspaceId = searchParams.get('workspaceId')
-    const clientId = searchParams.get('clientId')
-    const recommendationType = searchParams.get('type')
-    const limitParam = searchParams.get('limit') || '10'
+    const { searchParams } = new URL(request.url);
+    const workspaceId = searchParams.get("workspaceId");
+    const clientId = searchParams.get("clientId");
+    const recommendationType = searchParams.get("type");
+    const limitParam = searchParams.get("limit") || "10";
 
     // Validate required parameters
-    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      return createValidationErrorResponse([workspaceError])
+      return createValidationErrorResponse([workspaceError]);
     }
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
-      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
+      return NextResponse.json(
+        { error: "Access denied to this workspace" },
+        { status: 403 }
+      );
     }
 
     // Validate limit parameter
-    const limitError = validateNumber(limitParam, 'limit', 1, 100)
+    const limitError = validateNumber(limitParam, "limit", 1, 100);
     if (limitError) {
-      return createValidationErrorResponse([limitError])
+      return createValidationErrorResponse([limitError]);
     }
-    const limit = parseInt(limitParam)
+    const limit = parseInt(limitParam);
 
     // Validate recommendation type if provided
     if (recommendationType) {
-      const validTypes = ['REORDER', 'CROSS_SELL', 'SEASONAL', 'TRENDING']
-      const typeError = validateEnum(recommendationType, validTypes, 'type')
+      const validTypes = ["REORDER", "CROSS_SELL", "SEASONAL", "TRENDING"];
+      const typeError = validateEnum(recommendationType, validTypes, "type");
       if (typeError) {
-        return createValidationErrorResponse([typeError])
+        return createValidationErrorResponse([typeError]);
       }
     }
 
     const where: any = {
       workspace_id: workspaceId,
       expires_at: {
-        gte: new Date() // Only non-expired recommendations
-      }
-    }
+        gte: new Date(), // Only non-expired recommendations
+      },
+    };
 
-    if (clientId) where.client_id = clientId
-    if (recommendationType) where.recommendation_type = recommendationType
+    if (clientId) where.client_id = clientId;
+    if (recommendationType) where.recommendation_type = recommendationType;
 
     const recommendations = await prisma.productRecommendation.findMany({
       where,
@@ -55,314 +62,396 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         client: true,
       },
       orderBy: [
-        { confidence_score: 'desc' },
-        { expected_revenue: 'desc' },
-        { created_at: 'desc' }
+        { confidence_score: "desc" },
+        { expected_revenue: "desc" },
+        { created_at: "desc" },
       ],
       take: limit,
-    })
+    });
 
-    return NextResponse.json({ recommendations })
-
+    return NextResponse.json({ recommendations });
   } catch (error) {
-    console.error('Recommendations fetch error:', error)
-    return NextResponse.json({
-      error: 'Failed to fetch recommendations'
-    }, { status: 500 })
+    console.error("Recommendations fetch error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to fetch recommendations",
+      },
+      { status: 500 }
+    );
   }
-})
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const { workspaceId, clientId, generateAll } = await request.json()
+    const { workspaceId, clientId, generateAll } = await request.json();
 
     // Validate required parameters
-    const workspaceError = validateRequired(workspaceId, 'workspaceId')
+    const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      return createValidationErrorResponse([workspaceError])
+      return createValidationErrorResponse([workspaceError]);
     }
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId)) {
-      return NextResponse.json({ error: 'Access denied to this workspace' }, { status: 403 })
+      return NextResponse.json(
+        { error: "Access denied to this workspace" },
+        { status: 403 }
+      );
     }
 
-    let recommendations = []
+    let recommendations = [];
 
     if (generateAll) {
       // Generate recommendations for all active clients
       const clients = await prisma.client.findMany({
         where: {
           workspace_id: workspaceId,
-          is_active: true
-        }
-      })
+          is_active: true,
+        },
+      });
 
       for (const client of clients) {
-        const clientRecommendations = await generateRecommendationsForClient(workspaceId, client.id)
-        recommendations.push(...clientRecommendations)
+        const clientRecommendations = await generateRecommendationsForClient(
+          workspaceId,
+          client.id
+        );
+        recommendations.push(...clientRecommendations);
       }
     } else if (clientId) {
       // Generate recommendations for specific client
-      recommendations = await generateRecommendationsForClient(workspaceId, clientId)
+      recommendations = await generateRecommendationsForClient(
+        workspaceId,
+        clientId
+      );
     } else {
-      return NextResponse.json({ error: 'Client ID is required when not generating for all clients' }, { status: 400 })
+      return NextResponse.json(
+        { error: "Client ID is required when not generating for all clients" },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json({
       recommendations,
-      count: recommendations.length
-    })
-
+      count: recommendations.length,
+    });
   } catch (error) {
-    console.error('Recommendation generation error:', error)
-    return NextResponse.json({
-      error: 'Failed to generate recommendations'
-    }, { status: 500 })
+    console.error("Recommendation generation error:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to generate recommendations",
+      },
+      { status: 500 }
+    );
   }
-})
+});
 
-async function generateRecommendationsForClient(workspaceId: string, clientId: string) {
+async function generateRecommendationsForClient(
+  workspaceId: string,
+  clientId: string
+) {
   // Get client's order history
   const clientOrders = await prisma.order.findMany({
     where: {
       workspace_id: workspaceId,
       client_id: clientId,
       created_at: {
-        gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) // Last year
-      }
+        gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), // Last year
+      },
     },
     include: {
       line_items: true,
-      brand: true
+      brand: true,
     },
-    orderBy: { created_at: 'desc' }
-  })
+    orderBy: { created_at: "desc" },
+  });
 
   if (clientOrders.length === 0) {
-    return []
+    return [];
   }
 
-  const recommendations = []
+  const recommendations = [];
 
   // 1. REORDER RECOMMENDATIONS - Based on repeat purchases
-  const reorderRecommendations = await generateReorderRecommendations(workspaceId, clientId, clientOrders)
-  recommendations.push(...reorderRecommendations)
+  const reorderRecommendations = await generateReorderRecommendations(
+    workspaceId,
+    clientId,
+    clientOrders
+  );
+  recommendations.push(...reorderRecommendations);
 
   // 2. CROSS-SELL RECOMMENDATIONS - Products often bought together
-  const crossSellRecommendations = await generateCrossSellRecommendations(workspaceId, clientId, clientOrders)
-  recommendations.push(...crossSellRecommendations)
+  const crossSellRecommendations = await generateCrossSellRecommendations(
+    workspaceId,
+    clientId,
+    clientOrders
+  );
+  recommendations.push(...crossSellRecommendations);
 
   // 3. SEASONAL RECOMMENDATIONS - Based on time of year
-  const seasonalRecommendations = await generateSeasonalRecommendations(workspaceId, clientId, clientOrders)
-  recommendations.push(...seasonalRecommendations)
+  const seasonalRecommendations = await generateSeasonalRecommendations(
+    workspaceId,
+    clientId,
+    clientOrders
+  );
+  recommendations.push(...seasonalRecommendations);
 
   // 4. TRENDING RECOMMENDATIONS - Based on what's popular
-  const trendingRecommendations = await generateTrendingRecommendations(workspaceId, clientId)
-  recommendations.push(...trendingRecommendations)
+  const trendingRecommendations = await generateTrendingRecommendations(
+    workspaceId,
+    clientId
+  );
+  recommendations.push(...trendingRecommendations);
 
-  return recommendations
+  return recommendations;
 }
 
-async function generateReorderRecommendations(workspaceId: string, clientId: string, clientOrders: any[]) {
-  const recommendations = []
+async function generateReorderRecommendations(
+  workspaceId: string,
+  clientId: string,
+  clientOrders: any[]
+) {
+  const recommendations = [];
 
   // Find products ordered multiple times
-  const productFrequency: { [key: string]: { count: number, lastOrder: Date, avgQuantity: number, totalRevenue: number } } = {}
+  const productFrequency: {
+    [key: string]: {
+      count: number;
+      lastOrder: Date;
+      avgQuantity: number;
+      totalRevenue: number;
+    };
+  } = {};
 
   clientOrders.forEach(order => {
     order.line_items.forEach((item: any) => {
-      const key = `${item.product_type || 'unknown'}-${item.color || 'default'}`
+      const key = `${item.product_type || "unknown"}-${item.color || "default"}`;
       if (!productFrequency[key]) {
-        productFrequency[key] = { count: 0, lastOrder: order.created_at, avgQuantity: 0, totalRevenue: 0 }
+        productFrequency[key] = {
+          count: 0,
+          lastOrder: order.created_at,
+          avgQuantity: 0,
+          totalRevenue: 0,
+        };
       }
-      productFrequency[key].count++
-      productFrequency[key].avgQuantity += item.quantity || 0
-      productFrequency[key].totalRevenue += (item.quantity || 0) * (item.unit_price || 0)
+      productFrequency[key].count++;
+      productFrequency[key].avgQuantity += item.quantity || 0;
+      productFrequency[key].totalRevenue +=
+        (item.quantity || 0) * (item.unit_price || 0);
       if (order.created_at > productFrequency[key].lastOrder) {
-        productFrequency[key].lastOrder = order.created_at
+        productFrequency[key].lastOrder = order.created_at;
       }
-    })
-  })
+    });
+  });
 
   // Generate reorder recommendations for frequently ordered items
   for (const [productKey, data] of Object.entries(productFrequency)) {
-    if (data.count >= 2) { // Ordered at least twice
-      const daysSinceLastOrder = Math.floor((Date.now() - data.lastOrder.getTime()) / (1000 * 60 * 60 * 24))
-      const avgOrderInterval = 90 // Assume 90 days between reorders
+    if (data.count >= 2) {
+      // Ordered at least twice
+      const daysSinceLastOrder = Math.floor(
+        (Date.now() - data.lastOrder.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const avgOrderInterval = 90; // Assume 90 days between reorders
 
-      if (daysSinceLastOrder >= avgOrderInterval * 0.8) { // 80% of typical interval
-        const [productType, color] = productKey.split('-')
-        const confidence = Math.min(0.95, 0.6 + (data.count * 0.1))
-        const avgQuantity = Math.round(data.avgQuantity / data.count)
+      if (daysSinceLastOrder >= avgOrderInterval * 0.8) {
+        // 80% of typical interval
+        const [productType, color] = productKey.split("-");
+        const confidence = Math.min(0.95, 0.6 + data.count * 0.1);
+        const avgQuantity = Math.round(data.avgQuantity / data.count);
 
-        recommendations.push(await prisma.productRecommendation.create({
-          data: {
-            workspace_id: workspaceId,
-            client_id: clientId,
-            recommendation_type: 'REORDER',
-            source_product_type: productType,
-            recommended_product_type: productType,
-            recommended_category: 'APPAREL',
-            confidence_score: confidence,
-            expected_quantity: avgQuantity,
-            expected_revenue: data.totalRevenue / data.count,
-            reasoning: `Customer has ordered this product ${data.count} times. Last order was ${daysSinceLastOrder} days ago.`,
-            historical_success: confidence,
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-          }
-        }))
+        recommendations.push(
+          await prisma.productRecommendation.create({
+            data: {
+              workspace_id: workspaceId,
+              client_id: clientId,
+              recommendation_type: "REORDER",
+              source_product_type: productType,
+              recommended_product_type: productType,
+              recommended_category: "APPAREL",
+              confidence_score: confidence,
+              expected_quantity: avgQuantity,
+              expected_revenue: data.totalRevenue / data.count,
+              reasoning: `Customer has ordered this product ${data.count} times. Last order was ${daysSinceLastOrder} days ago.`,
+              historical_success: confidence,
+              expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            },
+          })
+        );
       }
     }
   }
 
-  return recommendations
+  return recommendations;
 }
 
-async function generateCrossSellRecommendations(workspaceId: string, clientId: string, clientOrders: any[]) {
-  const recommendations = []
+async function generateCrossSellRecommendations(
+  workspaceId: string,
+  clientId: string,
+  clientOrders: any[]
+) {
+  const recommendations = [];
 
   // Analyze what products are often bought together
-  const productCombinations: { [key: string]: string[] } = {}
+  const productCombinations: { [key: string]: string[] } = {};
 
   clientOrders.forEach(order => {
-    const productsInOrder = order.line_items.map((item: any) => item.product_type || 'unknown')
+    const productsInOrder = order.line_items.map(
+      (item: any) => item.product_type || "unknown"
+    );
     productsInOrder.forEach((product: string, index: number) => {
       if (!productCombinations[product]) {
-        productCombinations[product] = []
+        productCombinations[product] = [];
       }
       // Add other products from the same order
       productsInOrder.forEach((otherProduct: string, otherIndex: number) => {
-        if (index !== otherIndex && !productCombinations[product].includes(otherProduct)) {
-          productCombinations[product].push(otherProduct)
+        if (
+          index !== otherIndex &&
+          !productCombinations[product].includes(otherProduct)
+        ) {
+          productCombinations[product].push(otherProduct);
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
   // Generate cross-sell recommendations
-  const recentProducts = clientOrders.slice(0, 3).flatMap(order =>
-    order.line_items.map((item: any) => item.product_type || 'unknown')
-  )
+  const recentProducts = clientOrders
+    .slice(0, 3)
+    .flatMap(order =>
+      order.line_items.map((item: any) => item.product_type || "unknown")
+    );
 
   for (const recentProduct of recentProducts) {
     if (productCombinations[recentProduct]) {
       for (const suggestedProduct of productCombinations[recentProduct]) {
         if (suggestedProduct !== recentProduct) {
-          recommendations.push(await prisma.productRecommendation.create({
-            data: {
-              workspace_id: workspaceId,
-              client_id: clientId,
-              recommendation_type: 'CROSS_SELL',
-              source_product_type: recentProduct,
-              recommended_product_type: suggestedProduct,
-              recommended_category: 'APPAREL',
-              confidence_score: 0.75,
-              expected_quantity: 50,
-              expected_revenue: 25000,
-              reasoning: `Customers who buy ${recentProduct} often also purchase ${suggestedProduct}.`,
-              historical_success: 0.75,
-              expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
-            }
-          }))
+          recommendations.push(
+            await prisma.productRecommendation.create({
+              data: {
+                workspace_id: workspaceId,
+                client_id: clientId,
+                recommendation_type: "CROSS_SELL",
+                source_product_type: recentProduct,
+                recommended_product_type: suggestedProduct,
+                recommended_category: "APPAREL",
+                confidence_score: 0.75,
+                expected_quantity: 50,
+                expected_revenue: 25000,
+                reasoning: `Customers who buy ${recentProduct} often also purchase ${suggestedProduct}.`,
+                historical_success: 0.75,
+                expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
+              },
+            })
+          );
         }
       }
     }
   }
 
-  return recommendations.slice(0, 3) // Limit to 3 cross-sell recommendations
+  return recommendations.slice(0, 3); // Limit to 3 cross-sell recommendations
 }
 
-async function generateSeasonalRecommendations(workspaceId: string, clientId: string, clientOrders: any[]) {
-  const recommendations = []
-  const currentMonth = new Date().getMonth()
+async function generateSeasonalRecommendations(
+  workspaceId: string,
+  clientId: string,
+  clientOrders: any[]
+) {
+  const recommendations = [];
+  const currentMonth = new Date().getMonth();
 
   // Define seasonal products
   const seasonalProducts = {
-    0: ['HOODIE', 'JACKET'], // January - Winter
-    1: ['HOODIE', 'JACKET'], // February - Winter
-    2: ['T_SHIRT', 'POLO'],   // March - Spring
-    3: ['T_SHIRT', 'POLO'],   // April - Spring
-    4: ['T_SHIRT', 'SHORTS'], // May - Late Spring
-    5: ['T_SHIRT', 'SHORTS'], // June - Summer
-    6: ['T_SHIRT', 'SHORTS'], // July - Summer
-    7: ['T_SHIRT', 'SHORTS'], // August - Summer
-    8: ['T_SHIRT', 'POLO'],   // September - Early Fall
-    9: ['HOODIE', 'JACKET'],  // October - Fall
-    10: ['HOODIE', 'JACKET'], // November - Late Fall
-    11: ['HOODIE', 'JACKET'], // December - Winter
-  }
+    0: ["HOODIE", "JACKET"], // January - Winter
+    1: ["HOODIE", "JACKET"], // February - Winter
+    2: ["T_SHIRT", "POLO"], // March - Spring
+    3: ["T_SHIRT", "POLO"], // April - Spring
+    4: ["T_SHIRT", "SHORTS"], // May - Late Spring
+    5: ["T_SHIRT", "SHORTS"], // June - Summer
+    6: ["T_SHIRT", "SHORTS"], // July - Summer
+    7: ["T_SHIRT", "SHORTS"], // August - Summer
+    8: ["T_SHIRT", "POLO"], // September - Early Fall
+    9: ["HOODIE", "JACKET"], // October - Fall
+    10: ["HOODIE", "JACKET"], // November - Late Fall
+    11: ["HOODIE", "JACKET"], // December - Winter
+  };
 
-  const currentSeasonProducts = seasonalProducts[currentMonth] || ['T_SHIRT']
+  const currentSeasonProducts = seasonalProducts[currentMonth] || ["T_SHIRT"];
 
   for (const productType of currentSeasonProducts) {
-    recommendations.push(await prisma.productRecommendation.create({
-      data: {
-        workspace_id: workspaceId,
-        client_id: clientId,
-        recommendation_type: 'SEASONAL',
-        recommended_product_type: productType,
-        recommended_category: 'APPAREL',
-        confidence_score: 0.8,
-        expected_quantity: 100,
-        expected_revenue: 50000,
-        reasoning: `${productType} is popular during this season based on historical trends.`,
-        seasonal_relevance: 0.9,
-        expires_at: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days
-      }
-    }))
+    recommendations.push(
+      await prisma.productRecommendation.create({
+        data: {
+          workspace_id: workspaceId,
+          client_id: clientId,
+          recommendation_type: "SEASONAL",
+          recommended_product_type: productType,
+          recommended_category: "APPAREL",
+          confidence_score: 0.8,
+          expected_quantity: 100,
+          expected_revenue: 50000,
+          reasoning: `${productType} is popular during this season based on historical trends.`,
+          seasonal_relevance: 0.9,
+          expires_at: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000), // 45 days
+        },
+      })
+    );
   }
 
-  return recommendations.slice(0, 2) // Limit to 2 seasonal recommendations
+  return recommendations.slice(0, 2); // Limit to 2 seasonal recommendations
 }
 
-async function generateTrendingRecommendations(workspaceId: string, clientId: string) {
-  const recommendations = []
+async function generateTrendingRecommendations(
+  workspaceId: string,
+  clientId: string
+) {
+  const recommendations = [];
 
   // Get trending products based on recent order activity across all clients
   const recentOrders = await prisma.order.findMany({
     where: {
       workspace_id: workspaceId,
       created_at: {
-        gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-      }
+        gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
+      },
     },
     include: {
-      line_items: true
-    }
-  })
+      line_items: true,
+    },
+  });
 
-  const productPopularity: { [key: string]: number } = {}
+  const productPopularity: { [key: string]: number } = {};
 
   recentOrders.forEach(order => {
     order.line_items.forEach((item: any) => {
-      const productType = item.product_type || 'unknown'
-      productPopularity[productType] = (productPopularity[productType] || 0) + (item.quantity || 0)
-    })
-  })
+      const productType = item.product_type || "unknown";
+      productPopularity[productType] =
+        (productPopularity[productType] || 0) + (item.quantity || 0);
+    });
+  });
 
   // Get top 2 trending products
   const trendingProducts = Object.entries(productPopularity)
-    .sort(([,a], [,b]) => b - a)
-    .slice(0, 2)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 2);
 
   for (const [productType, quantity] of trendingProducts) {
-    recommendations.push(await prisma.productRecommendation.create({
-      data: {
-        workspace_id: workspaceId,
-        client_id: clientId,
-        recommendation_type: 'TRENDING',
-        recommended_product_type: productType,
-        recommended_category: 'APPAREL',
-        confidence_score: 0.7,
-        expected_quantity: 75,
-        expected_revenue: 37500,
-        reasoning: `${productType} is trending with ${quantity} units ordered recently across all clients.`,
-        trend_alignment: 0.85,
-        expires_at: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 21 days
-      }
-    }))
+    recommendations.push(
+      await prisma.productRecommendation.create({
+        data: {
+          workspace_id: workspaceId,
+          client_id: clientId,
+          recommendation_type: "TRENDING",
+          recommended_product_type: productType,
+          recommended_category: "APPAREL",
+          confidence_score: 0.7,
+          expected_quantity: 75,
+          expected_revenue: 37500,
+          reasoning: `${productType} is trending with ${quantity} units ordered recently across all clients.`,
+          trend_alignment: 0.85,
+          expires_at: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000), // 21 days
+        },
+      })
+    );
   }
 
-  return recommendations
+  return recommendations;
 }

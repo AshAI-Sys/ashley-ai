@@ -1,8 +1,8 @@
-import { db } from '@/lib/database';
-import { hash } from './crypto'
-import { NextRequest } from 'next/server'
+import { db } from "@/lib/database";
+import { hash } from "./crypto";
+import { NextRequest } from "next/server";
 
-const prisma = db
+const prisma = db;
 
 /**
  * Create a new user session
@@ -13,12 +13,13 @@ export async function createSession(
   request?: NextRequest,
   expiresInHours: number = 24
 ): Promise<string> {
-  const tokenHash = hash(token)
-  const ipAddress = request?.ip || request?.headers.get('x-forwarded-for') || 'unknown'
-  const userAgent = request?.headers.get('user-agent') || 'unknown'
+  const tokenHash = hash(token);
+  const ipAddress =
+    request?.ip || request?.headers.get("x-forwarded-for") || "unknown";
+  const userAgent = request?.headers.get("user-agent") || "unknown";
 
-  const expiresAt = new Date()
-  expiresAt.setHours(expiresAt.getHours() + expiresInHours)
+  const expiresAt = new Date();
+  expiresAt.setHours(expiresAt.getHours() + expiresInHours);
 
   await prisma.userSession.create({
     data: {
@@ -27,44 +28,44 @@ export async function createSession(
       ip_address: ipAddress,
       user_agent: userAgent,
       expires_at: expiresAt,
-    }
-  })
+    },
+  });
 
-  return tokenHash
+  return tokenHash;
 }
 
 /**
  * Validate and update session activity
  */
 export async function validateSession(token: string): Promise<boolean> {
-  const tokenHash = hash(token)
+  const tokenHash = hash(token);
 
   const session = await prisma.userSession.findUnique({
-    where: { token_hash: tokenHash }
-  })
+    where: { token_hash: tokenHash },
+  });
 
   if (!session) {
-    return false
+    return false;
   }
 
   // Check if session is active and not expired
   if (!session.is_active || session.revoked_at) {
-    return false
+    return false;
   }
 
   if (new Date() > session.expires_at) {
     // Session expired, revoke it
-    await revokeSession(tokenHash)
-    return false
+    await revokeSession(tokenHash);
+    return false;
   }
 
   // Update last activity
   await prisma.userSession.update({
     where: { token_hash: tokenHash },
-    data: { last_activity: new Date() }
-  })
+    data: { last_activity: new Date() },
+  });
 
-  return true
+  return true;
 }
 
 /**
@@ -75,9 +76,9 @@ export async function revokeSession(tokenHash: string): Promise<void> {
     where: { token_hash: tokenHash },
     data: {
       is_active: false,
-      revoked_at: new Date()
-    }
-  })
+      revoked_at: new Date(),
+    },
+  });
 }
 
 /**
@@ -87,15 +88,15 @@ export async function revokeAllUserSessions(userId: string): Promise<number> {
   const result = await prisma.userSession.updateMany({
     where: {
       user_id: userId,
-      is_active: true
+      is_active: true,
     },
     data: {
       is_active: false,
-      revoked_at: new Date()
-    }
-  })
+      revoked_at: new Date(),
+    },
+  });
 
-  return result.count
+  return result.count;
 }
 
 /**
@@ -107,13 +108,13 @@ export async function getUserActiveSessions(userId: string) {
       user_id: userId,
       is_active: true,
       expires_at: {
-        gt: new Date()
-      }
+        gt: new Date(),
+      },
     },
     orderBy: {
-      last_activity: 'desc'
-    }
-  })
+      last_activity: "desc",
+    },
+  });
 }
 
 /**
@@ -123,12 +124,12 @@ export async function cleanupExpiredSessions(): Promise<number> {
   const result = await prisma.userSession.deleteMany({
     where: {
       expires_at: {
-        lt: new Date()
-      }
-    }
-  })
+        lt: new Date(),
+      },
+    },
+  });
 
-  return result.count
+  return result.count;
 }
 
 /**
@@ -140,15 +141,15 @@ export async function getUserSessionStats(userId: string) {
       where: {
         user_id: userId,
         is_active: true,
-        expires_at: { gt: new Date() }
-      }
+        expires_at: { gt: new Date() },
+      },
     }),
     prisma.userSession.count({
-      where: { user_id: userId }
+      where: { user_id: userId },
     }),
     prisma.userSession.findMany({
       where: { user_id: userId },
-      orderBy: { created_at: 'desc' },
+      orderBy: { created_at: "desc" },
       take: 5,
       select: {
         id: true,
@@ -156,14 +157,14 @@ export async function getUserSessionStats(userId: string) {
         user_agent: true,
         is_active: true,
         last_activity: true,
-        created_at: true
-      }
-    })
-  ])
+        created_at: true,
+      },
+    }),
+  ]);
 
   return {
     activeSessions,
     totalSessions,
-    recentLogins
-  }
+    recentLogins,
+  };
 }

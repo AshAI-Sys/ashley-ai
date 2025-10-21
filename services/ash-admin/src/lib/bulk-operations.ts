@@ -3,14 +3,14 @@
  * Provides batch processing capabilities for orders, invoices, and other entities
  */
 
-import { prisma } from './db'
+import { prisma } from "./db";
 
 export interface BulkOperationResult<T = any> {
-  success: boolean
-  processed: number
-  failed: number
-  errors: Array<{ index: number; error: string; item?: T }>
-  results?: T[]
+  success: boolean;
+  processed: number;
+  failed: number;
+  errors: Array<{ index: number; error: string; item?: T }>;
+  results?: T[];
 }
 
 /**
@@ -21,9 +21,9 @@ export async function bulkUpdateOrderStatus(
   status: string,
   userId: string
 ): Promise<BulkOperationResult> {
-  const errors: Array<{ index: number; error: string }> = []
-  let processed = 0
-  let failed = 0
+  const errors: Array<{ index: number; error: string }> = [];
+  let processed = 0;
+  let failed = 0;
 
   try {
     for (let i = 0; i < orderIds.length; i++) {
@@ -32,28 +32,30 @@ export async function bulkUpdateOrderStatus(
           where: { id: orderIds[i] },
           data: {
             status,
-            updated_at: new Date()
-          }
-        })
+            updated_at: new Date(),
+          },
+        });
 
         // Log activity
-        await prisma.orderActivityLog.create({
-          data: {
-            order_id: orderIds[i],
-            event_type: 'STATUS_CHANGED',
-            description: `Status changed to ${status} (bulk operation)`,
-            performed_by: userId,
-            metadata: JSON.stringify({ bulkOperation: true })
-          }
-        }).catch(() => {}) // Ignore activity log errors
+        await prisma.orderActivityLog
+          .create({
+            data: {
+              order_id: orderIds[i],
+              event_type: "STATUS_CHANGED",
+              description: `Status changed to ${status} (bulk operation)`,
+              performed_by: userId,
+              metadata: JSON.stringify({ bulkOperation: true }),
+            },
+          })
+          .catch(() => {}); // Ignore activity log errors
 
-        processed++
+        processed++;
       } catch (error) {
-        failed++
+        failed++;
         errors.push({
           index: i,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -61,18 +63,21 @@ export async function bulkUpdateOrderStatus(
       success: failed === 0,
       processed,
       failed,
-      errors
-    }
+      errors,
+    };
   } catch (error) {
     return {
       success: false,
       processed,
       failed: orderIds.length - processed,
-      errors: [{
-        index: -1,
-        error: error instanceof Error ? error.message : 'Bulk operation failed'
-      }]
-    }
+      errors: [
+        {
+          index: -1,
+          error:
+            error instanceof Error ? error.message : "Bulk operation failed",
+        },
+      ],
+    };
   }
 }
 
@@ -83,9 +88,9 @@ export async function bulkDeleteOrders(
   orderIds: string[],
   userId: string
 ): Promise<BulkOperationResult> {
-  const errors: Array<{ index: number; error: string }> = []
-  let processed = 0
-  let failed = 0
+  const errors: Array<{ index: number; error: string }> = [];
+  let processed = 0;
+  let failed = 0;
 
   try {
     for (let i = 0; i < orderIds.length; i++) {
@@ -94,18 +99,18 @@ export async function bulkDeleteOrders(
         await prisma.order.update({
           where: { id: orderIds[i] },
           data: {
-            status: 'CANCELLED',
-            updated_at: new Date()
-          }
-        })
+            status: "CANCELLED",
+            updated_at: new Date(),
+          },
+        });
 
-        processed++
+        processed++;
       } catch (error) {
-        failed++
+        failed++;
         errors.push({
           index: i,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -113,18 +118,21 @@ export async function bulkDeleteOrders(
       success: failed === 0,
       processed,
       failed,
-      errors
-    }
+      errors,
+    };
   } catch (error) {
     return {
       success: false,
       processed,
       failed: orderIds.length - processed,
-      errors: [{
-        index: -1,
-        error: error instanceof Error ? error.message : 'Bulk operation failed'
-      }]
-    }
+      errors: [
+        {
+          index: -1,
+          error:
+            error instanceof Error ? error.message : "Bulk operation failed",
+        },
+      ],
+    };
   }
 }
 
@@ -135,10 +143,10 @@ export async function bulkCreateInvoices(
   orderIds: string[],
   workspaceId: string
 ): Promise<BulkOperationResult<{ orderId: string; invoiceId: string }>> {
-  const errors: Array<{ index: number; error: string; item?: any }> = []
-  const results: Array<{ orderId: string; invoiceId: string }> = []
-  let processed = 0
-  let failed = 0
+  const errors: Array<{ index: number; error: string; item?: any }> = [];
+  const results: Array<{ orderId: string; invoiceId: string }> = [];
+  let processed = 0;
+  let failed = 0;
 
   try {
     for (let i = 0; i < orderIds.length; i++) {
@@ -147,16 +155,16 @@ export async function bulkCreateInvoices(
           where: { id: orderIds[i] },
           include: {
             client: true,
-            brand: true
-          }
-        })
+            brand: true,
+          },
+        });
 
         if (!order) {
-          throw new Error('Order not found')
+          throw new Error("Order not found");
         }
 
         if (!order.client_id) {
-          throw new Error('Order has no client')
+          throw new Error("Order has no client");
         }
 
         // Create invoice
@@ -170,24 +178,24 @@ export async function bulkCreateInvoices(
             issue_date: new Date(),
             due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
             total_amount: order.total_amount || 0,
-            status: 'draft',
-            currency: 'PHP'
-          }
-        })
+            status: "draft",
+            currency: "PHP",
+          },
+        });
 
         results.push({
           orderId: order.id,
-          invoiceId: invoice.id
-        })
+          invoiceId: invoice.id,
+        });
 
-        processed++
+        processed++;
       } catch (error) {
-        failed++
+        failed++;
         errors.push({
           index: i,
           item: { orderId: orderIds[i] },
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -196,19 +204,22 @@ export async function bulkCreateInvoices(
       processed,
       failed,
       errors,
-      results
-    }
+      results,
+    };
   } catch (error) {
     return {
       success: false,
       processed,
       failed: orderIds.length - processed,
-      errors: [{
-        index: -1,
-        error: error instanceof Error ? error.message : 'Bulk operation failed'
-      }],
-      results
-    }
+      errors: [
+        {
+          index: -1,
+          error:
+            error instanceof Error ? error.message : "Bulk operation failed",
+        },
+      ],
+      results,
+    };
   }
 }
 
@@ -219,9 +230,9 @@ export async function bulkUpdateInvoiceStatus(
   invoiceIds: string[],
   status: string
 ): Promise<BulkOperationResult> {
-  const errors: Array<{ index: number; error: string }> = []
-  let processed = 0
-  let failed = 0
+  const errors: Array<{ index: number; error: string }> = [];
+  let processed = 0;
+  let failed = 0;
 
   try {
     for (let i = 0; i < invoiceIds.length; i++) {
@@ -230,17 +241,17 @@ export async function bulkUpdateInvoiceStatus(
           where: { id: invoiceIds[i] },
           data: {
             status,
-            updated_at: new Date()
-          }
-        })
+            updated_at: new Date(),
+          },
+        });
 
-        processed++
+        processed++;
       } catch (error) {
-        failed++
+        failed++;
         errors.push({
           index: i,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -248,18 +259,21 @@ export async function bulkUpdateInvoiceStatus(
       success: failed === 0,
       processed,
       failed,
-      errors
-    }
+      errors,
+    };
   } catch (error) {
     return {
       success: false,
       processed,
       failed: invoiceIds.length - processed,
-      errors: [{
-        index: -1,
-        error: error instanceof Error ? error.message : 'Bulk operation failed'
-      }]
-    }
+      errors: [
+        {
+          index: -1,
+          error:
+            error instanceof Error ? error.message : "Bulk operation failed",
+        },
+      ],
+    };
   }
 }
 
@@ -267,33 +281,33 @@ export async function bulkUpdateInvoiceStatus(
  * Bulk import orders from CSV/Excel data
  */
 export interface OrderImportData {
-  client_name: string
-  brand_name?: string
-  order_number: string
-  quantity: number
-  total_amount?: number
-  delivery_date?: string
-  notes?: string
+  client_name: string;
+  brand_name?: string;
+  order_number: string;
+  quantity: number;
+  total_amount?: number;
+  delivery_date?: string;
+  notes?: string;
 }
 
 export async function bulkImportOrders(
   orders: OrderImportData[],
   workspaceId: string
 ): Promise<BulkOperationResult<{ orderNumber: string; orderId: string }>> {
-  const errors: Array<{ index: number; error: string; item?: any }> = []
-  const results: Array<{ orderNumber: string; orderId: string }> = []
-  let processed = 0
-  let failed = 0
+  const errors: Array<{ index: number; error: string; item?: any }> = [];
+  const results: Array<{ orderNumber: string; orderId: string }> = [];
+  let processed = 0;
+  let failed = 0;
 
   try {
     for (let i = 0; i < orders.length; i++) {
       try {
-        const orderData = orders[i]
+        const orderData = orders[i];
 
         // Find or create client
         let client = await prisma.client.findFirst({
-          where: { workspace_id: workspaceId, name: orderData.client_name }
-        })
+          where: { workspace_id: workspaceId, name: orderData.client_name },
+        });
 
         if (!client) {
           client = await prisma.client.create({
@@ -301,22 +315,22 @@ export async function bulkImportOrders(
               workspace_id: workspaceId,
               name: orderData.client_name,
               code: orderData.client_name.substring(0, 3).toUpperCase(),
-              email: `${orderData.client_name.toLowerCase().replace(/\s+/g, '')}@example.com`,
-              is_active: true
-            }
-          })
+              email: `${orderData.client_name.toLowerCase().replace(/\s+/g, "")}@example.com`,
+              is_active: true,
+            },
+          });
         }
 
         // Find or create brand if provided
-        let brand_id: string | undefined
+        let brand_id: string | undefined;
         if (orderData.brand_name) {
           let brand = await prisma.brand.findFirst({
             where: {
               workspace_id: workspaceId,
               client_id: client.id,
-              name: orderData.brand_name
-            }
-          })
+              name: orderData.brand_name,
+            },
+          });
 
           if (!brand) {
             brand = await prisma.brand.create({
@@ -325,12 +339,12 @@ export async function bulkImportOrders(
                 client_id: client.id,
                 name: orderData.brand_name,
                 code: orderData.brand_name.substring(0, 3).toUpperCase(),
-                is_active: true
-              }
-            })
+                is_active: true,
+              },
+            });
           }
 
-          brand_id = brand.id
+          brand_id = brand.id;
         }
 
         // Create order
@@ -342,25 +356,27 @@ export async function bulkImportOrders(
             order_number: orderData.order_number,
             qty: orderData.quantity,
             total_amount: orderData.total_amount || 0,
-            delivery_date: orderData.delivery_date ? new Date(orderData.delivery_date) : undefined,
+            delivery_date: orderData.delivery_date
+              ? new Date(orderData.delivery_date)
+              : undefined,
             notes: orderData.notes,
-            status: 'ORDER_RECEIVED'
-          }
-        })
+            status: "ORDER_RECEIVED",
+          },
+        });
 
         results.push({
           orderNumber: order.order_number,
-          orderId: order.id
-        })
+          orderId: order.id,
+        });
 
-        processed++
+        processed++;
       } catch (error) {
-        failed++
+        failed++;
         errors.push({
           index: i,
           item: orders[i],
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -369,19 +385,22 @@ export async function bulkImportOrders(
       processed,
       failed,
       errors,
-      results
-    }
+      results,
+    };
   } catch (error) {
     return {
       success: false,
       processed,
       failed: orders.length - processed,
-      errors: [{
-        index: -1,
-        error: error instanceof Error ? error.message : 'Bulk operation failed'
-      }],
-      results
-    }
+      errors: [
+        {
+          index: -1,
+          error:
+            error instanceof Error ? error.message : "Bulk operation failed",
+        },
+      ],
+      results,
+    };
   }
 }
 
@@ -390,46 +409,46 @@ export async function bulkImportOrders(
  */
 export async function bulkAssignToProduction(
   orderIds: string[],
-  runType: 'cutting' | 'printing' | 'sewing',
+  runType: "cutting" | "printing" | "sewing",
   workspaceId: string
 ): Promise<BulkOperationResult> {
-  const errors: Array<{ index: number; error: string }> = []
-  let processed = 0
-  let failed = 0
+  const errors: Array<{ index: number; error: string }> = [];
+  let processed = 0;
+  let failed = 0;
 
   try {
     for (let i = 0; i < orderIds.length; i++) {
       try {
         const order = await prisma.order.findUnique({
-          where: { id: orderIds[i] }
-        })
+          where: { id: orderIds[i] },
+        });
 
         if (!order) {
-          throw new Error('Order not found')
+          throw new Error("Order not found");
         }
 
         // Update order status based on run type
         const statusMap = {
-          cutting: 'IN_CUTTING',
-          printing: 'IN_PRINTING',
-          sewing: 'IN_SEWING'
-        }
+          cutting: "IN_CUTTING",
+          printing: "IN_PRINTING",
+          sewing: "IN_SEWING",
+        };
 
         await prisma.order.update({
           where: { id: orderIds[i] },
           data: {
             status: statusMap[runType],
-            updated_at: new Date()
-          }
-        })
+            updated_at: new Date(),
+          },
+        });
 
-        processed++
+        processed++;
       } catch (error) {
-        failed++
+        failed++;
         errors.push({
           index: i,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
       }
     }
 
@@ -437,17 +456,20 @@ export async function bulkAssignToProduction(
       success: failed === 0,
       processed,
       failed,
-      errors
-    }
+      errors,
+    };
   } catch (error) {
     return {
       success: false,
       processed,
       failed: orderIds.length - processed,
-      errors: [{
-        index: -1,
-        error: error instanceof Error ? error.message : 'Bulk operation failed'
-      }]
-    }
+      errors: [
+        {
+          index: -1,
+          error:
+            error instanceof Error ? error.message : "Bulk operation failed",
+        },
+      ],
+    };
   }
 }

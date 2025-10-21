@@ -1,7 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __importDefault =
+  (this && this.__importDefault) ||
+  function (mod) {
+    return mod && mod.__esModule ? mod : { default: mod };
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DesignFileValidationSystem = void 0;
 const eventemitter3_1 = require("eventemitter3");
@@ -9,405 +11,456 @@ const zod_1 = require("zod");
 const nanoid_1 = require("nanoid");
 const sharp_1 = __importDefault(require("sharp"));
 const FileValidationSchema = zod_1.z.object({
-    workspaceId: zod_1.z.string(),
-    designVersionId: zod_1.z.string(),
-    fileUrl: zod_1.z.string(),
-    fileName: zod_1.z.string(),
-    fileType: zod_1.z.enum(["AI", "PSD", "PNG", "JPG", "SVG", "PDF", "DST", "EPS"]),
-    printMethod: zod_1.z.enum(["SILKSCREEN", "DTG", "SUBLIMATION", "EMBROIDERY", "HEAT_TRANSFER"]),
-    validationRules: zod_1.z.array(zod_1.z.string()).optional()
+  workspaceId: zod_1.z.string(),
+  designVersionId: zod_1.z.string(),
+  fileUrl: zod_1.z.string(),
+  fileName: zod_1.z.string(),
+  fileType: zod_1.z.enum([
+    "AI",
+    "PSD",
+    "PNG",
+    "JPG",
+    "SVG",
+    "PDF",
+    "DST",
+    "EPS",
+  ]),
+  printMethod: zod_1.z.enum([
+    "SILKSCREEN",
+    "DTG",
+    "SUBLIMATION",
+    "EMBROIDERY",
+    "HEAT_TRANSFER",
+  ]),
+  validationRules: zod_1.z.array(zod_1.z.string()).optional(),
 });
 class DesignFileValidationSystem extends eventemitter3_1.EventEmitter {
-    constructor(db) {
-        super();
-        this.db = db;
-        this.validationRules = new Map();
-        this.initializeValidationRules();
-        this.setupEventHandlers();
+  constructor(db) {
+    super();
+    this.db = db;
+    this.validationRules = new Map();
+    this.initializeValidationRules();
+    this.setupEventHandlers();
+  }
+  setupEventHandlers() {
+    this.on("validation:started", this.handleValidationStarted.bind(this));
+    this.on("validation:completed", this.handleValidationCompleted.bind(this));
+    this.on("validation:failed", this.handleValidationFailed.bind(this));
+  }
+  initializeValidationRules() {
+    // Screen Printing Rules
+    this.addValidationRule({
+      id: "silkscreen_resolution",
+      name: "Screen Print Resolution",
+      type: "RESOLUTION",
+      conditions: { minDPI: 300, maxDPI: 600 },
+      severity: "ERROR",
+      errorMessage: "Screen printing requires 300-600 DPI resolution",
+      fixSuggestion:
+        "Adjust image resolution to 300-400 DPI for optimal results",
+    });
+    this.addValidationRule({
+      id: "silkscreen_colors",
+      name: "Screen Print Color Count",
+      type: "PRINT_SPECS",
+      conditions: { maxColors: 6, colorMode: "SPOT" },
+      severity: "WARNING",
+      errorMessage: "Screen printing works best with 6 or fewer spot colors",
+      fixSuggestion: "Consider reducing color count or using process colors",
+    });
+    // DTG Rules
+    this.addValidationRule({
+      id: "dtg_resolution",
+      name: "DTG Resolution",
+      type: "RESOLUTION",
+      conditions: { minDPI: 300, preferredDPI: 400 },
+      severity: "ERROR",
+      errorMessage: "DTG printing requires minimum 300 DPI",
+      fixSuggestion:
+        "Increase resolution to at least 300 DPI, preferably 400 DPI",
+    });
+    this.addValidationRule({
+      id: "dtg_color_mode",
+      name: "DTG Color Mode",
+      type: "COLOR_MODE",
+      conditions: { colorMode: "CMYK", profile: "sRGB" },
+      severity: "WARNING",
+      errorMessage: "DTG works best with CMYK color mode",
+      fixSuggestion:
+        "Convert to CMYK color mode for accurate color reproduction",
+    });
+    // Embroidery Rules
+    this.addValidationRule({
+      id: "embroidery_format",
+      name: "Embroidery File Format",
+      type: "FILE_FORMAT",
+      conditions: { formats: ["DST", "EMB", "PES", "VP3"] },
+      severity: "ERROR",
+      errorMessage: "Embroidery requires DST, EMB, PES, or VP3 format",
+      fixSuggestion:
+        "Convert design to embroidery format using digitizing software",
+    });
+    this.addValidationRule({
+      id: "embroidery_stitch_density",
+      name: "Embroidery Stitch Density",
+      type: "PRINT_SPECS",
+      conditions: { maxDensity: 0.4, minDensity: 0.3 },
+      severity: "WARNING",
+      errorMessage: "Stitch density should be between 0.3-0.4mm",
+      fixSuggestion: "Adjust stitch density for optimal embroidery quality",
+    });
+    // General Rules
+    this.addValidationRule({
+      id: "file_size_limit",
+      name: "File Size Limit",
+      type: "FILE_FORMAT",
+      conditions: { maxSizeMB: 50 },
+      severity: "ERROR",
+      errorMessage: "File size cannot exceed 50MB",
+      fixSuggestion: "Compress file or reduce image dimensions",
+    });
+    this.addValidationRule({
+      id: "print_dimensions",
+      name: "Print Area Dimensions",
+      type: "DIMENSION",
+      conditions: { maxWidth: 356, maxHeight: 280 }, // mm
+      severity: "ERROR",
+      errorMessage: 'Design exceeds maximum print area (14"×11")',
+      fixSuggestion: "Resize design to fit within print area limitations",
+    });
+  }
+  addValidationRule(rule) {
+    this.validationRules.set(rule.id, rule);
+  }
+  async validateDesignFile(data) {
+    const validated = FileValidationSchema.parse(data);
+    try {
+      // Create validation record
+      const validation = await this.db.designFileValidation.create({
+        data: {
+          id: (0, nanoid_1.nanoid)(),
+          workspaceId: validated.workspaceId,
+          designVersionId: validated.designVersionId,
+          fileName: validated.fileName,
+          fileUrl: validated.fileUrl,
+          fileType: validated.fileType,
+          printMethod: validated.printMethod,
+          validationStatus: "VALIDATING",
+          startedAt: new Date(),
+          createdAt: new Date(),
+        },
+      });
+      this.emit("validation:started", { validation });
+      // Perform validation
+      const result = await this.performValidation(
+        validated.fileUrl,
+        validated.fileType,
+        validated.printMethod,
+        validated.validationRules
+      );
+      // Update validation record with results
+      const updatedValidation = await this.db.designFileValidation.update({
+        where: { id: validation.id },
+        data: {
+          validationStatus: result.isValid ? "PASSED" : "FAILED",
+          validationResults: JSON.stringify(result),
+          errorCount: result.errors.filter(e => e.severity === "ERROR").length,
+          warningCount: result.errors.filter(e => e.severity === "WARNING")
+            .length,
+          fileMetadata: JSON.stringify(result.metadata),
+          completedAt: new Date(),
+        },
+      });
+      if (result.isValid) {
+        this.emit("validation:completed", {
+          validation: updatedValidation,
+          result,
+        });
+      } else {
+        this.emit("validation:failed", {
+          validation: updatedValidation,
+          result,
+        });
+      }
+      return { validation: updatedValidation, result };
+    } catch (error) {
+      console.error("File validation failed:", error);
+      // Update validation record with error
+      await this.db.designFileValidation
+        .update({
+          where: { id: "temp" }, // This would need the actual ID
+          data: {
+            validationStatus: "FAILED",
+            errorMessage: error.message,
+            completedAt: new Date(),
+          },
+        })
+        .catch(() => {}); // Ignore errors in error handling
+      throw new Error(`File validation failed: ${error.message}`);
     }
-    setupEventHandlers() {
-        this.on("validation:started", this.handleValidationStarted.bind(this));
-        this.on("validation:completed", this.handleValidationCompleted.bind(this));
-        this.on("validation:failed", this.handleValidationFailed.bind(this));
-    }
-    initializeValidationRules() {
-        // Screen Printing Rules
-        this.addValidationRule({
-            id: "silkscreen_resolution",
-            name: "Screen Print Resolution",
-            type: "RESOLUTION",
-            conditions: { minDPI: 300, maxDPI: 600 },
+  }
+  async performValidation(fileUrl, fileType, printMethod, ruleIds) {
+    const errors = [];
+    let metadata;
+    try {
+      // Get file metadata
+      metadata = await this.extractFileMetadata(fileUrl, fileType);
+      // Get applicable rules
+      const rulesToApply = ruleIds
+        ? ruleIds.map(id => this.validationRules.get(id)).filter(Boolean)
+        : this.getApplicableRules(fileType, printMethod);
+      // Apply each validation rule
+      for (const rule of rulesToApply) {
+        if (!rule) continue;
+        const ruleResult = await this.applyValidationRule(
+          rule,
+          metadata,
+          fileUrl
+        );
+        if (ruleResult) {
+          errors.push(ruleResult);
+        }
+      }
+      return {
+        isValid: !errors.some(e => e.severity === "ERROR"),
+        errors,
+        metadata,
+      };
+    } catch (error) {
+      console.error("Validation error:", error);
+      return {
+        isValid: false,
+        errors: [
+          {
+            rule: "system_error",
+            message: `Validation system error: ${error.message}`,
             severity: "ERROR",
-            errorMessage: "Screen printing requires 300-600 DPI resolution",
-            fixSuggestion: "Adjust image resolution to 300-400 DPI for optimal results"
-        });
-        this.addValidationRule({
-            id: "silkscreen_colors",
-            name: "Screen Print Color Count",
-            type: "PRINT_SPECS",
-            conditions: { maxColors: 6, colorMode: "SPOT" },
-            severity: "WARNING",
-            errorMessage: "Screen printing works best with 6 or fewer spot colors",
-            fixSuggestion: "Consider reducing color count or using process colors"
-        });
-        // DTG Rules
-        this.addValidationRule({
-            id: "dtg_resolution",
-            name: "DTG Resolution",
-            type: "RESOLUTION",
-            conditions: { minDPI: 300, preferredDPI: 400 },
-            severity: "ERROR",
-            errorMessage: "DTG printing requires minimum 300 DPI",
-            fixSuggestion: "Increase resolution to at least 300 DPI, preferably 400 DPI"
-        });
-        this.addValidationRule({
-            id: "dtg_color_mode",
-            name: "DTG Color Mode",
-            type: "COLOR_MODE",
-            conditions: { colorMode: "CMYK", profile: "sRGB" },
-            severity: "WARNING",
-            errorMessage: "DTG works best with CMYK color mode",
-            fixSuggestion: "Convert to CMYK color mode for accurate color reproduction"
-        });
-        // Embroidery Rules
-        this.addValidationRule({
-            id: "embroidery_format",
-            name: "Embroidery File Format",
-            type: "FILE_FORMAT",
-            conditions: { formats: ["DST", "EMB", "PES", "VP3"] },
-            severity: "ERROR",
-            errorMessage: "Embroidery requires DST, EMB, PES, or VP3 format",
-            fixSuggestion: "Convert design to embroidery format using digitizing software"
-        });
-        this.addValidationRule({
-            id: "embroidery_stitch_density",
-            name: "Embroidery Stitch Density",
-            type: "PRINT_SPECS",
-            conditions: { maxDensity: 0.4, minDensity: 0.3 },
-            severity: "WARNING",
-            errorMessage: "Stitch density should be between 0.3-0.4mm",
-            fixSuggestion: "Adjust stitch density for optimal embroidery quality"
-        });
-        // General Rules
-        this.addValidationRule({
-            id: "file_size_limit",
-            name: "File Size Limit",
-            type: "FILE_FORMAT",
-            conditions: { maxSizeMB: 50 },
-            severity: "ERROR",
-            errorMessage: "File size cannot exceed 50MB",
-            fixSuggestion: "Compress file or reduce image dimensions"
-        });
-        this.addValidationRule({
-            id: "print_dimensions",
-            name: "Print Area Dimensions",
-            type: "DIMENSION",
-            conditions: { maxWidth: 356, maxHeight: 280 }, // mm
-            severity: "ERROR",
-            errorMessage: "Design exceeds maximum print area (14\"×11\")",
-            fixSuggestion: "Resize design to fit within print area limitations"
-        });
+          },
+        ],
+        metadata: metadata || {
+          fileSize: 0,
+          format: fileType,
+        },
+      };
     }
-    addValidationRule(rule) {
-        this.validationRules.set(rule.id, rule);
+  }
+  async extractFileMetadata(fileUrl, fileType) {
+    // For image files, use Sharp to extract metadata
+    if (["PNG", "JPG", "SVG"].includes(fileType)) {
+      try {
+        const response = await fetch(fileUrl);
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const imageInfo = await (0, sharp_1.default)(buffer).metadata();
+        return {
+          dimensions: {
+            width: imageInfo.width || 0,
+            height: imageInfo.height || 0,
+          },
+          dpi: imageInfo.density || 72,
+          colorMode: this.getColorMode(imageInfo),
+          fileSize: buffer.length,
+          format: fileType,
+        };
+      } catch (error) {
+        console.error("Failed to extract image metadata:", error);
+      }
     }
-    async validateDesignFile(data) {
-        const validated = FileValidationSchema.parse(data);
-        try {
-            // Create validation record
-            const validation = await this.db.designFileValidation.create({
-                data: {
-                    id: (0, nanoid_1.nanoid)(),
-                    workspaceId: validated.workspaceId,
-                    designVersionId: validated.designVersionId,
-                    fileName: validated.fileName,
-                    fileUrl: validated.fileUrl,
-                    fileType: validated.fileType,
-                    printMethod: validated.printMethod,
-                    validationStatus: "VALIDATING",
-                    startedAt: new Date(),
-                    createdAt: new Date()
-                }
-            });
-            this.emit("validation:started", { validation });
-            // Perform validation
-            const result = await this.performValidation(validated.fileUrl, validated.fileType, validated.printMethod, validated.validationRules);
-            // Update validation record with results
-            const updatedValidation = await this.db.designFileValidation.update({
-                where: { id: validation.id },
-                data: {
-                    validationStatus: result.isValid ? "PASSED" : "FAILED",
-                    validationResults: JSON.stringify(result),
-                    errorCount: result.errors.filter(e => e.severity === "ERROR").length,
-                    warningCount: result.errors.filter(e => e.severity === "WARNING").length,
-                    fileMetadata: JSON.stringify(result.metadata),
-                    completedAt: new Date()
-                }
-            });
-            if (result.isValid) {
-                this.emit("validation:completed", { validation: updatedValidation, result });
-            }
-            else {
-                this.emit("validation:failed", { validation: updatedValidation, result });
-            }
-            return { validation: updatedValidation, result };
-        }
-        catch (error) {
-            console.error("File validation failed:", error);
-            // Update validation record with error
-            await this.db.designFileValidation.update({
-                where: { id: "temp" }, // This would need the actual ID
-                data: {
-                    validationStatus: "FAILED",
-                    errorMessage: error.message,
-                    completedAt: new Date()
-                }
-            }).catch(() => { }); // Ignore errors in error handling
-            throw new Error(`File validation failed: ${error.message}`);
-        }
+    // For other file types, get basic file info
+    try {
+      const response = await fetch(fileUrl, { method: "HEAD" });
+      const fileSize = parseInt(response.headers.get("content-length") || "0");
+      return {
+        fileSize,
+        format: fileType,
+      };
+    } catch (error) {
+      console.error("Failed to get file metadata:", error);
+      return {
+        fileSize: 0,
+        format: fileType,
+      };
     }
-    async performValidation(fileUrl, fileType, printMethod, ruleIds) {
-        const errors = [];
-        let metadata;
-        try {
-            // Get file metadata
-            metadata = await this.extractFileMetadata(fileUrl, fileType);
-            // Get applicable rules
-            const rulesToApply = ruleIds
-                ? ruleIds.map(id => this.validationRules.get(id)).filter(Boolean)
-                : this.getApplicableRules(fileType, printMethod);
-            // Apply each validation rule
-            for (const rule of rulesToApply) {
-                if (!rule)
-                    continue;
-                const ruleResult = await this.applyValidationRule(rule, metadata, fileUrl);
-                if (ruleResult) {
-                    errors.push(ruleResult);
-                }
-            }
-            return {
-                isValid: !errors.some(e => e.severity === "ERROR"),
-                errors,
-                metadata
-            };
-        }
-        catch (error) {
-            console.error("Validation error:", error);
-            return {
-                isValid: false,
-                errors: [{
-                        rule: "system_error",
-                        message: `Validation system error: ${error.message}`,
-                        severity: "ERROR"
-                    }],
-                metadata: metadata || {
-                    fileSize: 0,
-                    format: fileType
-                }
-            };
-        }
+  }
+  getColorMode(imageInfo) {
+    if (imageInfo.space) {
+      return imageInfo.space.toUpperCase();
     }
-    async extractFileMetadata(fileUrl, fileType) {
-        // For image files, use Sharp to extract metadata
-        if (["PNG", "JPG", "SVG"].includes(fileType)) {
-            try {
-                const response = await fetch(fileUrl);
-                const buffer = Buffer.from(await response.arrayBuffer());
-                const imageInfo = await (0, sharp_1.default)(buffer).metadata();
-                return {
-                    dimensions: {
-                        width: imageInfo.width || 0,
-                        height: imageInfo.height || 0
-                    },
-                    dpi: imageInfo.density || 72,
-                    colorMode: this.getColorMode(imageInfo),
-                    fileSize: buffer.length,
-                    format: fileType
-                };
-            }
-            catch (error) {
-                console.error("Failed to extract image metadata:", error);
-            }
-        }
-        // For other file types, get basic file info
-        try {
-            const response = await fetch(fileUrl, { method: "HEAD" });
-            const fileSize = parseInt(response.headers.get("content-length") || "0");
-            return {
-                fileSize,
-                format: fileType
-            };
-        }
-        catch (error) {
-            console.error("Failed to get file metadata:", error);
-            return {
-                fileSize: 0,
-                format: fileType
-            };
-        }
+    // Infer from channels
+    switch (imageInfo.channels) {
+      case 1:
+        return "GRAYSCALE";
+      case 3:
+        return "RGB";
+      case 4:
+        return "CMYK";
+      default:
+        return "RGB";
     }
-    getColorMode(imageInfo) {
-        if (imageInfo.space) {
-            return imageInfo.space.toUpperCase();
-        }
-        // Infer from channels
-        switch (imageInfo.channels) {
-            case 1: return "GRAYSCALE";
-            case 3: return "RGB";
-            case 4: return "CMYK";
-            default: return "RGB";
-        }
+  }
+  getApplicableRules(fileType, printMethod) {
+    const rules = [];
+    // Always apply general rules
+    rules.push(
+      this.validationRules.get("file_size_limit"),
+      this.validationRules.get("print_dimensions")
+    );
+    // Apply print method specific rules
+    switch (printMethod) {
+      case "SILKSCREEN":
+        rules.push(
+          this.validationRules.get("silkscreen_resolution"),
+          this.validationRules.get("silkscreen_colors")
+        );
+        break;
+      case "DTG":
+        rules.push(
+          this.validationRules.get("dtg_resolution"),
+          this.validationRules.get("dtg_color_mode")
+        );
+        break;
+      case "EMBROIDERY":
+        rules.push(
+          this.validationRules.get("embroidery_format"),
+          this.validationRules.get("embroidery_stitch_density")
+        );
+        break;
     }
-    getApplicableRules(fileType, printMethod) {
-        const rules = [];
-        // Always apply general rules
-        rules.push(this.validationRules.get("file_size_limit"), this.validationRules.get("print_dimensions"));
-        // Apply print method specific rules
-        switch (printMethod) {
-            case "SILKSCREEN":
-                rules.push(this.validationRules.get("silkscreen_resolution"), this.validationRules.get("silkscreen_colors"));
-                break;
-            case "DTG":
-                rules.push(this.validationRules.get("dtg_resolution"), this.validationRules.get("dtg_color_mode"));
-                break;
-            case "EMBROIDERY":
-                rules.push(this.validationRules.get("embroidery_format"), this.validationRules.get("embroidery_stitch_density"));
-                break;
-        }
-        return rules.filter(Boolean);
-    }
-    async applyValidationRule(rule, metadata, fileUrl) {
-        switch (rule.type) {
-            case "RESOLUTION":
-                return this.validateResolution(rule, metadata);
-            case "FILE_FORMAT":
-                return this.validateFileFormat(rule, metadata);
-            case "COLOR_MODE":
-                return this.validateColorMode(rule, metadata);
-            case "DIMENSION":
-                return this.validateDimensions(rule, metadata);
-            case "PRINT_SPECS":
-                return this.validatePrintSpecs(rule, metadata, fileUrl);
-            default:
-                return null;
-        }
-    }
-    validateResolution(rule, metadata) {
-        const dpi = metadata.dpi || 72;
-        const { minDPI, maxDPI, preferredDPI } = rule.conditions;
-        if (minDPI && dpi < minDPI) {
-            return {
-                rule: rule.id,
-                message: rule.errorMessage,
-                severity: rule.severity,
-                suggestion: rule.fixSuggestion
-            };
-        }
-        if (maxDPI && dpi > maxDPI) {
-            return {
-                rule: rule.id,
-                message: rule.errorMessage,
-                severity: rule.severity,
-                suggestion: rule.fixSuggestion
-            };
-        }
-        if (preferredDPI && Math.abs(dpi - preferredDPI) > 50) {
-            return {
-                rule: rule.id,
-                message: `Resolution is ${dpi} DPI, preferred is ${preferredDPI} DPI`,
-                severity: "INFO",
-                suggestion: `Consider using ${preferredDPI} DPI for optimal quality`
-            };
-        }
+    return rules.filter(Boolean);
+  }
+  async applyValidationRule(rule, metadata, fileUrl) {
+    switch (rule.type) {
+      case "RESOLUTION":
+        return this.validateResolution(rule, metadata);
+      case "FILE_FORMAT":
+        return this.validateFileFormat(rule, metadata);
+      case "COLOR_MODE":
+        return this.validateColorMode(rule, metadata);
+      case "DIMENSION":
+        return this.validateDimensions(rule, metadata);
+      case "PRINT_SPECS":
+        return this.validatePrintSpecs(rule, metadata, fileUrl);
+      default:
         return null;
     }
-    validateFileFormat(rule, metadata) {
-        const { formats, maxSizeMB } = rule.conditions;
-        if (formats && !formats.includes(metadata.format)) {
-            return {
-                rule: rule.id,
-                message: rule.errorMessage,
-                severity: rule.severity,
-                suggestion: rule.fixSuggestion
-            };
-        }
-        if (maxSizeMB && metadata.fileSize > maxSizeMB * 1024 * 1024) {
-            return {
-                rule: rule.id,
-                message: rule.errorMessage,
-                severity: rule.severity,
-                suggestion: rule.fixSuggestion
-            };
-        }
-        return null;
+  }
+  validateResolution(rule, metadata) {
+    const dpi = metadata.dpi || 72;
+    const { minDPI, maxDPI, preferredDPI } = rule.conditions;
+    if (minDPI && dpi < minDPI) {
+      return {
+        rule: rule.id,
+        message: rule.errorMessage,
+        severity: rule.severity,
+        suggestion: rule.fixSuggestion,
+      };
     }
-    validateColorMode(rule, metadata) {
-        const { colorMode } = rule.conditions;
-        if (colorMode && metadata.colorMode !== colorMode) {
-            return {
-                rule: rule.id,
-                message: `Color mode is ${metadata.colorMode}, expected ${colorMode}`,
-                severity: rule.severity,
-                suggestion: rule.fixSuggestion
-            };
-        }
-        return null;
+    if (maxDPI && dpi > maxDPI) {
+      return {
+        rule: rule.id,
+        message: rule.errorMessage,
+        severity: rule.severity,
+        suggestion: rule.fixSuggestion,
+      };
     }
-    validateDimensions(rule, metadata) {
-        if (!metadata.dimensions)
-            return null;
-        const { maxWidth, maxHeight } = rule.conditions;
-        const { width, height } = metadata.dimensions;
-        // Convert pixels to mm (assuming 300 DPI)
-        const widthMM = (width * 25.4) / (metadata.dpi || 300);
-        const heightMM = (height * 25.4) / (metadata.dpi || 300);
-        if ((maxWidth && widthMM > maxWidth) || (maxHeight && heightMM > maxHeight)) {
-            return {
-                rule: rule.id,
-                message: `Design size is ${widthMM.toFixed(1)}×${heightMM.toFixed(1)}mm, maximum is ${maxWidth}×${maxHeight}mm`,
-                severity: rule.severity,
-                suggestion: rule.fixSuggestion
-            };
-        }
-        return null;
+    if (preferredDPI && Math.abs(dpi - preferredDPI) > 50) {
+      return {
+        rule: rule.id,
+        message: `Resolution is ${dpi} DPI, preferred is ${preferredDPI} DPI`,
+        severity: "INFO",
+        suggestion: `Consider using ${preferredDPI} DPI for optimal quality`,
+      };
     }
-    async validatePrintSpecs(rule, metadata, fileUrl) {
-        // This would involve more complex validation
-        // like counting colors, analyzing stitch density, etc.
-        // For now, return a basic implementation
-        return null;
+    return null;
+  }
+  validateFileFormat(rule, metadata) {
+    const { formats, maxSizeMB } = rule.conditions;
+    if (formats && !formats.includes(metadata.format)) {
+      return {
+        rule: rule.id,
+        message: rule.errorMessage,
+        severity: rule.severity,
+        suggestion: rule.fixSuggestion,
+      };
     }
-    async getValidationHistory(designVersionId) {
-        return await this.db.designFileValidation.findMany({
-            where: { designVersionId },
-            orderBy: { createdAt: "desc" }
-        });
+    if (maxSizeMB && metadata.fileSize > maxSizeMB * 1024 * 1024) {
+      return {
+        rule: rule.id,
+        message: rule.errorMessage,
+        severity: rule.severity,
+        suggestion: rule.fixSuggestion,
+      };
     }
-    async revalidateFile(validationId) {
-        const validation = await this.db.designFileValidation.findUnique({
-            where: { id: validationId }
-        });
-        if (!validation) {
-            throw new Error("Validation record not found");
-        }
-        return await this.validateDesignFile({
-            workspaceId: validation.workspaceId,
-            designVersionId: validation.designVersionId,
-            fileUrl: validation.fileUrl,
-            fileName: validation.fileName,
-            fileType: validation.fileType,
-            printMethod: validation.printMethod
-        });
+    return null;
+  }
+  validateColorMode(rule, metadata) {
+    const { colorMode } = rule.conditions;
+    if (colorMode && metadata.colorMode !== colorMode) {
+      return {
+        rule: rule.id,
+        message: `Color mode is ${metadata.colorMode}, expected ${colorMode}`,
+        severity: rule.severity,
+        suggestion: rule.fixSuggestion,
+      };
     }
-    // Event handlers
-    async handleValidationStarted(data) {
-        console.log(`File validation started: ${data.validation.id}`);
+    return null;
+  }
+  validateDimensions(rule, metadata) {
+    if (!metadata.dimensions) return null;
+    const { maxWidth, maxHeight } = rule.conditions;
+    const { width, height } = metadata.dimensions;
+    // Convert pixels to mm (assuming 300 DPI)
+    const widthMM = (width * 25.4) / (metadata.dpi || 300);
+    const heightMM = (height * 25.4) / (metadata.dpi || 300);
+    if (
+      (maxWidth && widthMM > maxWidth) ||
+      (maxHeight && heightMM > maxHeight)
+    ) {
+      return {
+        rule: rule.id,
+        message: `Design size is ${widthMM.toFixed(1)}×${heightMM.toFixed(1)}mm, maximum is ${maxWidth}×${maxHeight}mm`,
+        severity: rule.severity,
+        suggestion: rule.fixSuggestion,
+      };
     }
-    async handleValidationCompleted(data) {
-        console.log(`File validation completed: ${data.validation.id}`);
+    return null;
+  }
+  async validatePrintSpecs(rule, metadata, fileUrl) {
+    // This would involve more complex validation
+    // like counting colors, analyzing stitch density, etc.
+    // For now, return a basic implementation
+    return null;
+  }
+  async getValidationHistory(designVersionId) {
+    return await this.db.designFileValidation.findMany({
+      where: { designVersionId },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+  async revalidateFile(validationId) {
+    const validation = await this.db.designFileValidation.findUnique({
+      where: { id: validationId },
+    });
+    if (!validation) {
+      throw new Error("Validation record not found");
     }
-    async handleValidationFailed(data) {
-        console.log(`File validation failed: ${data.validation.id}`);
-    }
+    return await this.validateDesignFile({
+      workspaceId: validation.workspaceId,
+      designVersionId: validation.designVersionId,
+      fileUrl: validation.fileUrl,
+      fileName: validation.fileName,
+      fileType: validation.fileType,
+      printMethod: validation.printMethod,
+    });
+  }
+  // Event handlers
+  async handleValidationStarted(data) {
+    console.log(`File validation started: ${data.validation.id}`);
+  }
+  async handleValidationCompleted(data) {
+    console.log(`File validation completed: ${data.validation.id}`);
+  }
+  async handleValidationFailed(data) {
+    console.log(`File validation failed: ${data.validation.id}`);
+  }
 }
 exports.DesignFileValidationSystem = DesignFileValidationSystem;

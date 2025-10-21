@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
+import { z } from "zod";
 
-const DEFAULT_WORKSPACE_ID = 'default-workspace';
+const DEFAULT_WORKSPACE_ID = "default-workspace";
 
 const CreateBrandSchema = z.object({
-  name: z.string().min(1, 'Brand name is required'),
+  name: z.string().min(1, "Brand name is required"),
   code: z.string().optional(),
   logo_url: z.string().optional(),
   settings: z.string().optional(),
@@ -23,12 +23,12 @@ export async function GET(
 
     // Check if client exists
     const client = await prisma.client.findUnique({
-      where: { id: clientId }
+      where: { id: clientId },
     });
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Client not found' },
+        { success: false, error: "Client not found" },
         { status: 404 }
       );
     }
@@ -41,7 +41,7 @@ export async function GET(
             id: true,
             name: true,
             email: true,
-          }
+          },
         },
         orders: {
           select: {
@@ -51,26 +51,26 @@ export async function GET(
             total_amount: true,
             created_at: true,
           },
-          orderBy: { created_at: 'desc' },
+          orderBy: { created_at: "desc" },
           take: 5,
         },
         _count: {
           select: {
             orders: true,
-          }
-        }
+          },
+        },
       },
-      orderBy: { created_at: 'desc' },
+      orderBy: { created_at: "desc" },
     });
 
     return NextResponse.json({
       success: true,
-      data: brands
+      data: brands,
     });
   } catch (error) {
-    console.error('Error fetching client brands:', error);
+    console.error("Error fetching client brands:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch brands' },
+      { success: false, error: "Failed to fetch brands" },
       { status: 500 }
     );
   }
@@ -87,12 +87,12 @@ export async function POST(
 
     // Check if client exists
     const client = await prisma.client.findUnique({
-      where: { id: clientId }
+      where: { id: clientId },
     });
 
     if (!client) {
       return NextResponse.json(
-        { success: false, error: 'Client not found' },
+        { success: false, error: "Client not found" },
         { status: 404 }
       );
     }
@@ -102,12 +102,15 @@ export async function POST(
       where: {
         name: validatedData.name,
         client_id: clientId,
-      }
+      },
     });
 
     if (existingBrand) {
       return NextResponse.json(
-        { success: false, error: 'Brand with this name already exists for this client' },
+        {
+          success: false,
+          error: "Brand with this name already exists for this client",
+        },
         { status: 400 }
       );
     }
@@ -117,8 +120,8 @@ export async function POST(
       where: { id: client.workspace_id },
       create: {
         id: client.workspace_id,
-        name: 'Default Workspace',
-        slug: client.workspace_id
+        name: "Default Workspace",
+        slug: client.workspace_id,
       },
       update: {},
     });
@@ -140,32 +143,35 @@ export async function POST(
             id: true,
             name: true,
             email: true,
-          }
+          },
         },
         _count: {
           select: {
             orders: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
-    return NextResponse.json({
-      success: true,
-      data: brand,
-      message: 'Brand created successfully'
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        data: brand,
+        message: "Brand created successfully",
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.errors },
+        { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error('Error creating brand:', error);
+    console.error("Error creating brand:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create brand' },
+      { success: false, error: "Failed to create brand" },
       { status: 500 }
     );
   }

@@ -1,26 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/lib/database";
 
 const prisma = db;
 
 // GET /api/reports - List all reports for workspace
 export async function GET(req: NextRequest) {
   try {
-    const workspaceId = req.headers.get('x-workspace-id') || 'default-workspace';
+    const workspaceId =
+      req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
-    const type = url.searchParams.get('type');
-    const dataSource = url.searchParams.get('dataSource');
-    const createdBy = url.searchParams.get('createdBy');
-    const isPublic = url.searchParams.get('isPublic');
-    const isFavorite = url.searchParams.get('isFavorite');
+    const type = url.searchParams.get("type");
+    const dataSource = url.searchParams.get("dataSource");
+    const createdBy = url.searchParams.get("createdBy");
+    const isPublic = url.searchParams.get("isPublic");
+    const isFavorite = url.searchParams.get("isFavorite");
 
     const where: any = { workspace_id: workspaceId };
 
     if (type) where.report_type = type;
     if (dataSource) where.data_source = dataSource;
     if (createdBy) where.created_by = createdBy;
-    if (isPublic !== null) where.is_public = isPublic === 'true';
-    if (isFavorite !== null) where.is_favorite = isFavorite === 'true';
+    if (isPublic !== null) where.is_public = isPublic === "true";
+    if (isFavorite !== null) where.is_favorite = isFavorite === "true";
 
     const reports = await prisma.customReport.findMany({
       where,
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
           },
         },
       },
-      orderBy: { created_at: 'desc' },
+      orderBy: { created_at: "desc" },
     });
 
     return NextResponse.json({
@@ -53,11 +54,13 @@ export async function GET(req: NextRequest) {
         columns: JSON.parse(r.columns),
         filters: r.filters ? JSON.parse(r.filters) : null,
         sort_order: r.sort_order ? JSON.parse(r.sort_order) : null,
-        schedule_config: r.schedule_config ? JSON.parse(r.schedule_config) : null,
+        schedule_config: r.schedule_config
+          ? JSON.parse(r.schedule_config)
+          : null,
       })),
     });
   } catch (error: any) {
-    console.error('Error fetching reports:', error);
+    console.error("Error fetching reports:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
@@ -68,8 +71,9 @@ export async function GET(req: NextRequest) {
 // POST /api/reports - Create new report
 export async function POST(req: NextRequest) {
   try {
-    const workspaceId = req.headers.get('x-workspace-id') || 'default-workspace';
-    const userId = req.headers.get('x-user-id') || 'system';
+    const workspaceId =
+      req.headers.get("x-workspace-id") || "default-workspace";
+    const userId = req.headers.get("x-user-id") || "system";
     const body = await req.json();
 
     const {
@@ -90,7 +94,7 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     if (!name || !report_type || !data_source || !query_config || !columns) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
@@ -108,7 +112,9 @@ export async function POST(req: NextRequest) {
         filters: filters ? JSON.stringify(filters) : null,
         sort_order: sort_order ? JSON.stringify(sort_order) : null,
         schedule,
-        schedule_config: schedule_config ? JSON.stringify(schedule_config) : null,
+        schedule_config: schedule_config
+          ? JSON.stringify(schedule_config)
+          : null,
         is_public: is_public || false,
         created_by: userId,
       },
@@ -129,15 +135,19 @@ export async function POST(req: NextRequest) {
       report: {
         ...report,
         query_config: JSON.parse(report.query_config),
-        visualization: report.visualization ? JSON.parse(report.visualization) : null,
+        visualization: report.visualization
+          ? JSON.parse(report.visualization)
+          : null,
         columns: JSON.parse(report.columns),
         filters: report.filters ? JSON.parse(report.filters) : null,
         sort_order: report.sort_order ? JSON.parse(report.sort_order) : null,
-        schedule_config: report.schedule_config ? JSON.parse(report.schedule_config) : null,
+        schedule_config: report.schedule_config
+          ? JSON.parse(report.schedule_config)
+          : null,
       },
     });
   } catch (error: any) {
-    console.error('Error creating report:', error);
+    console.error("Error creating report:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

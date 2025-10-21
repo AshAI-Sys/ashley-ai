@@ -150,7 +150,15 @@
       "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\lib\\fetch-interceptor.ts\")",
       "Bash(for file in password/page.tsx security/page.tsx workspace/page.tsx appearance/page.tsx notifications/page.tsx sessions/page.tsx audit-logs/page.tsx)",
       "Bash(pnpx tsx create-admin.js)",
-      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\workspace\\logo\\route.ts\")"
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\workspace\\logo\\route.ts\")",
+      "Bash(del dev.db)",
+      "Bash(del dev.db-journal)",
+      "Bash(for dir in general account avatar workspace audit-logs sessions notifications password)",
+      "Bash(do if [ -f \"$dir/route.ts\" ])",
+      "Bash(! grep -q \"export const dynamic\" \"$dir/route.ts\")",
+      "Bash(then sed -i \"3a\\\\n// Force dynamic route (don''t pre-render during build)\\nexport const dynamic = ''force-dynamic''\\n\" \"$dir/route.ts\")",
+      "Bash(if exist \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\.next\" rd /s /q \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\.next\")",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

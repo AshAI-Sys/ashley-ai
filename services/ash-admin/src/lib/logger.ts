@@ -18,45 +18,49 @@ export enum LogLevel {
 }
 
 interface LogContext {
-  [key: string]: any
+  [key: string]: any;
 }
 
 class Logger {
-  private level: LogLevel
-  private prefix: string
+  private level: LogLevel;
+  private prefix: string;
 
-  constructor(prefix: string = 'APP') {
-    this.prefix = prefix
-    this.level = this.getLogLevelFromEnv()
+  constructor(prefix: string = "APP") {
+    this.prefix = prefix;
+    this.level = this.getLogLevelFromEnv();
   }
 
   private getLogLevelFromEnv(): LogLevel {
-    const envLevel = process.env.LOG_LEVEL?.toUpperCase() || 'INFO'
+    const envLevel = process.env.LOG_LEVEL?.toUpperCase() || "INFO";
 
     switch (envLevel) {
-      case 'DEBUG':
-        return LogLevel.DEBUG
-      case 'INFO':
-        return LogLevel.INFO
-      case 'WARN':
-        return LogLevel.WARN
-      case 'ERROR':
-        return LogLevel.ERROR
-      case 'SILENT':
-        return LogLevel.SILENT
+      case "DEBUG":
+        return LogLevel.DEBUG;
+      case "INFO":
+        return LogLevel.INFO;
+      case "WARN":
+        return LogLevel.WARN;
+      case "ERROR":
+        return LogLevel.ERROR;
+      case "SILENT":
+        return LogLevel.SILENT;
       default:
-        return LogLevel.INFO
+        return LogLevel.INFO;
     }
   }
 
   private shouldLog(level: LogLevel): boolean {
-    return level >= this.level
+    return level >= this.level;
   }
 
-  private formatMessage(level: string, message: string, context?: LogContext): string {
-    const timestamp = new Date().toISOString()
-    const contextStr = context ? ` ${JSON.stringify(context)}` : ''
-    return `[${timestamp}] [${this.prefix}] ${level}: ${message}${contextStr}`
+  private formatMessage(
+    level: string,
+    message: string,
+    context?: LogContext
+  ): string {
+    const timestamp = new Date().toISOString();
+    const contextStr = context ? ` ${JSON.stringify(context)}` : "";
+    return `[${timestamp}] [${this.prefix}] ${level}: ${message}${contextStr}`;
   }
 
   /**
@@ -64,7 +68,7 @@ class Logger {
    */
   debug(message: string, context?: LogContext): void {
     if (this.shouldLog(LogLevel.DEBUG)) {
-      console.debug(this.formatMessage('DEBUG', message, context))
+      console.debug(this.formatMessage("DEBUG", message, context));
     }
   }
 
@@ -73,7 +77,7 @@ class Logger {
    */
   info(message: string, context?: LogContext): void {
     if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage('INFO', message, context))
+      console.info(this.formatMessage("INFO", message, context));
     }
   }
 
@@ -82,7 +86,7 @@ class Logger {
    */
   warn(message: string, context?: LogContext): void {
     if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage('WARN', message, context))
+      console.warn(this.formatMessage("WARN", message, context));
     }
   }
 
@@ -91,8 +95,10 @@ class Logger {
    */
   error(message: string, error?: Error | any, context?: LogContext): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      const errorContext = error ? { error: error.message, stack: error.stack, ...context } : context
-      console.error(this.formatMessage('ERROR', message, errorContext))
+      const errorContext = error
+        ? { error: error.message, stack: error.stack, ...context }
+        : context;
+      console.error(this.formatMessage("ERROR", message, errorContext));
     }
   }
 
@@ -100,54 +106,77 @@ class Logger {
    * Create a child logger with a specific prefix
    */
   child(prefix: string): Logger {
-    return new Logger(`${this.prefix}:${prefix}`)
+    return new Logger(`${this.prefix}:${prefix}`);
   }
 }
 
 // Default logger instance
-export const logger = new Logger('ASHLEY-AI')
+export const logger = new Logger("ASHLEY-AI");
 
 // Create domain-specific loggers
-export const apiLogger = logger.child('API')
-export const dbLogger = logger.child('DB')
-export const authLogger = logger.child('AUTH')
-export const workspaceLogger = logger.child('WORKSPACE')
-export const cacheLogger = logger.child('CACHE')
+export const apiLogger = logger.child("API");
+export const dbLogger = logger.child("DB");
+export const authLogger = logger.child("AUTH");
+export const workspaceLogger = logger.child("WORKSPACE");
+export const cacheLogger = logger.child("CACHE");
 
 /**
  * Helper function to replace console.error with proper error logging
  */
-export function logError(context: string, error: any, additionalContext?: LogContext): void {
-  logger.error(`${context}: ${error?.message || error}`, error, additionalContext)
+export function logError(
+  context: string,
+  error: any,
+  additionalContext?: LogContext
+): void {
+  logger.error(
+    `${context}: ${error?.message || error}`,
+    error,
+    additionalContext
+  );
 }
 
 /**
  * Helper function to log API requests
  */
-export function logApiRequest(method: string, path: string, context?: LogContext): void {
-  apiLogger.info(`${method} ${path}`, context)
+export function logApiRequest(
+  method: string,
+  path: string,
+  context?: LogContext
+): void {
+  apiLogger.info(`${method} ${path}`, context);
 }
 
 /**
  * Helper function to log API responses
  */
-export function logApiResponse(method: string, path: string, status: number, duration?: number): void {
-  apiLogger.info(`${method} ${path} - ${status}`, { duration: duration ? `${duration}ms` : undefined })
+export function logApiResponse(
+  method: string,
+  path: string,
+  status: number,
+  duration?: number
+): void {
+  apiLogger.info(`${method} ${path} - ${status}`, {
+    duration: duration ? `${duration}ms` : undefined,
+  });
 }
 
 /**
  * Helper function to log database queries (for debugging)
  */
-export function logDbQuery(operation: string, model: string, context?: LogContext): void {
-  dbLogger.debug(`${operation} ${model}`, context)
+export function logDbQuery(
+  operation: string,
+  model: string,
+  context?: LogContext
+): void {
+  dbLogger.debug(`${operation} ${model}`, context);
 }
 
 /**
  * Performance timer utility
  */
 export function startTimer(): () => number {
-  const start = Date.now()
-  return () => Date.now() - start
+  const start = Date.now();
+  return () => Date.now() - start;
 }
 
 /**

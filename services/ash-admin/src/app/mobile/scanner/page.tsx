@@ -1,14 +1,23 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { Camera, QrCode, CheckCircle, XCircle, RefreshCw, Info } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from "react";
+import {
+  Camera,
+  QrCode,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  Info,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function QRScannerPage() {
   const [scanning, setScanning] = useState(false);
   const [scannedData, setScannedData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [cameraPermission, setCameraPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+  const [cameraPermission, setCameraPermission] = useState<
+    "granted" | "denied" | "prompt"
+  >("prompt");
   const [bundleInfo, setBundleInfo] = useState<any>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,10 +34,12 @@ export default function QRScannerPage() {
 
   const checkCameraPermission = async () => {
     try {
-      const result = await navigator.permissions.query({ name: 'camera' as PermissionName });
+      const result = await navigator.permissions.query({
+        name: "camera" as PermissionName,
+      });
       setCameraPermission(result.state);
     } catch (error) {
-      console.error('Permission check failed:', error);
+      console.error("Permission check failed:", error);
     }
   };
 
@@ -38,7 +49,7 @@ export default function QRScannerPage() {
 
       // Request camera access
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' } // Use rear camera on mobile
+        video: { facingMode: "environment" }, // Use rear camera on mobile
       });
 
       streamRef.current = stream;
@@ -47,7 +58,7 @@ export default function QRScannerPage() {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
         setScanning(true);
-        setCameraPermission('granted');
+        setCameraPermission("granted");
 
         // Start scanning loop
         scanIntervalRef.current = setInterval(() => {
@@ -55,9 +66,9 @@ export default function QRScannerPage() {
         }, 500); // Scan every 500ms
       }
     } catch (err: any) {
-      console.error('Camera access error:', err);
-      setError('Camera access denied. Please enable camera permissions.');
-      setCameraPermission('denied');
+      console.error("Camera access error:", err);
+      setError("Camera access denied. Please enable camera permissions.");
+      setCameraPermission("denied");
     }
   };
 
@@ -84,7 +95,7 @@ export default function QRScannerPage() {
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
 
     if (!context) return;
 
@@ -94,9 +105,9 @@ export default function QRScannerPage() {
 
     try {
       // Use browser's built-in barcode detector if available
-      if ('BarcodeDetector' in window) {
+      if ("BarcodeDetector" in window) {
         const barcodeDetector = new (window as any).BarcodeDetector({
-          formats: ['qr_code']
+          formats: ["qr_code"],
         });
         const barcodes = await barcodeDetector.detect(canvas);
 
@@ -106,14 +117,19 @@ export default function QRScannerPage() {
         }
       } else {
         // Fallback: Manual QR detection (simplified)
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
         const code = detectQRCode(imageData);
         if (code) {
           handleQRCodeScanned(code);
         }
       }
     } catch (err) {
-      console.error('QR decode error:', err);
+      console.error("QR decode error:", err);
     }
   };
 
@@ -132,7 +148,7 @@ export default function QRScannerPage() {
     try {
       const response = await fetch(`/api/bundles/scan?code=${qrData}`, {
         headers: {
-          'x-workspace-id': 'default-workspace',
+          "x-workspace-id": "default-workspace",
         },
       });
 
@@ -141,11 +157,11 @@ export default function QRScannerPage() {
       if (data.success) {
         setBundleInfo(data.bundle);
       } else {
-        setError('Bundle not found');
+        setError("Bundle not found");
       }
     } catch (err) {
-      console.error('Bundle lookup error:', err);
-      setError('Failed to retrieve bundle information');
+      console.error("Bundle lookup error:", err);
+      setError("Failed to retrieve bundle information");
     }
   };
 
@@ -161,11 +177,11 @@ export default function QRScannerPage() {
 
     try {
       const response = await fetch(`/api/bundles/${bundleInfo.id}/status`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'x-workspace-id': 'default-workspace',
-          'x-user-id': 'mobile-scanner',
+          "Content-Type": "application/json",
+          "x-workspace-id": "default-workspace",
+          "x-user-id": "mobile-scanner",
         },
         body: JSON.stringify({ status }),
       });
@@ -176,25 +192,25 @@ export default function QRScannerPage() {
         alert(`Bundle status updated to: ${status}`);
         resetScanner();
       } else {
-        setError('Failed to update bundle status');
+        setError("Failed to update bundle status");
       }
     } catch (err) {
-      console.error('Status update error:', err);
-      setError('Failed to update bundle status');
+      console.error("Status update error:", err);
+      setError("Failed to update bundle status");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
+      <div className="border-b border-gray-700 bg-gray-800 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <QrCode className="h-6 w-6 text-blue-400" />
             <h1 className="text-xl font-bold">QR Scanner</h1>
           </div>
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push("/dashboard")}
             className="text-gray-400 hover:text-white"
           >
             Dashboard
@@ -204,14 +220,17 @@ export default function QRScannerPage() {
 
       <div className="p-4">
         {/* Camera Permission Info */}
-        {cameraPermission === 'denied' && (
-          <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-4">
+        {cameraPermission === "denied" && (
+          <div className="mb-4 rounded-lg border border-red-700 bg-red-900 p-4">
             <div className="flex items-start space-x-3">
-              <Info className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
               <div>
-                <p className="font-medium text-red-200">Camera Access Required</p>
-                <p className="text-sm text-red-300 mt-1">
-                  Please enable camera permissions in your browser settings to use the scanner.
+                <p className="font-medium text-red-200">
+                  Camera Access Required
+                </p>
+                <p className="mt-1 text-sm text-red-300">
+                  Please enable camera permissions in your browser settings to
+                  use the scanner.
                 </p>
               </div>
             </div>
@@ -221,21 +240,21 @@ export default function QRScannerPage() {
         {/* Scanner View */}
         {!scannedData && (
           <div className="space-y-4">
-            <div className="bg-gray-800 rounded-lg overflow-hidden border-2 border-gray-700 relative">
+            <div className="relative overflow-hidden rounded-lg border-2 border-gray-700 bg-gray-800">
               {/* Video Preview */}
               <video
                 ref={videoRef}
-                className="w-full h-auto"
+                className="h-auto w-full"
                 playsInline
                 muted
-                style={{ maxHeight: '60vh' }}
+                style={{ maxHeight: "60vh" }}
               />
               <canvas ref={canvasRef} className="hidden" />
 
               {/* Scanning Overlay */}
               {scanning && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="border-4 border-blue-500 rounded-lg w-64 h-64 animate-pulse"></div>
+                  <div className="h-64 w-64 animate-pulse rounded-lg border-4 border-blue-500"></div>
                 </div>
               )}
 
@@ -243,7 +262,7 @@ export default function QRScannerPage() {
               {!scanning && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90">
                   <div className="text-center">
-                    <Camera className="h-24 w-24 text-gray-600 mx-auto mb-4" />
+                    <Camera className="mx-auto mb-4 h-24 w-24 text-gray-600" />
                     <p className="text-gray-400">Camera is off</p>
                   </div>
                 </div>
@@ -254,7 +273,7 @@ export default function QRScannerPage() {
             {!scanning ? (
               <button
                 onClick={startScanning}
-                className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-medium transition-colors"
+                className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-4 font-medium text-white transition-colors hover:bg-blue-700"
               >
                 <Camera className="h-5 w-5" />
                 <span>Start Scanning</span>
@@ -262,7 +281,7 @@ export default function QRScannerPage() {
             ) : (
               <button
                 onClick={stopScanning}
-                className="w-full flex items-center justify-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-lg font-medium transition-colors"
+                className="flex w-full items-center justify-center space-x-2 rounded-lg bg-red-600 px-6 py-4 font-medium text-white transition-colors hover:bg-red-700"
               >
                 <XCircle className="h-5 w-5" />
                 <span>Stop Scanning</span>
@@ -270,9 +289,9 @@ export default function QRScannerPage() {
             )}
 
             {/* Instructions */}
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-              <h3 className="font-medium mb-2">How to scan:</h3>
-              <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+            <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
+              <h3 className="mb-2 font-medium">How to scan:</h3>
+              <ol className="list-inside list-decimal space-y-1 text-sm text-gray-300">
                 <li>Click "Start Scanning" to activate camera</li>
                 <li>Point camera at QR code on bundle</li>
                 <li>Hold steady until code is detected</li>
@@ -286,37 +305,49 @@ export default function QRScannerPage() {
         {scannedData && bundleInfo && (
           <div className="space-y-4">
             {/* Success Icon */}
-            <div className="bg-green-900 border border-green-700 rounded-lg p-6 text-center">
-              <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-3" />
-              <h2 className="text-xl font-bold text-green-200">Bundle Scanned!</h2>
-              <p className="text-sm text-green-300 mt-1">Code: {scannedData}</p>
+            <div className="rounded-lg border border-green-700 bg-green-900 p-6 text-center">
+              <CheckCircle className="mx-auto mb-3 h-16 w-16 text-green-400" />
+              <h2 className="text-xl font-bold text-green-200">
+                Bundle Scanned!
+              </h2>
+              <p className="mt-1 text-sm text-green-300">Code: {scannedData}</p>
             </div>
 
             {/* Bundle Information */}
-            <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-              <div className="bg-gray-700 px-4 py-3 border-b border-gray-600">
+            <div className="overflow-hidden rounded-lg border border-gray-700 bg-gray-800">
+              <div className="border-b border-gray-600 bg-gray-700 px-4 py-3">
                 <h3 className="font-medium">Bundle Information</h3>
               </div>
-              <div className="p-4 space-y-3">
+              <div className="space-y-3 p-4">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Bundle ID:</span>
-                  <span className="font-medium">{bundleInfo.bundle_number}</span>
+                  <span className="font-medium">
+                    {bundleInfo.bundle_number}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Order:</span>
-                  <span className="font-medium">{bundleInfo.order?.order_number || 'N/A'}</span>
+                  <span className="font-medium">
+                    {bundleInfo.order?.order_number || "N/A"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Quantity:</span>
-                  <span className="font-medium">{bundleInfo.quantity} units</span>
+                  <span className="font-medium">
+                    {bundleInfo.quantity} units
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Status:</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    bundleInfo.status === 'COMPLETED' ? 'bg-green-900 text-green-200' :
-                    bundleInfo.status === 'IN_PROGRESS' ? 'bg-blue-900 text-blue-200' :
-                    'bg-gray-700 text-gray-300'
-                  }`}>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                      bundleInfo.status === "COMPLETED"
+                        ? "bg-green-900 text-green-200"
+                        : bundleInfo.status === "IN_PROGRESS"
+                          ? "bg-blue-900 text-blue-200"
+                          : "bg-gray-700 text-gray-300"
+                    }`}
+                  >
                     {bundleInfo.status}
                   </span>
                 </div>
@@ -324,30 +355,30 @@ export default function QRScannerPage() {
             </div>
 
             {/* Status Update Actions */}
-            <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-              <h3 className="font-medium mb-3">Update Status</h3>
+            <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
+              <h3 className="mb-3 font-medium">Update Status</h3>
               <div className="grid grid-cols-2 gap-3">
                 <button
-                  onClick={() => updateBundleStatus('IN_PROGRESS')}
-                  className="bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg font-medium transition-colors"
+                  onClick={() => updateBundleStatus("IN_PROGRESS")}
+                  className="rounded-lg bg-blue-600 px-4 py-3 font-medium transition-colors hover:bg-blue-700"
                 >
                   Start Work
                 </button>
                 <button
-                  onClick={() => updateBundleStatus('COMPLETED')}
-                  className="bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-medium transition-colors"
+                  onClick={() => updateBundleStatus("COMPLETED")}
+                  className="rounded-lg bg-green-600 px-4 py-3 font-medium transition-colors hover:bg-green-700"
                 >
                   Complete
                 </button>
                 <button
-                  onClick={() => updateBundleStatus('ON_HOLD')}
-                  className="bg-yellow-600 hover:bg-yellow-700 px-4 py-3 rounded-lg font-medium transition-colors"
+                  onClick={() => updateBundleStatus("ON_HOLD")}
+                  className="rounded-lg bg-yellow-600 px-4 py-3 font-medium transition-colors hover:bg-yellow-700"
                 >
                   Hold
                 </button>
                 <button
-                  onClick={() => updateBundleStatus('DEFECT')}
-                  className="bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg font-medium transition-colors"
+                  onClick={() => updateBundleStatus("DEFECT")}
+                  className="rounded-lg bg-red-600 px-4 py-3 font-medium transition-colors hover:bg-red-700"
                 >
                   Report Issue
                 </button>
@@ -357,7 +388,7 @@ export default function QRScannerPage() {
             {/* Scan Another Button */}
             <button
               onClick={resetScanner}
-              className="w-full flex items-center justify-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-4 rounded-lg font-medium transition-colors"
+              className="flex w-full items-center justify-center space-x-2 rounded-lg bg-gray-700 px-6 py-4 font-medium text-white transition-colors hover:bg-gray-600"
             >
               <RefreshCw className="h-5 w-5" />
               <span>Scan Another Bundle</span>
@@ -368,16 +399,16 @@ export default function QRScannerPage() {
         {/* Error Display */}
         {error && !bundleInfo && scannedData && (
           <div className="space-y-4">
-            <div className="bg-red-900 border border-red-700 rounded-lg p-6 text-center">
-              <XCircle className="h-16 w-16 text-red-400 mx-auto mb-3" />
+            <div className="rounded-lg border border-red-700 bg-red-900 p-6 text-center">
+              <XCircle className="mx-auto mb-3 h-16 w-16 text-red-400" />
               <h2 className="text-xl font-bold text-red-200">Error</h2>
-              <p className="text-sm text-red-300 mt-1">{error}</p>
-              <p className="text-xs text-red-400 mt-2">Code: {scannedData}</p>
+              <p className="mt-1 text-sm text-red-300">{error}</p>
+              <p className="mt-2 text-xs text-red-400">Code: {scannedData}</p>
             </div>
 
             <button
               onClick={resetScanner}
-              className="w-full flex items-center justify-center space-x-2 bg-gray-700 hover:bg-gray-600 text-white px-6 py-4 rounded-lg font-medium transition-colors"
+              className="flex w-full items-center justify-center space-x-2 rounded-lg bg-gray-700 px-6 py-4 font-medium text-white transition-colors hover:bg-gray-600"
             >
               <RefreshCw className="h-5 w-5" />
               <span>Try Again</span>

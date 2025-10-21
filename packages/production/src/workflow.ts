@@ -10,7 +10,7 @@ import type {
   WorkflowStatus,
   Priority,
   ProductionAlert,
-  BottleneckAnalysis
+  BottleneckAnalysis,
 } from "./types";
 
 export class ProductionWorkflowEngine extends EventEmitter {
@@ -29,7 +29,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
     metadata: Record<string, unknown> = {}
   ): Promise<ProductionWorkflow> {
     const workflowId = nanoid();
-    
+
     // Get order details
     const order = await db.order.findUnique({
       where: { id: orderId },
@@ -78,7 +78,10 @@ export class ProductionWorkflowEngine extends EventEmitter {
         stage: "DESIGN",
         planned_start: startDate,
         planned_end: estimatedEndDate,
-        planned_quantity: order.line_items.reduce((sum, item) => sum + item.quantity, 0),
+        planned_quantity: order.line_items.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        ),
         status: "PLANNED",
         priority: this.priorityToNumber(priority),
         notes: JSON.stringify(metadata),
@@ -87,7 +90,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
     });
 
     this.emit("workflow:created", { workflow });
-    
+
     return workflow;
   }
 
@@ -130,7 +133,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
     }
 
     const actualEnd = new Date();
-    const actualHours = step.actualStart 
+    const actualHours = step.actualStart
       ? differenceInHours(actualEnd, step.actualStart)
       : step.estimatedHours;
 
@@ -203,8 +206,8 @@ export class ProductionWorkflowEngine extends EventEmitter {
 
     // Check worker availability
     const isAvailable = await this.isWorkerAvailable(
-      workerId, 
-      step.plannedStart, 
+      workerId,
+      step.plannedStart,
       step.plannedEnd
     );
 
@@ -236,7 +239,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
 
     // Check for delayed steps
     const delayedSteps = await this.getDelayedSteps(workflowId);
-    
+
     for (const step of delayedSteps) {
       bottlenecks.push({
         productionLineId: step.productionLineId || "unknown",
@@ -248,7 +251,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
         suggestions: [
           "Reassign worker with higher skill level",
           "Add overtime hours",
-          "Parallel processing where possible"
+          "Parallel processing where possible",
         ],
         estimatedDelay: step.estimatedHours,
         affectedOrders: [workflow.orderId],
@@ -280,24 +283,31 @@ export class ProductionWorkflowEngine extends EventEmitter {
 
     // In a real implementation, you'd save this to the database
     this.emit("alert:created", alert);
-    
+
     return alert;
   }
 
   private async generateWorkflowSteps(
-    workflowId: string, 
+    workflowId: string,
     order: any
   ): Promise<WorkflowStep[]> {
     const steps: WorkflowStep[] = [];
-    const stages: ProductionStage[] = ["DESIGN", "CUT", "PRINT", "SEW", "QC", "PACK"];
-    
+    const stages: ProductionStage[] = [
+      "DESIGN",
+      "CUT",
+      "PRINT",
+      "SEW",
+      "QC",
+      "PACK",
+    ];
+
     let currentStart = new Date();
-    
+
     for (let i = 0; i < stages.length; i++) {
       const stage = stages[i];
       const estimatedHours = this.getStageEstimatedHours(stage, order);
       const plannedEnd = addHours(currentStart, estimatedHours);
-      
+
       const step: WorkflowStep = {
         id: nanoid(),
         workflowId,
@@ -310,27 +320,33 @@ export class ProductionWorkflowEngine extends EventEmitter {
         plannedStart: currentStart,
         plannedEnd,
       };
-      
+
       steps.push(step);
       currentStart = plannedEnd;
     }
-    
+
     return steps;
   }
 
   private calculateEstimatedDuration(order: any): number {
     // Simple calculation based on quantity and complexity
-    const totalQuantity = order.line_items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+    const totalQuantity = order.line_items.reduce(
+      (sum: number, item: any) => sum + item.quantity,
+      0
+    );
     const baseHours = 24; // Base 24 hours for any order
     const quantityFactor = totalQuantity / 100; // 1 hour per 100 pieces
     const complexityFactor = order.line_items.length * 2; // 2 hours per line item
-    
+
     return Math.ceil(baseHours + quantityFactor + complexityFactor);
   }
 
   private getStageEstimatedHours(stage: ProductionStage, order: any): number {
-    const quantity = order.line_items.reduce((sum: number, item: any) => sum + item.quantity, 0);
-    
+    const quantity = order.line_items.reduce(
+      (sum: number, item: any) => sum + item.quantity,
+      0
+    );
+
     const stageHours = {
       DESIGN: 4,
       CUT: Math.ceil(quantity / 200) * 2, // 2 hours per 200 pieces
@@ -339,7 +355,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
       QC: Math.ceil(quantity / 500) * 1, // 1 hour per 500 pieces
       PACK: Math.ceil(quantity / 1000) * 1, // 1 hour per 1000 pieces
     };
-    
+
     return stageHours[stage] || 2;
   }
 
@@ -354,7 +370,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
       PACK: "Packing",
       DELIVERY: "Delivery",
     };
-    
+
     return names[stage];
   }
 
@@ -363,7 +379,9 @@ export class ProductionWorkflowEngine extends EventEmitter {
     return priorities[priority];
   }
 
-  private async getWorkflow(workflowId: string): Promise<ProductionWorkflow | null> {
+  private async getWorkflow(
+    workflowId: string
+  ): Promise<ProductionWorkflow | null> {
     const schedule = await db.productionSchedule.findUnique({
       where: { id: workflowId },
     });
@@ -379,9 +397,15 @@ export class ProductionWorkflowEngine extends EventEmitter {
       totalSteps: 6, // TODO: Calculate from actual steps
       completedSteps: schedule.completed_quantity,
       currentStage: schedule.stage as ProductionStage,
-      estimatedDuration: differenceInHours(schedule.planned_end, schedule.planned_start),
-      actualDuration: schedule.actual_end 
-        ? differenceInHours(schedule.actual_end, schedule.actual_start || schedule.planned_start)
+      estimatedDuration: differenceInHours(
+        schedule.planned_end,
+        schedule.planned_start
+      ),
+      actualDuration: schedule.actual_end
+        ? differenceInHours(
+            schedule.actual_end,
+            schedule.actual_start || schedule.planned_start
+          )
         : undefined,
       startDate: schedule.planned_start,
       estimatedEndDate: schedule.planned_end,
@@ -409,7 +433,7 @@ export class ProductionWorkflowEngine extends EventEmitter {
   }
 
   private async updateStep(
-    stepId: string, 
+    stepId: string,
     updates: Partial<WorkflowStep>
   ): Promise<void> {
     // Update step in database
@@ -421,8 +445,8 @@ export class ProductionWorkflowEngine extends EventEmitter {
   }
 
   private async isWorkerAvailable(
-    workerId: string, 
-    startTime: Date, 
+    workerId: string,
+    startTime: Date,
     endTime: Date
   ): Promise<boolean> {
     const conflicts = await db.workerAssignment.count({

@@ -1,9 +1,14 @@
-import { NextRequest } from 'next/server'
-import { paymentService } from '@/lib/paymentService'
-import { createSuccessResponse, createErrorResponse, ValidationError, NotFoundError } from '@/lib/error-handling'
-import { db } from '@/lib/database';
+import { NextRequest } from "next/server";
+import { paymentService } from "@/lib/paymentService";
+import {
+  createSuccessResponse,
+  createErrorResponse,
+  ValidationError,
+  NotFoundError,
+} from "@/lib/error-handling";
+import { db } from "@/lib/database";
 
-const prisma = db
+const prisma = db;
 
 /**
  * Create Stripe Checkout Session
@@ -13,11 +18,11 @@ const prisma = db
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { invoiceId } = body
+    const body = await request.json();
+    const { invoiceId } = body;
 
     if (!invoiceId) {
-      return createErrorResponse(new ValidationError('Invoice ID is required'))
+      return createErrorResponse(new ValidationError("Invoice ID is required"));
     }
 
     // Get invoice details
@@ -26,50 +31,58 @@ export async function POST(request: NextRequest) {
       include: {
         client: true,
       },
-    })
+    });
 
     if (!invoice) {
-      return createErrorResponse(new NotFoundError('Invoice not found'))
+      return createErrorResponse(new NotFoundError("Invoice not found"));
     }
 
-    if (invoice.status === 'PAID') {
-      return createErrorResponse(new ValidationError('Invoice is already paid'))
+    if (invoice.status === "PAID") {
+      return createErrorResponse(
+        new ValidationError("Invoice is already paid")
+      );
     }
 
     // Calculate remaining amount
     const payments = await prisma.payment.aggregate({
       where: {
         invoice_id: invoiceId,
-        status: 'COMPLETED',
+        status: "COMPLETED",
       },
       _sum: { amount: true },
-    })
+    });
 
-    const paidAmount = payments._sum.amount || 0
-    const remainingAmount = parseFloat(invoice.total_amount.toString()) - parseFloat(paidAmount.toString())
+    const paidAmount = payments._sum.amount || 0;
+    const remainingAmount =
+      parseFloat(invoice.total_amount.toString()) -
+      parseFloat(paidAmount.toString());
 
     if (remainingAmount <= 0) {
-      return createErrorResponse(new ValidationError('Invoice has no remaining balance'))
+      return createErrorResponse(
+        new ValidationError("Invoice has no remaining balance")
+      );
     }
 
     // Create checkout session
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001";
     const result = await paymentService.createStripeCheckoutSession({
       invoiceId: invoice.id,
       invoiceNumber: invoice.invoice_number,
       amount: paymentService.toSmallestUnit(remainingAmount, invoice.currency),
       currency: invoice.currency,
-      customerEmail: invoice.client?.email || 'customer@example.com',
+      customerEmail: invoice.client?.email || "customer@example.com",
       successUrl: `${baseUrl}/payments/success?session_id={CHECKOUT_SESSION_ID}&invoice=${invoice.id}`,
       cancelUrl: `${baseUrl}/invoices/${invoice.id}`,
       metadata: {
-        order_id: invoice.order_id || '',
-        client_name: invoice.client?.name || '',
+        order_id: invoice.order_id || "",
+        client_name: invoice.client?.name || "",
       },
-    })
+    });
 
     if (!result.success) {
-      return createErrorResponse(new ValidationError(result.error || 'Failed to create checkout session'))
+      return createErrorResponse(
+        new ValidationError(result.error || "Failed to create checkout session")
+      );
     }
 
     return createSuccessResponse({
@@ -83,12 +96,14 @@ export async function POST(request: NextRequest) {
         amount: remainingAmount,
         currency: invoice.currency,
       },
-    })
+    });
   } catch (error) {
-    console.error('Error creating checkout session:', error)
+    console.error("Error creating checkout session:", error);
     return createErrorResponse(
-      error instanceof Error ? error.message : 'Failed to create checkout session',
+      error instanceof Error
+        ? error.message
+        : "Failed to create checkout session",
       500
-    )
+    );
   }
 }
