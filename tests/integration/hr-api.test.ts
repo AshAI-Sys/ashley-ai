@@ -32,7 +32,7 @@ describe("HR API Integration Tests", () => {
 
       if (response.ok) {
         const data = await response.json();
-        authToken = data.token || data.accessToken;
+        authToken = data.access_token;
       }
     } catch (error) {
       console.warn("Setup failed:", error);

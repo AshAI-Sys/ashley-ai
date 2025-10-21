@@ -54,7 +54,7 @@ describe("Real API Integration Tests", () => {
 
       if (response.ok) {
         const data = await response.json();
-        authToken = data.token || data.accessToken || null;
+        authToken = data.access_token || null;
         testUserId = data.user?.id || null;
       }
     } catch (error) {
@@ -75,8 +75,11 @@ describe("Real API Integration Tests", () => {
         const data = await response.json();
 
         expect(response.status).toBe(200);
-        expect(data).toHaveProperty("status");
-        expect(data.status).toBe("healthy");
+        expect(data).toHaveProperty("success");
+        expect(data.success).toBe(true);
+        expect(data).toHaveProperty("data");
+        expect(data.data).toHaveProperty("status");
+        expect(data.data.status).toBe("healthy");
       },
       TEST_TIMEOUT
     );
@@ -92,8 +95,10 @@ describe("Real API Integration Tests", () => {
         const response = await fetch(`${API_BASE}/api/health`);
         const data = await response.json();
 
-        expect(data).toHaveProperty("timestamp");
-        expect(new Date(data.timestamp).getTime()).toBeLessThanOrEqual(
+        expect(data).toHaveProperty("success");
+        expect(data.success).toBe(true);
+        expect(data.data).toHaveProperty("timestamp");
+        expect(new Date(data.data.timestamp).getTime()).toBeLessThanOrEqual(
           Date.now()
         );
       },

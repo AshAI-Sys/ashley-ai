@@ -27,7 +27,7 @@ describe("QC & Delivery Operations API Integration Tests", () => {
 
       if (response.ok) {
         const data = await response.json();
-        authToken = data.token || data.accessToken;
+        authToken = data.access_token;
       }
     } catch (error) {
       console.log("Server not available, skipping integration tests");
