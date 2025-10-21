@@ -181,7 +181,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, ClientFormProps>(
                   Basic Information
                 </CardTitle>
                 <CardDescription>
-                  Enter the client's basic company and contact information
+                  Enter the client&apos;s basic company and contact information
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

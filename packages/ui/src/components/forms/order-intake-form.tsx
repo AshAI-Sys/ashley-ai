@@ -227,6 +227,7 @@ export const OrderIntakeForm = React.forwardRef<
       if (sizeCurveTotal > 0 && sizeCurveTotal !== watchedQuantity) {
         form.setValue("quantity", sizeCurveTotal);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [watchedSizeCurve, form]);
 
     const handleValidate = async () => {
