@@ -203,7 +203,7 @@ export class InventoryManager {
   }
 
   async receivePurchaseOrder(
-    po_id: string,
+    _po_id: string,
     received_items: Array<{ material_id: string; quantity: number }>
   ): Promise<void> {
     // Update stock for each received item
@@ -228,18 +228,18 @@ export class InventoryManager {
     if (!material) return;
 
     let alertType: StockAlert["alert_type"] | null = null;
-    let severity: StockAlert["severity"] = "INFO";
+    let _severity: StockAlert["severity"] = "INFO"; // TODO: Use severity in alert creation
     let message = "";
 
     const reorderPoint = material.reorder_point || 0;
 
     if (current_level === 0) {
       alertType = "OUT_OF_STOCK";
-      severity = "CRITICAL";
+      _severity = "CRITICAL";
       message = `${material.material_name} is out of stock!`;
     } else if (current_level <= reorderPoint) {
       alertType = "LOW_STOCK";
-      severity = "WARNING";
+      _severity = "WARNING";
       message = `${material.material_name} is below reorder point (${current_level}/${reorderPoint})`;
     }
 
@@ -335,7 +335,7 @@ export class InventoryManager {
       }
     }
 
-    return alerts.sort((a, b) => (a.severity === "CRITICAL" ? -1 : 1));
+    return alerts.sort((a, _b) => (a.severity === "CRITICAL" ? -1 : 1));
   }
 
   // F4: Material Costing and Waste Tracking
@@ -357,7 +357,7 @@ export class InventoryManager {
       },
     });
 
-    const costings: MaterialCosting[] = materials.map(material => {
+    const costings: MaterialCosting[] = materials.map((material: any) => {
       const currentStock = material.current_stock || 0;
       const unitCost = material.cost_per_unit || 0;
       const stockValue = currentStock * unitCost;
@@ -458,16 +458,16 @@ export class InventoryManager {
 
     const totalMaterials = materials.length;
     const totalValue = materials.reduce(
-      (sum, m) => sum + (m.current_stock || 0) * (m.cost_per_unit || 0),
+      (sum: number, m: any) => sum + (m.current_stock || 0) * (m.cost_per_unit || 0),
       0
     );
-    const lowStockCount = materials.filter(m => {
+    const lowStockCount = materials.filter((m: any) => {
       const stock = m.current_stock || 0;
       const reorder = m.reorder_point || 0;
       return stock <= reorder && stock > 0;
     }).length;
     const outOfStockCount = materials.filter(
-      m => (m.current_stock || 0) === 0
+      (m: any) => (m.current_stock || 0) === 0
     ).length;
 
     const costings = await this.calculateMaterialCost(workspace_id);

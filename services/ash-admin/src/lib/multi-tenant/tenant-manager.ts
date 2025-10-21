@@ -2,6 +2,7 @@
 // Handles workspace creation, isolation, and tenant-specific configurations
 
 import { prisma } from "@/lib/database";
+import * as bcrypt from "bcryptjs";
 
 export interface TenantConfig {
   workspace_id: string;
@@ -294,9 +295,9 @@ export class TenantManager {
 
     return {
       total_users: workspace.users.length,
-      active_users: workspace.users.filter(u => u.is_active).length,
+      active_users: workspace.users.filter((u: any) => u.is_active).length,
       total_orders: workspace.orders.length,
-      active_orders: workspace.orders.filter(o => o.status === "IN_PRODUCTION")
+      active_orders: workspace.orders.filter((o: any) => o.status === "IN_PRODUCTION")
         .length,
       total_clients: workspace.clients.length,
       total_employees: workspace.employees.length,
@@ -377,7 +378,6 @@ export class TenantManager {
     workspaceName: string
   ): Promise<void> {
     // Create default admin user
-    const bcrypt = await import("bcryptjs");
     const defaultPassword = "ChangeMe123!"; // Force password change on first login
 
     await prisma.user.create({

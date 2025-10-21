@@ -221,7 +221,9 @@ export class MemoCache<K, V> {
     // Simple LRU: delete oldest entry when max size reached
     if (this.cache.size >= this.maxSize) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if (firstKey !== undefined) {
+        this.cache.delete(firstKey);
+      }
     }
 
     this.cache.set(key, value);

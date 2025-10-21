@@ -6,6 +6,7 @@
 
 import { getRedisClient } from "./redis/client";
 import { generateToken } from "./jwt";
+import { UserRole } from "./auth-guards";
 import crypto from "crypto";
 
 const redis = getRedisClient();
@@ -37,7 +38,7 @@ export async function generateTokenPair(
   userData: {
     userId: string;
     email: string;
-    role: string;
+    role: UserRole;
     workspaceId: string;
   },
   deviceInfo?: {

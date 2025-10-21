@@ -86,10 +86,10 @@ export function withAPICache(
                       }),
                       ttl
                     )
-                    .catch(err => console.error("Cache set error:", err));
+                    .catch((err: any) => console.error("Cache set error:", err));
                 });
               })
-              .catch(err => console.error("Background refresh error:", err));
+              .catch((err: any) => console.error("Background refresh error:", err));
           }
         }
 
