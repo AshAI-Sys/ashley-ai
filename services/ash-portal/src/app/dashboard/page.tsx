@@ -448,7 +448,7 @@ export default function DashboardPage() {
                     No notifications
                   </h3>
                   <p className="text-gray-600">
-                    You'll receive updates about your orders and account here.
+                    You&apos;ll receive updates about your orders and account here.
                   </p>
                 </CardContent>
               </Card>

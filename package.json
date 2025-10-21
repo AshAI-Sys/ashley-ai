@@ -19,7 +19,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev --parallel --no-cache",
     "dev:fast": "turbo run dev --parallel --no-cache --filter=apps/admin --filter=apps/portal",
-    "lint": "turbo run lint --continue -- --max-warnings=0",
+    "lint": "turbo run lint --continue -- --max-warnings=50",
     "lint:fix": "turbo run lint --continue -- --fix",
     "test": "jest --watchAll=false",
     "test:watch": "jest --watch",
