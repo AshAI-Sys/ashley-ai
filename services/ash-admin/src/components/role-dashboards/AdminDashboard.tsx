@@ -133,13 +133,13 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="responsive-grid">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="corporate-card p-6">
+            <div key={i} className="stats-card">
               <div className="animate-pulse space-y-3">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
               </div>
             </div>
           ))}
@@ -151,11 +151,11 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div>
-        <div className="corporate-card p-6">
+        <div className="modern-card p-6 fade-in">
           <div className="text-center">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-base font-medium text-gray-700 mb-4">Failed to load dashboard data</p>
-            <Button onClick={() => refetch()} className="corporate-button">Retry</Button>
+            <p className="text-base font-medium mb-4">Failed to load dashboard data</p>
+            <Button onClick={() => refetch()} className="modern-button">Retry</Button>
           </div>
         </div>
       </div>
@@ -250,37 +250,37 @@ export default function AdminDashboard() {
         </div>
       </StaggeredAnimation>
 
-      {/* Alert Cards - Professional Design */}
+      {/* Alert Cards - Modern Design */}
       <Animated animation="slide-in-from-bottom" delay={400}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="corporate-card border-l-4 border-yellow-500 p-6 hover:shadow-lg transition-all">
+          <div className="modern-card border-l-4 border-yellow-500 p-6 glow">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-600 mb-1.5">Pending Approvals</p>
-                <p className="text-4xl font-bold text-yellow-600" style={{ letterSpacing: '-0.02em' }}>{stats?.pendingApprovals || 0}</p>
-                <p className="text-sm font-medium text-gray-600 mt-2.5">Orders awaiting approval</p>
+                <p className="text-sm font-semibold mb-1.5">Pending Approvals</p>
+                <p className="text-4xl font-bold text-yellow-600 dark:text-yellow-400" style={{ letterSpacing: '-0.02em' }}>{stats?.pendingApprovals || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground mt-2.5">Orders awaiting approval</p>
               </div>
               <AlertCircle className="w-9 h-9 text-yellow-500" />
             </div>
           </div>
 
-          <div className="corporate-card border-l-4 border-purple-500 p-6 hover:shadow-lg transition-all">
+          <div className="modern-card border-l-4 border-purple-500 p-6 glow">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-600 mb-1.5">In Production</p>
-                <p className="text-4xl font-bold text-purple-600" style={{ letterSpacing: '-0.02em' }}>{stats?.ordersInProduction || 0}</p>
-                <p className="text-sm font-medium text-gray-600 mt-2.5">Active production runs</p>
+                <p className="text-sm font-semibold mb-1.5">In Production</p>
+                <p className="text-4xl font-bold text-purple-600 dark:text-purple-400" style={{ letterSpacing: '-0.02em' }}>{stats?.ordersInProduction || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground mt-2.5">Active production runs</p>
               </div>
               <Clock className="w-9 h-9 text-purple-500" />
             </div>
           </div>
 
-          <div className="corporate-card border-l-4 border-green-500 p-6 hover:shadow-lg transition-all">
+          <div className="modern-card border-l-4 border-green-500 p-6 glow">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-sm font-semibold text-gray-600 mb-1.5">Completed</p>
-                <p className="text-4xl font-bold text-green-600" style={{ letterSpacing: '-0.02em' }}>{stats?.completedThisMonth || 0}</p>
-                <p className="text-sm font-medium text-gray-600 mt-2.5">Orders this month</p>
+                <p className="text-sm font-semibold mb-1.5">Completed</p>
+                <p className="text-4xl font-bold text-green-600 dark:text-green-400" style={{ letterSpacing: '-0.02em' }}>{stats?.completedThisMonth || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground mt-2.5">Orders this month</p>
               </div>
               <CheckCircle className="w-9 h-9 text-green-500" />
             </div>
@@ -292,33 +292,38 @@ export default function AdminDashboard() {
       <Animated animation="fade-in" delay={600}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Orders by Status */}
-        <div className="corporate-card">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900">Orders by Status</h3>
-            <p className="text-sm font-medium text-gray-600 mt-1">Current order distribution across all stages</p>
+        <div className="modern-card fade-in">
+          <div className="p-6 border-b border-border dark:border-gray-700">
+            <h3 className="text-lg font-bold text-foreground dark:text-white">Orders by Status</h3>
+            <p className="text-sm font-medium text-muted-foreground">Current order distribution across all stages</p>
           </div>
           <div className="p-6">
             {stats?.ordersByStatus && stats.ordersByStatus.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.ordersByStatus}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="status" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                  <YAxis tick={{ fill: '#9CA3AF' }} />
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
+                  <XAxis dataKey="status" tick={{ fontSize: 12 }} className="text-muted-foreground" />
+                  <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
                   <Tooltip
                     formatter={(value: any, name: string) => {
                       if (name === 'count') return [value, 'Orders']
                       if (name === 'amount') return [formatCurrency(value), 'Revenue']
                       return [value, name]
                     }}
-                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', color: '#F3F4F6' }}
+                    contentStyle={{
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '0.5rem'
+                    }}
+                    labelStyle={{ color: 'var(--foreground)' }}
                   />
-                  <Legend wrapperStyle={{ color: '#9CA3AF' }} />
-                  <Bar dataKey="count" fill="#3B82F6" name="Orders" />
-                  <Bar dataKey="amount" fill="#10B981" name="Revenue (₱)" />
+                  <Legend />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" name="Orders" />
+                  <Bar dataKey="amount" fill="hsl(var(--accent))" name="Revenue (₱)" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                 No order data available
               </div>
             )}
@@ -326,10 +331,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Employees by Department */}
-        <div className="corporate-card">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900">Workforce Distribution</h3>
-            <p className="text-sm font-medium text-gray-600 mt-1">Employees across all departments</p>
+        <div className="modern-card fade-in">
+          <div className="p-6 border-b border-border dark:border-gray-700">
+            <h3 className="text-lg font-bold text-foreground dark:text-white">Workforce Distribution</h3>
+            <p className="text-sm font-medium text-muted-foreground">Employees across all departments</p>
           </div>
           <div className="p-6">
             {stats?.employeesByDepartment && stats.employeesByDepartment.length > 0 ? (
@@ -349,11 +354,18 @@ export default function AdminDashboard() {
                       <Cell key={`cell-${index}`} fill={Object.values(STATUS_COLORS)[index % Object.values(STATUS_COLORS).length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', color: '#F3F4F6' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'var(--background)',
+                      border: '1px solid var(--border)',
+                      borderRadius: '0.5rem',
+                      color: 'var(--foreground)'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-[300px] flex items-center justify-center text-gray-500 font-medium">
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                 No employee data available
               </div>
             )}
@@ -364,57 +376,57 @@ export default function AdminDashboard() {
 
       {/* Quick Actions - Professional Grid */}
       <Animated animation="slide-in-from-bottom" delay={800}>
-        <div className="corporate-card">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900">Quick Actions</h3>
-            <p className="text-sm font-medium text-gray-600 mt-1">Navigate to key sections of the system</p>
+        <div className="modern-card fade-in">
+          <div className="p-6 border-b border-border dark:border-gray-700">
+            <h3 className="text-lg font-bold text-foreground dark:text-white">Quick Actions</h3>
+            <p className="text-sm font-medium text-muted-foreground">Navigate to key sections of the system</p>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link href="/orders">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <Package className="w-6 h-6" />
                   <span className="text-sm">View Orders</span>
                 </button>
               </Link>
               <Link href="/clients">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <Building2 className="w-6 h-6" />
                   <span className="text-sm">Manage Clients</span>
                 </button>
               </Link>
               <Link href="/hr-payroll">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <Users className="w-6 h-6" />
                   <span className="text-sm">HR & Payroll</span>
                 </button>
               </Link>
               <Link href="/finance">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <DollarSign className="w-6 h-6" />
                   <span className="text-sm">Finance</span>
                 </button>
               </Link>
               <Link href="/cutting">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <Scissors className="w-6 h-6" />
                   <span className="text-sm">Cutting</span>
                 </button>
               </Link>
               <Link href="/printing">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <Printer className="w-6 h-6" />
                   <span className="text-sm">Printing</span>
                 </button>
               </Link>
               <Link href="/quality-control">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <BadgeCheck className="w-6 h-6" />
                   <span className="text-sm">Quality Control</span>
                 </button>
               </Link>
               <Link href="/analytics">
-                <button className="w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-white border-2 border-gray-200 rounded-lg text-gray-700 hover:border-corporate-blue hover:bg-blue-50 hover:text-corporate-blue transition-all font-semibold">
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
                   <TrendingUp className="w-6 h-6" />
                   <span className="text-sm">Analytics</span>
                 </button>
@@ -425,10 +437,10 @@ export default function AdminDashboard() {
       </Animated>
 
       {/* Manufacturing Stages Overview - Professional Grid */}
-      <div className="corporate-card">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-bold text-gray-900">Manufacturing Stages</h3>
-          <p className="text-sm font-medium text-gray-600 mt-1">Quick access to all production stages</p>
+      <div className="modern-card fade-in">
+        <div className="p-6 border-b border-border dark:border-gray-700">
+          <h3 className="text-lg font-bold text-foreground dark:text-white">Manufacturing Stages</h3>
+          <p className="text-sm font-medium text-muted-foreground">Quick access to all production stages</p>
         </div>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -443,10 +455,10 @@ export default function AdminDashboard() {
               { name: 'Delivery', icon: Clock, href: '/delivery', color: '#DB2777' },
             ].map((stage) => (
               <Link key={stage.name} href={stage.href}>
-                <div className="p-5 border-2 border-gray-200 rounded-lg hover:border-corporate-blue hover:bg-blue-50 cursor-pointer transition-all group">
-                  <stage.icon className="w-7 h-7 mb-3 text-gray-600 group-hover:text-corporate-blue transition-colors" style={{ color: stage.color }} />
-                  <h4 className="font-semibold text-gray-900 text-sm mb-1">{stage.name}</h4>
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-corporate-blue group-hover:translate-x-1 transition-all" />
+                <div className="p-5 border-2 border-border dark:border-gray-700 rounded-lg bg-card dark:bg-gray-800 hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-all group glow">
+                  <stage.icon className="w-7 h-7 mb-3 text-muted-foreground group-hover:text-primary transition-colors" style={{ color: stage.color }} />
+                  <h4 className="font-semibold text-foreground dark:text-white text-sm mb-1">{stage.name}</h4>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                 </div>
               </Link>
             ))}

@@ -1,56 +1,56 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Professional Modern Dashboard Theme - Light Mode */
-    --background: 215 25% 97%; /* #F8FAFC - Light gray background */
-    --foreground: 215 25% 15%; /* #1E293B - Dark text for high contrast */
-    --card: 0 0% 100%; /* #FFFFFF - Pure white cards */
-    --card-foreground: 215 25% 15%; /* #1E293B - Dark text on cards */
+    /* Modern Corporate Theme - Light Mode */
+    --background: 220 20% 97%; /* #F8FAFC */
+    --foreground: 222 47% 11%; /* #0F172A */
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
-    --primary: 217 91% 60%; /* #2563EB - Blue accent */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 214 32% 95%; /* #F1F5F9 - Light gray sections */
-    --secondary-foreground: 215 25% 15%;
-    --muted: 214 32% 95%; /* #F1F5F9 */
-    --muted-foreground: 215 16% 50%; /* Medium gray text */
-    --accent: 217 91% 60%; /* #2563EB */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%; /* #E2E8F0 - Subtle borders */
-    --input: 0 0% 100%; /* White input backgrounds */
-    --ring: 217 91% 60%; /* Blue focus rings */
-    --radius: 0.75rem; /* Rounded corners */
-  }
-
-  /* ============================================
-     DARK MODE DISABLED - LIGHT MODE ONLY
-     All dark mode styles are disabled globally
-     ============================================ */
-  .dark {
-    /* Dark mode is disabled - use light mode variables instead */
-    --background: 215 25% 97%;
-    --foreground: 215 25% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
-    --primary: 217 91% 60%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 60%; /* #2563EB */
     --primary-foreground: 0 0% 100%;
     --secondary: 214 32% 95%;
-    --secondary-foreground: 215 25% 15%;
+    --secondary-foreground: 222 47% 11%;
+    --accent: 199 89% 61%; /* #38BDF8 */
+    --accent-foreground: 222 47% 11%;
     --muted: 214 32% 95%;
-    --muted-foreground: 215 16% 50%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
+    --muted-foreground: 215 16% 47%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;
-    --input: 0 0% 100%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222 47% 11%; /* #0F172A */
+    --foreground: 210 40% 98%; /* #F8FAFC */
+    --card: 217 32% 17%; /* #1E293B */
+    --card-foreground: 210 40% 98%;
+    --popover: 217 32% 17%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%; /* #2563EB */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 32% 23%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 199 89% 61%; /* #38BDF8 */
+    --accent-foreground: 0 0% 100%;
+    --muted: 217 32% 23%;
+    --muted-foreground: 215 20% 65%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 32% 23%;
+    --input: 217 32% 23%;
     --ring: 217 91% 60%;
   }
 }
@@ -59,15 +59,15 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'cv05' 1, 'cv08' 1;
   }
 
-  /* Professional Typography - High Readability */
   h1, h2, h3, h4, h5, h6 {
     @apply text-foreground;
     font-weight: 600;
@@ -79,336 +79,71 @@
   h2 { font-size: 1.5rem; font-weight: 600; }
   h3 { font-size: 1.25rem; font-weight: 600; }
   h4 { font-size: 1.125rem; font-weight: 600; }
+}
 
-  p, span, div, button {
-    @apply text-foreground;
-    line-height: 1.6;
-  }
+/* ============================================
+   MODERN DASHBOARD STYLES
+   ============================================ */
 
-  /* Improve paragraph readability */
-  p {
-    margin-bottom: 1rem;
-  }
-
-  /* Improve contrast for muted text */
-  .text-muted-foreground {
-    color: hsl(var(--muted-foreground)) !important;
-    opacity: 1;
-  }
-
-  /* Make sure all text has sufficient contrast */
-  * {
-    text-rendering: optimizeLegibility;
-  }
-
-  /* Force readable text colors */
-  .text-sm, .text-xs {
-    opacity: 1;
-  }
-
-  /* Improve table readability */
-  table {
-    @apply text-foreground;
-  }
-
-  th, td {
-    @apply text-foreground;
-    padding: 0.75rem;
-  }
-
-  /* Make links more visible */
-  a {
-    @apply text-primary;
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
-  /* ============================================
-     COMPREHENSIVE TEXT READABILITY FIX
-     Override ALL dark text colors to be readable
-     ============================================ */
-
-  /* Override all dark gray text colors */
-  .text-gray-900,
-  .text-gray-800,
-  .text-black {
-    color: hsl(var(--foreground)) !important;
-  }
-
-  /* Override all blue text colors */
-  .text-blue-900,
-  .text-blue-800,
-  .text-blue-700,
-  .text-blue-600,
-  .text-blue-500 {
-    color: hsl(var(--foreground)) !important;
-  }
-
-  /* Special case: Cards with light backgrounds should keep dark text */
-  .bg-white .text-gray-900,
-  .bg-white .text-gray-800,
-  .bg-white .text-black,
-  .bg-gray-50 .text-gray-900,
-  .bg-gray-50 .text-gray-800,
-  .bg-blue-50 .text-gray-900,
-  .bg-blue-50 .text-gray-800,
-  .bg-green-50 .text-gray-900,
-  .bg-amber-50 .text-gray-900,
-  .bg-red-50 .text-gray-900 {
-    color: rgb(17 24 39) !important; /* text-gray-900 */
-  }
-
-  /* ============================================
-     DROPDOWN & SELECT DARK THEME COMPATIBILITY
-     ============================================ */
-
-  /* All select elements and dropdowns */
-  select,
-  [role="combobox"],
-  [role="listbox"],
-  [role="menu"],
-  [data-radix-select-content],
-  [data-radix-dropdown-menu-content],
-  [data-radix-popover-content] {
-    @apply bg-popover text-popover-foreground;
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.5rem;
-  }
-
-  /* Select dropdown items */
-  [data-radix-select-item],
-  [data-radix-dropdown-menu-item],
-  [role="option"],
-  .dropdown-item {
-    @apply bg-popover text-popover-foreground;
-    padding: 0.5rem 0.75rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-  }
-
-  /* Hover states for dropdown items */
-  [data-radix-select-item]:hover,
-  [data-radix-dropdown-menu-item]:hover,
-  [role="option"]:hover,
-  .dropdown-item:hover,
-  [data-radix-select-item][data-highlighted],
-  [data-radix-dropdown-menu-item][data-highlighted] {
-    @apply bg-accent text-accent-foreground;
-    outline: none;
-  }
-
-  /* Selected/Active state */
-  [data-radix-select-item][data-state="checked"],
-  [role="option"][aria-selected="true"],
-  .dropdown-item.active {
-    @apply bg-primary text-primary-foreground;
-    font-weight: 500;
-  }
-
-  /* Native select elements */
-  select {
-    @apply bg-background text-foreground;
-    padding: 0.5rem 2rem 0.5rem 0.75rem;
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.375rem;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 12px;
-  }
-
-  .dark select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaa' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  }
-
-  select:focus {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
-
-  select option {
-    @apply bg-popover text-popover-foreground;
-    padding: 0.5rem;
-  }
-
-  /* Filter dropdowns and status selectors */
-  .filter-dropdown,
-  .status-filter,
-  [class*="filter"] select,
-  [class*="status"] select {
+@layer utilities {
+  /* Modern Cards */
+  .modern-card {
     @apply bg-card text-card-foreground;
-    min-width: 120px;
+    border-radius: 1rem; /* rounded-2xl */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Dropdown content containers */
-  [data-radix-select-viewport],
-  [data-radix-dropdown-menu-viewport] {
-    padding: 0.25rem;
+  .modern-card:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    transform: scale(1.02) translateY(-2px);
   }
 
-  /* Input fields in dark mode */
-  input[type="text"],
-  input[type="search"],
-  input[type="email"],
-  input[type="password"],
-  input[type="number"],
-  input[type="date"],
-  input[type="tel"],
-  textarea {
-    @apply bg-background text-foreground;
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
+  /* Sidebar */
+  .modern-sidebar {
+    background: #1E293B;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  input:focus,
-  textarea:focus {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-    border-color: hsl(var(--ring));
+  .dark .modern-sidebar {
+    background: #0F172A;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  input::placeholder,
-  textarea::placeholder {
-    color: hsl(var(--muted-foreground));
-    opacity: 0.6;
+  /* Navigation Item */
+  .nav-item {
+    @apply flex items-center px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200;
   }
 
-  /* Buttons in dropdowns */
-  button[role="option"],
-  button[role="menuitem"] {
-    @apply bg-transparent text-foreground;
-    width: 100%;
-    text-align: left;
-    border: none;
-    padding: 0.5rem 0.75rem;
+  .nav-item-active {
+    @apply bg-primary text-white shadow-lg;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
   }
 
-  button[role="option"]:hover,
-  button[role="menuitem"]:hover {
-    @apply bg-accent text-accent-foreground;
+  /* Buttons */
+  .modern-button {
+    @apply bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium;
+    transition: all 0.2s ease-in-out;
   }
 
-  /* Scrollbar styling for dropdowns */
-  [data-radix-select-viewport]::-webkit-scrollbar,
-  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar,
-  select::-webkit-scrollbar {
-    width: 8px;
+  .modern-button:hover {
+    @apply shadow-lg;
+    transform: translateY(-1px);
   }
 
-  [data-radix-select-viewport]::-webkit-scrollbar-track,
-  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar-track,
-  select::-webkit-scrollbar-track {
-    @apply bg-muted;
-    border-radius: 4px;
+  .modern-button:active {
+    transform: translateY(0);
   }
 
-  [data-radix-select-viewport]::-webkit-scrollbar-thumb,
-  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar-thumb,
-  select::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground;
-    border-radius: 4px;
+  /* Animations */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
   }
 
-  [data-radix-select-viewport]::-webkit-scrollbar-thumb:hover,
-  [data-radix-dropdown-menu-viewport]::-webkit-scrollbar-thumb:hover,
-  select::-webkit-scrollbar-thumb:hover {
-    @apply bg-foreground;
-  }
-
-  /* Separator in dropdowns */
-  [data-radix-dropdown-menu-separator],
-  .dropdown-divider {
-    height: 1px;
-    @apply bg-border;
-    margin: 0.25rem 0;
-  }
-
-  /* Disabled states */
-  select:disabled,
-  [data-radix-select-item][data-disabled],
-  [data-radix-dropdown-menu-item][data-disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  /* ============================================
-     LOGIN PAGE INPUT FIELDS - ENHANCED CONTRAST
-     Ensure perfect readability in both modes
-     ============================================ */
-
-  /* FORCE WHITE BACKGROUND in light mode */
-  input[type="email"],
-  input[type="password"],
-  input[type="text"] {
-    background-color: #FFFFFF !important; /* white */
-    color: #111827 !important; /* gray-900 */
-    border-color: #D1D5DB !important; /* gray-300 */
-  }
-
-  input[type="email"]:focus,
-  input[type="password"]:focus,
-  input[type="text"]:focus {
-    background-color: #FFFFFF !important; /* white */
-    color: #111827 !important; /* gray-900 */
-  }
-
-  input::placeholder {
-    color: #9CA3AF !important; /* gray-400 */
-    opacity: 1 !important;
-  }
-
-  /* Force proper styling for login input fields in dark mode */
-  .dark input[type="email"],
-  .dark input[type="password"],
-  .dark input[type="text"] {
-    background-color: rgb(31 41 55) !important; /* gray-800 */
-    color: rgb(255 255 255) !important; /* white */
-    border-color: rgb(75 85 99) !important; /* gray-600 */
-  }
-
-  /* Placeholder text in dark mode */
-  .dark input::placeholder {
-    color: rgb(156 163 175) !important; /* gray-400 */
-    opacity: 0.7 !important;
-  }
-
-  /* Focus state for inputs in dark mode */
-  .dark input[type="email"]:focus,
-  .dark input[type="password"]:focus,
-  .dark input[type="text"]:focus {
-    background-color: rgb(31 41 55) !important; /* gray-800 */
-    color: rgb(255 255 255) !important; /* white */
-    border-color: rgb(59 130 246) !important; /* blue-500 */
-    outline: 2px solid rgb(59 130 246) !important;
-    outline-offset: 2px;
-  }
-
-  /* Focus visible for accessibility */
-  select:focus-visible,
-  [data-radix-select-trigger]:focus-visible,
-  [data-radix-dropdown-menu-trigger]:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
-
-  /* Ensure proper z-index for dropdowns */
-  [data-radix-select-content],
-  [data-radix-dropdown-menu-content],
-  [data-radix-popover-content] {
-    z-index: 50;
-  }
-
-  /* Animation for dropdown appearance */
-  @keyframes slideDown {
+  @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(-8px);
+      transform: translateY(10px);
     }
     to {
       opacity: 1;
@@ -416,495 +151,263 @@
     }
   }
 
-  [data-radix-select-content],
-  [data-radix-dropdown-menu-content] {
-    animation: slideDown 0.15s ease-out;
+  .glow {
+    transition: all 0.3s ease-in-out;
   }
 
-  /* ============================================
-     GLOBAL TEXT OVERFLOW FIX (SAFE VERSION)
-     Prevent text overlap without breaking styling
-     ============================================ */
-
-  /* Only apply word-wrap to text elements, not everything */
-  p, span:not([class*="icon"]), label, a {
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+  .glow:hover {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
   }
 
-  /* Ensure icons don't shrink in flex containers */
-  svg, [class*="icon"] {
-    flex-shrink: 0;
-  }
-
-  /* Fix for very long words in specific elements */
-  .break-words {
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
-
-  /* ============================================
-     COMPREHENSIVE DARK MODE TEXT FIXES - 2025-10-20
-     Force ALL text to be readable in dark mode
-     ============================================ */
-
-  /* Force ALL headings to use white text in dark mode */
-  .dark h1,
-  .dark h2,
-  .dark h3,
-  .dark h4,
-  .dark h5,
-  .dark h6 {
-    color: rgb(255 255 255) !important; /* white */
-  }
-
-  /* Force ALL labels to be readable in dark mode */
-  .dark label {
-    color: rgb(209 213 219) !important; /* gray-300 */
-  }
-
-  /* Force ALL paragraphs and divs with text classes */
-  .dark .text-gray-900,
-  .dark .text-gray-800,
-  .dark .text-gray-700,
-  .dark .text-gray-600 {
-    color: rgb(255 255 255) !important; /* white */
-  }
-
-  .dark .text-gray-500 {
-    color: rgb(156 163 175) !important; /* gray-400 - lighter */
-  }
-
-  .dark .text-gray-400 {
-    color: rgb(156 163 175) !important; /* gray-400 */
-  }
-
-  /* Ensure all font-semibold and font-bold are white in dark mode */
-  .dark .font-semibold,
-  .dark .font-bold,
-  .dark .font-medium {
-    color: rgb(255 255 255) !important; /* white */
-  }
-
-  /* Fix for small text and helper text */
-  .dark .text-sm,
-  .dark .text-xs {
-    color: rgb(209 213 219) !important; /* gray-300 */
-  }
-
-  /* ============================================
-     COLOR CONTRAST FIX FOR ALL BADGES & COLORED ELEMENTS
-     Ensure readability in both light and dark themes
-     ============================================ */
-
-  /* Fix ALL colored badge backgrounds to be brighter and more visible */
-  .bg-purple-600, .bg-purple-500,
-  .bg-blue-600, .bg-blue-500,
-  .bg-green-600, .bg-green-500,
-  .bg-red-600, .bg-red-500,
-  .bg-yellow-600, .bg-yellow-500,
-  .bg-orange-600, .bg-orange-500,
-  .bg-indigo-600, .bg-indigo-500,
-  .bg-pink-600, .bg-pink-500,
-  .bg-teal-600, .bg-teal-500 {
-    /* Ensure white text is visible on colored backgrounds */
-    color: white !important;
-    font-weight: 700 !important;
-    /* Add subtle border for better definition in dark theme */
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-
-  /* Specific fix for section letter badges (rounded-full) */
-  .rounded-full.text-white {
-    color: white !important;
-    font-weight: 700 !important;
-    /* Ensure badges pop in dark theme */
-    filter: brightness(1.2) saturate(1.1);
-  }
-
-  /* Make sure any badge/label elements are readable */
-  [class*="badge"],
-  .badge,
-  [class*="label"],
-  .label {
-    font-weight: 600 !important;
-  }
-}
-
-/* ============================================
-   PROFESSIONAL MODERN DASHBOARD STYLES
-   Clean, high-contrast design with Inter font
-   ============================================ */
-
-@layer utilities {
-  /* Professional card - white with subtle shadow and border */
-  .corporate-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    transition: all 0.2s ease-in-out;
-  }
-
-  .corporate-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transform: translateY(-1px);
-  }
-
-  /* Navy sidebar - professional dark blue */
-  .corporate-sidebar {
-    background: #1E293B;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  /* Primary button - blue accent */
-  .corporate-button {
-    background: #2563EB;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .corporate-button:hover {
-    background: #1D4ED8;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-  }
-
-  .corporate-button:active {
-    background: #1E40AF;
-    transform: scale(0.98);
-  }
-
-  /* Secondary button - outlined */
-  .corporate-button-secondary {
-    background: white;
-    color: #2563EB;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .corporate-button-secondary:hover {
-    background: #F1F5F9;
-    border-color: #2563EB;
-  }
-
-  /* Active nav item - blue highlight with glow */
-  .nav-item-active {
-    background: rgba(37, 99, 235, 0.1);
-    border-left: 3px solid #2563EB;
-    color: white;
-  }
-
-  /* Professional input fields */
-  .corporate-input {
-    background: white;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 0.5rem;
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .corporate-input:focus {
-    border-color: #2563EB;
-    outline: 2px solid rgba(37, 99, 235, 0.1);
-    outline-offset: 0;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  }
-
-  /* Section background */
-  .section-bg {
-    background: #F1F5F9;
-  }
-
-  /* Stats card with gradient */
+  /* Stats Cards */
   .stats-card {
-    background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
-    border: 1px solid #E2E8F0;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease-in-out;
+    @apply bg-card rounded-2xl p-6 border border-border;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    transition: all 0.3s ease;
   }
 
   .stats-card:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    transform: translateY(-4px) scale(1.02);
   }
-
-  /* Dark mode support - maintain glassmorphism for dark mode */
-  .dark .glass {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
-
-  .dark .glass-sidebar {
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .dark .glass-card {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  }
-
-  .dark .glass-button {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .dark .glass-dark {
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-  }
-
-  /* Glowing borders for dark mode */
-  .dark .glow-border {
-    border: 1px solid rgba(96, 165, 250, 0.5);
-    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3),
-                inset 0 0 20px rgba(96, 165, 250, 0.1);
-  }
-
-  .dark .glow-border-green {
-    border: 1px solid rgba(34, 197, 94, 0.5);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3),
-                inset 0 0 20px rgba(34, 197, 94, 0.1);
-  }
-
-  /* Light mode - use corporate classes by default */
-  .glass,
-  .glass-light {
-    background: white;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  }
-
-  .glass-dark {
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
-  }
-
-  .glass-sidebar {
-    background: #1E3A8A;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .glass-card {
-    background: white;
-    border: 1px solid #E2E8F0;
-    border-radius: 1rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-  }
-
-  .glass-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-  }
-
-  .glass-button {
-    background: white;
-    border: 1px solid #E2E8F0;
-    transition: all 0.3s ease;
-  }
-
-  .glass-button:hover {
-    background: #F8FAFC;
-    border-color: #2563EB;
-  }
-
-  .glow-border {
-    border: 2px solid #2563EB;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  }
-
-  .glow-border-green {
-    border: 2px solid #22C55E;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
-  }
-
-  .glow-border-purple {
-    border: 2px solid #A855F7;
-    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
-  }
-
-  /* Background gradient for light mode */
-  .bg-dark-gradient {
-    background: #F8FAFC;
-  }
-
-  .dark .bg-dark-gradient {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-  }
-}
-
-/* Professional body background */
-body {
-  background: #F8FAFC !important;
-  background-attachment: fixed !important;
-  min-height: 100vh;
-  font-size: 14px;
-}
-
-/* Dark mode disabled - use light mode background instead */
-.dark body {
-  background: #F8FAFC !important;
 }
 
 /* ============================================
-   FORCE LIGHT MODE ON LOGIN PAGE
-   Prevent dark mode from ever showing on login
+   FORM ELEMENTS
    ============================================ */
 
-/* Force light mode background and text on login page */
-body:has([class*="login"]),
-.light,
-[data-page="login"] {
-  background: #F8FAFC !important;
-  color: #000000 !important;
-  color-scheme: light !important;
-}
+@layer base {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="date"],
+  textarea,
+  select {
+    @apply bg-card text-foreground border-border rounded-lg px-3 py-2;
+    transition: all 0.2s ease;
+  }
 
-/* Force all login page children to use light colors */
-.light *,
-.light h1,
-.light h2,
-.light h3,
-.light p,
-.light label,
-.light span,
-.light div {
-  color: inherit !important;
-}
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply outline-none ring-2 ring-primary border-primary;
+  }
 
-/* Override any dark mode classes on login page */
-.light .text-gray-900,
-.light .text-gray-800,
-.light .text-gray-700,
-.light .text-gray-600 {
-  color: #000000 !important;
-}
-
-/* Force input fields on login page to be white with black text */
-.light input {
-  background-color: #FFFFFF !important;
-  color: #000000 !important;
-  border-color: #D1D5DB !important;
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-muted-foreground;
+  }
 }
 
 /* ============================================
-   GLOBAL LIGHT MODE ENFORCEMENT
-   Disable dark mode across entire application
+   DARK MODE TOGGLE
    ============================================ */
 
-/* FORCE REMOVE DARK CLASS FROM HTML AND BODY */
-html.dark,
-body.dark,
-html:has(.dark),
-body:has(.dark) {
-  background: #F8FAFC !important;
-  color: #1E293B !important;
-  color-scheme: light !important;
+.dark-mode-toggle {
+  @apply fixed bottom-6 right-6 z-50;
+  @apply bg-card border border-border rounded-full p-3;
+  @apply shadow-lg hover:shadow-xl;
+  @apply transition-all duration-300;
+  @apply cursor-pointer;
 }
 
-/* DISABLE ALL DARK MODE TAILWIND UTILITIES */
-.dark\:bg-gray-800,
-.dark\:bg-gray-900,
-.dark\:bg-gray-700,
-.dark\:bg-blue-900,
-.dark\:bg-slate-800,
-.dark\:bg-slate-900 {
-  background-color: transparent !important;
+.dark-mode-toggle:hover {
+  transform: scale(1.1) rotate(10deg);
 }
 
-.dark\:text-white,
-.dark\:text-gray-100,
-.dark\:text-gray-200,
-.dark\:text-gray-300 {
-  color: inherit !important;
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+@layer utilities {
+  .responsive-grid {
+    @apply grid grid-cols-1 gap-6;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-grid {
+      @apply grid-cols-2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-grid {
+      @apply grid-cols-3;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .responsive-grid {
+      @apply grid-cols-4;
+    }
+  }
 }
 
-.dark\:border-gray-700,
-.dark\:border-gray-600,
-.dark\:border-gray-800 {
-  border-color: #E2E8F0 !important;
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-/* FORCE LIGHT MODE ON ALL PAGES */
-html, body, #__next, main {
-  background: #F8FAFC !important;
-  color-scheme: light !important;
+::-webkit-scrollbar-track {
+  @apply bg-secondary;
 }
 
-/* ENSURE ALL TEXT IS VISIBLE IN LIGHT MODE */
-* {
-  color-scheme: light !important;
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground rounded-lg;
 }
 
-/* PREVENT ANY DARK MODE BACKGROUND COLORS */
-.dark * {
-  background-color: inherit !important;
-  color: inherit !important;
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-foreground;
 }
 
-/* PROFESSIONAL LIGHT MODE COLORS FOR ALL COMPONENTS */
-.dark .corporate-card,
-.dark [class*="card"] {
-  background: white !important;
-  color: #1E293B !important;
-  border-color: #E2E8F0 !important;
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  @apply bg-card;
 }
 
-/* ENSURE BUTTONS REMAIN VISIBLE */
-.dark button {
-  color: inherit !important;
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-muted;
 }
 
-/* OVERRIDE ANY DARK MODE STYLES ON NAVIGATION */
-.dark nav,
-.dark aside,
-.dark header {
-  background: inherit !important;
-  color: inherit !important;
+.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground;
 }
 
-/* ENSURE FORM ELEMENTS ARE VISIBLE */
-.dark input,
-.dark textarea,
-.dark select {
-  background: white !important;
-  color: #1E293B !important;
-  border-color: #D1D5DB !important;
+/* ============================================
+   TABLE STYLING
+   ============================================ */
+
+table {
+  @apply w-full;
 }
 
-/* DISABLE DARK MODE HOVER STATES */
-.dark\:hover\:bg-gray-700:hover,
-.dark\:hover\:bg-gray-800:hover {
-  background-color: #F1F5F9 !important;
+th {
+  @apply bg-secondary text-foreground font-semibold text-left px-4 py-3;
 }
 
-/* FINAL OVERRIDE - FORCE LIGHT MODE ON EVERYTHING */
-*:not(.corporate-blue):not([class*="bg-blue"]):not([class*="bg-red"]):not([class*="bg-green"]):not([class*="bg-yellow"]) {
-  color-scheme: light !important;
+td {
+  @apply border-t border-border px-4 py-3;
+}
+
+tr:hover {
+  @apply bg-secondary/50;
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   BADGE COMPONENTS
+   ============================================ */
+
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-primary text-white;
+}
+
+.badge-success {
+  @apply bg-green-500 text-white;
+}
+
+.badge-warning {
+  @apply bg-yellow-500 text-white;
+}
+
+.badge-danger {
+  @apply bg-red-500 text-white;
+}
+
+.badge-info {
+  @apply bg-blue-500 text-white;
+}
+
+/* ============================================
+   CHART STYLING (Recharts)
+   ============================================ */
+
+.recharts-wrapper {
+  @apply rounded-lg;
+}
+
+.recharts-surface {
+  @apply rounded-lg;
+}
+
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.dark .recharts-text {
+  fill: rgba(255, 255, 255, 0.7);
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .modern-card {
+    border-radius: 0.75rem;
+  }
+
+  .stats-card {
+    @apply p-4;
+  }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+  h3 { font-size: 1.125rem; }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+.focus-visible:focus {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
+}
+
+button:focus-visible,
+a:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

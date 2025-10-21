@@ -114,7 +114,6 @@ export default function Sidebar() {
     { name: 'AI Features', href: '/ai-features', icon: 'Brain', department: 'Management' },
     { name: 'Inventory', href: '/inventory', icon: 'PackageSearch', department: 'Inventory' },
     { name: 'Performance', href: '/performance', icon: 'Activity', department: 'Administration' },
-    { name: 'Settings', href: '/settings', icon: 'Settings', department: '*' },
     { name: 'Tenant Settings', href: '/admin/tenants', icon: 'Settings', department: 'Administration' },
   ]
 
@@ -179,9 +178,9 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar - Professional Navy Design */}
+      {/* Sidebar - Modern Design */}
       <div className={`
-        corporate-sidebar text-white transition-all duration-300
+        modern-sidebar text-white transition-all duration-300
         ${collapsed ? 'w-16' : 'w-64'}
         min-h-screen flex flex-col
 
@@ -205,7 +204,7 @@ export default function Sidebar() {
               </div>
               <div>
                 <h1 className="font-bold text-base text-white leading-tight">Ashley AI</h1>
-                <p className="text-xs text-blue-300/80 leading-tight">Apparel Smart Hub</p>
+                <p className="text-xs text-white/80 leading-tight">Apparel Smart Hub</p>
               </div>
             </div>
           )}
@@ -236,10 +235,10 @@ export default function Sidebar() {
               key={item.name}
               href={item.href}
               className={`
-                flex items-center px-3 py-3 rounded-lg text-sm font-medium transition-all
+                nav-item
                 ${isActive
-                  ? 'bg-blue-600/90 text-white shadow-lg shadow-blue-900/20'
-                  : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                  ? 'nav-item-active'
+                  : 'text-white hover:bg-white/10'
                 }
               `}
               title={collapsed ? item.name : undefined}
@@ -259,14 +258,14 @@ export default function Sidebar() {
         {!collapsed && user && (
           <div className="text-xs text-white bg-white/10 p-3.5 rounded-lg backdrop-blur-sm">
             <p className="font-semibold text-white text-sm mb-1">{user.name}</p>
-            <p className="text-blue-200 text-xs">{user.position}</p>
-            <p className="text-blue-300/70 text-[10px] mt-1.5">{user.department} • {user.role}</p>
+            <p className="text-white/90 text-xs">{user.position}</p>
+            <p className="text-white/70 text-[10px] mt-1.5">{user.department} • {user.role}</p>
           </div>
         )}
         {!collapsed && (
           <div className="text-xs">
             <p className="text-white font-semibold text-xs">Ashley AI v1.0</p>
-            <p className="text-blue-300/70 text-xs">Manufacturing ERP</p>
+            <p className="text-white/70 text-xs">Manufacturing ERP</p>
           </div>
         )}
       </div>

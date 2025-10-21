@@ -6,6 +6,7 @@ import { ToastProvider } from '@/components/ui/toast-provider'
 import { ErrorBoundary } from '@/components/ui/error-boundary'
 import { GlobalKeyboardShortcutsProvider } from '@/components/keyboard-shortcuts-dialog'
 import { FetchInterceptorInit } from '@/components/fetch-interceptor-init'
+import { ThemeProvider } from '@/lib/theme-context'
 import dynamic from 'next/dynamic'
 
 // Load ChatWidget only on client side to prevent hydration issues
@@ -18,6 +19,11 @@ const PWAInstallPrompt = dynamic(() => import('@/components/pwa-install-prompt')
   ssr: false,
 })
 const PWARegister = dynamic(() => import('@/components/pwa-register'), {
+  ssr: false,
+})
+
+// Load DarkModeToggle only on client side
+const DarkModeToggle = dynamic(() => import('@/components/dark-mode-toggle'), {
   ssr: false,
 })
 
@@ -89,44 +95,34 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" href="/favicon.png" />
         <link rel="apple-touch-icon" href="/ash-ai-logo.png" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // FORCE LIGHT MODE - Remove any dark mode classes (SYNCHRONOUS)
-              (function() {
-                try {
-                  document.documentElement.classList.remove('dark');
-                  document.body.classList.remove('dark');
-                  document.documentElement.style.colorScheme = 'light';
-                  localStorage.setItem('ash_theme', 'light');
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
         {/* Preconnect to speed up external resources */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ErrorBoundary>
-          <Providers>
-            {/* Initialize fetch interceptor to add auth headers */}
-            <FetchInterceptorInit />
+          <ThemeProvider>
+            <Providers>
+              {/* Initialize fetch interceptor to add auth headers */}
+              <FetchInterceptorInit />
 
-            <GlobalKeyboardShortcutsProvider>
-              {children}
-              {/* ChatWidget temporarily disabled for faster page load */}
-              {/* <ChatWidget /> */}
+              <GlobalKeyboardShortcutsProvider>
+                {children}
+                {/* ChatWidget temporarily disabled for faster page load */}
+                {/* <ChatWidget /> */}
 
-              {/* PWA Components */}
-              <PWARegister />
-              <PWAInstallPrompt />
+                {/* Dark Mode Toggle */}
+                <DarkModeToggle />
 
-              {/* Enhanced Toast Provider */}
-              <ToastProvider />
-            </GlobalKeyboardShortcutsProvider>
-          </Providers>
+                {/* PWA Components */}
+                <PWARegister />
+                <PWAInstallPrompt />
+
+                {/* Enhanced Toast Provider */}
+                <ToastProvider />
+              </GlobalKeyboardShortcutsProvider>
+            </Providers>
+          </ThemeProvider>
         </ErrorBoundary>
       </body>
     </html>

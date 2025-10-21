@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 
-type Theme = 'light'
+type Theme = 'light' | 'dark'
 
 type ThemeContextType = {
   theme: Theme
@@ -13,27 +13,46 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme] = useState<Theme>('light')
+  const [theme, setThemeState] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
+  // Load theme from localStorage on mount
   useEffect(() => {
+    const savedTheme = localStorage.getItem('ash_theme') as Theme | null
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+      setThemeState(savedTheme)
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      setThemeState(prefersDark ? 'dark' : 'light')
+    }
     setMounted(true)
-    // FORCE LIGHT MODE ONLY - Remove any dark mode classes
-    document.documentElement.classList.remove('dark')
-    document.body.classList.remove('dark')
-    document.documentElement.style.colorScheme = 'light'
-    localStorage.setItem('ash_theme', 'light')
   }, [])
 
-  const setTheme = () => {
-    // Light mode only - do nothing
-  }
+  // Apply theme to document
+  useEffect(() => {
+    if (!mounted) return
+
+    const root = document.documentElement
+    root.classList.remove('light', 'dark')
+    root.classList.add(theme)
+    root.style.colorScheme = theme
+    localStorage.setItem('ash_theme', theme)
+  }, [theme, mounted])
 
   const toggleTheme = () => {
-    // Light mode only - do nothing
+    setThemeState(prev => prev === 'light' ? 'dark' : 'light')
   }
 
-  // Always provide the context, even before mounting
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme)
+  }
+
+  // Prevent flash of unstyled content
+  if (!mounted) {
+    return <>{children}</>
+  }
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}
