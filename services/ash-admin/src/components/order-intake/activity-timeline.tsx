@@ -158,7 +158,7 @@ export function ActivityTimeline({ activities, loading = false }: ActivityTimeli
                     </div>
 
                     {activity.description && (
-                      <p className="text-sm text-gray-300 mb-3">{activity.description}</p>
+                      <p className="text-sm text-gray-600 mb-3">{activity.description}</p>
                     )}
 
                     <div className="flex items-center gap-4 text-xs text-gray-500">
