@@ -35,6 +35,3 @@ export async function healthCheck(): Promise<boolean> {
 export async function disconnect(): Promise<void> {
   await db.$disconnect();
 }
-
-// Legacy exports for backwards compatibility
-export { db as prisma } from "@prisma/client";

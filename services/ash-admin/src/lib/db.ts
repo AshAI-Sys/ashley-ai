@@ -1,11 +1,8 @@
 import { db } from '@/lib/database'
-import { performanceExtension, queryLoggingExtension, autoPaginationExtension } from './performance/prisma-extensions'
+// import { performanceExtension, queryLoggingExtension, autoPaginationExtension } from './performance/prisma-extensions'
 
-// Extended Prisma client with performance monitoring
+// Export Prisma client directly (extensions temporarily disabled for stability)
 export const prisma = db
-  .$extends(performanceExtension)
-  .$extends(queryLoggingExtension)
-  .$extends(autoPaginationExtension)
 
 // Export original client for raw queries
 export const prismaRaw = db
