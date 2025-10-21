@@ -1,0 +1,39 @@
+# CODEOWNERS - Ashley AI Manufacturing ERP
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global Owners (Review all changes by default)
+* @khell
+
+# Core Application Code
+/services/ash-admin/src/ @khell
+/services/ash-portal/src/ @khell
+
+# Database & Migrations (Requires extra review)
+/packages/database/ @khell
+*.prisma @khell
+
+# API Routes (Security-sensitive)
+/services/ash-admin/src/app/api/ @khell
+
+# Configuration Files (Requires approval)
+/.github/ @khell
+/.husky/ @khell
+/package.json @khell
+/pnpm-lock.yaml @khell
+/tsconfig.json @khell
+/.eslintrc.json @khell
+/next.config.js @khell
+
+# Security & Authentication
+/services/ash-admin/src/lib/auth* @khell
+/services/ash-admin/src/lib/security/ @khell
+/services/ash-admin/src/middleware.ts @khell
+
+# CI/CD & DevOps
+/.github/workflows/ @khell
+/Dockerfile @khell
+/docker-compose*.yml @khell
+
+# Documentation (Can be updated by anyone but requires review)
+/docs/ @khell
+*.md @khell
