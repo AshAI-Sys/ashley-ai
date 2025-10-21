@@ -158,7 +158,12 @@
       "Bash(! grep -q \"export const dynamic\" \"$dir/route.ts\")",
       "Bash(then sed -i \"3a\\\\n// Force dynamic route (don''t pre-render during build)\\nexport const dynamic = ''force-dynamic''\\n\" \"$dir/route.ts\")",
       "Bash(if exist \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\.next\" rd /s /q \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\.next\")",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(printf:*)",
+      "Bash(git credential reject:*)",
+      "Bash(cmdkey /list:*)",
+      "Bash(git revert:*)",
+      "Bash(start https://github.com/AshAI-Sys/ashley-ai/pull/new/fix/auto-errors)"
     ],
     "deny": [],
     "ask": []

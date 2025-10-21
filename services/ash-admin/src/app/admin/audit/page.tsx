@@ -6,7 +6,6 @@ import PermissionGate from "@/components/PermissionGate";
 import {
   Shield,
   Search,
-  Filter,
   Calendar,
   User,
   Activity,
