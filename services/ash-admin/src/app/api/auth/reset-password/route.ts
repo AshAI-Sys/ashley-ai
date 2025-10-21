@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import { z } from "zod";
 
 // Force Node.js runtime (Prisma doesn't support Edge)

@@ -4,7 +4,7 @@
  */
 
 import { SignJWT, jwtVerify } from "jose";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 import crypto from "crypto";
 
 // JWT Configuration

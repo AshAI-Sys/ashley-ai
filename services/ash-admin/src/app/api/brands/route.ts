@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: validatedData.client_id },
+      select: { id: true, workspace_id: true },
     });
 
     if (!client) {
@@ -135,7 +136,10 @@ export async function POST(request: NextRequest) {
     }
 
     const brand = await prisma.brand.create({
-      data: validatedData,
+      data: {
+        ...validatedData,
+        workspace_id: client.workspace_id, // Add workspace_id from client
+      },
       include: {
         client: {
           select: {

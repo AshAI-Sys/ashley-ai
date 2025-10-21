@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 
 const prisma = db;
 

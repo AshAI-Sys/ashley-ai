@@ -13,7 +13,7 @@ import {
   requireAuth,
   requireAnyPermission,
 } from "../../../../lib/auth-middleware";
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 
 export const GET = requireAuth(
   withErrorHandling(async (request: NextRequest, user: any) => {
