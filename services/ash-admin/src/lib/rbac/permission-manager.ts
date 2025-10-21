@@ -583,9 +583,12 @@ export class PermissionManager {
 
     // Filter permissions based on role's permission patterns
     return allPerms.filter(perm => {
-      return roleConfig.permissions.some(pattern => {
-        return this.matchesPermissionPattern(perm.name, pattern);
-      });
+      if (Array.isArray(roleConfig.permissions)) {
+        return roleConfig.permissions.some(pattern => {
+          return this.matchesPermissionPattern(perm.name, pattern);
+        });
+      }
+      return false;
     });
   }
 

@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 // Security events will be logged from API routes instead
 import {
   generateNonce,
-  createCSPHeader,
   getMaxSecurityHeaders,
 } from "./lib/csp-nonce";
 
@@ -14,7 +13,7 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const csrfTokenStore = new Map<string, { token: string; expires: number }>();
 
 // Security headers configuration (CSP disabled for production compatibility)
-function getSecurityHeaders(nonce: string) {
+function getSecurityHeaders(_nonce: string) {
   return {
     "X-DNS-Prefetch-Control": "on",
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",

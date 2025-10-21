@@ -4,7 +4,7 @@
  * Validates that account lockout mechanism prevents brute force attacks
  */
 
-import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import { describe, it, expect, beforeEach } from "@jest/globals";
 
 const API_BASE = "http://localhost:3001";
 

@@ -234,7 +234,7 @@ export function getIdentifier(
   if (type === "ip") {
     const forwarded = request.headers.get("x-forwarded-for");
     const real = request.headers.get("x-real-ip");
-    return forwarded?.split(",")[0].trim() || real || "unknown";
+    return (forwarded?.split(",")[0]?.trim()) || real || "unknown";
   }
 
   if (type === "api-key") {

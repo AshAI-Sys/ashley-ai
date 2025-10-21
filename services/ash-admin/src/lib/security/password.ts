@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import * as bcrypt from "bcryptjs";
 
 /**
  * Common weak passwords to reject
@@ -288,7 +288,7 @@ export async function checkPasswordPwned(password: string): Promise<{
 
     for (const line of hashes) {
       const [hashSuffix, count] = line.split(":");
-      if (hashSuffix === suffix) {
+      if (hashSuffix === suffix && count) {
         return { pwned: true, count: parseInt(count.trim()) };
       }
     }

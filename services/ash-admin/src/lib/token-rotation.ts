@@ -47,7 +47,7 @@ export async function generateTokenPair(
   }
 ): Promise<TokenPair> {
   // Generate access token (short-lived)
-  const accessToken = generateToken(userData, `${ACCESS_TOKEN_EXPIRY}s`);
+  const accessToken = generateToken(userData);
 
   // Generate refresh token (long-lived, cryptographically secure)
   const refreshToken = crypto.randomBytes(REFRESH_TOKEN_LENGTH).toString("hex");

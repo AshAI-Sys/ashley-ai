@@ -124,7 +124,7 @@ export function isValidWorkspaceId(workspaceId: string): boolean {
  * Get workspace context from JWT token (for future implementation)
  * This is a placeholder for when proper JWT authentication is implemented
  */
-export function getWorkspaceFromToken(token: string): string | null {
+export function getWorkspaceFromToken(_token: string): string | null {
   // TODO: Implement JWT token parsing to extract workspace ID
   // For now, return null to fall back to other methods
   return null;

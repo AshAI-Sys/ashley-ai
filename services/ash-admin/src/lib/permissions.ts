@@ -36,7 +36,7 @@ export function hasAccess(user: User, route: string): boolean {
   const pageKey = route.replace("/", "");
 
   // Use our RBAC system to check access
-  return canAccessPage(userPermissions, pageKey);
+  return canAccessPage(userPermissions || [], pageKey);
 }
 
 // Get accessible navigation items for user
@@ -224,7 +224,7 @@ export function getAccessibleNavigation(user: User) {
 }
 
 // Check specific permissions using RBAC system
-export function canCreate(user: User, context?: string): boolean {
+export function canCreate(user: User, _context?: string): boolean {
   // If no permissions are provided, get them from the role
   let userPermissions = user.permissions;
   if (!userPermissions || userPermissions.length === 0) {
@@ -233,11 +233,11 @@ export function canCreate(user: User, context?: string): boolean {
   }
 
   // Check for create permissions in the specific context
-  const createPermissions = userPermissions.filter(p => p.includes(":create"));
+  const createPermissions = userPermissions?.filter(p => p.includes(":create")) || [];
   return createPermissions.length > 0;
 }
 
-export function canEdit(user: User, context?: string): boolean {
+export function canEdit(user: User, _context?: string): boolean {
   // If no permissions are provided, get them from the role
   let userPermissions = user.permissions;
   if (!userPermissions || userPermissions.length === 0) {
@@ -246,11 +246,11 @@ export function canEdit(user: User, context?: string): boolean {
   }
 
   // Check for update permissions in the specific context
-  const updatePermissions = userPermissions.filter(p => p.includes(":update"));
+  const updatePermissions = userPermissions?.filter(p => p.includes(":update")) || [];
   return updatePermissions.length > 0;
 }
 
-export function canDelete(user: User, context?: string): boolean {
+export function canDelete(user: User, _context?: string): boolean {
   // If no permissions are provided, get them from the role
   let userPermissions = user.permissions;
   if (!userPermissions || userPermissions.length === 0) {
@@ -259,11 +259,11 @@ export function canDelete(user: User, context?: string): boolean {
   }
 
   // Check for delete permissions in the specific context
-  const deletePermissions = userPermissions.filter(p => p.includes(":delete"));
+  const deletePermissions = userPermissions?.filter(p => p.includes(":delete")) || [];
   return deletePermissions.length > 0;
 }
 
-export function canApprove(user: User, context?: string): boolean {
+export function canApprove(user: User, _context?: string): boolean {
   // If no permissions are provided, get them from the role
   let userPermissions = user.permissions;
   if (!userPermissions || userPermissions.length === 0) {
@@ -272,9 +272,9 @@ export function canApprove(user: User, context?: string): boolean {
   }
 
   // Check for approve permissions in the specific context
-  const approvePermissions = userPermissions.filter(p =>
+  const approvePermissions = userPermissions?.filter(p =>
     p.includes(":approve")
-  );
+  ) || [];
   return approvePermissions.length > 0;
 }
 

@@ -96,7 +96,7 @@ export class SMSService {
     Object.keys(variables).forEach(key => {
       message = message.replace(
         new RegExp(`\\{${key}\\}`, "g"),
-        variables[key]
+        String(variables[key] || "")
       );
     });
 

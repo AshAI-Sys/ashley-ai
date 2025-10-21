@@ -110,7 +110,7 @@ export async function checkSessionTimeout(
     // Calculate timeout
     const now = new Date();
     const lastActivity = new Date(session.lastActivity);
-    const inactiveDuration = Math.floor(
+    const _inactiveDuration = Math.floor(
       (now.getTime() - lastActivity.getTime()) / 1000
     );
 
@@ -209,7 +209,7 @@ export async function terminateAllUserSessions(
   try {
     const sessions = await getUserActiveSessions(userId);
 
-    for (const session of sessions) {
+    for (const _session of sessions) {
       // Extract session ID from Redis key
       const keys = await redis.keys(`session_activity:*`);
 
