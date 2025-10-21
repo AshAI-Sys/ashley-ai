@@ -15,7 +15,7 @@
     "@ash-ai/database": "workspace:*",
     "@ash-ai/ui": "workspace:*",
     "@ash/types": "workspace:*",
-    "@aws-sdk/client-s3": "^3.899.0",
+    "@aws-sdk/client-s3": "^3.913.0",
     "@aws-sdk/s3-request-presigner": "^3.899.0",
     "@hookform/resolvers": "^3.1.0",
     "@prisma/client": "^5.22.0",
