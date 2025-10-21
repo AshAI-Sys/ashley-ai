@@ -65,7 +65,11 @@ export async function logAuthEvent(
     | "2FA_ENABLED"
     | "2FA_DISABLED"
     | "REGISTER"
-    | "REGISTER_FAILED",
+    | "REGISTER_FAILED"
+    | "PASSWORD_RESET_REQUESTED"
+    | "PASSWORD_RESET"
+    | "EMAIL_VERIFIED"
+    | "VERIFICATION_RESENT",
   workspaceId: string,
   userId?: string,
   request?: NextRequest,
