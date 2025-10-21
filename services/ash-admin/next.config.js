@@ -9,6 +9,13 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Optimize production builds
+  swcMinify: true,
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+    },
+  },
   env: {
     ASH_API_URL: process.env.ASH_API_URL || 'http://localhost:4000',
   },

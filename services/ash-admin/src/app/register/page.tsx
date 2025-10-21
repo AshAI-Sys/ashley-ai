@@ -3,16 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 
 export default function RegisterPage() {
-  // Force light mode on mount
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      document.documentElement.classList.remove('dark')
-      document.body.classList.remove('dark')
-      document.documentElement.style.colorScheme = 'light'
-    }
-  }, [])
+  // Force light mode immediately (synchronous, no useEffect delay)
+  if (typeof window !== 'undefined') {
+    document.documentElement.classList.remove('dark')
+    document.body.classList.remove('dark')
+    document.documentElement.style.colorScheme = 'light'
+  }
 
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)

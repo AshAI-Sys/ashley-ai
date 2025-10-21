@@ -1,0 +1,86 @@
+/* Critical CSS - Loaded first for faster initial render */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Professional Modern Dashboard Theme - Light Mode */
+    --background: 215 25% 97%;
+    --foreground: 215 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 95%;
+    --secondary-foreground: 215 25% 15%;
+    --muted: 214 32% 95%;
+    --muted-foreground: 215 16% 50%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 0 0% 100%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+  }
+
+  /* Force light mode */
+  .dark {
+    --background: 215 25% 97%;
+    --foreground: 215 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #F8FAFC !important;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* FORCE WHITE BACKGROUND in light mode for inputs */
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    background-color: #FFFFFF !important;
+    color: #111827 !important;
+    border-color: #D1D5DB !important;
+  }
+
+  input::placeholder {
+    color: #9CA3AF !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Professional card */
+@layer utilities {
+  .corporate-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .corporate-blue {
+    background: #2563EB;
+    color: white;
+  }
+}
+
+/* Force light mode globally */
+html, body {
+  background: #F8FAFC !important;
+  color-scheme: light !important;
+}

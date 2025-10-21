@@ -92,16 +92,21 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // FORCE LIGHT MODE - Remove any dark mode classes
-              try {
-                document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark');
-                document.documentElement.style.colorScheme = 'light';
-                localStorage.setItem('ash_theme', 'light');
-              } catch (e) {}
+              // FORCE LIGHT MODE - Remove any dark mode classes (SYNCHRONOUS)
+              (function() {
+                try {
+                  document.documentElement.classList.remove('dark');
+                  document.body.classList.remove('dark');
+                  document.documentElement.style.colorScheme = 'light';
+                  localStorage.setItem('ash_theme', 'light');
+                } catch (e) {}
+              })();
             `,
           }}
         />
+        {/* Preconnect to speed up external resources */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <ErrorBoundary>
