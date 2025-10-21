@@ -99,8 +99,10 @@ export async function POST(request: NextRequest) {
       }, { status: 409 })
     }
 
-    // Hash password with bcrypt (12 rounds)
-    const password_hash = await bcrypt.hash(password, 12)
+    // Hash password with bcrypt (10 rounds - optimized for speed while maintaining security)
+    // 10 rounds = ~100-500ms (fast & secure, OWASP recommended minimum)
+    // 12 rounds = ~1-3s (maximum security but slower UX)
+    const password_hash = await bcrypt.hash(password, 10)
 
     // Generate email verification token
     const verificationToken = crypto.randomBytes(32).toString('hex')
@@ -156,21 +158,33 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`
 
-    // Send welcome email with verification link using Gmail SMTP
-    try {
-      const { sendWelcomeEmail } = await import('../../../../lib/gmail-email')
-      await sendWelcomeEmail(user.email, {
-        user_name: `${user.first_name} ${user.last_name}`,
-        verification_link: verificationUrl,
-      })
-      console.log('✅ Welcome email sent to:', user.email)
-    } catch (emailError) {
-      console.error('❌ Failed to send welcome email:', emailError)
-      // Don't fail registration if email fails - show verification URL instead
+    // Send welcome email with verification link using Gmail SMTP (100% NON-BLOCKING)
+    // CRITICAL: Fire and forget - NEVER await or block the response
+    // Email will be sent asynchronously in background after response is sent
+    setImmediate(async () => {
+      try {
+        const { sendWelcomeEmail } = await import('../../../../lib/gmail-email')
+
+        // Fire and forget - no await, no blocking
+        sendWelcomeEmail(user.email, {
+          user_name: `${user.first_name} ${user.last_name}`,
+          verification_link: verificationUrl,
+        })
+          .then(() => {
+            console.log('✅ Welcome email sent to:', user.email)
+          })
+          .catch((emailError: any) => {
+            console.error('❌ Failed to send welcome email:', emailError.message)
+          })
+      } catch (importError: any) {
+        console.error('❌ Failed to import email module:', importError.message)
+      }
+
+      // Always log verification URL for development/debugging
       console.log('📧 Verification email for:', user.email)
       console.log('🔗 Verification URL:', verificationUrl)
       console.log('⏰ Expires:', verificationExpires)
-    }
+    })
 
     // Log successful registration
     await logAuthEvent('REGISTER', workspace.id, user.id, request, {

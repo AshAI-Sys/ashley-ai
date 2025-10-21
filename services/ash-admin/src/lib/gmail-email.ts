@@ -9,6 +9,16 @@ function getTransporter(): nodemailer.Transporter | null {
     return null;
   }
 
+  // Check for placeholder credentials - fail fast
+  if (
+    process.env.GMAIL_USER.includes('your-email') ||
+    process.env.GMAIL_APP_PASSWORD.includes('your-') ||
+    process.env.GMAIL_APP_PASSWORD.length < 16
+  ) {
+    console.warn('⚠️ Gmail credentials are placeholder values. Email sending disabled.');
+    return null;
+  }
+
   if (!transporter) {
     transporter = nodemailer.createTransporter({
       service: 'gmail',
@@ -16,6 +26,11 @@ function getTransporter(): nodemailer.Transporter | null {
         user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_APP_PASSWORD, // Use App Password, not regular password
       },
+      // Aggressive timeouts to prevent blocking
+      connectionTimeout: 2000, // 2 seconds (reduced from 3)
+      greetingTimeout: 2000, // 2 seconds (reduced from 3)
+      socketTimeout: 2000, // 2 seconds - socket timeout
+      pool: false, // Disable connection pooling for faster failures
     });
   }
 

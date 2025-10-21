@@ -120,9 +120,9 @@ export const PUT = requireAnyPermission(['admin:update'])(async (request: NextRe
     // Prepare update data
     const updateData: any = { ...validatedData }
 
-    // Hash password if provided
+    // Hash password if provided (10 rounds - optimized for speed while maintaining security)
     if (validatedData.password) {
-      updateData.password_hash = await bcrypt.hash(validatedData.password, 12)
+      updateData.password_hash = await bcrypt.hash(validatedData.password, 10)
       delete updateData.password
     }
 

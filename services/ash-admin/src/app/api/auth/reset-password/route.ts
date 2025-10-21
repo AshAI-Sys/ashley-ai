@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Hash new password
-    const password_hash = await bcrypt.hash(password, 12)
+    // Hash new password (10 rounds - optimized for speed while maintaining security)
+    const password_hash = await bcrypt.hash(password, 10)
 
     // Update password and clear reset token
     await prisma.user.update({

@@ -54,8 +54,8 @@ export async function PUT(request: NextRequest) {
         return NextResponse.json({ error: 'Password must contain a special character' }, { status: 400 })
       }
 
-      // Hash new password
-      const passwordHash = await bcrypt.hash(new_password, 12)
+      // Hash new password (10 rounds - optimized for speed while maintaining security)
+      const passwordHash = await bcrypt.hash(new_password, 10)
 
       // Update password
       await prisma.user.update({

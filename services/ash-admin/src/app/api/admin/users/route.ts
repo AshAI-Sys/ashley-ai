@@ -146,8 +146,8 @@ export const POST = requireAnyPermission(['admin:create'])(async (request: NextR
       )
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(validatedData.password, 12)
+    // Hash password (10 rounds - optimized for speed while maintaining security)
+    const hashedPassword = await bcrypt.hash(validatedData.password, 10)
 
     // Create user
     const newUser = await prisma.user.create({
