@@ -13,7 +13,7 @@ const ResendSchema = z.object({
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
 
     // Validate request
@@ -38,7 +38,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
-    });
 
     if (!user) {
       // Don't reveal if user exists or not for security
@@ -80,7 +79,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 429 }
         );
       }
-    });
 
     // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -94,7 +92,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         email_verification_expires: verificationExpires,
         email_verification_sent_at: new Date(),
       },
-    });
 
     // Create verification URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";

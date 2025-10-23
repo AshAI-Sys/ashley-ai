@@ -33,7 +33,7 @@ const RegisterSchema = z.object({
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
 
     // Validate request with Zod
@@ -82,7 +82,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if workspace slug already exists
     const existingWorkspace = await prisma.workspace.findUnique({
       where: { slug: workspaceSlug },
-    });
 
     if (existingWorkspace) {
       return NextResponse.json(
@@ -99,13 +98,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       where: {
         email: email.toLowerCase(),
       },
-    });
 
     if (existingUser) {
       await logAuthEvent("REGISTER_FAILED", "system", undefined, request, {
         email,
         reason: "Email already exists",
-      });
 
       return NextResponse.json(
         {
@@ -138,7 +135,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             companyPhone: companyPhone || null,
           }),
         },
-      });
 
       // Create admin user
       const user = await tx.user.create({
@@ -154,10 +150,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           is_active: true,
           permissions: JSON.stringify(["*"]), // Full permissions
         },
-      });
 
       return { workspace, user };
-    });
 
     const { workspace, user } = result;
 
@@ -175,7 +169,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       workspaceName: workspace.name,
       userId: user.id,
       email: user.email,
-    });
 
     return NextResponse.json(
       {

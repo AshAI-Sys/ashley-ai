@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/pricing - Get pricing recommendation
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const {
       client_id,
       product_type,
@@ -45,7 +45,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
@@ -53,7 +52,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
     // Calculate client history metrics
     const totalOrders = client.orders.length;
-    const totalRevenue = client.orders.reduce((sum, order) => {;
+    const totalRevenue = client.orders.reduce((sum, order) => {
       const orderRevenue = order.invoices.reduce(
         (isum, inv) => isum + parseFloat(inv.total_amount.toString()),
         0
@@ -61,7 +60,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       return sum + orderRevenue;
     }, 0);
 
-    const totalCost = client.orders.reduce((sum, order) => {;
+    const totalCost = client.orders.reduce((sum, order) => {
       return sum + parseFloat(order.total_amount.toString()) * 0.7; // Estimate 70% cost ratio
     }, 0);
 
@@ -90,7 +89,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
         },
       },
-    });
 
     const demandLevel =
       allOrders.length > 50
@@ -108,7 +106,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           in: ["PENDING", "IN_PROGRESS"],
         },
       },
-    });
 
     const capacityUtilization = Math.min((activeSewingRuns / 20) * 100, 100);
 
@@ -141,7 +138,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       recommendation,
       client_history: clientHistory,
       market_conditions: marketConditions,
-    }
   } catch (error: any) {
     console.error("Pricing calculation error:", error);
     return NextResponse.json(
@@ -149,11 +145,10 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // GET /api/ai/pricing/scenarios?client_id=xxx&... - Get multiple pricing scenarios
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");
     const product_type = searchParams.get("product_type");
@@ -188,14 +183,13 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 
     const totalOrders = client.orders.length;
-    const totalRevenue = client.orders.reduce((sum, order) => {;
+    const totalRevenue = client.orders.reduce((sum, order) => {
       const orderRevenue = order.invoices.reduce(
         (isum, inv) => isum + parseFloat(inv.total_amount.toString()),
         0
@@ -203,7 +197,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       return sum + orderRevenue;
     }, 0);
 
-    const totalCost = client.orders.reduce((sum, order) => {;
+    const totalCost = client.orders.reduce((sum, order) => {
       return sum + parseFloat(order.total_amount.toString()) * 0.7;
     }, 0);
 
@@ -231,7 +225,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         },
       },
-    });
 
     const demandLevel =
       allOrders.length > 50
@@ -248,7 +241,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           in: ["PENDING", "IN_PROGRESS"],
         },
       },
-    });
 
     const capacityUtilization = Math.min((activeSewingRuns / 20) * 100, 100);
 
@@ -279,7 +271,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       scenarios,
       client_history: clientHistory,
       market_conditions: marketConditions,
-    }
   } catch (error: any) {
     console.error("Pricing scenarios error:", error);
     return NextResponse.json(

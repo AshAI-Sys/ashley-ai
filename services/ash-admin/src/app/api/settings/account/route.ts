@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
       select: {
@@ -18,7 +18,6 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         bio: true,
         avatar_url: true,
       },
-    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -35,7 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const body = await request.json();
     const { name, email, phone, bio } = body;
 
@@ -45,13 +44,11 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       const currentUser = await prisma.user.findUnique({
         where: { id: authUser.id },
         select: { email: true },
-      });
 
       if (currentUser && currentUser.email !== email) {
         // Check if email is already taken
         const existingUser = await prisma.user.findUnique({
           where: { email },
-        });
 
         if (existingUser && existingUser.id !== authUser.id) {
           return NextResponse.json(
@@ -62,7 +59,6 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
         emailVerificationRequired = true;
       }
-    });
 
     const updateData: any = {
       updated_at: new Date(),
@@ -74,21 +70,18 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       if (emailVerificationRequired) {
         updateData.email_verified = false;
         // TODO: Send verification email
-      }
-    });
+      });
     if (phone !== undefined) updateData.phone = phone;
     if (bio !== undefined) updateData.bio = bio;
 
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: updateData,
-    });
 
     return NextResponse.json({
       success: true,
       user: updatedUser,
       email_verification_required: emailVerificationRequired,
-    });
   } catch (error) {
     console.error("Error updating account settings:", error);
     return NextResponse.json(

@@ -40,7 +40,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         keyspace_misses: stats.keyspace_misses || "0",
         uptime_in_days: stats.uptime_in_days || "0",
       };
-    });
 
     // Calculate cache hit rate for Redis
     let redisCacheHitRate = 0;
@@ -49,7 +48,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       const misses = parseInt(redisStats.keyspace_misses) || 0;
       const total = hits + misses;
       redisCacheHitRate = total > 0 ? (hits / total) * 100 : 0;
-    });
 
     return NextResponse.json({
       success: true,

@@ -49,7 +49,6 @@ export async function GET(
           },
         },
       },
-    });
 
     if (!brand) {
       return NextResponse.json(
@@ -61,7 +60,6 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: brand,
-    }
   } catch (error) {
     console.error("Error fetching brand:", error);
     return NextResponse.json(
@@ -83,7 +81,6 @@ export async function PUT(
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
       where: { id: brandId },
-    });
 
     if (!existingBrand) {
       return NextResponse.json(
@@ -107,7 +104,6 @@ export async function PUT(
           client_id: clientId,
           id: { not: brandId },
         },
-      });
 
       if (nameExists) {
         return NextResponse.json(
@@ -118,7 +114,6 @@ export async function PUT(
           { status: 400 }
         );
       }
-    });
 
     const brand = await prisma.brand.update({
       where: { id: brandId },
@@ -143,13 +138,11 @@ export async function PUT(
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: brand,
       message: "Brand updated successfully",
-    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -183,7 +176,6 @@ export async function DELETE(
           },
         },
       },
-    });
 
     if (!existingBrand) {
       return NextResponse.json(
@@ -205,12 +197,10 @@ export async function DELETE(
       data: {
         deleted_at: new Date(),
       },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Brand deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting brand:", error);
     return NextResponse.json(

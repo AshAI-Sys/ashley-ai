@@ -10,7 +10,7 @@ export const PUT = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const userId = user.id;
     const body = await req.json();
@@ -29,7 +29,6 @@ export const PUT = requireAuth(async (
         id: context.params.id,
         workspace_id: workspaceId,
       },
-    });
 
     if (!bundle) {
       return NextResponse.json(
@@ -52,7 +51,6 @@ export const PUT = requireAuth(async (
           },
         },
       },
-    });
 
     // Create status history log
     try {
@@ -67,7 +65,6 @@ export const PUT = requireAuth(async (
           location,
           changed_at: new Date(),
         },
-      });
     } catch (err) {
       // Ignore if BundleStatusHistory table doesn't exist
       console.log("Bundle status history logging skipped");
@@ -77,7 +74,6 @@ export const PUT = requireAuth(async (
       success: true,
       bundle: updatedBundle,
       message: `Bundle status updated to ${status}`,
-    }
   } catch (error: any) {
     console.error("Bundle status update error:", error);
     return NextResponse.json(

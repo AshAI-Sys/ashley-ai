@@ -17,7 +17,6 @@ export async function GET(
 
     if (version) {
       where.version_id = `${params.id}-${version}`;
-    });
 
     const comments = await prisma.designComment.findMany({
       where,
@@ -53,7 +52,6 @@ export async function GET(
         },
       },
       orderBy: { created_at: "desc" },
-    });
 
     // Parse attachments JSON
     const commentsWithParsedData = comments.map(comment => ({
@@ -90,7 +88,6 @@ export async function GET(
   } finally {
     await prisma.$disconnect();
   }
-});
 
 // POST - Create a new comment
 export async function POST(
@@ -128,7 +125,6 @@ export async function POST(
     // Verify design exists
     const designAsset = await prisma.designAsset.findUnique({
       where: { id: params.id },
-    });
 
     if (!designAsset) {
       return NextResponse.json(
@@ -146,7 +142,6 @@ export async function POST(
         attachmentUrls.push(`/uploads/comments/${filename}`);
         console.log(`Would upload file: ${filename}`);
       }
-    });
 
     // Create comment
     const comment = await prisma.designComment.create({
@@ -177,7 +172,6 @@ export async function POST(
           },
         },
       },
-    });
 
     // Create audit log
     await prisma.auditLog.create({
@@ -195,7 +189,6 @@ export async function POST(
           has_attachments: attachmentUrls.length > 0,
         }),
       },
-    });
 
     // TODO: Send notifications to mentioned users and design stakeholders
 
@@ -208,7 +201,6 @@ export async function POST(
         mentioned_users: mentionedUsers ? JSON.parse(mentionedUsers) : [],
         annotation_area: annotationArea ? JSON.parse(annotationArea) : null,
       },
-    }
   } catch (error) {
     console.error("Error creating comment:", error);
     return NextResponse.json(

@@ -11,7 +11,6 @@ const CreateBrandSchema = z.object({
   logo_url: z.string().optional(),
   settings: z.string().optional(),
   is_active: z.boolean().default(true),
-});
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
@@ -20,13 +19,12 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const clientId = context.params.id;
 
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: clientId },
-    });
 
     if (!client) {
       return NextResponse.json(
@@ -63,7 +61,6 @@ export const GET = requireAuth(async (
         },
       },
       orderBy: { created_at: "desc" },
-    });
 
     return NextResponse.json({
       success: true,
@@ -83,7 +80,7 @@ export const POST = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const clientId = context.params.id;
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
@@ -91,7 +88,6 @@ export const POST = requireAuth(async (
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: clientId },
-    });
 
     if (!client) {
       return NextResponse.json(
@@ -106,7 +102,6 @@ export const POST = requireAuth(async (
         name: validatedData.name,
         client_id: clientId,
       },
-    });
 
     if (existingBrand) {
       return NextResponse.json(
@@ -127,7 +122,6 @@ export const POST = requireAuth(async (
         slug: client.workspace_id,
       },
       update: {},
-    });
 
     // Use client's workspace_id
     const brand = await prisma.brand.create({
@@ -154,7 +148,6 @@ export const POST = requireAuth(async (
           },
         },
       },
-    });
 
     return NextResponse.json(
       {

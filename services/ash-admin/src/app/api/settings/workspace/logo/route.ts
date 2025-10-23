@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const POST = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const formData = await request.formData();
     const file = formData.get("logo") as File;
 
@@ -49,7 +49,6 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         logo_url,
         updated_at: new Date(),
       },
-    });
 
     return NextResponse.json({ success: true, logo_url });
   } catch (error) {
@@ -62,14 +61,13 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: {
         logo_url: null,
         updated_at: new Date(),
       },
-    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

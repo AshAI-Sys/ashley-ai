@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/dashboards - List all dashboards
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -29,7 +29,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         widgets_data: true,
       },
       orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
-    });
 
     return NextResponse.json({
       success: true,
@@ -44,7 +43,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           position: JSON.parse(w.position),
         })),
       })),
-    }
   } catch (error: any) {
     console.error("Error fetching dashboards:", error);
     return NextResponse.json(
@@ -52,11 +50,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/dashboards - Create new dashboard
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const userId = req.headers.get("x-user-id") || "system";
@@ -101,7 +98,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -110,7 +106,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         layout: JSON.parse(dashboard.layout),
         widgets: JSON.parse(dashboard.widgets),
       },
-    }
   } catch (error: any) {
     console.error("Error creating dashboard:", error);
     return NextResponse.json(

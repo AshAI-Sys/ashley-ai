@@ -88,7 +88,6 @@ const OnboardingStepSchema = z.object({
       })
       .optional(),
   }),
-});
 
 const CreateOnboardingSchema = z.object({
   employee_id: z.string().min(1, "Employee ID is required"),
@@ -97,14 +96,13 @@ const CreateOnboardingSchema = z.object({
     .default("basic"),
   priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
   expected_completion_date: z.string().optional(),
-});
 
 // GET - List onboarding processes
 export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "all";
     const page = parseInt(searchParams.get("page") || "1");
@@ -227,14 +225,13 @@ export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
       { status: 500 }
     );
   }
-});
 
 // POST - Create new onboarding process
 export const POST = requireAnyPermission(["admin:create", "hr:create"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateOnboardingSchema.parse(body);
 
@@ -340,7 +337,6 @@ export const POST = requireAnyPermission(["admin:create", "hr:create"])(async (
       { status: 500 }
     );
   }
-});
 
 // Helper function to generate onboarding checklist
 function generateOnboardingChecklist(template_type: string) {

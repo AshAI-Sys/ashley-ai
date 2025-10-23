@@ -14,7 +14,7 @@ const prisma = db;
 
 // POST /api/notifications/email - Send email notification
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { type, to, data, workspace_id } = body;
 
@@ -123,17 +123,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             status: "SENT",
             sent_at: new Date(),
           },
-        });
       } catch (error) {
         console.error("Failed to log notification:", error);
       }
-    });
 
     return NextResponse.json({
       success: true,
       message: "Email sent successfully",
       email_id: result.id,
-    }
   } catch (error: any) {
     console.error("Error sending email notification:", error);
     return NextResponse.json(
@@ -144,11 +141,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // GET /api/notifications/email/test - Test email configuration
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const test_email = searchParams.get("test_email");
 
@@ -156,8 +152,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       return NextResponse.json({
         configured: !!process.env.RESEND_API_KEY,
         from_address: process.env.EMAIL_FROM || "not configured",
-      }
-    });
+      });
 
     // Send test email
     const result = await sendEmail({
@@ -169,7 +164,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         <p>If you received this email, your email configuration is working correctly!</p>
         <p><strong>Timestamp:</strong> ${new Date().toISOString()});</p>
       `,
-    });
 
     if (!result.success) {
       return NextResponse.json(
@@ -182,7 +176,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       success: true,
       message: `Test email sent to ${test_email}`,
       email_id: result.id,
-    }
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

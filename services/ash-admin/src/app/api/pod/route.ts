@@ -54,7 +54,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         cod_collected,
         cod_reference,
       },
-    });
 
     // Update delivery status to DELIVERED
     await prisma.delivery.update({
@@ -63,7 +62,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         status: delivery_status,
         actual_delivery_date: new Date(),
       },
-    });
 
     return NextResponse.json(podRecord, { status: 201 });
   } catch (error: any) {
@@ -76,7 +74,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // GET /api/pod?delivery_id=xxx - Get POD records for a delivery
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -111,7 +108,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: {
         created_at: "desc",
       },
-    });
 
     // Parse photo_urls JSON
     const formattedRecords = podRecords.map(record => ({
@@ -130,7 +126,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // PUT /api/pod/:id - Update POD record
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -182,7 +177,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const updatedRecord = await prisma.pODRecord.update({
       where: { id },
       data: updateData,
-    });
 
     return NextResponse.json(updatedRecord);
   } catch (error: any) {

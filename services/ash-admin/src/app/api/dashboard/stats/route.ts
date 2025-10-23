@@ -177,7 +177,6 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
           lte: todayEnd,
         },
       },
-    });
 
     // Prepare chart data
     let productionTrendData = [];

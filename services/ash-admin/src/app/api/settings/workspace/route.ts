@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const workspace = await prisma.workspace.findUnique({
       where: { id: authUser.workspaceId },
       select: {
@@ -31,7 +31,6 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         tax_id: true,
         logo_url: true,
       },
-    });
 
     if (!workspace) {
       return NextResponse.json(
@@ -51,7 +50,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const body = await request.json();
 
     const updateData: any = {
@@ -82,12 +81,10 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       if (body[field] !== undefined) {
         updateData[field] = body[field];
       }
-    });
 
     const updatedWorkspace = await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: updateData,
-    });
 
     return NextResponse.json({ success: true, workspace: updatedWorkspace });
   } catch (error) {

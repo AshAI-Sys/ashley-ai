@@ -18,7 +18,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {;
+  try {
     const designAssetId = params.id;
 
     const printLocations = await prisma.printLocation.findMany({
@@ -28,12 +28,10 @@ export async function GET(
       orderBy: {
         created_at: "asc",
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: { printLocations },
-    });
   } catch (error) {
     console.error("Error fetching print locations:", error);
     return NextResponse.json(
@@ -64,7 +62,6 @@ export async function POST(
         offset_y_cm: validatedData.offset_y_cm || null,
         notes: validatedData.notes || null,
       },
-    });
 
     return NextResponse.json(
       {
@@ -125,13 +122,11 @@ export async function PUT(
         offset_y_cm: validatedData.offset_y_cm,
         notes: validatedData.notes,
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: { printLocation },
       message: "Print location updated successfully",
-    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -171,12 +166,10 @@ export async function DELETE(
       where: {
         id: locationId,
       },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Print location deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting print location:", error);
     return NextResponse.json(

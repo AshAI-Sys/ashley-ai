@@ -25,7 +25,6 @@ export async function POST(
         outputs: true,
         rejects: true,
       },
-    });
 
     if (!run) {
       return NextResponse.json(
@@ -53,7 +52,6 @@ export async function POST(
           status: "DONE",
           ended_at: new Date(),
         },
-      });
 
       // Record final output if provided
       if (qty_completed > 0 || qty_rejected > 0) {
@@ -65,7 +63,6 @@ export async function POST(
             notes: quality_notes || "Final run completion",
           },
         }
-      });
 
       // Record reject reasons if any
       if (qty_rejected > 0 && reject_reasons.length > 0) {
@@ -80,7 +77,6 @@ export async function POST(
             },
           });
         }
-      });
 
       // Record material consumption
       if (material_consumption.length > 0) {
@@ -95,7 +91,6 @@ export async function POST(
             },
           });
         }
-      });
 
       // Update method-specific completion data
       await updateMethodSpecificCompletion(tx, runId, run.method, body);
@@ -106,7 +101,6 @@ export async function POST(
         qty_rejected,
         ashley_feedback,
       }
-    });
 
     // Fetch completed run data
     const completedRun = await prisma.printRun.findUnique({
@@ -122,13 +116,11 @@ export async function POST(
         rejects: true,
         materials: true,
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: completedRun,
       message: "Print run completed successfully",
-    });
   } catch (error) {
     console.error("Complete print run error:", error);
     return NextResponse.json(
@@ -156,7 +148,6 @@ async function updateMethodSpecificCompletion(
             belt_speed: data.belt_speed || "MEDIUM",
           },
         }
-      });
 
       // Update ink consumption in specs
       if (data.actual_ink_g) {
@@ -273,7 +264,6 @@ async function createFinalAnalysis(
 
     await tx.aIAnalysis.create({
       data: analysisData,
-    });
   } catch (error) {
     console.error("Error creating final analysis:", error);
   });
@@ -342,7 +332,6 @@ function generateRecommendations(
     case "EMBROIDERY":
       recommendations.push("Review thread tension and stabilizer selection");
       break;
-  });
 
   if (completionData.qty_rejected > 0) {
     recommendations.push("Implement additional quality checkpoints");

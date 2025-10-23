@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 
 // GET /api/automation/notifications - Get notifications
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const status = searchParams.get("status");
@@ -45,7 +45,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         offset,
         pages: Math.ceil(total / limit),
       },
-    });
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
@@ -53,11 +52,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/automation/notifications - Create notification
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -92,7 +90,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (template_id) {
       const template = await prisma.notificationTemplate.findUnique({
         where: { id: template_id },
-      });
 
       if (template) {
         finalSubject = interpolateTemplate(
@@ -104,7 +101,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           variables_data
         );
       }
-    });
 
     const notification = await prisma.notification.create({
       data: {
@@ -127,13 +123,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, name: true, category: true },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: notification,
       message: "Notification created successfully",
-    }
   } catch (error) {
     console.error("Error creating notification:", error);
     return NextResponse.json(
@@ -141,11 +135,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // PUT /api/automation/notifications - Update notification status
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { id, status, error_message, sent_at, delivered_at } = body;
 
@@ -175,18 +168,15 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           updateData.error_message = error_message;
         }
       }
-    });
 
     const notification = await prisma.notification.update({
       where: { id },
       data: updateData,
-    });
 
     return NextResponse.json({
       success: true,
       data: notification,
       message: "Notification updated successfully",
-    });
   } catch (error) {
     console.error("Error updating notification:", error);
     return NextResponse.json(
@@ -194,7 +184,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // Helper function to interpolate template variables
 function interpolateTemplate(template: string, variables: any): string {

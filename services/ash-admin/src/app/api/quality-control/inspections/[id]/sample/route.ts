@@ -12,7 +12,6 @@ export async function POST(
     // Get current sample count for this inspection
     const sampleCount = await prisma.qCSample.count({
       where: { inspection_id: params.id },
-    });
 
     const sample = await prisma.qCSample.create({
       data: {
@@ -24,7 +23,6 @@ export async function POST(
         qty_sampled: data.qty_sampled || 1,
         result: data.result || "OK",
       },
-    });
 
     return NextResponse.json(sample, { status: 201 });
   } catch (error) {

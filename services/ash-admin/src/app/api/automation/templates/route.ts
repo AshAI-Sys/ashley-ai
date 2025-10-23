@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 
 // GET /api/automation/templates - Get notification templates
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const category = searchParams.get("category");
@@ -35,7 +35,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
-    });
 
     // Add usage statistics
     const templatesWithStats = await Promise.all(
@@ -44,7 +43,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           by: ["status"],
           where: { template_id: template.id },
           _count: { id: true },
-        });
 
         const usage = stats.reduce(
           (acc, stat) => {
@@ -74,7 +72,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total: templates.length,
         filters: { category, type, isActive },
       },
-    }
   } catch (error) {
     console.error("Error fetching notification templates:", error);
     return NextResponse.json(
@@ -82,11 +79,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/automation/templates - Create notification template
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -122,7 +118,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
       }
-    });
 
     const template = await prisma.notificationTemplate.create({
       data: {
@@ -141,13 +136,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: template,
       message: "Notification template created successfully",
-    }
   } catch (error) {
     console.error("Error creating notification template:", error);
     return NextResponse.json(
@@ -155,11 +148,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // PUT /api/automation/templates - Update notification template
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -183,13 +175,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: template,
       message: "Notification template updated successfully",
-    });
   } catch (error) {
     console.error("Error updating notification template:", error);
     return NextResponse.json(
@@ -197,11 +187,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/automation/templates - Delete notification template
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -215,7 +204,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     // Check if template is system template
     const template = await prisma.notificationTemplate.findUnique({
       where: { id },
-    });
 
     if (template?.is_system) {
       return NextResponse.json(
@@ -226,12 +214,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.notificationTemplate.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Notification template deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting notification template:", error);
     return NextResponse.json(

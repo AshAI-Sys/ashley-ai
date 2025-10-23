@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
     const date_from = searchParams.get("date_from");
@@ -17,7 +17,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       // Map status to our schema fields
       if (status === "APPROVED") where.status = "APPROVED";
       else if (status === "PENDING") where.status = "PENDING";
-    });
 
     // Date filtering
     if (date_from || date_to) {
@@ -31,7 +30,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         gte: new Date(today.setHours(0, 0, 0, 0)),
         lt: new Date(today.setHours(23, 59, 59, 999)),
       };
-    });
 
     const attendanceLogs = await prisma.attendanceLog.findMany({
       where,
@@ -46,7 +44,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
-    });
 
     const processedLogs = attendanceLogs.map(log => ({
       id: log.id,
@@ -78,7 +75,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
     const {
       employee_id,
@@ -94,7 +91,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const employee = await prisma.employee.findUnique({
       where: { id: employee_id },
       select: { id: true, first_name: true, last_name: true, is_active: true });,
-    });
 
     if (!employee) {
       return NextResponse.json(
@@ -125,7 +121,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           date: dateOnly,
         },
       },
-    });
 
     let attendanceLog;
     if (existingAttendance) {
@@ -196,7 +191,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }
-    });
 
     return NextResponse.json(
       {
@@ -229,7 +223,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
     const { id, approved, approver_notes } = data;
 
@@ -249,7 +243,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,

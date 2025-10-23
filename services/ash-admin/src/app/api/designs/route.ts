@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -153,14 +153,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
       if (status) {
         matches = matches && design.status === status;
-      });
 
       if (method) {
         matches = matches && design.method === method;
-      });
 
       return matches;
-    });
 
     // Apply pagination
     const skip = (page - 1) * limit;
@@ -177,7 +174,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           totalPages: Math.ceil(filteredDesigns.length / limit),
         },
       },
-    }
   } catch (error) {
     console.error("Error fetching designs:", error);
     return NextResponse.json(
@@ -188,7 +184,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
 
     // Create demo design response

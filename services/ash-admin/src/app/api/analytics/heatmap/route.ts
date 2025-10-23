@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/analytics/heatmap - Get production efficiency heatmap data
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -23,7 +23,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
-    });
 
     if (stationType) where.station_type = stationType;
     if (shift) where.shift = shift;
@@ -31,7 +30,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     const heatmapData = await prisma.productionHeatmap.findMany({
       where,
       orderBy: [{ date: "asc" }, { hour: "asc" });],
-    });
 
     // Calculate aggregated statistics
     const stats = {
@@ -64,7 +62,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       hourlyData[key].defect_rate.push(item.defect_rate);
       hourlyData[key].output += item.output_units;
       hourlyData[key].target += item.target_units;
-    });
 
     // Calculate averages
     const heatmapGrid = Object.values(hourlyData).map((item: any) => ({
@@ -86,7 +83,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       data: heatmapData,
       heatmap: heatmapGrid,
       stats,
-    }
   } catch (error: any) {
     console.error("Error fetching heatmap data:", error);
     return NextResponse.json(
@@ -94,11 +90,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/analytics/heatmap - Create heatmap data point
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const body = await req.json();
@@ -139,12 +134,10 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         downtime_mins: downtime_mins || 0,
         operators_count: operators_count || 1,
       },
-    });
 
     return NextResponse.json({
       success: true,
       heatmap,
-    });
   } catch (error: any) {
     console.error("Error creating heatmap data:", error);
     return NextResponse.json(

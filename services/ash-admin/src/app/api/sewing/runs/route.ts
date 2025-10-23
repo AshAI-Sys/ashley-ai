@@ -10,7 +10,6 @@ const CreateSewingRunSchema = z.object({
   operation_name: z.string().min(1, "Operation name is required"),
   sewing_type: z.string().optional(),
   operator_id: z.string().min(1, "Operator ID is required"),
-});
 
 const UpdateSewingRunSchema = z.object({
   status: z.enum(["CREATED", "IN_PROGRESS", "DONE"]).optional(),
@@ -29,7 +28,7 @@ const UpdateSewingRunSchema = z.object({
 }
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -155,14 +154,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateSewingRunSchema.parse(body);
 
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.order_id },
-    });
 
     if (!order) {
       return NextResponse.json(
@@ -174,7 +172,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if operator exists
     const operator = await prisma.employee.findUnique({
       where: { id: validatedData.operator_id },
-    });
 
     if (!operator) {
       return NextResponse.json(
@@ -186,7 +183,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if bundle exists
     const bundle = await prisma.bundle.findUnique({
       where: { id: validatedData.bundle_id },
-    });
 
     if (!bundle) {
       return NextResponse.json(
@@ -198,7 +194,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if routing step exists
     const routingStep = await prisma.routingStep.findUnique({
       where: { id: validatedData.routing_step_id },
-    });
 
     if (!routingStep) {
       return NextResponse.json(
@@ -239,7 +234,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json(
       {
@@ -266,7 +260,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -283,7 +277,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if sewing run exists
     const existingSewingRun = await prisma.sewingRun.findUnique({
       where: { id },
-    });
 
     if (!existingSewingRun) {
       return NextResponse.json(
@@ -310,7 +303,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         updateData.efficiency_pct =
           actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
       }
-    });
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
@@ -342,13 +334,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: sewingRun,
       message: "Sewing run updated successfully",
-    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -366,7 +356,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -380,7 +370,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     // Check if sewing run exists
     const existingSewingRun = await prisma.sewingRun.findUnique({
       where: { id },
-    });
 
     if (!existingSewingRun) {
       return NextResponse.json(
@@ -399,12 +388,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.sewingRun.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Sewing run deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting sewing run:", error);
     return NextResponse.json(

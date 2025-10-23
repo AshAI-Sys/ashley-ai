@@ -10,7 +10,7 @@ export const GET = requireAuth(async (
   user,
   { params }: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const conversation = await prisma.aIChatConversation.findUnique({
       where: {
         id: params.id,
@@ -30,7 +30,6 @@ export const GET = requireAuth(async (
           },
         },
       },
-    });
 
     if (!conversation) {
       return NextResponse.json(
@@ -47,7 +46,6 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-});
 
 // PATCH /api/ai-chat/conversations/:id - Update conversation
 export const PATCH = requireAuth(async (
@@ -55,7 +53,7 @@ export const PATCH = requireAuth(async (
   user,
   { params }: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const body = await request.json();
     const { title, is_archived, is_pinned } = body;
 
@@ -64,11 +62,10 @@ export const PATCH = requireAuth(async (
         id: params.id,
       },
       data: {
-        ...(title !== undefined && { title });),
+        ...(title !== undefined && { title }),
         ...(is_archived !== undefined && { is_archived }),
         ...(is_pinned !== undefined && { is_pinned }),
       },
-    });
 
     return NextResponse.json({ conversation });
   } catch (error) {
@@ -78,7 +75,6 @@ export const PATCH = requireAuth(async (
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
 export const DELETE = requireAuth(async (
@@ -86,12 +82,11 @@ export const DELETE = requireAuth(async (
   user,
   { params }: { params: { id: string } }
 ) => {
-  try {;
+  try {
     await prisma.aIChatConversation.delete({
       where: {
         id: params.id,
       },
-    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

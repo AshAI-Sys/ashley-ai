@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // Finance statistics API endpoint
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const today = new Date();
     const yearStart = new Date(today.getFullYear(), 0, 1);
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -102,7 +102,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       take: 5,
-    });
 
     // Get client names for top clients
     const clientIds = topClients.map(client => client.client_id);
@@ -110,15 +109,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: { id: { in: clientIds } },
       take: 10, // Limit to 10 clients (should match clientIds length from topClients)
       select: { id: true, name: true },
-    });
 
-    const topClientsWithNames = topClients.map(client => {;
+    const topClientsWithNames = topClients.map(client => {
       const clientInfo = clients.find(c => c.id === client.client_id);
       return {
         client_name: clientInfo?.name || "Unknown",
         revenue: client._sum.total_amount || 0,
       };
-    });
 
     const cashFlow = 0; // Will be calculated from payments later
 
@@ -137,7 +134,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         payment_distribution: [],
         top_clients: topClientsWithNames,
       },
-    }
   } catch (error) {
     console.error("Error calculating finance stats:", error);
     return NextResponse.json(

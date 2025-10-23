@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/sms/send - Send SMS
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { to, message, template, variables, provider } = body;
 
@@ -64,7 +64,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       message_id: result.message_id,
       provider: result.provider,
       status: result.status,
-    }
   } catch (error: any) {
     console.error("Error sending SMS:", error);
     return NextResponse.json(
@@ -72,7 +71,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // GET /api/sms/send - Get SMS provider status
 export async function GET() {
@@ -84,7 +82,6 @@ export async function GET() {
       providers: status,
       balances,
       configured: Object.values(status).some(v => v === true),
-    }
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to get SMS status", details: error.message },

@@ -20,7 +20,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       booking_id,
       tracking_number,
       reason,
-    });
 
     if (!result.success) {
       return NextResponse.json(

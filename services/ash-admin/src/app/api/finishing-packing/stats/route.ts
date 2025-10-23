@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -95,7 +95,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
         },
       },
-    });
 
     const efficiencyRate =
       totalFinishingRuns > 0 ? (completedRuns / totalFinishingRuns) * 100 : 0;
@@ -116,7 +115,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_cartons: totalCartons,
         cartons_today: packedTodayCartons,
       },
-    }
   } catch (error) {
     console.error("Error calculating finishing & packing stats:", error);
     return NextResponse.json(
@@ -138,7 +136,6 @@ async function getPackingEfficiency() {
       },
       take: 100, // Last 100 cartons
       orderBy: { updated_at: "desc" },
-    });
 
     if (cartons.length === 0) return 0;
 

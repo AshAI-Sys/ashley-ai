@@ -14,7 +14,6 @@ export const GET = withErrorHandling(
     // Get employee
     const employee = await prisma.employee.findUnique({
       where: { id: employeeId },
-    });
 
     if (!employee) {
       throw new NotFoundError("Employee not found");
@@ -146,7 +145,6 @@ export const GET = withErrorHandling(
       );
 
       tasksCompleted = printRuns.filter(run => run.status === "DONE").length;
-    });
 
     // Calculate efficiency rate (simplified - can be enhanced based on targets)
     const targetPiecesPerDay = employee.salary_type === "PIECE" ? 200 : 100;
@@ -166,7 +164,6 @@ export const GET = withErrorHandling(
           },
         },
         take: 10,
-      });
 
       if (recentInspections.length > 0) {
         const passedInspections = recentInspections.filter(
@@ -176,7 +173,6 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
-    });
 
     const stats = {
       total_pieces: totalPieces,

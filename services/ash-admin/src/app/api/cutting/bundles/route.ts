@@ -10,7 +10,6 @@ const BundleConfigSchema = z.object({
     .number()
     .int()
     .positive("Pieces per bundle must be positive"),
-});
 
 const CreateBundlesSchema = z.object({
   orderId: z.string().min(1, "Order ID is required"),
@@ -18,7 +17,6 @@ const CreateBundlesSchema = z.object({
   bundleConfigs: z
     .array(BundleConfigSchema)
     .min(1, "At least one bundle configuration is required"),
-});
 
 const UpdateBundleSchema = z.object({
   bundleId: z.string().min(1, "Bundle ID is required"),
@@ -27,7 +25,7 @@ const UpdateBundleSchema = z.object({
 }
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -99,7 +97,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pages: Math.ceil(total / limit),
         },
       },
-    });
   } catch (error) {
     console.error("Error fetching bundles:", error);
     return NextResponse.json(
@@ -110,14 +107,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateBundlesSchema.parse(body);
 
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.orderId },
-    });
 
     if (!order) {
       return NextResponse.json(
@@ -129,7 +125,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if cut lay exists
     const cutLay = await prisma.cutLay.findUnique({
       where: { id: validatedData.cutLayId },
-    });
 
     if (!cutLay) {
       return NextResponse.json(
@@ -203,7 +198,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           createdBundles.push(bundle);
         }
       }
-    });
 
     return NextResponse.json(
       {
@@ -240,7 +234,7 @@ function generateQRCode(
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -257,7 +251,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if bundle exists
     const existingBundle = await prisma.bundle.findUnique({
       where: { id },
-    });
 
     if (!existingBundle) {
       return NextResponse.json(
@@ -298,13 +291,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: bundle,
       message: "Bundle updated successfully",
-    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

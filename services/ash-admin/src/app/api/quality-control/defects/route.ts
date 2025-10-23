@@ -3,14 +3,13 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const inspectionId = searchParams.get("inspection_id");
 
     const where: any = {};
     if (inspectionId) {
       where.inspection_id = inspectionId;
-    });
 
     const defects = await prisma.qCDefect.findMany({
       where,
@@ -22,7 +21,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
-    });
 
     return NextResponse.json(defects);
   } catch (error) {
@@ -35,7 +33,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
 
     const defect = await prisma.qCDefect.create({
@@ -57,7 +55,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         defect_code: true,
         sample: true,
       },
-    });
 
     // Update inspection defect counts
     await updateInspectionDefectCounts(data.inspection_id);
@@ -76,7 +73,6 @@ async function updateInspectionDefectCounts(inspectionId: string) {
   const defects = await prisma.qCDefect.findMany({
     where: { inspection_id: inspectionId },
     select: { severity: true, quantity: true },
-  });
 
   const criticalFound = defects
     .filter(d => d.severity === "CRITICAL")
@@ -94,7 +90,6 @@ async function updateInspectionDefectCounts(inspectionId: string) {
   const inspection = await prisma.qCInspection.findUnique({
     where: { id: inspectionId },
     select: { acceptance: true, rejection: true },
-  });
 
   let result = "PENDING_REVIEW";
   if (inspection) {
@@ -104,7 +99,6 @@ async function updateInspectionDefectCounts(inspectionId: string) {
     } else if (totalDefects >= inspection.rejection) {
       result = "REJECT";
     }
-  });
 
   await prisma.qCInspection.update({
     where: { id: inspectionId },

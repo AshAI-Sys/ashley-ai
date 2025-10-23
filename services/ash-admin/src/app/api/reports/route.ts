@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/reports - List all reports for workspace
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -44,7 +44,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
-    });
 
     return NextResponse.json({
       success: true,
@@ -59,7 +58,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           ? JSON.parse(r.schedule_config)
           : null,
       })),
-    }
   } catch (error: any) {
     console.error("Error fetching reports:", error);
     return NextResponse.json(
@@ -67,11 +65,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/reports - Create new report
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const userId = req.headers.get("x-user-id") || "system";
@@ -129,7 +126,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -146,7 +142,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           ? JSON.parse(report.schedule_config)
           : null,
       },
-    }
   } catch (error: any) {
     console.error("Error creating report:", error);
     return NextResponse.json(

@@ -16,7 +16,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {;
+  try {
     const orderId = params.id;
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "50");
@@ -29,12 +29,10 @@ export async function GET(
         created_at: "desc",
       },
       take: limit,
-    });
 
     return NextResponse.json({
       success: true,
       data: { activities },
-    });
   } catch (error) {
     console.error("Error fetching activity logs:", error);
     return NextResponse.json(
@@ -64,7 +62,6 @@ export async function POST(
         performed_by: validatedData.performed_by || null,
         metadata: validatedData.metadata || null,
       },
-    });
 
     return NextResponse.json(
       {

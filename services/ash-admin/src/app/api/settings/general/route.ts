@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
       select: {
@@ -21,7 +21,6 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         date_format: true,
         time_format: true,
       },
-    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -38,7 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       name,
@@ -62,7 +61,6 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         time_format,
         updated_at: new Date(),
       },
-    });
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {

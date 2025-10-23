@@ -176,7 +176,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         employees: employeeDirectory,
         note: "Each employee has restricted access based on their role and department",
       },
-    }
   } catch (error) {
     console.error("Error fetching employee accounts:", error);
     return NextResponse.json(

@@ -18,7 +18,7 @@ const prisma = db;
  * Creates a hosted Stripe Checkout session for invoice payment
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { invoiceId } = body;
 
@@ -32,7 +32,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         client: true,
       },
-    });
 
     if (!invoice) {
       return createErrorResponse(new NotFoundError("Invoice not found"));
@@ -51,7 +50,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         status: "COMPLETED",
       },
       _sum: { amount: true },
-    });
 
     const paidAmount = payments._sum.amount || 0;
     const remainingAmount =
@@ -78,7 +76,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         order_id: invoice.order_id || "",
         client_name: invoice.client?.name || "",
       },
-    });
 
     if (!result.success) {
       return createErrorResponse(

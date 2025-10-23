@@ -7,8 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     // Get production metrics for all active stations
-    const [cutLays, sewingRuns, printRuns, qcInspections, finishingRuns] =;
-      await Promise.all([
+    const [cutLays, sewingRuns, printRuns, qcInspections, finishingRuns] = await Promise.all([
         prisma.cutLay.findMany({
           where: {
             created_at: {
@@ -73,7 +72,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: 2, // Simplified
         timestamp: new Date(),
       }
-    });
 
     // Printing station metrics
     if (printRuns.length > 0) {
@@ -97,7 +95,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: 3,
         timestamp: new Date(),
       }
-    });
 
     // Sewing station metrics
     if (sewingRuns.length > 0) {
@@ -128,7 +125,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: totalTarget > 0 ? (totalReject / totalTarget) * 100 : 0,
         timestamp: new Date(),
       }
-    });
 
     // QC station metrics
     if (qcInspections.length > 0) {
@@ -152,7 +148,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: defectRate,
         timestamp: new Date(),
       }
-    });
 
     // Finishing station metrics
     if (finishingRuns.length > 0) {
@@ -171,7 +166,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: 1,
         timestamp: new Date(),
       }
-    });
 
     if (metrics.length === 0) {
       return NextResponse.json({
@@ -188,8 +182,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           recommendations: ["No active production - system idle"],
           predicted_completion_delays: [],
         },
-      }
-    });
+      });
 
     // Analyze production system
     const analysis =
@@ -200,7 +193,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       analysis,
       analyzed_at: new Date(),
       stations_analyzed: metrics.length,
-    }
   } catch (error: any) {
     console.error("Bottleneck detection error:", error);
     return NextResponse.json(
@@ -208,11 +200,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/ai/bottleneck/station - Analyze specific station
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const metrics = await req.json();
 
     // Validate required fields
@@ -248,7 +239,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       success: true,
       detection,
       analyzed_at: new Date(),
-    }
   } catch (error: any) {
     console.error("Station bottleneck detection error:", error);
     return NextResponse.json(

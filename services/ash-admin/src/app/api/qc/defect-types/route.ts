@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/qc/defect-types - Get all defect types
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
 
@@ -16,9 +16,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         // QCDefectType doesn't have is_active field - removed
       },
       orderBy: {
-        name: "asc", // Changed from 'code' to 'name' (code doesn't exist)
+        name: "asc", // Changed from 'code' to 'name' (code doesn't exist);
       },
-    });
 
     // If no defect types exist, return default ones
     if (defectTypes.length === 0) {
@@ -108,8 +107,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       return NextResponse.json({
         success: true,
         defectTypes: defaultDefectTypes,
-      }
-    });
+      });
 
     return NextResponse.json({
       success: true,

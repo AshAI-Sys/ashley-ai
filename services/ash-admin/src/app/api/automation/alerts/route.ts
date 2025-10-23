@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 
 // GET /api/automation/alerts - Get alerts
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const alertType = searchParams.get("alert_type");
@@ -56,7 +56,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         pages: Math.ceil(total / limit),
         summary: await getAlertSummary(workspaceId),
       },
-    });
   } catch (error) {
     console.error("Error fetching alerts:", error);
     return NextResponse.json(
@@ -64,11 +63,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/automation/alerts - Create alert
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -112,7 +110,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         current_value,
         next_escalation_at: nextEscalationAt,
       },
-    });
 
     // Trigger automatic notification for high/critical alerts
     if (severity === "HIGH" || severity === "CRITICAL") {
@@ -123,7 +120,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: alert,
       message: "Alert created successfully",
-    }
   } catch (error) {
     console.error("Error creating alert:", error);
     return NextResponse.json(
@@ -131,11 +127,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // PUT /api/automation/alerts - Update alert (acknowledge/resolve)
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { id, action, user_id = "user_1", resolution_notes } = body;
 
@@ -200,13 +195,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: alert,
       message: `Alert ${action}d successfully`,
-    });
   } catch (error) {
     console.error("Error updating alert:", error);
     return NextResponse.json(
@@ -214,11 +207,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/automation/alerts - Delete alert
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -231,12 +223,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.alert.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Alert deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting alert:", error);
     return NextResponse.json(
@@ -244,7 +234,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // Helper functions
 async function getAlertSummary(workspaceId: string) {
@@ -252,7 +241,6 @@ async function getAlertSummary(workspaceId: string) {
     by: ["severity", "is_resolved"],
     where: { workspace_id: workspaceId },
     _count: { id: true },
-  });
 
   const result = {
     total: 0,
@@ -272,7 +260,6 @@ async function getAlertSummary(workspaceId: string) {
     }
     result.by_severity[group.severity as keyof typeof result.by_severity] +=
       group._count.id;
-  });
 
   return result;
 }
@@ -314,7 +301,6 @@ Please acknowledge this alert in the system.`,
         priority: alert.severity === "CRITICAL" ? "URGENT" : "HIGH",
         status: "PENDING",
       },
-    });
   } catch (error) {
     console.error("Error creating alert notification:", error);
   }

@@ -100,7 +100,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         credit_limit: 500000,
         is_active: true,
       },
-    });
 
     const client2 = await prisma.client.upsert({
       where: { id: "client-2" },
@@ -123,7 +122,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         credit_limit: 750000,
         is_active: true,
       },
-    });
 
     const client3 = await prisma.client.upsert({
       where: { id: "client-3" },

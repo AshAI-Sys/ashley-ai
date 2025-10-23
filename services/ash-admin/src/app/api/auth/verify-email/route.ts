@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const runtime = "nodejs";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
 
@@ -30,7 +30,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
-    });
 
     if (!user) {
       return NextResponse.json(
@@ -65,7 +64,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         email_verification_token: null,
         email_verification_expires: null,
       },
-    });
 
     // Log successful verification
     await logAuthEvent("EMAIL_VERIFIED", user.workspace_id, user.id, request, {

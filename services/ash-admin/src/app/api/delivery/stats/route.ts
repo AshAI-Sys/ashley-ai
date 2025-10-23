@@ -4,7 +4,7 @@ import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId = getWorkspaceIdFromRequest(request);
     // Calculate delivery statistics using updated_at as proxy for delivery timestamp
     const today = new Date();
@@ -110,17 +110,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           const deliveryTime =
             shipment.updated_at.getTime() - shipment.created_at.getTime();
           return sum + deliveryTime / (1000 * 60 * 60); // Convert to hours
-        });
         return sum;
       }, 0);
       avgDeliveryTime = totalDeliveryTime / averageDeliveryTimes.length;
-    });
 
     // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
     const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
       if (shipment.updated_at && shipment.eta) {;
         return shipment.updated_at <= shipment.eta;
-      });
       return false;
     }).length;
 
@@ -149,7 +146,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         delivered_week: deliveredThisWeek,
         completion_rate: Math.round(onTimeRate * 10) / 10,
       },
-    }
   } catch (error) {
     console.error("Error calculating delivery stats:", error);
     return NextResponse.json(
@@ -169,7 +165,6 @@ async function getGeographicDistribution() {
       },
       take: 100, // Limit to last 100 shipments
       select: { consignee_address: true },
-    });
 
     const cityCount: Record<string, number> = {};
 
@@ -189,7 +184,6 @@ async function getGeographicDistribution() {
 
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
-    });
 
     return Object.entries(cityCount).map(([city, count]) => ({
       location: city,
@@ -243,7 +237,6 @@ async function getMethodPerformance() {
         success_rate: total > 0 ? (delivered / total) * 100 : 0,
         avg_delivery_time: Math.round(averageTime * 10) / 10,
       }
-    });
 
     return performance;
   } catch (error) {

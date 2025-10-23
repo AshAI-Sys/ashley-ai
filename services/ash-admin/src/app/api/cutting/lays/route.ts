@@ -24,7 +24,7 @@ const CreateCutLaySchema = z.object({
 }
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -91,7 +91,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pages: Math.ceil(total / limit),
         },
       },
-    });
   } catch (error) {
     console.error("Error fetching cut lays:", error);
     return NextResponse.json(
@@ -105,14 +104,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateCutLaySchema.parse(body);
 
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.order_id },
-    });
 
     if (!order) {
       return NextResponse.json(
@@ -150,7 +148,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      });
 
       // Create cut outputs
       const cutOutputs = await tx.cutOutput.createMany({
@@ -160,15 +157,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           size_code: output.size_code,
           qty: output.qty,
         })),
-      });
 
       // Fetch the created outputs
       const outputs = await tx.cutOutput.findMany({
         where: { cut_lay_id: newCutLay.id },
-      });
 
       return { ...newCutLay, outputs };
-    });
 
     return NextResponse.json(
       {

@@ -10,7 +10,7 @@ import {
 
 // GET - Get active sessions for the current user
 export const GET = requireAuth(async (request: NextRequest, user: any) => {
-  try {;
+  try {
     const { searchParams } = request.nextUrl;
     const statsOnly = searchParams.get("stats") === "true";
 
@@ -20,7 +20,6 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
         success: true,
         data: stats,
       }
-    });
 
     const sessions = await getUserActiveSessions(user.id);
 
@@ -30,7 +29,6 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
         sessions,
         total: sessions.length,
       },
-    }
   } catch (error) {
     console.error("Error fetching sessions:", error);
     return NextResponse.json(
@@ -38,11 +36,10 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
       { status: 500 }
     );
   }
-});
 
 // DELETE - Revoke sessions
 export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
-  try {;
+  try {
     const { searchParams } = request.nextUrl;
     const sessionHash = searchParams.get("sessionHash");
     const revokeAll = searchParams.get("revokeAll") === "true";
@@ -55,8 +52,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
         success: true,
         message: `Revoked ${count} active sessions`,
         data: { revokedCount: count },
-      }
-    });
+      });
 
     if (!sessionHash) {
       return NextResponse.json(

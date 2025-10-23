@@ -74,7 +74,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         percentage: percentage,
         cumulative_percentage: cumulativePercentage,
       };
-    });
 
     return NextResponse.json(paretoData);
   } catch (error) {

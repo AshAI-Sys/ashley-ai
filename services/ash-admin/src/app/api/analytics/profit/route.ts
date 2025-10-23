@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/analytics/profit - Get profit analysis data
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -28,7 +28,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
-    });
 
     const analyses = await prisma.profitAnalysis.findMany({
       where,
@@ -48,7 +47,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         },
       },
       orderBy: { [sortBy]: sortOrder },
-    });
 
     // Calculate aggregate statistics
     const stats = {
@@ -91,7 +89,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         client.margins.reduce((a: number, b: number) => a + b, 0) /
         client.margins.length;
       delete client.margins;
-    });
 
     const clientComparison = Object.values(byClient).sort(
       (a: any, b: any) => b.total_profit - a.total_profit
@@ -102,7 +99,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       analyses,
       stats,
       clientComparison,
-    }
   } catch (error: any) {
     console.error("Error fetching profit analysis:", error);
     return NextResponse.json(
@@ -110,11 +106,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/analytics/profit - Create profit analysis
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const body = await req.json();
@@ -195,7 +190,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -208,11 +202,10 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // PUT /api/analytics/profit - Auto-generate profit analysis for an order
 export const PUT = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const body = await req.json();
@@ -237,7 +230,6 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
         invoices: true,
         expenses: true,
       },
-    });
 
     if (!order) {
       return NextResponse.json(
@@ -311,13 +303,11 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       analysis,
       message: "Profit analysis auto-generated successfully",
-    }
   } catch (error: any) {
     console.error("Error auto-generating profit analysis:", error);
     return NextResponse.json(

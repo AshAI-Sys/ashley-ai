@@ -14,7 +14,6 @@ export async function POST(
     // Check if run exists and can be paused
     const run = await prisma.printRun.findUnique({
       where: { id: runId },
-    });
 
     if (!run) {
       return NextResponse.json(
@@ -44,7 +43,6 @@ export async function POST(
         },
         machine: true,
       },
-    });
 
     // Log the pause event
     await logRunEvent(runId, "PAUSED", reason, notes);
@@ -53,7 +51,6 @@ export async function POST(
       success: true,
       data: updatedRun,
       message: "Print run paused successfully",
-    }
   } catch (error) {
     console.error("Pause print run error:", error);
     return NextResponse.json(
@@ -86,7 +83,6 @@ async function logRunEvent(
           timestamp: new Date().toISOString(),
         }),
       },
-    });
   } catch (error) {
     console.error("Failed to log run event:", error);
   });

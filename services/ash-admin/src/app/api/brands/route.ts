@@ -10,12 +10,11 @@ const CreateBrandSchema = z.object({
   logo_url: z.string().optional(),
   settings: z.string().optional(), // JSON string for brand settings
   is_active: z.boolean().default(true),
-});
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -87,7 +86,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pages: Math.ceil(total / limit),
         },
       },
-    });
   } catch (error) {
     console.error("Error fetching brands:", error);
     return NextResponse.json(
@@ -98,7 +96,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
 
@@ -106,7 +104,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const client = await prisma.client.findUnique({
       where: { id: validatedData.client_id },
       select: { id: true, workspace_id: true });,
-    });
 
     if (!client) {
       return NextResponse.json(
@@ -121,7 +118,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         name: validatedData.name,
         client_id: validatedData.client_id,
       },
-    });
 
     if (existingBrand) {
       return NextResponse.json(
@@ -152,7 +148,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json(
       {
@@ -179,7 +174,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -196,7 +191,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
       where: { id },
-    });
 
     if (!existingBrand) {
       return NextResponse.json(
@@ -213,7 +207,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           client_id: validatedData.client_id || existingBrand.client_id,
           id: { not: id },
         },
-      });
 
       if (nameExists) {
         return NextResponse.json(
@@ -224,7 +217,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
       }
-    });
 
     const brand = await prisma.brand.update({
       where: { id },
@@ -243,13 +235,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: brand,
       message: "Brand updated successfully",
-    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -267,7 +257,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -288,7 +278,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     if (!existingBrand) {
       return NextResponse.json(
@@ -307,12 +296,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.brand.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Brand deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting brand:", error);
     return NextResponse.json(

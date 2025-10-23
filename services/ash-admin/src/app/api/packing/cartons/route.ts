@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const orderId = searchParams.get("order_id");
@@ -34,7 +34,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-    });
 
     // Process cartons to calculate metrics
     const processedCartons = cartons.map(carton => {;
@@ -55,7 +54,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         fill_percent: carton.fill_percent || 0,
         units_count: unitsCount,
       };
-    });
 
     return NextResponse.json({
       cartons: processedCartons,
@@ -64,7 +62,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         limit,
         total: await prisma.carton.count({ where }),
       },
-    });
   } catch (error) {
     console.error("Error fetching cartons:", error);
     return NextResponse.json(
@@ -75,13 +72,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
 
     // Generate carton number if not provided
     const cartonCount = await prisma.carton.count({
       where: { order_id: data.order_id },
-    });
     const cartonNo = data.carton_no || cartonCount + 1;
 
     const carton = await prisma.carton.create({
@@ -98,7 +94,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         order: { select: { order_number: true } },
       },
-    });
 
     return NextResponse.json(carton, { status: 201 });
   } catch (error) {
@@ -111,7 +106,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
     const { id, ...updateData } = data;
 
@@ -126,7 +121,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      });
 
       if (cartonWithContents) {
         // Calculate actual weight and fill percentage
@@ -154,7 +148,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         const dimWeight = cartonVolume / 5000; // Divisor varies by carrier
         updateData.dim_weight_kg = dimWeight;
       }
-    });
 
     const carton = await prisma.carton.update({
       where: { id },
@@ -172,7 +165,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json(carton);
   } catch (error) {

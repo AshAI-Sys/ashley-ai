@@ -6,7 +6,7 @@ const prisma = db;
 
 // POST /api/reports/execute - Execute a report and return data
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const userId = req.headers.get("x-user-id") || "system";
@@ -29,7 +29,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         id: report_id,
         workspace_id: workspaceId,
       },
-    });
 
     if (!report) {
       return NextResponse.json(
@@ -118,7 +117,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             ...(additionalFilters || []),
           ]),
         },
-      });
 
       // Update view count
       await prisma.customReport.update({
@@ -126,7 +124,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         data: {
           view_count: { increment: 1 },
         },
-      });
 
       return NextResponse.json({
         success: true,
@@ -136,7 +133,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           execution_time: executionTime,
           filters_applied: [...reportFilters, ...(additionalFilters || [])],
         },
-      });
     } catch (queryError: any) {
       const executionTime = Date.now() - startTime;
 
@@ -155,10 +151,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             ...(additionalFilters || []),
           ]),
         },
-      });
 
       throw queryError;
-    });
   } catch (error: any) {
     console.error("Error executing report:", error);
     return NextResponse.json(
@@ -166,7 +160,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // Query executors for different data sources
 async function executeOrdersQuery(
@@ -184,7 +177,6 @@ async function executeOrdersQuery(
     if (filter.field === "created_at" && filter.operator === "gte") {
       where.created_at = { gte: new Date(filter.value) };
     }
-  });
 
   const orders = await prisma.order.findMany({
     where,
@@ -203,7 +195,6 @@ async function executeOrdersQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000, // Limit results
-  });
 
   return orders;
 }
@@ -230,7 +221,6 @@ async function executeProductionQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-  });
 
   return bundles;
 }
@@ -255,7 +245,6 @@ async function executeFinanceQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-  });
 
   return invoices;
 }
@@ -284,7 +273,6 @@ async function executeHRQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-  });
 
   return employees;
 }
@@ -303,7 +291,6 @@ async function executeInventoryQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-  });
 
   return inventory;
 }
@@ -326,7 +313,6 @@ async function executeQualityQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-  });
 
   return inspections;
 });

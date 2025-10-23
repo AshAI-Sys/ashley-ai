@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -12,7 +12,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: {
         status: "IN_PROGRESS",
       },
-    });
 
     // Count completed runs today
     const todaysCompleted = await prisma.sewingRun.count({
@@ -22,7 +21,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           gte: today,
         },
       },
-    });
 
     // Count unique operators working today
     const operatorsWorkingResult = await prisma.sewingRun.findMany({
@@ -38,7 +36,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         operator_id: true,
       },
       distinct: ["operator_id"],
-    });
     const operatorsWorking = operatorsWorkingResult.length;
 
     // Calculate average efficiency
@@ -54,7 +51,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       select: {
         efficiency_pct: true,
       },
-    });
 
     const avgEfficiency =
       runsWithEfficiency.length > 0
@@ -71,7 +67,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: {
         status: "PENDING",
       },
-    });
 
     // Calculate total pieces completed today
     const completedRuns = await prisma.sewingRun.findMany({
@@ -84,7 +79,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       select: {
         qty_good: true,
       },
-    });
 
     const totalPiecesToday = completedRuns.reduce(
       (sum, run) => sum + (run.qty_good || 0),
@@ -101,7 +95,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         pending_bundles: pendingBundles,
         total_pieces_today: totalPiecesToday,
       },
-    }
   } catch (error) {
     console.error("Error fetching sewing dashboard stats:", error);
     return NextResponse.json(

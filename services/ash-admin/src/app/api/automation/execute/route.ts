@@ -18,12 +18,10 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
   const validationError = validateRequiredFields(body, ["rule_id"]);
   if (validationError) {
     throw validationError;
-  });
 
   // Get the automation rule
   const rule = await prisma.automationRule.findUnique({
     where: { id: rule_id },
-  });
 
   if (!rule) {
     throw new NotFoundError("Automation rule");
@@ -34,7 +32,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
       rule_id,
       status: "inactive",
     }
-  });
 
   // Create execution record
   const execution = await prisma.automationExecution.create({
@@ -68,13 +65,11 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
           ]),
           completed_at: new Date(),
         },
-      });
 
       return createSuccessResponse({
         execution_id: execution.id,
         status: "CONDITIONS_NOT_MET",
       }
-    });
 
     // Execute actions
     const actionResults = await executeActions(
@@ -92,7 +87,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
         completed_at: new Date(),
         execution_time_ms: Date.now() - execution.started_at.getTime(),
       },
-    });
 
     // Update rule statistics
     await prisma.automationRule.update({
@@ -101,13 +95,11 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
         last_executed: new Date(),
         execution_count: { increment: 1 },
       },
-    });
 
     return createSuccessResponse({
       execution_id: execution.id,
       status: "SUCCESS",
       actions_executed: actionResults.length,
-    });
   } catch (error) {
     // Update execution record with error
     await prisma.automationExecution.update({
@@ -117,7 +109,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
         error_message: error instanceof Error ? error.message : "Unknown error",
         completed_at: new Date(),
       },
-    });
 
     // Update rule error count
     await prisma.automationRule.update({
@@ -125,11 +116,9 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
       data: {
         error_count: { increment: 1 },
       },
-    });
 
     throw error;
   }
-});
 
 // Helper function to evaluate conditions
 async function evaluateConditions(
@@ -197,14 +186,12 @@ async function evaluateConditions(
         default:
           throw new Error(`Unknown operator: ${operator}`);
       }
-    });
 
     return true; // All conditions passed
   } catch (error) {
     console.error("Error evaluating conditions:", error);
     return false;
   }
-});
 
 // Helper function to execute actions
 async function executeActions(
@@ -225,10 +212,8 @@ async function executeActions(
         status: "FAILED",
       }
     }
-  });
 
   return results;
-});
 
 // Helper function to execute a single action
 async function executeAction(
@@ -260,7 +245,6 @@ async function executeAction(
     default:
       throw new Error(`Unknown action type: ${type}`);
   }
-});
 
 // Action implementations
 async function sendNotification(
@@ -280,7 +264,6 @@ async function sendNotification(
       priority: config.priority || "MEDIUM",
       status: "PENDING",
     },
-  });
 
   return { notification_id: notification.id };
 }
@@ -296,7 +279,6 @@ async function createAlert(config: any, triggerData: any, workspaceId: string) {
       source_type: config.source_type || "SYSTEM",
       source_id: config.source_id,
     },
-  });
 
   return { alert_id: alert.id };
 }
@@ -318,7 +300,6 @@ async function updateOrderStatus(
   const order = await prisma.order.update({
     where: { id: orderId },
     data: { status: newStatus },
-  });
 
   return { order_id: order.id, new_status: newStatus };
 }
@@ -329,7 +310,6 @@ async function sendEmail(config: any, triggerData: any) {
     to: config.to,
     subject: interpolateTemplate(config.subject || "", triggerData),
     body: interpolateTemplate(config.body || "", triggerData),
-  });
 
   return { email_sent: true, recipient: config.to };
 }
@@ -352,10 +332,8 @@ async function logEvent(config: any, triggerData: any, workspaceId: string) {
         timestamp: new Date(),
       }),
     },
-  });
 
   return { log_id: logEntry.id };
-});
 
 // Helper functions
 function getNestedValue(obj: any, path: string): any {

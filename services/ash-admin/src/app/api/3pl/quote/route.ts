@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/3pl/quote - Get shipping quotes from 3PL providers
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { provider, shipment } = body;
 
@@ -34,7 +34,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const quotes = await threePLService.getQuotes({
       provider,
       shipment,
-    });
 
     // Get comparison
     const comparison = await threePLService.compareProviders(shipment);
@@ -44,7 +43,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       recommended: comparison.cheapest,
       cheapest: comparison.cheapest,
       fastest: comparison.fastest,
-    }
   } catch (error: any) {
     console.error("Error getting 3PL quotes:", error);
     return NextResponse.json(

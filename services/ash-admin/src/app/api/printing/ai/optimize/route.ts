@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       print_method,
@@ -53,7 +53,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       take: 20,
       orderBy: { created_at: "desc" },
-    });
 
     // Generate AI optimization recommendations
     const optimization = generateOptimization(print_method, {
@@ -63,7 +62,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       historicalRuns,
       quality_requirements,
       rush_order,
-    });
 
     // Store AI analysis (using aIAnalysis instead of printRunAIAnalysis)
     const aiAnalysis = await prisma.aIAnalysis.create({
@@ -90,7 +88,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         result: "SUCCESS",
         created_by: "system",
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -98,7 +95,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         analysis_id: aiAnalysis.id,
         ...optimization,
       },
-    }
   } catch (error) {
     console.error("AI optimization error:", error);
     return NextResponse.json(
@@ -142,7 +138,6 @@ function generateOptimization(method: string, params: any) {
     case "EMBROIDERY":
       methodOptimization = optimizeEmbroidery(params, baseFactors);
       break;
-  });
 
   return {
     recommendations: generateRecommendations(
@@ -304,7 +299,6 @@ function generateRecommendations(
       message: "Consider adjusting quantity for optimal batch size",
       impact: "cost_reduction",
     }
-  });
 
   if (baseFactors.machine_efficiency < 0.8) {
     recommendations.push({
@@ -313,7 +307,6 @@ function generateRecommendations(
       message: "Schedule machine maintenance to improve efficiency",
       impact: "quality_improvement",
     }
-  });
 
   // Method-specific recommendations
   switch (method) {
@@ -359,7 +352,6 @@ function generateRecommendations(
         }
       }
       break;
-  });
 
   return recommendations;
 }

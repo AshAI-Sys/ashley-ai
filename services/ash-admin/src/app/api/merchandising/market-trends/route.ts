@@ -10,7 +10,7 @@ import {
 } from "@/lib/validation";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspaceId");
     const category = searchParams.get("category");
@@ -55,7 +55,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
-    });
 
     // Calculate trend statistics
     const trendStats = {
@@ -95,7 +94,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { workspaceId, generateTrends } = body;
 
@@ -129,9 +128,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: workspaceId,
           ...validation.sanitizedData,
         },
-      });
       return NextResponse.json({ trend });
-    });
   } catch (error) {
     console.error("Market trend creation error:", error);
     return NextResponse.json(
@@ -180,7 +177,6 @@ async function generateMarketTrends(workspaceId: string) {
     } catch (error) {
       // console.error('Error saving trend:', error)
     }
-  });
 
   return savedTrends;
 }
@@ -258,7 +254,6 @@ function getSeasonalTrends(season: string, workspaceId: string) {
       lifestyle: ["active", "professional", "casual"],
     }),
     opportunity_score: currentSeasonData.impact,
-  });
 
   return trends;
 }
@@ -327,7 +322,6 @@ function getColorTrends(workspaceId: string) {
       }),
       opportunity_score: colorTrend.impact,
     }
-  });
 
   return trends;
 }
@@ -403,7 +397,6 @@ function getStyleTrends(workspaceId: string) {
       }),
       opportunity_score: styleTrend.impact,
     }
-  });
 
   return trends;
 }

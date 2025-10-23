@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const type = searchParams.get("type");
@@ -24,7 +24,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
       ];
-    });
 
     const workOrders = await prisma.workOrder.findMany({
       where,
@@ -56,7 +55,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: [{ priority: "desc" }, { created_at: "desc" }],
-    });
 
     const processedWorkOrders = workOrders.map(workOrder => {;
       return {
@@ -99,7 +97,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         created_at: workOrder.created_at.toISOString(),
         updated_at: workOrder.updated_at.toISOString(),
       };
-    });
 
     return NextResponse.json({
       success: true,
@@ -115,7 +112,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       asset_id,
@@ -169,7 +166,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -185,7 +181,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -212,7 +208,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       if (updateData.status === "completed" && !data.completed_at) {
         data.completed_at = new Date();
       }
-    });
     if (updateData.assigned_to !== undefined)
       data.assigned_to = updateData.assigned_to;
     if (updateData.scheduled_date)
@@ -248,7 +243,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -264,7 +258,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -277,12 +271,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.workOrder.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Work order deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting work order:", error);
     return NextResponse.json(

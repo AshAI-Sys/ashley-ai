@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth-middleware";
 
 // GET /api/backups - List all backups (ADMIN ONLY)
 export const GET = requireRole("admin")(async (request: NextRequest, user) => {
-  try {;
+  try {
     const backups = await backupService.listBackups();
     const totalSize = await backupService.getTotalBackupSize();
     const schedulerConfig = backupScheduler.getConfig();
@@ -19,18 +19,16 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
         ...schedulerConfig,
         running: backupScheduler.isRunning(),
       },
-    }
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to list backups", details: error.message },
       { status: 500 }
     );
   }
-});
 
 // POST /api/backups - Create new backup (ADMIN ONLY)
 export const POST = requireRole("admin")(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json().catch(() => ({}));
     const {
       name,
@@ -44,7 +42,6 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       compress,
       includeData,
       includeSchema,
-    });
 
     return NextResponse.json({
       success: true,
@@ -56,11 +53,10 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/backups?id={backupId} - Delete backup (ADMIN ONLY)
 export const DELETE = requireRole("admin")(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");
 

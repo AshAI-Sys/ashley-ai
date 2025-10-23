@@ -16,7 +16,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {;
+  try {
     const orderId = params.id;
 
     // Get all line items for the order first
@@ -31,12 +31,10 @@ export async function GET(
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: { lineItems },
-    });
   } catch (error) {
     console.error("Error fetching color variants:", error);
     return NextResponse.json(
@@ -62,7 +60,6 @@ export async function POST(
         percentage: validatedData.percentage,
         quantity: validatedData.quantity,
       },
-    });
 
     return NextResponse.json(
       {
@@ -111,12 +108,10 @@ export async function DELETE(
       where: {
         id: variantId,
       },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Color variant deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting color variant:", error);
     return NextResponse.json(

@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/inventory - Get inventory summary and alerts
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
     const action = searchParams.get("action"); // 'summary' | 'alerts' | 'costing' | 'scan'
@@ -23,7 +23,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           success: true,
           alerts,
           total: alerts.length,
-        });
 
       case "costing":
         const costings =
@@ -31,7 +30,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           material_costings: costings,
-        });
 
       case "scan":
         const code = searchParams.get("code");
@@ -60,7 +58,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           success: true,
           material: scanned,
           scan_type: type || "barcode",
-        });
 
       case "summary":
       default:
@@ -78,11 +75,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/inventory - Create material or update stock
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const body = await req.json();
     const { action, ...data } = body;
 
@@ -93,7 +89,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           material,
           message: "Material added successfully",
-        });
 
       case "update_stock":
         const { material_id, quantity_change, transaction_type } = data;
@@ -121,7 +116,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           message: "Stock updated successfully",
-        });
 
       case "create_supplier":
         const supplier = await inventoryManager.createSupplier(data);
@@ -129,7 +123,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           supplier,
           message: "Supplier created successfully",
-        });
 
       case "create_po":
         const po = await inventoryManager.createPurchaseOrder(data);
@@ -137,7 +130,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           purchase_order: po,
           message: "Purchase order created successfully",
-        });
 
       case "receive_po":
         const { po_id, received_items } = data;
@@ -154,7 +146,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           message: "Purchase order received and stock updated",
-        });
 
       case "generate_barcode":
         const { material_id: matId } = data;

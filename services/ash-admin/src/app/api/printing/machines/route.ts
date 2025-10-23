@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workcenter = searchParams.get("workcenter");
     const activeOnly = searchParams.get("active_only") === "true";
@@ -37,7 +37,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     // Transform data for frontend
     const transformedMachines = await Promise.all(
@@ -86,7 +85,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { name, workcenter, specifications = {}, is_active = true } = body;
 
@@ -116,12 +115,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         spec: JSON.stringify(specifications),
         is_active,
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: machine,
-    });
   } catch (error) {
     console.error("Create machine error:", error);
     return NextResponse.json(
@@ -147,7 +144,6 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
           lt: tomorrow,
         },
       },
-    });
 
     // Get completed runs today
     const completedRuns = await prisma.printRun.count({
@@ -159,7 +155,6 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
           lt: tomorrow,
         },
       },
-    });
 
     // Calculate utilization as percentage
     return totalRuns > 0 ? Math.round((completedRuns / totalRuns) * 100) : 0;
@@ -181,7 +176,6 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
         status: { in: ["open", "scheduled"] },
         type: { in: ["preventive_maintenance", "repair"] },
       },
-    });
 
     return !!pendingMaintenance;
   } catch (error) {

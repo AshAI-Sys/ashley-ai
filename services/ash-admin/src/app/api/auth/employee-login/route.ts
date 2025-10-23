@@ -20,7 +20,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
   const validationError = validateRequiredFields(data, ["email", "password"]);
   if (validationError) {
     throw validationError;
-  });
 
   // Find employee by email
   const employee = await prisma.employee.findUnique({
@@ -28,7 +27,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
     include: {
       workspace: true,
     },
-  });
 
   if (!employee) {
     return NextResponse.json(

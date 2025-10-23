@@ -54,7 +54,6 @@ export async function POST(
           id,
           workspace_id: user.workspaceId,
         },
-      });
 
       if (!employee) {
         return NextResponse.json(
@@ -94,7 +93,6 @@ export async function POST(
         } catch (error) {
           console.error("Error deleting old profile picture:", error);
         }
-      });
 
       // Update employee with new profile picture URL
       const profilePictureUrl = `/uploads/employees/${filename}`;
@@ -104,7 +102,6 @@ export async function POST(
           profile_picture: profilePictureUrl,
           updated_at: new Date(),
         },
-      });
 
       return NextResponse.json({
         success: true,
@@ -115,7 +112,6 @@ export async function POST(
           last_name: updatedEmployee.last_name,
           profile_picture: updatedEmployee.profile_picture,
         },
-      });
     } catch (error) {
       console.error("Error uploading employee profile picture:", error);
       return NextResponse.json(
@@ -124,7 +120,6 @@ export async function POST(
       );
     }
   }
-});
 
 // DELETE - Remove employee profile picture
 export async function DELETE(
@@ -141,7 +136,6 @@ export async function DELETE(
           id,
           workspace_id: user.workspaceId,
         },
-      });
 
       if (!employee) {
         return NextResponse.json(
@@ -178,12 +172,10 @@ export async function DELETE(
           profile_picture: null,
           updated_at: new Date(),
         },
-      });
 
       return NextResponse.json({
         success: true,
         message: "Profile picture deleted successfully",
-      });
     } catch (error) {
       console.error("Error deleting employee profile picture:", error);
       return NextResponse.json(

@@ -10,7 +10,7 @@ const prisma = db;
 
 // POST /api/government/reports - Generate government remittance reports
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { agency, period, workspace_id, employer_details, employee_ids } =
       body;
@@ -40,7 +40,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         piece_rate: true,
         salary_type: true,
       },
-    });
 
     if (employees.length === 0) {
       return NextResponse.json(
@@ -58,7 +57,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
       } catch (e) {
         // If parsing fails, use empty object
-      });
 
       const monthlySalary = emp.base_salary || emp.piece_rate || 0;
 
@@ -69,7 +67,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         pagibig_number: contactInfo.pagibig_number || null,
         monthly_salary: monthlySalary,
       };
-    });
 
     switch (agency.toUpperCase()) {
       case "SSS":
@@ -147,7 +144,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       agency,
       period,
       report,
-    }
   } catch (error: any) {
     console.error("Error generating government report:", error);
     return NextResponse.json(
@@ -155,11 +151,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // GET /api/government/reports - Get contribution calculations for a single employee
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
     const monthly_salary = searchParams.get("monthly_salary");
@@ -200,7 +195,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           last_name: true,
           contact_info: true,
         },
-      });
 
       if (emp) {
         let contactInfo: any = {};
@@ -219,7 +213,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pagibig_number: contactInfo.pagibig_number || null,
         };
       }
-    });
 
     return NextResponse.json({
       employee,

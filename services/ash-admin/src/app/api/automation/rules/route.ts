@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/automation/rules - Get all automation rules
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = user.workspaceId;
     const isActive = searchParams.get("is_active");
@@ -14,11 +14,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (isActive !== null) {
       where.is_active = isActive === "true";
-    });
 
     if (triggerType) {
       where.trigger_type = triggerType;
-    });
 
     const rules = await prisma.automationRule.findMany({
       where,
@@ -39,7 +37,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
-    });
 
     return NextResponse.json({
       success: true,
@@ -48,7 +45,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total: rules.length,
         filters: { isActive, triggerType },
       },
-    }
   } catch (error) {
     console.error("Error fetching automation rules:", error);
     return NextResponse.json(
@@ -56,11 +52,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/automation/rules - Create new automation rule
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       name,
@@ -122,13 +117,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: rule,
       message: "Automation rule created successfully",
-    }
   } catch (error) {
     console.error("Error creating automation rule:", error);
     return NextResponse.json(
@@ -136,11 +129,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // PUT /api/automation/rules - Update automation rule
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -170,13 +162,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: rule,
       message: "Automation rule updated successfully",
-    });
   } catch (error) {
     console.error("Error updating automation rule:", error);
     return NextResponse.json(
@@ -184,11 +174,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/automation/rules - Delete automation rule
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -201,12 +190,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.automationRule.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Automation rule deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting automation rule:", error);
     return NextResponse.json(

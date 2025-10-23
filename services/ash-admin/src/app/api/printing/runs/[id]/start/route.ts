@@ -27,7 +27,6 @@ export async function POST(
           },
         },
       },
-    });
 
     if (!run) {
       return NextResponse.json(
@@ -54,7 +53,6 @@ export async function POST(
           status: "IN_PROGRESS",
           id: { not: runId },
         },
-      });
 
       if (busyMachine) {
         return NextResponse.json(
@@ -65,7 +63,6 @@ export async function POST(
           { status: 400 }
         );
       }
-    });
 
     // Start the run
     const updatedRun = await prisma.printRun.update({
@@ -82,7 +79,6 @@ export async function POST(
         },
         machine: true,
       },
-    });
 
     // Initialize method-specific data based on method
     await initializeMethodSpecificData(
@@ -98,7 +94,6 @@ export async function POST(
       success: true,
       data: updatedRun,
       message: "Print run started successfully",
-    }
   } catch (error) {
     console.error("Start print run error:", error);
     return NextResponse.json(
@@ -126,7 +121,6 @@ async function initializeMethodSpecificData(
             exposure_seconds: 120,
             registration_notes: "Auto-initialized for print run",
           },
-        });
 
         // Initialize silkscreen specs
         await prisma.silkscreenSpec.create({
@@ -158,7 +152,6 @@ async function initializeMethodSpecificData(
             film_m2: 1.0, // Will be updated during printing
             ink_g: null, // Will be measured
           },
-        });
 
         await prisma.dtfPowderCure.create({
           data: {
@@ -186,7 +179,6 @@ async function initializeMethodSpecificData(
           });
         }
         break;
-    });
   } catch (error) {
     console.error("Error initializing method-specific data:", error);
   });
@@ -223,7 +215,6 @@ async function createAshleyAnalysis(runId: string, run: any) {
 
     await prisma.aIAnalysis.create({
       data: analysisData,
-    });
   } catch (error) {
     console.error("Error creating Ashley analysis:", error);
   });

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
 
     const sample = await prisma.qCSample.create({
@@ -19,7 +19,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         sample_data: data.sample_data ? JSON.stringify(data.sample_data) : null,
         sampled_at: new Date(),
       },
-    });
 
     return NextResponse.json(sample, { status: 201 });
   } catch (error) {
@@ -32,7 +31,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const inspectionId = searchParams.get("inspection_id");
 
@@ -53,7 +52,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { sample_no: "asc" },
-    });
 
     return NextResponse.json(samples);
   } catch (error) {

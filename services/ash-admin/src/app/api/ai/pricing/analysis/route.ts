@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");
     const days = parseInt(searchParams.get("days") || "90");
@@ -19,7 +19,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
     if (client_id) {
       whereClause.client_id = client_id;
-    });
 
     // Get orders with invoices and actual costs
     const orders = await prisma.order.findMany({
@@ -32,7 +31,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         print_runs: true,
         line_items: true,
       },
-    });
 
     // Transform orders into pricing analysis format
     const pricingData = orders.map(order => {
@@ -75,7 +73,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         actual_cost: actualCost > 0 ? actualCost : quotedPrice * 0.7, // Estimate if no data
         accepted,
       };
-    });
 
     // Filter out invalid data
     const validData = pricingData.filter(
@@ -93,8 +90,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           insights: ["Not enough historical data for analysis"],
         },
         total_orders: 0,
-      }
-    });
+      });
 
     // Perform analysis
     const analysis = await dynamicPricingAI.analyzeHistoricalPricing(validData);
@@ -107,7 +103,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         end: new Date(),
       },
-    }
   } catch (error: any) {
     console.error("Pricing analysis error:", error);
     return NextResponse.json(
@@ -115,13 +110,11 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
 export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
-    const { product_type, target_margin, min_acceptance_rate } =;
-      await req.json();
+    const { product_type, target_margin, min_acceptance_rate } = await req.json();
 
     // Get recent orders for this product type
     const orders = await prisma.order.findMany({
@@ -138,7 +131,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         print_runs: true,
         line_items: true,
       },
-    });
 
     // Calculate average costs and prices
     const stats = orders.map(order => {;
@@ -174,7 +166,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         accepted,
         quantity: totalQuantity,
       };
-    });
 
     const validStats = stats.filter(s => s.cost > 0 && s.price > 0);
 
@@ -186,8 +177,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           suggested_margin: target_margin || 30,
           confidence: "LOW",
         },
-      }
-    });
+      });
 
     // Calculate averages
     const avgCost =
@@ -280,7 +270,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       recommendations,
-    }
   } catch (error: any) {
     console.error("Pricing optimization error:", error);
     return NextResponse.json(

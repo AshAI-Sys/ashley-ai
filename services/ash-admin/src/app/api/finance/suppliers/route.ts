@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Note: Supplier model not yet implemented in schema
 // Using expense.supplier field as temporary solution
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
 
@@ -24,7 +24,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         _count: true,
       },
       distinct: ["supplier"],
-    });
 
     // Format as supplier list
     const suppliers = expenses

@@ -9,7 +9,7 @@ import {
 } from "@/lib/validation";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspaceId");
     const clientId = searchParams.get("clientId");
@@ -44,7 +44,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       if (typeError) {
         return createValidationErrorResponse([typeError]);
       }
-    });
 
     const where: any = {
       workspace_id: workspaceId,
@@ -67,7 +66,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
-    });
 
     return NextResponse.json({ recommendations });
   } catch (error) {
@@ -82,7 +80,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { workspaceId, clientId, generateAll } = await request.json();
 
     // Validate required parameters
@@ -108,7 +106,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: workspaceId,
           is_active: true,
         },
-      });
 
       for (const client of clients) {
         const clientRecommendations = await generateRecommendationsForClient(
@@ -133,7 +130,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       recommendations,
       count: recommendations.length,
-    }
   } catch (error) {
     console.error("Recommendation generation error:", error);
     return NextResponse.json(
@@ -163,11 +159,9 @@ async function generateRecommendationsForClient(
       brand: true,
     },
     orderBy: { created_at: "desc" },
-  });
 
   if (clientOrders.length === 0) {
     return [];
-  });
 
   const recommendations = [];
 
@@ -241,7 +235,6 @@ async function generateReorderRecommendations(
         productFrequency[key].lastOrder = order.created_at;
       }
     }
-  });
 
   // Generate reorder recommendations for frequently ordered items
   for (const [productKey, data] of Object.entries(productFrequency)) {
@@ -278,7 +271,6 @@ async function generateReorderRecommendations(
         );
       });
     }
-  });
 
   return recommendations;
 }
@@ -311,7 +303,6 @@ async function generateCrossSellRecommendations(
         }
       }
     }
-  });
 
   // Generate cross-sell recommendations
   const recentProducts = clientOrders
@@ -345,7 +336,6 @@ async function generateCrossSellRecommendations(
         });
       });
     }
-  });
 
   return recommendations.slice(0, 3); // Limit to 3 cross-sell recommendations
 }
@@ -416,7 +406,6 @@ async function generateTrendingRecommendations(
     include: {
       line_items: true,
     },
-  });
 
   const productPopularity: { [key: string]: number } = {};
 
@@ -426,7 +415,6 @@ async function generateTrendingRecommendations(
       productPopularity[productType] =
         (productPopularity[productType] || 0) + (item.quantity || 0);
     }
-  });
 
   // Get top 2 trending products
   const trendingProducts = Object.entries(productPopularity)

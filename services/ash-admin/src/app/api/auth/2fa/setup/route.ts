@@ -21,7 +21,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Get user
     const user = await prisma.user.findUnique({
       where: { id: user_id },
-    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -47,7 +46,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         }),
         two_factor_backup_codes: JSON.stringify(result.backup_codes_hashed),
       },
-    });
 
     // Return otpauth URL and backup codes to user
     // NOTE: This is the ONLY time backup codes are shown
@@ -56,7 +54,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       otpauth_url: result.otpauth_url,
       backup_codes: result.backup_codes,
       message: "Scan QR code with Google Authenticator or similar app",
-    });
   } catch (error: any) {
     console.error("Error setting up 2FA:", error);
     return NextResponse.json(
@@ -67,7 +64,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/auth/2fa/setup - Disable 2FA
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -90,11 +86,9 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         two_factor_secret: null,
         two_factor_backup_codes: null,
       },
-    });
 
     return NextResponse.json({
       message: "2FA has been disabled",
-    });
   } catch (error: any) {
     console.error("Error disabling 2FA:", error);
     return NextResponse.json(

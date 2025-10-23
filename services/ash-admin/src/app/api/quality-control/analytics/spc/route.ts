@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const metric = searchParams.get("metric") || "defect_rate";
     const period = searchParams.get("period") || "month";
@@ -66,14 +66,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           break;
         default:
           value = day.avg_defects;
-      });
 
       return {
         date: day.date,
         value: value,
         inspections: Number(day.total_inspections),
       };
-    });
 
     // Calculate control limits (simplified X-bar chart)
     const values = spcData.map(d => d.value).filter(v => !isNaN(v));

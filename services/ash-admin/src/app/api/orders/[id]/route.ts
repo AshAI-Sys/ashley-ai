@@ -12,7 +12,7 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const order = await prisma.order.findFirst({
       where: {
@@ -44,7 +44,6 @@ export const GET = requireAuth(async (
           },
         },
       },
-    });
 
     if (!order) {
       return apiNotFound("Order");
@@ -55,7 +54,6 @@ export const GET = requireAuth(async (
     logError("Failed to fetch order", error, { orderId: context.params.id });
     return apiServerError(error);
   }
-});
 
 // PUT /api/orders/[id] - Update order
 export const PUT = requireAuth(async (
@@ -63,7 +61,7 @@ export const PUT = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const body = await request.json();
 
@@ -92,14 +90,12 @@ export const PUT = requireAuth(async (
           },
         },
       },
-    });
 
     return apiSuccess(order, "Order updated successfully");
   } catch (error) {
     logError("Failed to update order", error, { orderId: context.params.id });
     return apiServerError(error);
   }
-});
 
 // DELETE /api/orders/[id] - Delete order
 export const DELETE = requireAuth(async (
@@ -107,11 +103,10 @@ export const DELETE = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     await prisma.order.delete({
       where: { id: context.params.id },
-    });
 
     return apiSuccess({ id: context.params.id }, "Order deleted successfully");
   } catch (error) {

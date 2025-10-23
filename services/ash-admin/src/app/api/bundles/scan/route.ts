@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/bundles/scan?code=BUNDLE-XXX - Scan bundle QR code
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -41,7 +41,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-    });
 
     if (!bundle) {
       return NextResponse.json(
@@ -64,7 +63,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         size_code: bundle.size_code,
         created_at: bundle.created_at,
       },
-    }
   } catch (error: any) {
     console.error("Bundle scan error:", error);
     return NextResponse.json(

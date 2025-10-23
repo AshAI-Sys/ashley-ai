@@ -21,7 +21,7 @@ const prisma = db;
  * Creates a Stripe Payment Intent for invoice payment
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { invoiceId, provider = "stripe" } = body;
 
@@ -35,7 +35,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         client: true,
       },
-    });
 
     if (!invoice) {
       return createErrorResponse(new NotFoundError("Invoice"));
@@ -54,7 +53,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         status: "completed",
       },
       _sum: { amount: true },
-    });
 
     const paidAmount = payments._sum.amount || 0;
     const remainingAmount =
@@ -83,7 +81,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           order_id: invoice.order_id || "",
           client_name: invoice.client.name,
         },
-      });
 
       if (!result.success) {
         return createErrorResponse(
@@ -121,7 +118,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         customerEmail: undefined,
         successUrl: `${baseUrl}/payments/success?invoice=${invoice.id}`,
         failureUrl: `${baseUrl}/payments/failed?invoice=${invoice.id}`,
-      });
 
       if (!result.success) {
         return createErrorResponse(

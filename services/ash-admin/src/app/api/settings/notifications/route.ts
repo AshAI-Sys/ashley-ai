@@ -32,7 +32,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {;
+  try {
     const body = await request.json();
     // TODO: Save to database
     return NextResponse.json({ success: true });

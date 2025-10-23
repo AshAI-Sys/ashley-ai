@@ -34,7 +34,7 @@ const CreateClientSchema = z.object({
 }
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -55,11 +55,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { email: { contains: search, mode: "insensitive" } },
         { contact_person: { contains: search, mode: "insensitive" } },
       ];
-    });
 
     if (is_active !== null && is_active !== undefined) {
       where.is_active = is_active === "true";
-    });
 
     // Fetch clients with related data
     const [clients, total] = await Promise.all([
@@ -108,7 +106,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pages: Math.ceil(total / limit),
         },
       },
-    });
   } catch (error) {
     console.error("Error fetching clients:", error);
     return NextResponse.json(
@@ -119,7 +116,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
@@ -128,7 +125,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     try {
       const workspaceExists = await prisma.workspace.findUnique({
         where: { id: workspaceId },
-      });
 
       if (!workspaceExists) {
         console.log("Creating workspace:", workspaceId);
@@ -140,7 +136,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         }
         console.log("Workspace created successfully");
-      });
     } catch (error: any) {
       console.error("Error with workspace:", error.message);
       return NextResponse.json(
@@ -186,7 +181,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json(
       {

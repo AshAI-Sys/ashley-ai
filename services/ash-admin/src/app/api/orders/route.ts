@@ -17,7 +17,6 @@ const OrderLineItemSchema = z.object({
   totalPrice: z.number().positive("Total price must be positive"),
   sizeCurve: z.record(z.number()).optional(),
   specifications: z.record(z.any()).optional(),
-});
 
 const CreateOrderSchema = z.object({
   clientId: z.string().min(1, "Client ID is required"),
@@ -52,7 +51,7 @@ const CreateOrderSchema = z.object({
 }
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -70,22 +69,18 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (search) {
       where.OR = [{ order_number: { contains: search, mode: "insensitive" } }];
-    });
 
     if (status) {
       where.status = status;
-    });
 
     if (clientId) {
       where.client_id = clientId;
-    });
 
     // Generate cache key
     const cacheKey = CacheKeys.ordersList(page, limit, {
       search,
       status,
       clientId,
-    });
 
     // Use cached query
     const result = await cachedQueryWithMetrics(
@@ -141,7 +136,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: result,
-    });
   } catch (error) {
     console.error("Error fetching orders:", error);
     return NextResponse.json(
@@ -152,7 +146,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const body = await request.json();
     const validatedData = CreateOrderSchema.parse(body);
@@ -192,7 +186,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     // Invalidate orders cache (non-blocking)
     try {
@@ -200,7 +193,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     } catch (cacheError) {
       console.warn("Failed to invalidate cache:", cacheError);
       // Don't fail the request if cache invalidation fails
-    });
 
     return NextResponse.json(
       {

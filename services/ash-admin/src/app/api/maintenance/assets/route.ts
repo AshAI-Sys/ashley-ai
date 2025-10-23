@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const type = searchParams.get("type");
@@ -21,7 +21,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { asset_number: { contains: search, mode: "insensitive" } },
         { location: { contains: search, mode: "insensitive" } },
       ];
-    });
 
     const assets = await prisma.asset.findMany({
       where,
@@ -45,7 +44,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: [{ name: "asc" }],
-    });
 
     const processedAssets = assets.map(asset => {;
       const activeWorkOrders = asset.work_orders;
@@ -81,7 +79,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         created_at: asset.created_at.toISOString(),
         updated_at: asset.updated_at.toISOString(),
       };
-    });
 
     return NextResponse.json({
       success: true,
@@ -97,7 +94,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       name,
@@ -133,12 +130,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         metadata: metadata ? JSON.stringify(metadata) : null,
         status: "active",
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: asset,
-    });
   } catch (error: any) {
     console.error("Error creating asset:", error);
 
@@ -157,7 +152,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -184,12 +179,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const asset = await prisma.asset.update({
       where: { id },
       data,
-    });
 
     return NextResponse.json({
       success: true,
       data: asset,
-    });
   } catch (error) {
     console.error("Error updating asset:", error);
     return NextResponse.json(

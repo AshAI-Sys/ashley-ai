@@ -14,12 +14,11 @@ const CreateFabricBatchSchema = z.object({
     .string()
     .transform(str => new Date(str))
     .optional(),
-});
 
 const UpdateFabricBatchSchema = CreateFabricBatchSchema.partial();
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -80,7 +79,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pages: Math.ceil(total / limit),
         },
       },
-    });
   } catch (error) {
     console.error("Error fetching fabric batches:", error);
     return NextResponse.json(
@@ -91,14 +89,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateFabricBatchSchema.parse(body);
 
     // Check if brand exists
     const brand = await prisma.brand.findUnique({
       where: { id: validatedData.brand_id },
-    });
 
     if (!brand) {
       return NextResponse.json(
@@ -131,7 +128,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json(
       {
@@ -158,7 +154,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -175,7 +171,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if fabric batch exists
     const existingBatch = await prisma.fabricBatch.findUnique({
       where: { id },
-    });
 
     if (!existingBatch) {
       return NextResponse.json(
@@ -200,13 +195,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: fabricBatch,
       message: "Fabric batch updated successfully",
-    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -224,7 +217,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -245,7 +238,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     if (!existingBatch) {
       return NextResponse.json(
@@ -267,12 +259,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.fabricBatch.delete({
       where: { id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Fabric batch deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting fabric batch:", error);
     return NextResponse.json(

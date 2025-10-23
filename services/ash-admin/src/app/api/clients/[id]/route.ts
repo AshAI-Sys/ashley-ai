@@ -10,7 +10,7 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const workspaceId = user.workspaceId;
     const client = await prisma.client.findFirst({
       where: {
@@ -48,7 +48,6 @@ export const GET = requireAuth(async (
           },
         },
       },
-    });
 
     if (!client) {
       return NextResponse.json(
@@ -60,7 +59,6 @@ export const GET = requireAuth(async (
     return NextResponse.json({
       success: true,
       data: client,
-    }
   } catch (error) {
     console.error("Failed to fetch client:", error);
     return NextResponse.json(
@@ -68,7 +66,6 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-});
 
 // PUT /api/clients/[id] - Update client
 export const PUT = requireAuth(async (
@@ -76,7 +73,7 @@ export const PUT = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     const body = await request.json();
 
     // Convert address object to JSON string if it's an object
@@ -106,13 +103,11 @@ export const PUT = requireAuth(async (
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: client,
       message: "Client updated successfully",
-    }
   } catch (error) {
     console.error("Failed to update client:", error);
     return NextResponse.json(
@@ -120,7 +115,6 @@ export const PUT = requireAuth(async (
       { status: 500 }
     );
   }
-});
 
 // DELETE /api/clients/[id] - Delete client
 export const DELETE = requireAuth(async (
@@ -128,15 +122,13 @@ export const DELETE = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {;
+  try {
     await prisma.client.delete({
       where: { id: context.params.id },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Client deleted successfully",
-    });
   } catch (error) {
     console.error("Failed to delete client:", error);
     return NextResponse.json(

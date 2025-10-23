@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const { approval_ids, action, template_id, message, extension_days } = body;
 
@@ -47,7 +47,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         client: true,
       },
-    });
 
     if (approvals.length === 0) {
       return NextResponse.json(
@@ -154,7 +153,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             await prisma.designApproval.update({
               where: { id: approval.id },
               data: { expires_at: newExpiryDate },
-            });
 
             // Create audit log
             await prisma.auditLog.create({
@@ -190,7 +188,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               data: {
                 status: "CANCELLED",
               },
-            });
 
             // Create audit log
             await prisma.auditLog.create({
@@ -214,7 +211,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           });
         }
         break;
-    });
 
     return NextResponse.json({
       success: true,
@@ -224,7 +220,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         total: approval_ids.length,
         errors: results.errors,
       },
-    }
   } catch (error) {
     console.error("Error processing batch actions:", error);
     return NextResponse.json(

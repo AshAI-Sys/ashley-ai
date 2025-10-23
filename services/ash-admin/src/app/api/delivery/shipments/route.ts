@@ -15,7 +15,7 @@ export async function GET(_request: NextRequest) {
       pages: 0,
     },
     message: "Shipments temporarily disabled - Prisma model issue",
-  }
+  });
 }
 
 export async function POST(_request: NextRequest) {
@@ -26,4 +26,4 @@ export async function POST(_request: NextRequest) {
     },
     { status: 503 }
   );
-};
+}

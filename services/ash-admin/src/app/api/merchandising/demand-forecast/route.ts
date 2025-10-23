@@ -9,7 +9,7 @@ import {
 } from "@/lib/validation";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspaceId");
     const clientId = searchParams.get("clientId");
@@ -61,7 +61,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       orderBy: { forecast_date: "asc" },
       take: limit,
-    });
 
     return NextResponse.json({ forecasts });
   } catch (error) {
@@ -76,7 +75,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const {
       workspaceId,
@@ -129,7 +128,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       trendFactor,
       externalFactors,
       modelVersion: modelVersion || "v1.0",
-    });
 
     return NextResponse.json({ forecast });
   } catch (error) {
@@ -157,7 +155,6 @@ async function generateDemandForecast(params: any) {
     include: {
       line_items: true,
     },
-  });
 
   // Simple demand forecasting algorithm (in production, use ML models)
   const currentMonth = new Date().getMonth();
@@ -232,7 +229,6 @@ async function generateDemandForecast(params: any) {
       }),
       model_version: params.modelVersion,
     },
-  });
 
   return forecast;
 });

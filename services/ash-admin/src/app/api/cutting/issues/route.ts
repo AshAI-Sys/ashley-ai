@@ -9,12 +9,11 @@ const CreateFabricIssueSchema = z.object({
   qty_issued: z.number().positive("Quantity issued must be positive"),
   uom: z.string().min(1, "Unit of measure is required"),
   issued_by: z.string().min(1, "Issued by is required"),
-});
 
 const UpdateFabricIssueSchema = CreateFabricIssueSchema.partial();
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -78,7 +77,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pages: Math.ceil(total / limit),
         },
       },
-    });
   } catch (error) {
     console.error("Error fetching fabric issues:", error);
     return NextResponse.json(
@@ -89,14 +87,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateFabricIssueSchema.parse(body);
 
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.order_id },
-    });
 
     if (!order) {
       return NextResponse.json(
@@ -108,7 +105,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if fabric batch exists and has sufficient quantity
     const fabricBatch = await prisma.fabricBatch.findUnique({
       where: { id: validatedData.batch_id },
-    });
 
     if (!fabricBatch) {
       return NextResponse.json(
@@ -158,7 +154,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      });
 
       // Update fabric batch quantity
       await tx.fabricBatch.update({
@@ -168,10 +163,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             decrement: validatedData.qty_issued,
           },
         },
-      });
 
       return newFabricIssue;
-    });
 
     return NextResponse.json(
       {
@@ -198,7 +191,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -215,7 +208,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if fabric issue exists
     const existingIssue = await prisma.cutIssue.findUnique({
       where: { id },
-    });
 
     if (!existingIssue) {
       return NextResponse.json(
@@ -250,13 +242,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json({
       success: true,
       data: fabricIssue,
       message: "Fabric issue updated successfully",
-    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -274,7 +264,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -291,7 +281,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       include: {
         batch: true,
       },
-    });
 
     if (!existingIssue) {
       return NextResponse.json(
@@ -305,7 +294,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       // Delete the fabric issue
       await tx.cutIssue.delete({
         where: { id },
-      });
 
       // Restore fabric batch quantity
       await tx.fabricBatch.update({
@@ -316,12 +304,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }
-    });
 
     return NextResponse.json({
       success: true,
       message: "Fabric issue deleted successfully",
-    });
   } catch (error) {
     console.error("Error deleting fabric issue:", error);
     return NextResponse.json(

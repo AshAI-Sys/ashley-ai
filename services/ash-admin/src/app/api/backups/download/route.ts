@@ -4,7 +4,7 @@ import { requireRole } from "@/lib/auth-middleware";
 
 // GET /api/backups/download?id={backupId} - Download backup file (ADMIN ONLY)
 export const GET = requireRole("admin")(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");
 
@@ -32,7 +32,6 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
         "Content-Disposition": `attachment; filename="${backup.filename}"`,
         "Content-Length": backup.size.toString(),
       },
-    }
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to download backup", details: error.message },

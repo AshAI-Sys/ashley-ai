@@ -15,7 +15,6 @@ export async function POST(
       include: {
         contents: true,
       },
-    });
 
     if (!carton) {
       return NextResponse.json({ error: "Carton not found" }, { status: 404 });
@@ -56,13 +55,11 @@ export async function POST(
           select: { sku: true, size_code: true, color: true, serial: true },
         },
       },
-    });
 
     // Update finished unit status
     await prisma.finishedUnit.updateMany({
       where: { id: data.finished_unit_id },
       data: { packed: true },
-    });
 
     return NextResponse.json(cartonContent, { status: 201 });
   } catch (error) {
@@ -93,7 +90,6 @@ export async function GET(
         },
       },
       orderBy: { created_at: "asc" },
-    });
 
     return NextResponse.json(contents);
   } catch (error) {
@@ -124,7 +120,6 @@ export async function DELETE(
     const content = await prisma.cartonContent.findUnique({
       where: { id: contentId },
       include: { finished_unit: true },
-    });
 
     if (!content) {
       return NextResponse.json({ error: "Content not found" }, { status: 404 });
@@ -133,13 +128,11 @@ export async function DELETE(
     // Remove content from carton
     await prisma.cartonContent.delete({
       where: { id: contentId },
-    });
 
     // Update finished unit status back to FINISHED
     await prisma.finishedUnit.update({
       where: { id: content.finished_unit_id },
       data: { packed: false },
-    });
 
     return NextResponse.json({ message: "Content removed from carton" });
   } catch (error) {

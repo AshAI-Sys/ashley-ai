@@ -15,7 +15,7 @@ const ResetPasswordSchema = z.object({
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
 
     // Validate request
@@ -55,7 +55,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
-    });
 
     if (!user) {
       return NextResponse.json(
@@ -94,7 +93,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         password_reset_token: null,
         password_reset_expires: null,
       },
-    });
 
     // Log successful password reset
     await logAuthEvent("PASSWORD_RESET", user.workspace_id, user.id, request, {

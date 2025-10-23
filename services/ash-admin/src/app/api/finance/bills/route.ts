@@ -8,7 +8,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: [],
-    }
   } catch (error) {
     console.error("Error fetching bills:", error);
     return NextResponse.json(
@@ -19,7 +18,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },
       { status: 501 });
@@ -34,7 +33,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },
       { status: 501 });

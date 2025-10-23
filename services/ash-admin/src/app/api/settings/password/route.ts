@@ -24,7 +24,6 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     // Get user with password
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
-    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -96,12 +95,10 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         password_hash: passwordHash,
         updated_at: new Date(),
       },
-    });
 
     return NextResponse.json({
       success: true,
       message: "Password changed successfully",
-    });
   } catch (error) {
     console.error("Error changing password:", error);
     return NextResponse.json(

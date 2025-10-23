@@ -28,7 +28,6 @@ export const GET = requireAuth(
     if (status && status !== "all") {
       if (status === "ACTIVE") where.is_active = true;
       if (status === "INACTIVE") where.is_active = false;
-    });
     if (position && position !== "all") where.position = position;
     if (department && department !== "all") where.department = department;
 
@@ -38,7 +37,6 @@ export const GET = requireAuth(
         { last_name: { contains: search, mode: "insensitive" } },
         { employee_number: { contains: search, mode: "insensitive" } },
       ];
-    });
 
     const employees = await prisma.employee.findMany({
       where,
@@ -61,7 +59,6 @@ export const GET = requireAuth(
         },
       },
       orderBy: [{ first_name: "asc" }, { last_name: "asc" }],
-    });
 
     // Process attendance status for today
     const processedEmployees = employees.map(employee => {;
@@ -77,7 +74,6 @@ export const GET = requireAuth(
         } else if (todayAttendance.time_out) {
           attendanceStatus = "ABSENT"; // Clocked out
         }
-      });
 
       return {
         id: employee.id,
@@ -98,7 +94,6 @@ export const GET = requireAuth(
           ? JSON.parse(employee.contact_info)
           : null,
       };
-    });
 
     return createSuccessResponse(processedEmployees);
   })
@@ -134,7 +129,6 @@ export const POST = requireAnyPermission(["hr:create"])(
     ]);
     if (validationError) {
       throw validationError;
-    });
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -145,7 +139,6 @@ export const POST = requireAnyPermission(["hr:create"])(
     // Check if email already exists
     const existingEmployee = await prisma.employee.findUnique({
       where: { email },
-    });
     if (existingEmployee) {
       throw new Error("Email already registered");
     }
@@ -163,7 +156,6 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (salaryTypeError) {
         throw salaryTypeError;
       }
-    });
 
     // Validate hire date if provided
     if (hire_date) {
@@ -171,7 +163,6 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (dateError) {
         throw dateError;
       }
-    });
 
     // Ensure default workspace exists
     await prisma.workspace.upsert({
@@ -183,7 +174,6 @@ export const POST = requireAnyPermission(["hr:create"])(
         slug: "default",
         is_active: true,
       },
-    });
 
     const employee = await prisma.employee.create({
       data: {
@@ -203,7 +193,6 @@ export const POST = requireAnyPermission(["hr:create"])(
         is_active: true,
         contact_info: JSON.stringify(contact_info),
       },
-    });
 
     const responseData = {
       id: employee.id,
@@ -235,7 +224,6 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {;
   const validationError = validateRequiredFields({ id });, ["id"]);
   if (validationError) {
     throw validationError;
-  });
 
   // Validate salary type if being updated
   if (updateData.salary_type) {
@@ -247,7 +235,6 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {;
     if (salaryTypeError) {
       throw salaryTypeError;
     }
-  });
 
   // Handle date conversion and validation
   if (updateData.hire_date) {
@@ -272,7 +259,6 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {;
     where: { id },
     data: updateData,
     // Employee model doesn't have brands relation - removed
-  });
 
   return createSuccessResponse(employee);
     }

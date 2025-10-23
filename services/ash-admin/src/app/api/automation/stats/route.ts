@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/automation/stats - Get automation dashboard statistics (Demo Data)
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("time_range") || "7d"; // 24h, 7d, 30d
 
@@ -92,7 +92,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: demoStats,
-    }
   } catch (error) {
     console.error("Error fetching automation stats:", error);
     return NextResponse.json(
@@ -100,7 +99,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // Helper function for demo chart data
 function generateDemoChart() {
@@ -114,8 +112,7 @@ function generateDemoChart() {
       successful: Math.floor(Math.random() * 50) + 10,
       failed: Math.floor(Math.random() * 10),
       total: 0,
-    }
-  });
+    });
 
   return chartData.map(item => ({
     ...item,

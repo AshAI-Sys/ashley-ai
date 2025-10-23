@@ -10,7 +10,7 @@ import {
 // Fixed: Prisma groupBy nullable field issues - using manual grouping instead
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const workspaceId = "default";
     const today = new Date();
     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
@@ -166,7 +166,6 @@ async function calculateHRStats(
       position: true,
       salary_type: true,
     },
-  });
 
   // Manual grouping to avoid Prisma groupBy issues with nullable fields
   const departmentMap = new Map<string, number>();
@@ -192,7 +191,6 @@ async function calculateHRStats(
         (salaryTypeMap.get(emp.salary_type) || 0) + 1
       );
     }
-  });
 
   // Convert maps to arrays
   const departmentStats = Array.from(departmentMap.entries()).map(
@@ -226,7 +224,6 @@ async function calculateHRStats(
     select: {
       hire_date: true,
     },
-  });
 
   // Filter out null hire_dates
   const employeesWithTenure = allEmployeesForTenure.filter(
@@ -242,7 +239,6 @@ async function calculateHRStats(
       return sum + months;
     }, 0);
     averageTenureMonths = totalMonths / employeesWithTenure.length;
-  });
 
   // Productivity metrics (from production runs)
   // Note: SewingRun doesn't have pieces_per_hour or efficiency_percentage fields
@@ -261,7 +257,6 @@ async function calculateHRStats(
       started_at: true,
       ended_at: true,
     },
-  });
 
   // Calculate average efficiency from sewing runs
   const sewingProductivity = {
@@ -276,7 +271,6 @@ async function calculateHRStats(
                 const piecesPerHour =
                   hours > 0 ? (run.qty_good || 0) / hours : 0;
                 return sum + piecesPerHour;
-              });
               return sum;
             }, 0) / sewingRuns.length
           : 0,

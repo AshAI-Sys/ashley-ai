@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/defect-detection/patterns - Analyze defect patterns
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "30");
     const operator_id = searchParams.get("operator_id");
@@ -31,7 +31,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       orderBy: {
         created_at: "desc",
       },
-    });
 
     if (qcChecks.length === 0) {
       return NextResponse.json({
@@ -44,8 +43,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           prevention_tips: [],
         },
         total_inspections: 0,
-      }
-    });
+      });
 
     // Transform QC checks into inspection format
     const inspections = qcChecks.map(qc => {
@@ -69,7 +67,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             recommendation: "Review and address defect",
           }
         }
-      });
 
       return {
         date: qc.created_at,
@@ -77,7 +74,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         station: qc.stage || "UNKNOWN",
         defects,
       };
-    });
 
     // Analyze patterns
     const patternAnalysis =
@@ -91,7 +87,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         end: new Date(),
       },
-    }
   } catch (error: any) {
     console.error("Pattern analysis error:", error);
     return NextResponse.json(
@@ -99,11 +94,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
 
 // POST /api/ai/defect-detection/patterns/compare - Compare quality between operators/stations
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {;
+  try {
     const { entity_type, days = 30 } = await req.json();
 
     if (!entity_type || !["operator", "station"].includes(entity_type)) {
@@ -125,15 +119,13 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         order: true,
         inspector: true,
       },
-    });
 
     if (qcChecks.length === 0) {
       return NextResponse.json({
         success: true,
         comparison: [],
         message: "No AI vision inspections found",
-      }
-    });
+      });
 
     // Group by entity (operator or station)
     const entityGroups: Record<string, any[]> = {};
@@ -148,11 +140,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       } else {
         entityId = qc.stage || "UNKNOWN";
         entityName = qc.stage || "Unknown Station";
-      });
 
       if (!entityGroups[entityId]) {
         entityGroups[entityId] = [];
-      });
 
       // Calculate total defects from critical + major + minor
       const totalDefects =
@@ -176,7 +166,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         entity_name: entityName,
         result,
       }
-    });
 
     // Prepare data for comparison
     const comparisonData = Object.entries(entityGroups).map(
@@ -195,7 +184,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       comparison,
       entity_type,
       total_entities: comparison.length,
-    }
   } catch (error: any) {
     console.error("Quality comparison error:", error);
     return NextResponse.json(

@@ -33,14 +33,13 @@ const CreateAuditLogSchema = z.object({
   ip_address: z.string().optional(),
   user_agent: z.string().optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).default("medium"),
-});
 
 // GET - List audit logs (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
@@ -207,15 +206,12 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
       if (action && action !== "all") {
         matches = matches && log.action === action;
-      });
 
       if (target_user_id) {
         matches = matches && log.target_user_id === target_user_id;
-      });
 
       if (severity && severity !== "all") {
         matches = matches && log.severity === severity;
-      });
 
       if (search) {
         matches =
@@ -236,7 +232,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     }
 
       return matches;
-    });
 
     // Sort by timestamp (newest first)
     filteredLogs.sort(
@@ -291,7 +286,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         },
         summary,
       },
-    }
   } catch (error) {
     console.error("Error fetching audit logs:", error);
     return NextResponse.json(
@@ -299,14 +293,13 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
-});
 
 // POST - Create new audit log entry
 export const POST = requireAnyPermission(["admin:create"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {;
+  try {
     const body = await request.json();
     const validatedData = CreateAuditLogSchema.parse(body);
 
@@ -366,7 +359,6 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       { status: 500 }
     );
   }
-});
 
 // Helper function to create audit log (internal use only)
 async function createAuditLog(
@@ -393,7 +385,6 @@ async function createAuditLog(
       performer_user_id,
       ...auditLog,
       timestamp: new Date().toISOString(),
-    });
 
     return true;
   } catch (error) {

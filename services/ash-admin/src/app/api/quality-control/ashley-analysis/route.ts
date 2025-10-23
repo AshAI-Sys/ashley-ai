@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // Ashley AI Quality Control Analytics
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { inspection_id, analysis_type } = await request.json();
 
     const inspection = await prisma.qCInspection.findUnique({
@@ -35,7 +35,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     if (!inspection) {
       return NextResponse.json(
@@ -69,13 +68,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       data: {
         ashley_analysis: JSON.stringify(ashleyAnalysis),
       },
-    });
 
     return NextResponse.json({
       inspection_id,
       analysis_type,
       ashley_analysis: ashleyAnalysis,
-    });
   } catch (error) {
     console.error("Error in Ashley QC analysis:", error);
     return NextResponse.json(
@@ -103,7 +100,6 @@ async function performDefectTrendAnalysis(inspection: any) {
       },
     },
     orderBy: { inspection_date: "asc" },
-  });
 
   const defectTrends = {};
   const timeSeriesData = [];
@@ -130,7 +126,6 @@ async function performDefectTrendAnalysis(inspection: any) {
       total_defects: totalDefects,
       defect_rate: (totalDefects / insp.sample_size) * 100,
     }
-  });
 
   // Calculate trends
   const currentDefectRate =
@@ -188,7 +183,6 @@ async function performRootCausePrediction(inspection: any) {
       }
       defectPatterns[category].locations[defect.location] += defect.quantity;
     }
-  });
 
   // Root cause prediction logic based on defect patterns
   const rootCausePredictions = [];
@@ -252,7 +246,6 @@ async function performRootCausePrediction(inspection: any) {
       preventive_actions: preventiveActions,
       defect_pattern: pattern,
     }
-  });
 
   return {
     type: "root_cause_prediction",
@@ -289,7 +282,6 @@ async function performQualityRiskAssessment(inspection: any) {
       description: `Current defect rate ${defectRate.toFixed(2)}% exceeds acceptable threshold`,
     }
     overallRiskScore += 30;
-  });
 
   // Factor 2: Critical defects present
   if (inspection.critical_found > 0) {
@@ -300,7 +292,6 @@ async function performQualityRiskAssessment(inspection: any) {
       description: `${inspection.critical_found} critical defects detected`,
     }
     overallRiskScore += 40;
-  });
 
   // Factor 3: Lot size vs sample adequacy
   const samplePercentage = (inspection.sample_size / inspection.lot_size) * 100;
@@ -312,7 +303,6 @@ async function performQualityRiskAssessment(inspection: any) {
       description: `Sample size only covers ${samplePercentage.toFixed(1)}% of lot`,
     }
     overallRiskScore += 20;
-  });
 
   // Factor 4: Inspection timing
   const inspectionType = inspection.stage; // Changed from inspection_type to stage
@@ -328,7 +318,6 @@ async function performQualityRiskAssessment(inspection: any) {
         "Defects found at final inspection indicate upstream process issues",
     }
     overallRiskScore += 35;
-  });
 
   const riskLevel =
     overallRiskScore >= 70 ? "HIGH" : overallRiskScore >= 40 ? "MEDIUM" : "LOW";
@@ -363,7 +352,6 @@ async function performProcessControlAnalysis(inspection: any) {
       },
     },
     orderBy: { inspection_date: "asc" },
-  });
 
   if (historicalInspections.length >= 10) {
     const defectRates = historicalInspections.map(
@@ -399,7 +387,6 @@ async function performProcessControlAnalysis(inspection: any) {
     controlStatus = "OUT_OF_CONTROL_HIGH";
   } else if (currentDefectRate < controlLimits.lcl) {
     controlStatus = "OUT_OF_CONTROL_LOW";
-  });
 
   return {
     type: "process_control_analysis",
@@ -509,7 +496,6 @@ function generateOverallRecommendation(
       action: "STOP_PRODUCTION",
       summary: "High risk detected - immediate intervention required",
     };
-  });
 
   if (risk.risk_level === "MEDIUM" || trend.trend_direction === "INCREASING") {
     return {
@@ -518,7 +504,6 @@ function generateOverallRecommendation(
       summary:
         "Quality issues detected - investigation and corrective action needed",
     };
-  });
 
   return {
     priority: "NORMAL",
@@ -534,7 +519,6 @@ function calculateProcessCapability(historicalInspections: any[]) {
       cpk: null,
       note: "Insufficient data for capability analysis",
     };
-  });
 
   // Simplified capability calculation
   return { cp: 1.33, cpk: 1.2, note: "Process capable" });

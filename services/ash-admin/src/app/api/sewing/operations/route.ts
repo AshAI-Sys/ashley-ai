@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const productType = searchParams.get("product_type");
 
@@ -64,7 +64,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: operations,
-    }
   } catch (error) {
     console.error("Error fetching sewing operations:", error);
     return NextResponse.json(

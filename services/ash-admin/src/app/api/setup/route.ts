@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 export async function GET() {
   return NextResponse.json({
     message: "Setup endpoint - Use POST to create admin user",
-  }
+  });
 }
 
 export async function POST() {
@@ -16,14 +16,12 @@ export async function POST() {
       where: {
         email: "admin@ashleyai.com",
       },
-    });
 
     if (existingAdmin) {
       return NextResponse.json({
         success: false,
         message: "Admin user already exists",
-      }
-    });
+      });
 
     // Create workspace first
     const workspace = await prisma.workspace.create({
@@ -31,7 +29,6 @@ export async function POST() {
         name: "Main Workspace",
         slug: "main",
       },
-    });
 
     // Hash password
     const hashedPassword = await bcrypt.hash("Admin@12345", 10);
@@ -47,7 +44,6 @@ export async function POST() {
         is_active: true,
         workspace_id: workspace.id,
       },
-    });
 
     return NextResponse.json({
       success: true,
@@ -57,7 +53,6 @@ export async function POST() {
         email: admin.email,
         name: `${admin.first_name} ${admin.last_name}`,
       },
-    });
   } catch (error: any) {
     console.error("Setup error:", error);
     return NextResponse.json(

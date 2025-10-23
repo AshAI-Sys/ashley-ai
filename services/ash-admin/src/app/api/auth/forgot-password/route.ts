@@ -13,7 +13,7 @@ const ForgotPasswordSchema = z.object({
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const body = await request.json();
 
     // Validate request
@@ -38,7 +38,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
-    });
 
     // For security, always return success even if user doesn't exist
     // This prevents email enumeration attacks
@@ -70,7 +69,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 429 }
         );
       }
-    });
 
     // Generate password reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -84,7 +82,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         password_reset_expires: resetExpires,
         password_reset_sent_at: new Date(),
       },
-    });
 
     // Create reset URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";

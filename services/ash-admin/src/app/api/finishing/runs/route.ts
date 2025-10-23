@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const orderId = searchParams.get("order_id");
@@ -24,7 +24,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-    });
 
     // Process runs to calculate task completion
     const processedRuns = runs.map(run => {;
@@ -49,7 +48,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         }
       } catch (e) {
         materialsUsed = [];
-      });
 
       return {
         ...run,
@@ -57,7 +55,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_tasks: totalTasks,
         materials_used: materialsUsed,
       };
-    });
 
     return NextResponse.json({
       runs: processedRuns,
@@ -66,7 +63,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         limit,
         total: await prisma.finishingRun.count({ where }),
       },
-    });
   } catch (error) {
     console.error("Error fetching finishing runs:", error);
     return NextResponse.json(
@@ -77,7 +73,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
 
     const finishingRun = await prisma.finishingRun.create({
@@ -94,7 +90,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         order: { select: { order_number: true }); },
         operator: { select: { first_name: true, last_name: true } },
       },
-    });
 
     return NextResponse.json(finishingRun, { status: 201 });
   } catch (error) {
@@ -107,7 +102,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
     const { id, ...updateData } = data;
 
@@ -121,7 +116,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
       },
-    });
 
     // If marking as completed, create finished units if data provided
     if (updateData.status === "COMPLETED" && updateData.bundle_data) {
@@ -144,7 +138,6 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
     const order = await prisma.order.findUnique({
       where: { id: finishingRun.order_id },
       include: { line_items: true },
-    });
 
     if (!order || !bundleData) return;
 
@@ -161,7 +154,6 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
         color: bundleData.color || null,
         serial: `${bundleData.qr_code || finishingRun.id}-${(i + 1).toString().padStart(3, "0")}`,
       }
-    });
 
     await prisma.finishedUnit.createMany({
       data: finishedUnits,

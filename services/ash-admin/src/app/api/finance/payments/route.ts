@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const { searchParams } = new URL(request.url);
     const invoice_id = searchParams.get("invoice_id");
     const payment_method = searchParams.get("payment_method");
@@ -33,12 +33,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { payment_date: "desc" },
-    });
 
     return NextResponse.json({
       success: true,
       data: payments,
-    });
   } catch (error) {
     console.error("Error fetching payments:", error);
     return NextResponse.json(
@@ -49,7 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {;
+  try {
     const data = await request.json();
     const { invoice_id, payment_method, amount, reference, payment_date } =
       data;
@@ -70,7 +68,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         workspace_id: true,
         invoice_number: true,
       },
-    });
 
     if (!invoice) {
       return NextResponse.json(
@@ -84,7 +81,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       // Generate payment number;
       const paymentCount = await tx.payment.count({
         where: { workspace_id: invoice.workspace_id },
-      });
       const payment_number = `PAY-${String(paymentCount + 1).padStart(6, "0")}`;
 
       // Create payment record
@@ -100,7 +96,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: "completed",
           processed_at: new Date(),
         },
-      });
 
       // Calculate total paid for this invoice
       const totalPaid = await tx.payment.aggregate({
@@ -109,7 +104,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: "completed",
         },
         _sum: { amount: true },
-      });
 
       const paidAmount = totalPaid._sum.amount || 0;
       let newStatus = "pending";
@@ -118,7 +112,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         newStatus = "paid";
       } else if (paidAmount > 0) {
         newStatus = "sent";
-      });
 
       // Update invoice status
       await tx.invoice.update({
@@ -127,10 +120,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: newStatus,
           paid_at: newStatus === "paid" ? new Date() : null,
         },
-      });
 
       return payment;
-    });
 
     // Fetch the complete payment record with relationships
     const paymentWithDetails = await prisma.payment.findUnique({
@@ -144,7 +135,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
 
     return NextResponse.json(
       {
