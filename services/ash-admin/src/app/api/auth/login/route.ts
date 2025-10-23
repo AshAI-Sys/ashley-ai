@@ -11,9 +11,8 @@ import {
   clearFailedAttempts,
 } from "../../../../lib/account-lockout";
 import { authLogger } from "../../../../lib/logger";
-import { requireAuth } from "@/lib/auth-middleware";
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, password } = body;
@@ -210,4 +209,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
