@@ -18,7 +18,7 @@ const OrderLineItemSchema = z.object({
   totalPrice: z.number().positive("Total price must be positive"),
   sizeCurve: z.record(z.number()).optional(),
   specifications: z.record(z.any()).optional(),
-      });
+});
 
 const CreateOrderSchema = z.object({
   clientId: z.string().min(1, "Client ID is required"),
