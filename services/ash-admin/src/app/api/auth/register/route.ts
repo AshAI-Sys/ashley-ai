@@ -5,7 +5,6 @@ import * as bcrypt from "bcryptjs";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
 import { z } from "zod";
-import { requireAuth } from "@/lib/auth-middleware";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
@@ -33,7 +32,7 @@ const RegisterSchema = z.object({
   companyPhone: z.string().optional(),
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -194,12 +193,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           name: `${user.first_name} ${user.last_name}`,
           role: user.role,
         },
-        // Only return verification URL in development (for testing)
-        // In production, user must check email
-        ...(process.env.NODE_ENV === "development" && {
-          verificationUrl,
-          expiresAt: verificationExpires,
-        }),
       },
       { status: 201 }
     );
@@ -215,4 +208,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
