@@ -29,6 +29,7 @@ export const GET = requireAuth(
     if (status && status !== "all") {
       if (status === "ACTIVE") where.is_active = true;
       if (status === "INACTIVE") where.is_active = false;
+    }
     if (position && position !== "all") where.position = position;
     if (department && department !== "all") where.department = department;
 
@@ -38,6 +39,7 @@ export const GET = requireAuth(
         { last_name: { contains: search, mode: "insensitive" } },
         { employee_number: { contains: search, mode: "insensitive" } },
       ];
+    }
 
     const employees = await prisma.employee.findMany({
       where,
