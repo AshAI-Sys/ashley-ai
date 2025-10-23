@@ -50,6 +50,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 423 }
       ); // 423 Locked
+    }
 
     // Find user in database
     const user = await prisma.user.findFirst({
@@ -115,6 +116,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         lockStatus.remainingAttempts > 0
       ) {
         errorMessage += `. Warning: ${lockStatus.remainingAttempts} ${lockStatus.remainingAttempts === 1 ? "attempt" : "attempts"} remaining before account lockout.`;
+      }
 
       return NextResponse.json(
         {
@@ -138,13 +140,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       email: user.email,
       role: user.role as any,
       workspaceId: user.workspace_id,
-      });
+    });
 
     // Update last login timestamp
     await prisma.user.update({
       where: { id: user.id },
       data: { last_login_at: new Date() },
-      });
+    });
 
     // Create session for the user with access token
     await createSession(user.id, tokenPair.accessToken, request);
@@ -153,12 +155,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     await logAuthEvent("LOGIN", user.workspace_id, user.id, request, {
       email: user.email,
       role: user.role,
+    });
 
     authLogger.info("User logged in successfully", {
       userId: user.id,
       email: user.email,
       workspaceId: user.workspace_id,
-      });
+    });
 
     // Set HTTP-only cookie with access token
     const response = NextResponse.json({
@@ -175,7 +178,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         department: user.department || null,
         workspaceId: user.workspace_id,
       },
-      });
+    });
 
     // Set secure HTTP-only cookie for auth token
     response.cookies.set("auth_token", tokenPair.accessToken, {
@@ -184,7 +187,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: tokenPair.expiresIn, // 15 minutes
       path: "/",
-      });
+    });
 
     // Set refresh token as HTTP-only cookie (7 days)
     response.cookies.set("refresh_token", tokenPair.refreshToken, {
@@ -193,7 +196,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       path: "/",
-      });
+    });
 
     return response;
   } catch (error: any) {
@@ -206,3 +209,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
