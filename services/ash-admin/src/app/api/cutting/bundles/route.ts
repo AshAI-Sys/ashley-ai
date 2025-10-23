@@ -10,6 +10,7 @@ const BundleConfigSchema = z.object({
     .number()
     .int()
     .positive("Pieces per bundle must be positive"),
+      });
 
 const CreateBundlesSchema = z.object({
   orderId: z.string().min(1, "Order ID is required"),
@@ -17,6 +18,7 @@ const CreateBundlesSchema = z.object({
   bundleConfigs: z
     .array(BundleConfigSchema)
     .min(1, "At least one bundle configuration is required"),
+      });
 
 const UpdateBundleSchema = z.object({
   bundleId: z.string().min(1, "Bundle ID is required"),
@@ -114,6 +116,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.orderId },
+      });
 
     if (!order) {
       return NextResponse.json(
@@ -121,10 +124,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if cut lay exists
     const cutLay = await prisma.cutLay.findUnique({
       where: { id: validatedData.cutLayId },
+      });
 
     if (!cutLay) {
       return NextResponse.json(
@@ -132,6 +137,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     const createdBundles = [];
 
@@ -244,6 +250,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const body = await request.json();
     const validatedData = UpdateBundleSchema.parse(body);
@@ -251,6 +258,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if bundle exists
     const existingBundle = await prisma.bundle.findUnique({
       where: { id },
+      });
 
     if (!existingBundle) {
       return NextResponse.json(
@@ -258,6 +266,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     const bundle = await prisma.bundle.update({
       where: { id },

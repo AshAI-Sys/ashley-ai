@@ -37,6 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     // Transform data for frontend
     const transformedMachines = await Promise.all(
@@ -105,6 +106,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Create machine
     const machine = await prisma.machine.create({
@@ -115,6 +117,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         spec: JSON.stringify(specifications),
         is_active,
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -144,6 +147,7 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
           lt: tomorrow,
         },
       },
+      });
 
     // Get completed runs today
     const completedRuns = await prisma.printRun.count({
@@ -155,6 +159,7 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
           lt: tomorrow,
         },
       },
+      });
 
     // Calculate utilization as percentage
     return totalRuns > 0 ? Math.round((completedRuns / totalRuns) * 100) : 0;
@@ -176,6 +181,7 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
         status: { in: ["open", "scheduled"] },
         type: { in: ["preventive_maintenance", "repair"] },
       },
+      });
 
     return !!pendingMaintenance;
   } catch (error) {

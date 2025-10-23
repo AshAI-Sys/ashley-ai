@@ -27,6 +27,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const { email } = validation.data;
 
@@ -38,6 +39,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
+      });
 
     if (!user) {
       // Don't reveal if user exists or not for security
@@ -50,6 +52,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 200 }
       );
     }
+      });
 
     // Check if already verified
     if (user.email_verified) {
@@ -61,6 +64,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check rate limiting - don't allow resending within 2 minutes
     if (user.email_verification_sent_at) {
@@ -92,6 +96,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         email_verification_expires: verificationExpires,
         email_verification_sent_at: new Date(),
       },
+      });
 
     // Create verification URL
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";
@@ -114,6 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       console.log("🔗 Verification URL:", verificationUrl);
       console.log("⏰ Expires:", verificationExpires);
     }
+      });
 
     // Log event
     await logAuthEvent(

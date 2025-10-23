@@ -29,6 +29,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         widgets_data: true,
       },
       orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
+      });
 
     return NextResponse.json({
       success: true,
@@ -50,6 +51,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/dashboards - Create new dashboard
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -75,6 +77,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const dashboard = await prisma.executiveDashboard.create({
       data: {
@@ -98,6 +101,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,

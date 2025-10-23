@@ -20,14 +20,17 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { status: 400 }
       );
     }
+      });
 
     // Get user with password
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
+      });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+      });
 
     // Verify current password
     const isPasswordValid = await bcrypt.compare(
@@ -40,6 +43,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { status: 401 }
       );
     }
+      });
 
     // Check if new password is same as old
     const isSamePassword = await bcrypt.compare(
@@ -52,6 +56,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { status: 400 }
       );
     }
+      });
 
     // Validate new password strength
     if (new_password.length < 8) {

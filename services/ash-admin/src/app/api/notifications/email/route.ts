@@ -24,6 +24,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     let result;
 
@@ -101,6 +102,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
     }
+      });
 
     if (!result.success) {
       return NextResponse.json(
@@ -108,6 +110,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
+      });
 
     // Log notification in database
     if (workspace_id) {
@@ -126,6 +129,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       } catch (error) {
         console.error("Failed to log notification:", error);
       }
+      });
 
     return NextResponse.json({
       success: true,
@@ -141,6 +145,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // GET /api/notifications/email/test - Test email configuration
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -164,6 +169,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         <p>If you received this email, your email configuration is working correctly!</p>
         <p><strong>Timestamp:</strong> ${new Date().toISOString()});</p>
       `,
+      });
 
     if (!result.success) {
       return NextResponse.json(
@@ -171,6 +177,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
+      });
 
     return NextResponse.json({
       success: true,

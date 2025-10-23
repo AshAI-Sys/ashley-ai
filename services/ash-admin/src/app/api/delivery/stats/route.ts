@@ -29,6 +29,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           status: "READY_FOR_PICKUP",
         },
       }),
+      });
 
       // In transit (including out for delivery)
       prisma.shipment.count({
@@ -37,6 +38,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           OR: [{ status: "IN_TRANSIT" }, { status: "OUT_FOR_DELIVERY" }],
         },
       }),
+      });
 
       // Delivered today (using updated_at as proxy for delivery timestamp)
       prisma.shipment.count({
@@ -49,6 +51,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }),
+      });
 
       // Failed deliveries (not resolved)
       prisma.shipment.count({
@@ -165,6 +168,7 @@ async function getGeographicDistribution() {
       },
       take: 100, // Limit to last 100 shipments
       select: { consignee_address: true },
+      });
 
     const cityCount: Record<string, number> = {};
 
@@ -184,6 +188,7 @@ async function getGeographicDistribution() {
 
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
+      });
 
     return Object.entries(cityCount).map(([city, count]) => ({
       location: city,

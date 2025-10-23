@@ -69,6 +69,7 @@ async function calculateHRStats(
     prisma.employee.count({
       where: { workspace_id: workspaceId },
     }),
+      });
 
     // Active employees
     prisma.employee.count({
@@ -77,6 +78,7 @@ async function calculateHRStats(
         is_active: true,
       },
     }),
+      });
 
     // Today's attendance - employees who checked in
     prisma.attendanceLog.count({
@@ -90,6 +92,7 @@ async function calculateHRStats(
         status: "APPROVED",
       },
     }),
+      });
 
     // Pending overtime requests - using attendance with overtime
     prisma.attendanceLog.count({
@@ -166,6 +169,7 @@ async function calculateHRStats(
       position: true,
       salary_type: true,
     },
+      });
 
   // Manual grouping to avoid Prisma groupBy issues with nullable fields
   const departmentMap = new Map<string, number>();
@@ -191,6 +195,7 @@ async function calculateHRStats(
         (salaryTypeMap.get(emp.salary_type) || 0) + 1
       );
     }
+      });
 
   // Convert maps to arrays
   const departmentStats = Array.from(departmentMap.entries()).map(
@@ -224,6 +229,7 @@ async function calculateHRStats(
     select: {
       hire_date: true,
     },
+      });
 
   // Filter out null hire_dates
   const employeesWithTenure = allEmployeesForTenure.filter(
@@ -257,6 +263,7 @@ async function calculateHRStats(
       started_at: true,
       ended_at: true,
     },
+      });
 
   // Calculate average efficiency from sewing runs
   const sewingProductivity = {
@@ -317,6 +324,7 @@ async function calculateHRStats(
     // Pending approvals
     overtime_requests: pendingOvertimeRequests,
     pending_leaves: pendingLeaveRequests,
+      });
 
     // Financial
     total_payroll_cost: currentMonthPayroll._sum.net_pay || 0,
@@ -326,6 +334,7 @@ async function calculateHRStats(
     average_tenure_months: Math.round(averageTenureMonths * 10) / 10,
     attendance_rate:
       activeEmployees > 0 ? (presentToday / activeEmployees) * 100 : 0,
+      });
 
     // Productivity
     avg_sewing_efficiency: sewingProductivity._avg.efficiency_percentage || 0,

@@ -13,6 +13,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const bundle = await prisma.bundle.findUnique({
       where: { qr_code: qrCode },

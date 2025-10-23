@@ -84,6 +84,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         active_operators: 12 + Math.floor(Math.random() * 4),
         defect_rate: 3 + Math.random() * 5,
         timestamp: date,
+      });
 
       // QC
       dayMetrics.push({
@@ -110,6 +111,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         timestamp: date,
         metrics: dayMetrics,
       }
+      });
 
     // Analyze trends
     const trendAnalysis =

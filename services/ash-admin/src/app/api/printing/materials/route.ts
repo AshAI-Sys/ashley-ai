@@ -25,6 +25,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const materials = await prisma.materialInventory.findMany({
       where,
       orderBy: [{ material_type: "asc" }, { material_name: "asc" });],
+      });
 
     // Transform data for frontend
     const transformedMaterials = materials.map(material => ({
@@ -77,16 +78,19 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         // Check if material exists and has sufficient stock
         const materialRecord = await tx.materialInventory.findUnique({
           where: { id: material_id },
+      });
 
         if (!materialRecord) {
           throw new Error(`Material ${material_id} not found`);
     }
+      });
 
         if (materialRecord.available_stock < quantity) {
           throw new Error(
             `Insufficient stock for ${materialRecord.material_name}. Available: ${materialRecord.available_stock}, Required: ${quantity}`
           );
     }
+      });
 
         // Create consumption record
         const consumptionRecord = await tx.printRunMaterial.create({
@@ -97,6 +101,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             qty: quantity,
             source_batch_id: batch_id || null,
           },
+      });
 
         // Update inventory - reduce available stock
         await tx.materialInventory.update({
@@ -109,6 +114,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               decrement: quantity,
             },
           },
+      });
 
         // Create material transaction record
         await tx.materialTransaction.create({
@@ -126,6 +132,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
         consumptionRecords.push(consumptionRecord);
     }
+      });
 
       return consumptionRecords;
 
@@ -146,6 +153,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // Get material types for filtering
 export async function OPTIONS(request: NextRequest) {
@@ -155,6 +163,7 @@ export async function OPTIONS(request: NextRequest) {
         material_type: true,
       },
       distinct: ["material_type"],
+      });
 
     const types = materialTypes.map(m => m.material_type);
 

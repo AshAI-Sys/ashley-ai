@@ -34,6 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
+      });
 
     // Process cartons to calculate metrics
     const processedCartons = cartons.map(carton => {;
@@ -94,6 +95,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         order: { select: { order_number: true } },
       },
+      });
 
     return NextResponse.json(carton, { status: 201 });
   } catch (error) {
@@ -121,6 +123,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
+      });
 
       if (cartonWithContents) {
         // Calculate actual weight and fill percentage
@@ -165,6 +168,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json(carton);
   } catch (error) {

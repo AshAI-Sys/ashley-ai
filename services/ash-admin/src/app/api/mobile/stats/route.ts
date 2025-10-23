@@ -16,6 +16,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         // You can add user_id relation in future to link user to employee
       },
       orderBy: { created_at: "asc" });,
+      });
 
     if (!employee) {
       return NextResponse.json({
@@ -46,6 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }),
+      });
 
       // Sewing production stats
       prisma.sewingRun.aggregate({
@@ -63,6 +65,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           efficiency_pct: true,
         },
       }),
+      });
 
       // Print production stats (count print runs)
       prisma.printRun.count({

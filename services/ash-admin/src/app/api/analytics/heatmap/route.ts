@@ -30,6 +30,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     const heatmapData = await prisma.productionHeatmap.findMany({
       where,
       orderBy: [{ date: "asc" }, { hour: "asc" });],
+      });
 
     // Calculate aggregated statistics
     const stats = {
@@ -90,6 +91,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/analytics/heatmap - Create heatmap data point
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -118,6 +120,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const heatmap = await prisma.productionHeatmap.create({
       data: {
@@ -134,6 +137,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         downtime_mins: downtime_mins || 0,
         operators_count: operators_count || 1,
       },
+      });
 
     return NextResponse.json({
       success: true,

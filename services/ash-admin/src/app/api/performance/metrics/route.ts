@@ -65,6 +65,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
             Math.round(queryMetrics.avgUncachedDuration * 10) / 10,
           speedup: Math.round(queryMetrics.speedup * 10) / 10,
         },
+      });
 
         // Redis metrics
         redis: {
@@ -72,6 +73,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           cacheHitRate: Math.round(redisCacheHitRate * 10) / 10,
           stats: redisStats,
         },
+      });
 
         // System health
         health: {
@@ -80,6 +82,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
             ? "All systems operational"
             : "Redis unavailable - using in-memory fallback",
         },
+      });
 
         // Performance grades
         grades: {
@@ -153,6 +156,7 @@ function getRecommendations(
       "Slow uncached queries detected. Review database indexes and query optimization."
     );
     }
+      });
 
   if (queryMetrics.totalQueries < 100) {
     recommendations.push(

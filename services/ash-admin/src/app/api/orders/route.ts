@@ -17,6 +17,7 @@ const OrderLineItemSchema = z.object({
   totalPrice: z.number().positive("Total price must be positive"),
   sizeCurve: z.record(z.number()).optional(),
   specifications: z.record(z.any()).optional(),
+      });
 
 const CreateOrderSchema = z.object({
   clientId: z.string().min(1, "Client ID is required"),
@@ -40,6 +41,7 @@ const CreateOrderSchema = z.object({
     .transform(str => (str ? new Date(str) : undefined)),
   notes: z.string().optional(),
   lineItems: z.array(OrderLineItemSchema).optional(),
+      });
 
   // New Order Details fields
   po_number: z.string().optional(),
@@ -81,6 +83,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       search,
       status,
       clientId,
+      });
 
     // Use cached query
     const result = await cachedQueryWithMetrics(
@@ -168,6 +171,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         currency: validatedData.currency,
         delivery_date: validatedData.deliveryDate || null,
         notes: validatedData.notes || null,
+      });
 
         // New Order Details fields
         po_number: validatedData.po_number || null,
@@ -186,6 +190,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     // Invalidate orders cache (non-blocking)
     try {

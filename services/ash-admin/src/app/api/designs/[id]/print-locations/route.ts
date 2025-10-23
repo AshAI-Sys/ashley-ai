@@ -28,6 +28,7 @@ export async function GET(
       orderBy: {
         created_at: "asc",
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -62,6 +63,7 @@ export async function POST(
         offset_y_cm: validatedData.offset_y_cm || null,
         notes: validatedData.notes || null,
       },
+      });
 
     return NextResponse.json(
       {
@@ -122,6 +124,7 @@ export async function PUT(
         offset_y_cm: validatedData.offset_y_cm,
         notes: validatedData.notes,
       },
+      });
 
     return NextResponse.json({
       success: true,

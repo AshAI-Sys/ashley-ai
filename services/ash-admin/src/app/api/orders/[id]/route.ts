@@ -44,6 +44,7 @@ export const GET = requireAuth(async (
           },
         },
       },
+      });
 
     if (!order) {
       return apiNotFound("Order");
@@ -90,12 +91,14 @@ export const PUT = requireAuth(async (
           },
         },
       },
+      });
 
     return apiSuccess(order, "Order updated successfully");
   } catch (error) {
     logError("Failed to update order", error, { orderId: context.params.id });
     return apiServerError(error);
   }
+      });
 
 // DELETE /api/orders/[id] - Delete order
 export const DELETE = requireAuth(async (
@@ -107,6 +110,7 @@ export const DELETE = requireAuth(async (
     const workspaceId = user.workspaceId;
     await prisma.order.delete({
       where: { id: context.params.id },
+      });
 
     return apiSuccess({ id: context.params.id }, "Order deleted successfully");
   } catch (error) {

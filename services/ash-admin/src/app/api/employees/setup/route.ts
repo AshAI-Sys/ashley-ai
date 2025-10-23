@@ -27,6 +27,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if email already exists
     const existingEmployee = await prisma.employee.findUnique({
       where: { email: validatedData.email.toLowerCase() },
+      });
 
     if (existingEmployee) {
       return NextResponse.json(
@@ -34,6 +35,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Hash password
     const saltRounds = 12;
@@ -69,6 +71,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           ? JSON.stringify(validatedData.permissions)
           : null,
       },
+      });
 
     return NextResponse.json(
       {
@@ -123,6 +126,7 @@ export async function GET() {
         created_at: true,
       },
       orderBy: { created_at: "desc" },
+      });
 
     return NextResponse.json({
       success: true,

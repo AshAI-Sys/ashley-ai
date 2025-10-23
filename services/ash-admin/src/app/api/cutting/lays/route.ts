@@ -111,6 +111,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.order_id },
+      });
 
     if (!order) {
       return NextResponse.json(
@@ -118,6 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Create cut lay with outputs in a transaction
     const cutLay = await prisma.$transaction(async tx => {;
@@ -148,6 +150,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
+      });
 
       // Create cut outputs
       const cutOutputs = await tx.cutOutput.createMany({
@@ -157,10 +160,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           size_code: output.size_code,
           qty: output.qty,
         })),
+      });
 
       // Fetch the created outputs
       const outputs = await tx.cutOutput.findMany({
         where: { cut_lay_id: newCutLay.id },
+      });
 
       return { ...newCutLay, outputs };
 

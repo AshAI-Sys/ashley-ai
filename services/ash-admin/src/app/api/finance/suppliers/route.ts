@@ -24,6 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         _count: true,
       },
       distinct: ["supplier"],
+      });
 
     // Format as supplier list
     const suppliers = expenses

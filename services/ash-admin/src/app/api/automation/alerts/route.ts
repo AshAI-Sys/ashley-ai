@@ -90,6 +90,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Calculate next escalation time based on severity
     const escalationMinutes = getEscalationDelay(severity);
@@ -110,6 +111,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         current_value,
         next_escalation_at: nextEscalationAt,
       },
+      });
 
     // Trigger automatic notification for high/critical alerts
     if (severity === "HIGH" || severity === "CRITICAL") {
@@ -127,6 +129,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/automation/alerts - Update alert (acknowledge/resolve)
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -140,6 +143,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const updateData: any = {};
     const now = new Date();
@@ -195,6 +199,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -207,6 +212,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/automation/alerts - Delete alert
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -220,9 +226,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.alert.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,
@@ -234,6 +242,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // Helper functions
 async function getAlertSummary(workspaceId: string) {
@@ -241,6 +250,7 @@ async function getAlertSummary(workspaceId: string) {
     by: ["severity", "is_resolved"],
     where: { workspace_id: workspaceId },
     _count: { id: true },
+      });
 
   const result = {
     total: 0,

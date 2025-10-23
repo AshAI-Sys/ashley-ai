@@ -31,6 +31,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         print_runs: true,
         line_items: true,
       },
+      });
 
     // Transform orders into pricing analysis format
     const pricingData = orders.map(order => {
@@ -110,6 +111,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -131,6 +133,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         print_runs: true,
         line_items: true,
       },
+      });
 
     // Calculate average costs and prices
     const stats = orders.map(order => {;

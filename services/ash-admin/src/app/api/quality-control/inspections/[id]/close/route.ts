@@ -16,6 +16,7 @@ export async function POST(
         defects: true,
         order: true,
       },
+      });
 
     if (!inspection) {
       return NextResponse.json(
@@ -23,6 +24,7 @@ export async function POST(
         { status: 404 }
       );
     }
+      });
 
     // Calculate total defects by severity
     const criticalDefects = inspection.defects.filter(
@@ -54,6 +56,7 @@ export async function POST(
         completed_at: new Date(),
         closed_at: new Date(),
       },
+      });
 
     // If failed, create CAPA task
     if (status === "FAILED") {
@@ -72,6 +75,7 @@ export async function POST(
           created_by: inspection.inspector_id,
         },
       }
+      });
 
     return NextResponse.json({
       ...updatedInspection,

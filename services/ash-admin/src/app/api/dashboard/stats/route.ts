@@ -35,11 +35,13 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
           created_at: { gte: startDate },
         },
       }),
+      });
 
       // Total clients
       prisma.client.count({
         where: { workspace_id: authUser.workspaceId },
       }),
+      });
 
       // Total revenue
       prisma.order.aggregate({
@@ -49,6 +51,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         },
         _sum: { total_amount: true },
       }),
+      });
 
       // Active orders (in production)
       prisma.order.count({
@@ -57,6 +60,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
           status: "in_production",
         },
       }),
+      });
 
       // Recent orders
       prisma.order.findMany({
@@ -177,6 +181,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
           lte: todayEnd,
         },
       },
+      });
 
     // Prepare chart data
     let productionTrendData = [];

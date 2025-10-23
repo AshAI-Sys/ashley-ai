@@ -33,6 +33,7 @@ const CreateAuditLogSchema = z.object({
   ip_address: z.string().optional(),
   user_agent: z.string().optional(),
   severity: z.enum(["low", "medium", "high", "critical"]).default("medium"),
+      });
 
 // GET - List audit logs (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
@@ -222,14 +223,17 @@ export const GET = requireAnyPermission(["admin:read"])(async (
               .includes(search.toLowerCase()) ||
             log.performer?.email?.toLowerCase().includes(search.toLowerCase()));
     }
+      });
 
       if (date_from) {
         matches = matches && new Date(log.timestamp) >= new Date(date_from);
     }
+      });
 
       if (date_to) {
         matches = matches && new Date(log.timestamp) <= new Date(date_to);
     }
+      });
 
       return matches;
 
@@ -293,6 +297,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
+      });
 
 // POST - Create new audit log entry
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -385,6 +390,7 @@ async function createAuditLog(
       performer_user_id,
       ...auditLog,
       timestamp: new Date().toISOString(),
+      });
 
     return true;
   } catch (error) {

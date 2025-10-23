@@ -29,6 +29,7 @@ export async function GET(
         created_at: "desc",
       },
       take: limit,
+      });
 
     return NextResponse.json({
       success: true,
@@ -62,6 +63,7 @@ export async function POST(
         performed_by: validatedData.performed_by || null,
         metadata: validatedData.metadata || null,
       },
+      });
 
     return NextResponse.json(
       {

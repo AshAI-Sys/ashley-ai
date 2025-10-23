@@ -10,6 +10,7 @@ const CreateSewingRunSchema = z.object({
   operation_name: z.string().min(1, "Operation name is required"),
   sewing_type: z.string().optional(),
   operator_id: z.string().min(1, "Operator ID is required"),
+      });
 
 const UpdateSewingRunSchema = z.object({
   status: z.enum(["CREATED", "IN_PROGRESS", "DONE"]).optional(),
@@ -161,6 +162,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.order_id },
+      });
 
     if (!order) {
       return NextResponse.json(
@@ -168,10 +170,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if operator exists
     const operator = await prisma.employee.findUnique({
       where: { id: validatedData.operator_id },
+      });
 
     if (!operator) {
       return NextResponse.json(
@@ -179,10 +183,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if bundle exists
     const bundle = await prisma.bundle.findUnique({
       where: { id: validatedData.bundle_id },
+      });
 
     if (!bundle) {
       return NextResponse.json(
@@ -190,10 +196,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if routing step exists
     const routingStep = await prisma.routingStep.findUnique({
       where: { id: validatedData.routing_step_id },
+      });
 
     if (!routingStep) {
       return NextResponse.json(
@@ -201,6 +209,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     const sewingRun = await prisma.sewingRun.create({
       data: {
@@ -277,6 +286,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if sewing run exists
     const existingSewingRun = await prisma.sewingRun.findUnique({
       where: { id },
+      });
 
     if (!existingSewingRun) {
       return NextResponse.json(
@@ -284,6 +294,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Calculate efficiency and metrics if times are provided
     let updateData: any = { ...validatedData };
@@ -303,6 +314,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         updateData.efficiency_pct =
           actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
       }
+      });
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
@@ -334,6 +346,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -366,10 +379,12 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if sewing run exists
     const existingSewingRun = await prisma.sewingRun.findUnique({
       where: { id },
+      });
 
     if (!existingSewingRun) {
       return NextResponse.json(
@@ -377,6 +392,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if sewing run is completed (prevent deletion)
     if (existingSewingRun.status === "DONE") {
@@ -385,9 +401,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.sewingRun.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

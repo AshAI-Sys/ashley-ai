@@ -28,6 +28,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (!invoiceId) {
       return createErrorResponse(new ValidationError("Invoice ID is required"));
     }
+      });
 
     // Get invoice details
     const invoice = await prisma.invoice.findUnique({
@@ -35,16 +36,19 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         client: true,
       },
+      });
 
     if (!invoice) {
       return createErrorResponse(new NotFoundError("Invoice"));
     }
+      });
 
     if (invoice.status === "paid") {
       return createErrorResponse(
         new ValidationError("Invoice is already paid")
       );
     }
+      });
 
     // Calculate remaining amount
     const payments = await prisma.payment.aggregate({
@@ -53,6 +57,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         status: "completed",
       },
       _sum: { amount: true },
+      });
 
     const paidAmount = payments._sum.amount || 0;
     const remainingAmount =
@@ -64,6 +69,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         new ValidationError("Invoice has no remaining balance")
       );
     }
+      });
 
     // Create payment based on provider
     if (provider === "stripe") {
@@ -81,6 +87,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           order_id: invoice.order_id || "",
           client_name: invoice.client.name,
         },
+      });
 
       if (!result.success) {
         return createErrorResponse(
@@ -91,6 +98,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           )
         );
     }
+      });
 
       return createSuccessResponse({
         paymentIntent: {
@@ -128,6 +136,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           )
         );
     }
+      });
 
       return createSuccessResponse({
         payment: {

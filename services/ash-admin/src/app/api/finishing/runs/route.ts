@@ -24,6 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
+      });
 
     // Process runs to calculate task completion
     const processedRuns = runs.map(run => {;
@@ -116,11 +117,13 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
       },
+      });
 
     // If marking as completed, create finished units if data provided
     if (updateData.status === "COMPLETED" && updateData.bundle_data) {
       await createFinishedUnits(finishingRun, updateData.bundle_data);
     }
+      });
 
     return NextResponse.json(finishingRun);
   } catch (error) {
@@ -138,6 +141,7 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
     const order = await prisma.order.findUnique({
       where: { id: finishingRun.order_id },
       include: { line_items: true },
+      });
 
     if (!order || !bundleData) return;
 
@@ -154,6 +158,7 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
         color: bundleData.color || null,
         serial: `${bundleData.qr_code || finishingRun.id}-${(i + 1).toString().padStart(3, "0")}`,
       }
+      });
 
     await prisma.finishedUnit.createMany({
       data: finishedUnits,

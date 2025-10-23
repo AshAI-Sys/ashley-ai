@@ -26,6 +26,7 @@ export async function POST(
         { status: 400 }
       );
     }
+      });
 
     // Get the design asset with related data
     const designAsset = await prisma.designAsset.findUnique({
@@ -41,6 +42,7 @@ export async function POST(
           where: { version },
         },
       },
+      });
 
     if (!designAsset) {
       return NextResponse.json(
@@ -48,6 +50,7 @@ export async function POST(
         { status: 404 }
       );
     }
+      });
 
     if (designAsset.versions.length === 0) {
       return NextResponse.json(
@@ -72,6 +75,7 @@ export async function POST(
         expires_at: expiresAt,
         approver_email: designAsset.order.client.email,
       },
+      });
 
     // Generate secure token after approval is created
     const secureToken = tokenService.generateApprovalToken({
@@ -81,11 +85,13 @@ export async function POST(
       version: version,
       expiresAt: expiresAt,
       permissions: ["view", "approve", "request_changes"],
+      });
 
     // Update approval with the secure token
     await prisma.designApproval.update({
       where: { id: approval.id },
       data: { portal_token: secureToken },
+      });
 
     // Generate secure approval link
     const approvalLink = tokenService.generateSignedApprovalUrl({
@@ -94,6 +100,7 @@ export async function POST(
       designId: designAsset.id,
       version: version,
       expiresAt: expiresAt,
+      });
 
     // Prepare email data
     const emailData = {
@@ -154,6 +161,7 @@ export async function POST(
           expires_at: expiresAt,
         }),
       },
+      });
 
     return NextResponse.json({
       success: true,

@@ -13,6 +13,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+      });
 
 // POST /api/upload - Upload file to Cloudinary
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -25,6 +26,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
+      });
 
     // Determine allowed file types based on upload type
     let allowedTypes: string[] = ALLOWED_FILE_TYPES.all;
@@ -48,6 +50,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if Cloudinary is configured
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
@@ -120,6 +123,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const result = await cloudinary.uploader.destroy(publicId);
 
@@ -137,6 +141,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // GET /api/upload - Check upload configuration status
 export async function GET() {

@@ -18,6 +18,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     if (
       !["send_reminder", "extend_expiry", "cancel_approval"].includes(action)
@@ -27,6 +28,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Get approvals with related data
     const approvals = await prisma.designApproval.findMany({
@@ -153,6 +155,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             await prisma.designApproval.update({
               where: { id: approval.id },
               data: { expires_at: newExpiryDate },
+      });
 
             // Create audit log
             await prisma.auditLog.create({
@@ -188,6 +191,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               data: {
                 status: "CANCELLED",
               },
+      });
 
             // Create audit log
             await prisma.auditLog.create({

@@ -11,6 +11,7 @@ const CreateBrandSchema = z.object({
   logo_url: z.string().optional(),
   settings: z.string().optional(),
   is_active: z.boolean().default(true),
+      });
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
@@ -25,6 +26,7 @@ export const GET = requireAuth(async (
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: clientId },
+      });
 
     if (!client) {
       return NextResponse.json(
@@ -32,6 +34,7 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
+      });
 
     const brands = await prisma.brand.findMany({
       where: { client_id: clientId },
@@ -88,6 +91,7 @@ export const POST = requireAuth(async (
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: clientId },
+      });
 
     if (!client) {
       return NextResponse.json(
@@ -95,6 +99,7 @@ export const POST = requireAuth(async (
         { status: 404 }
       );
     }
+      });
 
     // Check if brand with same name already exists for this client
     const existingBrand = await prisma.brand.findFirst({
@@ -102,6 +107,7 @@ export const POST = requireAuth(async (
         name: validatedData.name,
         client_id: clientId,
       },
+      });
 
     if (existingBrand) {
       return NextResponse.json(
@@ -112,6 +118,7 @@ export const POST = requireAuth(async (
         { status: 400 }
       );
     }
+      });
 
     // Ensure workspace exists before creating brand
     await prisma.workspace.upsert({
@@ -122,6 +129,7 @@ export const POST = requireAuth(async (
         slug: client.workspace_id,
       },
       update: {},
+      });
 
     // Use client's workspace_id
     const brand = await prisma.brand.create({
@@ -148,6 +156,7 @@ export const POST = requireAuth(async (
           },
         },
       },
+      });
 
     return NextResponse.json(
       {

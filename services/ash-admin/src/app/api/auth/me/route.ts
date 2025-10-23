@@ -34,6 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         created_at: true,
         last_login_at: true,
       },
+      });
 
     if (!user) {
       authLogger.warn("User not found in database", { userId: authUser.id });

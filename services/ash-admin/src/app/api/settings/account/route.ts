@@ -18,10 +18,12 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         bio: true,
         avatar_url: true,
       },
+      });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+      });
 
     return NextResponse.json(user);
   } catch (error) {
@@ -44,11 +46,13 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       const currentUser = await prisma.user.findUnique({
         where: { id: authUser.id },
         select: { email: true },
+      });
 
       if (currentUser && currentUser.email !== email) {
         // Check if email is already taken
         const existingUser = await prisma.user.findUnique({
           where: { email },
+      });
 
         if (existingUser && existingUser.id !== authUser.id) {
           return NextResponse.json(
@@ -59,6 +63,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
         emailVerificationRequired = true;
       }
+      });
 
     const updateData: any = {
       updated_at: new Date(),
@@ -77,6 +82,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: updateData,
+      });
 
     return NextResponse.json({
       success: true,

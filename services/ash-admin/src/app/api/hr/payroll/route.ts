@@ -20,6 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         where.period_start.gte = startYear;
         where.period_start.lte = endYear;
       }
+      });
 
     const payrollPeriods = await prisma.payrollPeriod.findMany({
       where,
@@ -43,6 +44,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { period_start: "desc" },
+      });
 
     // Calculate summary for each payroll period
     const processedRuns = payrollPeriods.map(period => {;
@@ -100,6 +102,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           period_end: periodEnd,
           status: "draft",
         },
+      });
 
       // Get all active employees
       const employees = await tx.employee.findMany({
@@ -107,6 +110,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: "default",
           is_active: true,
         },
+      });
 
       // Calculate payroll for each employee
       const payrollItems = [];
@@ -123,6 +127,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             status: "APPROVED",
           },
           orderBy: { date: "asc" },
+      });
 
         // Calculate working hours from attendance logs
         let totalHours = 0;
@@ -140,6 +145,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               overtimeHours += hours - 8;
             }
           }
+      });
 
         // Get piece-rate earnings from production runs (sewing)
         const sewingEarnings = await tx.sewingRun.aggregate({
@@ -154,6 +160,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           _sum: {
             qty_good: true,
           },
+      });
 
         // Note: PrintRun doesn't have operator_id, skipping print earnings for now
         const printingEarnings = { _sum: { qty_good: 0 } };
@@ -207,10 +214,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             salary_type: employee.salary_type,
           }),
         }
+      });
 
       // Create payroll earnings
       await tx.payrollEarning.createMany({
         data: payrollItems,
+      });
 
       // Update total amount in payroll period
       const totalAmount = payrollItems.reduce(
@@ -220,6 +229,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       await tx.payrollPeriod.update({
         where: { id: payrollPeriod.id },
         data: { total_amount: totalAmount },
+      });
 
       return payrollPeriod;
 
@@ -240,6 +250,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json(
       {
@@ -290,6 +301,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,

@@ -21,6 +21,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Fetch employees
     const employees = await prisma.employee.findMany({
@@ -40,6 +41,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         piece_rate: true,
         salary_type: true,
       },
+      });
 
     if (employees.length === 0) {
       return NextResponse.json(
@@ -47,6 +49,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     let report: any = null;
 
@@ -151,6 +154,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // GET /api/government/reports - Get contribution calculations for a single employee
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -165,6 +169,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const salary = parseFloat(monthly_salary);
 
@@ -195,6 +200,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           last_name: true,
           contact_info: true,
         },
+      });
 
       if (emp) {
         let contactInfo: any = {};
@@ -213,6 +219,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pagibig_number: contactInfo.pagibig_number || null,
         };
       }
+      });
 
     return NextResponse.json({
       employee,

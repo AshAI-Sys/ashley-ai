@@ -18,6 +18,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Format and validate phone number
     const formattedPhone = smsService.formatPhoneNumber(phone);
@@ -30,6 +31,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Generate 6-digit OTP
     const code = crypto.randomInt(100000, 999999).toString();
@@ -66,6 +68,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/sms/otp - Verify OTP code
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -79,6 +82,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Format phone number
     const formattedPhone = smsService.formatPhoneNumber(phone);
@@ -92,6 +96,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if expired
     if (storedOTP.expires < Date.now()) {

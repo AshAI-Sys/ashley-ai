@@ -17,14 +17,17 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Get user
     const user = await prisma.user.findUnique({
       where: { id: user_id },
+      });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+      });
 
     if (user.two_factor_enabled) {
       return NextResponse.json(
@@ -32,6 +35,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Generate 2FA credentials
     const result = await setup2FA(user.email);
@@ -46,6 +50,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         }),
         two_factor_backup_codes: JSON.stringify(result.backup_codes_hashed),
       },
+      });
 
     // Return otpauth URL and backup codes to user
     // NOTE: This is the ONLY time backup codes are shown
@@ -64,6 +69,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/auth/2fa/setup - Disable 2FA
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -77,6 +83,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Disable 2FA
     await prisma.user.update({
@@ -86,6 +93,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         two_factor_secret: null,
         two_factor_backup_codes: null,
       },
+      });
 
     return NextResponse.json({
       message: "2FA has been disabled",

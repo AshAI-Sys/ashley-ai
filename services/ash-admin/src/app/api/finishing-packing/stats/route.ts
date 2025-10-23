@@ -38,6 +38,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           ],
         },
       }),
+      });
 
       // In progress finishing
       prisma.finishingRun.count({
@@ -45,6 +46,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           status: "IN_PROGRESS",
         },
       }),
+      });
 
       // Completed today finishing
       prisma.finishingRun.count({
@@ -136,6 +138,7 @@ async function getPackingEfficiency() {
       },
       take: 100, // Last 100 cartons
       orderBy: { updated_at: "desc" },
+      });
 
     if (cartons.length === 0) return 0;
 

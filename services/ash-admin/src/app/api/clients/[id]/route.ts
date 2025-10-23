@@ -66,6 +66,7 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/clients/[id] - Update client
 export const PUT = requireAuth(async (
@@ -103,6 +104,7 @@ export const PUT = requireAuth(async (
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -115,6 +117,7 @@ export const PUT = requireAuth(async (
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/clients/[id] - Delete client
 export const DELETE = requireAuth(async (
@@ -125,6 +128,7 @@ export const DELETE = requireAuth(async (
   try {
     await prisma.client.delete({
       where: { id: context.params.id },
+      });
 
     return NextResponse.json({
       success: true,

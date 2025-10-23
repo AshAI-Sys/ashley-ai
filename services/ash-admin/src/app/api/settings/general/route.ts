@@ -21,10 +21,12 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         date_format: true,
         time_format: true,
       },
+      });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+      });
 
     return NextResponse.json(user);
   } catch (error) {
@@ -61,6 +63,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         time_format,
         updated_at: new Date(),
       },
+      });
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {

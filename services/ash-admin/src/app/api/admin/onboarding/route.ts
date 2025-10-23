@@ -29,6 +29,7 @@ const OnboardingStepSchema = z.object({
         hire_date: z.string().optional(),
       })
       .optional(),
+      });
 
     // Role Assignment Step
     role_assignment: z

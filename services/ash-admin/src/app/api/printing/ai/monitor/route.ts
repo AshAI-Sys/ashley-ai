@@ -14,6 +14,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Get current run data
     const printRun = await prisma.printRun.findUnique({
@@ -23,6 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         outputs: true,
         rejects: true,
       },
+      });
 
     if (!printRun) {
       return NextResponse.json(
@@ -30,6 +32,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Generate real-time insights
     const insights = await generateRealTimeInsights(printRun);
@@ -63,12 +66,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Process incoming monitoring data
     const analysis = await processMonitoringData(run_id, {
       sensor_data,
       operator_input,
       quality_checkpoint,
+      });
 
     // Store monitoring record would go here if PrintRunAIAnalysis model existed
     console.log("AI Analysis:", analysis);
@@ -286,6 +291,7 @@ function identifyRiskFactors(printRun: any) {
       description: `Quality score below threshold: ${Math.round(qualityTrend.score * 100)}%`,
       recommendation: "Immediate quality inspection required",
     }
+      });
 
   // Material waste risk
   const materialUtil = calculateMaterialUtilization(printRun);
@@ -296,6 +302,7 @@ function identifyRiskFactors(printRun: any) {
       description: `Material waste at ${materialUtil.waste_percentage}%`,
       recommendation: "Review material usage and adjust parameters",
     }
+      });
 
   // Time overrun risk
   const prediction = predictCompletionTime(printRun);
@@ -307,6 +314,7 @@ function identifyRiskFactors(printRun: any) {
       description: "Run exceeding estimated completion time",
       recommendation: "Consider process optimization or additional resources",
     }
+      });
 
   // Cost overrun risk
   const costTracking = analyzeCostTracking(printRun);
@@ -317,6 +325,7 @@ function identifyRiskFactors(printRun: any) {
       description: `Low profit margin: ${Math.round(costTracking.profit_margin * 100)}%`,
       recommendation: "Review pricing or optimize costs",
     }
+      });
 
   return risks;
 }
@@ -336,6 +345,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
       message: `Improve ${worstFactor[0]} efficiency (currently ${Math.round((worstFactor[1] as number) * 100)}%)`,
       action: getEfficiencyAction(worstFactor[0], printRun.method),
     }
+      });
 
   // Based on quality trend
   if (insights.quality_trend.trend === "needs_attention") {
@@ -345,6 +355,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
       message: "Quality below acceptable standards",
       action: "Stop production and investigate quality issues",
     }
+      });
 
   // Based on material utilization
   if (insights.material_utilization.waste_percentage > 15) {
@@ -354,6 +365,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
       message: `High material waste detected: ${insights.material_utilization.waste_percentage}%`,
       action: "Adjust material parameters and review setup",
     }
+      });
 
   // Based on risk factors
   insights.risk_factors.forEach((risk: any) => {
@@ -365,6 +377,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
         action: risk.recommendation,
       }
     }
+      });
 
   return recommendations;
 }
@@ -478,6 +491,7 @@ async function processMonitoringData(runId: string, data: any) {
         severity: "MEDIUM",
         message: `Temperature out of optimal range: ${temperature}°C`,
       }
+      });
 
     if (humidity && (humidity < 40 || humidity > 70)) {
       analysis.alerts.push({
@@ -486,6 +500,7 @@ async function processMonitoringData(runId: string, data: any) {
         message: `Humidity suboptimal: ${humidity}%`,
       }
     }
+      });
 
   // Process operator input
   if (data.operator_input) {
@@ -499,6 +514,7 @@ async function processMonitoringData(runId: string, data: any) {
         details: issues,
       }
     }
+      });
 
   // Process quality checkpoint
   if (data.quality_checkpoint) {
@@ -517,6 +533,7 @@ async function processMonitoringData(runId: string, data: any) {
         message: "Immediate quality intervention required",
       }
     }
+      });
 
   return analysis;
 });

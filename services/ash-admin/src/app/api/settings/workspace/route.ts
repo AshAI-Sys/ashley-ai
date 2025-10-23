@@ -31,6 +31,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         tax_id: true,
         logo_url: true,
       },
+      });
 
     if (!workspace) {
       return NextResponse.json(
@@ -38,6 +39,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         { status: 404 }
       );
     }
+      });
 
     return NextResponse.json(workspace);
   } catch (error) {
@@ -81,10 +83,12 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       if (body[field] !== undefined) {
         updateData[field] = body[field];
       }
+      });
 
     const updatedWorkspace = await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: updateData,
+      });
 
     return NextResponse.json({ success: true, workspace: updatedWorkspace });
   } catch (error) {

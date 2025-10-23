@@ -31,6 +31,7 @@ const CreateUserSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   is_active: z.boolean().default(true),
   requires_2fa: z.boolean().default(false),
+      });
 
 const UpdateUserSchema = z.object({
   email: z.string().email().optional(),
@@ -59,6 +60,7 @@ const UpdateUserSchema = z.object({
   is_active: z.boolean().optional(),
   requires_2fa: z.boolean().optional(),
   password: z.string().min(8).optional(),
+      });
 
 // GET - List all users (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
@@ -121,6 +123,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
+      });
 
     return NextResponse.json({
       success: true,
@@ -140,6 +143,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
+      });
 
 // POST - Create new user (Admin only)
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -159,6 +163,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
         ],
         workspace_id: user.workspace_id || "default",
       },
+      });
 
     if (existingUser) {
       return NextResponse.json(
@@ -169,6 +174,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
         { status: 400 }
       );
     }
+      });
 
     // Hash password (10 rounds - optimized for speed while maintaining security)
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);

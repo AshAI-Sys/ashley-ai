@@ -10,6 +10,7 @@ const CreateBrandSchema = z.object({
   logo_url: z.string().optional(),
   settings: z.string().optional(), // JSON string for brand settings
   is_active: z.boolean().default(true),
+      });
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
@@ -104,6 +105,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const client = await prisma.client.findUnique({
       where: { id: validatedData.client_id },
       select: { id: true, workspace_id: true });,
+      });
 
     if (!client) {
       return NextResponse.json(
@@ -111,6 +113,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if brand with same name already exists for this client
     const existingBrand = await prisma.brand.findFirst({
@@ -118,6 +121,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         name: validatedData.name,
         client_id: validatedData.client_id,
       },
+      });
 
     if (existingBrand) {
       return NextResponse.json(
@@ -128,6 +132,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const brand = await prisma.brand.create({
       data: {
@@ -148,6 +153,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json(
       {
@@ -191,6 +197,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
       where: { id },
+      });
 
     if (!existingBrand) {
       return NextResponse.json(
@@ -198,6 +205,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check name uniqueness if name is being updated
     if (validatedData.name && validatedData.name !== existingBrand.name) {
@@ -207,6 +215,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           client_id: validatedData.client_id || existingBrand.client_id,
           id: { not: id },
         },
+      });
 
       if (nameExists) {
         return NextResponse.json(
@@ -217,6 +226,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
       }
+      });
 
     const brand = await prisma.brand.update({
       where: { id },
@@ -235,6 +245,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -267,6 +278,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
@@ -278,6 +290,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     if (!existingBrand) {
       return NextResponse.json(
@@ -285,6 +298,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if brand has orders (prevent deletion if they do)
     if (existingBrand._count.orders > 0) {
@@ -293,9 +307,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.brand.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

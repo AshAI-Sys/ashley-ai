@@ -24,6 +24,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Get machine data for optimization (using print_runs instead of printMachine)
     const machine = machine_id
@@ -62,6 +63,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       historicalRuns,
       quality_requirements,
       rush_order,
+      });
 
     // Store AI analysis (using aIAnalysis instead of printRunAIAnalysis)
     const aiAnalysis = await prisma.aIAnalysis.create({
@@ -88,6 +90,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         result: "SUCCESS",
         created_by: "system",
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -238,6 +241,7 @@ function calculateHistoricalPerformance(runs: any[]) {
     const defectRate = (output.qty_reject || 0) / totalQty;
     return Math.max(0.5, 1 - defectRate);
     }
+      });
 
   return (
     qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length
@@ -299,6 +303,7 @@ function generateRecommendations(
       message: "Consider adjusting quantity for optimal batch size",
       impact: "cost_reduction",
     }
+      });
 
   if (baseFactors.machine_efficiency < 0.8) {
     recommendations.push({
@@ -307,6 +312,7 @@ function generateRecommendations(
       message: "Schedule machine maintenance to improve efficiency",
       impact: "quality_improvement",
     }
+      });
 
   // Method-specific recommendations
   switch (method) {

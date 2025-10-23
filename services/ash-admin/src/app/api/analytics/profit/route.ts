@@ -47,6 +47,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         },
       },
       orderBy: { [sortBy]: sortOrder },
+      });
 
     // Calculate aggregate statistics
     const stats = {
@@ -82,6 +83,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       byClient[a.client_id].total_profit += a.net_profit;
       byClient[a.client_id].margins.push(a.net_margin);
     }
+      });
 
     // Calculate average margins
     Object.values(byClient).forEach((client: any) => {
@@ -106,6 +108,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/analytics/profit - Create profit analysis
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -202,6 +205,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/analytics/profit - Auto-generate profit analysis for an order
 export const PUT = requireAuth(async (req: NextRequest, user) => {
@@ -217,6 +221,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Fetch order with related data
     const order = await prisma.order.findFirst({
@@ -230,6 +235,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
         invoices: true,
         expenses: true,
       },
+      });
 
     if (!order) {
       return NextResponse.json(
@@ -237,6 +243,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Calculate costs from various sources
     const materialCost = order.expenses

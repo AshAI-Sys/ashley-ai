@@ -55,6 +55,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: [{ priority: "desc" }, { created_at: "desc" }],
+      });
 
     const processedWorkOrders = workOrders.map(workOrder => {;
       return {
@@ -166,6 +167,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -191,6 +193,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const data: any = {};
     if (updateData.title) data.title = updateData.title;
@@ -243,6 +246,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -268,9 +272,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.workOrder.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

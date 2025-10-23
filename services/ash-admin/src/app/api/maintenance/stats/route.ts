@@ -30,16 +30,19 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       prisma.asset.count({
         where: { workspace_id, deleted_at: null },
       }),
+      });
 
       // Active assets count
       prisma.asset.count({
         where: { workspace_id, status: "active", deleted_at: null },
       }),
+      });
 
       // Total work orders
       prisma.workOrder.count({
         where: { workspace_id },
       }),
+      });
 
       // Open work orders
       prisma.workOrder.count({
@@ -48,6 +51,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           status: { in: ["open", "assigned", "in_progress"] },
         },
       }),
+      });
 
       // Overdue maintenance schedules
       prisma.maintenanceSchedule.count({

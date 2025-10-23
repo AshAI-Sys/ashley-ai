@@ -37,6 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
+      });
 
     return NextResponse.json({
       success: true,
@@ -52,6 +53,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/automation/rules - Create new automation rule
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -81,6 +83,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Validate trigger_config and actions are valid JSON
     let parsedTriggerConfig, parsedConditions, parsedActions;
@@ -117,6 +120,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -129,6 +133,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/automation/rules - Update automation rule
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -142,6 +147,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Convert objects to JSON strings if they exist
     if (updateData.trigger_config) {
@@ -153,6 +159,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     if (updateData.actions) {
       updateData.actions = JSON.stringify(updateData.actions);
     }
+      });
 
     const rule = await prisma.automationRule.update({
       where: { id },
@@ -162,6 +169,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -174,6 +182,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/automation/rules - Delete automation rule
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -187,9 +196,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.automationRule.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

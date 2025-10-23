@@ -16,6 +16,7 @@ export async function POST() {
       where: {
         email: "admin@ashleyai.com",
       },
+      });
 
     if (existingAdmin) {
       return NextResponse.json({
@@ -29,6 +30,7 @@ export async function POST() {
         name: "Main Workspace",
         slug: "main",
       },
+      });
 
     // Hash password
     const hashedPassword = await bcrypt.hash("Admin@12345", 10);
@@ -44,6 +46,7 @@ export async function POST() {
         is_active: true,
         workspace_id: workspace.id,
       },
+      });
 
     return NextResponse.json({
       success: true,

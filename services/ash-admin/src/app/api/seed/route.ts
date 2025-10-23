@@ -19,6 +19,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
+      });
 
     // DEVELOPMENT ONLY: Security check with token
     const { searchParams } = new URL(request.url);
@@ -100,6 +101,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         credit_limit: 500000,
         is_active: true,
       },
+      });
 
     const client2 = await prisma.client.upsert({
       where: { id: "client-2" },

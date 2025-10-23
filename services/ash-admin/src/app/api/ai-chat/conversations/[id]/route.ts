@@ -30,6 +30,7 @@ export const GET = requireAuth(async (
           },
         },
       },
+      });
 
     if (!conversation) {
       return NextResponse.json(
@@ -37,6 +38,7 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
+      });
 
     return NextResponse.json({ conversation });
   } catch (error) {
@@ -66,6 +68,7 @@ export const PATCH = requireAuth(async (
         ...(is_archived !== undefined && { is_archived }),
         ...(is_pinned !== undefined && { is_pinned }),
       },
+      });
 
     return NextResponse.json({ conversation });
   } catch (error) {
@@ -75,6 +78,7 @@ export const PATCH = requireAuth(async (
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
 export const DELETE = requireAuth(async (
@@ -87,6 +91,7 @@ export const DELETE = requireAuth(async (
       where: {
         id: params.id,
       },
+      });
 
     return NextResponse.json({ success: true });
   } catch (error) {

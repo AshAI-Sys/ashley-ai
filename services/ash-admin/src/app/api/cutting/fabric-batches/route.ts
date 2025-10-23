@@ -14,6 +14,7 @@ const CreateFabricBatchSchema = z.object({
     .string()
     .transform(str => new Date(str))
     .optional(),
+      });
 
 const UpdateFabricBatchSchema = CreateFabricBatchSchema.partial();
 
@@ -96,6 +97,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if brand exists
     const brand = await prisma.brand.findUnique({
       where: { id: validatedData.brand_id },
+      });
 
     if (!brand) {
       return NextResponse.json(
@@ -103,6 +105,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     const fabricBatch = await prisma.fabricBatch.create({
       data: {
@@ -128,6 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json(
       {
@@ -171,6 +175,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Check if fabric batch exists
     const existingBatch = await prisma.fabricBatch.findUnique({
       where: { id },
+      });
 
     if (!existingBatch) {
       return NextResponse.json(
@@ -178,6 +183,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     const fabricBatch = await prisma.fabricBatch.update({
       where: { id },
@@ -195,6 +201,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -227,6 +234,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if fabric batch exists
     const existingBatch = await prisma.fabricBatch.findUnique({
@@ -238,6 +246,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     if (!existingBatch) {
       return NextResponse.json(
@@ -245,6 +254,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Check if fabric batch has issues (prevent deletion if they do)
     if (existingBatch._count.cut_issues > 0) {
@@ -259,6 +269,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.fabricBatch.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

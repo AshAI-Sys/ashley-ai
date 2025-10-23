@@ -21,6 +21,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) {
       return createValidationErrorResponse([workspaceError]);
     }
+      });
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
@@ -29,6 +30,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
+      });
 
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 100);
@@ -44,6 +46,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       if (typeError) {
         return createValidationErrorResponse([typeError]);
       }
+      });
 
     const where: any = {
       workspace_id: workspaceId,
@@ -66,6 +69,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
+      });
 
     return NextResponse.json({ recommendations });
   } catch (error) {
@@ -88,6 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) {
       return createValidationErrorResponse([workspaceError]);
     }
+      });
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId)) {
@@ -96,6 +101,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
+      });
 
     let recommendations = [];
 
@@ -159,6 +165,7 @@ async function generateRecommendationsForClient(
       brand: true,
     },
     orderBy: { created_at: "desc" },
+      });
 
   if (clientOrders.length === 0) {
     return [];
@@ -235,6 +242,7 @@ async function generateReorderRecommendations(
         productFrequency[key].lastOrder = order.created_at;
       }
     }
+      });
 
   // Generate reorder recommendations for frequently ordered items
   for (const [productKey, data] of Object.entries(productFrequency)) {
@@ -303,6 +311,7 @@ async function generateCrossSellRecommendations(
         }
       }
     }
+      });
 
   // Generate cross-sell recommendations
   const recentProducts = clientOrders
@@ -336,6 +345,7 @@ async function generateCrossSellRecommendations(
         });
       });
     }
+      });
 
   return recommendations.slice(0, 3); // Limit to 3 cross-sell recommendations
 }
@@ -415,6 +425,7 @@ async function generateTrendingRecommendations(
       productPopularity[productType] =
         (productPopularity[productType] || 0) + (item.quantity || 0);
     }
+      });
 
   // Get top 2 trending products
   const trendingProducts = Object.entries(productPopularity)
@@ -440,6 +451,7 @@ async function generateTrendingRecommendations(
       })
     );
     }
+      });
 
   return recommendations;
 });

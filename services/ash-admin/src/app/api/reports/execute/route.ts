@@ -20,6 +20,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const startTime = Date.now();
 
@@ -29,6 +30,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         id: report_id,
         workspace_id: workspaceId,
       },
+      });
 
     if (!report) {
       return NextResponse.json(
@@ -36,6 +38,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     const queryConfig = JSON.parse(report.query_config);
     const reportFilters = report.filters ? JSON.parse(report.filters) : [];
@@ -117,6 +120,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             ...(additionalFilters || []),
           ]),
         },
+      });
 
       // Update view count
       await prisma.customReport.update({
@@ -124,6 +128,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         data: {
           view_count: { increment: 1 },
         },
+      });
 
       return NextResponse.json({
         success: true,
@@ -160,6 +165,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // Query executors for different data sources
 async function executeOrdersQuery(
@@ -177,6 +183,7 @@ async function executeOrdersQuery(
     if (filter.field === "created_at" && filter.operator === "gte") {
       where.created_at = { gte: new Date(filter.value) };
     }
+      });
 
   const orders = await prisma.order.findMany({
     where,
@@ -221,6 +228,7 @@ async function executeProductionQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
+      });
 
   return bundles;
 }
@@ -245,6 +253,7 @@ async function executeFinanceQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
+      });
 
   return invoices;
 }
@@ -273,6 +282,7 @@ async function executeHRQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
+      });
 
   return employees;
 }
@@ -291,6 +301,7 @@ async function executeInventoryQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
+      });
 
   return inventory;
 }
@@ -313,6 +324,7 @@ async function executeQualityQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
+      });
 
   return inspections;
 });

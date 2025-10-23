@@ -49,6 +49,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/i18n/convert - Convert currency
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -61,6 +62,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const converted = currencyManager.convert(amount, from, to);
     const formatted = currencyManager.formatAmount(converted, to);

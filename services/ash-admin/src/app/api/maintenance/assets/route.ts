@@ -44,6 +44,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: [{ name: "asc" }],
+      });
 
     const processedAssets = assets.map(asset => {;
       const activeWorkOrders = asset.work_orders;
@@ -116,6 +117,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const asset = await prisma.asset.create({
       data: {
@@ -130,6 +132,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         metadata: metadata ? JSON.stringify(metadata) : null,
         status: "active",
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -143,6 +146,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
+      });
 
     return NextResponse.json(
       { success: false, error: "Failed to create asset" },
@@ -162,6 +166,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const data: any = {};
     if (updateData.name) data.name = updateData.name;
@@ -179,6 +184,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const asset = await prisma.asset.update({
       where: { id },
       data,
+      });
 
     return NextResponse.json({
       success: true,

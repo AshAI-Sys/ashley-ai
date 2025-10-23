@@ -17,6 +17,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {;
       { status: 400 }
     );
     }
+      });
 
   let tasks: any[] = [];
 

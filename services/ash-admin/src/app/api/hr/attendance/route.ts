@@ -44,6 +44,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
+      });
 
     const processedLogs = attendanceLogs.map(log => ({
       id: log.id,
@@ -91,6 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const employee = await prisma.employee.findUnique({
       where: { id: employee_id },
       select: { id: true, first_name: true, last_name: true, is_active: true });,
+      });
 
     if (!employee) {
       return NextResponse.json(
@@ -98,6 +100,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     if (!employee.is_active) {
       return NextResponse.json(
@@ -105,6 +108,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const today = new Date();
     const dateOnly = new Date(
@@ -121,6 +125,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           date: dateOnly,
         },
       },
+      });
 
     let attendanceLog;
     if (existingAttendance) {
@@ -136,6 +141,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       ) {
         updateData.time_out = timestamp ? new Date(timestamp) : new Date();
     }
+      });
 
       if (Object.keys(updateData).length > 0) {
         attendanceLog = await prisma.attendanceLog.update({
@@ -191,6 +197,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }
+      });
 
     return NextResponse.json(
       {
@@ -243,6 +250,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,

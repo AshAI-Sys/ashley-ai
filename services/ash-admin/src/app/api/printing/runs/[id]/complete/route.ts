@@ -25,6 +25,7 @@ export async function POST(
         outputs: true,
         rejects: true,
       },
+      });
 
     if (!run) {
       return NextResponse.json(
@@ -32,6 +33,7 @@ export async function POST(
         { status: 404 }
       );
     }
+      });
 
     if (run.status !== "IN_PROGRESS" && run.status !== "PAUSED") {
       return NextResponse.json(
@@ -42,6 +44,7 @@ export async function POST(
         { status: 400 }
       );
     }
+      });
 
     // Start transaction to complete run
     await prisma.$transaction(async tx => {
@@ -52,6 +55,7 @@ export async function POST(
           status: "DONE",
           ended_at: new Date(),
         },
+      });
 
       // Record final output if provided
       if (qty_completed > 0 || qty_rejected > 0) {
@@ -63,6 +67,7 @@ export async function POST(
             notes: quality_notes || "Final run completion",
           },
         }
+      });
 
       // Record reject reasons if any
       if (qty_rejected > 0 && reject_reasons.length > 0) {
@@ -77,6 +82,7 @@ export async function POST(
             },
           });
         }
+      });
 
       // Record material consumption
       if (material_consumption.length > 0) {
@@ -116,6 +122,7 @@ export async function POST(
         rejects: true,
         materials: true,
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -148,6 +155,7 @@ async function updateMethodSpecificCompletion(
             belt_speed: data.belt_speed || "MEDIUM",
           },
         }
+      });
 
       // Update ink consumption in specs
       if (data.actual_ink_g) {

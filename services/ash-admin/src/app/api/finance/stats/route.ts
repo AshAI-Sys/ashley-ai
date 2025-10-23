@@ -28,6 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _sum: { total_amount: true },
       }),
+      });
 
       // Outstanding invoices
       prisma.invoice.aggregate({
@@ -36,6 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _sum: { total_amount: true },
       }),
+      });
 
       // Overdue invoices
       prisma.invoice.aggregate({
@@ -45,6 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _sum: { total_amount: true },
       }),
+      });
 
       // YTD Revenue
       prisma.invoice.aggregate({
@@ -102,6 +105,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       take: 5,
+      });
 
     // Get client names for top clients
     const clientIds = topClients.map(client => client.client_id);
@@ -109,6 +113,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: { id: { in: clientIds } },
       take: 10, // Limit to 10 clients (should match clientIds length from topClients)
       select: { id: true, name: true },
+      });
 
     const topClientsWithNames = topClients.map(client => {
       const clientInfo = clients.find(c => c.id === client.client_id);

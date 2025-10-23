@@ -14,6 +14,7 @@ export async function POST(
     // Check if run exists and can be paused
     const run = await prisma.printRun.findUnique({
       where: { id: runId },
+      });
 
     if (!run) {
       return NextResponse.json(
@@ -21,6 +22,7 @@ export async function POST(
         { status: 404 }
       );
     }
+      });
 
     if (run.status !== "IN_PROGRESS") {
       return NextResponse.json(
@@ -28,6 +30,7 @@ export async function POST(
         { status: 400 }
       );
     }
+      });
 
     // Pause the run
     const updatedRun = await prisma.printRun.update({
@@ -43,6 +46,7 @@ export async function POST(
         },
         machine: true,
       },
+      });
 
     // Log the pause event
     await logRunEvent(runId, "PAUSED", reason, notes);

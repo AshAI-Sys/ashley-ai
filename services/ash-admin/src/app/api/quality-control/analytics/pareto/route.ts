@@ -24,6 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
+      });
 
     // Get defect counts by type
     const defectData = (await prisma.$queryRaw`

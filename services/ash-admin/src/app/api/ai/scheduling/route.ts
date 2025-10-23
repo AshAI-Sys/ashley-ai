@@ -30,6 +30,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         sewing_runs: true,
         print_runs: true,
       },
+      });
 
     // Transform orders into production jobs
     const jobs = orders
@@ -197,6 +198,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       orderBy: {
         delivery_date: "asc",
       },
+      });
 
     // Format schedule preview
     const schedulePreview = orders.map(order => {;

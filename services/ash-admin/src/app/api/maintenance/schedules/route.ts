@@ -64,6 +64,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: [{ next_due_date: "asc" }, { priority: "desc" }],
+      });
 
     const processedSchedules = schedules.map(schedule => {;
       const nextDueDate = new Date(schedule.next_due_date);
@@ -229,6 +230,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -254,6 +256,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const data: any = {};
     if (updateData.schedule_name) data.schedule_name = updateData.schedule_name;
@@ -300,6 +303,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -324,6 +328,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if there are active work orders linked to this schedule
     const linkedWorkOrders = await prisma.workOrder.count({
@@ -331,6 +336,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         maintenance_schedule_id: id,
         status: { not: "completed" },
       },
+      });
 
     if (linkedWorkOrders > 0) {
       return NextResponse.json(
@@ -341,9 +347,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
+      });
 
     await prisma.maintenanceSchedule.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

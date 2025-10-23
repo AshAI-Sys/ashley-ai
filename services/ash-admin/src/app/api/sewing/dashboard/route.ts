@@ -12,6 +12,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: {
         status: "IN_PROGRESS",
       },
+      });
 
     // Count completed runs today
     const todaysCompleted = await prisma.sewingRun.count({
@@ -21,6 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           gte: today,
         },
       },
+      });
 
     // Count unique operators working today
     const operatorsWorkingResult = await prisma.sewingRun.findMany({
@@ -51,6 +53,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       select: {
         efficiency_pct: true,
       },
+      });
 
     const avgEfficiency =
       runsWithEfficiency.length > 0
@@ -67,6 +70,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: {
         status: "PENDING",
       },
+      });
 
     // Calculate total pieces completed today
     const completedRuns = await prisma.sewingRun.findMany({
@@ -79,6 +83,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       select: {
         qty_good: true,
       },
+      });
 
     const totalPiecesToday = completedRuns.reduce(
       (sum, run) => sum + (run.qty_good || 0),

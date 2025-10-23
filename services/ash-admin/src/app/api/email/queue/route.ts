@@ -35,10 +35,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const jobId = await emailQueue.enqueue(type, to, data, {
       scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
       maxAttempts,
+      });
 
     return NextResponse.json({
       success: true,

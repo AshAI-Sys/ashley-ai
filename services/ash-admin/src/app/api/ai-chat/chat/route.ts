@@ -83,6 +83,7 @@ async function getBusinessContext(
       },
       orderBy: { created_at: "desc" },
       take: 10,
+      });
 
     if (orders.length > 0) {
       contextParts.push(`\n## Recent Orders (Last 10):`);
@@ -91,6 +92,7 @@ async function getBusinessContext(
           `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - ₱${order.total_amount?.toLocaleString() || "0"}`
         );
       }
+      });
 
     // Get clients summary
     const clients = await prisma.client.findMany({
@@ -102,6 +104,7 @@ async function getBusinessContext(
       },
       orderBy: { created_at: "desc" },
       take: 5,
+      });
 
     if (clients.length > 0) {
       contextParts.push(`\n## Active Clients (Top 5):`);
@@ -110,18 +113,21 @@ async function getBusinessContext(
           `${idx + 1}. ${client.name} - ${client._count.brands} brands, ${client._count.orders} orders - Contact: ${client.email || "N/A"}`
         );
       }
+      });
 
     // Get production statistics
     const orderStats = await prisma.order.groupBy({
       by: ["status"],
       where: { workspace_id: workspaceId },
       _count: true,
+      });
 
     if (orderStats.length > 0) {
       contextParts.push(`\n## Production Overview:`);
       orderStats.forEach(stat => {
         contextParts.push(`- ${stat.status}: ${stat._count} orders`);
       }
+      });
 
     // Get recent employees if HR query detected
     if (
@@ -133,6 +139,7 @@ async function getBusinessContext(
         where: { workspace_id: workspaceId },
         orderBy: { created_at: "desc" },
         take: 5,
+      });
 
       if (employees.length > 0) {
         contextParts.push(`\n## Recent Employees:`);
@@ -142,6 +149,7 @@ async function getBusinessContext(
           );
         });
       }
+      });
 
     if (contextParts.length === 0) {
       return "\n## Current System Status:\nNo data available in the system yet. Ready to help you get started!";
@@ -151,6 +159,7 @@ async function getBusinessContext(
     console.error("Error getting business context:", error);
     return "\n## System Status:\nUnable to fetch current data, but ready to assist with general queries.";
   }
+      });
 
 // POST /api/ai-chat/chat - Send a message and get AI response
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -182,11 +191,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 503 }
       );
     }
+      });
 
     // Ensure workspace exists (create if needed for demo mode)
     try {
       const workspaceExists = await prisma.workspace.findUnique({
         where: { id: workspace_id },
+      });
 
       if (!workspaceExists) {
         console.log("Creating workspace:", workspace_id);
@@ -207,6 +218,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
+      });
 
     // Get or create conversation
     let conversationId = conversation_id;
@@ -215,6 +227,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         // First verify workspace exists
         const workspace = await prisma.workspace.findFirst({
           where: { slug: workspace_id },
+      });
 
         const actualWorkspaceId = workspace?.id || workspace_id;
 
@@ -232,6 +245,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         // Continue without conversation ID - one-off chat mode
         conversationId = "temp-" + Date.now();
       }
+      });
 
     // Save user message (skip if temp conversation)
     let userMessage;
@@ -341,6 +355,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           timestamp: new Date().toISOString(),
         }),
       },
+      });
 
     // Update conversation last_message_at
     await prisma.aIChatConversation.update({
@@ -350,6 +365,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       data: {
         last_message_at: new Date(),
       },
+      });
 
     return NextResponse.json({
       conversation_id: conversationId,
@@ -366,6 +382,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // GET /api/ai-chat/chat - Check AI configuration status
 export const GET = requireAuth(async (request: NextRequest, user) => {;

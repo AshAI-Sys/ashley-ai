@@ -20,6 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Try to identify what was scanned based on code format and database lookup
 
@@ -43,6 +44,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
+      });
 
       if (bundle) {
         return NextResponse.json({

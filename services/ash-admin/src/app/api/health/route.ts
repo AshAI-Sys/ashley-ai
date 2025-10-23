@@ -22,6 +22,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {;
       instructions: "Run: cd services/ash-admin && pnpm init-db",
       documentation: "See PRODUCTION-SETUP.md for details",
     }
+      });
 
   // Test different error scenarios
   if (test === "validation") {
@@ -29,6 +30,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {;
       providedValue: test,
       expectedFormat: "none",
     }
+      });
 
   return createSuccessResponse({
     status: "healthy",

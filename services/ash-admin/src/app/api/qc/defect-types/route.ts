@@ -18,6 +18,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       orderBy: {
         name: "asc", // Changed from 'code' to 'name' (code doesn't exist);
       },
+      });
 
     // If no defect types exist, return default ones
     if (defectTypes.length === 0) {

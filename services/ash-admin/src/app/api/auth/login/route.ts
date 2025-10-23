@@ -27,6 +27,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if account is locked
     const lockStatus = await isAccountLocked(email);
@@ -39,6 +40,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         email,
         reason: "Account locked",
         lockoutExpiresAt: lockStatus.lockoutExpiresAt,
+      });
 
       return NextResponse.json(
         {
@@ -59,12 +61,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
+    });
 
     if (!user) {
       // Log failed login attempt
       await logAuthEvent("LOGIN_FAILED", "system", undefined, request, {
         email,
         reason: "User not found",
+      });
 
       return NextResponse.json(
         {
@@ -81,6 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
         email,
         reason: "No password hash",
+      });
 
       return NextResponse.json(
         {
@@ -90,6 +95,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 401 }
       );
     }
+      });
 
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
@@ -102,6 +108,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         reason: "Invalid password",
         failedAttempts: lockStatus.failedAttempts,
         remainingAttempts: lockStatus.remainingAttempts,
+      });
 
       // Inform user of remaining attempts
       let errorMessage = "Invalid email or password";
@@ -120,6 +127,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 401 }
       );
     }
+      });
 
     // Email verification disabled - allow login directly
     // Email verification check removed to allow direct login after registration
@@ -133,11 +141,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       email: user.email,
       role: user.role as any,
       workspaceId: user.workspace_id,
+      });
 
     // Update last login timestamp
     await prisma.user.update({
       where: { id: user.id },
       data: { last_login_at: new Date() },
+      });
 
     // Create session for the user with access token
     await createSession(user.id, tokenPair.accessToken, request);
@@ -151,6 +161,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       userId: user.id,
       email: user.email,
       workspaceId: user.workspace_id,
+      });
 
     // Set HTTP-only cookie with access token
     const response = NextResponse.json({
@@ -167,6 +178,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         department: user.department || null,
         workspaceId: user.workspace_id,
       },
+      });
 
     // Set secure HTTP-only cookie for auth token
     response.cookies.set("auth_token", tokenPair.accessToken, {
@@ -175,6 +187,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: tokenPair.expiresIn, // 15 minutes
       path: "/",
+      });
 
     // Set refresh token as HTTP-only cookie (7 days)
     response.cookies.set("refresh_token", tokenPair.refreshToken, {
@@ -183,6 +196,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       path: "/",
+      });
 
     return response;
   } catch (error: any) {

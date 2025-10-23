@@ -34,6 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
+      });
 
     return NextResponse.json({
       capa_tasks: capaTasks,
@@ -64,6 +65,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
+      });
 
     let nextNumber = 1;
     if (lastCapa) {
@@ -96,6 +98,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         assignee: { select: { first_name: true, last_name: true } },
         creator: { select: { first_name: true, last_name: true } },
       },
+      });
 
     return NextResponse.json(capaTask, { status: 201 });
   } catch (error) {

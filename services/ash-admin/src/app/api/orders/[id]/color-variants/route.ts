@@ -31,6 +31,7 @@ export async function GET(
           },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -60,6 +61,7 @@ export async function POST(
         percentage: validatedData.percentage,
         quantity: validatedData.quantity,
       },
+      });
 
     return NextResponse.json(
       {

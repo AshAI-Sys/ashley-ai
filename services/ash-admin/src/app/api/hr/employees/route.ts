@@ -59,6 +59,7 @@ export const GET = requireAuth(
         },
       },
       orderBy: [{ first_name: "asc" }, { last_name: "asc" }],
+      });
 
     // Process attendance status for today
     const processedEmployees = employees.map(employee => {;
@@ -74,6 +75,7 @@ export const GET = requireAuth(
         } else if (todayAttendance.time_out) {
           attendanceStatus = "ABSENT"; // Clocked out
         }
+      });
 
       return {
         id: employee.id,
@@ -142,6 +144,7 @@ export const POST = requireAnyPermission(["hr:create"])(
     if (existingEmployee) {
       throw new Error("Email already registered");
     }
+      });
 
     // Hash password
     const password_hash = await bcrypt.hash(password, 10);
@@ -156,6 +159,7 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (salaryTypeError) {
         throw salaryTypeError;
       }
+      });
 
     // Validate hire date if provided
     if (hire_date) {
@@ -163,6 +167,7 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (dateError) {
         throw dateError;
       }
+      });
 
     // Ensure default workspace exists
     await prisma.workspace.upsert({
@@ -174,6 +179,7 @@ export const POST = requireAnyPermission(["hr:create"])(
         slug: "default",
         is_active: true,
       },
+      });
 
     const employee = await prisma.employee.create({
       data: {
@@ -193,6 +199,7 @@ export const POST = requireAnyPermission(["hr:create"])(
         is_active: true,
         contact_info: JSON.stringify(contact_info),
       },
+      });
 
     const responseData = {
       id: employee.id,
@@ -235,6 +242,7 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {;
     if (salaryTypeError) {
       throw salaryTypeError;
     }
+      });
 
   // Handle date conversion and validation
   if (updateData.hire_date) {
@@ -254,6 +262,7 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {;
     }
     updateData.separation_date = new Date(updateData.separation_date);
     }
+      });
 
   const employee = await prisma.employee.update({
     where: { id },

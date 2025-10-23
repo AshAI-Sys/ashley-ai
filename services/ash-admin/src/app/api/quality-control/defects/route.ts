@@ -21,6 +21,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
+      });
 
     return NextResponse.json(defects);
   } catch (error) {
@@ -55,6 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         defect_code: true,
         sample: true,
       },
+      });
 
     // Update inspection defect counts
     await updateInspectionDefectCounts(data.inspection_id);
@@ -73,6 +75,7 @@ async function updateInspectionDefectCounts(inspectionId: string) {
   const defects = await prisma.qCDefect.findMany({
     where: { inspection_id: inspectionId },
     select: { severity: true, quantity: true },
+      });
 
   const criticalFound = defects
     .filter(d => d.severity === "CRITICAL")
@@ -90,6 +93,7 @@ async function updateInspectionDefectCounts(inspectionId: string) {
   const inspection = await prisma.qCInspection.findUnique({
     where: { id: inspectionId },
     select: { acceptance: true, rejection: true },
+      });
 
   let result = "PENDING_REVIEW";
   if (inspection) {
@@ -99,6 +103,7 @@ async function updateInspectionDefectCounts(inspectionId: string) {
     } else if (totalDefects >= inspection.rejection) {
       result = "REJECT";
     }
+      });
 
   await prisma.qCInspection.update({
     where: { id: inspectionId },

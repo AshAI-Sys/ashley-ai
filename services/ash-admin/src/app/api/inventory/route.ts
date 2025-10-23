@@ -41,6 +41,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             { status: 400 }
           );
     }
+      });
 
         const scanned =
           type === "rfid"
@@ -53,6 +54,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             { status: 404 }
           );
     }
+      });
 
         return NextResponse.json({
           success: true,
@@ -75,6 +77,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/inventory - Create material or update stock
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -106,6 +109,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { status: 400 }
           );
     }
+      });
 
         await inventoryManager.updateStock(
           material_id,
@@ -140,6 +144,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { status: 400 }
           );
     }
+      });
 
         await inventoryManager.receivePurchaseOrder(po_id, received_items);
 
@@ -156,6 +161,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { status: 400 }
           );
     }
+      });
 
         const barcode = await inventoryManager.generateBarcode(matId);
 

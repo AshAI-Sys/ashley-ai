@@ -19,6 +19,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         sample_data: data.sample_data ? JSON.stringify(data.sample_data) : null,
         sampled_at: new Date(),
       },
+      });
 
     return NextResponse.json(sample, { status: 201 });
   } catch (error) {
@@ -41,6 +42,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const samples = await prisma.qCSample.findMany({
       where: { inspection_id: inspectionId },
@@ -52,6 +54,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { sample_no: "asc" },
+      });
 
     return NextResponse.json(samples);
   } catch (error) {

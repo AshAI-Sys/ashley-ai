@@ -42,6 +42,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
+      });
 
     // Mask sensitive configuration data
     const sanitizedIntegrations = integrations.map(integration => ({
@@ -63,6 +64,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // POST /api/automation/integrations - Create integration
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -89,6 +91,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Validate configuration based on integration type
     const validationResult = validateIntegrationConfig(type, provider, config);
@@ -120,6 +123,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -136,6 +140,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/automation/integrations - Update integration
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -149,11 +154,13 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Convert config to JSON string if provided
     if (updateData.config) {
       updateData.config = JSON.stringify(updateData.config);
     }
+      });
 
     const integration = await prisma.integration.update({
       where: { id },
@@ -163,6 +170,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -178,6 +186,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/automation/integrations - Delete integration
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -191,9 +200,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.integration.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,
@@ -205,6 +216,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // Helper functions
 function maskSensitiveConfig(config: any): any {
@@ -221,6 +233,7 @@ function maskSensitiveConfig(config: any): any {
     if (masked[key]) {
       masked[key] = "***MASKED***";
     }
+      });
 
   return masked;
 }
@@ -270,6 +283,7 @@ function validateIntegrationConfig(
     if (!config[field]) {
       return { valid: false, error: `Missing required field: ${field}` };
     }
+      });
 
   return { valid: true };
 }

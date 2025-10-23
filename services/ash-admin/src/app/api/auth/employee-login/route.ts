@@ -27,6 +27,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
     include: {
       workspace: true,
     },
+      });
 
   if (!employee) {
     return NextResponse.json(
@@ -34,6 +35,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
       { status: 401 }
     );
     }
+      });
 
   // Check if employee is active
   if (!employee.is_active) {
@@ -42,6 +44,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
       { status: 403 }
     );
     }
+      });
 
   // Verify password
   const isPasswordValid = await bcrypt.compare(

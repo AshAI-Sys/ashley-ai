@@ -27,6 +27,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         department: "Production",
         access: "Orders, Production, Quality, Employees, Reports",
       },
+      });
 
       // Design Department
       {

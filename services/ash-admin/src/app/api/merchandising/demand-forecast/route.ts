@@ -22,6 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) {
       return createValidationErrorResponse([workspaceError]);
     }
+      });
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
@@ -30,6 +31,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
+      });
 
     // Validate period parameter
     const validPeriods = ["DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"];
@@ -37,6 +39,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (periodError) {
       return createValidationErrorResponse([periodError]);
     }
+      });
 
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 200);
@@ -61,6 +64,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       orderBy: { forecast_date: "asc" },
       take: limit,
+      });
 
     return NextResponse.json({ forecasts });
   } catch (error) {
@@ -128,6 +132,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       trendFactor,
       externalFactors,
       modelVersion: modelVersion || "v1.0",
+      });
 
     return NextResponse.json({ forecast });
   } catch (error) {
@@ -155,6 +160,7 @@ async function generateDemandForecast(params: any) {
     include: {
       line_items: true,
     },
+      });
 
   // Simple demand forecasting algorithm (in production, use ML models)
   const currentMonth = new Date().getMonth();
@@ -229,6 +235,7 @@ async function generateDemandForecast(params: any) {
       }),
       model_version: params.modelVersion,
     },
+      });
 
   return forecast;
 });

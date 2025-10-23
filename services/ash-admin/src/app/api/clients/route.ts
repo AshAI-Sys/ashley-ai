@@ -125,6 +125,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     try {
       const workspaceExists = await prisma.workspace.findUnique({
         where: { id: workspaceId },
+      });
 
       if (!workspaceExists) {
         console.log("Creating workspace:", workspaceId);
@@ -146,6 +147,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
+      });
 
     // Convert address object to JSON string if it's an object
     const addressData =
@@ -181,6 +183,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json(
       {

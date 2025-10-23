@@ -14,10 +14,12 @@ export const GET = withErrorHandling(
     // Get employee
     const employee = await prisma.employee.findUnique({
       where: { id: employeeId },
+      });
 
     if (!employee) {
       throw new NotFoundError("Employee not found");
     }
+      });
 
     // Get today's date range
     const today = new Date();
@@ -164,6 +166,7 @@ export const GET = withErrorHandling(
           },
         },
         take: 10,
+      });
 
       if (recentInspections.length > 0) {
         const passedInspections = recentInspections.filter(
@@ -173,6 +176,7 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
+      });
 
     const stats = {
       total_pieces: totalPieces,

@@ -14,12 +14,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const result = await threePLService.cancelShipment({
       provider,
       booking_id,
       tracking_number,
       reason,
+      });
 
     if (!result.success) {
       return NextResponse.json(
@@ -27,6 +29,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     return NextResponse.json(result);
   } catch (error: any) {

@@ -25,6 +25,7 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
     if (searchParams.get("endDate")) {
       endDate = new Date(searchParams.get("endDate")!);
     }
+      });
 
     // If requesting security alerts
     if (alertsOnly) {
@@ -49,6 +50,7 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
       offset,
       startDate,
       endDate,
+      });
 
     return NextResponse.json({
       success: true,

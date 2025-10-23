@@ -35,6 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
+      });
 
     // Add usage statistics
     const templatesWithStats = await Promise.all(
@@ -43,6 +44,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           by: ["status"],
           where: { template_id: template.id },
           _count: { id: true },
+      });
 
         const usage = stats.reduce(
           (acc, stat) => {
@@ -106,6 +108,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Validate variables array if provided
     let variablesJson = null;
@@ -136,6 +139,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -148,6 +152,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // PUT /api/automation/templates - Update notification template
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -161,11 +166,13 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Convert variables to JSON string if provided
     if (updateData.variables) {
       updateData.variables = JSON.stringify(updateData.variables);
     }
+      });
 
     const template = await prisma.notificationTemplate.update({
       where: { id },
@@ -175,6 +182,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
+      });
 
     return NextResponse.json({
       success: true,
@@ -187,6 +195,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+      });
 
 // DELETE /api/automation/templates - Delete notification template
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -200,10 +209,12 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if template is system template
     const template = await prisma.notificationTemplate.findUnique({
       where: { id },
+      });
 
     if (template?.is_system) {
       return NextResponse.json(
@@ -211,9 +222,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     await prisma.notificationTemplate.delete({
       where: { id },
+      });
 
     return NextResponse.json({
       success: true,

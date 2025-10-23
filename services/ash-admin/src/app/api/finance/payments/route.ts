@@ -20,6 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       if (date_from) where.payment_date.gte = new Date(date_from);
       if (date_to) where.payment_date.lte = new Date(date_to);
     }
+      });
 
     const payments = await prisma.payment.findMany({
       where,
@@ -33,6 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { payment_date: "desc" },
+      });
 
     return NextResponse.json({
       success: true,
@@ -58,6 +60,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Get invoice to verify
     const invoice = await prisma.invoice.findUnique({
@@ -68,6 +71,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         workspace_id: true,
         invoice_number: true,
       },
+      });
 
     if (!invoice) {
       return NextResponse.json(
@@ -75,6 +79,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
+      });
 
     // Start transaction
     const result = await prisma.$transaction(async tx => {
@@ -96,6 +101,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: "completed",
           processed_at: new Date(),
         },
+      });
 
       // Calculate total paid for this invoice
       const totalPaid = await tx.payment.aggregate({
@@ -104,6 +110,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: "completed",
         },
         _sum: { amount: true },
+      });
 
       const paidAmount = totalPaid._sum.amount || 0;
       let newStatus = "pending";
@@ -120,6 +127,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: newStatus,
           paid_at: newStatus === "paid" ? new Date() : null,
         },
+      });
 
       return payment;
 
@@ -135,6 +143,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+      });
 
     return NextResponse.json(
       {

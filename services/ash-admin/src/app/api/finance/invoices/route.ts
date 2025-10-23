@@ -49,6 +49,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {;
       },
     },
     orderBy: { issue_date: "desc" },
+      });
 
   // Calculate days overdue and other metrics
   const processedInvoices = (invoices || []).map(invoice => {;
@@ -132,6 +133,7 @@ export const POST = requireAnyPermission(["finance:create"])(
         "discount"
       );
     }
+      });
 
     // Validate lines array
     if (!Array.isArray(lines) || lines.length === 0) {
@@ -140,6 +142,7 @@ export const POST = requireAnyPermission(["finance:create"])(
         "lines"
       );
     }
+      });
 
     // Validate each line item
     for (let i = 0; i < lines.length; i++) {
@@ -155,6 +158,7 @@ export const POST = requireAnyPermission(["finance:create"])(
           `lines[${i}]`
         );
     }
+      });
 
       const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
       if (qtyError) {
@@ -168,6 +172,7 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (priceError) {
         throw priceError;
       }
+      });
 
     // Validate due date if provided
     if (due_date) {
@@ -175,12 +180,14 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (dateError) {
         throw dateError;
       }
+      });
 
     // Verify client exists
     const client = await prisma.client.findUnique({ where: { id: client_id } });
     if (!client) {
       throw new NotFoundError("Client");
     }
+      });
 
     // Verify order exists if provided
     if (order_id) {
@@ -188,6 +195,7 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (!order) {
         throw new NotFoundError("Order");
       }
+      });
 
     // Generate invoice number
     const year = new Date().getFullYear();
@@ -253,6 +261,7 @@ export const POST = requireAnyPermission(["finance:create"])(
         client: { select: { name: true } },
         invoice_items: true,
       },
+      });
 
     return createSuccessResponse(invoice, 201);
   })

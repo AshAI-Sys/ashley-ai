@@ -32,6 +32,7 @@ export const GET = requireAuth(async (
         },
         capa_tasks: true,
       },
+      });
 
     if (!inspection) {
       return NextResponse.json(
@@ -39,6 +40,7 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
+      });
 
     return NextResponse.json(inspection);
   } catch (error) {
@@ -68,6 +70,7 @@ export const PUT = requireAuth(async (
         order: { select: { order_number: true } },
         inspector: { select: { first_name: true, last_name: true } },
       },
+      });
 
     return NextResponse.json(inspection);
   } catch (error) {

@@ -24,6 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
+      });
 
     // Get quality metrics
     const inspections = await prisma.qCInspection.findMany({
@@ -37,6 +38,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         defects: true,
         samples: true,
       },
+      });
 
     // Calculate metrics
     const totalInspections = inspections.length;
@@ -86,6 +88,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           lte: prevEndDate,
         },
       },
+      });
 
     const prevTotalSamples = prevInspections.reduce(
       (sum, i) => sum + i.sample_size,

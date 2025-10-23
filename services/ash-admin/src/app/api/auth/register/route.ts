@@ -19,6 +19,7 @@ const RegisterSchema = z.object({
       /^[a-z0-9-]+$/,
       "Workspace slug must be lowercase alphanumeric with hyphens"
     ),
+      });
 
   // User info
   email: z.string().email("Invalid email address"),
@@ -26,6 +27,7 @@ const RegisterSchema = z.object({
   confirmPassword: z.string().optional(),
   firstName: z.string().min(1, "First name is required").max(100),
   lastName: z.string().min(1, "Last name is required").max(100),
+      });
 
   // Optional
   companyAddress: z.string().optional(),
@@ -49,6 +51,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     const {
       workspaceName,
@@ -82,6 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if workspace slug already exists
     const existingWorkspace = await prisma.workspace.findUnique({
       where: { slug: workspaceSlug },
+      });
 
     if (existingWorkspace) {
       return NextResponse.json(
@@ -92,17 +96,20 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
+      });
 
     // Check if user email already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         email: email.toLowerCase(),
       },
+      });
 
     if (existingUser) {
       await logAuthEvent("REGISTER_FAILED", "system", undefined, request, {
         email,
         reason: "Email already exists",
+      });
 
       return NextResponse.json(
         {
@@ -112,6 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
+      });
 
     // Hash password with bcrypt (10 rounds - optimized for speed while maintaining security)
     // 10 rounds = ~100-500ms (fast & secure, OWASP recommended minimum)
@@ -135,6 +143,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             companyPhone: companyPhone || null,
           }),
         },
+      });
 
       // Create admin user
       const user = await tx.user.create({
@@ -150,6 +159,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           is_active: true,
           permissions: JSON.stringify(["*"]), // Full permissions
         },
+      });
 
       return { workspace, user };
 
@@ -169,6 +179,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       workspaceName: workspace.name,
       userId: user.id,
       email: user.email,
+      });
 
     return NextResponse.json(
       {

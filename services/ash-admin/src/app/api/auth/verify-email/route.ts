@@ -20,6 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Find user with this verification token
     const user = await prisma.user.findFirst({
@@ -30,6 +31,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
+      });
 
     if (!user) {
       return NextResponse.json(
@@ -40,6 +42,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
+      });
 
     // Check if token is expired (24 hours)
     if (
