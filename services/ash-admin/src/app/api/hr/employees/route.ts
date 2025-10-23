@@ -65,7 +65,7 @@ export const GET = requireAuth(
       });
 
     // Process attendance status for today
-    const processedEmployees = employees.map(employee => {;
+    const processedEmployees = employees.map(employee => {
       const todayAttendance = employee.attendance[0];
       let attendanceStatus = "ABSENT";
       let lastCheckin = null;
@@ -78,6 +78,7 @@ export const GET = requireAuth(
         } else if (todayAttendance.time_out) {
           attendanceStatus = "ABSENT"; // Clocked out
         }
+      }
 
       return {
         id: employee.id,
@@ -98,6 +99,7 @@ export const GET = requireAuth(
           ? JSON.parse(employee.contact_info)
           : null,
       };
+    });
 
     return createSuccessResponse(processedEmployees);
   })
