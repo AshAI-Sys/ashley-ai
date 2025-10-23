@@ -245,4 +245,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to detect station bottleneck", details: error.message },
       { status: 500 }
     );
-  }
+});

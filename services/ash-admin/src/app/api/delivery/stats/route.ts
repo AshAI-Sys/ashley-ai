@@ -246,4 +246,4 @@ async function getMethodPerformance() {
   } catch (error) {
     console.error("Error calculating method performance:", error);
     return [];
-  }
+});

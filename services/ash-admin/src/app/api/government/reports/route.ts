@@ -253,4 +253,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to calculate contributions", details: error.message },
       { status: 500 }
     );
-  }
+});

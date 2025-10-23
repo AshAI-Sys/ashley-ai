@@ -153,4 +153,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   } catch (error) {
     console.error("Error creating payment intent:", error);
     return handleApiError(error);
-  }
+});

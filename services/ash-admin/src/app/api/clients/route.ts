@@ -209,4 +209,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create client" },
       { status: 500 }
     );
-  }
+});

@@ -172,4 +172,4 @@ export async function OPTIONS(request: NextRequest) {
       { success: false, error: "Failed to fetch material types" },
       { status: 500 }
     );
-  }
+});

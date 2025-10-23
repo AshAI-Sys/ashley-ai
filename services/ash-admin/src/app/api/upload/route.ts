@@ -147,4 +147,4 @@ export async function GET() {
     ),
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null,
   });
-    }
+});

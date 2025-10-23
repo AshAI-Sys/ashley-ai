@@ -229,4 +229,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     );
   } finally {
     await prisma.$disconnect();
-  }
+});

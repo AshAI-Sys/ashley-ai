@@ -78,4 +78,4 @@ export const PUT = requireAuth(async (
       { error: "Failed to update inspection" },
       { status: 500 }
     );
-  }
+});

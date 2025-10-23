@@ -77,4 +77,4 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to remove logo" },
       { status: 500 }
     );
-  }
+});

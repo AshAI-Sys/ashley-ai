@@ -64,4 +64,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to scan bundle" },
       { status: 500 }
     );
-  }
+});

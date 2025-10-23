@@ -110,4 +110,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to generate SPC data" },
       { status: 500 }
     );
-  }
+});

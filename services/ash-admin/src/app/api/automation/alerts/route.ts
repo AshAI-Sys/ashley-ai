@@ -307,4 +307,4 @@ Please acknowledge this alert in the system.`,
       },
   } catch (error) {
     console.error("Error creating alert notification:", error);
-  }
+});

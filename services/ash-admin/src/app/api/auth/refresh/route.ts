@@ -61,4 +61,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   } catch (error: any) {
     authLogger.error("Token refresh error", error);
     return apiServerError(error);
-  }
+});

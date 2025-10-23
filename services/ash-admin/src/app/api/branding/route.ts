@@ -82,4 +82,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to update branding", details: error.message },
       { status: 500 }
     );
-  }
+});

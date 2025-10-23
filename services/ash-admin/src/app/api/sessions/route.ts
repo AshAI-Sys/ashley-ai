@@ -74,4 +74,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       { success: false, error: "Failed to revoke session" },
       { status: 500 }
     );
-  }
+});

@@ -106,4 +106,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to create CAPA task" },
       { status: 500 }
     );
-  }
+});

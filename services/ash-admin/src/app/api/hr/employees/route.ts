@@ -264,4 +264,4 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {;
     // Employee model doesn't have brands relation - removed
 
   return createSuccessResponse(employee);
-    }
+});

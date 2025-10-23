@@ -316,4 +316,4 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
-  }
+});

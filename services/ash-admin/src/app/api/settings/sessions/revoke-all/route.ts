@@ -14,4 +14,4 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to revoke sessions" },
       { status: 500 }
     );
-  }
+});

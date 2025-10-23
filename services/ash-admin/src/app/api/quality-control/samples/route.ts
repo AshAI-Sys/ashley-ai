@@ -62,4 +62,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch samples" },
       { status: 500 }
     );
-  }
+});

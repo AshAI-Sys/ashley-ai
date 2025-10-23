@@ -76,4 +76,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     response.cookies.set("session", "", { maxAge: 0, path: "/" });
 
     return response;
-  }
+});

@@ -276,4 +276,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete fabric batch" },
       { status: 500 }
     );
-  }
+});

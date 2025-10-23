@@ -137,4 +137,4 @@ export const DELETE = requireAuth(async (
       { success: false, error: "Failed to delete client" },
       { status: 500 }
     );
-  }
+});

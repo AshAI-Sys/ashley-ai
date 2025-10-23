@@ -137,4 +137,4 @@ export async function GET() {
       { success: false, error: "Failed to fetch employees" },
       { status: 500 }
     );
-  }
+});

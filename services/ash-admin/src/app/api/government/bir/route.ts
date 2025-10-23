@@ -197,4 +197,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to perform BIR calculation", details: error.message },
       { status: 500 }
     );
-  }
+});

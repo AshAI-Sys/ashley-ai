@@ -118,4 +118,4 @@ function generateDemoChart() {
     ...item,
     total: item.successful + item.failed,
   }));
-    }
+});

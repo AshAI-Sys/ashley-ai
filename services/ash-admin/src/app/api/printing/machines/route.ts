@@ -185,4 +185,4 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
   } catch (error) {
     console.error("Error checking maintenance due:", error);
     return false;
-  }
+});

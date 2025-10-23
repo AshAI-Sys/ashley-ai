@@ -407,4 +407,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete sewing run" },
       { status: 500 }
     );
-  }
+});

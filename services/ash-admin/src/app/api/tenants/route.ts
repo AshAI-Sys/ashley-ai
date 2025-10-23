@@ -172,4 +172,4 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to delete tenant", details: error.message },
       { status: 400 }
     );
-  }
+});

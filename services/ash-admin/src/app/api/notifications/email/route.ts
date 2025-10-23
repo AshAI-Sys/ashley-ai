@@ -179,4 +179,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       email_id: result.id,
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+});

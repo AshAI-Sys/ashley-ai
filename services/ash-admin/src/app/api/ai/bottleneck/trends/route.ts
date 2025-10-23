@@ -130,4 +130,4 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to analyze trends", details: error.message },
       { status: 500 }
     );
-  }
+});

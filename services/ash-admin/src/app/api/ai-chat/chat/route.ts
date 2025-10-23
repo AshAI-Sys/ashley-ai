@@ -391,4 +391,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {;
           ? "openai"
           : null,
   });
-    }
+});

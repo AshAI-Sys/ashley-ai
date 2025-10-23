@@ -95,4 +95,4 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to update workspace" },
       { status: 500 }
     );
-  }
+});

@@ -317,4 +317,4 @@ async function testConnection(
       success: false,
       error: error instanceof Error ? error.message : "Connection test failed",
     };
-  }
+});

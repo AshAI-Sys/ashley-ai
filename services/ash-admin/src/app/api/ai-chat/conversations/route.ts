@@ -68,4 +68,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to create conversation" },
       { status: 500 }
     );
-  }
+});

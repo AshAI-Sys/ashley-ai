@@ -76,4 +76,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to convert currency", details: error.message },
       { status: 500 }
     );
-  }
+});

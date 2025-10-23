@@ -423,4 +423,4 @@ function calculateQualityPrediction(factors: any, requirements: any) {
     0.99,
     Math.round(baseQuality * requirementsFactor * 100) / 100
   );
-    }
+});

@@ -248,4 +248,4 @@ function getMethodDetails(run: any) {
       };
     default:
       return { type: "unknown" };
-  }
+});
