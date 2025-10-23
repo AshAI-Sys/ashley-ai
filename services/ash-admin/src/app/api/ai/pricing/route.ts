@@ -46,7 +46,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-      });
+    });
 
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
@@ -108,7 +108,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           in: ["PENDING", "IN_PROGRESS"],
         },
       },
-      });
+    });
 
     const capacityUtilization = Math.min((activeSewingRuns / 20) * 100, 100);
 
@@ -141,6 +141,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       recommendation,
       client_history: clientHistory,
       market_conditions: marketConditions,
+    });
   } catch (error: any) {
     console.error("Pricing calculation error:", error);
     return NextResponse.json(
@@ -148,6 +149,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/ai/pricing/scenarios?client_id=xxx&... - Get multiple pricing scenarios
 export const GET = requireAuth(async (req: NextRequest, user) => {
@@ -186,7 +188,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-      });
+    });
 
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
@@ -229,6 +231,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
         },
       },
+    });
 
     const demandLevel =
       allOrders.length > 50
@@ -245,7 +248,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           in: ["PENDING", "IN_PROGRESS"],
         },
       },
-      });
+    });
 
     const capacityUtilization = Math.min((activeSewingRuns / 20) * 100, 100);
 
@@ -276,6 +279,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       scenarios,
       client_history: clientHistory,
       market_conditions: marketConditions,
+    });
   } catch (error: any) {
     console.error("Pricing scenarios error:", error);
     return NextResponse.json(

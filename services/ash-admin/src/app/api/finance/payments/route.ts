@@ -29,16 +29,17 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           select: {
             invoice_number: true,
             total_amount: true,
-            client: { select: { name: true }});,
+            client: { select: { name: true } },
           },
         },
       },
       orderBy: { payment_date: "desc" },
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: payments,
+    });
   } catch (error) {
     console.error("Error fetching payments:", error);
     return NextResponse.json(
@@ -59,7 +60,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { success: false, error: "Invoice ID is required" },
         { status: 400 }
       );
-      }
+    }
 
     // Get invoice to verify
     const invoice = await prisma.invoice.findUnique({
@@ -70,20 +71,21 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         workspace_id: true,
         invoice_number: true,
       },
-      });
+    });
 
     if (!invoice) {
       return NextResponse.json(
         { success: false, error: "Invoice not found" },
         { status: 404 }
       );
-      }
+    }
 
     // Start transaction
     const result = await prisma.$transaction(async tx => {
-      // Generate payment number;
+      // Generate payment number
       const paymentCount = await tx.payment.count({
         where: { workspace_id: invoice.workspace_id },
+      });
       const payment_number = `PAY-${String(paymentCount + 1).padStart(6, "0")}`;
 
       // Create payment record
@@ -117,7 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         newStatus = "paid";
       } else if (paidAmount > 0) {
         newStatus = "sent";
-
+      }
       // Update invoice status
       await tx.invoice.update({
         where: { id: invoice_id },
@@ -128,7 +130,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       });
 
       return payment;
-
+    });
     // Fetch the complete payment record with relationships
     const paymentWithDetails = await prisma.payment.findUnique({
       where: { id: result.id },
@@ -141,7 +143,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
+    });
 
     return NextResponse.json(
       {

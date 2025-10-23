@@ -23,17 +23,19 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       // Log logout event
       await logAuthEvent("LOGOUT", workspaceId, userId, request, {
         email: userOrResponse.email,
+      });
 
       authLogger.info("User logged out", {
         userId: userId,
         email: userOrResponse.email,
-      }
+      });
+    }
 
     // Clear cookies
     const response = NextResponse.json({
       success: true,
       message: "Logged out successfully",
-      });
+    });
 
     // Clear auth_token cookie
     response.cookies.set("auth_token", "", {
@@ -42,7 +44,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: 0,
       path: "/",
-      });
+    });
 
     // Clear refresh_token cookie
     response.cookies.set("refresh_token", "", {
@@ -51,7 +53,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: 0,
       path: "/",
-      });
+    });
 
     // Clear session cookie if it exists
     response.cookies.set("session", "", {
@@ -60,7 +62,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       sameSite: "lax",
       maxAge: 0,
       path: "/",
-      });
+    });
 
     return response;
   } catch (error) {
@@ -70,11 +72,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const response = NextResponse.json({
       success: true,
       message: "Logged out successfully",
-    }
+    });
 
     response.cookies.set("auth_token", "", { maxAge: 0, path: "/" });
     response.cookies.set("refresh_token", "", { maxAge: 0, path: "/" });
     response.cookies.set("session", "", { maxAge: 0, path: "/" });
 
     return response;
+  }
 });

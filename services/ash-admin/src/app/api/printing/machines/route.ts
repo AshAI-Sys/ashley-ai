@@ -17,7 +17,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const machines = await prisma.machine.findMany({
       where,
       take: 100, // Limit to 100 machines
-      orderBy: [{ workcenter: "asc" }, { name: "asc" });],
+      orderBy: [{ workcenter: "asc" }, { name: "asc" }],
       include: {
         print_runs: {
           where: {
@@ -38,11 +38,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
+    });
 
     // Transform data for frontend
     const transformedMachines = await Promise.all(
-      machines.map(async machine => {;
+      machines.map(async machine => {
         const spec = machine.spec ? JSON.parse(machine.spec) : {};
         const currentRun = machine.print_runs[0] || null;
 
@@ -76,7 +76,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: transformedMachines,
-    }
+    });
   } catch (error) {
     console.error("Machines API error:", error);
     return NextResponse.json(
@@ -117,18 +117,20 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         spec: JSON.stringify(specifications),
         is_active,
       },
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: machine,
+    });
   } catch (error) {
     console.error("Create machine error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create machine" },
       { status: 500 }
     );
-}
+  }
+});
 
 async function calculateMachineUtilization(machineId: string): Promise<number> {
   try {
@@ -146,7 +148,7 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
           lt: tomorrow,
         },
       },
-      });
+    });
 
     // Get completed runs today
     const completedRuns = await prisma.printRun.count({
@@ -158,14 +160,14 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
           lt: tomorrow,
         },
       },
-      });
+    });
 
     // Calculate utilization as percentage
     return totalRuns > 0 ? Math.round((completedRuns / totalRuns) * 100) : 0;
   } catch (error) {
     console.error("Error calculating machine utilization:", error);
     return 0;
-  });
+  }
 }
 
 async function checkMaintenanceDue(machineId: string): Promise<boolean> {
@@ -180,10 +182,11 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
         status: { in: ["open", "scheduled"] },
         type: { in: ["preventive_maintenance", "repair"] },
       },
-      });
+    });
 
     return !!pendingMaintenance;
   } catch (error) {
     console.error("Error checking maintenance due:", error);
     return false;
-});
+  }
+}

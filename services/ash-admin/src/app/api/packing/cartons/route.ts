@@ -18,7 +18,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const cartons = await prisma.carton.findMany({
       where,
       include: {
-        order: { select: { order_number: true } });,
+        order: { select: { order_number: true } },
         contents: {
           include: {
             finished_unit: {
@@ -35,10 +35,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+    });
 
     // Process cartons to calculate metrics
-    const processedCartons = cartons.map(carton => {;
+    const processedCartons = cartons.map(carton => {
       const unitsCount = carton.contents.reduce(
         (sum, content) => sum + content.qty,
         0
@@ -56,6 +56,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         fill_percent: carton.fill_percent || 0,
         units_count: unitsCount,
       };
+    });
 
     return NextResponse.json({
       cartons: processedCartons,
@@ -64,13 +65,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         limit,
         total: await prisma.carton.count({ where }),
       },
+    });
   } catch (error) {
     console.error("Error fetching cartons:", error);
     return NextResponse.json(
       { error: "Failed to fetch cartons" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -79,6 +82,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Generate carton number if not provided
     const cartonCount = await prisma.carton.count({
       where: { order_id: data.order_id },
+    });
     const cartonNo = data.carton_no || cartonCount + 1;
 
     const carton = await prisma.carton.create({
@@ -95,7 +99,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         order: { select: { order_number: true } },
       },
-      });
+    });
 
     return NextResponse.json(carton, { status: 201 });
   } catch (error) {
@@ -151,6 +155,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         const dimWeight = cartonVolume / 5000; // Divisor varies by carrier
         updateData.dim_weight_kg = dimWeight;
       }
+    }
 
     const carton = await prisma.carton.update({
       where: { id },
@@ -168,7 +173,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
+    });
 
     return NextResponse.json(carton);
   } catch (error) {

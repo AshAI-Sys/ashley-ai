@@ -32,7 +32,7 @@ const CreateUserSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
   is_active: z.boolean().default(true),
   requires_2fa: z.boolean().default(false),
-      });
+});
 
 const UpdateUserSchema = z.object({
   email: z.string().email().optional(),
@@ -61,8 +61,9 @@ const UpdateUserSchema = z.object({
   is_active: z.boolean().optional(),
   requires_2fa: z.boolean().optional(),
   password: z.string().min(8).optional(),
+});
 
-  // GET - List all users (Admin only)
+// GET - List all users (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
   user: any
@@ -88,15 +89,19 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         { last_name: { contains: search, mode: "insensitive" } },
         { username: { contains: search, mode: "insensitive" } },
       ];
+    }
 
     if (role && role !== "all") {
       where.role = role;
+    }
 
     if (department && department !== "all") {
       where.department = department;
+    }
 
     if (status && status !== "all") {
       where.is_active = status === "active";
+    }
 
     // Get total count for pagination
     const total = await prisma.user.count({ where });
@@ -123,7 +128,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+    });
 
     return NextResponse.json({
       success: true,
@@ -135,15 +140,16 @@ export const GET = requireAnyPermission(["admin:read"])(async (
           total,
           totalPages: Math.ceil(total / limit),
         },
-  },
-});
-} catch (error) {
+      },
+    });
+  } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },
       { status: 500 }
     );
   }
+});
 
 // POST - Create new user (Admin only)
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -163,7 +169,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
         ],
         workspace_id: user.workspace_id || "default",
       },
-      });
+    });
 
     if (existingUser) {
       return NextResponse.json(
@@ -199,6 +205,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
         requires_2fa: true,
         created_at: true,
       },
+    });
 
     // Log user creation audit
     await logUserAudit(
@@ -237,6 +244,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       { status: 500 }
     );
   }
+});
 
 // Helper function to log user audit events
 async function logUserAudit(
@@ -268,5 +276,5 @@ async function logUserAudit(
     // })
   } catch (error) {
     console.error("Error logging audit event:", error);
-};
-});
+  }
+}

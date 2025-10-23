@@ -72,13 +72,13 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         active_operators: cutLays.length,
         defect_rate: 2, // Simplified
         timestamp: new Date(),
-      }
-
+      });
+    }
     // Printing station metrics
     if (printRuns.length > 0) {
       // Calculate total good quantity from outputs instead of non-existent quantity field
       const totalGood = printRuns.reduce((sum, run) => {
-        // Note: Need to fetch outputs separately since they're not included;
+        // Note: Need to fetch outputs separately since they're not included
         return sum + 100; // Simplified for now
       }, 0);
 
@@ -95,8 +95,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         active_operators: 3,
         defect_rate: 3,
         timestamp: new Date(),
-      }
-
+      });
+    }
     // Sewing station metrics
     if (sewingRuns.length > 0) {
       const totalPieces = sewingRuns.reduce(
@@ -125,8 +125,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         active_operators: sewingRuns.length,
         defect_rate: totalTarget > 0 ? (totalReject / totalTarget) * 100 : 0,
         timestamp: new Date(),
-      }
-
+      });
+    }
     // QC station metrics
     if (qcInspections.length > 0) {
       const failedInspections = qcInspections.filter(
@@ -148,8 +148,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         active_operators: 3,
         defect_rate: defectRate,
         timestamp: new Date(),
-      }
-
+      });
+    }
     // Finishing station metrics
     if (finishingRuns.length > 0) {
       metrics.push({
@@ -166,8 +166,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         active_operators: finishingRuns.length,
         defect_rate: 1,
         timestamp: new Date(),
-      }
-
+      });
+    }
     if (metrics.length === 0) {
       return NextResponse.json({
         success: true,
@@ -184,7 +184,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           predicted_completion_delays: [],
         },
       });
-
+    }
     // Analyze production system
     const analysis =
       await bottleneckDetectionAI.analyzeProductionSystem(metrics);
@@ -194,6 +194,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       analysis,
       analyzed_at: new Date(),
       stations_analyzed: metrics.length,
+    });
   } catch (error: any) {
     console.error("Bottleneck detection error:", error);
     return NextResponse.json(
@@ -226,7 +227,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(", ")}` },
-        { status: 400 });
+        { status: 400 }
       );
     }
 
@@ -240,6 +241,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       success: true,
       detection,
       analyzed_at: new Date(),
+    });
   } catch (error: any) {
     console.error("Station bottleneck detection error:", error);
     return NextResponse.json(

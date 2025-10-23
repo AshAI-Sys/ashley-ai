@@ -82,8 +82,8 @@ export const authRateLimit = new RateLimiter({
 });
 
 export function rateLimit(limiter: RateLimiter) {
-  return (handler: (request: NextRequest) => Promise<NextResponse>) => {
-    return async (request: NextRequest) => {
+  return <T = any>(handler: (request: NextRequest, context?: T) => Promise<NextResponse>) => {
+    return async (request: NextRequest, context?: T) => {
       const { allowed, resetTime, remaining } = limiter.isAllowed(request);
 
       if (!allowed) {
@@ -106,7 +106,7 @@ export function rateLimit(limiter: RateLimiter) {
         );
       }
 
-      const response = await handler(request);
+      const response = await handler(request, context);
 
       // Add rate limit headers to successful responses
       if (resetTime && remaining !== undefined) {

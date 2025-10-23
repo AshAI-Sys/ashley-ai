@@ -46,7 +46,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-      }
+    }
 
     // Find user with this reset token
     const user = await prisma.user.findFirst({
@@ -56,7 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       include: {
         workspace: true,
       },
-
+    });
     if (!user) {
       return NextResponse.json(
         {
@@ -81,7 +81,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-      }
+    }
 
     // Hash new password (10 rounds - optimized for speed while maintaining security)
     const password_hash = await bcrypt.hash(password, 10);
@@ -94,7 +94,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         password_reset_token: null,
         password_reset_expires: null,
       },
-
+    });
     // Log successful password reset
     await logAuthEvent("PASSWORD_RESET", user.workspace_id, user.id, request, {
       email: user.email,

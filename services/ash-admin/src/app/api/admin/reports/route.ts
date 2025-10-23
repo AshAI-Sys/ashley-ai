@@ -20,7 +20,7 @@ const GenerateReportSchema = z.object({
   date_to: z.string().optional(),
   format: z.enum(["json", "csv", "pdf"]).default("json"),
   filters: z.record(z.any()).optional(),
-      });
+});
 
 // GET - List available reports and recent reports
 export const GET = requireAnyPermission(["admin:read"])(async (
@@ -162,15 +162,16 @@ export const GET = requireAnyPermission(["admin:read"])(async (
           ],
           last_updated: new Date().toISOString(),
         },
-  },
-});
-} catch (error) {
+      },
+    });
+  } catch (error) {
     console.error("Error fetching reports:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch reports" },
       { status: 500 }
     );
   }
+});
 
 // POST - Generate new report
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -189,12 +190,13 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       generated_by: user.id,
       timestamp: new Date().toISOString(),
       filters: validatedData.filters,
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: reportData,
       message: "Report generated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -213,6 +215,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       { status: 500 }
     );
   }
+});
 
 // Generate specific report
 async function generateReport(
@@ -238,7 +241,8 @@ async function generateReport(
   return NextResponse.json({
     success: true,
     data: reportData,
-  }
+  });
+}
 
 // Generate report data based on type
 async function generateReportData(params: any, user: any) {
@@ -272,6 +276,7 @@ async function generateReportData(params: any, user: any) {
     default:
       throw new Error("Invalid report type");
   }
+}
 
 // User Activity Report
 async function generateUserActivityReport(
@@ -333,6 +338,7 @@ async function generateUserActivityReport(
       device_types: { desktop: 78, mobile: 18, tablet: 4 },
     },
   };
+}
 
 // Department Summary Report
 async function generateDepartmentSummaryReport(department?: string) {
@@ -391,6 +397,7 @@ async function generateDepartmentSummaryReport(department?: string) {
       hiring_rate: 2.4, // per month
     },
   };
+}
 
 // Role Distribution Report
 async function generateRoleDistributionReport(department?: string) {
@@ -464,6 +471,7 @@ async function generateRoleDistributionReport(department?: string) {
       "HR staff ratio is healthy for current company size",
     ],
   };
+}
 
 // Security Events Report
 async function generateSecurityEventsReport(
@@ -517,6 +525,7 @@ async function generateSecurityEventsReport(
       audit_trail: "Complete",
     },
   };
+}
 
 // Onboarding Progress Report
 async function generateOnboardingProgressReport(
@@ -578,6 +587,7 @@ async function generateOnboardingProgressReport(
       { step: "Equipment Assignment", delays: 2, avg_delay: "1.5 days" },
     ],
   };
+}
 
 // System Usage Report
 async function generateSystemUsageReport(dateFrom?: string, dateTo?: string) {
@@ -612,6 +622,7 @@ async function generateSystemUsageReport(dateFrom?: string, dateTo?: string) {
       edge: 2,
     },
   };
+}
 
 // Performance Metrics Report
 async function generatePerformanceMetricsReport(
@@ -656,6 +667,7 @@ async function generatePerformanceMetricsReport(
       "Response time optimization needed",
     ],
   };
+}
 
 // Compliance Audit Report
 async function generateComplianceAuditReport(
@@ -696,4 +708,5 @@ async function generateComplianceAuditReport(
       "Enhanced logging for sensitive operations",
     ],
     next_review: "2024-12-28",
-  });
+  };
+}

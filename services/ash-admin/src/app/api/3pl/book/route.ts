@@ -66,6 +66,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         });
       }
+    }
 
     return NextResponse.json(booking, { status: 201 });
   } catch (error: any) {

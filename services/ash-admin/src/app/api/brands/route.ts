@@ -106,8 +106,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: validatedData.client_id },
-      select: { id: true, workspace_id: true });,
-      });
+      select: { id: true, workspace_id: true },
+    });
 
     if (!client) {
       return NextResponse.json(

@@ -208,12 +208,15 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
       if (action && action !== "all") {
         matches = matches && log.action === action;
+      }
 
       if (target_user_id) {
         matches = matches && log.target_user_id === target_user_id;
+      }
 
       if (severity && severity !== "all") {
         matches = matches && log.severity === severity;
+      }
 
       if (search) {
         matches =
@@ -223,17 +226,18 @@ export const GET = requireAnyPermission(["admin:read"])(async (
               ?.toLowerCase()
               .includes(search.toLowerCase()) ||
             log.performer?.email?.toLowerCase().includes(search.toLowerCase()));
-    }
+      }
 
       if (date_from) {
         matches = matches && new Date(log.timestamp) >= new Date(date_from);
-    }
+      }
 
       if (date_to) {
         matches = matches && new Date(log.timestamp) <= new Date(date_to);
-    }
+      }
 
       return matches;
+    });
 
     // Sort by timestamp (newest first)
     filteredLogs.sort(
@@ -248,7 +252,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     // Calculate summary statistics
     const summary = {
       total: filteredLogs.length,
-      today: filteredLogs.filter(log => {;
+      today: filteredLogs.filter(log => {
         const today = new Date();
         const logDate = new Date(log.timestamp);
         return logDate.toDateString() === today.toDateString();
@@ -288,14 +292,15 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         },
         summary,
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching audit logs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch audit logs" },
       { status: 500 }
     );
   }
+});
 
 // POST - Create new audit log entry
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -362,6 +367,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       { status: 500 }
     );
   }
+});
 
 // Helper function to create audit log (internal use only)
 async function createAuditLog(
@@ -388,12 +394,11 @@ async function createAuditLog(
       performer_user_id,
       ...auditLog,
       timestamp: new Date().toISOString(),
-      });
+    });
 
     return true;
   } catch (error) {
     console.error("Error creating audit log:", error);
     return false;
   }
-};
-});
+}

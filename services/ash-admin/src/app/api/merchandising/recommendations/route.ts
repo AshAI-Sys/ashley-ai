@@ -45,6 +45,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       if (typeError) {
         return createValidationErrorResponse([typeError]);
       }
+    }
 
     const where: any = {
       workspace_id: workspaceId,
@@ -67,7 +68,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
-      });
+    });
 
     return NextResponse.json({ recommendations });
   } catch (error) {
@@ -108,6 +109,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: workspaceId,
           is_active: true,
         },
+      });
 
       for (const client of clients) {
         const clientRecommendations = await generateRecommendationsForClient(
@@ -115,6 +117,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           client.id
         );
         recommendations.push(...clientRecommendations);
+      }
     } else if (clientId) {
       // Generate recommendations for specific client
       recommendations = await generateRecommendationsForClient(
@@ -131,6 +134,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       recommendations,
       count: recommendations.length,
+    });
   } catch (error) {
     console.error("Recommendation generation error:", error);
     return NextResponse.json(
@@ -160,10 +164,11 @@ async function generateRecommendationsForClient(
       brand: true,
     },
     orderBy: { created_at: "desc" },
-      });
+  });
 
   if (clientOrders.length === 0) {
     return [];
+  }
 
   const recommendations = [];
 
@@ -236,7 +241,8 @@ async function generateReorderRecommendations(
       if (order.created_at > productFrequency[key].lastOrder) {
         productFrequency[key].lastOrder = order.created_at;
       }
-    }
+    });
+  });
 
   // Generate reorder recommendations for frequently ordered items
   for (const [productKey, data] of Object.entries(productFrequency)) {
@@ -271,7 +277,9 @@ async function generateReorderRecommendations(
             },
           })
         );
+      }
     }
+  }
 
   return recommendations;
 }
@@ -293,7 +301,7 @@ async function generateCrossSellRecommendations(
     productsInOrder.forEach((product: string, index: number) => {
       if (!productCombinations[product]) {
         productCombinations[product] = [];
-      });
+      }
       // Add other products from the same order
       productsInOrder.forEach((otherProduct: string, otherIndex: number) => {
         if (
@@ -302,8 +310,9 @@ async function generateCrossSellRecommendations(
         ) {
           productCombinations[product].push(otherProduct);
         }
-      }
-    }
+      });
+    });
+  });
 
   // Generate cross-sell recommendations
   const recentProducts = clientOrders
@@ -334,7 +343,10 @@ async function generateCrossSellRecommendations(
               },
             })
           );
+        }
+      }
     }
+  }
 
   return recommendations.slice(0, 3); // Limit to 3 cross-sell recommendations
 }
@@ -383,7 +395,7 @@ async function generateSeasonalRecommendations(
         },
       })
     );
-    }
+  }
 
   return recommendations.slice(0, 2); // Limit to 2 seasonal recommendations
 }
@@ -405,6 +417,7 @@ async function generateTrendingRecommendations(
     include: {
       line_items: true,
     },
+  });
 
   const productPopularity: { [key: string]: number } = {};
 
@@ -413,7 +426,8 @@ async function generateTrendingRecommendations(
       const productType = item.product_type || "unknown";
       productPopularity[productType] =
         (productPopularity[productType] || 0) + (item.quantity || 0);
-    }
+    });
+  });
 
   // Get top 2 trending products
   const trendingProducts = Object.entries(productPopularity)
@@ -438,7 +452,7 @@ async function generateTrendingRecommendations(
         },
       })
     );
-    }
+  }
 
   return recommendations;
-});
+}

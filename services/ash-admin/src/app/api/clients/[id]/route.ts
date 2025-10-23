@@ -49,6 +49,7 @@ export const GET = requireAuth(async (
           },
         },
       },
+    });
 
     if (!client) {
       return NextResponse.json(
@@ -60,6 +61,7 @@ export const GET = requireAuth(async (
     return NextResponse.json({
       success: true,
       data: client,
+    });
   } catch (error) {
     console.error("Failed to fetch client:", error);
     return NextResponse.json(
@@ -67,6 +69,7 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
+});
 
 // PUT /api/clients/[id] - Update client
 export const PUT = requireAuth(async (
@@ -110,6 +113,7 @@ export const PUT = requireAuth(async (
       success: true,
       data: client,
       message: "Client updated successfully",
+    });
   } catch (error) {
     console.error("Failed to update client:", error);
     return NextResponse.json(
@@ -117,6 +121,7 @@ export const PUT = requireAuth(async (
       { status: 500 }
     );
   }
+});
 
 // DELETE /api/clients/[id] - Delete client
 export const DELETE = requireAuth(async (
@@ -132,6 +137,7 @@ export const DELETE = requireAuth(async (
     return NextResponse.json({
       success: true,
       message: "Client deleted successfully",
+    });
   } catch (error) {
     console.error("Failed to delete client:", error);
     return NextResponse.json(

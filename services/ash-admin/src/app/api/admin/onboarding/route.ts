@@ -30,7 +30,6 @@ const OnboardingStepSchema = z.object({
         hire_date: z.string().optional(),
       })
       .optional(),
-      });
 
     // Role Assignment Step
     role_assignment: z
@@ -90,6 +89,7 @@ const OnboardingStepSchema = z.object({
       })
       .optional(),
   }),
+});
 
 const CreateOnboardingSchema = z.object({
   employee_id: z.string().min(1, "Employee ID is required"),
@@ -98,6 +98,7 @@ const CreateOnboardingSchema = z.object({
     .default("basic"),
   priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
   expected_completion_date: z.string().optional(),
+});
 
 // GET - List onboarding processes
 export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
@@ -219,7 +220,7 @@ export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
           ).length,
         },
       },
-    }
+    });
   } catch (error) {
     console.error("Error fetching onboarding processes:", error);
     return NextResponse.json(
@@ -227,6 +228,7 @@ export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
       { status: 500 }
     );
   }
+});
 
 // POST - Create new onboarding process
 export const POST = requireAnyPermission(["admin:create", "hr:create"])(async (
@@ -339,6 +341,7 @@ export const POST = requireAnyPermission(["admin:create", "hr:create"])(async (
       { status: 500 }
     );
   }
+});
 
 // Helper function to generate onboarding checklist
 function generateOnboardingChecklist(template_type: string) {
@@ -442,7 +445,7 @@ function generateOnboardingChecklist(template_type: string) {
   return (
     checklists[template_type as keyof typeof checklists] || checklists.basic
   );
-    }
+}
 
 // Helper function to log onboarding audit events
 async function logOnboardingAudit(
@@ -458,9 +461,8 @@ async function logOnboardingAudit(
       description,
       metadata,
       timestamp: new Date(),
-    }
+    });
   } catch (error) {
     console.error("Error logging onboarding audit event:", error);
   }
-};
-});
+}

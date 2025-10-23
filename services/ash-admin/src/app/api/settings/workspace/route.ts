@@ -83,6 +83,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       if (body[field] !== undefined) {
         updateData[field] = body[field];
       }
+    });
 
     const updatedWorkspace = await prisma.workspace.update({
       where: { id: authUser.workspaceId },

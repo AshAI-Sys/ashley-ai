@@ -30,8 +30,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
     const heatmapData = await prisma.productionHeatmap.findMany({
       where,
-      orderBy: [{ date: "asc" }, { hour: "asc" });],
-      });
+      orderBy: [{ date: "asc" }, { hour: "asc" }],
+    });
 
     // Calculate aggregated statistics
     const stats = {

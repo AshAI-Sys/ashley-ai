@@ -18,17 +18,17 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const runs = await prisma.finishingRun.findMany({
       where,
       include: {
-        order: { select: { order_number: true } });,
+        order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
         routing_step: true,
       },
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+    });
 
     // Process runs to calculate task completion
-    const processedRuns = runs.map(run => {;
+    const processedRuns = runs.map(run => {
       const totalTasks = 5; // Default finishing tasks
       const completedTasks =
         run.status === "COMPLETED"
@@ -50,14 +50,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         }
       } catch (e) {
         materialsUsed = [];
-
+      }
       return {
         ...run,
         tasks_completed: completedTasks,
         total_tasks: totalTasks,
         materials_used: materialsUsed,
       };
-
+    });
     return NextResponse.json({
       runs: processedRuns,
       pagination: {
@@ -65,13 +65,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         limit,
         total: await prisma.finishingRun.count({ where }),
       },
+    });
   } catch (error) {
     console.error("Error fetching finishing runs:", error);
     return NextResponse.json(
       { error: "Failed to fetch finishing runs" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -88,9 +90,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         started_at: data.started_at ? new Date(data.started_at) : null,
       },
       include: {
-        order: { select: { order_number: true }); },
+        order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
       },
+    });
 
     return NextResponse.json(finishingRun, { status: 201 });
   } catch (error) {
@@ -100,7 +103,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -117,7 +120,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
       },
-      });
+    });
 
     // If marking as completed, create finished units if data provided
     if (updateData.status === "COMPLETED" && updateData.bundle_data) {
@@ -132,7 +135,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 async function createFinishedUnits(finishingRun: any, bundleData: any) {
   try {
@@ -140,7 +143,7 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
     const order = await prisma.order.findUnique({
       where: { id: finishingRun.order_id },
       include: { line_items: true },
-      });
+    });
 
     if (!order || !bundleData) return;
 
@@ -156,15 +159,16 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
         size_code: bundleData.size_code,
         color: bundleData.color || null,
         serial: `${bundleData.qr_code || finishingRun.id}-${(i + 1).toString().padStart(3, "0")}`,
-      }
-
+      });
+    }
     await prisma.finishedUnit.createMany({
       data: finishedUnits,
-    }
+    });
 
     console.log(
       `Created ${finishedUnits.length} finished units for finishing run ${finishingRun.id}`
     );
   } catch (error) {
     console.error("Error creating finished units:", error);
-});
+  }
+}

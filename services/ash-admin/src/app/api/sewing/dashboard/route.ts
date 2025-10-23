@@ -39,6 +39,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         operator_id: true,
       },
       distinct: ["operator_id"],
+    });
     const operatorsWorking = operatorsWorkingResult.length;
 
     // Calculate average efficiency
@@ -101,8 +102,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         pending_bundles: pendingBundles,
         total_pieces_today: totalPiecesToday,
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching sewing dashboard stats:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch dashboard stats" },

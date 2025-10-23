@@ -123,14 +123,16 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       const validation = validateAndSanitizeMarketTrendData(body);
       if (!validation.isValid) {
         return createValidationErrorResponse(validation.errors);
-    }
+      }
 
       const trend = await prisma.marketTrend.create({
         data: {
           workspace_id: workspaceId,
           ...validation.sanitizedData,
         },
+      });
       return NextResponse.json({ trend });
+    }
   } catch (error) {
     console.error("Market trend creation error:", error);
     return NextResponse.json(
@@ -139,7 +141,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
-}
+  }
+});
 
 async function generateMarketTrends(workspaceId: string) {
   const trends = [];
@@ -173,11 +176,12 @@ async function generateMarketTrends(workspaceId: string) {
     try {
       const savedTrend = await prisma.marketTrend.create({
         data: trend,
-      }
+      });
       savedTrends.push(savedTrend);
     } catch (error) {
       // console.error('Error saving trend:', error)
     }
+  }
 
   return savedTrends;
 }
@@ -255,6 +259,7 @@ function getSeasonalTrends(season: string, workspaceId: string) {
       lifestyle: ["active", "professional", "casual"],
     }),
     opportunity_score: currentSeasonData.impact,
+  });
 
   return trends;
 }
@@ -322,7 +327,8 @@ function getColorTrends(workspaceId: string) {
         psychographics: ["trend-conscious", "style-forward"],
       }),
       opportunity_score: colorTrend.impact,
-    }
+    });
+  });
 
   return trends;
 }
@@ -397,7 +403,8 @@ function getStyleTrends(workspaceId: string) {
         values: ["style-conscious", "quality-focused"],
       }),
       opportunity_score: styleTrend.impact,
-    }
+    });
+  });
 
   return trends;
 }
@@ -481,4 +488,4 @@ function getTechnologyTrends(workspaceId: string) {
       opportunity_score: 0.6,
     },
   ];
-});
+}

@@ -24,6 +24,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           success: true,
           alerts,
           total: alerts.length,
+        });
 
       case "costing":
         const costings =
@@ -31,6 +32,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           material_costings: costings,
+        });
 
       case "scan":
         const code = searchParams.get("code");
@@ -41,7 +43,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             { error: "code parameter required for scan" },
             { status: 400 }
           );
-    }
+        }
 
         const scanned =
           type === "rfid"
@@ -53,12 +55,13 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             { error: "Material not found", code },
             { status: 404 }
           );
-    }
+        }
 
         return NextResponse.json({
           success: true,
           material: scanned,
           scan_type: type || "barcode",
+        });
 
       case "summary":
       default:
@@ -67,7 +70,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           summary,
-        }
+        });
     }
   } catch (error: any) {
     console.error("Inventory API error:", error);
@@ -76,6 +79,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/inventory - Create material or update stock
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -90,6 +94,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           material,
           message: "Material added successfully",
+        });
 
       case "update_stock":
         const { material_id, quantity_change, transaction_type } = data;
@@ -106,7 +111,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             },
             { status: 400 }
           );
-    }
+        }
 
         await inventoryManager.updateStock(
           material_id,
@@ -117,6 +122,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           message: "Stock updated successfully",
+        });
 
       case "create_supplier":
         const supplier = await inventoryManager.createSupplier(data);
@@ -124,6 +130,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           supplier,
           message: "Supplier created successfully",
+        });
 
       case "create_po":
         const po = await inventoryManager.createPurchaseOrder(data);
@@ -131,6 +138,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           purchase_order: po,
           message: "Purchase order created successfully",
+        });
 
       case "receive_po":
         const { po_id, received_items } = data;
@@ -140,13 +148,14 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { error: "po_id and received_items are required" },
             { status: 400 }
           );
-    }
+        }
 
         await inventoryManager.receivePurchaseOrder(po_id, received_items);
 
         return NextResponse.json({
           success: true,
           message: "Purchase order received and stock updated",
+        });
 
       case "generate_barcode":
         const { material_id: matId } = data;
@@ -156,7 +165,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { error: "material_id is required" },
             { status: 400 }
           );
-    }
+        }
 
         const barcode = await inventoryManager.generateBarcode(matId);
 
@@ -164,7 +173,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           barcode,
           material_id: matId,
-        }
+        });
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });

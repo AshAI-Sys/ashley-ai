@@ -91,9 +91,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           total,
           pages: Math.ceil(total / limit),
         },
-  },
-});
-} catch (error) {
+      },
+    });
+  } catch (error) {
     console.error("Error fetching cut lays:", error);
     return NextResponse.json(
       {
@@ -113,7 +113,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: validatedData.order_id },
-      });
+    });
 
     if (!order) {
       return NextResponse.json(
@@ -123,7 +123,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     }
 
     // Create cut lay with outputs in a transaction
-    const cutLay = await prisma.$transaction(async tx => {;
+    const cutLay = await prisma.$transaction(async tx => {
       const newCutLay = await tx.cutLay.create({
         data: {
           workspace_id: "default",
@@ -169,7 +169,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       });
 
       return { ...newCutLay, outputs };
-
+    });
     return NextResponse.json(
       {
         success: true,

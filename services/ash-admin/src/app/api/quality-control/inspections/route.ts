@@ -23,10 +23,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (inspectionType && inspectionType !== "all") {
       where.inspection_type = inspectionType;
+    }
 
     if (result && result !== "all") {
       where.result = result;
-
+    }
     const inspections = await prisma.qCInspection.findMany({
       where,
       include: {
@@ -53,7 +54,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { inspection_date: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+    });
 
     return NextResponse.json({
       inspections,
@@ -62,13 +63,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         limit,
         total: await prisma.qCInspection.count({ where }),
       },
+    });
   } catch (error) {
     console.error("Error fetching QC inspections:", error);
     return NextResponse.json(
       { error: "Failed to fetch inspections" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -100,10 +103,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         inspection_date: new Date(),
       },
       include: {
-        order: { select: { order_number: true }); },
+        order: { select: { order_number: true } },
         inspector: { select: { first_name: true, last_name: true } },
       },
-      });
+    });
 
     return NextResponse.json(inspection, { status: 201 });
   } catch (error) {
@@ -113,7 +116,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-
+});
 // AQL Sampling calculation based on ANSI/ASQ Z1.4
 function calculateAQLSampling(lotSize: number, aql: number, level: string) {
   // Simplified AQL table - in production this should be a complete implementation
@@ -153,4 +156,5 @@ function calculateAQLSampling(lotSize: number, aql: number, level: string) {
     sample_size: result.sampleSize,
     acceptance: result.acceptance,
     rejection: result.rejection,
-  });
+  };
+}

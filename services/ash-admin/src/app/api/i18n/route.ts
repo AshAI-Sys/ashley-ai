@@ -17,6 +17,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           languages,
+        });
 
       case "translations":
         const translations = translationManager.getAllTranslations(lang);
@@ -24,12 +25,14 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           success: true,
           language: lang,
           translations,
+        });
 
       case "currencies":
         const currencies = currencyManager.getSupportedCurrencies();
         return NextResponse.json({
           success: true,
           currencies,
+        });
 
       case "exchange_rate":
         const from = (searchParams.get("from") as any) || "PHP";
@@ -38,7 +41,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           exchange_rate: rate,
-        }
+        });
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
@@ -50,6 +53,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/i18n/convert - Convert currency
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -71,6 +75,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       original: { amount, currency: from },
       converted: { amount: converted, currency: to, formatted },
       rate: currencyManager.getExchangeRate(from, to).rate,
+    });
   } catch (error: any) {
     console.error("Currency conversion error:", error);
     return NextResponse.json(

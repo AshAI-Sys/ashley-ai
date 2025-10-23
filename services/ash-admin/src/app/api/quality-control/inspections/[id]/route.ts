@@ -12,7 +12,7 @@ export const GET = requireAuth(async (
     const inspection = await prisma.qCInspection.findUnique({
       where: { id: context.params.id },
       include: {
-        order: { select: { order_number: true }); },
+        order: { select: { order_number: true } },
         bundle: { select: { qr_code: true, size_code: true, qty: true } },
         checklist: true,
         inspector: { select: { first_name: true, last_name: true } },
@@ -33,7 +33,7 @@ export const GET = requireAuth(async (
         },
         capa_tasks: true,
       },
-      });
+    });
 
     if (!inspection) {
       return NextResponse.json(
@@ -70,7 +70,7 @@ export const PUT = requireAuth(async (
         order: { select: { order_number: true } },
         inspector: { select: { first_name: true, last_name: true } },
       },
-      });
+    });
 
     return NextResponse.json(inspection);
   } catch (error) {

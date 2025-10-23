@@ -103,7 +103,7 @@ export default function ClientsPage() {
         {/* Page Header - Responsive */}
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold lg:text-3xl">Clients</h1>
+            <h1 className="text-2xl font-bold text-white lg:text-3xl">Clients</h1>
             <p className="text-sm text-muted-foreground lg:text-base">
               Manage your clients and their information
             </p>

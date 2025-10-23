@@ -84,7 +84,7 @@ async function getBusinessContext(
       },
       orderBy: { created_at: "desc" },
       take: 10,
-      });
+    });
 
     if (orders.length > 0) {
       contextParts.push(`\n## Recent Orders (Last 10):`);
@@ -92,7 +92,8 @@ async function getBusinessContext(
         contextParts.push(
           `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - ₱${order.total_amount?.toLocaleString() || "0"}`
         );
-      }
+      });
+    }
 
     // Get clients summary
     const clients = await prisma.client.findMany({
@@ -104,7 +105,7 @@ async function getBusinessContext(
       },
       orderBy: { created_at: "desc" },
       take: 5,
-      });
+    });
 
     if (clients.length > 0) {
       contextParts.push(`\n## Active Clients (Top 5):`);
@@ -112,20 +113,22 @@ async function getBusinessContext(
         contextParts.push(
           `${idx + 1}. ${client.name} - ${client._count.brands} brands, ${client._count.orders} orders - Contact: ${client.email || "N/A"}`
         );
-      }
+      });
+    }
 
     // Get production statistics
     const orderStats = await prisma.order.groupBy({
       by: ["status"],
       where: { workspace_id: workspaceId },
       _count: true,
-      });
+    });
 
     if (orderStats.length > 0) {
       contextParts.push(`\n## Production Overview:`);
       orderStats.forEach(stat => {
         contextParts.push(`- ${stat.status}: ${stat._count} orders`);
-      }
+      });
+    }
 
     // Get recent employees if HR query detected
     if (
@@ -145,16 +148,19 @@ async function getBusinessContext(
           contextParts.push(
             `${idx + 1}. ${emp.first_name} ${emp.last_name} - ${emp.position || "N/A"} - ${emp.salary_type} (${emp.is_active ? "Active" : "Inactive"})`
           );
+        });
       }
+    }
 
     if (contextParts.length === 0) {
       return "\n## Current System Status:\nNo data available in the system yet. Ready to help you get started!";
-
+    }
     return contextParts.join("\n");
   } catch (error) {
     console.error("Error getting business context:", error);
     return "\n## System Status:\nUnable to fetch current data, but ready to assist with general queries.";
   }
+}
 
 // POST /api/ai-chat/chat - Send a message and get AI response
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -202,8 +208,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             name: "Demo Workspace",
             slug: workspace_id,
           },
-        }
+        });
         console.log("Workspace created successfully");
+      }
     } catch (error: any) {
       console.error("Error with workspace:", error.message);
       // If workspace creation fails, return error
@@ -220,7 +227,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         // First verify workspace exists
         const workspace = await prisma.workspace.findFirst({
           where: { slug: workspace_id },
-      });
+        });
 
         const actualWorkspaceId = workspace?.id || workspace_id;
 
@@ -231,14 +238,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             title: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
             context_type: "GENERAL",
           },
-        }
+        });
         conversationId = newConversation.id;
       } catch (error: any) {
         console.error("Error creating conversation:", error.message, error);
         // Continue without conversation ID - one-off chat mode
         conversationId = "temp-" + Date.now();
       }
-
+    }
     // Save user message (skip if temp conversation)
     let userMessage;
     try {
@@ -251,10 +258,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             message_type: "TEXT",
           },
         });
+      }
     } catch (error) {
       console.error("Error saving user message:", error);
       // Continue without saving - one-off mode
-
+    }
     // Get conversation history (skip if temp conversation)
     let history: any[] = [];
     try {
@@ -268,10 +276,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
           take: 20, // Last 20 messages for context
         });
+      }
     } catch (error) {
       console.error("Error getting history:", error);
       // Continue without history
-
+    }
     // Get real-time business context
     const businessContext = await getBusinessContext(workspace_id, message);
 
@@ -298,7 +307,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         ],
         max_tokens: 3000,
         temperature: 0.7,
-      }
+      });
 
       assistantResponse =
         response.choices[0]?.message?.content ||
@@ -311,7 +320,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         max_tokens: 3000,
         system: enhancedSystemPrompt,
         messages: messages as any,
-      }
+      });
 
       assistantResponse =
         response.content[0].type === "text"
@@ -327,12 +336,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           ...messages,
         ],
         max_tokens: 3000,
-      }
+      });
 
       assistantResponse =
         response.choices[0]?.message?.content ||
         "Sorry, I could not generate a response.";
       modelUsed = "gpt-4-turbo";
+    }
 
     // Save assistant message
     const assistantMessage = await prisma.aIChatMessage.create({
@@ -347,7 +357,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           timestamp: new Date().toISOString(),
         }),
       },
-      });
+    });
 
     // Update conversation last_message_at
     await prisma.aIChatConversation.update({
@@ -357,13 +367,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       data: {
         last_message_at: new Date(),
       },
-      });
+    });
 
     return NextResponse.json({
       conversation_id: conversationId,
       user_message: userMessage,
       assistant_message: assistantMessage,
       response: assistantResponse,
+    });
   } catch (error: any) {
     console.error("Error in AI chat:", error);
     return NextResponse.json(
@@ -374,7 +385,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-
+});
 // GET /api/ai-chat/chat - Check AI configuration status
 export const GET = requireAuth(async (request: NextRequest, user) => {
   return NextResponse.json({

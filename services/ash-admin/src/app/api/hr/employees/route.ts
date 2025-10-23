@@ -15,7 +15,6 @@ import {
   requireAnyPermission,
 } from "../../../../lib/auth-middleware";
 import * as bcrypt from "bcryptjs";
-import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(
   withErrorHandling(async (request: NextRequest, user: any) => {
@@ -135,6 +134,7 @@ export const POST = requireAnyPermission(["hr:create"])(
     ]);
     if (validationError) {
       throw validationError;
+    }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -145,6 +145,7 @@ export const POST = requireAnyPermission(["hr:create"])(
     // Check if email already exists
     const existingEmployee = await prisma.employee.findUnique({
       where: { email },
+    });
     if (existingEmployee) {
       throw new Error("Email already registered");
     }
@@ -162,6 +163,7 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (salaryTypeError) {
         throw salaryTypeError;
       }
+    }
 
     // Validate hire date if provided
     if (hire_date) {
@@ -169,6 +171,7 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (dateError) {
         throw dateError;
       }
+    }
 
     // Ensure default workspace exists
     await prisma.workspace.upsert({
@@ -180,7 +183,7 @@ export const POST = requireAnyPermission(["hr:create"])(
         slug: "default",
         is_active: true,
       },
-      });
+    });
 
     const employee = await prisma.employee.create({
       data: {
@@ -200,7 +203,7 @@ export const POST = requireAnyPermission(["hr:create"])(
         is_active: true,
         contact_info: JSON.stringify(contact_info),
       },
-      });
+    });
 
     const responseData = {
       id: employee.id,
@@ -224,49 +227,54 @@ export const POST = requireAnyPermission(["hr:create"])(
   })
 );
 
-export const PUT = withErrorHandling(async (request: NextRequest) => {
-  const data = await request.json();
-  const { id, ...updateData } = data;
+export const PUT = requireAuth(
+  withErrorHandling(async (request: NextRequest, user: any) => {
+    const data = await request.json();
+    const { id, ...updateData } = data;
 
-  // Validate required ID
-  const validationError = validateRequiredFields({ id });, ["id"]);
-  if (validationError) {
-    throw validationError;
-
-  // Validate salary type if being updated
-  if (updateData.salary_type) {
-    const salaryTypeError = validateEnum(
-      updateData.salary_type,
-      ["DAILY", "HOURLY", "PIECE", "MONTHLY"],
-      "salary_type"
-    );
-    if (salaryTypeError) {
-      throw salaryTypeError;
+    // Validate required ID
+    const validationError = validateRequiredFields({ id }, ["id"]);
+    if (validationError) {
+      throw validationError;
     }
 
-  // Handle date conversion and validation
-  if (updateData.hire_date) {
-    const dateError = validateDate(updateData.hire_date, "hire_date");
-    if (dateError) {
-      throw dateError;
-    }
-    updateData.hire_date = new Date(updateData.hire_date);
-    }
-  if (updateData.separation_date) {
-    const dateError = validateDate(
-      updateData.separation_date,
-      "separation_date"
-    );
-    if (dateError) {
-      throw dateError;
-    }
-    updateData.separation_date = new Date(updateData.separation_date);
+    // Validate salary type if being updated
+    if (updateData.salary_type) {
+      const salaryTypeError = validateEnum(
+        updateData.salary_type,
+        ["DAILY", "HOURLY", "PIECE", "MONTHLY"],
+        "salary_type"
+      );
+      if (salaryTypeError) {
+        throw salaryTypeError;
+      }
     }
 
-  const employee = await prisma.employee.update({
-    where: { id },
-    data: updateData,
-    // Employee model doesn't have brands relation - removed
+    // Handle date conversion and validation
+    if (updateData.hire_date) {
+      const dateError = validateDate(updateData.hire_date, "hire_date");
+      if (dateError) {
+        throw dateError;
+      }
+      updateData.hire_date = new Date(updateData.hire_date);
+    }
+    if (updateData.separation_date) {
+      const dateError = validateDate(
+        updateData.separation_date,
+        "separation_date"
+      );
+      if (dateError) {
+        throw dateError;
+      }
+      updateData.separation_date = new Date(updateData.separation_date);
+    }
 
-  return createSuccessResponse(employee);
-});
+    const employee = await prisma.employee.update({
+      where: { id },
+      data: updateData,
+      // Employee model doesn't have brands relation - removed
+    });
+
+    return createSuccessResponse(employee);
+  })
+);

@@ -65,10 +65,11 @@ export const GET = requireAuth(async (
       },
       orderBy: { created_at: "desc" },
 
+    });
     return NextResponse.json({
       success: true,
       data: brands,
-    }
+    });
   } catch (error) {
     console.error("Error fetching client brands:", error);
     return NextResponse.json(
@@ -76,7 +77,7 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-}
+});
 
 export const POST = requireAuth(async (
   request: NextRequest,

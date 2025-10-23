@@ -27,6 +27,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           headers: {
             "Content-Type": "text/css",
           },
+        });
 
       case "preview":
         const html = brandingManager.generatePreviewHTML(branding);
@@ -34,6 +35,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           headers: {
             "Content-Type": "text/html",
           },
+        });
 
       case "json":
       default:
@@ -41,6 +43,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           success: true,
           branding,
         });
+    }
   } catch (error: any) {
     console.error("Get branding error:", error);
     return NextResponse.json(
@@ -48,6 +51,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // PUT /api/branding - Update branding configuration
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -77,6 +81,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       success: true,
       message: "Branding updated successfully",
       branding,
+    });
   } catch (error: any) {
     console.error("Update branding error:", error);
     return NextResponse.json(

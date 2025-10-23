@@ -33,8 +33,9 @@ const UpdateUserSchema = z.object({
   is_active: z.boolean().optional(),
   requires_2fa: z.boolean().optional(),
   password: z.string().min(8).optional(),
+});
 
-  // GET - Get specific user (Admin only)
+// GET - Get specific user (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
   user: any,
@@ -64,7 +65,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         created_at: true,
         updated_at: true,
       },
-      });
+    });
 
     if (!targetUser) {
       return NextResponse.json(
@@ -76,14 +77,15 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     return NextResponse.json({
       success: true,
       data: { user: targetUser },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch user" },
       { status: 500 }
     );
   }
+});
 
 // PUT - Update user (Admin only)
 export const PUT = requireAnyPermission(["admin:update"])(async (
@@ -102,7 +104,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
         id,
         workspace_id: user.workspace_id || "default",
       },
-      });
+    });
 
     if (!existingUser) {
       return NextResponse.json(
@@ -141,6 +143,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
           { status: 400 }
         );
       }
+    }
 
     // Prepare update data
     const updateData: any = { ...validatedData };
@@ -149,6 +152,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
     if (validatedData.password) {
       updateData.password_hash = await bcrypt.hash(validatedData.password, 10);
       delete updateData.password;
+    }
 
     // Track changes for audit
     const changes: any = {};
@@ -162,6 +166,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
           to: validatedData[key as keyof typeof validatedData],
         };
       }
+    });
 
     // Update user
     const updatedUser = await prisma.user.update({
@@ -183,7 +188,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
         created_at: true,
         updated_at: true,
       },
-      });
+    });
 
     // Log user update audit
     await logUserAudit(
@@ -200,6 +205,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
       success: true,
       data: { user: updatedUser },
       message: "User updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -218,6 +224,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
       { status: 500 }
     );
   }
+});
 
 // DELETE - Delete user (Admin only)
 export const DELETE = requireAnyPermission(["admin:delete"])(async (
@@ -234,7 +241,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
         id,
         workspace_id: user.workspace_id || "default",
       },
-      });
+    });
 
     if (!existingUser) {
       return NextResponse.json(
@@ -258,7 +265,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
         deleted_at: new Date(),
         is_active: false,
       },
-      });
+    });
 
     // Log user deletion audit
     await logUserAudit(
@@ -274,7 +281,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
     return NextResponse.json({
       success: true,
       message: "User deleted successfully",
-    }
+    });
   } catch (error) {
     console.error("Error deleting user:", error);
     return NextResponse.json(
@@ -282,6 +289,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
       { status: 500 }
     );
   }
+});
 
 // Helper function to log user audit events
 async function logUserAudit(
@@ -297,9 +305,8 @@ async function logUserAudit(
       description,
       metadata,
       timestamp: new Date(),
-    }
+    });
   } catch (error) {
     console.error("Error logging audit event:", error);
   }
-};
-});
+}

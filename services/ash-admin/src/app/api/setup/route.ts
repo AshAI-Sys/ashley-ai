@@ -24,6 +24,7 @@ export async function POST() {
         success: false,
         message: "Admin user already exists",
       });
+    }
 
     // Create workspace first
     const workspace = await prisma.workspace.create({
@@ -57,8 +58,8 @@ export async function POST() {
         email: admin.email,
         name: `${admin.first_name} ${admin.last_name}`,
       },
-});
-} catch (error: any) {
+    });
+  } catch (error: any) {
     console.error("Setup error:", error);
     return NextResponse.json(
       {
@@ -69,5 +70,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-};
-});
+}

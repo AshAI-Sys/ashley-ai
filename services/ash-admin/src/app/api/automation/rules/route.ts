@@ -40,7 +40,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
-      });
+    });
 
     return NextResponse.json({
       success: true,
@@ -48,8 +48,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       meta: {
         total: rules.length,
         filters: { isActive, triggerType },
-    },
-  });
+      },
+    });
   } catch (error) {
     console.error("Error fetching automation rules:", error);
     return NextResponse.json(
@@ -123,12 +123,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: rule,
       message: "Automation rule created successfully",
+    });
   } catch (error) {
     console.error("Error creating automation rule:", error);
     return NextResponse.json(
@@ -136,7 +137,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-
+});
 // PUT /api/automation/rules - Update automation rule
 export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -169,12 +170,13 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: rule,
       message: "Automation rule updated successfully",
+    });
   } catch (error) {
     console.error("Error updating automation rule:", error);
     return NextResponse.json(
@@ -182,7 +184,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-
+});
 // DELETE /api/automation/rules - Delete automation rule
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -198,11 +200,12 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.automationRule.delete({
       where: { id },
-      });
+    });
 
     return NextResponse.json({
       success: true,
       message: "Automation rule deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting automation rule:", error);
     return NextResponse.json(

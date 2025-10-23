@@ -18,7 +18,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const capaTasks = await prisma.cAPATask.findMany({
       where,
       include: {
-        order: { select: { order_number: true } });,
+        order: { select: { order_number: true } },
         inspection: { select: { stage: true, result: true } }, // Changed from inspection_type to stage
         defect: { select: { severity: true, description: true } },
         assignee: { select: { first_name: true, last_name: true } },
@@ -35,7 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+    });
 
     return NextResponse.json({
       capa_tasks: capaTasks,
@@ -44,13 +44,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         limit,
         total: await prisma.cAPATask.count({ where }),
       },
+    });
   } catch (error) {
     console.error("Error fetching CAPA tasks:", error);
     return NextResponse.json(
       { error: "Failed to fetch CAPA tasks" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -65,12 +67,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { created_at: "desc" },
-      });
+    });
 
     let nextNumber = 1;
     if (lastCapa) {
       const lastNumber = parseInt(lastCapa.capa_number.split("-").pop() || "0");
       nextNumber = lastNumber + 1;
+    }
 
     const capaNumber = `CAPA-${currentYear}-${nextNumber.toString().padStart(4, "0")}`;
 
@@ -98,7 +101,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         assignee: { select: { first_name: true, last_name: true } },
         creator: { select: { first_name: true, last_name: true } },
       },
-      });
+    });
 
     return NextResponse.json(capaTask, { status: 201 });
   } catch (error) {

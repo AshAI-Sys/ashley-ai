@@ -175,8 +175,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         currency: validatedData.currency,
         delivery_date: validatedData.deliveryDate || null,
         notes: validatedData.notes || null,
-      });
-
         // New Order Details fields
         po_number: validatedData.po_number || null,
         order_type: validatedData.order_type || "NEW",
@@ -202,6 +200,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     } catch (cacheError) {
       console.warn("Failed to invalidate cache:", cacheError);
       // Don't fail the request if cache invalidation fails
+    }
 
     return NextResponse.json(
       {

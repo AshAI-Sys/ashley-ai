@@ -28,7 +28,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         department: "Production",
         access: "Orders, Production, Quality, Employees, Reports",
       },
-      });
 
       // Design Department
       {
@@ -178,8 +177,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         employees: employeeDirectory,
         note: "Each employee has restricted access based on their role and department",
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching employee accounts:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch employee accounts" },
