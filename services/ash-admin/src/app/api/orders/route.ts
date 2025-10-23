@@ -71,12 +71,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (search) {
       where.OR = [{ order_number: { contains: search, mode: "insensitive" } }];
+    }
 
     if (status) {
       where.status = status;
+    }
 
     if (clientId) {
       where.client_id = clientId;
+    }
 
     // Generate cache key
     const cacheKey = CacheKeys.ordersList(page, limit, {
