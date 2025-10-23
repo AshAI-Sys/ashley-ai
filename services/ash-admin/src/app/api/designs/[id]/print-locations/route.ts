@@ -13,7 +13,7 @@ const PrintLocationSchema = z.object({
   offset_x_cm: z.number().optional(),
   offset_y_cm: z.number().optional(),
   notes: z.string().optional(),
-}
+});
 
 export async function GET(
   request: NextRequest,
@@ -180,3 +180,4 @@ export async function DELETE(
       { status: 500 }
     );
 };
+});

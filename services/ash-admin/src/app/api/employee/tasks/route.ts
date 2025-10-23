@@ -7,7 +7,7 @@ import {
   withErrorHandling,
 } from "../../../../lib/error-handling";
 
-export const GET = withErrorHandling(async (request: NextRequest) => {;
+export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const department = searchParams.get("department");
   const position = searchParams.get("position");

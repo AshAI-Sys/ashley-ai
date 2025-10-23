@@ -10,7 +10,7 @@ const UpdateBrandSchema = z.object({
   logo_url: z.string().optional(),
   settings: z.string().optional(),
   is_active: z.boolean().optional(),
-}
+});
 
 export async function GET(
   request: NextRequest,
@@ -214,3 +214,4 @@ export async function DELETE(
       { status: 500 }
     );
 };
+});

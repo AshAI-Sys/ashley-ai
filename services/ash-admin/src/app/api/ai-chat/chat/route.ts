@@ -376,7 +376,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 
 // GET /api/ai-chat/chat - Check AI configuration status
-export const GET = requireAuth(async (request: NextRequest, user) => {;
+export const GET = requireAuth(async (request: NextRequest, user) => {
   return NextResponse.json({
     configured: !!(groq || anthropic || openai),
     providers: {
@@ -392,4 +392,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {;
           ? "openai"
           : null,
   });
-});

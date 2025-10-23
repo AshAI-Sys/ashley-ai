@@ -177,4 +177,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to update carton" },
       { status: 500 }
     );
+  }
 });

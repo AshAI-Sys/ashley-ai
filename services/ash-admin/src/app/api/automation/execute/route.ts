@@ -11,7 +11,7 @@ import {
 } from "../../../../lib/error-handling";
 
 // POST /api/automation/execute - Execute automation rule
-export const POST = withErrorHandling(async (request: NextRequest) => {;
+export const POST = withErrorHandling(async (request: NextRequest) => {
   const body = await request.json();
   const { rule_id, trigger_data } = body;
 

@@ -342,3 +342,4 @@ function generateRecommendations(
 
   return recommendations;
 };
+});

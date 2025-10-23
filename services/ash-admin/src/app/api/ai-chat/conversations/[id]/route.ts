@@ -99,4 +99,5 @@ export const DELETE = requireAuth(async (
       { error: "Failed to delete conversation" },
       { status: 500 }
     );
+  }
 });

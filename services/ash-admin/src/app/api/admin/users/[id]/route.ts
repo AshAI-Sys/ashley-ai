@@ -33,9 +33,8 @@ const UpdateUserSchema = z.object({
   is_active: z.boolean().optional(),
   requires_2fa: z.boolean().optional(),
   password: z.string().min(8).optional(),
-      });
 
-// GET - Get specific user (Admin only)
+  // GET - Get specific user (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
   user: any,
@@ -302,3 +301,4 @@ async function logUserAudit(
     console.error("Error logging audit event:", error);
   }
 };
+});

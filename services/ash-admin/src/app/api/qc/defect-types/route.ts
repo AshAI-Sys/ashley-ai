@@ -121,4 +121,5 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
 });

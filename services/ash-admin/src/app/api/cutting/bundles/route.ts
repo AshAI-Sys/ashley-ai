@@ -25,7 +25,7 @@ const UpdateBundleSchema = z.object({
   bundleId: z.string().min(1, "Bundle ID is required"),
   status: z.enum(["CREATED", "IN_SEWING", "DONE", "REJECTED"]),
   notes: z.string().optional(),
-}
+});
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -315,4 +315,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update bundle" },
       { status: 500 }
     );
+  }
 });

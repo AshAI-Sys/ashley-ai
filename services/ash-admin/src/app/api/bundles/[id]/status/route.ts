@@ -83,4 +83,5 @@ export const PUT = requireAuth(async (
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
 });

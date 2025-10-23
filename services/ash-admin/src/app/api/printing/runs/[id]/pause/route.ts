@@ -89,3 +89,4 @@ async function logRunEvent(
   } catch (error) {
     console.error("Failed to log run event:", error);
 };
+});

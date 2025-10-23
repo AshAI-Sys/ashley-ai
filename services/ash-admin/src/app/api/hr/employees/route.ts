@@ -18,7 +18,7 @@ import * as bcrypt from "bcryptjs";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(
-  withErrorHandling(async (request: NextRequest, user: any) => {;
+  withErrorHandling(async (request: NextRequest, user: any) => {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const position = searchParams.get("position");
@@ -102,7 +102,7 @@ export const GET = requireAuth(
 );
 
 export const POST = requireAnyPermission(["hr:create"])(
-  withErrorHandling(async (request: NextRequest, user: any) => {;
+  withErrorHandling(async (request: NextRequest, user: any) => {
     const data = await request.json();
     const {
       first_name,
@@ -220,7 +220,7 @@ export const POST = requireAnyPermission(["hr:create"])(
   })
 );
 
-export const PUT = withErrorHandling(async (request: NextRequest) => {;
+export const PUT = withErrorHandling(async (request: NextRequest) => {
   const data = await request.json();
   const { id, ...updateData } = data;
 

@@ -29,7 +29,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _sum: { total_amount: true },
       }),
-      });
 
       // Outstanding invoices
       prisma.invoice.aggregate({
@@ -38,7 +37,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _sum: { total_amount: true },
       }),
-      });
 
       // Overdue invoices
       prisma.invoice.aggregate({
@@ -48,7 +46,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _sum: { total_amount: true },
       }),
-      });
 
       // YTD Revenue
       prisma.invoice.aggregate({
@@ -146,4 +143,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to calculate finance statistics" },
       { status: 500 }
     );
+  }
 });

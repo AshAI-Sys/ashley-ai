@@ -231,4 +231,5 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete notification template" },
       { status: 500 }
     );
+  }
 });

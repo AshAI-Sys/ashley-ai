@@ -114,4 +114,3 @@ async function updateInspectionDefectCounts(inspectionId: string) {
       updated_at: new Date(),
     },
   });
-});

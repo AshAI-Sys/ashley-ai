@@ -151,4 +151,5 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
 });

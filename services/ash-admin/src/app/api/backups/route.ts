@@ -81,3 +81,4 @@ export const DELETE = requireRole("admin")(async (request: NextRequest, user) =>
       { status: 500 }
     );
   }
+});

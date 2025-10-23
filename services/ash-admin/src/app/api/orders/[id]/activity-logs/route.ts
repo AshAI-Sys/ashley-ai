@@ -11,7 +11,7 @@ const ActivityLogSchema = z.object({
   description: z.string().optional(),
   performed_by: z.string().optional(),
   metadata: z.string().optional(), // JSON string
-}
+});
 
 export async function GET(
   request: NextRequest,

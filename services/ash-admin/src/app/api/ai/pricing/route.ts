@@ -282,4 +282,5 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to calculate scenarios", details: error.message },
       { status: 500 }
     );
+  }
 });

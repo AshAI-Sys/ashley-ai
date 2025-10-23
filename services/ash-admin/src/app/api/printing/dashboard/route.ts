@@ -24,7 +24,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           status: { in: ["IN_PROGRESS", "PAUSED"] },
         },
       }),
-      });
 
       // Today's runs count
       prisma.printRun.count({
@@ -35,7 +34,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }),
-      });
 
       // Method breakdown for today
       prisma.printRun.groupBy({
@@ -48,7 +46,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         _count: true,
       }),
-      });
 
       // Recent rejects
       prisma.printReject.findMany({
@@ -147,4 +144,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to fetch dashboard data" },
       { status: 500 }
     );
+  }
 });

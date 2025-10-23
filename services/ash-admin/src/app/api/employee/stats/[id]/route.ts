@@ -9,7 +9,7 @@ import {
 } from "@/lib/error-handling";
 
 export const GET = withErrorHandling(
-  async (request: NextRequest, { params }: { params: { id: string } }) => {;
+  async (request: NextRequest, { params }: { params: { id: string } }) => {
     const employeeId = params.id;
 
     // Get employee
@@ -189,3 +189,4 @@ export const GET = withErrorHandling(
     return createSuccessResponse(stats);
   }
 );
+});

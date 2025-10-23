@@ -93,4 +93,5 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to update account" },
       { status: 500 }
     );
+  }
 });

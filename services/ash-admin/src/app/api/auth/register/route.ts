@@ -20,7 +20,6 @@ const RegisterSchema = z.object({
       /^[a-z0-9-]+$/,
       "Workspace slug must be lowercase alphanumeric with hyphens"
     ),
-      });
 
   // User info
   email: z.string().email("Invalid email address"),
@@ -28,12 +27,11 @@ const RegisterSchema = z.object({
   confirmPassword: z.string().optional(),
   firstName: z.string().min(1, "First name is required").max(100),
   lastName: z.string().min(1, "Last name is required").max(100),
-      });
 
   // Optional
   companyAddress: z.string().optional(),
   companyPhone: z.string().optional(),
-}
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -160,6 +158,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       });
 
       return { workspace, user };
+    });
 
     const { workspace, user } = result;
 
@@ -170,14 +169,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     await logAuthEvent("REGISTER", workspace.id, user.id, request, {
       email: user.email,
       role: user.role,
-    }
+    });
 
     console.log("✅ New admin account created:", {
       workspaceId: workspace.id,
       workspaceName: workspace.name,
       userId: user.id,
       email: user.email,
-      });
+    });
 
     return NextResponse.json(
       {
@@ -215,4 +214,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
 });

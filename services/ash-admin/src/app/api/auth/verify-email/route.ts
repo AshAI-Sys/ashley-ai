@@ -70,9 +70,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Log successful verification
     await logAuthEvent("EMAIL_VERIFIED", user.workspace_id, user.id, request, {
       email: user.email,
-    }
+    });
 
-    console.log("✅ Email verified for user:", user.email);
+console.log("✅ Email verified for user:", user.email);
 
     return NextResponse.json(
       {
@@ -96,4 +96,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
 });

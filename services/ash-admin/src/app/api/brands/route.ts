@@ -316,4 +316,5 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete brand" },
       { status: 500 }
     );
+  }
 });

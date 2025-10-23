@@ -53,4 +53,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to fetch employees" },
       { status: 500 }
     );
+  }
 });

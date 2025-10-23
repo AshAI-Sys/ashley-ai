@@ -30,7 +30,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           status: "READY_FOR_PICKUP",
         },
       }),
-      });
 
       // In transit (including out for delivery)
       prisma.shipment.count({
@@ -39,7 +38,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           OR: [{ status: "IN_TRANSIT" }, { status: "OUT_FOR_DELIVERY" }],
         },
       }),
-      });
 
       // Delivered today (using updated_at as proxy for delivery timestamp)
       prisma.shipment.count({
@@ -52,7 +50,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }),
-      });
 
       // Failed deliveries (not resolved)
       prisma.shipment.count({

@@ -27,7 +27,7 @@ const UpdateSewingRunSchema = z.object({
     .optional(),
   reject_reason: z.string().optional(),
   reject_photo_url: z.string().optional(),
-}
+});
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -408,4 +408,5 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete sewing run" },
       { status: 500 }
     );
+  }
 });

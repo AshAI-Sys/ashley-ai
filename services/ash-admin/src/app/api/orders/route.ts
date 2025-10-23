@@ -42,7 +42,6 @@ const CreateOrderSchema = z.object({
     .transform(str => (str ? new Date(str) : undefined)),
   notes: z.string().optional(),
   lineItems: z.array(OrderLineItemSchema).optional(),
-      });
 
   // New Order Details fields
   po_number: z.string().optional(),
@@ -51,7 +50,7 @@ const CreateOrderSchema = z.object({
   fabric_type: z.string().optional(),
   size_distribution: z.string().optional(),
   mockup_url: z.string().optional(),
-}
+});
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -140,6 +139,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: result,
+    });
   } catch (error) {
     console.error("Error fetching orders:", error);
     return NextResponse.json(
@@ -147,7 +147,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -225,4 +225,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create order" },
       { status: 500 }
     );
+  }
 });

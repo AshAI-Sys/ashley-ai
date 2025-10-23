@@ -15,7 +15,7 @@ import {
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = withErrorHandling(async (request: NextRequest) => {;
+export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
   const client_id = searchParams.get("client_id");
@@ -97,7 +97,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {;
 }
 
 export const POST = requireAnyPermission(["finance:create"])(
-  withErrorHandling(async (request: NextRequest, user: any) => {;
+  withErrorHandling(async (request: NextRequest, user: any) => {
     const data = await request.json();
     const {
       brand_id,
@@ -260,3 +260,4 @@ export const POST = requireAnyPermission(["finance:create"])(
     return createSuccessResponse(invoice, 201);
   })
 );
+});

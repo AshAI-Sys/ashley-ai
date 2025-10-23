@@ -395,3 +395,4 @@ async function createAuditLog(
     return false;
   }
 };
+});

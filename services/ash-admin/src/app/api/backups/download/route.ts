@@ -39,3 +39,4 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});

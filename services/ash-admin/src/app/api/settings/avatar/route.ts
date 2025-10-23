@@ -78,4 +78,5 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to remove avatar" },
       { status: 500 }
     );
+  }
 });

@@ -122,4 +122,5 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to detect defects", details: error.message },
       { status: 500 }
     );
+  }
 });

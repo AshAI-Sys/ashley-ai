@@ -124,4 +124,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to verify OTP", details: error.message },
       { status: 500 }
     );
+  }
 });

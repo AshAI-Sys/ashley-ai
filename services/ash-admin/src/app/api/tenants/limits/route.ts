@@ -62,4 +62,5 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to check limits", details: error.message },
       { status: 500 }
     );
+  }
 });

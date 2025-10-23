@@ -50,4 +50,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to create checklist" },
       { status: 500 }
     );
+  }
 });

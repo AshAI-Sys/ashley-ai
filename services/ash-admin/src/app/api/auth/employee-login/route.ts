@@ -13,7 +13,7 @@ import {
 const JWT_SECRET =
   process.env.JWT_SECRET || "ashley-ai-jwt-secret-2025-production";
 
-export const POST = withErrorHandling(async (request: NextRequest) => {;
+export const POST = withErrorHandling(async (request: NextRequest) => {
   const data = await request.json();
   const { email, password } = data;
 

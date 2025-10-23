@@ -463,3 +463,4 @@ async function logOnboardingAudit(
     console.error("Error logging onboarding audit event:", error);
   }
 };
+});

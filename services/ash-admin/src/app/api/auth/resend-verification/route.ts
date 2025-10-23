@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 
 const ResendSchema = z.object({
   email: z.string().email("Invalid email address"),
-}
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -153,4 +153,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
 });

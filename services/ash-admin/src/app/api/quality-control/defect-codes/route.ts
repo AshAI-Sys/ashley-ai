@@ -51,4 +51,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to create defect code" },
       { status: 500 }
     );
+  }
 });

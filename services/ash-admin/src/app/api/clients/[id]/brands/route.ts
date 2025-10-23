@@ -177,4 +177,5 @@ export const POST = requireAuth(async (
       { success: false, error: "Failed to create brand" },
       { status: 500 }
     );
+  }
 });

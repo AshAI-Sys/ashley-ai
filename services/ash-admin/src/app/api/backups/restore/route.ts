@@ -40,3 +40,4 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});

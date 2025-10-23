@@ -39,7 +39,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           ],
         },
       }),
-      });
 
       // In progress finishing
       prisma.finishingRun.count({
@@ -47,7 +46,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           status: "IN_PROGRESS",
         },
       }),
-      });
 
       // Completed today finishing
       prisma.finishingRun.count({

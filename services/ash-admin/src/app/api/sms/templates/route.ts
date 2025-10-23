@@ -68,4 +68,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to preview template", details: error.message },
       { status: 500 }
     );
+  }
 });

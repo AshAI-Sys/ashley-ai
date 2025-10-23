@@ -72,4 +72,5 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to update settings" },
       { status: 500 }
     );
+  }
 });

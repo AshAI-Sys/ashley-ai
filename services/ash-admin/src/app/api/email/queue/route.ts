@@ -52,4 +52,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to queue email", details: error.message },
       { status: 500 }
     );
+  }
 });

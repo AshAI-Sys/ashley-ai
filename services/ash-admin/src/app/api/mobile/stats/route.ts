@@ -48,7 +48,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }),
-      });
 
       // Sewing production stats
       prisma.sewingRun.aggregate({
@@ -66,7 +65,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           efficiency_pct: true,
         },
       }),
-      });
 
       // Print production stats (count print runs)
       prisma.printRun.count({
@@ -191,4 +189,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
 });

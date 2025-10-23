@@ -175,4 +175,5 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to complete operation", details: error.message },
       { status: 500 }
     );
+  }
 });

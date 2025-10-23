@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 const ResetPasswordSchema = z.object({
   token: z.string().min(1, "Reset token is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-}
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -98,9 +98,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Log successful password reset
     await logAuthEvent("PASSWORD_RESET", user.workspace_id, user.id, request, {
       email: user.email,
-    }
+    });
 
-    console.log("✅ Password reset successful for user:", user.email);
+console.log("✅ Password reset successful for user:", user.email);
 
     return NextResponse.json(
       {
@@ -125,4 +125,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
 });

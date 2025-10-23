@@ -70,18 +70,16 @@ async function calculateHRStats(
     prisma.employee.count({
       where: { workspace_id: workspaceId },
     }),
-      });
 
-    // Active employees
+      // Active employees
     prisma.employee.count({
       where: {
         workspace_id: workspaceId,
         is_active: true,
       },
     }),
-      });
 
-    // Today's attendance - employees who checked in
+      // Today's attendance - employees who checked in
     prisma.attendanceLog.count({
       where: {
         workspace_id: workspaceId,
@@ -93,9 +91,8 @@ async function calculateHRStats(
         status: "APPROVED",
       },
     }),
-      });
 
-    // Pending overtime requests - using attendance with overtime
+      // Pending overtime requests - using attendance with overtime
     prisma.attendanceLog.count({
       where: {
         workspace_id: workspaceId,

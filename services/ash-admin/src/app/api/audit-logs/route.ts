@@ -67,3 +67,4 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
       { status: 500 }
     );
   }
+});
