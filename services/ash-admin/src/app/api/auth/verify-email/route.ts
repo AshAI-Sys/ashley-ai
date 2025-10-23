@@ -19,7 +19,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-    }
+      }
 
     // Find user with this verification token
     const user = await prisma.user.findFirst({

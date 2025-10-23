@@ -79,7 +79,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-    }
+      }
 
     // Check if workspace slug already exists
     const existingWorkspace = await prisma.workspace.findUnique({
@@ -94,7 +94,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 409 }
       );
-    }
+      }
 
     // Check if user email already exists
     const existingUser = await prisma.user.findFirst({

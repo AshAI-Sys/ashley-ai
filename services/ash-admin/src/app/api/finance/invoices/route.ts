@@ -178,14 +178,14 @@ export const POST = requireAnyPermission(["finance:create"])(
       }
 
     // Verify client exists
-    const client = await prisma.client.findUnique({ where: { id: client_id } });
+    const client = await prisma.client.findUnique({ where: { id: client_id }});
     if (!client) {
       throw new NotFoundError("Client");
     }
 
     // Verify order exists if provided
     if (order_id) {
-      const order = await prisma.order.findUnique({ where: { id: order_id } });
+      const order = await prisma.order.findUnique({ where: { id: order_id }});
       if (!order) {
         throw new NotFoundError("Order");
       }

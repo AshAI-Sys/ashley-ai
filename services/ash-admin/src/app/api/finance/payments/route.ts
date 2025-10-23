@@ -28,7 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           select: {
             invoice_number: true,
             total_amount: true,
-            client: { select: { name: true } });,
+            client: { select: { name: true }});,
           },
         },
       },
@@ -58,7 +58,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { success: false, error: "Invoice ID is required" },
         { status: 400 }
       );
-    }
+      }
 
     // Get invoice to verify
     const invoice = await prisma.invoice.findUnique({
@@ -76,7 +76,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { success: false, error: "Invoice not found" },
         { status: 404 }
       );
-    }
+      }
 
     // Start transaction
     const result = await prisma.$transaction(async tx => {

@@ -120,4 +120,4 @@ export async function DELETE(
       { success: false, error: "Failed to delete color variant" },
       { status: 500 }
     );
-};
+});

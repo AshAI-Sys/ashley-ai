@@ -16,7 +16,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { error: "user_id and token are required" },
         { status: 400 }
       );
-    }
+      }
 
     // Get user with 2FA settings
     const user = await prisma.user.findUnique({
@@ -34,7 +34,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-    }
+      }
 
     // Parse encrypted secret
     const secretData = JSON.parse(user.two_factor_secret);

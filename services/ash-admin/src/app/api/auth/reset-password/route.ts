@@ -45,7 +45,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-    }
+      }
 
     // Find user with this reset token
     const user = await prisma.user.findFirst({
@@ -80,7 +80,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-    }
+      }
 
     // Hash new password (10 rounds - optimized for speed while maintaining security)
     const password_hash = await bcrypt.hash(password, 10);

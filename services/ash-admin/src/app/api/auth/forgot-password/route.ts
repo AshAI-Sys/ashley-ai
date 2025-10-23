@@ -95,7 +95,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       await sendPasswordResetEmail(user.email, {
         user_name: `${user.first_name} ${user.last_name}`,
         reset_link: resetUrl,
-      }
+      });
       console.log("✅ Password reset email sent to:", user.email);
     } catch (emailError) {
       console.error("❌ Failed to send password reset email:", emailError);

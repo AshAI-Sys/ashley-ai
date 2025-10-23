@@ -26,7 +26,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 400 }
       );
-    }
+      }
 
     // Check if account is locked
     const lockStatus = await isAccountLocked(email);

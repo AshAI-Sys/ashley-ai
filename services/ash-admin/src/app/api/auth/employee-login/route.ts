@@ -42,9 +42,9 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
       { error: "Your account has been deactivated. Please contact HR." },
       { status: 403 }
     );
-    }
+      }
 
-  // Verify password
+    // Verify password
   const isPasswordValid = await bcrypt.compare(
     password,
     employee.password_hash
@@ -54,9 +54,9 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
       { error: "Invalid email or password" },
       { status: 401 }
     );
-    }
+      }
 
-  // Generate JWT token
+    // Generate JWT token
   const token = jwt.sign(
     {
       id: employee.id,

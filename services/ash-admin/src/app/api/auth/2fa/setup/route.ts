@@ -16,7 +16,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { error: "user_id is required" },
         { status: 400 }
       );
-    }
+      }
 
     // Get user
     const user = await prisma.user.findUnique({
@@ -32,7 +32,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { error: "2FA is already enabled for this user" },
         { status: 400 }
       );
-    }
+      }
 
     // Generate 2FA credentials
     const result = await setup2FA(user.email);
