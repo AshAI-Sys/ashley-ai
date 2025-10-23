@@ -60,6 +60,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           `Detected ${defect.type}: ${defect.description} (${defect.severity})`
         );
       }
+    }
 
     return NextResponse.json({
       success: true,
@@ -105,6 +106,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         results: [],
         message: "No QC inspections found for provided bundles",
       });
+    }
 
     // Note: QCInspection doesn't have a photos field in the schema
     // In production, photos would be stored separately (e.g., in QCDefect or file storage)
@@ -117,6 +119,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       success: true,
       results: response,
       total_analyzed: results.length,
+    });
   } catch (error: any) {
     console.error("Batch defect detection error:", error);
     return NextResponse.json(

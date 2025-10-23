@@ -104,6 +104,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       success: true,
       analysis,
       analyzed_at: new Date(),
+    });
   } catch (error: any) {
     console.error("Scenario analysis error:", error);
     return NextResponse.json(

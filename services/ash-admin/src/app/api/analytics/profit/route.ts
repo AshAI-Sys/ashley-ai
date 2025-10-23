@@ -91,6 +91,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         client.margins.reduce((a: number, b: number) => a + b, 0) /
         client.margins.length;
       delete client.margins;
+    });
 
     const clientComparison = Object.values(byClient).sort(
       (a: any, b: any) => b.total_profit - a.total_profit

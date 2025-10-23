@@ -24,6 +24,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
+    }
 
     if (stationType) where.station_type = stationType;
     if (shift) where.shift = shift;
@@ -85,6 +86,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       data: heatmapData,
       heatmap: heatmapGrid,
       stats,
+    });
   } catch (error: any) {
     console.error("Error fetching heatmap data:", error);
     return NextResponse.json(

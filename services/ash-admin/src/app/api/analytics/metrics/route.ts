@@ -13,6 +13,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: metrics,
       timestamp: new Date().toISOString(),
+    });
   } catch (error: any) {
     console.error("Error fetching analytics metrics:", error);
     return NextResponse.json(

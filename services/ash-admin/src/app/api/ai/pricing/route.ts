@@ -91,6 +91,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
         },
       },
+    });
 
     const demandLevel =
       allOrders.length > 50
@@ -152,7 +153,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // GET /api/ai/pricing/scenarios?client_id=xxx&... - Get multiple pricing scenarios
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");

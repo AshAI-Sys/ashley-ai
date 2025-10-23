@@ -20,6 +20,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     if (client_id) {
       whereClause.client_id = client_id;
+    }
 
     // Get orders with invoices and actual costs
     const orders = await prisma.order.findMany({
@@ -36,7 +37,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     // Transform orders into pricing analysis format
     const pricingData = orders.map(order => {
-      // Calculate actual cost from production runs;
+      // Calculate actual cost from production runs
       const cuttingCost = 0; // Cut lays don't have labor_cost field
       const sewingCost = order.sewing_runs.reduce(
         (sum, run) => sum + (run.piece_rate_pay || 0),
@@ -75,6 +76,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         actual_cost: actualCost > 0 ? actualCost : quotedPrice * 0.7, // Estimate if no data
         accepted,
       };
+    });
 
     // Filter out invalid data
     const validData = pricingData.filter(
@@ -93,6 +95,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         },
         total_orders: 0,
       });
+    }
 
     // Perform analysis
     const analysis = await dynamicPricingAI.analyzeHistoricalPricing(validData);
@@ -105,17 +108,18 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         end: new Date(),
       },
-});
-} catch (error: any) {
+    });
+  } catch (error: any) {
     console.error("Pricing analysis error:", error);
     return NextResponse.json(
       { error: "Failed to analyze pricing", details: error.message },
       { status: 500 }
     );
   }
+});
 
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { product_type, target_margin, min_acceptance_rate } = await req.json();
 
@@ -137,7 +141,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       });
 
     // Calculate average costs and prices
-    const stats = orders.map(order => {;
+    const stats = orders.map(order => {
       const cuttingCost = 0; // Cut lays don't have labor_cost field
       const sewingCost = order.sewing_runs.reduce(
         (sum, run) => sum + (run.piece_rate_pay || 0),
@@ -170,6 +174,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         accepted,
         quantity: totalQuantity,
       };
+    });
 
     const validStats = stats.filter(s => s.cost > 0 && s.price > 0);
 
@@ -182,6 +187,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           confidence: "LOW",
         },
       });
+    }
 
     // Calculate averages
     const avgCost =
@@ -274,6 +280,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       recommendations,
+    });
   } catch (error: any) {
     console.error("Pricing optimization error:", error);
     return NextResponse.json(

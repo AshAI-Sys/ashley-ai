@@ -403,3 +403,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           ? "openai"
           : null,
   });
+});

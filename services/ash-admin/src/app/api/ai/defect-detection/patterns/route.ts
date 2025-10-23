@@ -46,10 +46,11 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         },
         total_inspections: 0,
       });
+    }
 
     // Transform QC checks into inspection format
     const inspections = qcChecks.map(qc => {
-      // Parse defects from notes or create simulated defects;
+      // Parse defects from notes or create simulated defects
       const defects: any[] = [];
 
       // Calculate total defects from critical + major + minor
@@ -91,17 +92,18 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         end: new Date(),
       },
-});
-} catch (error: any) {
+    });
+  } catch (error: any) {
     console.error("Pattern analysis error:", error);
     return NextResponse.json(
       { error: "Failed to analyze patterns", details: error.message },
       { status: 500 }
     );
   }
+});
 
 // POST /api/ai/defect-detection/patterns/compare - Compare quality between operators/stations
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { entity_type, days = 30 } = await req.json();
 
@@ -132,6 +134,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         comparison: [],
         message: "No AI vision inspections found",
       });
+    }
 
     // Group by entity (operator or station)
     const entityGroups: Record<string, any[]> = {};
@@ -146,9 +149,11 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       } else {
         entityId = qc.stage || "UNKNOWN";
         entityName = qc.stage || "Unknown Station";
+      }
 
       if (!entityGroups[entityId]) {
         entityGroups[entityId] = [];
+      }
 
       // Calculate total defects from critical + major + minor
       const totalDefects =
@@ -171,7 +176,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         entity_id: entityId,
         entity_name: entityName,
         result,
-      }
+      });
+    });
 
     // Prepare data for comparison
     const comparisonData = Object.entries(entityGroups).map(
@@ -190,6 +196,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       comparison,
       entity_type,
       total_entities: comparison.length,
+    });
   } catch (error: any) {
     console.error("Quality comparison error:", error);
     return NextResponse.json(

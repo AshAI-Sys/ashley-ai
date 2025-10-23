@@ -48,11 +48,12 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
+});
 
 // PATCH /api/ai-chat/conversations/:id - Update conversation
 export const PATCH = requireAuth(async (
   request: NextRequest,
-  user,
+  _user,
   { params }: { params: { id: string } }
 ) => {
   try {
@@ -78,11 +79,12 @@ export const PATCH = requireAuth(async (
       { status: 500 }
     );
   }
+});
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
 export const DELETE = requireAuth(async (
   request: NextRequest,
-  user,
+  _user,
   { params }: { params: { id: string } }
 ) => {
   try {

@@ -202,9 +202,10 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/ai/bottleneck/station - Analyze specific station
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const metrics = await req.json();
 

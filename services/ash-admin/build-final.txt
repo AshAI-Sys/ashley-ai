@@ -1,0 +1,166 @@
+
+> @ash/admin@1.0.0 build C:\Users\Khell\Desktop\Ashley AI\services\ash-admin
+> npx prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to .\..\..\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client in 2.93s
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
+
+  ▲ Next.js 14.2.33
+  - Environments: .env.production.local, .env.production, .env
+  - Experiments (use with caution):
+    · scrollRestoration
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./src/app/api/ai/scheduling/scenario/route.ts
+Error: 
+  [31mx[0m Expected a semicolon
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\ai\scheduling\scenario\route.ts[0m:105:1]
+ [2m105[0m |       analysis,
+ [2m106[0m |       analyzed_at: new Date(),
+ [2m107[0m |     });
+ [2m108[0m |   } catch (error: any) {
+     : [31;1m    ^^^^^[0m
+ [2m109[0m |     console.error("Scenario analysis error:", error);
+ [2m110[0m |     return NextResponse.json(
+ [2m110[0m |       { error: "Failed to analyze scenario", details: error.message },
+     `----
+
+  [31mx[0m Expected a semicolon
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\ai\scheduling\scenario\route.ts[0m:112:1]
+ [2m112[0m |       { status: 500 }
+ [2m113[0m |     );
+ [2m114[0m |   }
+ [2m115[0m | });
+     : [31;1m ^[0m
+     `----
+
+  [31mx[0m Expression expected
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\ai\scheduling\scenario\route.ts[0m:112:1]
+ [2m112[0m |       { status: 500 }
+ [2m113[0m |     );
+ [2m114[0m |   }
+ [2m115[0m | });
+     : [31;1m ^[0m
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/ai/scheduling/scenario/route.ts
+
+./src/app/api/analytics/heatmap/route.ts
+Error: 
+  [31mx[0m Expected ',', got 'catch'
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\analytics\heatmap\route.ts[0m:86:1]
+ [2m86[0m |       heatmap: heatmapGrid,
+ [2m87[0m |       stats,
+ [2m88[0m |     });
+ [2m89[0m |   } catch (error: any) {
+    : [31;1m    ^^^^^[0m
+ [2m90[0m |     console.error("Error fetching heatmap data:", error);
+ [2m91[0m |     return NextResponse.json(
+ [2m91[0m |       { success: false, error: error.message },
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/analytics/heatmap/route.ts
+
+./src/app/api/analytics/profit/route.ts
+Error: 
+  [31mx[0m Expected ',', got 'Object'
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\analytics\profit\route.ts[0m:86:1]
+ [2m86[0m |     }
+ [2m87[0m | 
+ [2m88[0m |     // Calculate average margins
+ [2m89[0m |     Object.values(byClient).forEach((client: any) => {
+    : [31;1m    ^^^^^^[0m
+ [2m90[0m |       client.avg_margin =
+ [2m91[0m |         client.margins.reduce((a: number, b: number) => a + b, 0) /
+ [2m91[0m |         client.margins.length;
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/analytics/profit/route.ts
+
+./src/app/api/audit-logs/route.ts
+Error: 
+  [31mx[0m Expected a semicolon
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\audit-logs\route.ts[0m:61:1]
+ [2m61[0m |         offset,
+ [2m62[0m |       },
+ [2m63[0m |     });
+ [2m64[0m |   } catch (error) {
+    : [31;1m    ^^^^^[0m
+ [2m65[0m |     console.error("Error fetching audit logs:", error);
+ [2m66[0m |     return NextResponse.json(
+ [2m66[0m |       { success: false, error: "Failed to fetch audit logs" },
+    `----
+
+  [31mx[0m Expected a semicolon
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\audit-logs\route.ts[0m:68:1]
+ [2m68[0m |       { status: 500 }
+ [2m69[0m |     );
+ [2m70[0m |   }
+ [2m71[0m | });
+    : [31;1m ^[0m
+    `----
+
+  [31mx[0m Expression expected
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\audit-logs\route.ts[0m:68:1]
+ [2m68[0m |       { status: 500 }
+ [2m69[0m |     );
+ [2m70[0m |   }
+ [2m71[0m | });
+    : [31;1m ^[0m
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/audit-logs/route.ts
+
+./src/app/api/auth/employee-login/route.ts
+Error: 
+  [31mx[0m Expected '}', got '<eof>'
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\auth\employee-login\route.ts[0m:96:1]
+ [2m96[0m |     expires_in: 28800, // 8 hours in seconds
+ [2m97[0m |     employee: employeeData,
+ [2m98[0m |   });
+ [2m99[0m |     }
+    : [31;1m    ^[0m
+    `----
+
+  [31mx[0m Unexpected eof
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\auth\employee-login\route.ts[0m:96:1]
+ [2m96[0m |     expires_in: 28800, // 8 hours in seconds
+ [2m97[0m |     employee: employeeData,
+ [2m98[0m |   });
+ [2m99[0m |     }
+    : [31;1m     ^[0m
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/auth/employee-login/route.ts
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.
