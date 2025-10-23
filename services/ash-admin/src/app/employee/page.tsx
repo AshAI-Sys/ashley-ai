@@ -32,6 +32,7 @@ import {
   Award,
   DollarSign,
 } from "lucide-react";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface EmployeeProfile {
   id: string;
@@ -138,17 +139,17 @@ export default function EmployeeDashboardPage() {
   const getDepartmentIcon = (department: string) => {
     switch (department) {
       case "Cutting":
-        return <Scissors className="h-5 w-5" />;
+        return <HydrationSafeIcon Icon={Scissors} className="h-5 w-5" />;
       case "Printing":
-        return <Printer className="h-5 w-5" />;
+        return <HydrationSafeIcon Icon={Printer} className="h-5 w-5" />;
       case "Sewing":
-        return <Shirt className="h-5 w-5" />;
+        return <HydrationSafeIcon Icon={Shirt} className="h-5 w-5" />;
       case "Quality Control":
-        return <SearchIcon className="h-5 w-5" />;
+        return <HydrationSafeIcon Icon={SearchIcon} className="h-5 w-5" />;
       case "Finishing":
-        return <Package className="h-5 w-5" />;
+        return <HydrationSafeIcon Icon={Package} className="h-5 w-5" />;
       default:
-        return <ClipboardList className="h-5 w-5" />;
+        return <HydrationSafeIcon Icon={ClipboardList} className="h-5 w-5" />;
     }
   };
 
@@ -242,7 +243,7 @@ export default function EmployeeDashboardPage() {
                   <p className="text-2xl font-bold">{stats.today_pieces}</p>
                   <p className="text-xs text-gray-500">pieces completed</p>
                 </div>
-                <Target className="h-8 w-8 text-blue-600" />
+                <HydrationSafeIcon Icon={Target} className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
@@ -259,7 +260,7 @@ export default function EmployeeDashboardPage() {
                   <p className="text-2xl font-bold">{stats.week_pieces}</p>
                   <p className="text-xs text-gray-500">pieces this week</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-600" />
+                <HydrationSafeIcon Icon={TrendingUp} className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
@@ -276,7 +277,7 @@ export default function EmployeeDashboardPage() {
                   <p className="text-2xl font-bold">{stats.efficiency_rate}%</p>
                   <p className="text-xs text-gray-500">vs target</p>
                 </div>
-                <Award className="h-8 w-8 text-purple-600" />
+                <HydrationSafeIcon Icon={Award} className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -293,7 +294,7 @@ export default function EmployeeDashboardPage() {
                   <p className="text-2xl font-bold">{stats.quality_score}%</p>
                   <p className="text-xs text-gray-500">defect-free</p>
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-600" />
+                <HydrationSafeIcon Icon={CheckCircle} className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>

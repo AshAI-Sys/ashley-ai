@@ -9,6 +9,7 @@ import {
   Minimize2,
   Maximize2,
 } from "lucide-react";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface Message {
   id: string;
@@ -127,7 +128,7 @@ export function ChatWidget() {
           className="fixed bottom-6 right-6 z-50 rounded-full bg-indigo-600 p-4 text-white shadow-lg transition-all duration-200 hover:scale-110 hover:bg-indigo-700"
           aria-label="Open AI Chat"
         >
-          <MessageCircle className="h-6 w-6" />
+          <HydrationSafeIcon Icon={MessageCircle} className="h-6 w-6" />
         </button>
       )}
 
@@ -141,7 +142,7 @@ export function ChatWidget() {
           {/* Header */}
           <div className="flex items-center justify-between rounded-t-lg border-b bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white">
             <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5" />
+              <HydrationSafeIcon Icon={MessageCircle} className="h-5 w-5" />
               <h3 className="font-semibold">Ashley AI Assistant</h3>
             </div>
             <div className="flex items-center gap-2">
@@ -151,9 +152,9 @@ export function ChatWidget() {
                 aria-label={isMinimized ? "Maximize" : "Minimize"}
               >
                 {isMinimized ? (
-                  <Maximize2 className="h-4 w-4" />
+                  <HydrationSafeIcon Icon={Maximize2} className="h-4 w-4" />
                 ) : (
-                  <Minimize2 className="h-4 w-4" />
+                  <HydrationSafeIcon Icon={Minimize2} className="h-4 w-4" />
                 )}
               </button>
               <button
@@ -161,7 +162,7 @@ export function ChatWidget() {
                 className="rounded p-1 transition-colors hover:bg-white/20"
                 aria-label="Close chat"
               >
-                <X className="h-4 w-4" />
+                <HydrationSafeIcon Icon={X} className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -172,7 +173,7 @@ export function ChatWidget() {
               <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4">
                 {messages.length === 0 && !isConfigured && (
                   <div className="mt-4 p-4 text-center text-gray-600">
-                    <MessageCircle className="mx-auto mb-3 h-12 w-12 text-indigo-400" />
+                    <HydrationSafeIcon Icon={MessageCircle} className="mx-auto mb-3 h-12 w-12 text-indigo-400" />
                     <h3 className="mb-2 text-lg font-semibold">
                       AI Chat Setup Required
                     </h3>
@@ -297,7 +298,7 @@ export function ChatWidget() {
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="rounded-lg border bg-white p-3 text-gray-800 shadow-sm">
-                      <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
+                      <HydrationSafeIcon Icon={Loader2} className="h-5 w-5 animate-spin text-indigo-600" />
                     </div>
                   </div>
                 )}
@@ -329,9 +330,9 @@ export function ChatWidget() {
                       aria-label="Send message"
                     >
                       {isLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <HydrationSafeIcon Icon={Loader2} className="h-5 w-5 animate-spin" />
                       ) : (
-                        <Send className="h-5 w-5" />
+                        <HydrationSafeIcon Icon={Send} className="h-5 w-5" />
                       )}
                     </button>
                   </div>

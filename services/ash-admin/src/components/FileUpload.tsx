@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Upload, X, Loader2, Image as ImageIcon, File } from "lucide-react";
 import toast from "react-hot-toast";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface FileUploadProps {
   onUpload: (url: string, publicId: string) => void;
@@ -123,12 +124,12 @@ export function FileUpload({
         >
           {uploading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <HydrationSafeIcon Icon={Loader2} className="h-4 w-4 animate-spin" />
               Uploading... {uploadProgress}%
             </>
           ) : (
             <>
-              <Upload className="h-4 w-4" />
+              <HydrationSafeIcon Icon={Upload} className="h-4 w-4" />
               Upload {type === "image" ? "Photo" : "File"}
             </>
           )}
@@ -149,7 +150,7 @@ export function FileUpload({
                 />
               ) : (
                 <div className="flex h-32 w-full items-center justify-center rounded-lg border border-gray-200 bg-gray-100">
-                  <File className="h-8 w-8 text-gray-500" />
+                  <HydrationSafeIcon Icon={File} className="h-8 w-8 text-gray-500" />
                 </div>
               )}
               <button
@@ -157,7 +158,7 @@ export function FileUpload({
                 onClick={() => handleRemove(url)}
                 className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
               >
-                <X className="h-4 w-4" />
+                <HydrationSafeIcon Icon={X} className="h-4 w-4" />
               </button>
             </div>
           ))}

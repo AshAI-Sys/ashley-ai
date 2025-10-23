@@ -2,6 +2,7 @@ import React from "react";
 import { LucideIcon } from "lucide-react";
 import { Button } from "./button";
 import { Card, CardContent } from "./card";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -23,7 +24,7 @@ export function EmptyState({
   return (
     <Card>
       <CardContent className="py-12 text-center">
-        <Icon className="mx-auto mb-4 h-12 w-12 text-gray-500" />
+        <HydrationSafeIcon Icon={Icon} className="mx-auto mb-4 h-12 w-12 text-gray-500" />
         <h3 className="mb-2 text-lg font-semibold">{title}</h3>
         {description && (
           <p className="mb-4 text-muted-foreground">{description}</p>

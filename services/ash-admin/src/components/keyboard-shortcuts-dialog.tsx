@@ -15,6 +15,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 /**
  * Keyboard Shortcuts Help Dialog
@@ -71,7 +72,7 @@ export function KeyboardShortcutsDialog() {
       <DialogContent className="max-h-[80vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Keyboard className="h-5 w-5" />
+            <HydrationSafeIcon Icon={Keyboard} className="h-5 w-5" />
             Keyboard Shortcuts
           </DialogTitle>
           <DialogDescription>
@@ -81,7 +82,7 @@ export function KeyboardShortcutsDialog() {
 
         {/* Search */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <HydrationSafeIcon Icon={Search} className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search shortcuts..."

@@ -305,53 +305,29 @@ export default function Sidebar() {
 
       {/* Sidebar - Modern Design */}
       <div
-        className={`modern-sidebar text-white transition-all duration-300 ${collapsed ? "w-16" : "w-64"} /* Mobile styles */ fixed z-40 flex min-h-screen flex-col lg:relative lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
+        className={`modern-sidebar text-white transition-all duration-300 w-64 /* Mobile styles */ fixed z-40 flex min-h-screen flex-col lg:relative lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
       >
         {/* Header - Improved spacing */}
         <div className="border-b border-white/10 p-5">
           <div className="flex items-center justify-between">
-            {collapsed ? (
-              // Show only logo icon when collapsed
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
+            {/* Show full logo and text - always expanded */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 p-1.5 backdrop-blur-sm">
                 <img
                   src="/ash-ai-logo.png"
                   alt="Ashley AI Logo"
                   className="h-full w-full object-contain"
                 />
               </div>
-            ) : (
-              // Show full logo and text when expanded
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
-                  <img
-                    src="/ash-ai-logo.png"
-                    alt="Ashley AI Logo"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold leading-tight text-white">
-                    Ashley AI
-                  </h1>
-                  <p className="text-sm leading-tight text-white/90">
-                    Apparel Smart Hub
-                  </p>
-                </div>
+              <div>
+                <h1 className="text-xl font-bold leading-tight text-white">
+                  Ashley AI
+                </h1>
+                <p className="text-sm leading-tight text-white/90">
+                  Apparel Smart Hub
+                </p>
               </div>
-            )}
-            {!collapsed && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCollapsed(!collapsed)}
-                  className="rounded-lg p-2 transition-colors hover:bg-white/10"
-                >
-                  <HydrationSafeIcon
-                    Icon={collapsed ? ChevronRight : ChevronLeft}
-                    className="h-4 w-4 text-white"
-                  />
-                </button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -368,13 +344,12 @@ export default function Sidebar() {
                 className={`nav-item ${
                   isActive ? "nav-item-active" : "text-white hover:bg-white/10"
                 } `}
-                title={collapsed ? item.name : undefined}
               >
                 <HydrationSafeIcon
                   Icon={Icon}
-                  className={`${collapsed ? "h-6 w-6" : "mr-3 h-6 w-6"} flex-shrink-0`}
+                  className="mr-3 h-6 w-6 flex-shrink-0"
                 />
-                {!collapsed && <span className="text-base font-medium">{item.name}</span>}
+                <span className="text-base font-medium">{item.name}</span>
               </Link>
             );
           })}
@@ -382,7 +357,7 @@ export default function Sidebar() {
 
         {/* Footer - Professional user info */}
         <div className="space-y-3 border-t border-white/10 p-5">
-          {!collapsed && user && (
+          {user && (
             <div className="rounded-lg bg-white/10 p-4 text-white backdrop-blur-sm">
               <p className="mb-1 text-base font-semibold text-white">
                 {user.name}
@@ -393,12 +368,10 @@ export default function Sidebar() {
               </p>
             </div>
           )}
-          {!collapsed && (
-            <div className="text-sm">
-              <p className="text-sm font-semibold text-white">Ashley AI v1.0</p>
-              <p className="text-sm text-white/70">Manufacturing ERP</p>
-            </div>
-          )}
+          <div className="text-sm">
+            <p className="text-sm font-semibold text-white">Ashley AI v1.0</p>
+            <p className="text-sm text-white/70">Manufacturing ERP</p>
+          </div>
         </div>
       </div>
     </>

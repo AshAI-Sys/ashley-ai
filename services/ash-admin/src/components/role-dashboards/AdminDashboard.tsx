@@ -21,6 +21,7 @@ import {
   BadgeCheck
 } from 'lucide-react'
 import Link from 'next/link'
+import HydrationSafeIcon from '@/components/hydration-safe-icon'
 import {
   BarChart,
   Bar,
@@ -153,7 +154,7 @@ export default function AdminDashboard() {
       <div>
         <div className="modern-card p-6 fade-in">
           <div className="text-center">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <HydrationSafeIcon Icon={AlertCircle} className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <p className="text-base font-medium mb-4">Failed to load dashboard data</p>
             <Button onClick={() => refetch()} className="modern-button">Retry</Button>
           </div>
@@ -178,7 +179,7 @@ export default function AdminDashboard() {
           disabled={isFetching}
           className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-semibold px-4 py-2.5 rounded-lg transition-all"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
+          <HydrationSafeIcon Icon={RefreshCw} className={`w-4 h-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
           {isFetching ? 'Refreshing...' : 'Refresh'}
         </Button>
       </div>
@@ -191,12 +192,12 @@ export default function AdminDashboard() {
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Total Revenue</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{formatCurrency(stats?.totalRevenue || 0)}</p>
               <p className="text-sm font-medium text-green-600 mt-2 flex items-center">
-                <TrendingUp className="w-4 h-4 mr-1.5" />
+                <HydrationSafeIcon Icon={TrendingUp} className="w-4 h-4 mr-1.5" />
                 {stats?.totalOrders || 0} orders
               </p>
             </div>
             <div className="bg-green-50 p-3.5 rounded-xl">
-              <DollarSign className="w-7 h-7 text-green-600" />
+              <HydrationSafeIcon Icon={DollarSign} className="w-7 h-7 text-green-600" />
             </div>
           </div>
         </div>
@@ -207,12 +208,12 @@ export default function AdminDashboard() {
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Active Orders</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.totalOrders || 0}</p>
               <p className="text-sm font-medium text-blue-600 mt-2 flex items-center">
-                <Package className="w-4 h-4 mr-1.5" />
+                <HydrationSafeIcon Icon={Package} className="w-4 h-4 mr-1.5" />
                 {stats?.ordersInProduction || 0} in production
               </p>
             </div>
             <div className="bg-blue-50 p-3.5 rounded-xl">
-              <Package className="w-7 h-7 text-blue-600" />
+              <HydrationSafeIcon Icon={Package} className="w-7 h-7 text-blue-600" />
             </div>
           </div>
         </div>
@@ -223,12 +224,12 @@ export default function AdminDashboard() {
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Total Clients</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.totalClients || 0}</p>
               <p className="text-sm font-medium text-purple-600 mt-2 flex items-center">
-                <Building2 className="w-4 h-4 mr-1.5" />
+                <HydrationSafeIcon Icon={Building2} className="w-4 h-4 mr-1.5" />
                 Active partnerships
               </p>
             </div>
             <div className="bg-purple-50 p-3.5 rounded-xl">
-              <Building2 className="w-7 h-7 text-purple-600" />
+              <HydrationSafeIcon Icon={Building2} className="w-7 h-7 text-purple-600" />
             </div>
           </div>
         </div>
@@ -239,12 +240,12 @@ export default function AdminDashboard() {
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Employees</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.activeEmployees || 0}</p>
               <p className="text-sm font-medium text-orange-600 mt-2 flex items-center">
-                <Users className="w-4 h-4 mr-1.5" />
+                <HydrationSafeIcon Icon={Users} className="w-4 h-4 mr-1.5" />
                 Active workforce
               </p>
             </div>
             <div className="bg-orange-50 p-3.5 rounded-xl">
-              <Users className="w-7 h-7 text-orange-600" />
+              <HydrationSafeIcon Icon={Users} className="w-7 h-7 text-orange-600" />
             </div>
           </div>
         </div>
@@ -260,7 +261,7 @@ export default function AdminDashboard() {
                 <p className="text-4xl font-bold text-yellow-600 dark:text-yellow-400" style={{ letterSpacing: '-0.02em' }}>{stats?.pendingApprovals || 0}</p>
                 <p className="text-sm font-medium text-muted-foreground mt-2.5">Orders awaiting approval</p>
               </div>
-              <AlertCircle className="w-9 h-9 text-yellow-500" />
+              <HydrationSafeIcon Icon={AlertCircle} className="w-9 h-9 text-yellow-500" />
             </div>
           </div>
 
@@ -271,7 +272,7 @@ export default function AdminDashboard() {
                 <p className="text-4xl font-bold text-purple-600 dark:text-purple-400" style={{ letterSpacing: '-0.02em' }}>{stats?.ordersInProduction || 0}</p>
                 <p className="text-sm font-medium text-muted-foreground mt-2.5">Active production runs</p>
               </div>
-              <Clock className="w-9 h-9 text-purple-500" />
+              <HydrationSafeIcon Icon={Clock} className="w-9 h-9 text-purple-500" />
             </div>
           </div>
 
@@ -282,7 +283,7 @@ export default function AdminDashboard() {
                 <p className="text-4xl font-bold text-green-600 dark:text-green-400" style={{ letterSpacing: '-0.02em' }}>{stats?.completedThisMonth || 0}</p>
                 <p className="text-sm font-medium text-muted-foreground mt-2.5">Orders this month</p>
               </div>
-              <CheckCircle className="w-9 h-9 text-green-500" />
+              <HydrationSafeIcon Icon={CheckCircle} className="w-9 h-9 text-green-500" />
             </div>
           </div>
         </div>
@@ -384,50 +385,50 @@ export default function AdminDashboard() {
           <div className="p-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Link href="/orders">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <Package className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={Package} className="w-6 h-6" />
                   <span className="text-sm">View Orders</span>
                 </button>
               </Link>
               <Link href="/clients">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <Building2 className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={Building2} className="w-6 h-6" />
                   <span className="text-sm">Manage Clients</span>
                 </button>
               </Link>
               <Link href="/hr-payroll">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <Users className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={Users} className="w-6 h-6" />
                   <span className="text-sm">HR & Payroll</span>
                 </button>
               </Link>
               <Link href="/finance">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <DollarSign className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={DollarSign} className="w-6 h-6" />
                   <span className="text-sm">Finance</span>
                 </button>
               </Link>
               <Link href="/cutting">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <Scissors className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={Scissors} className="w-6 h-6" />
                   <span className="text-sm">Cutting</span>
                 </button>
               </Link>
               <Link href="/printing">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <Printer className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={Printer} className="w-6 h-6" />
                   <span className="text-sm">Printing</span>
                 </button>
               </Link>
               <Link href="/quality-control">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <BadgeCheck className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={BadgeCheck} className="w-6 h-6" />
                   <span className="text-sm">Quality Control</span>
                 </button>
               </Link>
               <Link href="/analytics">
-                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-card dark:bg-gray-800 border-2 border-border dark:border-gray-700 rounded-lg text-foreground dark:text-white hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-primary transition-all font-semibold">
-                  <TrendingUp className="w-6 h-6" />
+                <button className="modern-button w-full h-24 flex flex-col items-center justify-center gap-2.5 bg-primary text-white border-2 border-primary rounded-lg hover:bg-primary/90 hover:border-primary/90 hover:shadow-lg transition-all font-semibold">
+                  <HydrationSafeIcon Icon={TrendingUp} className="w-6 h-6" />
                   <span className="text-sm">Analytics</span>
                 </button>
               </Link>
@@ -456,9 +457,9 @@ export default function AdminDashboard() {
             ].map((stage) => (
               <Link key={stage.name} href={stage.href}>
                 <div className="p-5 border-2 border-border dark:border-gray-700 rounded-lg bg-card dark:bg-gray-800 hover:border-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-all group glow">
-                  <stage.icon className="w-7 h-7 mb-3 text-muted-foreground group-hover:text-primary transition-colors" style={{ color: stage.color }} />
+                  <HydrationSafeIcon Icon={stage.icon} className="w-7 h-7 mb-3 text-muted-foreground group-hover:text-primary transition-colors" style={{ color: stage.color }} />
                   <h4 className="font-semibold text-foreground dark:text-white text-sm mb-1">{stage.name}</h4>
-                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  <HydrationSafeIcon Icon={ArrowRight} className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
                 </div>
               </Link>
             ))}

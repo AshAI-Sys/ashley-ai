@@ -16,6 +16,7 @@ import {
   RefreshCw,
   PieChart,
   Activity,
+  Eye,
 } from "lucide-react";
 
 interface Report {

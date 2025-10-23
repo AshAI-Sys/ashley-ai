@@ -74,11 +74,11 @@ export default function TopNavbar() {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-border bg-background/80 shadow-sm backdrop-blur-md transition-all">
+    <nav className="sticky top-0 z-40 border-b border-slate-700 bg-slate-800 shadow-sm backdrop-blur-md transition-all">
       <div className="flex items-center justify-between px-6 py-3.5">
-        {/* Left Section - Logo/Brand (optional) */}
+        {/* Left Section - Logo/Brand */}
         <div className="flex items-center gap-4">
-          <h1 className="hidden text-lg font-bold text-foreground md:block">
+          <h1 className="hidden text-lg font-bold text-white md:block">
             Ashley AI
           </h1>
         </div>
@@ -98,7 +98,7 @@ export default function TopNavbar() {
               {!mounted ? (
                 <div className="h-5 w-5" />
               ) : (
-                <Bell className="h-5 w-5" />
+                <HydrationSafeIcon Icon={Bell} className="h-5 w-5" />
               )}
               {unreadCount > 0 && (
                 <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
@@ -177,7 +177,8 @@ export default function TopNavbar() {
               {!mounted ? (
                 <div className="h-4 w-4" />
               ) : (
-                <ChevronDown
+                <HydrationSafeIcon
+                  Icon={ChevronDown}
                   className={`h-4 w-4 text-muted-foreground transition-transform ${
                     showProfileMenu ? "rotate-180" : ""
                   }`}
@@ -204,7 +205,7 @@ export default function TopNavbar() {
                     }}
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-accent/5"
                   >
-                    <Settings className="h-4 w-4 text-muted-foreground" />
+                    <HydrationSafeIcon Icon={Settings} className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Settings</span>
                   </button>
                 </div>
@@ -213,7 +214,7 @@ export default function TopNavbar() {
                     onClick={handleLogout}
                     className="mx-1 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm text-red-600 dark:text-red-400 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <HydrationSafeIcon Icon={LogOut} className="h-4 w-4" />
                     <span className="font-semibold">Logout</span>
                   </button>
                 </div>

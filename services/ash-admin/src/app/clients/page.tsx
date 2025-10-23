@@ -26,6 +26,7 @@ import { SkeletonTable } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { useDebounce } from "@/hooks/useDebounce";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface Client {
   id: string;
@@ -99,12 +100,12 @@ export default function ClientsPage() {
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-6">
+      <div className="container mx-auto py-6 min-h-screen bg-white">
         {/* Page Header - Responsive */}
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white lg:text-3xl">Clients</h1>
-            <p className="text-sm text-muted-foreground lg:text-base">
+            <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">Clients</h1>
+            <p className="text-sm text-gray-600 lg:text-base">
               Manage your clients and their information
             </p>
           </div>
@@ -116,7 +117,8 @@ export default function ClientsPage() {
               className="flex-1 gap-2 sm:flex-none"
               size="sm"
             >
-              <RefreshCw
+              <HydrationSafeIcon
+                Icon={RefreshCw}
                 className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
               />
               <span className="hidden sm:inline">

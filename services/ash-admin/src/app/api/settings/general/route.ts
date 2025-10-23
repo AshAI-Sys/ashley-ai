@@ -13,22 +13,27 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
       select: {
-        name: true,
+        first_name: true,
+        last_name: true,
         email: true,
         position: true,
         department: true,
-        timezone: true,
-        language: true,
-        date_format: true,
-        time_format: true,
       },
-      });
+    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    // Return with backwards compatible name field
+    return NextResponse.json({
+      ...user,
+      name: `${user.first_name} ${user.last_name}`,
+      timezone: 'UTC',
+      language: 'en',
+      date_format: 'YYYY-MM-DD',
+      time_format: '24h',
+    });
   } catch (error) {
     console.error("Error fetching general settings:", error);
     return NextResponse.json(
@@ -36,7 +41,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-}
+});
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
   try {
@@ -45,25 +50,23 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       name,
       position,
       department,
-      timezone,
-      language,
-      date_format,
-      time_format,
     } = body;
+
+    // Split name into first and last
+    const nameParts = name?.split(' ') || [];
+    const first_name = nameParts[0] || '';
+    const last_name = nameParts.slice(1).join(' ') || '';
 
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: {
-        name,
+        first_name,
+        last_name,
         position,
         department,
-        timezone,
-        language,
-        date_format,
-        time_format,
         updated_at: new Date(),
       },
-      });
+    });
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {

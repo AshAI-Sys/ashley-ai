@@ -44,6 +44,7 @@ import {
   DataTableSkeleton,
 } from "@/components/ui/loading-skeletons";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface PrintRun {
   id: string;
@@ -315,14 +316,15 @@ export default function PrintingPage() {
               onClick={handleRefreshAll}
               disabled={isFetching}
             >
-              <RefreshCw
+              <HydrationSafeIcon
+                Icon={RefreshCw}
                 className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
               />
               Refresh
             </Button>
             <Link href="/printing/create-run">
               <Button className="bg-blue-600 hover:bg-blue-700">
-                <Printer className="mr-2 h-4 w-4" />
+                <HydrationSafeIcon Icon={Printer} className="mr-2 h-4 w-4" />
                 New Print Run
               </Button>
             </Link>
@@ -356,7 +358,7 @@ export default function PrintingPage() {
                 <CardTitle className="text-sm font-medium">
                   Active Runs
                 </CardTitle>
-                <Play className="h-4 w-4 text-muted-foreground" />
+                <HydrationSafeIcon Icon={Play} className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-blue-600">
@@ -370,7 +372,7 @@ export default function PrintingPage() {
                 <CardTitle className="text-sm font-medium">
                   Today's Runs
                 </CardTitle>
-                <Printer className="h-4 w-4 text-muted-foreground" />
+                <HydrationSafeIcon Icon={Printer} className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">
@@ -384,7 +386,7 @@ export default function PrintingPage() {
                 <CardTitle className="text-sm font-medium">
                   Active Machines
                 </CardTitle>
-                <Package2 className="h-4 w-4 text-muted-foreground" />
+                <HydrationSafeIcon Icon={Package2} className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-purple-600">
@@ -398,7 +400,7 @@ export default function PrintingPage() {
                 <CardTitle className="text-sm font-medium">
                   Methods Today
                 </CardTitle>
-                <Palette className="h-4 w-4 text-muted-foreground" />
+                <HydrationSafeIcon Icon={Palette} className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-orange-600">

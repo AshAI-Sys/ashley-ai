@@ -13,19 +13,25 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
       select: {
-        name: true,
+        first_name: true,
+        last_name: true,
         email: true,
-        phone: true,
-        bio: true,
+        phone_number: true,
         avatar_url: true,
       },
-      });
+    });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json(user);
+    // Return with backwards compatible fields
+    return NextResponse.json({
+      ...user,
+      name: `${user.first_name} ${user.last_name}`,
+      phone: user.phone_number,
+      bio: '', // Bio doesn't exist in schema
+    });
   } catch (error) {
     console.error("Error fetching account settings:", error);
     return NextResponse.json(
@@ -33,12 +39,12 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-}
+});
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
   try {
     const body = await request.json();
-    const { name, email, phone, bio } = body;
+    const { name, email, phone } = body;
 
     // Check if email is being changed
     let emailVerificationRequired = false;
@@ -49,10 +55,13 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       });
 
       if (currentUser && currentUser.email !== email) {
-        // Check if email is already taken
-        const existingUser = await prisma.user.findUnique({
-          where: { email },
-      });
+        // Check if email is already taken with workspace
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            email,
+            workspace_id: authUser.workspaceId,
+          },
+        });
 
         if (existingUser && existingUser.id !== authUser.id) {
           return NextResponse.json(
@@ -63,30 +72,37 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
         emailVerificationRequired = true;
       }
+    }
 
     const updateData: any = {
       updated_at: new Date(),
     };
 
-    if (name) updateData.name = name;
+    // Split name into first and last if provided
+    if (name) {
+      const nameParts = name.split(' ');
+      updateData.first_name = nameParts[0] || '';
+      updateData.last_name = nameParts.slice(1).join(' ') || '';
+    }
+
     if (email) {
       updateData.email = email;
-      if (emailVerificationRequired) {
-        updateData.email_verified = false;
-        // TODO: Send verification email
-      });
-    if (phone !== undefined) updateData.phone = phone;
-    if (bio !== undefined) updateData.bio = bio;
+    }
+
+    if (phone !== undefined) {
+      updateData.phone_number = phone;
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: updateData,
-      });
+    });
 
     return NextResponse.json({
       success: true,
       user: updatedUser,
       email_verification_required: emailVerificationRequired,
+    });
   } catch (error) {
     console.error("Error updating account settings:", error);
     return NextResponse.json(

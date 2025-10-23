@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/button";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 export function ThemeToggle() {
   const { theme, setTheme, effectiveTheme } = useTheme();
@@ -65,7 +66,8 @@ export function ThemeToggle() {
         aria-label="Toggle theme"
       >
         {/* Sun icon for light mode */}
-        <Sun
+        <HydrationSafeIcon
+          Icon={Sun}
           className={`h-[1.2rem] w-[1.2rem] transition-all duration-300 ${
             effectiveTheme === "dark"
               ? "rotate-90 scale-0"
@@ -73,7 +75,8 @@ export function ThemeToggle() {
           }`}
         />
         {/* Moon icon for dark mode */}
-        <Moon
+        <HydrationSafeIcon
+          Icon={Moon}
           className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300 ${
             effectiveTheme === "dark"
               ? "rotate-0 scale-100"
@@ -94,7 +97,7 @@ export function ThemeToggle() {
               }}
               className="flex w-full items-center px-3 py-2 text-sm text-foreground hover:bg-accent/10 transition-colors cursor-pointer"
             >
-              <Icon className="mr-2 h-4 w-4" />
+              <HydrationSafeIcon Icon={Icon} className="mr-2 h-4 w-4" />
               <span>{label}</span>
               {theme === value && (
                 <span className="ml-auto text-primary font-semibold">✓</span>
