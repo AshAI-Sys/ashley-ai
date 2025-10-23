@@ -106,16 +106,16 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           total,
           pages: Math.ceil(total / limit),
         },
-  },
-});
-} catch (error) {
+      },
+    });
+  } catch (error) {
     console.error("Error fetching clients:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch clients" },
       { status: 500 }
     );
   }
-}
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
