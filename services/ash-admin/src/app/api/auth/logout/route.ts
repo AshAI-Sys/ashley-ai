@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "../../../../lib/auth-guards";
 import { authLogger } from "../../../../lib/logger";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { requireAuth } from "@/lib/auth-middleware";

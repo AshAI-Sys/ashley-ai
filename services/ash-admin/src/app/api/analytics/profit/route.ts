@@ -29,6 +29,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
+    }
 
     const analyses = await prisma.profitAnalysis.findMany({
       where,

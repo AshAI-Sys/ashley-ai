@@ -81,6 +81,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         scenario.job_id = scenario_data.job_id;
         scenario.new_deadline = new Date(scenario_data.new_deadline);
         break;
+    }
 
     // Parse jobs and resources (convert date strings to Date objects)
     const parsedJobs = jobs.map((j: any) => ({

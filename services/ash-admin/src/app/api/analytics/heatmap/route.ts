@@ -94,6 +94,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/analytics/heatmap - Create heatmap data point
 export const POST = requireAuth(async (req: NextRequest, user) => {

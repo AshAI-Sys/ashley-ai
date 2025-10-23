@@ -80,7 +80,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+})
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -144,7 +144,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+})
 
 async function generateRecommendationsForClient(
   workspaceId: string,

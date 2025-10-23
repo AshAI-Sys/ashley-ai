@@ -141,7 +141,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+})
 
 async function generateDemandForecast(params: any) {
   // Get historical data for this client/brand/product combination

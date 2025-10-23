@@ -69,7 +69,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+})
 
 async function updateInspectionDefectCounts(inspectionId: string) {
   const defects = await prisma.qCDefect.findMany({

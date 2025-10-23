@@ -175,7 +175,8 @@
       "Bash(for file in alerts/route.ts execute/route.ts integrations/route.ts notifications/route.ts rules/route.ts stats/route.ts templates/route.ts)",
       "Bash(for file in \"seed/route.ts\" \"reports/execute/route.ts\" \"printing/dashboard/route.ts\" \"payments/create-intent/route.ts\")",
       "Bash(bc:*)",
-      "Bash(if exist fix-changes.ps1 powershell -ExecutionPolicy Bypass -File fix-changes.ps1)"
+      "Bash(if exist fix-changes.ps1 powershell -ExecutionPolicy Bypass -File fix-changes.ps1)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

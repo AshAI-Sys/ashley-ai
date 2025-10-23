@@ -1,8 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, requireAdmin } from "../../../lib/auth-middleware";
+import { requireAdmin } from "../../../lib/auth-middleware";
 import { getAuditLogs, getSecurityAlerts } from "../../../lib/audit-logger";
-import { requireAuth } from "@/lib/auth-middleware";
 
 // GET - Retrieve audit logs with filtering
 export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
@@ -39,6 +38,7 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
           total: alerts.length,
         },
       });
+    }
 
     // Get regular audit logs
     const result = await getAuditLogs({

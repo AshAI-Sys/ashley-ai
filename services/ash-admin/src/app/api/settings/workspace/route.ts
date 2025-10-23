@@ -49,7 +49,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-}
+})
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
   try {

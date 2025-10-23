@@ -21,6 +21,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   const validationError = validateRequiredFields(data, ["email", "password"]);
   if (validationError) {
     throw validationError;
+  }
 
   // Find employee by email
   const employee = await prisma.employee.findUnique({
@@ -96,4 +97,4 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
     expires_in: 28800, // 8 hours in seconds
     employee: employeeData,
   });
-    }
+});
