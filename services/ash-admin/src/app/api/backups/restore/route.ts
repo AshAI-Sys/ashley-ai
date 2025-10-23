@@ -34,7 +34,8 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
         filename: backup.filename,
         timestamp: backup.timestamp,
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     return NextResponse.json(
       { error: "Failed to restore backup", details: error.message },
       { status: 500 }

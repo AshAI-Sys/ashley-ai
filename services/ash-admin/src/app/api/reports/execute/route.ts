@@ -137,7 +137,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           execution_time: executionTime,
           filters_applied: [...reportFilters, ...(additionalFilters || [])],
         },
-    } catch (queryError: any) {
+});
+} catch (queryError: any) {
       const executionTime = Date.now() - startTime;
 
       // Log failed execution

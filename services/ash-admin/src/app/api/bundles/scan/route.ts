@@ -65,7 +65,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         size_code: bundle.size_code,
         created_at: bundle.created_at,
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Bundle scan error:", error);
     return NextResponse.json(
       { success: false, error: error.message },

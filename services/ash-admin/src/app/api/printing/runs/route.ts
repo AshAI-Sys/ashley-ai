@@ -103,7 +103,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         offset,
         hasMore: offset + limit < totalCount,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Print runs API error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch print runs" },

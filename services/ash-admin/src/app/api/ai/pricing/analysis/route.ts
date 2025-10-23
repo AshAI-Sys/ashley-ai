@@ -105,7 +105,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: new Date(Date.now() - days * 24 * 60 * 60 * 1000),
         end: new Date(),
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Pricing analysis error:", error);
     return NextResponse.json(
       { error: "Failed to analyze pricing", details: error.message },

@@ -145,7 +145,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           ? JSON.parse(report.schedule_config)
           : null,
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Error creating report:", error);
     return NextResponse.json(
       { success: false, error: error.message },

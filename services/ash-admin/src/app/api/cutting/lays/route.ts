@@ -91,8 +91,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           total,
           pages: Math.ceil(total / limit),
         },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching cut lays:", error);
     return NextResponse.json(
       {

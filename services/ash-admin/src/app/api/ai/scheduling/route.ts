@@ -237,7 +237,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: new Date(),
         end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Schedule preview error:", error);
     return NextResponse.json(
       { error: "Failed to generate preview", details: error.message },

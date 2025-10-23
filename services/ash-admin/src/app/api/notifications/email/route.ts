@@ -124,7 +124,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             status: "SENT",
             sent_at: new Date(),
           },
-      } catch (error) {
+});
+} catch (error) {
         console.error("Failed to log notification:", error);
       }
 

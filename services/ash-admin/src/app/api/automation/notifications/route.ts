@@ -46,7 +46,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         offset,
         pages: Math.ceil(total / limit),
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch notifications" },

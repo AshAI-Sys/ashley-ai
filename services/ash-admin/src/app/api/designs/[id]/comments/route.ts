@@ -205,7 +205,8 @@ export async function POST(
         mentioned_users: mentionedUsers ? JSON.parse(mentionedUsers) : [],
         annotation_area: annotationArea ? JSON.parse(annotationArea) : null,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error creating comment:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create comment" },

@@ -76,7 +76,8 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     return NextResponse.json({
       success: true,
       data: { user: targetUser },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch user" },

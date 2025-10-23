@@ -116,7 +116,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_cartons: totalCartons,
         cartons_today: packedTodayCartons,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error calculating finishing & packing stats:", error);
     return NextResponse.json(
       { error: "Failed to calculate statistics" },

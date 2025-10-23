@@ -180,7 +180,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
             : "CLOCKED_IN"
           : "NOT_CLOCKED_IN",
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Mobile stats error:", error);
     return NextResponse.json(
       {

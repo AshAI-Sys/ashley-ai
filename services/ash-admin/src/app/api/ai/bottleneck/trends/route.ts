@@ -125,7 +125,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: historicalMetrics[historicalMetrics.length - 1].timestamp,
         end: historicalMetrics[0].timestamp,
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Trend analysis error:", error);
     return NextResponse.json(
       { error: "Failed to analyze trends", details: error.message },

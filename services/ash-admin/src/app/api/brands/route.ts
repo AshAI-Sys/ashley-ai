@@ -87,8 +87,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           total,
           pages: Math.ceil(total / limit),
         },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching brands:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch brands" },

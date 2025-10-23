@@ -57,7 +57,8 @@ export async function POST() {
         email: admin.email,
         name: `${admin.first_name} ${admin.last_name}`,
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Setup error:", error);
     return NextResponse.json(
       {

@@ -162,8 +162,9 @@ export const GET = requireAnyPermission(["admin:read"])(async (
           ],
           last_updated: new Date().toISOString(),
         },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching reports:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch reports" },

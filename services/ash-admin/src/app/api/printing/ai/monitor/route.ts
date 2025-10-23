@@ -45,7 +45,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         recommendations: generateRealTimeRecommendations(printRun, insights),
         performance_score: calculatePerformanceScore(printRun, insights),
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("AI monitoring error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to generate AI monitoring data" },

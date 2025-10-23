@@ -33,7 +33,8 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
         "Content-Disposition": `attachment; filename="${backup.filename}"`,
         "Content-Length": backup.size.toString(),
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     return NextResponse.json(
       { error: "Failed to download backup", details: error.message },
       { status: 500 }

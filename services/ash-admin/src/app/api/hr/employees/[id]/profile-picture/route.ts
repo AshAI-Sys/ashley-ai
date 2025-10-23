@@ -115,7 +115,8 @@ export async function POST(
           last_name: updatedEmployee.last_name,
           profile_picture: updatedEmployee.profile_picture,
         },
-    } catch (error) {
+});
+} catch (error) {
       console.error("Error uploading employee profile picture:", error);
       return NextResponse.json(
         { error: "Failed to upload profile picture" },

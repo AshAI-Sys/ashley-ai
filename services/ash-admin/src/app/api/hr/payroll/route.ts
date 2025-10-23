@@ -313,7 +313,8 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         created_at: payrollPeriod.created_at.toISOString(),
         processed_at: payrollPeriod.processed_at?.toISOString() || null,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error updating payroll run:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update payroll run" },

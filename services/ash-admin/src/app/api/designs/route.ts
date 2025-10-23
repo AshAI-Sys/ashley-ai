@@ -174,8 +174,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           total: filteredDesigns.length,
           totalPages: Math.ceil(filteredDesigns.length / limit),
         },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching designs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch designs" },

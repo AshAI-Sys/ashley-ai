@@ -109,7 +109,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         layout: JSON.parse(dashboard.layout),
         widgets: JSON.parse(dashboard.widgets),
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     console.error("Error creating dashboard:", error);
     return NextResponse.json(
       { success: false, error: error.message },

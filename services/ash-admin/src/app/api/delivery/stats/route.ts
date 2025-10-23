@@ -147,7 +147,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         delivered_week: deliveredThisWeek,
         completion_rate: Math.round(onTimeRate * 10) / 10,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error calculating delivery stats:", error);
     return NextResponse.json(
       { error: "Failed to calculate delivery statistics" },

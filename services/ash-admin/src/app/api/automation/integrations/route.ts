@@ -57,8 +57,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       meta: {
         total: integrations.length,
         filters: { type, provider, isActive, isConnected },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching integrations:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch integrations" },

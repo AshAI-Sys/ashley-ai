@@ -30,7 +30,8 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
         sessions,
         total: sessions.length,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error fetching sessions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch sessions" },

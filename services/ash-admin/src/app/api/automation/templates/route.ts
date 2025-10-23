@@ -74,8 +74,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       meta: {
         total: templates.length,
         filters: { category, type, isActive },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching notification templates:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch notification templates" },

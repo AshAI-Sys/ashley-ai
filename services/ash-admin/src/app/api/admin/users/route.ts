@@ -135,8 +135,9 @@ export const GET = requireAnyPermission(["admin:read"])(async (
           total,
           totalPages: Math.ceil(total / limit),
         },
-      },
-  } catch (error) {
+  },
+});
+} catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch users" },

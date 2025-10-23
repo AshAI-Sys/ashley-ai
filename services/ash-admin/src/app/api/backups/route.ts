@@ -20,7 +20,8 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
         ...schedulerConfig,
         running: backupScheduler.isRunning(),
       },
-  } catch (error: any) {
+});
+} catch (error: any) {
     return NextResponse.json(
       { error: "Failed to list backups", details: error.message },
       { status: 500 }

@@ -222,7 +222,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         total: approval_ids.length,
         errors: results.errors,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error processing batch actions:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },

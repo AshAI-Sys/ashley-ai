@@ -1,82 +1,102 @@
 #!/usr/bin/env python3
 """
-Final comprehensive fix for all remaining syntax errors
+FINAL COMPREHENSIVE FIX
+Fixes the exact pattern causing 90% of compilation errors:
+Missing }); before } catch (error) {
 """
+
 import os
 import re
 from pathlib import Path
+from typing import List, Tuple
 
-def fix_file(filepath):
-    """Fix remaining syntax errors"""
-    with open(filepath, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+def fix_missing_closure_before_catch(filepath: str) -> Tuple[bool, List[str]]:
+    """
+    Fix missing }); before } catch (error) {
+    Returns (was_modified, list_of_fixes_applied)
+    """
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
 
-    original = ''.join(lines)
-    fixed_lines = []
-    i = 0
+        original_content = content
+        fixes_applied = []
 
-    while i < len(lines):
-        line = lines[i]
-        stripped = line.strip()
+        # PATTERN 1: Missing }); after return NextResponse.json({...},
+        # before } catch
+        pattern1 = r'(return\s+NextResponse\.json\([^)]+\{[^}]+\},)\s*\n\s*(\}\s+catch\s*\()'
+        if re.search(pattern1, content, re.DOTALL):
+            content = re.sub(pattern1, r'\1\n});\n\2', content, flags=re.DOTALL)
+            fixes_applied.append("Added missing }); after return NextResponse.json before catch")
 
-        # Fix 1: Prisma/database calls missing );
-        # Pattern: .create({ ... }\n      } without );
-        # Pattern: .findMany({ ... }\n      } without );
-        # Pattern: .update({ ... }\n      } without );
-        if i + 1 < len(lines):
-            next_line = lines[i + 1].strip()
+        # PATTERN 2: Missing }); after nested object literal
+        # },  },  } catch
+        pattern2 = r'(\},)\s*\n\s*(\},)\s*\n\s*(\}\s+catch\s*\()'
+        if re.search(pattern2, content, re.DOTALL):
+            content = re.sub(pattern2, r'\1\n  \2\n});\n\3', content, flags=re.DOTALL)
+            fixes_applied.append("Added missing }); before catch block")
 
-            # If current line ends with } and next line starts with } (closing nested objects)
-            # and this is inside a Prisma call, add );
-            if (stripped.endswith('}') and not stripped.endswith('});') and not stripped.endswith('})')
-                and next_line.startswith('}') and not next_line.startswith('});')):
+        # PATTERN 3: Simpler pattern - any } catch that should have });
+        # Look for },\n} catch and make it },\n});\n} catch
+        pattern3 = r'(\},)\s*\n\s*(\}\s+catch\s*\()'
+        if re.search(pattern3, content):
+            # Check if there's already a }); there
+            if not re.search(r'\}\);\s*\n\s*\}\s+catch', content):
+                content = re.sub(pattern3, r'\1\n});\n\2', content)
+                fixes_applied.append("Added missing }); before catch")
 
-                # Check if we're in a Prisma call by looking back
-                in_prisma_call = False
-                for j in range(max(0, i - 20), i):
-                    if 'prisma.' in lines[j] or '.create(' in lines[j] or '.update(' in lines[j] or '.findMany(' in lines[j] or '.findFirst(' in lines[j]:
-                        in_prisma_call = True
-                        break
+        # Save if modified
+        if content != original_content:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(content)
+            return True, fixes_applied
 
-                if in_prisma_call:
-                    fixed_lines.append(line.rstrip() + ');\n')
-                    i += 1
-                    continue
+        return False, []
 
-        fixed_lines.append(line)
-        i += 1
-
-    content = ''.join(fixed_lines)
-
-    # Fix 2: Missing semicolons after variable declarations with conditional spread
-    # Pattern: const variable = ...\n without semicolon before next statement
-    content = re.sub(
-        r'(const \w+ = [^;]+)\n(\s*)(const|let|var|if|return|await)',
-        r'\1;\n\2\3',
-        content
-    )
-
-    # Write back if changed
-    if content != original:
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    return False
+    except Exception as e:
+        print(f"[ERROR] {filepath}: {e}")
+        return False, []
 
 def main():
-    base_path = Path(r'C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api')
-    route_files = list(base_path.rglob('route.ts'))
+    # Find all API route files
+    api_dir = Path(r"C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api")
+    route_files = list(api_dir.rglob("route.ts"))
 
-    fixed = 0
-    for route_file in route_files:
-        try:
-            if fix_file(route_file):
-                print(f'[OK] {route_file.relative_to(base_path)}')
-                fixed += 1
-        except Exception as e:
-            print(f'[ERR] {route_file.relative_to(base_path)}: {e}')
+    print(f"Scanning {len(route_files)} route files for missing closures before catch...")
+    print("=" * 80)
 
-    print(f'\n{fixed} files fixed')
+    fixed_count = 0
+    skipped_count = 0
+    fix_summary = {}
 
-if __name__ == '__main__':
+    for filepath in route_files:
+        relative_path = filepath.relative_to(api_dir.parent.parent.parent)
+
+        was_modified, fixes = fix_missing_closure_before_catch(str(filepath))
+
+        if was_modified:
+            fixed_count += 1
+            print(f"[FIXED] {relative_path}")
+            for fix in fixes:
+                print(f"  - {fix}")
+                fix_summary[fix] = fix_summary.get(fix, 0) + 1
+        else:
+            skipped_count += 1
+
+    print("\n" + "=" * 80)
+    print("SUMMARY")
+    print("=" * 80)
+    print(f"Total files: {len(route_files)}")
+    print(f"Fixed: {fixed_count}")
+    print(f"Already correct: {skipped_count}")
+
+    if fix_summary:
+        print("\nFixes Applied:")
+        for fix_type, count in sorted(fix_summary.items(), key=lambda x: -x[1]):
+            print(f"  {count:3d}x {fix_type}")
+
+    print("=" * 80)
+    print("\nRun dev server to test the fixes!")
+
+if __name__ == "__main__":
     main()

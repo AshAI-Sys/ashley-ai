@@ -98,7 +98,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         analysis_id: aiAnalysis.id,
         ...optimization,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("AI optimization error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to generate AI optimization" },

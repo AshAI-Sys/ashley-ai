@@ -57,7 +57,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         pages: Math.ceil(total / limit),
         summary: await getAlertSummary(workspaceId),
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error fetching alerts:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch alerts" },

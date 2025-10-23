@@ -288,7 +288,8 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         },
         summary,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error fetching audit logs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch audit logs" },

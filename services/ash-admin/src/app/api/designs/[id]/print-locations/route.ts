@@ -34,7 +34,8 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: { printLocations },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error fetching print locations:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch print locations" },

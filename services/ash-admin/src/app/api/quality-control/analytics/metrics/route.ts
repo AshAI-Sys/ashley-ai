@@ -118,7 +118,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_samples: totalSamples,
         total_defects: totalDefects,
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Error calculating quality metrics:", error);
     return NextResponse.json(
       { error: "Failed to calculate metrics" },

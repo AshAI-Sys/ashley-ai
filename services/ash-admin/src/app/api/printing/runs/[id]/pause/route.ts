@@ -86,7 +86,8 @@ async function logRunEvent(
           timestamp: new Date().toISOString(),
         }),
       },
-  } catch (error) {
+});
+} catch (error) {
     console.error("Failed to log run event:", error);
 };
 });

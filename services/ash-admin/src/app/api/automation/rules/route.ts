@@ -15,9 +15,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (isActive !== null) {
       where.is_active = isActive === "true";
+    }
 
     if (triggerType) {
       where.trigger_type = triggerType;
+    }
 
     const rules = await prisma.automationRule.findMany({
       where,
@@ -46,7 +48,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       meta: {
         total: rules.length,
         filters: { isActive, triggerType },
-      },
+    },
+  });
   } catch (error) {
     console.error("Error fetching automation rules:", error);
     return NextResponse.json(
@@ -54,6 +57,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/automation/rules - Create new automation rule
 export const POST = requireAuth(async (request: NextRequest, user) => {
