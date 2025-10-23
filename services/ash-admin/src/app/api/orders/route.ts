@@ -91,7 +91,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Use cached query
     const result = await cachedQueryWithMetrics(
       cacheKey,
-      async () => {;
+      async () => {
         const [orders, total] = await Promise.all([
           prisma.order.findMany({
             where,
