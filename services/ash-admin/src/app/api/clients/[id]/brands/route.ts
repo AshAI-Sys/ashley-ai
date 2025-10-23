@@ -20,7 +20,7 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const clientId = context.params.id;
 
     // Check if client exists
@@ -68,7 +68,7 @@ export const GET = requireAuth(async (
     return NextResponse.json({
       success: true,
       data: brands,
-    });
+    }
   } catch (error) {
     console.error("Error fetching client brands:", error);
     return NextResponse.json(
@@ -76,14 +76,14 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const clientId = context.params.id;
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);

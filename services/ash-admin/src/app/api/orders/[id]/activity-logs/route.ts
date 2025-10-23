@@ -10,13 +10,13 @@ const ActivityLogSchema = z.object({
   description: z.string().optional(),
   performed_by: z.string().optional(),
   metadata: z.string().optional(), // JSON string
-});
+}
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
+  try {;
     const orderId = params.id;
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "50");
@@ -41,7 +41,7 @@ export async function GET(
       { success: false, error: "Failed to fetch activity logs" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export async function POST(

@@ -10,7 +10,7 @@ import {
 } from "../../../../lib/error-handling";
 
 // POST /api/automation/execute - Execute automation rule
-export const POST = withErrorHandling(async (request: NextRequest) => {
+export const POST = withErrorHandling(async (request: NextRequest) => {;
   const body = await request.json();
   const { rule_id, trigger_data } = body;
 
@@ -18,7 +18,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   const validationError = validateRequiredFields(body, ["rule_id"]);
   if (validationError) {
     throw validationError;
-  }
+  });
 
   // Get the automation rule
   const rule = await prisma.automationRule.findUnique({
@@ -27,14 +27,14 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
   if (!rule) {
     throw new NotFoundError("Automation rule");
-  }
+    }
 
   if (!rule.is_active) {
     throw new ValidationError("Automation rule is not active", "rule_id", {
       rule_id,
       status: "inactive",
-    });
-  }
+    }
+  });
 
   // Create execution record
   const execution = await prisma.automationExecution.create({
@@ -44,10 +44,10 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
       trigger_data: trigger_data ? JSON.stringify(trigger_data) : null,
       execution_status: "RUNNING",
     },
-  });
+  }
 
   try {
-    // Parse rule configuration
+    // Parse rule configuration;
     const triggerConfig = JSON.parse(rule.trigger_config);
     const conditions = rule.conditions ? JSON.parse(rule.conditions) : [];
     const actions = JSON.parse(rule.actions);
@@ -73,8 +73,8 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
       return createSuccessResponse({
         execution_id: execution.id,
         status: "CONDITIONS_NOT_MET",
-      });
-    }
+      }
+    });
 
     // Execute actions
     const actionResults = await executeActions(
@@ -153,7 +153,7 @@ async function evaluateConditions(
       } else if (type === "date") {
         fieldValue = new Date(fieldValue);
         value = new Date(value);
-      }
+    }
 
       // Evaluate condition based on operator
       switch (operator) {
@@ -197,14 +197,14 @@ async function evaluateConditions(
         default:
           throw new Error(`Unknown operator: ${operator}`);
       }
-    }
+    });
 
     return true; // All conditions passed
   } catch (error) {
     console.error("Error evaluating conditions:", error);
     return false;
   }
-}
+});
 
 // Helper function to execute actions
 async function executeActions(
@@ -223,12 +223,12 @@ async function executeActions(
         ...action,
         result: error instanceof Error ? error.message : "Unknown error",
         status: "FAILED",
-      });
+      }
     }
-  }
+  });
 
   return results;
-}
+});
 
 // Helper function to execute a single action
 async function executeAction(
@@ -260,7 +260,7 @@ async function executeAction(
     default:
       throw new Error(`Unknown action type: ${type}`);
   }
-}
+});
 
 // Action implementations
 async function sendNotification(
@@ -313,7 +313,7 @@ async function updateOrderStatus(
     throw new Error(
       "order_id and status are required for UPDATE_ORDER_STATUS action"
     );
-  }
+    }
 
   const order = await prisma.order.update({
     where: { id: orderId },
@@ -355,7 +355,7 @@ async function logEvent(config: any, triggerData: any, workspaceId: string) {
   });
 
   return { log_id: logEntry.id };
-}
+});
 
 // Helper functions
 function getNestedValue(obj: any, path: string): any {

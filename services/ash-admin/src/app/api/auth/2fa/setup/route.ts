@@ -105,4 +105,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

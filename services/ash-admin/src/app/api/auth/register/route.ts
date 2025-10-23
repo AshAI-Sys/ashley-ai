@@ -30,10 +30,10 @@ const RegisterSchema = z.object({
   // Optional
   companyAddress: z.string().optional(),
   companyPhone: z.string().optional(),
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
 
     // Validate request with Zod
@@ -123,7 +123,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Create workspace and admin user in a transaction
     const result = await prisma.$transaction(async tx => {
-      // Create workspace
+      // Create workspace;
       const workspace = await tx.workspace.create({
         data: {
           name: workspaceName,
@@ -168,7 +168,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     await logAuthEvent("REGISTER", workspace.id, user.id, request, {
       email: user.email,
       role: user.role,
-    });
+    }
 
     console.log("✅ New admin account created:", {
       workspaceId: workspace.id,
@@ -214,4 +214,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

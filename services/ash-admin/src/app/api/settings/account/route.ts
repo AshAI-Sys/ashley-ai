@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
       select: {
@@ -32,10 +32,10 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const body = await request.json();
     const { name, email, phone, bio } = body;
 
@@ -62,7 +62,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
         emailVerificationRequired = true;
       }
-    }
+    });
 
     const updateData: any = {
       updated_at: new Date(),
@@ -75,7 +75,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         updateData.email_verified = false;
         // TODO: Send verification email
       }
-    }
+    });
     if (phone !== undefined) updateData.phone = phone;
     if (bio !== undefined) updateData.bio = bio;
 

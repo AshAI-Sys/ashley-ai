@@ -10,13 +10,13 @@ const ColorVariantSchema = z.object({
   color_code: z.string().min(1, "Color code is required"),
   percentage: z.number().min(0).max(100),
   quantity: z.number().int().min(0),
-});
+}
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
+  try {;
     const orderId = params.id;
 
     // Get all line items for the order first
@@ -123,5 +123,5 @@ export async function DELETE(
       { success: false, error: "Failed to delete color variant" },
       { status: 500 }
     );
-  }
+  });
 };

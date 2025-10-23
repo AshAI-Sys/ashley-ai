@@ -104,7 +104,7 @@ export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "all";
     const page = parseInt(searchParams.get("page") || "1");
@@ -219,7 +219,7 @@ export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
           ).length,
         },
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching onboarding processes:", error);
     return NextResponse.json(
@@ -234,7 +234,7 @@ export const POST = requireAnyPermission(["admin:create", "hr:create"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateOnboardingSchema.parse(body);
 
@@ -444,7 +444,7 @@ function generateOnboardingChecklist(template_type: string) {
   return (
     checklists[template_type as keyof typeof checklists] || checklists.basic
   );
-}
+    }
 
 // Helper function to log onboarding audit events
 async function logOnboardingAudit(
@@ -460,7 +460,7 @@ async function logOnboardingAudit(
       description,
       metadata,
       timestamp: new Date(),
-    });
+    }
   } catch (error) {
     console.error("Error logging onboarding audit event:", error);
   }

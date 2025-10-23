@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/tenants - Create new tenant workspace
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const {
       name,
       slug,
@@ -67,7 +67,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
 // GET /api/tenants?workspace_id=xxx - Get tenant information
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
 
@@ -95,7 +95,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       config,
       limits,
       stats,
-    });
+    }
   } catch (error: any) {
     console.error("Get tenant error:", error);
     return NextResponse.json(
@@ -107,7 +107,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // PUT /api/tenants - Update tenant configuration
 export const PUT = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const { workspace_id, ...updates } = await req.json();
 
     if (!workspace_id) {
@@ -132,7 +132,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       message: "Tenant configuration updated",
-    });
+    }
   } catch (error: any) {
     console.error("Update tenant error:", error);
     return NextResponse.json(
@@ -144,7 +144,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
 
 // DELETE /api/tenants?workspace_id=xxx&confirmation=slug - Delete tenant
 export const DELETE = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
     const confirmation = searchParams.get("confirmation");
@@ -171,7 +171,7 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       message: "Tenant deleted successfully",
-    });
+    }
   } catch (error: any) {
     console.error("Delete tenant error:", error);
     return NextResponse.json(
@@ -179,4 +179,4 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
       { status: 400 }
     );
   }
-};
+});

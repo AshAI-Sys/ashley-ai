@@ -10,7 +10,7 @@ export const PUT = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const userId = user.id;
     const body = await req.json();
@@ -77,7 +77,7 @@ export const PUT = requireAuth(async (
       success: true,
       bundle: updatedBundle,
       message: `Bundle status updated to ${status}`,
-    });
+    }
   } catch (error: any) {
     console.error("Bundle status update error:", error);
     return NextResponse.json(

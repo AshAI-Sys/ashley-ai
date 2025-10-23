@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/alerts - Get alerts
-export const GET = requireAuth(async (request: NextRequest) {
-  try {
+export const GET = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const alertType = searchParams.get("alert_type");
@@ -64,11 +64,11 @@ export const GET = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/automation/alerts - Create alert
-export const POST = requireAuth(async (request: NextRequest) {
-  try {
+export const POST = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -123,7 +123,7 @@ export const POST = requireAuth(async (request: NextRequest) {
       success: true,
       data: alert,
       message: "Alert created successfully",
-    });
+    }
   } catch (error) {
     console.error("Error creating alert:", error);
     return NextResponse.json(
@@ -131,11 +131,11 @@ export const POST = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/automation/alerts - Update alert (acknowledge/resolve)
-export const PUT = requireAuth(async (request: NextRequest) {
-  try {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const { id, action, user_id = "user_1", resolution_notes } = body;
 
@@ -214,11 +214,11 @@ export const PUT = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/automation/alerts - Delete alert
-export const DELETE = requireAuth(async (request: NextRequest) {
-  try {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -244,7 +244,7 @@ export const DELETE = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // Helper functions
 async function getAlertSummary(workspaceId: string) {
@@ -318,4 +318,4 @@ Please acknowledge this alert in the system.`,
   } catch (error) {
     console.error("Error creating alert notification:", error);
   }
-}
+});

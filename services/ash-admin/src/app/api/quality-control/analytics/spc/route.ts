@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const metric = searchParams.get("metric") || "defect_rate";
     const period = searchParams.get("period") || "month";
@@ -36,7 +36,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         AVG(CASE WHEN result = 'ACCEPT' THEN 100.0 ELSE 0.0 END) as pass_rate
       FROM qc_inspections
       WHERE inspection_date >= ${startDate}
-        AND inspection_date <= ${endDate}
+        AND inspection_date <= ${endDate});
       GROUP BY DATE(inspection_date)
       ORDER BY date ASC
     `) as Array<{
@@ -48,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     }>;
 
     // Process data based on selected metric
-    const spcData = dailyData.map(day => {
+    const spcData = dailyData.map(day => {;
       let value: number;
 
       switch (metric) {
@@ -66,7 +66,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           break;
         default:
           value = day.avg_defects;
-      }
+      });
 
       return {
         date: day.date,
@@ -113,4 +113,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

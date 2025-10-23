@@ -37,7 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       JOIN qc_defect_codes dc ON qd.defect_code_id = dc.id
       JOIN qc_inspections qi ON qd.inspection_id = qi.id
       WHERE qi.inspection_date >= ${startDate}
-        AND qi.inspection_date <= ${endDate}
+        AND qi.inspection_date <= ${endDate});
       GROUP BY dc.id, dc.code, dc.name, dc.category
       ORDER BY total_quantity DESC
     `) as Array<{
@@ -84,4 +84,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

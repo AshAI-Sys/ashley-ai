@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "../../../../lib/auth-guards";
 import { authLogger } from "../../../../lib/logger";
 import { logAuthEvent } from "../../../../lib/audit-logger";
+import { requireAuth } from "@/lib/auth-middleware";
 
 /**
  * POST /api/auth/logout
  * Logout current user and clear session
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Get user from auth (optional - still logout even if not authenticated)
+    // Get user from auth (optional - still logout even if not authenticated);
     const userOrResponse = await requireAuth(request);
     let userId: string | undefined;
     let workspaceId: string | undefined;
@@ -26,8 +27,8 @@ export async function POST(request: NextRequest) {
       authLogger.info("User logged out", {
         userId: userId,
         email: userOrResponse.email,
-      });
-    }
+      }
+    });
 
     // Clear cookies
     const response = NextResponse.json({
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       success: true,
       message: "Logged out successfully",
-    });
+    }
 
     response.cookies.set("auth_token", "", { maxAge: 0, path: "/" });
     response.cookies.set("refresh_token", "", { maxAge: 0, path: "/" });
@@ -78,4 +79,4 @@ export async function POST(request: NextRequest) {
 
     return response;
   }
-}
+});

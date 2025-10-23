@@ -67,7 +67,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -88,19 +88,19 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         { last_name: { contains: search, mode: "insensitive" } },
         { username: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     if (role && role !== "all") {
       where.role = role;
-    }
+    });
 
     if (department && department !== "all") {
       where.department = department;
-    }
+    });
 
     if (status && status !== "all") {
       where.is_active = status === "active";
-    }
+    });
 
     // Get total count for pagination
     const total = await prisma.user.count({ where });
@@ -140,7 +140,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
           totalPages: Math.ceil(total / limit),
         },
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
@@ -155,7 +155,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateUserSchema.parse(body);
 
@@ -271,9 +271,9 @@ async function logUserAudit(
     //     description,
     //     metadata: JSON.stringify(metadata),
     //     timestamp: new Date()
-    //   }
+    //   });
     // })
   } catch (error) {
     console.error("Error logging audit event:", error);
-  }
+  });
 };

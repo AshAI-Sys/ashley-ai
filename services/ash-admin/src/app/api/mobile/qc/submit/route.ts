@@ -6,7 +6,7 @@ const prisma = db;
 
 // POST /api/mobile/qc/submit - Submit mobile QC inspection
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const userId = req.headers.get("x-user-id") || "mobile-qc";
@@ -116,8 +116,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         })
         .catch(() => {
           console.log("CAPA task creation skipped");
-        });
-    }
+        }
+    });
 
     return NextResponse.json({
       success: true,
@@ -127,7 +127,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         defect_rate: defectRate,
       },
       message: `Inspection ${aqlResult === "PASS" ? "passed" : "failed"} - ${defectRate.toFixed(2)}% defect rate`,
-    });
+    }
   } catch (error: any) {
     console.error("QC submission error:", error);
     return NextResponse.json(
@@ -135,4 +135,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

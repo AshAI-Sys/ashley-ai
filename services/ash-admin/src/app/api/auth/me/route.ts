@@ -3,18 +3,19 @@ import { requireAuth } from "../../../../lib/auth-guards";
 import { apiSuccess, apiServerError } from "../../../../lib/api-response";
 import { authLogger } from "../../../../lib/logger";
 import { prisma } from "../../../../lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 /**
  * GET /api/auth/me
  * Get current authenticated user information
  */
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Use auth guard to verify authentication
+    // Use auth guard to verify authentication;
     const userOrResponse = await requireAuth(request);
     if (userOrResponse instanceof Response) {
       return userOrResponse;
-    }
+    });
 
     const authUser = userOrResponse;
 
@@ -53,9 +54,9 @@ export async function GET(request: NextRequest) {
       workspaceId: user.workspace_id,
       isActive: user.is_active,
       lastLoginAt: user.last_login_at,
-    });
+    }
   } catch (error) {
     authLogger.error("Auth verification error", error);
     return apiServerError(error);
   }
-}
+});

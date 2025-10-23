@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -116,7 +116,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_cartons: totalCartons,
         cartons_today: packedTodayCartons,
       },
-    });
+    }
   } catch (error) {
     console.error("Error calculating finishing & packing stats:", error);
     return NextResponse.json(
@@ -159,4 +159,4 @@ async function getPackingEfficiency() {
     console.error("Error calculating packing efficiency:", error);
     return 0;
   }
-};
+});

@@ -7,7 +7,7 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const runId = context.params.id;
 
     const run = await prisma.printRun.findUnique({
@@ -90,7 +90,7 @@ export const GET = requireAuth(async (
     return NextResponse.json({
       success: true,
       data: transformedRun,
-    });
+    }
   } catch (error) {
     console.error("Get print run error:", error);
     return NextResponse.json(
@@ -98,14 +98,14 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-});
+}
 
 export const PATCH = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const runId = context.params.id;
     const body = await request.json();
     const { status, notes, material_consumption, quality_data } = body;
@@ -116,11 +116,11 @@ export const PATCH = requireAuth(async (
       updateData.status = status;
       if (status === "IN_PROGRESS" && !(await getRunStartTime(runId))) {
         updateData.started_at = new Date();
-      }
+    }
       if (status === "DONE") {
         updateData.ended_at = new Date();
       }
-    }
+    });
 
     const updatedRun = await prisma.printRun.update({
       where: { id: runId },
@@ -170,8 +170,8 @@ export const PATCH = requireAuth(async (
             qty_reject: qty_reject || 0,
             notes: notes || null,
           },
-        });
-      }
+        }
+      });
 
       // Create reject records if any
       if (qty_reject > 0 && reject_reasons) {
@@ -190,7 +190,7 @@ export const PATCH = requireAuth(async (
           )
         );
       }
-    }
+    });
 
     return NextResponse.json({
       success: true,
@@ -203,7 +203,7 @@ export const PATCH = requireAuth(async (
       { status: 500 }
     );
   }
-});
+}
 
 async function getRunStartTime(runId: string) {
   const run = await prisma.printRun.findUnique({
@@ -256,4 +256,4 @@ function getMethodDetails(run: any) {
     default:
       return { type: "unknown" };
   }
-}
+});

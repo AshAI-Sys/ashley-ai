@@ -8,14 +8,14 @@ import { requireAuth } from "@/lib/auth-middleware";
  */
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Get employee from authenticated user's workspace
+    // Get employee from authenticated user's workspace;
     const employee = await prisma.employee.findFirst({
       where: {
         workspace_id: user.workspaceId,
         is_active: true,
         // You can add user_id relation in future to link user to employee
       },
-      orderBy: { created_at: "asc" },
+      orderBy: { created_at: "asc" });,
     });
 
     if (!employee) {
@@ -29,8 +29,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           current_shift: "Day Shift",
           hours_worked_today: 0,
         },
-      });
-    }
+      }
+    });
 
     const today = new Date();
     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
@@ -102,7 +102,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           (timeOut.getTime() - timeIn.getTime()) / (1000 * 60) - breakMinutes;
         hoursWorked = workedMinutes / 60;
       }
-    }
+    });
 
     // Determine current shift based on time
     const currentHour = new Date().getHours();
@@ -113,7 +113,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       currentShift = "Afternoon Shift";
     } else if (currentHour >= 22 || currentHour < 6) {
       currentShift = "Night Shift";
-    }
+    });
 
     // Count pending tasks
     const [pendingSewingTasks, pendingPrintTasks] = await Promise.all([
@@ -182,7 +182,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
             : "CLOCKED_IN"
           : "NOT_CLOCKED_IN",
       },
-    });
+    }
   } catch (error) {
     console.error("Mobile stats error:", error);
     return NextResponse.json(

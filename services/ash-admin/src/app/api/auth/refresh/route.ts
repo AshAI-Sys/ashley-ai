@@ -14,13 +14,13 @@ import {
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Try to get refresh token from cookie or request body
+    // Try to get refresh token from cookie or request body;
     let refreshToken = request.cookies.get("refresh_token")?.value;
 
     if (!refreshToken) {
       const body = await request.json().catch(() => ({}));
       refreshToken = body.refresh_token;
-    }
+    });
 
     if (!refreshToken) {
       authLogger.warn("Refresh token missing in request");
@@ -41,8 +41,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       authLogger.info("Access token refreshed", {
         userId: payload.userId,
         email: payload.email,
-      });
-    }
+      }
+    });
 
     // Return new access token
     const response = NextResponse.json({
@@ -65,4 +65,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     authLogger.error("Token refresh error", error);
     return apiServerError(error);
   }
-};
+});

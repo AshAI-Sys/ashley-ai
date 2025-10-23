@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/qc/defect-types - Get all defect types
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
 
@@ -108,13 +108,13 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       return NextResponse.json({
         success: true,
         defectTypes: defaultDefectTypes,
-      });
-    }
+      }
+    });
 
     return NextResponse.json({
       success: true,
       defectTypes,
-    });
+    }
   } catch (error: any) {
     console.error("Defect types fetch error:", error);
     return NextResponse.json(
@@ -122,4 +122,4 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

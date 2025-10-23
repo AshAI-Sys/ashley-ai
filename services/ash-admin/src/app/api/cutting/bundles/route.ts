@@ -24,10 +24,10 @@ const UpdateBundleSchema = z.object({
   bundleId: z.string().min(1, "Bundle ID is required"),
   status: z.enum(["CREATED", "IN_SEWING", "DONE", "REJECTED"]),
   notes: z.string().optional(),
-});
+}
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -107,10 +107,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateBundlesSchema.parse(body);
 
@@ -198,7 +198,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
                 },
               },
             },
-          });
+          }
 
           createdBundles.push(bundle);
         }
@@ -227,7 +227,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 function generateQRCode(
   orderId: string,
@@ -239,8 +239,8 @@ function generateQRCode(
   return `ASH-${orderId}-${layId}-${sizeCode}-${String(bundleNumber).padStart(3, "0")}-${timestamp}`;
 }
 
-export async function PUT(request: NextRequest) {
-  try {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -304,7 +304,7 @@ export async function PUT(request: NextRequest) {
       success: true,
       data: bundle,
       message: "Bundle updated successfully",
-    });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -319,4 +319,4 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

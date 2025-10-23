@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "../../../lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   getUserActiveSessions,
   getUserSessionStats,
@@ -9,7 +10,7 @@ import {
 
 // GET - Get active sessions for the current user
 export const GET = requireAuth(async (request: NextRequest, user: any) => {
-  try {
+  try {;
     const { searchParams } = request.nextUrl;
     const statsOnly = searchParams.get("stats") === "true";
 
@@ -18,8 +19,8 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
       return NextResponse.json({
         success: true,
         data: stats,
-      });
-    }
+      }
+    });
 
     const sessions = await getUserActiveSessions(user.id);
 
@@ -29,7 +30,7 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
         sessions,
         total: sessions.length,
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching sessions:", error);
     return NextResponse.json(
@@ -41,7 +42,7 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
 
 // DELETE - Revoke sessions
 export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
-  try {
+  try {;
     const { searchParams } = request.nextUrl;
     const sessionHash = searchParams.get("sessionHash");
     const revokeAll = searchParams.get("revokeAll") === "true";
@@ -54,8 +55,8 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
         success: true,
         message: `Revoked ${count} active sessions`,
         data: { revokedCount: count },
-      });
-    }
+      }
+    });
 
     if (!sessionHash) {
       return NextResponse.json(
@@ -70,7 +71,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
     return NextResponse.json({
       success: true,
       message: "Session revoked successfully",
-    });
+    }
   } catch (error) {
     console.error("Error revoking session:", error);
     return NextResponse.json(

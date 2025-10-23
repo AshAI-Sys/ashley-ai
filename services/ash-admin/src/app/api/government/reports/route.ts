@@ -10,7 +10,7 @@ const prisma = db;
 
 // POST /api/government/reports - Generate government remittance reports
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { agency, period, workspace_id, employer_details, employee_ids } =
       body;
@@ -52,13 +52,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     let report: any = null;
 
     // Parse contact_info JSON to extract government IDs
-    const employeesWithGovIds = employees.map(emp => {
+    const employeesWithGovIds = employees.map(emp => {;
       let contactInfo: any = {};
       try {
         contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
       } catch (e) {
         // If parsing fails, use empty object
-      }
+      });
 
       const monthlySalary = emp.base_salary || emp.piece_rate || 0;
 
@@ -147,7 +147,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       agency,
       period,
       report,
-    });
+    }
   } catch (error: any) {
     console.error("Error generating government report:", error);
     return NextResponse.json(
@@ -159,7 +159,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
 // GET /api/government/reports - Get contribution calculations for a single employee
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
     const monthly_salary = searchParams.get("monthly_salary");
@@ -219,7 +219,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           pagibig_number: contactInfo.pagibig_number || null,
         };
       }
-    }
+    });
 
     return NextResponse.json({
       employee,
@@ -251,7 +251,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_employer_contribution: Math.round(totalER * 100) / 100,
         grand_total: Math.round(grandTotal * 100) / 100,
       },
-    });
+    }
   } catch (error: any) {
     console.error("Error calculating contributions:", error);
     return NextResponse.json(

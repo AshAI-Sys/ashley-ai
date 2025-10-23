@@ -7,10 +7,10 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Force dynamic route (don't pre-render during build)
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   return requireAuth(async (request: NextRequest, user) => {
     try {
-      // Return mock sessions
+      // Return mock sessions;
       const sessions = [
         {
           id: "1",
@@ -47,4 +47,4 @@ export async function GET(request: NextRequest) {
       );
     }
   });
-}
+    }

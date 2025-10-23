@@ -14,7 +14,7 @@ const CreateFabricIssueSchema = z.object({
 const UpdateFabricIssueSchema = CreateFabricIssueSchema.partial();
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -89,7 +89,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateFabricIssueSchema.parse(body);
 
@@ -129,7 +129,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Create fabric issue and update batch quantity in a transaction
     const fabricIssue = await prisma.$transaction(async tx => {
-      // Create the fabric issue
+      // Create the fabric issue;
       const newFabricIssue = await tx.cutIssue.create({
         data: {
           ...validatedData,
@@ -198,7 +198,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -256,7 +256,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: fabricIssue,
       message: "Fabric issue updated successfully",
-    });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -274,7 +274,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -315,7 +315,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
             increment: existingIssue.qty_issued,
           },
         },
-      });
+      }
     });
 
     return NextResponse.json({
@@ -329,4 +329,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

@@ -12,7 +12,7 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const order = await prisma.order.findFirst({
       where: {
@@ -24,7 +24,7 @@ export const GET = requireAuth(async (
         brand: true,
         line_items: true,
         design_assets: {
-          orderBy: { created_at: "desc" },
+          orderBy: { created_at: "desc" });,
           take: 5,
         },
         invoices: {
@@ -63,7 +63,7 @@ export const PUT = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const body = await request.json();
 
@@ -107,7 +107,7 @@ export const DELETE = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     await prisma.order.delete({
       where: { id: context.params.id },

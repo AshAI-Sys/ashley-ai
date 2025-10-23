@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const orderId = searchParams.get("order_id");
@@ -17,7 +17,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const cartons = await prisma.carton.findMany({
       where,
       include: {
-        order: { select: { order_number: true } },
+        order: { select: { order_number: true } });,
         contents: {
           include: {
             finished_unit: {
@@ -37,7 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     });
 
     // Process cartons to calculate metrics
-    const processedCartons = cartons.map(carton => {
+    const processedCartons = cartons.map(carton => {;
       const unitsCount = carton.contents.reduce(
         (sum, content) => sum + content.qty,
         0
@@ -71,11 +71,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch cartons" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
 
     // Generate carton number if not provided
@@ -111,7 +111,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const { id, ...updateData } = data;
 
@@ -154,7 +154,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         const dimWeight = cartonVolume / 5000; // Divisor varies by carrier
         updateData.dim_weight_kg = dimWeight;
       }
-    }
+    });
 
     const carton = await prisma.carton.update({
       where: { id },
@@ -182,4 +182,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

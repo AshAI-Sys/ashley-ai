@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/analytics/profit - Get profit analysis data
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -28,7 +28,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
-    }
+    });
 
     const analyses = await prisma.profitAnalysis.findMany({
       where,
@@ -83,7 +83,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       byClient[a.client_id].total_revenue += a.total_revenue;
       byClient[a.client_id].total_profit += a.net_profit;
       byClient[a.client_id].margins.push(a.net_margin);
-    });
+    }
 
     // Calculate average margins
     Object.values(byClient).forEach((client: any) => {
@@ -102,7 +102,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       analyses,
       stats,
       clientComparison,
-    });
+    }
   } catch (error: any) {
     console.error("Error fetching profit analysis:", error);
     return NextResponse.json(
@@ -114,7 +114,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // POST /api/analytics/profit - Create profit analysis
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const body = await req.json();
@@ -200,7 +200,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       analysis,
-    });
+    }
   } catch (error: any) {
     console.error("Error creating profit analysis:", error);
     return NextResponse.json(
@@ -212,7 +212,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
 // PUT /api/analytics/profit - Auto-generate profit analysis for an order
 export const PUT = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const body = await req.json();
@@ -317,7 +317,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       success: true,
       analysis,
       message: "Profit analysis auto-generated successfully",
-    });
+    }
   } catch (error: any) {
     console.error("Error auto-generating profit analysis:", error);
     return NextResponse.json(

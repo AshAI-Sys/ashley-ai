@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const orderId = searchParams.get("order_id");
@@ -17,7 +17,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const runs = await prisma.finishingRun.findMany({
       where,
       include: {
-        order: { select: { order_number: true } },
+        order: { select: { order_number: true } });,
         operator: { select: { first_name: true, last_name: true } },
         routing_step: true,
       },
@@ -27,7 +27,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     });
 
     // Process runs to calculate task completion
-    const processedRuns = runs.map(run => {
+    const processedRuns = runs.map(run => {;
       const totalTasks = 5; // Default finishing tasks
       const completedTasks =
         run.status === "COMPLETED"
@@ -49,7 +49,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         }
       } catch (e) {
         materialsUsed = [];
-      }
+      });
 
       return {
         ...run,
@@ -73,11 +73,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch finishing runs" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
 
     const finishingRun = await prisma.finishingRun.create({
@@ -91,7 +91,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         started_at: data.started_at ? new Date(data.started_at) : null,
       },
       include: {
-        order: { select: { order_number: true } },
+        order: { select: { order_number: true }); },
         operator: { select: { first_name: true, last_name: true } },
       },
     });
@@ -107,7 +107,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const { id, ...updateData } = data;
 
@@ -160,12 +160,12 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
         size_code: bundleData.size_code,
         color: bundleData.color || null,
         serial: `${bundleData.qr_code || finishingRun.id}-${(i + 1).toString().padStart(3, "0")}`,
-      });
-    }
+      }
+    });
 
     await prisma.finishedUnit.createMany({
       data: finishedUnits,
-    });
+    }
 
     console.log(
       `Created ${finishedUnits.length} finished units for finishing run ${finishingRun.id}`
@@ -173,4 +173,4 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
   } catch (error) {
     console.error("Error creating finished units:", error);
   }
-};
+});

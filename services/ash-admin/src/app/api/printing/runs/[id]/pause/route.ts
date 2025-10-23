@@ -53,7 +53,7 @@ export async function POST(
       success: true,
       data: updatedRun,
       message: "Print run paused successfully",
-    });
+    }
   } catch (error) {
     console.error("Pause print run error:", error);
     return NextResponse.json(
@@ -89,5 +89,5 @@ async function logRunEvent(
     });
   } catch (error) {
     console.error("Failed to log run event:", error);
-  }
+  });
 };

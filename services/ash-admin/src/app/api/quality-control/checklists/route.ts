@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const productType = searchParams.get("product_type");
     const method = searchParams.get("method");
@@ -11,10 +11,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const where: any = {};
     if (productType && productType !== "all") {
       where.product_type = productType;
-    }
+    });
     if (method && method !== "all") {
       where.method = method;
-    }
+    });
 
     const checklists = await prisma.qCChecklist.findMany({
       where,
@@ -28,11 +28,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch checklists" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
 
     const checklist = await prisma.qCChecklist.create({
@@ -53,4 +53,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

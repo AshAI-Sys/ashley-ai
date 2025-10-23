@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/notifications - Get notifications
-export const GET = requireAuth(async (request: NextRequest) {
-  try {
+export const GET = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const status = searchParams.get("status");
@@ -53,11 +53,11 @@ export const GET = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/automation/notifications - Create notification
-export const POST = requireAuth(async (request: NextRequest) {
-  try {
+export const POST = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -104,7 +104,7 @@ export const POST = requireAuth(async (request: NextRequest) {
           variables_data
         );
       }
-    }
+    });
 
     const notification = await prisma.notification.create({
       data: {
@@ -116,7 +116,7 @@ export const POST = requireAuth(async (request: NextRequest) {
         recipient_phone,
         channel,
         subject: finalSubject,
-        content: finalContent,
+        content: finalContent,;
         variables_data: variables_data ? JSON.stringify(variables_data) : null,
         priority,
         scheduled_for: scheduled_for ? new Date(scheduled_for) : null,
@@ -133,7 +133,7 @@ export const POST = requireAuth(async (request: NextRequest) {
       success: true,
       data: notification,
       message: "Notification created successfully",
-    });
+    }
   } catch (error) {
     console.error("Error creating notification:", error);
     return NextResponse.json(
@@ -141,11 +141,11 @@ export const POST = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/automation/notifications - Update notification status
-export const PUT = requireAuth(async (request: NextRequest) {
-  try {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const { id, status, error_message, sent_at, delivered_at } = body;
 
@@ -163,11 +163,11 @@ export const PUT = requireAuth(async (request: NextRequest) {
 
       if (status === "SENT" && sent_at) {
         updateData.sent_at = new Date(sent_at);
-      }
+    }
 
       if (status === "DELIVERED" && delivered_at) {
         updateData.delivered_at = new Date(delivered_at);
-      }
+    }
 
       if (status === "FAILED") {
         updateData.retry_count = { increment: 1 };
@@ -175,7 +175,7 @@ export const PUT = requireAuth(async (request: NextRequest) {
           updateData.error_message = error_message;
         }
       }
-    }
+    });
 
     const notification = await prisma.notification.update({
       where: { id },
@@ -194,7 +194,7 @@ export const PUT = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // Helper function to interpolate template variables
 function interpolateTemplate(template: string, variables: any): string {
@@ -203,9 +203,9 @@ function interpolateTemplate(template: string, variables: any): string {
   return template.replace(/\{\{(\w+(?:\.\w+)*)\}\}/g, (match, path) => {
     const value = getNestedValue(variables, path);
     return value !== undefined ? String(value) : match;
-  });
+  }
 }
 
 function getNestedValue(obj: any, path: string): any {
   return path.split(".").reduce((current, key) => current?.[key], obj);
-}
+    }

@@ -10,10 +10,10 @@ export const runtime = "nodejs";
 
 const ForgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
 
     // Validate request
@@ -70,7 +70,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 429 }
         );
       }
-    }
+    });
 
     // Generate password reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -96,7 +96,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       await sendPasswordResetEmail(user.email, {
         user_name: `${user.first_name} ${user.last_name}`,
         reset_link: resetUrl,
-      });
+      }
       console.log("✅ Password reset email sent to:", user.email);
     } catch (emailError) {
       console.error("❌ Failed to send password reset email:", emailError);
@@ -140,4 +140,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

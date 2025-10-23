@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },
       select: {
@@ -35,10 +35,10 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       name,

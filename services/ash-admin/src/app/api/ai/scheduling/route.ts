@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/scheduling - Generate optimized schedule
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const { start_date, include_stages } = await req.json();
     const workspace_id = user.workspaceId;
 
@@ -35,7 +35,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     // Transform orders into production jobs
     const jobs = orders
       .map(order => {
-        // Determine current stage
+        // Determine current stage;
         let currentStage: "CUTTING" | "PRINTING" | "SEWING" | "FINISHING" =
           "CUTTING";
         if (order.sewing_runs && order.sewing_runs.length > 0)
@@ -150,8 +150,8 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           recommendations: ["No active jobs - ready for new orders"],
           conflicts: [],
         },
-      });
-    }
+      }
+    });
 
     // Generate optimized schedule
     const schedule = await smartSchedulingAI.optimizeSchedule(
@@ -164,7 +164,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       success: true,
       schedule,
       generated_at: new Date(),
-    });
+    }
   } catch (error: any) {
     console.error("Scheduling optimization error:", error);
     return NextResponse.json(
@@ -176,7 +176,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
 // GET /api/ai/scheduling/preview - Preview current schedule
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");
 
@@ -205,7 +205,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     });
 
     // Format schedule preview
-    const schedulePreview = orders.map(order => {
+    const schedulePreview = orders.map(order => {;
       const deadline =
         order.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const daysUntilDeadline =
@@ -241,7 +241,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: new Date(),
         end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
       },
-    });
+    }
   } catch (error: any) {
     console.error("Schedule preview error:", error);
     return NextResponse.json(

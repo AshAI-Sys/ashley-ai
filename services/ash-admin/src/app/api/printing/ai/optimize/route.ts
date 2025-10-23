@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       print_method,
@@ -98,7 +98,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         analysis_id: aiAnalysis.id,
         ...optimization,
       },
-    });
+    }
   } catch (error) {
     console.error("AI optimization error:", error);
     return NextResponse.json(
@@ -142,7 +142,7 @@ function generateOptimization(method: string, params: any) {
     case "EMBROIDERY":
       methodOptimization = optimizeEmbroidery(params, baseFactors);
       break;
-  }
+  });
 
   return {
     recommendations: generateRecommendations(
@@ -233,7 +233,7 @@ function calculateHistoricalPerformance(runs: any[]) {
   if (runs.length === 0) return 0.8;
 
   const qualityScores = runs.map(run => {
-    // Use output quality metrics instead of QC inspections
+    // Use output quality metrics instead of QC inspections;
     if (!run.outputs || run.outputs.length === 0) return 0.85;
 
     const output = run.outputs[0];
@@ -242,7 +242,7 @@ function calculateHistoricalPerformance(runs: any[]) {
 
     const defectRate = (output.qty_reject || 0) / totalQty;
     return Math.max(0.5, 1 - defectRate);
-  });
+    }
 
   return (
     qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length
@@ -303,8 +303,8 @@ function generateRecommendations(
       priority: "HIGH",
       message: "Consider adjusting quantity for optimal batch size",
       impact: "cost_reduction",
-    });
-  }
+    }
+  });
 
   if (baseFactors.machine_efficiency < 0.8) {
     recommendations.push({
@@ -312,8 +312,8 @@ function generateRecommendations(
       priority: "MEDIUM",
       message: "Schedule machine maintenance to improve efficiency",
       impact: "quality_improvement",
-    });
-  }
+    }
+  });
 
   // Method-specific recommendations
   switch (method) {
@@ -324,7 +324,7 @@ function generateRecommendations(
           priority: "MEDIUM",
           message: "Consider splitting into multiple smaller batches",
           impact: "time_optimization",
-        });
+        }
       }
       break;
 
@@ -336,7 +336,7 @@ function generateRecommendations(
           message:
             "Small batch detected - consider combining with similar orders",
           impact: "efficiency",
-        });
+        }
       }
       break;
 
@@ -346,7 +346,7 @@ function generateRecommendations(
         priority: "HIGH",
         message: `Optimal film temperature: ${methodOpt.film_temperature}°F`,
         impact: "quality_improvement",
-      });
+      }
       break;
 
     case "EMBROIDERY":
@@ -356,10 +356,10 @@ function generateRecommendations(
           priority: "MEDIUM",
           message: "High speed detected - monitor thread breaks",
           impact: "quality_assurance",
-        });
+        }
       }
       break;
-  }
+  });
 
   return recommendations;
 }
@@ -429,4 +429,4 @@ function calculateQualityPrediction(factors: any, requirements: any) {
     0.99,
     Math.round(baseQuality * requirementsFactor * 100) / 100
   );
-};
+    }

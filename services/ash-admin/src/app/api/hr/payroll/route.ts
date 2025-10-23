@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const year = searchParams.get("year");
@@ -20,7 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         where.period_start.gte = startYear;
         where.period_start.lte = endYear;
       }
-    }
+    });
 
     const payrollPeriods = await prisma.payrollPeriod.findMany({
       where,
@@ -47,7 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     });
 
     // Calculate summary for each payroll period
-    const processedRuns = payrollPeriods.map(period => {
+    const processedRuns = payrollPeriods.map(period => {;
       const totalAmount = period.earnings.reduce(
         (sum, earning) => sum + (earning.net_pay || 0),
         0
@@ -69,7 +69,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: processedRuns,
-    });
+    }
   } catch (error) {
     console.error("Error fetching payroll runs:", error);
     return NextResponse.json(
@@ -77,10 +77,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const {
       period_start,
@@ -95,7 +95,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Start transaction
     const result = await prisma.$transaction(async tx => {
-      // Create payroll period
+      // Create payroll period;
       const payrollPeriod = await tx.payrollPeriod.create({
         data: {
           workspace_id: "default",
@@ -193,7 +193,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             const monthlyRate = employee.base_salary || 0;
             grossPay = (monthlyRate / 22) * workDays; // Assuming 22 working days per month
             break;
-        }
+        });
 
         // Calculate deductions (10% as simplified deductions)
         const deductions = grossPay * 0.1;
@@ -215,8 +215,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             total_hours: totalHours,
             salary_type: employee.salary_type,
           }),
-        });
-      }
+        }
+      });
 
       // Create payroll earnings
       await tx.payrollEarning.createMany({
@@ -277,10 +277,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const { id, status, approval_notes } = data;
 
@@ -318,7 +318,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         created_at: payrollPeriod.created_at.toISOString(),
         processed_at: payrollPeriod.processed_at?.toISOString() || null,
       },
-    });
+    }
   } catch (error) {
     console.error("Error updating payroll run:", error);
     return NextResponse.json(

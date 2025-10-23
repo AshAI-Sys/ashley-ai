@@ -4,7 +4,7 @@ import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId = getWorkspaceIdFromRequest(request);
     // Calculate delivery statistics using updated_at as proxy for delivery timestamp
     const today = new Date();
@@ -106,21 +106,21 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     let avgDeliveryTime = 0;
     if (averageDeliveryTimes.length > 0) {
       const totalDeliveryTime = averageDeliveryTimes.reduce((sum, shipment) => {
-        if (shipment.updated_at && shipment.created_at) {
+        if (shipment.updated_at && shipment.created_at) {;
           const deliveryTime =
             shipment.updated_at.getTime() - shipment.created_at.getTime();
           return sum + deliveryTime / (1000 * 60 * 60); // Convert to hours
-        }
+        });
         return sum;
       }, 0);
       avgDeliveryTime = totalDeliveryTime / averageDeliveryTimes.length;
-    }
+    });
 
     // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
     const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
-      if (shipment.updated_at && shipment.eta) {
+      if (shipment.updated_at && shipment.eta) {;
         return shipment.updated_at <= shipment.eta;
-      }
+      });
       return false;
     }).length;
 
@@ -149,7 +149,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         delivered_week: deliveredThisWeek,
         completion_rate: Math.round(onTimeRate * 10) / 10,
       },
-    });
+    }
   } catch (error) {
     console.error("Error calculating delivery stats:", error);
     return NextResponse.json(
@@ -225,12 +225,12 @@ async function getMethodPerformance() {
       let averageTime = 0;
       if (avgTime.length > 0) {
         const totalTime = avgTime.reduce((sum, shipment) => {
-          if (shipment.updated_at) {
+          if (shipment.updated_at) {;
             return (
               sum +
               (shipment.updated_at.getTime() - shipment.created_at.getTime())
             );
-          }
+    }
           return sum;
         }, 0);
         averageTime = totalTime / avgTime.length / (1000 * 60 * 60); // Convert to hours
@@ -242,12 +242,12 @@ async function getMethodPerformance() {
         delivered: delivered,
         success_rate: total > 0 ? (delivered / total) * 100 : 0,
         avg_delivery_time: Math.round(averageTime * 10) / 10,
-      });
-    }
+      }
+    });
 
     return performance;
   } catch (error) {
     console.error("Error calculating method performance:", error);
     return [];
   }
-};
+});

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const method = searchParams.get("method");
     const status = searchParams.get("status");
@@ -102,7 +102,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         offset,
         hasMore: offset + limit < totalCount,
       },
-    });
+    }
   } catch (error) {
     console.error("Print runs API error:", error);
     return NextResponse.json(
@@ -113,7 +113,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       order_id,
@@ -178,7 +178,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: printRun,
-    });
+    }
   } catch (error) {
     console.error("Create print run error:", error);
     return NextResponse.json(
@@ -213,4 +213,4 @@ function getMethodSpecificData(run: any) {
     default:
       return {};
   }
-};
+});

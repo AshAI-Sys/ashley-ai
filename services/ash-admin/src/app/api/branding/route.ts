@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/branding?workspace_id=xxx - Get branding configuration
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
     const format = searchParams.get("format"); // 'json' | 'css' | 'preview'
@@ -41,7 +41,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           branding,
-        });
+        }
     }
   } catch (error: any) {
     console.error("Get branding error:", error);
@@ -54,7 +54,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // PUT /api/branding - Update branding configuration
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const { workspace_id, ...updates } = await req.json();
 
     if (!workspace_id) {
@@ -80,7 +80,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       success: true,
       message: "Branding updated successfully",
       branding,
-    });
+    }
   } catch (error: any) {
     console.error("Update branding error:", error);
     return NextResponse.json(
@@ -88,4 +88,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

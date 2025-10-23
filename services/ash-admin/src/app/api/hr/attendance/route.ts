@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
     const date_from = searchParams.get("date_from");
@@ -17,7 +17,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       // Map status to our schema fields
       if (status === "APPROVED") where.status = "APPROVED";
       else if (status === "PENDING") where.status = "PENDING";
-    }
+    });
 
     // Date filtering
     if (date_from || date_to) {
@@ -31,7 +31,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         gte: new Date(today.setHours(0, 0, 0, 0)),
         lt: new Date(today.setHours(23, 59, 59, 999)),
       };
-    }
+    });
 
     const attendanceLogs = await prisma.attendanceLog.findMany({
       where,
@@ -67,7 +67,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: processedLogs,
-    });
+    }
   } catch (error) {
     console.error("Error fetching attendance logs:", error);
     return NextResponse.json(
@@ -75,10 +75,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const {
       employee_id,
@@ -93,7 +93,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Validate employee exists
     const employee = await prisma.employee.findUnique({
       where: { id: employee_id },
-      select: { id: true, first_name: true, last_name: true, is_active: true },
+      select: { id: true, first_name: true, last_name: true, is_active: true });,
     });
 
     if (!employee) {
@@ -140,7 +140,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         !existingAttendance.time_out
       ) {
         updateData.time_out = timestamp ? new Date(timestamp) : new Date();
-      }
+    }
 
       if (Object.keys(updateData).length > 0) {
         attendanceLog = await prisma.attendanceLog.update({
@@ -162,7 +162,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { success: false, error: "Invalid attendance action" },
           { status: 400 }
         );
-      }
+      });
     } else {
       // Create new attendance record
       attendanceLog = await prisma.attendanceLog.create({
@@ -195,8 +195,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
         },
-      });
-    }
+      }
+    });
 
     return NextResponse.json(
       {
@@ -226,10 +226,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const { id, approved, approver_notes } = data;
 
@@ -254,7 +254,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: attendanceLog,
-    });
+    }
   } catch (error) {
     console.error("Error updating attendance log:", error);
     return NextResponse.json(

@@ -17,10 +17,10 @@ const CreateEmployeeSchema = z.object({
   base_salary: z.number().optional(),
   piece_rate: z.number().optional(),
   permissions: z.object({}).optional(),
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateEmployeeSchema.parse(body);
 
@@ -48,8 +48,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           name: "Ashley AI Manufacturing",
           description: "Main manufacturing workspace",
         },
-      });
-    }
+      }
+    });
 
     // Create employee
     const employee = await prisma.employee.create({
@@ -103,7 +103,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 // Get all employees
 export async function GET() {
@@ -132,7 +132,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: employees,
-    });
+    }
   } catch (error) {
     console.error("Error fetching employees:", error);
     return NextResponse.json(
@@ -140,4 +140,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-};
+});

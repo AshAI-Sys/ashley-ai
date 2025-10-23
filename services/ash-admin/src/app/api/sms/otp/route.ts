@@ -8,7 +8,7 @@ const otpStore = new Map<string, { code: string; expires: number }>();
 
 // POST /api/sms/otp - Send OTP code
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { phone } = body;
 
@@ -53,14 +53,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       if (value.expires < Date.now()) {
         otpStore.delete(key);
       }
-    }
+    });
 
     return NextResponse.json({
       success: true,
       message: "OTP sent successfully",
       expires_in: 300, // 5 minutes
       message_id: result.message_id,
-    });
+    }
   } catch (error: any) {
     console.error("Error sending OTP:", error);
     return NextResponse.json(
@@ -72,7 +72,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
 // PUT /api/sms/otp - Verify OTP code
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { phone, code } = body;
 
@@ -119,7 +119,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       message: "OTP verified successfully",
-    });
+    }
   } catch (error: any) {
     console.error("Error verifying OTP:", error);
     return NextResponse.json(
@@ -127,4 +127,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

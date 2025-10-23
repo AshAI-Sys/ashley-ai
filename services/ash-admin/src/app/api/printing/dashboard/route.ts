@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -138,7 +138,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: dashboard,
-    });
+    }
   } catch (error) {
     console.error("Dashboard API error:", error);
     return NextResponse.json(
@@ -146,4 +146,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

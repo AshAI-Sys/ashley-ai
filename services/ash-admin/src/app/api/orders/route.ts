@@ -49,10 +49,10 @@ const CreateOrderSchema = z.object({
   fabric_type: z.string().optional(),
   size_distribution: z.string().optional(),
   mockup_url: z.string().optional(),
-});
+}
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -70,15 +70,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (search) {
       where.OR = [{ order_number: { contains: search, mode: "insensitive" } }];
-    }
+    });
 
     if (status) {
       where.status = status;
-    }
+    });
 
     if (clientId) {
       where.client_id = clientId;
-    }
+    });
 
     // Generate cache key
     const cacheKey = CacheKeys.ordersList(page, limit, {
@@ -90,7 +90,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Use cached query
     const result = await cachedQueryWithMetrics(
       cacheKey,
-      async () => {
+      async () => {;
         const [orders, total] = await Promise.all([
           prisma.order.findMany({
             where,
@@ -149,10 +149,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const body = await request.json();
     const validatedData = CreateOrderSchema.parse(body);
@@ -200,7 +200,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     } catch (cacheError) {
       console.warn("Failed to invalidate cache:", cacheError);
       // Don't fail the request if cache invalidation fails
-    }
+    });
 
     return NextResponse.json(
       {

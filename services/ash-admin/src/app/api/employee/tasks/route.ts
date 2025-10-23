@@ -6,7 +6,7 @@ import {
   withErrorHandling,
 } from "../../../../lib/error-handling";
 
-export const GET = withErrorHandling(async (request: NextRequest) => {
+export const GET = withErrorHandling(async (request: NextRequest) => {;
   const { searchParams } = new URL(request.url);
   const department = searchParams.get("department");
   const position = searchParams.get("position");
@@ -16,7 +16,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       { success: false, error: "Department is required" },
       { status: 400 }
     );
-  }
+    }
 
   let tasks: any[] = [];
 
@@ -46,7 +46,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      });
+      }
 
       tasks = cutLays.map(lay => ({
         id: lay.id,
@@ -82,7 +82,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      });
+      }
 
       tasks = printRuns.map(run => ({
         id: run.id,
@@ -116,7 +116,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      });
+      }
 
       tasks = sewingRuns.map(run => ({
         id: run.id,
@@ -150,7 +150,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      });
+      }
 
       tasks = qcInspections.map(check => ({
         id: check.id,
@@ -184,7 +184,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      });
+      }
 
       tasks = finishingRuns.map(run => ({
         id: run.id,
@@ -218,7 +218,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      });
+      }
 
       tasks = shipments.map(shipment => ({
         id: shipment.id,
@@ -235,7 +235,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     default:
       // For other departments, return empty array or generic tasks
       tasks = [];
-  }
+  });
 
   return createSuccessResponse(tasks);
-});
+    }

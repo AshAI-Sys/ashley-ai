@@ -40,7 +40,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
@@ -207,15 +207,15 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
       if (action && action !== "all") {
         matches = matches && log.action === action;
-      }
+      });
 
       if (target_user_id) {
         matches = matches && log.target_user_id === target_user_id;
-      }
+      });
 
       if (severity && severity !== "all") {
         matches = matches && log.severity === severity;
-      }
+      });
 
       if (search) {
         matches =
@@ -225,15 +225,15 @@ export const GET = requireAnyPermission(["admin:read"])(async (
               ?.toLowerCase()
               .includes(search.toLowerCase()) ||
             log.performer?.email?.toLowerCase().includes(search.toLowerCase()));
-      }
+    }
 
       if (date_from) {
         matches = matches && new Date(log.timestamp) >= new Date(date_from);
-      }
+    }
 
       if (date_to) {
         matches = matches && new Date(log.timestamp) <= new Date(date_to);
-      }
+    }
 
       return matches;
     });
@@ -251,7 +251,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     // Calculate summary statistics
     const summary = {
       total: filteredLogs.length,
-      today: filteredLogs.filter(log => {
+      today: filteredLogs.filter(log => {;
         const today = new Date();
         const logDate = new Date(log.timestamp);
         return logDate.toDateString() === today.toDateString();
@@ -291,7 +291,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         },
         summary,
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching audit logs:", error);
     return NextResponse.json(
@@ -306,7 +306,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
   request: NextRequest,
   user: any
 ) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateAuditLogSchema.parse(body);
 

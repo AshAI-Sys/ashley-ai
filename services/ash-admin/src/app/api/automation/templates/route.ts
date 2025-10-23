@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/templates - Get notification templates
-export const GET = requireAuth(async (request: NextRequest) {
-  try {
+export const GET = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const category = searchParams.get("category");
@@ -39,7 +39,7 @@ export const GET = requireAuth(async (request: NextRequest) {
 
     // Add usage statistics
     const templatesWithStats = await Promise.all(
-      templates.map(async template => {
+      templates.map(async template => {;
         const stats = await prisma.notification.groupBy({
           by: ["status"],
           where: { template_id: template.id },
@@ -74,7 +74,7 @@ export const GET = requireAuth(async (request: NextRequest) {
         total: templates.length,
         filters: { category, type, isActive },
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching notification templates:", error);
     return NextResponse.json(
@@ -82,11 +82,11 @@ export const GET = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/automation/templates - Create notification template
-export const POST = requireAuth(async (request: NextRequest) {
-  try {
+export const POST = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -122,7 +122,7 @@ export const POST = requireAuth(async (request: NextRequest) {
           { status: 400 }
         );
       }
-    }
+    });
 
     const template = await prisma.notificationTemplate.create({
       data: {
@@ -131,7 +131,7 @@ export const POST = requireAuth(async (request: NextRequest) {
         category,
         type,
         subject_template,
-        body_template,
+        body_template,;
         variables: variablesJson,
         is_active,
         created_by,
@@ -147,7 +147,7 @@ export const POST = requireAuth(async (request: NextRequest) {
       success: true,
       data: template,
       message: "Notification template created successfully",
-    });
+    }
   } catch (error) {
     console.error("Error creating notification template:", error);
     return NextResponse.json(
@@ -155,11 +155,11 @@ export const POST = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/automation/templates - Update notification template
-export const PUT = requireAuth(async (request: NextRequest) {
-  try {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -197,11 +197,11 @@ export const PUT = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/automation/templates - Delete notification template
-export const DELETE = requireAuth(async (request: NextRequest) {
-  try {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -239,4 +239,4 @@ export const DELETE = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

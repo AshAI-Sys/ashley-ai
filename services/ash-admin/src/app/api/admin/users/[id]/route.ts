@@ -40,7 +40,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
   user: any,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const id = context.params.id;
 
     const targetUser = await prisma.user.findFirst({
@@ -76,7 +76,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     return NextResponse.json({
       success: true,
       data: { user: targetUser },
-    });
+    }
   } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(
@@ -92,7 +92,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
   user: any,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const id = context.params.id;
     const body = await request.json();
     const validatedData = UpdateUserSchema.parse(body);
@@ -142,7 +142,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
           { status: 400 }
         );
       }
-    }
+    });
 
     // Prepare update data
     const updateData: any = { ...validatedData };
@@ -151,7 +151,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
     if (validatedData.password) {
       updateData.password_hash = await bcrypt.hash(validatedData.password, 10);
       delete updateData.password;
-    }
+    });
 
     // Track changes for audit
     const changes: any = {};
@@ -204,7 +204,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
       success: true,
       data: { user: updatedUser },
       message: "User updated successfully",
-    });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -231,7 +231,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
   user: any,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const id = context.params.id;
 
     // Check if user exists
@@ -280,7 +280,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
     return NextResponse.json({
       success: true,
       message: "User deleted successfully",
-    });
+    }
   } catch (error) {
     console.error("Error deleting user:", error);
     return NextResponse.json(
@@ -304,7 +304,7 @@ async function logUserAudit(
       description,
       metadata,
       timestamp: new Date(),
-    });
+    }
   } catch (error) {
     console.error("Error logging audit event:", error);
   }

@@ -15,7 +15,7 @@ const CreateBrandSchema = z.object({
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -98,14 +98,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
 
     // Check if client exists
     const client = await prisma.client.findUnique({
       where: { id: validatedData.client_id },
-      select: { id: true, workspace_id: true },
+      select: { id: true, workspace_id: true });,
     });
 
     if (!client) {
@@ -179,7 +179,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -224,7 +224,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
       }
-    }
+    });
 
     const brand = await prisma.brand.update({
       where: { id },
@@ -249,7 +249,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: brand,
       message: "Brand updated successfully",
-    });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -267,7 +267,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -320,4 +320,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

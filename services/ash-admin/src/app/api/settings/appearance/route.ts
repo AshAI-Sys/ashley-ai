@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
   try {
-    // Return default appearance settings
+    // Return default appearance settings;
     const settings = {
       theme: "system",
       color_scheme: "blue",
@@ -23,13 +23,13 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     console.error("Error fetching appearance settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 }
+      { status: 500 });
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const body = await request.json();
     // TODO: Save to database
     return NextResponse.json({ success: true });

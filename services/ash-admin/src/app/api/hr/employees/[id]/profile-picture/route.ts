@@ -23,7 +23,7 @@ export async function POST(
           { error: "No file provided" },
           { status: 400 }
         );
-      }
+    }
 
       // Validate file type
       const allowedTypes = [
@@ -37,7 +37,7 @@ export async function POST(
           { error: "Invalid file type. Only JPEG, PNG, and WebP are allowed" },
           { status: 400 }
         );
-      }
+    }
 
       // Validate file size (max 5MB)
       const maxSize = 5 * 1024 * 1024; // 5MB
@@ -46,7 +46,7 @@ export async function POST(
           { error: "File size too large. Maximum 5MB allowed" },
           { status: 400 }
         );
-      }
+    }
 
       // Check if employee exists and belongs to user's workspace
       const employee = await prisma.employee.findFirst({
@@ -61,13 +61,13 @@ export async function POST(
           { error: "Employee not found" },
           { status: 404 }
         );
-      }
+    }
 
       // Create uploads directory if it doesn't exist
       const uploadsDir = join(process.cwd(), "public", "uploads", "employees");
       if (!existsSync(uploadsDir)) {
         mkdirSync(uploadsDir, { recursive: true });
-      }
+    }
 
       // Generate unique filename
       const timestamp = Date.now();
@@ -94,7 +94,7 @@ export async function POST(
         } catch (error) {
           console.error("Error deleting old profile picture:", error);
         }
-      }
+      });
 
       // Update employee with new profile picture URL
       const profilePictureUrl = `/uploads/employees/${filename}`;
@@ -123,8 +123,8 @@ export async function POST(
         { status: 500 }
       );
     }
-  });
-}
+  }
+});
 
 // DELETE - Remove employee profile picture
 export async function DELETE(
@@ -148,14 +148,14 @@ export async function DELETE(
           { error: "Employee not found" },
           { status: 404 }
         );
-      }
+    }
 
       if (!employee.profile_picture) {
         return NextResponse.json(
           { error: "No profile picture to delete" },
           { status: 400 }
         );
-      }
+    }
 
       // Delete file from filesystem
       try {
@@ -169,7 +169,7 @@ export async function DELETE(
         }
       } catch (error) {
         console.error("Error deleting profile picture file:", error);
-      }
+    }
 
       // Update employee to remove profile picture
       await prisma.employee.update({

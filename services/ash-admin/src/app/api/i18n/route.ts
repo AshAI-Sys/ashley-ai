@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/i18n?action=languages|translations|currencies
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const action = searchParams.get("action") || "languages";
     const lang = (searchParams.get("lang") as any) || "en";
@@ -40,7 +40,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           exchange_rate: rate,
-        });
+        }
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
@@ -56,7 +56,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // POST /api/i18n/convert - Convert currency
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const { amount, from, to } = await req.json();
 
     if (!amount || !from || !to) {
@@ -74,7 +74,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       original: { amount, currency: from },
       converted: { amount: converted, currency: to, formatted },
       rate: currencyManager.getExchangeRate(from, to).rate,
-    });
+    }
   } catch (error: any) {
     console.error("Currency conversion error:", error);
     return NextResponse.json(
@@ -82,4 +82,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

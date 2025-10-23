@@ -9,7 +9,7 @@ const UpdateBrandSchema = z.object({
   logo_url: z.string().optional(),
   settings: z.string().optional(),
   is_active: z.boolean().optional(),
-});
+}
 
 export async function GET(
   request: NextRequest,
@@ -61,7 +61,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: brand,
-    });
+    }
   } catch (error) {
     console.error("Error fetching brand:", error);
     return NextResponse.json(
@@ -118,7 +118,7 @@ export async function PUT(
           { status: 400 }
         );
       }
-    }
+    });
 
     const brand = await prisma.brand.update({
       where: { id: brandId },
@@ -149,7 +149,7 @@ export async function PUT(
       success: true,
       data: brand,
       message: "Brand updated successfully",
-    });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -217,5 +217,5 @@ export async function DELETE(
       { success: false, error: "Failed to delete brand" },
       { status: 500 }
     );
-  }
+  });
 };

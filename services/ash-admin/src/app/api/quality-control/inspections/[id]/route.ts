@@ -7,11 +7,11 @@ export const GET = requireAuth(async (
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const inspection = await prisma.qCInspection.findUnique({
       where: { id: context.params.id },
       include: {
-        order: { select: { order_number: true } },
+        order: { select: { order_number: true }); },
         bundle: { select: { qr_code: true, size_code: true, qty: true } },
         checklist: true,
         inspector: { select: { first_name: true, last_name: true } },
@@ -49,14 +49,14 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
 ) => {
-  try {
+  try {;
     const data = await request.json();
 
     const inspection = await prisma.qCInspection.update({

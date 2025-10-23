@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get("order_id");
     const status = searchParams.get("status");
@@ -17,7 +17,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const capaTasks = await prisma.cAPATask.findMany({
       where,
       include: {
-        order: { select: { order_number: true } },
+        order: { select: { order_number: true } });,
         inspection: { select: { stage: true, result: true } }, // Changed from inspection_type to stage
         defect: { select: { severity: true, description: true } },
         assignee: { select: { first_name: true, last_name: true } },
@@ -50,11 +50,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch CAPA tasks" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
 
     // Generate CAPA number
@@ -72,7 +72,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (lastCapa) {
       const lastNumber = parseInt(lastCapa.capa_number.split("-").pop() || "0");
       nextNumber = lastNumber + 1;
-    }
+    });
 
     const capaNumber = `CAPA-${currentYear}-${nextNumber.toString().padStart(4, "0")}`;
 
@@ -110,4 +110,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

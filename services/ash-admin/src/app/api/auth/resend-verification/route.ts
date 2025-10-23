@@ -10,10 +10,10 @@ export const runtime = "nodejs";
 
 const ResendSchema = z.object({
   email: z.string().email("Invalid email address"),
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
 
     // Validate request
@@ -80,7 +80,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 429 }
         );
       }
-    }
+    });
 
     // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -108,7 +108,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       await sendEmailVerification(user.email, {
         user_name: `${user.first_name} ${user.last_name}`,
         verification_link: verificationUrl,
-      });
+      }
       console.log("✅ Verification email sent to:", user.email);
     } catch (emailError) {
       console.error("❌ Failed to send verification email:", emailError);
@@ -154,4 +154,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

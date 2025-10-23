@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth-middleware";
 
 // GET /api/backups - List all backups (ADMIN ONLY)
 export const GET = requireRole("admin")(async (request: NextRequest, user) => {
-  try {
+  try {;
     const backups = await backupService.listBackups();
     const totalSize = await backupService.getTotalBackupSize();
     const schedulerConfig = backupScheduler.getConfig();
@@ -19,7 +19,7 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
         ...schedulerConfig,
         running: backupScheduler.isRunning(),
       },
-    });
+    }
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to list backups", details: error.message },
@@ -30,7 +30,7 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
 
 // POST /api/backups - Create new backup (ADMIN ONLY)
 export const POST = requireRole("admin")(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json().catch(() => ({}));
     const {
       name,
@@ -49,7 +49,7 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       backup,
-    });
+    }
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to create backup", details: error.message },
@@ -60,7 +60,7 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
 
 // DELETE /api/backups?id={backupId} - Delete backup (ADMIN ONLY)
 export const DELETE = requireRole("admin")(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");
 
@@ -76,7 +76,7 @@ export const DELETE = requireRole("admin")(async (request: NextRequest, user) =>
     return NextResponse.json({
       success: true,
       message: "Backup deleted successfully",
-    });
+    }
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to delete backup", details: error.message },

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
     const severity = searchParams.get("severity");
@@ -11,10 +11,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const where: any = {};
     if (category && category !== "all") {
       where.category = category;
-    }
+    });
     if (severity && severity !== "all") {
       where.severity = severity;
-    }
+    });
 
     const defectCodes = await prisma.qCDefectCode.findMany({
       where,
@@ -28,11 +28,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch defect codes" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
 
     const defectCode = await prisma.qCDefectCode.create({
@@ -54,4 +54,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

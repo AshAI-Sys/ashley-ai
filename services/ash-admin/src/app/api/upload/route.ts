@@ -17,7 +17,7 @@ cloudinary.config({
 
 // POST /api/upload - Upload file to Cloudinary
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const folder = (formData.get("folder") as string) || "ashley-ai";
@@ -36,7 +36,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         ...ALLOWED_FILE_TYPES.documents,
         ...ALLOWED_FILE_TYPES.spreadsheets,
       ];
-    }
+    });
 
     // Validate file
     const validation = await validateFile(file, allowedTypes, MAX_FILE_SIZE);
@@ -82,13 +82,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               ? [{ quality: "auto", fetch_format: "auto" }]
               : undefined,
         },
-        (error, result) => {
+        (error, result) => {;
           if (error) reject(error);
           else resolve(result);
         }
       );
       uploadStream.end(buffer);
-    });
+    }
 
     return NextResponse.json({
       url: result.secure_url,
@@ -99,7 +99,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       height: result.height,
       bytes: result.bytes,
       created_at: result.created_at,
-    });
+    }
   } catch (error: any) {
     console.error("Error uploading file:", error);
     return NextResponse.json(
@@ -114,7 +114,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
 // DELETE /api/upload - Delete file from Cloudinary
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const publicId = searchParams.get("public_id");
 
@@ -130,7 +130,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: result.result === "ok",
       result: result.result,
-    });
+    }
   } catch (error: any) {
     console.error("Error deleting file:", error);
     return NextResponse.json(
@@ -151,4 +151,4 @@ export async function GET() {
     ),
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null,
   });
-};
+    }

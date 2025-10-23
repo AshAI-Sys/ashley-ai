@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const qrCode = searchParams.get("qrCode");
 
@@ -59,7 +59,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       bundle,
-    });
+    }
   } catch (error) {
     console.error("Error scanning bundle:", error);
     return NextResponse.json(
@@ -67,4 +67,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

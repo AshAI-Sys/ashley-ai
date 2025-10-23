@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Fixed: Changed createdAt to created_at
+    // Fixed: Changed createdAt to created_at;
     const { searchParams } = new URL(request.url);
     const department = searchParams.get("department");
     const status = searchParams.get("status");
@@ -18,15 +18,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (department) {
       where.department = department;
-    }
+    });
 
     if (status) {
       where.status = status;
-    }
+    });
 
     if (position) {
       where.position = position;
-    }
+    });
 
     const [employees, total] = await Promise.all([
       prisma.employee.findMany({
@@ -57,4 +57,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // Ashley AI Quality Control Analytics
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { inspection_id, analysis_type } = await request.json();
 
     const inspection = await prisma.qCInspection.findUnique({
@@ -82,7 +82,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to perform Ashley analysis" },
       { status: 500 }
     );
-  }
+  });
 }
 
 async function performDefectTrendAnalysis(inspection: any) {
@@ -121,15 +121,15 @@ async function performDefectTrendAnalysis(inspection: any) {
         date,
         count: defect.quantity,
         severity: defect.severity,
-      });
+      }
       totalDefects += defect.quantity;
-    });
+    }
 
     timeSeriesData.push({
       date,
       total_defects: totalDefects,
       defect_rate: (totalDefects / insp.sample_size) * 100,
-    });
+    }
   });
 
   // Calculate trends
@@ -251,8 +251,8 @@ async function performRootCausePrediction(inspection: any) {
       confidence_score: confidence,
       preventive_actions: preventiveActions,
       defect_pattern: pattern,
-    });
-  }
+    }
+  });
 
   return {
     type: "root_cause_prediction",
@@ -287,9 +287,9 @@ async function performQualityRiskAssessment(inspection: any) {
       impact: "HIGH",
       score: 30,
       description: `Current defect rate ${defectRate.toFixed(2)}% exceeds acceptable threshold`,
-    });
+    }
     overallRiskScore += 30;
-  }
+  });
 
   // Factor 2: Critical defects present
   if (inspection.critical_found > 0) {
@@ -298,9 +298,9 @@ async function performQualityRiskAssessment(inspection: any) {
       impact: "CRITICAL",
       score: 40,
       description: `${inspection.critical_found} critical defects detected`,
-    });
+    }
     overallRiskScore += 40;
-  }
+  });
 
   // Factor 3: Lot size vs sample adequacy
   const samplePercentage = (inspection.sample_size / inspection.lot_size) * 100;
@@ -310,9 +310,9 @@ async function performQualityRiskAssessment(inspection: any) {
       impact: "MEDIUM",
       score: 20,
       description: `Sample size only covers ${samplePercentage.toFixed(1)}% of lot`,
-    });
+    }
     overallRiskScore += 20;
-  }
+  });
 
   // Factor 4: Inspection timing
   const inspectionType = inspection.stage; // Changed from inspection_type to stage
@@ -326,9 +326,9 @@ async function performQualityRiskAssessment(inspection: any) {
       score: 35,
       description:
         "Defects found at final inspection indicate upstream process issues",
-    });
+    }
     overallRiskScore += 35;
-  }
+  });
 
   const riskLevel =
     overallRiskScore >= 70 ? "HIGH" : overallRiskScore >= 40 ? "MEDIUM" : "LOW";
@@ -386,7 +386,7 @@ async function performProcessControlAnalysis(inspection: any) {
     controlLimits.centerline = p;
     controlLimits.ucl = p + 3 * sigma;
     controlLimits.lcl = Math.max(0, p - 3 * sigma);
-  }
+    }
 
   const currentDefectRate =
     (inspection.critical_found +
@@ -399,7 +399,7 @@ async function performProcessControlAnalysis(inspection: any) {
     controlStatus = "OUT_OF_CONTROL_HIGH";
   } else if (currentDefectRate < controlLimits.lcl) {
     controlStatus = "OUT_OF_CONTROL_LOW";
-  }
+  });
 
   return {
     type: "process_control_analysis",
@@ -455,7 +455,7 @@ function generateDefectTrendRecommendations(
     recommendations.push(
       "Consider increasing inspection frequency temporarily"
     );
-  }
+    }
 
   return recommendations;
 }
@@ -472,7 +472,7 @@ function generateRiskMitigationRecommendations(
     );
     recommendations.push("Initiate emergency CAPA process");
     recommendations.push("Notify quality manager and customer if applicable");
-  }
+    }
 
   return recommendations;
 }
@@ -489,7 +489,7 @@ function generateSPCRecommendations(
     recommendations.push(
       "Do not ship until process is brought back into control"
     );
-  }
+    }
 
   return recommendations;
 }
@@ -509,7 +509,7 @@ function generateOverallRecommendation(
       action: "STOP_PRODUCTION",
       summary: "High risk detected - immediate intervention required",
     };
-  }
+  });
 
   if (risk.risk_level === "MEDIUM" || trend.trend_direction === "INCREASING") {
     return {
@@ -518,7 +518,7 @@ function generateOverallRecommendation(
       summary:
         "Quality issues detected - investigation and corrective action needed",
     };
-  }
+  });
 
   return {
     priority: "NORMAL",
@@ -534,8 +534,7 @@ function calculateProcessCapability(historicalInspections: any[]) {
       cpk: null,
       note: "Insufficient data for capability analysis",
     };
-  }
+  });
 
   // Simplified capability calculation
-  return { cp: 1.33, cpk: 1.2, note: "Process capable" };
-};
+  return { cp: 1.33, cpk: 1.2, note: "Process capable" });

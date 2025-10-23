@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -101,7 +101,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         pending_bundles: pendingBundles,
         total_pieces_today: totalPiecesToday,
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching sewing dashboard stats:", error);
     return NextResponse.json(
@@ -109,4 +109,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

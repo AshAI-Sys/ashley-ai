@@ -6,7 +6,7 @@ const prisma = db;
 
 // POST /api/reports/execute - Execute a report and return data
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const userId = req.headers.get("x-user-id") || "system";
@@ -158,7 +158,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       });
 
       throw queryError;
-    }
+    });
   } catch (error: any) {
     console.error("Error executing report:", error);
     return NextResponse.json(
@@ -166,7 +166,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 // Query executors for different data sources
 async function executeOrdersQuery(
@@ -329,4 +329,4 @@ async function executeQualityQuery(
   });
 
   return inspections;
-};
+});

@@ -7,7 +7,7 @@ const prisma = db;
 
 // POST /api/auth/2fa/verify - Verify 2FA token and enable 2FA
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { user_id, token, enable_2fa = false } = body;
 
@@ -65,8 +65,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         data: {
           two_factor_backup_codes: JSON.stringify(backupCodes),
         },
-      });
-    }
+      }
+    });
 
     // If this is the first verification (enabling 2FA), enable it now
     if (enable_2fa && !user.two_factor_enabled) {
@@ -75,8 +75,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         data: {
           two_factor_enabled: true,
         },
-      });
-    }
+      }
+    });
 
     return NextResponse.json({
       valid: true,
@@ -96,4 +96,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

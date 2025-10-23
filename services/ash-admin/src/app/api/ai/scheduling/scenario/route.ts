@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // POST /api/ai/scheduling/scenario - Analyze what-if scenarios
 export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
-    const { base_schedule, scenario_type, scenario_data, jobs, resources } =
+    const { base_schedule, scenario_type, scenario_data, jobs, resources } =;
       await req.json();
 
     if (!base_schedule || !scenario_type || !jobs || !resources) {
@@ -81,7 +81,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         scenario.job_id = scenario_data.job_id;
         scenario.new_deadline = new Date(scenario_data.new_deadline);
         break;
-    }
+    });
 
     // Parse jobs and resources (convert date strings to Date objects)
     const parsedJobs = jobs.map((j: any) => ({
@@ -105,7 +105,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       success: true,
       analysis,
       analyzed_at: new Date(),
-    });
+    }
   } catch (error: any) {
     console.error("Scenario analysis error:", error);
     return NextResponse.json(

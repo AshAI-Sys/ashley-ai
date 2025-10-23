@@ -170,7 +170,7 @@ export async function POST(
         approval_link: approvalLink,
         expires_at: expiresAt,
       },
-    });
+    }
   } catch (error) {
     console.error("Error sending approval:", error);
     return NextResponse.json(
@@ -179,5 +179,5 @@ export async function POST(
     );
   } finally {
     await prisma.$disconnect();
-  }
+  });
 };

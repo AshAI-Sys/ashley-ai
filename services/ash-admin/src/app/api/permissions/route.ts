@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/permissions - Get all available permissions
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const user_id = searchParams.get("user_id");
     const action = searchParams.get("action"); // 'list' | 'user' | 'roles'
@@ -14,8 +14,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       return NextResponse.json({
         success: true,
         roles,
-      });
-    }
+      }
+    });
 
     if (action === "user" && user_id) {
       const userPermissions =
@@ -23,8 +23,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       return NextResponse.json({
         success: true,
         user_permissions: userPermissions,
-      });
-    }
+      }
+    });
 
     // Default: return all system permissions
     const permissions = permissionManager.getAllPermissions();
@@ -32,7 +32,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       success: true,
       permissions,
       total: permissions.length,
-    });
+    }
   } catch (error: any) {
     console.error("Get permissions error:", error);
     return NextResponse.json(
@@ -44,7 +44,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // POST /api/permissions/check - Check if user has permission
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const { user_id, resource, action } = await req.json();
 
     if (!user_id || !resource || !action) {
@@ -66,7 +66,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       user_id,
       resource,
       action,
-    });
+    }
   } catch (error: any) {
     console.error("Check permission error:", error);
     return NextResponse.json(
@@ -74,4 +74,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

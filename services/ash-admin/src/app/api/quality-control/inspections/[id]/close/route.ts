@@ -73,14 +73,14 @@ export async function POST(
           root_cause: "QC inspection failed AQL standards",
           created_by: inspection.inspector_id,
         },
-      });
-    }
+      }
+    });
 
     return NextResponse.json({
       ...updatedInspection,
       autoResult: result,
       actualResult: status,
-    });
+    }
   } catch (error) {
     console.error("Error closing inspection:", error);
     return NextResponse.json(

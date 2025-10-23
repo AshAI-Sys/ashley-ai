@@ -8,7 +8,7 @@ import {
 } from "@/lib/error-handling";
 
 export const GET = withErrorHandling(
-  async (request: NextRequest, { params }: { params: { id: string } }) => {
+  async (request: NextRequest, { params }: { params: { id: string } }) => {;
     const employeeId = params.id;
 
     // Get employee
@@ -42,7 +42,7 @@ export const GET = withErrorHandling(
       // Count pieces from sewing runs
       const sewingRuns = await prisma.sewingRun.findMany({
         where: { operator_id: employeeId },
-      });
+      }
 
       totalPieces = sewingRuns.reduce(
         (sum, run) => sum + (run.qty_good || 0),
@@ -69,7 +69,7 @@ export const GET = withErrorHandling(
       // Count QC inspections
       const qcInspections = await prisma.qCInspection.findMany({
         where: { inspector_id: employeeId },
-      });
+      }
 
       totalPieces = qcInspections.length;
 
@@ -96,7 +96,7 @@ export const GET = withErrorHandling(
           bundles: true,
           outputs: true,
         },
-      });
+      }
 
       totalPieces = cutLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
 
@@ -122,7 +122,7 @@ export const GET = withErrorHandling(
         include: {
           outputs: true,
         },
-      });
+      }
 
       totalPieces = printRuns.reduce(
         (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
@@ -146,7 +146,7 @@ export const GET = withErrorHandling(
       );
 
       tasksCompleted = printRuns.filter(run => run.status === "DONE").length;
-    }
+    });
 
     // Calculate efficiency rate (simplified - can be enhanced based on targets)
     const targetPiecesPerDay = employee.salary_type === "PIECE" ? 200 : 100;
@@ -176,7 +176,7 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
-    }
+    });
 
     const stats = {
       total_pieces: totalPieces,

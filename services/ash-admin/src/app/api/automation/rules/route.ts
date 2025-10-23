@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/automation/rules - Get all automation rules
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = user.workspaceId;
     const isActive = searchParams.get("is_active");
@@ -14,11 +14,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (isActive !== null) {
       where.is_active = isActive === "true";
-    }
+    });
 
     if (triggerType) {
       where.trigger_type = triggerType;
-    }
+    });
 
     const rules = await prisma.automationRule.findMany({
       where,
@@ -48,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total: rules.length,
         filters: { isActive, triggerType },
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching automation rules:", error);
     return NextResponse.json(
@@ -60,7 +60,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
 // POST /api/automation/rules - Create new automation rule
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       name,
@@ -128,7 +128,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: rule,
       message: "Automation rule created successfully",
-    });
+    }
   } catch (error) {
     console.error("Error creating automation rule:", error);
     return NextResponse.json(
@@ -140,7 +140,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
 // PUT /api/automation/rules - Update automation rule
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -188,7 +188,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 
 // DELETE /api/automation/rules - Delete automation rule
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 

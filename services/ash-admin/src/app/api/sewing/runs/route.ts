@@ -26,10 +26,10 @@ const UpdateSewingRunSchema = z.object({
     .optional(),
   reject_reason: z.string().optional(),
   reject_photo_url: z.string().optional(),
-});
+}
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -144,7 +144,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: transformedRuns,
-    });
+    }
   } catch (error) {
     console.error("Error fetching sewing runs:", error);
     return NextResponse.json(
@@ -155,7 +155,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateSewingRunSchema.parse(body);
 
@@ -266,7 +266,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -310,7 +310,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         updateData.efficiency_pct =
           actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
       }
-    }
+    });
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
@@ -348,7 +348,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: sewingRun,
       message: "Sewing run updated successfully",
-    });
+    }
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -366,7 +366,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -412,4 +412,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

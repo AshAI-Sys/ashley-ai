@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const period = searchParams.get("period") || "month";
 
@@ -79,7 +79,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       case "quarter":
         prevStartDate.setMonth(prevStartDate.getMonth() - 3);
         break;
-    }
+    });
 
     const prevInspections = await prisma.qCInspection.findMany({
       where: {
@@ -118,7 +118,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_samples: totalSamples,
         total_defects: totalDefects,
       },
-    });
+    }
   } catch (error) {
     console.error("Error calculating quality metrics:", error);
     return NextResponse.json(
@@ -126,4 +126,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

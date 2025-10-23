@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/inventory - Get inventory summary and alerts
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
     const action = searchParams.get("action"); // 'summary' | 'alerts' | 'costing' | 'scan'
@@ -42,7 +42,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             { error: "code parameter required for scan" },
             { status: 400 }
           );
-        }
+    }
 
         const scanned =
           type === "rfid"
@@ -54,7 +54,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             { error: "Material not found", code },
             { status: 404 }
           );
-        }
+    }
 
         return NextResponse.json({
           success: true,
@@ -69,7 +69,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         return NextResponse.json({
           success: true,
           summary,
-        });
+        }
     }
   } catch (error: any) {
     console.error("Inventory API error:", error);
@@ -82,7 +82,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // POST /api/inventory - Create material or update stock
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const body = await req.json();
     const { action, ...data } = body;
 
@@ -110,7 +110,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             },
             { status: 400 }
           );
-        }
+    }
 
         await inventoryManager.updateStock(
           material_id,
@@ -147,7 +147,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { error: "po_id and received_items are required" },
             { status: 400 }
           );
-        }
+    }
 
         await inventoryManager.receivePurchaseOrder(po_id, received_items);
 
@@ -164,7 +164,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             { error: "material_id is required" },
             { status: 400 }
           );
-        }
+    }
 
         const barcode = await inventoryManager.generateBarcode(matId);
 
@@ -172,7 +172,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           success: true,
           barcode,
           material_id: matId,
-        });
+        }
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
@@ -184,4 +184,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

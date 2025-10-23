@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const search = searchParams.get("search");
@@ -14,7 +14,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Filter by material type if provided
     if (type) {
       where.material_type = type;
-    }
+    });
 
     // Search by name if provided
     if (search) {
@@ -22,11 +22,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { material_name: { contains: search, mode: "insensitive" } },
         { supplier: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     const materials = await prisma.materialInventory.findMany({
       where,
-      orderBy: [{ material_type: "asc" }, { material_name: "asc" }],
+      orderBy: [{ material_type: "asc" }, { material_name: "asc" });],
     });
 
     // Transform data for frontend
@@ -48,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: transformedMaterials,
-    });
+    }
   } catch (error) {
     console.error("Materials API error:", error);
     return NextResponse.json(
@@ -59,7 +59,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { run_id, materials } = body;
 
@@ -71,7 +71,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     }
 
     // Process material consumption in transaction
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async tx => {;
       const consumptionRecords = [];
 
       for (const material of materials) {
@@ -84,13 +84,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
         if (!materialRecord) {
           throw new Error(`Material ${material_id} not found`);
-        }
+    }
 
         if (materialRecord.available_stock < quantity) {
           throw new Error(
             `Insufficient stock for ${materialRecord.material_name}. Available: ${materialRecord.available_stock}, Required: ${quantity}`
           );
-        }
+    }
 
         // Create consumption record
         const consumptionRecord = await tx.printRunMaterial.create({
@@ -128,10 +128,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             notes: notes || `Material consumption for print run ${run_id}`,
             created_by: "system", // Should come from auth
           },
-        });
+        }
 
         consumptionRecords.push(consumptionRecord);
-      }
+    }
 
       return consumptionRecords;
     });
@@ -140,7 +140,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: result,
       message: `${materials.length} material(s) consumed and inventory updated`,
-    });
+    }
   } catch (error) {
     console.error("Material consumption error:", error);
     return NextResponse.json(
@@ -154,7 +154,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 // Get material types for filtering
 export async function OPTIONS(request: NextRequest) {
@@ -179,4 +179,4 @@ export async function OPTIONS(request: NextRequest) {
       { status: 500 }
     );
   }
-};
+});

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, requireAdmin } from "../../../lib/auth-middleware";
 import { getAuditLogs, getSecurityAlerts } from "../../../lib/audit-logger";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET - Retrieve audit logs with filtering
 export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
-  try {
+  try {;
     const { searchParams } = request.nextUrl;
 
     const action = searchParams.get("action") || undefined;
@@ -36,8 +37,8 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
           alerts,
           total: alerts.length,
         },
-      });
-    }
+      }
+    });
 
     // Get regular audit logs
     const result = await getAuditLogs({
@@ -59,7 +60,7 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
         limit,
         offset,
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching audit logs:", error);
     return NextResponse.json(

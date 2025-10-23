@@ -12,13 +12,13 @@ const PrintLocationSchema = z.object({
   offset_x_cm: z.number().optional(),
   offset_y_cm: z.number().optional(),
   notes: z.string().optional(),
-});
+}
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
+  try {;
     const designAssetId = params.id;
 
     const printLocations = await prisma.printLocation.findMany({
@@ -40,7 +40,7 @@ export async function GET(
       { success: false, error: "Failed to fetch print locations" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export async function POST(
@@ -183,5 +183,5 @@ export async function DELETE(
       { success: false, error: "Failed to delete print location" },
       { status: 500 }
     );
-  }
+  });
 };

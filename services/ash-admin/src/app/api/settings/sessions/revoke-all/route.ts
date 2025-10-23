@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, authUser) => {
   try {
-    // TODO: Revoke all sessions except current from Redis or database
+    // TODO: Revoke all sessions except current from Redis or database;
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error revoking sessions:", error);

@@ -8,7 +8,7 @@ const prisma = db;
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     // PRODUCTION SECURITY: Disable seed endpoint in production
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production") {;
       return NextResponse.json(
         {
           error: "Forbidden - Seed endpoint disabled in production",
@@ -49,7 +49,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         slug: "demo-workspace",
         is_active: true,
       },
-    });
+    }
     console.log("✅ Workspace created:", workspace.slug);
 
     // Hash password for demo user
@@ -75,7 +75,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         department: "IT",
         is_active: true,
       },
-    });
+    }
     console.log("✅ User created:", user.email);
 
     // Create demo clients
@@ -146,7 +146,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         credit_limit: 1000000,
         is_active: true,
       },
-    });
+    }
     console.log("✅ Clients created: 3");
 
     return NextResponse.json({
@@ -176,7 +176,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         password: "password123",
       },
       nextStep: "Go to /login and use the credentials above",
-    });
+    }
   } catch (error: any) {
     console.error("❌ Error seeding database:", error);
     return NextResponse.json(
@@ -190,4 +190,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   } finally {
     await prisma.$disconnect();
   }
-};
+});

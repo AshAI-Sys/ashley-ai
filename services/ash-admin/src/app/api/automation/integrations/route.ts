@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/integrations - Get integrations
-export const GET = requireAuth(async (request: NextRequest) {
-  try {
+export const GET = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
     const type = searchParams.get("type");
@@ -57,7 +57,7 @@ export const GET = requireAuth(async (request: NextRequest) {
         total: integrations.length,
         filters: { type, provider, isActive, isConnected },
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching integrations:", error);
     return NextResponse.json(
@@ -65,11 +65,11 @@ export const GET = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/automation/integrations - Create integration
-export const POST = requireAuth(async (request: NextRequest) {
-  try {
+export const POST = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const {
       workspace_id = "workspace_1",
@@ -133,7 +133,7 @@ export const POST = requireAuth(async (request: NextRequest) {
       },
       message: "Integration created successfully",
       connection_test: connectionTest,
-    });
+    }
   } catch (error) {
     console.error("Error creating integration:", error);
     return NextResponse.json(
@@ -141,11 +141,11 @@ export const POST = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/automation/integrations - Update integration
-export const PUT = requireAuth(async (request: NextRequest) {
-  try {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -186,11 +186,11 @@ export const PUT = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/automation/integrations - Delete integration
-export const DELETE = requireAuth(async (request: NextRequest) {
-  try {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -216,7 +216,7 @@ export const DELETE = requireAuth(async (request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // Helper functions
 function maskSensitiveConfig(config: any): any {
@@ -233,7 +233,7 @@ function maskSensitiveConfig(config: any): any {
     if (masked[key]) {
       masked[key] = "***MASKED***";
     }
-  }
+  });
 
   return masked;
 }
@@ -271,7 +271,7 @@ function validateIntegrationConfig(
   const typeConfig = requiredFields[type];
   if (!typeConfig) {
     return { valid: false, error: `Unsupported integration type: ${type}` };
-  }
+  });
 
   const providerConfig = typeConfig[provider];
   if (!providerConfig) {
@@ -279,13 +279,13 @@ function validateIntegrationConfig(
       valid: false,
       error: `Unsupported provider for ${type}: ${provider}`,
     };
-  }
+  });
 
   for (const field of providerConfig) {
     if (!config[field]) {
       return { valid: false, error: `Missing required field: ${field}` };
     }
-  }
+  });
 
   return { valid: true };
 }
@@ -303,7 +303,7 @@ async function testConnection(
       case "EMAIL":
         if (provider === "MAILGUN" && config.api_key && config.domain) {
           return { success: true };
-        }
+        });
         if (provider === "SENDGRID" && config.api_key) {
           return { success: true };
         }
@@ -323,7 +323,7 @@ async function testConnection(
 
       default:
         return { success: true }; // Assume success for other types
-    }
+    });
 
     return { success: false, error: "Invalid configuration" };
   } catch (error) {
@@ -332,4 +332,4 @@ async function testConnection(
       error: error instanceof Error ? error.message : "Connection test failed",
     };
   }
-}
+});

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { approval_ids, action, template_id, message, extension_days } = body;
 
@@ -121,7 +121,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
                   client_email: approval.client.email,
                 }),
               },
-            });
+            }
 
             results.processed++;
           } catch (error) {
@@ -142,7 +142,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             { success: false, message: "Invalid extension period" },
             { status: 400 }
           );
-        }
+    }
 
         for (const approval of approvals) {
           try {
@@ -170,7 +170,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
                   extension_days: extension_days,
                 }),
               },
-            });
+            }
 
             results.processed++;
           } catch (error) {
@@ -203,7 +203,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
                 old_values: JSON.stringify({ status: approval.status }),
                 new_values: JSON.stringify({ status: "CANCELLED" }),
               },
-            });
+            }
 
             results.processed++;
           } catch (error) {
@@ -211,10 +211,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             results.errors.push(
               `Failed to cancel approval for ${approval.design_asset.name}`
             );
-          }
+          });
         }
         break;
-    }
+    });
 
     return NextResponse.json({
       success: true,
@@ -224,7 +224,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         total: approval_ids.length,
         errors: results.errors,
       },
-    });
+    }
   } catch (error) {
     console.error("Error processing batch actions:", error);
     return NextResponse.json(

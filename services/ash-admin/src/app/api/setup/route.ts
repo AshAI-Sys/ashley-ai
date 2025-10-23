@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 export async function GET() {
   return NextResponse.json({
     message: "Setup endpoint - Use POST to create admin user",
-  });
+  }
 }
 
 export async function POST() {
@@ -22,8 +22,8 @@ export async function POST() {
       return NextResponse.json({
         success: false,
         message: "Admin user already exists",
-      });
-    }
+      }
+    });
 
     // Create workspace first
     const workspace = await prisma.workspace.create({

@@ -6,7 +6,7 @@ const prisma = db;
 
 // GET /api/analytics/heatmap - Get production efficiency heatmap data
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const url = new URL(req.url);
@@ -23,14 +23,14 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
-    }
+    });
 
     if (stationType) where.station_type = stationType;
     if (shift) where.shift = shift;
 
     const heatmapData = await prisma.productionHeatmap.findMany({
       where,
-      orderBy: [{ date: "asc" }, { hour: "asc" }],
+      orderBy: [{ date: "asc" }, { hour: "asc" });],
     });
 
     // Calculate aggregated statistics
@@ -86,7 +86,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       data: heatmapData,
       heatmap: heatmapGrid,
       stats,
-    });
+    }
   } catch (error: any) {
     console.error("Error fetching heatmap data:", error);
     return NextResponse.json(
@@ -98,7 +98,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 
 // POST /api/analytics/heatmap - Create heatmap data point
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
     const body = await req.json();

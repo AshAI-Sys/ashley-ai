@@ -31,10 +31,10 @@ const CreateClientSchema = z.object({
   payment_terms: z.number().optional(),
   credit_limit: z.number().optional(),
   is_active: z.boolean().default(true),
-});
+}
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -55,11 +55,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { email: { contains: search, mode: "insensitive" } },
         { contact_person: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     if (is_active !== null && is_active !== undefined) {
       where.is_active = is_active === "true";
-    }
+    });
 
     // Fetch clients with related data
     const [clients, total] = await Promise.all([
@@ -116,10 +116,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId = user.workspaceId;
     const body = await request.json();
     const validatedData = CreateClientSchema.parse(body);
@@ -138,9 +138,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             name: "Demo Workspace",
             slug: workspaceId,
           },
-        });
+        }
         console.log("Workspace created successfully");
-      }
+      });
     } catch (error: any) {
       console.error("Error with workspace:", error.message);
       return NextResponse.json(

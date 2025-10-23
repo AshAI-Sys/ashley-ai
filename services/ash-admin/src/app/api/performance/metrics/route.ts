@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Get query performance metrics
+    // Get query performance metrics;
     const queryMetrics = getQueryMetrics();
 
     // Get Redis status
@@ -28,7 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           const [key, value] = line.split(":");
           stats[key] = value;
         }
-      });
+      }
 
       redisStats = {
         connected_clients: stats.connected_clients || "0",
@@ -40,7 +40,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         keyspace_misses: stats.keyspace_misses || "0",
         uptime_in_days: stats.uptime_in_days || "0",
       };
-    }
+    });
 
     // Calculate cache hit rate for Redis
     let redisCacheHitRate = 0;
@@ -49,7 +49,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       const misses = parseInt(redisStats.keyspace_misses) || 0;
       const total = hits + misses;
       redisCacheHitRate = total > 0 ? (hits / total) * 100 : 0;
-    }
+    });
 
     return NextResponse.json({
       success: true,
@@ -99,7 +99,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           redisCacheHitRate
         ),
       },
-    });
+    }
   } catch (error) {
     console.error("Error fetching performance metrics:", error);
     return NextResponse.json(
@@ -148,19 +148,19 @@ function getRecommendations(
     recommendations.push(
       "Low cache hit rate detected. Consider increasing cache TTL for frequently accessed data."
     );
-  }
+    }
 
   if (queryMetrics.avgUncachedDuration > 500) {
     recommendations.push(
       "Slow uncached queries detected. Review database indexes and query optimization."
     );
-  }
+    }
 
   if (queryMetrics.totalQueries < 100) {
     recommendations.push(
       "Limited data - continue monitoring for more accurate metrics."
     );
-  }
+    }
 
   // Redis recommendations
   if (!redisAvailable) {
@@ -171,20 +171,20 @@ function getRecommendations(
     recommendations.push(
       "Redis cache hit rate is below optimal. Review cache invalidation strategy."
     );
-  }
+    }
 
   // Performance recommendations
   if (queryMetrics.avgDuration > 200) {
     recommendations.push(
       "Average query duration is high. Consider implementing more aggressive caching."
     );
-  }
+    }
 
   if (recommendations.length === 0) {
     recommendations.push(
       "Performance is excellent! No immediate optimizations needed."
     );
-  }
+    }
 
   return recommendations;
-};
+});

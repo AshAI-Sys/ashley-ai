@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const fromDate = searchParams.get("from_date");
     const toDate = searchParams.get("to_date");
@@ -19,15 +19,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         gte: new Date(fromDate),
         lte: new Date(toDate),
       };
-    }
+    });
 
     if (inspectionType && inspectionType !== "all") {
       where.inspection_type = inspectionType;
-    }
+    });
 
     if (result && result !== "all") {
       where.result = result;
-    }
+    });
 
     const inspections = await prisma.qCInspection.findMany({
       where,
@@ -71,11 +71,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch inspections" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
 
     // Calculate AQL sample size and acceptance/rejection numbers
@@ -104,7 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         inspection_date: new Date(),
       },
       include: {
-        order: { select: { order_number: true } },
+        order: { select: { order_number: true }); },
         inspector: { select: { first_name: true, last_name: true } },
       },
     });
@@ -117,7 +117,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 // AQL Sampling calculation based on ANSI/ASQ Z1.4
 function calculateAQLSampling(lotSize: number, aql: number, level: string) {
@@ -158,5 +158,4 @@ function calculateAQLSampling(lotSize: number, aql: number, level: string) {
     sample_size: result.sampleSize,
     acceptance: result.acceptance,
     rejection: result.rejection,
-  };
-};
+  });

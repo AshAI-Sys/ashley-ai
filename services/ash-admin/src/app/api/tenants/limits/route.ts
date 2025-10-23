@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/tenants/limits?workspace_id=xxx - Check tenant limits
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
 
@@ -55,7 +55,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       },
       warnings,
       needs_upgrade: warnings.length > 0,
-    });
+    }
   } catch (error: any) {
     console.error("Check limits error:", error);
     return NextResponse.json(
@@ -63,4 +63,4 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

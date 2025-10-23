@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const POST = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const formData = await request.formData();
     const file = formData.get("avatar") as File;
 
@@ -58,11 +58,11 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to upload avatar" },
       { status: 500 }
     );
-  }
-});
+  });
+}
 
 export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     await prisma.user.update({
       where: { id: authUser.id },
       data: {

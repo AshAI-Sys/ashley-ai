@@ -71,7 +71,7 @@ export async function POST(
       { error: "Failed to add content to carton" },
       { status: 500 }
     );
-  }
+  });
 }
 
 export async function GET(
@@ -148,5 +148,5 @@ export async function DELETE(
       { error: "Failed to remove content from carton" },
       { status: 500 }
     );
-  }
+  });
 };

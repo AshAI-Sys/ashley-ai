@@ -6,13 +6,13 @@ import { requireAuth } from "@/lib/auth-middleware";
  * GET /api/email/queue - Get queue statistics
  */
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const stats = await emailQueue.getStats();
 
     return NextResponse.json({
       success: true,
       stats,
-    });
+    }
   } catch (error: any) {
     console.error("Error getting email queue stats:", error);
     return NextResponse.json(
@@ -26,7 +26,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
  * POST /api/email/queue - Send email (add to queue)
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { type, to, data, scheduledFor, maxAttempts } = await request.json();
 
     if (!type || !to) {
@@ -45,7 +45,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       success: true,
       jobId,
       message: "Email queued for delivery",
-    });
+    }
   } catch (error: any) {
     console.error("Error queueing email:", error);
     return NextResponse.json(
@@ -53,4 +53,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

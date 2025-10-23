@@ -239,4 +239,4 @@ const openApiSpec = {
 
 export async function GET() {
   return NextResponse.json(openApiSpec);
-};
+}

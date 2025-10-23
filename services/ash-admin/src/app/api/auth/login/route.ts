@@ -13,7 +13,7 @@ import { authLogger } from "../../../../lib/logger";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { email, password } = body;
 
@@ -50,7 +50,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         { status: 423 }
       ); // 423 Locked
-    }
+    });
 
     // Find user in database
     const user = await prisma.user.findFirst({
@@ -116,7 +116,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         lockStatus.remainingAttempts > 0
       ) {
         errorMessage += `. Warning: ${lockStatus.remainingAttempts} ${lockStatus.remainingAttempts === 1 ? "attempt" : "attempts"} remaining before account lockout.`;
-      }
+      });
 
       return NextResponse.json(
         {
@@ -209,4 +209,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

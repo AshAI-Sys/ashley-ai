@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/bottleneck/trends?days=7 - Analyze bottleneck trends over time
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");
 
@@ -29,7 +29,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           where: {
             created_at: { gte: startOfDay, lte: endOfDay },
           },
-          include: { bundles: true },
+          include: { bundles: true });,
         }),
         prisma.sewingRun.findMany({
           where: {
@@ -68,8 +68,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
           active_operators: 4 + Math.floor(Math.random() * 2),
           defect_rate: 1 + Math.random() * 4,
           timestamp: date,
-        });
-      }
+        }
+      });
 
       // Sewing (often bottleneck)
       dayMetrics.push({
@@ -106,13 +106,13 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
               100
             : 5,
         timestamp: date,
-      });
+      }
 
       historicalMetrics.push({
         timestamp: date,
         metrics: dayMetrics,
-      });
-    }
+      }
+    });
 
     // Analyze trends
     const trendAnalysis =
@@ -126,7 +126,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         start: historicalMetrics[historicalMetrics.length - 1].timestamp,
         end: historicalMetrics[0].timestamp,
       },
-    });
+    }
   } catch (error: any) {
     console.error("Trend analysis error:", error);
     return NextResponse.json(

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const run_id = searchParams.get("run_id");
     const method = searchParams.get("method");
@@ -44,7 +44,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         recommendations: generateRealTimeRecommendations(printRun, insights),
         performance_score: calculatePerformanceScore(printRun, insights),
       },
-    });
+    }
   } catch (error) {
     console.error("AI monitoring error:", error);
     return NextResponse.json(
@@ -55,7 +55,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { run_id, sensor_data, operator_input, quality_checkpoint } = body;
 
@@ -79,7 +79,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: analysis,
-    });
+    }
   } catch (error) {
     console.error("AI monitoring update error:", error);
     return NextResponse.json(
@@ -112,7 +112,7 @@ function calculateMaterialUtilization(printRun: any) {
       cost_efficiency: 0,
       total_cost: 0,
     };
-  }
+  });
 
   let totalPlanned = 0;
   let totalUsed = 0;
@@ -149,7 +149,7 @@ function analyzeQualityTrend(printRun: any) {
 
   if (outputs.length === 0) {
     return { trend: "unknown", score: 0, confidence: 0, defect_rate: 0 };
-  }
+  });
 
   const totalGood = outputs.reduce(
     (sum: number, o: any) => sum + (o.qty_good || 0),
@@ -184,7 +184,7 @@ function calculateEfficiencyScore(printRun: any) {
 
   if (!startTime) {
     return { score: 0, factors: { time: 0, quality: 0, material: 0 } };
-  }
+  });
 
   const elapsedHours =
     (currentTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
@@ -217,7 +217,7 @@ function analyzeCostTracking(printRun: any) {
       (1000 * 60 * 60)
     : 0;
 
-  const materialCost = materials.reduce((sum: number, mat: any) => {
+  const materialCost = materials.reduce((sum: number, mat: any) => {;
     const cost = 0; // Would calculate from inventory if available
     return sum + cost;
   }, 0);
@@ -253,7 +253,7 @@ function predictCompletionTime(printRun: any) {
 
   if (!startTime) {
     return { estimated_completion: null, remaining_minutes: 0, confidence: 0 };
-  }
+  });
 
   const elapsedMinutes =
     (new Date().getTime() - startTime.getTime()) / (1000 * 60);
@@ -293,8 +293,8 @@ function identifyRiskFactors(printRun: any) {
       level: qualityTrend.score < 0.6 ? "HIGH" : "MEDIUM",
       description: `Quality score below threshold: ${Math.round(qualityTrend.score * 100)}%`,
       recommendation: "Immediate quality inspection required",
-    });
-  }
+    }
+  });
 
   // Material waste risk
   const materialUtil = calculateMaterialUtilization(printRun);
@@ -304,8 +304,8 @@ function identifyRiskFactors(printRun: any) {
       level: materialUtil.waste_percentage > 20 ? "HIGH" : "MEDIUM",
       description: `Material waste at ${materialUtil.waste_percentage}%`,
       recommendation: "Review material usage and adjust parameters",
-    });
-  }
+    }
+  });
 
   // Time overrun risk
   const prediction = predictCompletionTime(printRun);
@@ -316,8 +316,8 @@ function identifyRiskFactors(printRun: any) {
       level: "MEDIUM",
       description: "Run exceeding estimated completion time",
       recommendation: "Consider process optimization or additional resources",
-    });
-  }
+    }
+  });
 
   // Cost overrun risk
   const costTracking = analyzeCostTracking(printRun);
@@ -327,8 +327,8 @@ function identifyRiskFactors(printRun: any) {
       level: costTracking.profit_margin < 0.1 ? "HIGH" : "MEDIUM",
       description: `Low profit margin: ${Math.round(costTracking.profit_margin * 100)}%`,
       recommendation: "Review pricing or optimize costs",
-    });
-  }
+    }
+  });
 
   return risks;
 }
@@ -347,8 +347,8 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
       priority: "HIGH",
       message: `Improve ${worstFactor[0]} efficiency (currently ${Math.round((worstFactor[1] as number) * 100)}%)`,
       action: getEfficiencyAction(worstFactor[0], printRun.method),
-    });
-  }
+    }
+  });
 
   // Based on quality trend
   if (insights.quality_trend.trend === "needs_attention") {
@@ -357,8 +357,8 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
       priority: "CRITICAL",
       message: "Quality below acceptable standards",
       action: "Stop production and investigate quality issues",
-    });
-  }
+    }
+  });
 
   // Based on material utilization
   if (insights.material_utilization.waste_percentage > 15) {
@@ -367,8 +367,8 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
       priority: "MEDIUM",
       message: `High material waste detected: ${insights.material_utilization.waste_percentage}%`,
       action: "Adjust material parameters and review setup",
-    });
-  }
+    }
+  });
 
   // Based on risk factors
   insights.risk_factors.forEach((risk: any) => {
@@ -378,7 +378,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
         priority: "HIGH",
         message: risk.description,
         action: risk.recommendation,
-      });
+      }
     }
   });
 
@@ -400,7 +400,7 @@ function calculatePerformanceScore(printRun: any, insights: any) {
     time: insights.time_prediction.confidence,
   };
 
-  const weightedScore = Object.entries(weights).reduce((sum, [key, weight]) => {
+  const weightedScore = Object.entries(weights).reduce((sum, [key, weight]) => {;
     return sum + (scores[key] || 0) * weight;
   }, 0);
 
@@ -493,17 +493,17 @@ async function processMonitoringData(runId: string, data: any) {
         type: "ENVIRONMENTAL",
         severity: "MEDIUM",
         message: `Temperature out of optimal range: ${temperature}°C`,
-      });
-    }
+      }
+    });
 
     if (humidity && (humidity < 40 || humidity > 70)) {
       analysis.alerts.push({
         type: "ENVIRONMENTAL",
         severity: "LOW",
         message: `Humidity suboptimal: ${humidity}%`,
-      });
+      }
     }
-  }
+  });
 
   // Process operator input
   if (data.operator_input) {
@@ -515,9 +515,9 @@ async function processMonitoringData(runId: string, data: any) {
         priority: "HIGH",
         message: "Address operator-reported issues",
         details: issues,
-      });
+      }
     }
-  }
+  });
 
   // Process quality checkpoint
   if (data.quality_checkpoint) {
@@ -528,15 +528,15 @@ async function processMonitoringData(runId: string, data: any) {
         type: "QUALITY",
         severity: "HIGH",
         message: `Quality checkpoint below threshold: ${Math.round(pass_rate * 100)}%`,
-      });
+      }
 
       analysis.recommendations.push({
         type: "QUALITY",
         priority: "CRITICAL",
         message: "Immediate quality intervention required",
-      });
+      }
     }
-  }
+  });
 
   return analysis;
-};
+});

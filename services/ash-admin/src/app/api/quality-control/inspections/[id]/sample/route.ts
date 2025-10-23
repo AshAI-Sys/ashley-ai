@@ -33,5 +33,5 @@ export async function POST(
       { error: "Failed to create sample" },
       { status: 500 }
     );
-  }
-};
+  });
+}

@@ -9,7 +9,7 @@ import {
 } from "@/lib/validation";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspaceId");
     const clientId = searchParams.get("clientId");
@@ -72,11 +72,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
-  }
-});
+  });
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       workspaceId,
@@ -141,7 +141,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 async function generateDemandForecast(params: any) {
   // Get historical data for this client/brand/product combination
@@ -235,4 +235,4 @@ async function generateDemandForecast(params: any) {
   });
 
   return forecast;
-}
+});

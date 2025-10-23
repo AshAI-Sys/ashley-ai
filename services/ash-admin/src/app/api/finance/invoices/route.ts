@@ -14,7 +14,7 @@ import {
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = withErrorHandling(async (request: NextRequest) => {
+export const GET = withErrorHandling(async (request: NextRequest) => {;
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
   const client_id = searchParams.get("client_id");
@@ -30,7 +30,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   if (overdue_only === "true") {
     where.due_date = { lt: new Date() };
     where.status = { in: ["sent", "pending"] };
-  }
+  });
 
   const invoices = await prisma.invoice.findMany({
     where,
@@ -53,7 +53,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   });
 
   // Calculate days overdue and other metrics
-  const processedInvoices = (invoices || []).map(invoice => {
+  const processedInvoices = (invoices || []).map(invoice => {;
     const today = new Date();
     const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
     const daysOverdue =
@@ -95,10 +95,10 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   });
 
   return createSuccessResponse(processedInvoices);
-});
+}
 
 export const POST = requireAnyPermission(["finance:create"])(
-  withErrorHandling(async (request: NextRequest, user: any) => {
+  withErrorHandling(async (request: NextRequest, user: any) => {;
     const data = await request.json();
     const {
       brand_id,
@@ -118,7 +118,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     ]);
     if (validationError) {
       throw validationError;
-    }
+    });
 
     // Validate tax mode enum
     const taxModeError = validateEnum(
@@ -128,7 +128,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     );
     if (taxModeError) {
       throw taxModeError;
-    }
+    });
 
     // Validate discount percentage
     if (discount < 0 || discount > 100) {
@@ -159,12 +159,12 @@ export const POST = requireAnyPermission(["finance:create"])(
           `Line ${i + 1}: ${lineError.message}`,
           `lines[${i}]`
         );
-      }
+    }
 
       const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
       if (qtyError) {
         throw qtyError;
-      }
+      });
 
       const priceError = validateNumber(
         line.unit_price,
@@ -174,7 +174,7 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (priceError) {
         throw priceError;
       }
-    }
+    });
 
     // Validate due date if provided
     if (due_date) {
@@ -182,7 +182,7 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (dateError) {
         throw dateError;
       }
-    }
+    });
 
     // Verify client exists
     const client = await prisma.client.findUnique({ where: { id: client_id } });
@@ -196,7 +196,7 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (!order) {
         throw new NotFoundError("Order");
       }
-    }
+    });
 
     // Generate invoice number
     const year = new Date().getFullYear();
@@ -213,7 +213,7 @@ export const POST = requireAnyPermission(["finance:create"])(
 
     // Calculate totals
     let subtotal = 0;
-    const processedLines = lines.map((line: any) => {
+    const processedLines = lines.map((line: any) => {;
       const lineTotal = line.qty * line.unit_price;
       subtotal += lineTotal;
       return {
@@ -234,7 +234,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     } else if (tax_mode === "VAT_EXCLUSIVE") {
       vatAmount = netAmount * 0.12;
       total = netAmount + vatAmount;
-    }
+    });
 
     // Create invoice with transaction
     const invoice = await prisma.invoice.create({

@@ -10,7 +10,7 @@ import {
 } from "@/lib/validation";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspaceId");
     const category = searchParams.get("category");
@@ -92,10 +92,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { workspaceId, generateTrends } = body;
 
@@ -122,7 +122,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       const validation = validateAndSanitizeMarketTrendData(body);
       if (!validation.isValid) {
         return createValidationErrorResponse(validation.errors);
-      }
+    }
 
       const trend = await prisma.marketTrend.create({
         data: {
@@ -131,7 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
       });
       return NextResponse.json({ trend });
-    }
+    });
   } catch (error) {
     console.error("Market trend creation error:", error);
     return NextResponse.json(
@@ -140,8 +140,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
-  }
-});
+  });
+}
 
 async function generateMarketTrends(workspaceId: string) {
   const trends = [];
@@ -175,12 +175,12 @@ async function generateMarketTrends(workspaceId: string) {
     try {
       const savedTrend = await prisma.marketTrend.create({
         data: trend,
-      });
+      }
       savedTrends.push(savedTrend);
     } catch (error) {
       // console.error('Error saving trend:', error)
     }
-  }
+  });
 
   return savedTrends;
 }
@@ -326,7 +326,7 @@ function getColorTrends(workspaceId: string) {
         psychographics: ["trend-conscious", "style-forward"],
       }),
       opportunity_score: colorTrend.impact,
-    });
+    }
   });
 
   return trends;
@@ -402,7 +402,7 @@ function getStyleTrends(workspaceId: string) {
         values: ["style-conscious", "quality-focused"],
       }),
       opportunity_score: styleTrend.impact,
-    });
+    }
   });
 
   return trends;
@@ -487,4 +487,4 @@ function getTechnologyTrends(workspaceId: string) {
       opportunity_score: 0.6,
     },
   ];
-}
+});

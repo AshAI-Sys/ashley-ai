@@ -10,7 +10,7 @@ import {
 // Fixed: Prisma groupBy nullable field issues - using manual grouping instead
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const workspaceId = "default";
     const today = new Date();
     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
@@ -23,7 +23,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Use cached query with 2 minute cache (stats update frequently)
     const stats = await cachedQueryWithMetrics(
       cacheKey,
-      async () =>
+      async () =>;
         await calculateHRStats(
           workspaceId,
           today,
@@ -37,7 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: stats,
-    });
+    }
   } catch (error) {
     console.error("Error calculating HR stats:", error);
     return NextResponse.json(
@@ -235,14 +235,14 @@ async function calculateHRStats(
 
   let averageTenureMonths = 0;
   if (employeesWithTenure.length > 0) {
-    const totalMonths = employeesWithTenure.reduce((sum, emp) => {
+    const totalMonths = employeesWithTenure.reduce((sum, emp) => {;
       const months =
         (today.getTime() - emp.hire_date!.getTime()) /
         (1000 * 60 * 60 * 24 * 30.44);
       return sum + months;
     }, 0);
     averageTenureMonths = totalMonths / employeesWithTenure.length;
-  }
+  });
 
   // Productivity metrics (from production runs)
   // Note: SewingRun doesn't have pieces_per_hour or efficiency_percentage fields
@@ -269,14 +269,14 @@ async function calculateHRStats(
       pieces_per_hour:
         sewingRuns.length > 0
           ? sewingRuns.reduce((sum, run) => {
-              if (run.started_at && run.ended_at) {
+              if (run.started_at && run.ended_at) {;
                 const hours =
                   (run.ended_at.getTime() - run.started_at.getTime()) /
                   (1000 * 60 * 60);
                 const piecesPerHour =
                   hours > 0 ? (run.qty_good || 0) / hours : 0;
                 return sum + piecesPerHour;
-              }
+              });
               return sum;
             }, 0) / sewingRuns.length
           : 0,
@@ -311,7 +311,7 @@ async function calculateHRStats(
   } else {
     nextPayrollDate.setMonth(nextPayrollDate.getMonth() + 1);
     nextPayrollDate.setDate(15);
-  }
+    }
 
   return {
     // Basic counts
@@ -364,5 +364,4 @@ async function calculateHRStats(
           status: lastPayrollRun.status,
         }
       : null,
-  };
-};
+  });

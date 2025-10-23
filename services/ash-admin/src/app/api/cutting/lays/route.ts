@@ -21,10 +21,10 @@ const CreateCutLaySchema = z.object({
       })
     )
     .min(1, "At least one size output is required"),
-});
+}
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
@@ -105,7 +105,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const validatedData = CreateCutLaySchema.parse(body);
 
@@ -122,7 +122,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     }
 
     // Create cut lay with outputs in a transaction
-    const cutLay = await prisma.$transaction(async tx => {
+    const cutLay = await prisma.$transaction(async tx => {;
       const newCutLay = await tx.cutLay.create({
         data: {
           workspace_id: "default",
@@ -192,4 +192,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

@@ -21,7 +21,7 @@ const prisma = db;
  * Creates a Stripe Payment Intent for invoice payment
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { invoiceId, provider = "stripe" } = body;
 
@@ -93,7 +93,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             500
           )
         );
-      }
+    }
 
       return createSuccessResponse({
         paymentIntent: {
@@ -109,7 +109,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           paidAmount,
           remainingAmount,
         },
-      });
+      }
     } else if (provider === "gcash") {
       const baseUrl =
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001";
@@ -131,7 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             500
           )
         );
-      }
+    }
 
       return createSuccessResponse({
         payment: {
@@ -145,7 +145,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           id: invoice.id,
           number: invoice.invoice_number,
         },
-      });
+      }
     } else {
       return createErrorResponse(
         new ValidationError("Unsupported payment provider")
@@ -155,4 +155,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     console.error("Error creating payment intent:", error);
     return handleApiError(error);
   }
-};
+});

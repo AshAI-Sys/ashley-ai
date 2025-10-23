@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, authUser) => {
   try {
-    // Return default notification settings
+    // Return default notification settings;
     const settings = {
       orders: { email: true, sms: false, push: true, in_app: true },
       production: { email: true, sms: false, push: true, in_app: true },
@@ -29,10 +29,10 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const body = await request.json();
     // TODO: Save to database
     return NextResponse.json({ success: true });

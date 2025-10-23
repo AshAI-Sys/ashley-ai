@@ -18,7 +18,7 @@ const prisma = db;
  * Creates a hosted Stripe Checkout session for invoice payment
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { invoiceId } = body;
 
@@ -97,7 +97,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         amount: remainingAmount,
         currency: invoice.currency,
       },
-    });
+    }
   } catch (error) {
     console.error("Error creating checkout session:", error);
     return createErrorResponse(
@@ -107,4 +107,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       500
     );
   }
-};
+});

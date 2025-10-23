@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * Processes QR/barcode scans and identifies the entity type
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { code, format } = await request.json();
 
     if (!code) {
@@ -60,9 +60,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             client_name: bundle.lay?.order?.client?.name,
           },
           message: `Bundle ${bundle.qr_code} found - ${bundle.qty} pieces`,
-        });
+        }
       }
-    }
+    });
 
     // 2. Check if it's an Order (format: ORD-YYYY-XXXXXX)
     if (code.includes("ORD-") || code.includes("ORDER-")) {
@@ -105,9 +105,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             line_items_count: order._count.line_items,
           },
           message: `Order ${order.order_number} - ${order.client.name}`,
-        });
+        }
       }
-    }
+    });
 
     // 3. Check if it's a Finished Unit (format: FU-XXXXXX or SKU-XXXXXX)
     if (code.includes("FU-") || code.includes("SKU-")) {
@@ -148,9 +148,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             carton: finishedUnit.carton_contents[0]?.carton,
           },
           message: `Finished Unit ${finishedUnit.sku} - 1 piece`,
-        });
+        }
       }
-    }
+    });
 
     // 4. Check if it's a Carton (format: CTN-XXXXXX)
     if (code.includes("CTN-") || code.includes("CARTON-")) {
@@ -193,9 +193,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             },
           },
           message: `Carton ${carton.carton_no} - ${carton._count.contents} units`,
-        });
+        }
       }
-    }
+    });
 
     // 5. If nothing matches, try a generic search by ID
     // This handles cases where QR codes might just be UUIDs
@@ -220,8 +220,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: bundle.status,
         },
         message: `Bundle ${bundle.qr_code} found`,
-      });
-    }
+      }
+    });
 
     if (order) {
       return NextResponse.json({
@@ -233,8 +233,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           status: order.status,
         },
         message: `Order ${order.order_number} found`,
-      });
-    }
+      }
+    });
 
     if (finishedUnit) {
       return NextResponse.json({
@@ -246,8 +246,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           quantity: 1,
         },
         message: `Finished Unit ${finishedUnit.sku} found`,
-      });
-    }
+      }
+    });
 
     if (carton) {
       return NextResponse.json({
@@ -258,15 +258,15 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           carton_number: String(carton.carton_no),
         },
         message: `Carton ${carton.carton_no} found`,
-      });
-    }
+      }
+    });
 
     // Nothing found
     return NextResponse.json({
       success: false,
       type: "unknown",
       message: `Code "${code}" not found in the system. Please verify and try again.`,
-    });
+    }
   } catch (error) {
     console.error("Mobile scan error:", error);
     return NextResponse.json(

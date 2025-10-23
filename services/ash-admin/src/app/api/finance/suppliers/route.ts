@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Note: Supplier model not yet implemented in schema
 // Using expense.supplier field as temporary solution
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
 
@@ -37,7 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: suppliers,
-    });
+    }
   } catch (error) {
     console.error("Error fetching suppliers:", error);
     return NextResponse.json(
@@ -45,19 +45,19 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     // Supplier model not implemented yet
-    // Return success but don't create anything
+    // Return success but don't create anything;
     return NextResponse.json(
       {
         success: false,
         error:
           "Supplier model not yet implemented. Suppliers are tracked via Expense records.",
       },
-      { status: 501 }
+      { status: 501 });
     );
   } catch (error) {
     console.error("Error creating supplier:", error);

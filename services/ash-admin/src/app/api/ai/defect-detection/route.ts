@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // POST /api/ai/defect-detection - Detect defects in image
 export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
-    const { image_url, image_base64, garment_type, bundle_id } =
+    const { image_url, image_base64, garment_type, bundle_id } =;
       await req.json();
 
     if (!image_url && !image_base64) {
@@ -60,12 +60,12 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           `Detected ${defect.type}: ${defect.description} (${defect.severity})`
         );
       }
-    }
+    });
 
     return NextResponse.json({
       success: true,
       result,
-    });
+    }
   } catch (error: any) {
     console.error("Defect detection error:", error);
     return NextResponse.json(
@@ -77,7 +77,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
 // GET /api/ai/defect-detection/batch?bundle_ids=xxx,yyy - Batch defect detection
 export const GET = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const searchParams = req.nextUrl.searchParams;
     const bundleIdsParam = searchParams.get("bundle_ids");
 
@@ -105,8 +105,8 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         success: true,
         results: [],
         message: "No QC inspections found for provided bundles",
-      });
-    }
+      }
+    });
 
     // Note: QCInspection doesn't have a photos field in the schema
     // In production, photos would be stored separately (e.g., in QCDefect or file storage)
@@ -119,7 +119,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       success: true,
       results: response,
       total_analyzed: results.length,
-    });
+    }
   } catch (error: any) {
     console.error("Batch defect detection error:", error);
     return NextResponse.json(

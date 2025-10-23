@@ -14,9 +14,10 @@ import {
   requireAnyPermission,
 } from "../../../../lib/auth-middleware";
 import * as bcrypt from "bcryptjs";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(
-  withErrorHandling(async (request: NextRequest, user: any) => {
+  withErrorHandling(async (request: NextRequest, user: any) => {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const position = searchParams.get("position");
@@ -27,7 +28,7 @@ export const GET = requireAuth(
     if (status && status !== "all") {
       if (status === "ACTIVE") where.is_active = true;
       if (status === "INACTIVE") where.is_active = false;
-    }
+    });
     if (position && position !== "all") where.position = position;
     if (department && department !== "all") where.department = department;
 
@@ -37,7 +38,7 @@ export const GET = requireAuth(
         { last_name: { contains: search, mode: "insensitive" } },
         { employee_number: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     const employees = await prisma.employee.findMany({
       where,
@@ -63,7 +64,7 @@ export const GET = requireAuth(
     });
 
     // Process attendance status for today
-    const processedEmployees = employees.map(employee => {
+    const processedEmployees = employees.map(employee => {;
       const todayAttendance = employee.attendance[0];
       let attendanceStatus = "ABSENT";
       let lastCheckin = null;
@@ -76,7 +77,7 @@ export const GET = requireAuth(
         } else if (todayAttendance.time_out) {
           attendanceStatus = "ABSENT"; // Clocked out
         }
-      }
+      });
 
       return {
         id: employee.id,
@@ -104,7 +105,7 @@ export const GET = requireAuth(
 );
 
 export const POST = requireAnyPermission(["hr:create"])(
-  withErrorHandling(async (request: NextRequest, user: any) => {
+  withErrorHandling(async (request: NextRequest, user: any) => {;
     const data = await request.json();
     const {
       first_name,
@@ -133,7 +134,7 @@ export const POST = requireAnyPermission(["hr:create"])(
     ]);
     if (validationError) {
       throw validationError;
-    }
+    });
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -162,7 +163,7 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (salaryTypeError) {
         throw salaryTypeError;
       }
-    }
+    });
 
     // Validate hire date if provided
     if (hire_date) {
@@ -170,7 +171,7 @@ export const POST = requireAnyPermission(["hr:create"])(
       if (dateError) {
         throw dateError;
       }
-    }
+    });
 
     // Ensure default workspace exists
     await prisma.workspace.upsert({
@@ -226,15 +227,15 @@ export const POST = requireAnyPermission(["hr:create"])(
   })
 );
 
-export const PUT = withErrorHandling(async (request: NextRequest) => {
+export const PUT = withErrorHandling(async (request: NextRequest) => {;
   const data = await request.json();
   const { id, ...updateData } = data;
 
   // Validate required ID
-  const validationError = validateRequiredFields({ id }, ["id"]);
+  const validationError = validateRequiredFields({ id });, ["id"]);
   if (validationError) {
     throw validationError;
-  }
+  });
 
   // Validate salary type if being updated
   if (updateData.salary_type) {
@@ -246,7 +247,7 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {
     if (salaryTypeError) {
       throw salaryTypeError;
     }
-  }
+  });
 
   // Handle date conversion and validation
   if (updateData.hire_date) {
@@ -255,7 +256,7 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {
       throw dateError;
     }
     updateData.hire_date = new Date(updateData.hire_date);
-  }
+    }
   if (updateData.separation_date) {
     const dateError = validateDate(
       updateData.separation_date,
@@ -265,7 +266,7 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {
       throw dateError;
     }
     updateData.separation_date = new Date(updateData.separation_date);
-  }
+    }
 
   const employee = await prisma.employee.update({
     where: { id },
@@ -274,4 +275,4 @@ export const PUT = withErrorHandling(async (request: NextRequest) => {
   });
 
   return createSuccessResponse(employee);
-});
+    }

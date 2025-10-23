@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const invoice_id = searchParams.get("invoice_id");
     const payment_method = searchParams.get("payment_method");
@@ -28,7 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           select: {
             invoice_number: true,
             total_amount: true,
-            client: { select: { name: true } },
+            client: { select: { name: true } });,
           },
         },
       },
@@ -46,10 +46,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const data = await request.json();
     const { invoice_id, payment_method, amount, reference, payment_date } =
       data;
@@ -81,7 +81,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Start transaction
     const result = await prisma.$transaction(async tx => {
-      // Generate payment number
+      // Generate payment number;
       const paymentCount = await tx.payment.count({
         where: { workspace_id: invoice.workspace_id },
       });
@@ -118,7 +118,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         newStatus = "paid";
       } else if (paidAmount > 0) {
         newStatus = "sent";
-      }
+      });
 
       // Update invoice status
       await tx.invoice.update({

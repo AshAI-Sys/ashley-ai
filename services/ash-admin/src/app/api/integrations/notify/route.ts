@@ -8,7 +8,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/integrations/notify - Send notifications through all configured channels
 export const POST = requireAuth(async (req: NextRequest, user) => {
-  try {
+  try {;
     const body = await req.json();
     const {
       event,
@@ -68,7 +68,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("WhatsApp error:", error);
         results.whatsapp = false;
       }
-    }
+    });
 
     // SMS notifications
     if (channels.includes("sms") && recipients.sms) {
@@ -113,7 +113,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("SMS error:", error);
         results.sms = false;
       }
-    }
+    });
 
     // Slack notifications
     if (channels.includes("slack")) {
@@ -161,7 +161,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("Slack error:", error);
         results.slack = false;
       }
-    }
+    });
 
     // Microsoft Teams notifications
     if (channels.includes("teams")) {
@@ -194,7 +194,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("Teams error:", error);
         results.teams = false;
       }
-    }
+    });
 
     // Email notifications
     if (channels.includes("email") && recipients.email) {
@@ -258,7 +258,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("Email error:", error);
         results.email = false;
       }
-    }
+    });
 
     // Webhook notifications
     if (channels.includes("webhook") && data.webhook_subscriptions) {
@@ -274,13 +274,13 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("Webhook error:", error);
         results.webhook = false;
       }
-    }
+    });
 
     return NextResponse.json({
       success: true,
       results,
       message: "Notifications sent",
-    });
+    }
   } catch (error: any) {
     console.error("Integration notify error:", error);
     return NextResponse.json(
@@ -288,4 +288,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

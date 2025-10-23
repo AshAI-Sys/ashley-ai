@@ -7,7 +7,7 @@ const prisma = db;
 
 // POST /api/government/bir - Generate BIR reports (Sales Book, Purchase Book, 2307)
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { report_type, period, workspace_id, data } = body;
 
@@ -37,7 +37,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         });
 
-        const salesEntries = invoices.map(inv => {
+        const salesEntries = invoices.map(inv => {;
           const vat = birService.calculateVAT(inv.total_amount);
           return {
             date: inv.issue_date.toISOString().split("T")[0],
@@ -49,7 +49,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             vat_amount: vat.vat,
             total_amount: inv.total_amount,
           };
-        });
+        }
 
         report = await birService.generateSalesBook(salesEntries, period);
         break;
@@ -67,7 +67,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         });
 
-        const purchaseEntries = expenses.map(exp => {
+        const purchaseEntries = expenses.map(exp => {;
           const vat = birService.calculateVAT(exp.amount);
           return {
             date: exp.expense_date.toISOString().split("T")[0],
@@ -79,7 +79,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             vat_amount: vat.vat,
             total_amount: exp.amount,
           };
-        });
+        }
 
         report = await birService.generatePurchaseBook(purchaseEntries, period);
         break;
@@ -101,7 +101,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           payee: data.payee,
           withholding_entries: data.withholding_entries,
           total_tax_withheld: 0, // Will be calculated
-        });
+        }
         break;
 
       default:
@@ -119,7 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       report_type,
       period,
       report,
-    });
+    }
   } catch (error: any) {
     console.error("Error generating BIR report:", error);
     return NextResponse.json(
@@ -131,7 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
 // GET /api/government/bir - Calculate VAT or withholding tax
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const operation = searchParams.get("operation"); // 'vat' or 'withholding'
     const amount = searchParams.get("amount");

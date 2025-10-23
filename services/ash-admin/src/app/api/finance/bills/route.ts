@@ -4,11 +4,11 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Bills feature not yet implemented - return empty array
+    // Bills feature not yet implemented - return empty array;
     return NextResponse.json({
       success: true,
       data: [],
-    });
+    }
   } catch (error) {
     console.error("Error fetching bills:", error);
     return NextResponse.json(
@@ -16,13 +16,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },
-      { status: 501 }
+      { status: 501 });
     );
   } catch (error) {
     console.error("Error creating bill:", error);
@@ -31,13 +31,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+}
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },
-      { status: 501 }
+      { status: 501 });
     );
   } catch (error) {
     console.error("Error updating bill:", error);

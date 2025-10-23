@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const dynamic = "force-dynamic";
 
 export const POST = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     const formData = await request.formData();
     const file = formData.get("logo") as File;
 
@@ -58,11 +58,11 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to upload logo" },
       { status: 500 }
     );
-  }
-});
+  });
+}
 
 export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
-  try {
+  try {;
     await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: {

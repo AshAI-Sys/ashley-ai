@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const type = searchParams.get("type");
@@ -21,7 +21,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { asset_number: { contains: search, mode: "insensitive" } },
         { location: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     const assets = await prisma.asset.findMany({
       where,
@@ -47,7 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: [{ name: "asc" }],
     });
 
-    const processedAssets = assets.map(asset => {
+    const processedAssets = assets.map(asset => {;
       const activeWorkOrders = asset.work_orders;
       const overdueSchedules = asset.maintenance_schedules.filter(
         schedule => new Date(schedule.next_due_date) < new Date()
@@ -86,7 +86,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: processedAssets,
-    });
+    }
   } catch (error) {
     console.error("Error fetching assets:", error);
     return NextResponse.json(
@@ -97,7 +97,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       name,
@@ -157,7 +157,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -197,4 +197,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});

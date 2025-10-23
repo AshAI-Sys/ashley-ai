@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const type = searchParams.get("type");
@@ -24,7 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     const workOrders = await prisma.workOrder.findMany({
       where,
@@ -58,7 +58,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: [{ priority: "desc" }, { created_at: "desc" }],
     });
 
-    const processedWorkOrders = workOrders.map(workOrder => {
+    const processedWorkOrders = workOrders.map(workOrder => {;
       return {
         id: workOrder.id,
         title: workOrder.title,
@@ -104,7 +104,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: processedWorkOrders,
-    });
+    }
   } catch (error) {
     console.error("Error fetching work orders:", error);
     return NextResponse.json(
@@ -115,7 +115,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const {
       asset_id,
@@ -174,7 +174,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: workOrder,
-    });
+    }
   } catch (error: any) {
     console.error("Error creating work order:", error);
     return NextResponse.json(
@@ -185,7 +185,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const body = await request.json();
     const { id, ...updateData } = body;
 
@@ -208,11 +208,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       // Auto-set timestamps based on status changes
       if (updateData.status === "in_progress" && !data.started_at) {
         data.started_at = new Date();
-      }
+    }
       if (updateData.status === "completed" && !data.completed_at) {
         data.completed_at = new Date();
       }
-    }
+    });
     if (updateData.assigned_to !== undefined)
       data.assigned_to = updateData.assigned_to;
     if (updateData.scheduled_date)
@@ -253,7 +253,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       data: workOrder,
-    });
+    }
   } catch (error) {
     console.error("Error updating work order:", error);
     return NextResponse.json(
@@ -264,7 +264,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
+  try {;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -290,4 +290,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-};
+});
