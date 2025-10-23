@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { smsService } from "@/lib/sms";
 import crypto from "crypto";

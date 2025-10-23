@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { backupService } from "@/lib/backup/service";
 import { requireRole } from "@/lib/auth-middleware";

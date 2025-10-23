@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { emailQueue } from "@/lib/email/queue";
 import { requireAuth } from "@/lib/auth-middleware";

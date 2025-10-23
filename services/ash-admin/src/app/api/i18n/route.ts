@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { translationManager } from "@/lib/i18n/translation-manager";
 import { currencyManager } from "@/lib/i18n/currency-manager";

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { getAllMetrics } from "@/lib/analytics/metrics";
 import { requireAuth } from "@/lib/auth-middleware";

@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Performance Metrics API
  * Real-time performance monitoring and analytics

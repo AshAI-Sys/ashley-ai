@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";

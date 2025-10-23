@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";

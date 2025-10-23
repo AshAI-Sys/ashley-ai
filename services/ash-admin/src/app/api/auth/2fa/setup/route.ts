@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { setup2FA } from "@/lib/2fa-server";

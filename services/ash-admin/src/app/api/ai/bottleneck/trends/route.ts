@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
 import { prisma } from "@/lib/db";

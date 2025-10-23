@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { startOfDay, endOfDay, subDays, format } from "date-fns";

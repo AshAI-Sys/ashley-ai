@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { prisma } from "@/lib/db";

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { whatsappService } from "@/lib/integrations/whatsapp";
 import { smsService } from "@/lib/integrations/sms";

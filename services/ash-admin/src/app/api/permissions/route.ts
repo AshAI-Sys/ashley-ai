@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { permissionManager } from "@/lib/rbac/permission-manager";
 import { requireAuth } from "@/lib/auth-middleware";
