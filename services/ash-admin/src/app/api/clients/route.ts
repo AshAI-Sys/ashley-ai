@@ -141,6 +141,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         });
         console.log("Workspace created successfully");
+      }
     } catch (error: any) {
       console.error("Error with workspace:", error.message);
       return NextResponse.json(
