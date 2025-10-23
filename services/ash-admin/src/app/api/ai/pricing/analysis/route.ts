@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");

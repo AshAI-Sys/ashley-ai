@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

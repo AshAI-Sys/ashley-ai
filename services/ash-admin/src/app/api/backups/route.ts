@@ -5,7 +5,7 @@ import { backupScheduler } from "@/lib/backup/scheduler";
 import { requireRole } from "@/lib/auth-middleware";
 
 // GET /api/backups - List all backups (ADMIN ONLY)
-export const GET = requireRole("admin")(async (request: NextRequest, user) => {
+export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
   try {
     const backups = await backupService.listBackups();
     const totalSize = await backupService.getTotalBackupSize();

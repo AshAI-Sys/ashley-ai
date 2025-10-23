@@ -229,7 +229,7 @@ function MaterialsTab() {
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {materials.map(mat => {
-              const stockPercent = (mat.stock / (mat.reorder * 3)) * 100;
+              const _stockPercent = (mat.stock / (mat.reorder * 3)) * 100;
               const isLow = mat.stock <= mat.reorder;
 
               return (

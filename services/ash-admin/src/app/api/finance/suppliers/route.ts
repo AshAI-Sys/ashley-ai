@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 // Note: Supplier model not yet implemented in schema
 // Using expense.supplier field as temporary solution
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
@@ -48,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     // Supplier model not implemented yet
     // Return success but don't create anything;

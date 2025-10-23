@@ -76,7 +76,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
         : !event.ctrlKey && !event.metaKey;
       const altMatches = alt ? event.altKey : !event.altKey;
       const shiftMatches = shift ? event.shiftKey : !event.shiftKey;
-      const metaMatches = meta
+      const _metaMatches = meta
         ? event.metaKey
         : !event.metaKey && !event.ctrlKey;
 

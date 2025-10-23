@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/defect-detection - Detect defects in image
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { image_url, image_base64, garment_type, bundle_id } = await req.json();
 
@@ -27,7 +27,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     // Optionally save results to database if bundle_id provided
     if (bundle_id && result.defects_found > 0) {
       // Create QC check record
-      const qcCheck = await prisma.qCInspection.create({
+      const _qcCheck = await prisma.qCInspection.create({
         data: {
           workspace_id: "default",
           order_id: "unknown", // TODO: Get from bundle if available
@@ -64,7 +64,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       result,
-    }
+    });
   } catch (error: any) {
     console.error("Defect detection error:", error);
     return NextResponse.json(
@@ -72,9 +72,10 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/ai/defect-detection/batch?bundle_ids=xxx,yyy - Batch defect detection
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const bundleIdsParam = searchParams.get("bundle_ids");

@@ -10,7 +10,7 @@ import {
 
 // Fixed: Prisma groupBy nullable field issues - using manual grouping instead
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const workspaceId = "default";
     const today = new Date();

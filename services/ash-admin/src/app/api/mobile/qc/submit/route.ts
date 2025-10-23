@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const prisma = db;
 
 // POST /api/mobile/qc/submit - Submit mobile QC inspection
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";

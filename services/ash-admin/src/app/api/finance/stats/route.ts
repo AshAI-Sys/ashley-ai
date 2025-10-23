@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // Finance statistics API endpoint
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const today = new Date();
     const yearStart = new Date(today.getFullYear(), 0, 1);

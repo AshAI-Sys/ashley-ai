@@ -4,7 +4,7 @@ import { permissionManager } from "@/lib/rbac/permission-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/permissions - Get all available permissions
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const user_id = searchParams.get("user_id");

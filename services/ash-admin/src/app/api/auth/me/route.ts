@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * GET /api/auth/me
  * Get current authenticated user information
  */
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     // Use auth guard to verify authentication;
     const userOrResponse = await requireAuth(request);

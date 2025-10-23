@@ -4,7 +4,7 @@ import { backupService } from "@/lib/backup/service";
 import { requireRole } from "@/lib/auth-middleware";
 
 // POST /api/backups/restore - Restore backup (ADMIN ONLY)
-export const POST = requireRole("admin")(async (request: NextRequest, user) => {
+export const POST = requireRole("admin")(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { backupId } = body;

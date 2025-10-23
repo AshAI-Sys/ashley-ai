@@ -15,7 +15,7 @@ const ResetPasswordSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
 

@@ -21,7 +21,7 @@ const prisma = db;
  *
  * Creates a Stripe Payment Intent for invoice payment
  */
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { invoiceId, provider = "stripe" } = body;

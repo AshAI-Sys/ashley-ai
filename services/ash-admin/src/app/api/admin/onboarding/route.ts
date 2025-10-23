@@ -7,7 +7,7 @@ import * as bcrypt from "bcryptjs";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // Onboarding step validation schema
-const OnboardingStepSchema = z.object({
+const _OnboardingStepSchema = z.object({
   step: z.enum([
     "personal_info",
     "role_assignment",

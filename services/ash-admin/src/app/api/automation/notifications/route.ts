@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/notifications - Get notifications
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";

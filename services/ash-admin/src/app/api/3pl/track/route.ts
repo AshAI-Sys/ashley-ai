@@ -4,7 +4,7 @@ import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/3pl/track?provider=LALAMOVE&tracking_number=xxx - Track shipment
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const provider = searchParams.get("provider");

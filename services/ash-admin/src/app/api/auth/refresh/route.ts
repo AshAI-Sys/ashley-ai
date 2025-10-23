@@ -13,7 +13,7 @@ import {
  * POST /api/auth/refresh
  * Refresh an expired access token using a valid refresh token
  */
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     // Try to get refresh token from cookie or request body;
     let refreshToken = request.cookies.get("refresh_token")?.value;

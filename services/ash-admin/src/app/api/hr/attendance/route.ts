@@ -3,14 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
     const date_from = searchParams.get("date_from");
     const date_to = searchParams.get("date_to");
     const status = searchParams.get("status");
-    const type = searchParams.get("type");
+    const _type = searchParams.get("type");
 
     const where: any = { workspace_id: "default" };
     if (employee_id) where.employee_id = employee_id;

@@ -16,7 +16,7 @@ const MIN_LENGTH = 8;
 const MIN_UPPERCASE = 1;
 const MIN_LOWERCASE = 1;
 const MIN_NUMBERS = 1;
-const _MIN_SPECIAL = 0; // Special character not required (not currently enforced)
+const __MIN_SPECIAL = 0; // Special character not required (not currently enforced)
 
 // Common passwords list (top 100 most common passwords)
 const COMMON_PASSWORDS = [

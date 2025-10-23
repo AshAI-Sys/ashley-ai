@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * Mobile Scan API
  * Processes QR/barcode scans and identifies the entity type
  */
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { code, format } = await request.json();
 

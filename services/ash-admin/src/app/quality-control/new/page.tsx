@@ -163,7 +163,7 @@ export default function NewInspectionPage() {
     setSamples(newSamples);
   };
 
-  const addDefectToSample = (sampleIndex: number, defect: any) => {
+  const _addDefectToSample = (sampleIndex: number, defect: any) => {
     const updatedSamples = [...samples];
     updatedSamples[sampleIndex].defects.push(defect);
     updatedSamples[sampleIndex].pass_fail = false;

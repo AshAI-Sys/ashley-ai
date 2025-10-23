@@ -24,13 +24,13 @@ const CreateCutLaySchema = z.object({
     .min(1, "At least one size output is required"),
 }
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const orderId = searchParams.get("orderId") || "";
-    const status = searchParams.get("status") || "";
+    const _status = searchParams.get("status") || "";
     const startDate = searchParams.get("startDate") || "";
     const endDate = searchParams.get("endDate") || "";
 
@@ -105,7 +105,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const validatedData = CreateCutLaySchema.parse(body);
@@ -154,7 +154,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       });
 
       // Create cut outputs
-      const cutOutputs = await tx.cutOutput.createMany({
+      const _cutOutputs = await tx.cutOutput.createMany({
         data: validatedData.outputs.map(output => ({
           workspace_id: "default",
           cut_lay_id: newCutLay.id,

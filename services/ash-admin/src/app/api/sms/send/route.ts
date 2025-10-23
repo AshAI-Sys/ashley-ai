@@ -4,7 +4,7 @@ import { smsService } from "@/lib/sms";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/sms/send - Send SMS
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { to, message, template, variables, provider } = body;

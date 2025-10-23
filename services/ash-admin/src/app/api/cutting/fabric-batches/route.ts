@@ -19,7 +19,7 @@ const CreateFabricBatchSchema = z.object({
 
 const UpdateFabricBatchSchema = CreateFabricBatchSchema.partial();
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -91,7 +91,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const validatedData = CreateFabricBatchSchema.parse(body);
@@ -158,7 +158,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

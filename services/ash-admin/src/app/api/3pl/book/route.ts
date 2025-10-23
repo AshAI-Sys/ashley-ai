@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const prisma = db;
 
 // POST /api/3pl/book - Book shipment with 3PL provider
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { provider, shipment, shipment_id, reference_number } = body;

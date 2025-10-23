@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/bottleneck/trends?days=7 - Analyze bottleneck trends over time
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");

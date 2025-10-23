@@ -8,7 +8,7 @@ import { webhookService } from "@/lib/integrations/webhooks";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/integrations/notify - Send notifications through all configured channels
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const body = await req.json();
     const {

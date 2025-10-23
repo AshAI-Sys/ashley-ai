@@ -14,7 +14,7 @@ import {
 const prisma = db;
 
 // POST /api/notifications/email - Send email notification
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { type, to, data, workspace_id } = body;

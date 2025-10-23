@@ -110,7 +110,7 @@ export async function checkSessionTimeout(
     // Calculate timeout
     const now = new Date();
     const lastActivity = new Date(session.lastActivity);
-    const _inactiveDuration = Math.floor(
+    const __inactiveDuration = Math.floor(
       (now.getTime() - lastActivity.getTime()) / 1000
     );
 

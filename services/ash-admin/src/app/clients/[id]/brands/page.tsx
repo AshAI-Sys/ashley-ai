@@ -58,7 +58,7 @@ interface FormErrors {
 }
 
 export default function ClientBrandsPage() {
-  const router = useRouter();
+  const _router = useRouter();
   const params = useParams();
   const clientId = params.id as string;
 

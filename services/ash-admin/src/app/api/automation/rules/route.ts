@@ -139,7 +139,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 });
 // PUT /api/automation/rules - Update automation rule
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -186,7 +186,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
   }
 });
 // DELETE /api/automation/rules - Delete automation rule
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+export const DELETE = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

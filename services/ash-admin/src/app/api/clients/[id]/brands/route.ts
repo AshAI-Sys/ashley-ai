@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 
-const DEFAULT_WORKSPACE_ID = "default-workspace";
+const _DEFAULT_WORKSPACE_ID = "default-workspace";
 
 const CreateBrandSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
@@ -14,7 +14,7 @@ const CreateBrandSchema = z.object({
   is_active: z.boolean().default(true),
       });
 
-const UpdateBrandSchema = CreateBrandSchema.partial();
+const _UpdateBrandSchema = CreateBrandSchema.partial();
 
 export const GET = requireAuth(async (
   request: NextRequest,

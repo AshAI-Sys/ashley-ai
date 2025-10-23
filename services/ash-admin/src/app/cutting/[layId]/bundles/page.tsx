@@ -64,7 +64,7 @@ export default function CreateBundlesPage({
 }: {
   params: { layId: string };
 }) {
-  const router = useRouter();
+  const _router = useRouter();
   const [loading, setLoading] = useState(false);
   const [lay, setLay] = useState<CutLay | null>(null);
   const [bundleConfig, setBundleConfig] = useState<BundleCreate[]>([]);

@@ -5,7 +5,7 @@ import { currencyManager } from "@/lib/i18n/currency-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/i18n?action=languages|translations|currencies
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const action = searchParams.get("action") || "languages";
@@ -56,7 +56,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 });
 
 // POST /api/i18n/convert - Convert currency
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { amount, from, to } = await req.json();
 

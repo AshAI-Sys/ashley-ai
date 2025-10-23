@@ -13,7 +13,7 @@ const ForgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
 

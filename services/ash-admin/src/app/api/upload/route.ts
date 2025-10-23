@@ -17,7 +17,7 @@ cloudinary.config({
       });
 
 // POST /api/upload - Upload file to Cloudinary
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;

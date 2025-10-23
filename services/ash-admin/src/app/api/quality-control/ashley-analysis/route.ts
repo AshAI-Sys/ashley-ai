@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // Ashley AI Quality Control Analytics
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { inspection_id, analysis_type } = await request.json();
 

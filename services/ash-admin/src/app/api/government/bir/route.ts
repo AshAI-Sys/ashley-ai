@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const prisma = db;
 
 // POST /api/government/bir - Generate BIR reports (Sales Book, Purchase Book, 2307)
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { report_type, period, workspace_id, data } = body;

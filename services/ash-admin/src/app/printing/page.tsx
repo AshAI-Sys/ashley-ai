@@ -183,7 +183,7 @@ export default function PrintingPage() {
     refetchDashboard();
   };
 
-  const isLoading = runsLoading || machinesLoading || dashboardLoading;
+  const _isLoading = runsLoading || machinesLoading || dashboardLoading;
   const isFetching = runsFetching || machinesFetching || dashboardFetching;
 
   const handleRunAction = async (
@@ -256,7 +256,7 @@ export default function PrintingPage() {
   );
 
   // Skeleton Loaders
-  const StatCardSkeleton = () => (
+  const _StatCardSkeleton = () => (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <Skeleton className="h-4 w-24" />
@@ -268,7 +268,7 @@ export default function PrintingPage() {
     </Card>
   );
 
-  const PrintRunCardSkeleton = () => (
+  const _PrintRunCardSkeleton = () => (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">

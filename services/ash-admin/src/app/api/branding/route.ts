@@ -4,7 +4,7 @@ import { brandingManager } from "@/lib/white-label/branding-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/branding?workspace_id=xxx - Get branding configuration
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -54,7 +54,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 });
 
 // PUT /api/branding - Update branding configuration
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { workspace_id, ...updates } = await req.json();
 

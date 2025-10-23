@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const invoice_id = searchParams.get("invoice_id");
@@ -49,7 +49,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
     const { invoice_id, payment_method, amount, reference, payment_date } =

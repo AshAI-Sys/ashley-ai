@@ -5,10 +5,10 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Stub API for exporting audit logs
 // TODO: Implement real audit log export
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
-  return requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
+  return requireAuth(async (request: NextRequest, _user) => {
     try {
-      const body = await request.json();
+      const _body = await request.json();
 
       // Mock CSV data
       const csv = `ID,User,Action,Category,Status,IP Address,Timestamp

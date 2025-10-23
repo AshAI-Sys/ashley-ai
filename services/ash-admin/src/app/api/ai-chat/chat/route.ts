@@ -163,7 +163,7 @@ async function getBusinessContext(
 }
 
 // POST /api/ai-chat/chat - Send a message and get AI response
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const {
@@ -387,7 +387,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 });
 // GET /api/ai-chat/chat - Check AI configuration status
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   return NextResponse.json({
     configured: !!(groq || anthropic || openai),
     providers: {

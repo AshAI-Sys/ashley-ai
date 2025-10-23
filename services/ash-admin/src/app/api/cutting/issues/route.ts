@@ -14,7 +14,7 @@ const CreateFabricIssueSchema = z.object({
 
 const UpdateFabricIssueSchema = CreateFabricIssueSchema.partial();
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -89,7 +89,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const validatedData = CreateFabricIssueSchema.parse(body);

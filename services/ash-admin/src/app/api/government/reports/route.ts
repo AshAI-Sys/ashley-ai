@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const prisma = db;
 
 // POST /api/government/reports - Generate government remittance reports
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { agency, period, workspace_id, employer_details, employee_ids } =

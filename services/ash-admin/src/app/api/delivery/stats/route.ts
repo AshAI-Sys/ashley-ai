@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const workspaceId = getWorkspaceIdFromRequest(request);
     // Calculate delivery statistics using updated_at as proxy for delivery timestamp

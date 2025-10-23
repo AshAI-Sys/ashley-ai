@@ -11,7 +11,7 @@ export const DELETE = requireAuth(async (
   context: { params: { id: string } }
 ) => {
   try {
-    const sessionId = context.params.id;
+    const _sessionId = context.params.id;
     // TODO: Revoke session from Redis or database
     return NextResponse.json({ success: true });
   } catch (error) {

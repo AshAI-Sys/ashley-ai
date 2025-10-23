@@ -482,7 +482,7 @@ export function ProductionRouteSection({
       await new Promise(resolve => setTimeout(resolve, 4000));
 
       const availableRoutes = getAvailableRoutes();
-      const currentRoute = getCurrentRoute();
+      const _currentRoute = getCurrentRoute();
 
       const optimization: AshleyOptimization = {
         recommendedRoute:

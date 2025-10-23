@@ -8,7 +8,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const otpStore = new Map<string, { code: string; expires: number }>();
 
 // POST /api/sms/otp - Send OTP code
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { phone } = body;

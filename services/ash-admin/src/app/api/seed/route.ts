@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     // PRODUCTION SECURITY: Disable seed endpoint in production
     if (process.env.NODE_ENV === "production") {;

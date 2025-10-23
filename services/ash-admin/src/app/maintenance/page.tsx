@@ -163,7 +163,7 @@ interface MaintenanceSchedule {
 }
 
 export default function MaintenancePage() {
-  const router = useRouter();
+  const _router = useRouter();
   const [showWorkOrderModal, setShowWorkOrderModal] = useState(false);
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -245,7 +245,7 @@ export default function MaintenancePage() {
   });
 
   // Combined loading and error states
-  const loading =
+  const _loading =
     statsLoading || assetsLoading || workOrdersLoading || schedulesLoading;
   const isFetching =
     statsFetching || assetsFetching || workOrdersFetching || schedulesFetching;
@@ -315,7 +315,7 @@ export default function MaintenancePage() {
     return `₱${amount.toLocaleString()}`;
   };
 
-  const formatDateTime = (dateString: string) => {
+  const _formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
 

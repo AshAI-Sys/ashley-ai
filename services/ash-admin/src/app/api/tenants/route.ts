@@ -4,7 +4,7 @@ import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/tenants - Create new tenant workspace
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const {
       name,

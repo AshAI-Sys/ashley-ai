@@ -5,12 +5,12 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/defect-detection/patterns - Analyze defect patterns
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "30");
-    const operator_id = searchParams.get("operator_id");
-    const station = searchParams.get("station");
+    const _operator_id = searchParams.get("operator_id");
+    const _station = searchParams.get("station");
 
     // Build where clause
     const whereClause: any = {
@@ -67,8 +67,9 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             confidence: 85,
             description: qc.notes || "Defect detected",
             recommendation: "Review and address defect",
-          }
+          });
         }
+      }
 
       return {
         date: qc.created_at,
@@ -76,6 +77,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         station: qc.stage || "UNKNOWN",
         defects,
       };
+    });
 
     // Analyze patterns
     const patternAnalysis =

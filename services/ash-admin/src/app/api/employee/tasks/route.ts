@@ -10,7 +10,7 @@ import {
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const department = searchParams.get("department");
-  const position = searchParams.get("position");
+  const _position = searchParams.get("position");
 
   if (!department) {
     return NextResponse.json(

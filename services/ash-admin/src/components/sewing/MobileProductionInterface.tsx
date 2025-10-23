@@ -168,7 +168,7 @@ export default function MobileProductionInterface({
     }
 
     // Update efficiency based on progress
-    const progressPercentage =
+    const _progressPercentage =
       (updatedRun.completed / updatedRun.bundle_qty) * 100;
     const timeElapsed =
       (Date.now() - new Date(updatedRun.time_started).getTime()) / (1000 * 60);

@@ -4,7 +4,7 @@ import { inventoryManager } from "@/lib/inventory/inventory-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/inventory - Get inventory summary and alerts
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -82,7 +82,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 });
 
 // POST /api/inventory - Create material or update stock
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const body = await req.json();
     const { action, ...data } = body;

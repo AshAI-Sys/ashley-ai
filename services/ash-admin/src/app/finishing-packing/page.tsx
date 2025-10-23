@@ -146,7 +146,7 @@ export default function FinishingPackingPage() {
   });
 
   // Combined loading and error states
-  const isLoading =
+  const _isLoading =
     activeTab === "finishing" ? finishingRunsLoading : cartonsLoading;
   const isFetching =
     statsFetching ||

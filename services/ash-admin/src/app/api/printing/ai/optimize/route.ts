@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const {
@@ -199,7 +199,7 @@ function calculateQuantityEfficiency(quantity: number, method: string) {
 function calculateMaterialOptimization(materials: any[], method: string) {
   if (!materials || materials.length === 0) return 0.8;
 
-  const methodFactors = {
+  const _methodFactors = {
     SILKSCREEN: { ink: 0.4, screens: 0.3, squeegees: 0.2, substrate: 0.1 },
     SUBLIMATION: { ink: 0.4, paper: 0.3, substrate: 0.3 },
     DTF: { ink: 0.3, film: 0.3, powder: 0.2, substrate: 0.2 },

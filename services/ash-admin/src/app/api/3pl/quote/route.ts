@@ -4,7 +4,7 @@ import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/3pl/quote - Get shipping quotes from 3PL providers
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { provider, shipment } = body;

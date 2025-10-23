@@ -4,7 +4,7 @@ import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/3pl/cancel - Cancel shipment with 3PL provider
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { provider, booking_id, tracking_number, reason } = body;

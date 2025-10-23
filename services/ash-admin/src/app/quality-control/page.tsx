@@ -141,7 +141,7 @@ export default function QualityControlPage() {
     refetchInspections();
   };
 
-  const isLoading = inspectionsLoading;
+  const _isLoading = inspectionsLoading;
   const isFetching = inspectionsFetching;
 
   const filteredInspections = inspections.filter(

@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const run_id = searchParams.get("run_id");
-    const method = searchParams.get("method");
+    const _method = searchParams.get("method");
 
     if (!run_id) {
       return NextResponse.json(
@@ -55,7 +55,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 }
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { run_id, sensor_data, operator_input, quality_checkpoint } = body;
@@ -146,7 +146,7 @@ function calculateMaterialUtilization(printRun: any) {
 
 function analyzeQualityTrend(printRun: any) {
   const outputs = printRun.outputs || [];
-  const rejects = printRun.rejects || [];
+  const _rejects = printRun.rejects || [];
 
   if (outputs.length === 0) {
     return { trend: "unknown", score: 0, confidence: 0, defect_rate: 0 };

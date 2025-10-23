@@ -1,91 +1,93 @@
-src/app/api/3pl/book/route.ts(41,11): error TS2353: Object literal may only specify known properties, and 'tracking_code' does not exist in type '(Without<ShipmentUpdateInput, ShipmentUncheckedUpdateInput> & ShipmentUncheckedUpdateInput) | (Without<...> & ShipmentUpdateInput)'.
-src/app/api/admin/users/route.ts(154,7): error TS2322: Type '{ password_hash: any; workspace_id: any; email?: string; role?: "admin" | "manager" | "designer" | "cutting_operator" | "printing_operator" | "sewing_operator" | "qc_inspector" | "finishing_operator" | "warehouse_staff" | "finance_staff" | "hr_staff" | "maintenance_tech"; ... 8 more ...; phone_number?: string; }' is not assignable to type 'Exact<(Without<UserCreateInput, UserUncheckedCreateInput> & UserUncheckedCreateInput) | (Without<...> & UserCreateInput), (Without<...> & UserUncheckedCreateInput) | (Without<...> & UserCreateInput)>'.
-  Property 'workspace' is missing in type '{ password_hash: any; workspace_id: any; email?: string; role?: "admin" | "manager" | "designer" | "cutting_operator" | "printing_operator" | "sewing_operator" | "qc_inspector" | "finishing_operator" | "warehouse_staff" | "finance_staff" | "hr_staff" | "maintenance_tech"; ... 8 more ...; phone_number?: string; }' but required in type '{ workspace_id?: never; id?: string; email: string; username?: string; password_hash?: string; first_name: string; last_name: string; role: string; position?: string; department?: string; permissions?: string; ... 32 more ...; analytics_events?: { ...; }; }'.
-src/app/api/ai-chat/chat/route.ts(304,40): error TS2339: Property 'messages' does not exist on type 'Anthropic'.
-src/app/api/ai/defect-detection/patterns/route.ts(142,36): error TS2339: Property 'name' does not exist on type '{ id: string; is_active: boolean; created_at: Date; updated_at: Date; workspace_id: string; email: string; password_hash: string; first_name: string; last_name: string; role: string; ... 10 more ...; last_login: Date; }'.
-src/app/api/automation/execute/route.ts(313,7): error TS2353: Object literal may only specify known properties, and 'details' does not exist in type 'Exact<(Without<AuditLogCreateInput, AuditLogUncheckedCreateInput> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput), (Without<...> & AuditLogUncheckedCreateInput) | (Without<...> & AuditLogCreateInput)>'.
-src/app/api/brands/route.ts(133,7): error TS2322: Type '{ name?: string; client_id?: string; logo_url?: string; status?: "ACTIVE" | "INACTIVE"; metadata?: Record<string, any>; description?: string; brand_colors?: string[]; default_pricing?: Record<string, number>; guidelines?: string; }' is not assignable to type 'Exact<(Without<BrandCreateInput, BrandUncheckedCreateInput> & BrandUncheckedCreateInput) | (Without<...> & BrandCreateInput), (Without<...> & BrandUncheckedCreateInput) | (Without<...> & BrandCreateInput)>'.
-  Type '{ name?: string; client_id?: string; logo_url?: string; status?: "ACTIVE" | "INACTIVE"; metadata?: Record<string, any>; description?: string; brand_colors?: string[]; default_pricing?: Record<string, number>; guidelines?: string; }' is missing the following properties from type '{ workspace_id?: never; client_id?: never; id?: string; name: string; code?: string; logo_url?: string; settings?: string; is_active?: Exact<boolean, boolean>; created_at?: Exact<string | Date, string | Date>; ... 8 more ...; demand_forecasts?: { ...; }; }': workspace, client
-src/app/api/bundles/[id]/status/route.ts(57,20): error TS2339: Property 'bundleStatusHistory' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'.
-src/app/api/clients/[id]/brands/[brandId]/route.ts(30,13): error TS2353: Object literal may only specify known properties, and 'company' does not exist in type 'ClientSelect<InternalArgs & { result: {}; model: {}; query: {}; client: {}; }>'.
-src/app/api/cutting/bundles/route.ts(150,13): error TS2322: Type '{ workspace_id: string; lay_id: string; size_code: string; qty: number; qr_code: string; status: string; }' is not assignable to type 'Exact<(Without<BundleCreateInput, BundleUncheckedCreateInput> & BundleUncheckedCreateInput) | (Without<...> & BundleCreateInput), (Without<...> & BundleUncheckedCreateInput) | (Without<...> & BundleCreateInput)>'.
-  Property 'order' is missing in type '{ workspace_id: string; lay_id: string; size_code: string; qty: number; qr_code: string; status: string; }' but required in type '{ order_id?: never; lay_id?: never; id?: string; workspace_id: string; size_code: string; qty: number; qr_code: string; status?: string; created_at?: Exact<string | Date, string | Date>; ... 6 more ...; qc_inspections?: { ...; }; }'.
-src/app/api/cutting/issues/route.ts(133,9): error TS2322: Type '{ workspace_id: string; order_id?: string; uom?: string; batch_id?: string; qty_issued?: number; issued_by?: string; }' is not assignable to type 'Exact<(Without<CutIssueCreateInput, CutIssueUncheckedCreateInput> & CutIssueUncheckedCreateInput) | (Without<...> & CutIssueCreateInput), (Without<...> & CutIssueUncheckedCreateInput) | (Without<...> & CutIssueCreateInput)>'.
-  Type '{ workspace_id: string; order_id?: string; uom?: string; batch_id?: string; qty_issued?: number; issued_by?: string; }' is missing the following properties from type '{ order_id?: never; batch_id?: never; id?: string; workspace_id: string; qty_issued: number; uom: string; issued_by: string; created_at?: Exact<string | Date, string | Date>; order: { ...; }; batch: { ...; }; }': order, batch
-src/app/api/employees/route.ts(35,11): error TS2353: Object literal may only specify known properties, and 'createdAt' does not exist in type 'Exact<EmployeeOrderByWithRelationInput | EmployeeOrderByWithRelationInput[], EmployeeOrderByWithRelationInput | EmployeeOrderByWithRelationInput[]>'.
-src/app/api/employees/setup/route.ts(48,11): error TS2353: Object literal may only specify known properties, and 'description' does not exist in type 'Exact<(Without<WorkspaceCreateInput, WorkspaceUncheckedCreateInput> & WorkspaceUncheckedCreateInput) | (Without<...> & WorkspaceCreateInput), (Without<...> & WorkspaceUncheckedCreateInput) | (Without<...> & WorkspaceCreateInput)>'.
-src/app/api/finance/suppliers/route.ts(17,36): error TS2339: Property 'supplier' does not exist on type 'DynamicClientExtensionThis<TypeMap<InternalArgs & { result: {}; model: {}; query: {}; client: {}; }, PrismaClientOptions>, TypeMapCb, { result: {}; model: {}; query: {}; client: {}; }, {}>'.
-src/app/api/finance/suppliers/route.ts(47,35): error TS2339: Property 'supplier' does not exist on type 'DynamicClientExtensionThis<TypeMap<InternalArgs & { result: {}; model: {}; query: {}; client: {}; }, PrismaClientOptions>, TypeMapCb, { result: {}; model: {}; query: {}; client: {}; }, {}>'.
-src/app/api/government/bir/route.ts(65,13): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type 'ExpenseWhereInput'.
-src/app/api/government/bir/route.ts(73,35): error TS2339: Property 'reference_number' does not exist on type '{ id: string; created_at: Date; updated_at: Date; workspace_id: string; currency: string; notes: string; order_id: string; description: string; created_by: string; tax_amount: number; ... 11 more ...; approved_at: Date; }'.
-src/app/api/government/bir/route.ts(74,32): error TS2339: Property 'vendor_name' does not exist on type '{ id: string; created_at: Date; updated_at: Date; workspace_id: string; currency: string; notes: string; order_id: string; description: string; created_by: string; tax_amount: number; ... 11 more ...; approved_at: Date; }'.
-src/app/api/notifications/email/route.ts(93,11): error TS2561: Object literal may only specify known properties, but 'reply_to' does not exist in type 'EmailOptions'. Did you mean to write 'replyTo'?
-src/app/api/packing/cartons/route.ts(40,81): error TS2339: Property 'quantity' does not exist on type '{ finished_unit: { color: string; sku: string; size_code: string; }; } & { id: string; created_at: Date; qty: number; carton_id: string; finished_unit_id: string; }'.
-src/app/api/packing/cartons/route.ts(124,83): error TS2339: Property 'quantity' does not exist on type '{ finished_unit: { id: string; color: string; workspace_id: string; created_at: Date; order_id: string; sku: string; size_code: string; serial: string; packed: boolean; }; } & { id: string; created_at: Date; qty: number; carton_id: string; finished_unit_id: string; }'.
-src/app/api/payments/create-checkout/route.ts(91,7): error TS2554: Expected 1 arguments, but got 2.
-src/app/api/performance/metrics/route.ts(8,10): error TS2614: Module '"@/lib/redis"' has no exported member 'isRedisAvailable'. Did you mean to use 'import isRedisAvailable from "@/lib/redis"' instead?
-src/app/api/performance/metrics/route.ts(8,28): error TS2614: Module '"@/lib/redis"' has no exported member 'getRedisInfo'. Did you mean to use 'import getRedisInfo from "@/lib/redis"' instead?
-src/app/api/printing/runs/[id]/start/route.ts(211,7): error TS2322: Type '{ entity: string; entity_id: string; stage: string; analysis_type: string; risk: string; confidence: number; issues: string; recommendations: string; metadata: string; result: string; created_by: string; }' is not assignable to type 'Exact<(Without<AIAnalysisCreateInput, AIAnalysisUncheckedCreateInput> & AIAnalysisUncheckedCreateInput) | (Without<...> & AIAnalysisCreateInput), (Without<...> & AIAnalysisUncheckedCreateInput) | (Without<...> & AIAnalysisCreateInput)>'.
-  Type '{ entity: string; entity_id: string; stage: string; analysis_type: string; risk: string; confidence: number; issues: string; recommendations: string; metadata: string; result: string; created_by: string; }' is missing the following properties from type '{ workspace_id?: never; created_by?: never; id?: string; entity: string; entity_id: string; stage: string; analysis_type: string; risk: string; confidence: number; issues?: string; recommendations?: string; ... 5 more ...; created_by_user: { ...; }; }': workspace, created_by_user
-src/app/api/printing/runs/route.ts(142,7): error TS2322: Type '{ order_id: any; routing_step_id: any; machine_id: any; method: any; workcenter: string; status: string; created_by: string; outputs: { create: { qty_good: number; qty_reject: number; notes: string; }; }; }' is not assignable to type 'Exact<(Without<PrintRunCreateInput, PrintRunUncheckedCreateInput> & PrintRunUncheckedCreateInput) | (Without<...> & PrintRunCreateInput), (Without<...> & PrintRunUncheckedCreateInput) | (Without<...> & PrintRunCreateInput)>'.
-  Type '{ order_id: any; routing_step_id: any; machine_id: any; method: any; workcenter: string; status: string; created_by: string; outputs: { create: { qty_good: number; qty_reject: number; notes: string; }; }; }' is missing the following properties from type '{ order_id?: never; routing_step_id?: never; machine_id?: never; id?: string; workspace_id: string; method: string; print_options?: string; workcenter: string; started_at?: Exact<string | Date, string | Date>; ... 18 more ...; embroidery_runs?: { ...; }; }': workspace_id, order
-src/app/api/reports/execute/route.ts(177,7): error TS2353: Object literal may only specify known properties, and 'line_item' does not exist in type 'BundleInclude<DefaultArgs>'.
-src/app/api/reports/execute/route.ts(194,7): error TS2353: Object literal may only specify known properties, and 'line_items' does not exist in type 'InvoiceInclude<DefaultArgs>'.
-src/app/api/reports/execute/route.ts(210,7): error TS2561: Object literal may only specify known properties, but 'attendance_logs' does not exist in type 'EmployeeInclude<DefaultArgs>'. Did you mean to write 'attendance'?
-src/app/api/sewing/runs/route.ts(190,7): error TS2322: Type '{ status: string; order_id?: string; routing_step_id?: string; bundle_id?: string; operator_id?: string; operation_name?: string; sewing_type?: string; }' is not assignable to type 'Exact<(Without<SewingRunCreateInput, SewingRunUncheckedCreateInput> & SewingRunUncheckedCreateInput) | (Without<...> & SewingRunCreateInput), (Without<...> & SewingRunUncheckedCreateInput) | (Without<...> & SewingRunCreateInput)>'.
-  Type '{ status: string; order_id?: string; routing_step_id?: string; bundle_id?: string; operator_id?: string; operation_name?: string; sewing_type?: string; }' is missing the following properties from type '{ order_id?: never; routing_step_id?: never; bundle_id?: never; operator_id?: never; id?: string; operation_name: string; sewing_type?: string; started_at?: Exact<string | Date, string | Date>; ... 15 more ...; bundle: { ...; }; }': order, routing_step, operator, bundle
-src/app/designs/new/page.tsx(351,15): error TS2339: Property 'warning' does not exist on type '{ (message: Message, opts?: Partial<Pick<Toast, "style" | "className" | "id" | "icon" | "position" | "duration" | "ariaProps" | "iconTheme" | "toasterId" | "removeDelay">>): string; ... 8 more ...; promise<T>(promise: Promise<...> | (() => Promise<...>), msgs: { ...; }, opts?: DefaultToastOptions): Promise<...>; }'.
-src/app/printing/runs/[id]/page.tsx(520,13): error TS2322: Type 'Dispatch<SetStateAction<MaterialConsumption[]>>' is not assignable to type '(materials: MaterialConsumption[]) => void'.
-  Types of parameters 'value' and 'materials' are incompatible.
-    Type 'MaterialConsumption[]' is not assignable to type 'SetStateAction<MaterialConsumption[]>'.
-      Type 'MaterialConsumption[]' is not assignable to type 'MaterialConsumption[]'. Two different types with this name exist, but they are unrelated.
-        Type 'MaterialConsumption' is missing the following properties from type 'MaterialConsumption': item_id, item_name, uom, qty
-src/app/quality-control/new/page.tsx(140,27): error TS2353: Object literal may only specify known properties, and 'sampleSize' does not exist in type 'SetStateAction<{ sample_size: number; acceptance: number; rejection: number; result: "ACCEPT" | "REJECT" | "PENDING_REVIEW"; }>'.
-src/components/approval-workflow/BatchApprovalActions.tsx(279,48): error TS2322: Type '{ children: (string | number)[]; variant: "outline"; size: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
-  Property 'size' does not exist on type 'IntrinsicAttributes & BadgeProps'.
-src/components/design-upload/AshleyValidation.tsx(126,17): error TS2339: Property 'warning' does not exist on type '{ (message: Message, opts?: Partial<Pick<Toast, "style" | "className" | "id" | "icon" | "position" | "duration" | "ariaProps" | "iconTheme" | "toasterId" | "removeDelay">>): string; ... 8 more ...; promise<T>(promise: Promise<...> | (() => Promise<...>), msgs: { ...; }, opts?: DefaultToastOptions): Promise<...>; }'.
-src/components/ErrorBoundary.tsx(39,23): error TS2345: Argument of type 'ErrorInfo' is not assignable to parameter of type 'Extras'.
-  Index signature for type 'string' is missing in type 'ErrorInfo'.
-src/components/order-intake/variants-addons-section.tsx(745,36): error TS2304: Cannot find name 'X'.
-src/components/printing/DTFWorkflow.tsx(218,40): error TS2345: Argument of type '"print" | "setup" | "cure" | "quality" | "powder" | "transfer"' is not assignable to parameter of type '"printing" | "curing" | "powder_application" | "quality_control" | "transfer" | "film_setup"'.
-  Type '"print"' is not assignable to type '"printing" | "curing" | "powder_application" | "quality_control" | "transfer" | "film_setup"'.
-src/components/printing/EmbroideryWorkflow.tsx(246,40): error TS2345: Argument of type '"production" | "design" | "setup" | "quality"' is not assignable to parameter of type '"production" | "quality_control" | "design_setup" | "machine_setup"'.
-  Type '"design"' is not assignable to type '"production" | "quality_control" | "design_setup" | "machine_setup"'.
-src/components/printing/SilkscreenWorkflow.tsx(190,40): error TS2345: Argument of type '"print" | "prep" | "setup" | "cure"' is not assignable to parameter of type '"printing" | "curing" | "screen_prep" | "ink_setup"'.
-  Type '"print"' is not assignable to type '"printing" | "curing" | "screen_prep" | "ink_setup"'.
-src/components/printing/SublimationWorkflow.tsx(185,40): error TS2345: Argument of type '"print" | "setup" | "press" | "quality"' is not assignable to parameter of type '"printing" | "digital_setup" | "heat_press" | "quality_control"'.
-  Type '"print"' is not assignable to type '"printing" | "digital_setup" | "heat_press" | "quality_control"'.
-src/components/route-guard.tsx(28,9): error TS2322: Type 'string[] | {}' is not assignable to type 'Permission[]'.
-  Type 'string[]' is not assignable to type 'Permission[]'.
-    Type 'string' is not assignable to type 'Permission'.
-src/components/ui/popover.tsx(53,26): error TS2345: Argument of type 'HTMLElement' is not assignable to parameter of type 'HTMLButtonElement'.
-  Type 'HTMLElement' is missing the following properties from type 'HTMLButtonElement': disabled, form, formAction, formEnctype, and 15 more.
-src/lib/ai/dynamic-pricing.ts(558,7): error TS2552: Cannot find name 'optimal_margin_range'. Did you mean 'optimalMarginRange'?
-src/lib/backup/scheduler.ts(90,9): error TS2322: Type '"database"' is not assignable to type 'ErrorCategory'.
-src/lib/email.ts(56,7): error TS2561: Object literal may only specify known properties, but 'reply_to' does not exist in type 'CreateEmailOptions'. Did you mean to write 'replyTo'?
-src/lib/email/index.ts(51,7): error TS2561: Object literal may only specify known properties, but 'reply_to' does not exist in type 'CreateEmailOptions'. Did you mean to write 'replyTo'?
-src/lib/email/queue.ts(2,21): error TS2459: Module '"@/lib/email"' declares 'EmailOptions' locally, but it is not exported.
-src/lib/email/queue.ts(2,35): error TS2459: Module '"@/lib/email"' declares 'EmailResult' locally, but it is not exported.
-src/lib/email/queue.ts(261,11): error TS2561: Object literal may only specify known properties, but 'reply_to' does not exist in type 'EmailOptions'. Did you mean to write 'replyTo'?
-src/lib/emailService.ts(56,9): error TS2561: Object literal may only specify known properties, but 'reply_to' does not exist in type 'CreateEmailOptions'. Did you mean to write 'replyTo'?
-src/lib/error-logger.ts(263,17): error TS2339: Property 'startTransaction' does not exist on type 'typeof import("C:/Users/Khell/Desktop/Ashley AI/node_modules/.pnpm/@sentry+nextjs@10.17.0_@opentelemetry+context-async-hooks@2.1.0_@opentelemetry+api@1.9.0__@op_2x2ry7t36hv533ngbw7wobl7zy/node_modules/@sentry/nextjs/build/types/index.types")'.
-src/lib/jwt.ts(39,23): error TS2769: No overload matches this call.
-  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: SignOptions & { algorithm: "none"; }): string', gave the following error.
-    Argument of type 'string' is not assignable to parameter of type 'null'.
-  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions): string', gave the following error.
-    Type 'string' is not assignable to type 'number | StringValue'.
-  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
-    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
-src/lib/jwt.ts(60,23): error TS2769: No overload matches this call.
-  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: SignOptions & { algorithm: "none"; }): string', gave the following error.
-    Argument of type 'string' is not assignable to parameter of type 'null'.
-  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions): string', gave the following error.
-    Type 'string' is not assignable to type 'number | StringValue'.
-  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
-    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
-src/lib/multi-tenant/tenant-manager.ts(376,20): error TS2551: Property 'defectCode' does not exist on type 'PrismaClient<PrismaClientOptions, never, DefaultArgs>'. Did you mean 'qCDefectCode'?
-src/lib/paymentService.ts(12,7): error TS2322: Type '"2024-11-20.acacia"' is not assignable to type '"2025-08-27.basil"'.
-src/lib/performance/api-cache-middleware.ts(7,10): error TS2614: Module '"@/lib/redis"' has no exported member 'cache'. Did you mean to use 'import cache from "@/lib/redis"' instead?
-src/lib/rbac/permission-manager.ts(282,37): error TS2339: Property 'some' does not exist on type 'string | string[]'.
-  Property 'some' does not exist on type 'string'.
-src/lib/token-rotation.ts(50,47): error TS2554: Expected 1 arguments, but got 2.
+src/app/api/ai-chat/conversations/[id]/route.ts(104,4): error TS1005: '}' expected.
+src/app/api/ai/scheduling/scenario/route.ts(108,5): error TS1005: 'try' expected.
+src/app/api/ai/scheduling/scenario/route.ts(115,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/analytics/profit/route.ts(90,5): error TS1005: ',' expected.
+src/app/api/analytics/profit/route.ts(95,7): error TS1005: ')' expected.
+src/app/api/audit-logs/route.ts(64,3): error TS1005: 'try' expected.
+src/app/api/audit-logs/route.ts(71,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/automation/alerts/route.ts(320,1): error TS1005: ')' expected.
+src/app/api/automation/notifications/route.ts(211,1): error TS1005: ')' expected.
+src/app/api/automation/stats/route.ts(96,5): error TS1005: ',' expected.
+src/app/api/automation/stats/route.ts(122,2): error TS1128: Declaration or statement expected.
+src/app/api/automation/templates/route.ts(240,4): error TS1005: '}' expected.
+src/app/api/backups/route.ts(86,1): error TS1005: '}' expected.
+src/app/api/bundles/[id]/status/route.ts(81,5): error TS1005: ',' expected.
+src/app/api/bundles/[id]/status/route.ts(88,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/cutting/fabric-batches/route.ts(161,1): error TS1005: ',' expected.
+src/app/api/cutting/fabric-batches/route.ts(227,1): error TS1005: ',' expected.
+src/app/api/cutting/lays/route.ts(27,1): error TS1005: ',' expected.
+src/app/api/cutting/lays/route.ts(108,1): error TS1005: ',' expected.
+src/app/api/dashboards/route.ts(48,5): error TS1005: ',' expected.
+src/app/api/dashboards/route.ts(120,5): error TS1472: 'catch' or 'finally' expected.
+src/app/api/designs/[id]/comments/route.ts(222,2): error TS1128: Declaration or statement expected.
+src/app/api/designs/[id]/send-approval/route.ts(184,2): error TS1128: Declaration or statement expected.
+src/app/api/designs/route.ts(179,3): error TS1005: 'try' expected.
+src/app/api/designs/route.ts(218,4): error TS1005: '}' expected.
+src/app/api/employees/route.ts(51,3): error TS1005: 'try' expected.
+src/app/api/employees/route.ts(58,2): error TS1128: Declaration or statement expected.
+src/app/api/employees/setup/route.ts(144,2): error TS1128: Declaration or statement expected.
+src/app/api/finance/bills/route.ts(22,1): error TS1005: ',' expected.
+src/app/api/finance/bills/route.ts(37,1): error TS1005: ',' expected.
+src/app/api/finance/invoices/route.ts(271,4): error TS1128: Declaration or statement expected.
+src/app/api/finance/payments/route.ts(52,1): error TS1005: ',' expected.
+src/app/api/finance/stats/route.ts(141,3): error TS1005: ',' expected.
+src/app/api/finance/stats/route.ts(148,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/finishing-packing/stats/route.ts(130,1): error TS1005: ',' expected.
+src/app/api/finishing-packing/stats/route.ts(164,1): error TS1005: ')' expected.
+src/app/api/hr/payroll/route.ts(283,1): error TS1005: ',' expected.
+src/app/api/hr/stats/route.ts(51,1): error TS1005: ',' expected.
+src/app/api/hr/stats/route.ts(370,1): error TS1005: ')' expected.
+src/app/api/integrations/notify/route.ts(278,5): error TS1005: ',' expected.
+src/app/api/integrations/notify/route.ts(285,2): error TS1128: Declaration or statement expected.
+src/app/api/maintenance/assets/route.ts(100,1): error TS1005: ',' expected.
+src/app/api/maintenance/assets/route.ts(160,1): error TS1005: ',' expected.
+src/app/api/merchandising/demand-forecast/route.ts(146,1): error TS1005: ',' expected.
+src/app/api/merchandising/market-trends/route.ts(98,1): error TS1005: ',' expected.
+src/app/api/mobile/stats/route.ts(186,5): error TS1005: 'try' expected.
+src/app/api/mobile/stats/route.ts(196,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/notifications/email/route.ts(189,2): error TS1128: Declaration or statement expected.
+src/app/api/orders/[id]/activity-logs/route.ts(95,2): error TS1128: Declaration or statement expected.
+src/app/api/orders/[id]/activity-logs/route.ts(96,2): error TS1128: Declaration or statement expected.
+src/app/api/orders/[id]/color-variants/route.ts(128,2): error TS1128: Declaration or statement expected.
+src/app/api/packing/cartons/route.ts(114,1): error TS1005: ',' expected.
+src/app/api/payments/create-checkout/route.ts(102,3): error TS1005: ',' expected.
+src/app/api/payments/create-checkout/route.ts(110,2): error TS1128: Declaration or statement expected.
+src/app/api/payments/create-intent/route.ts(158,2): error TS1128: Declaration or statement expected.
+src/app/api/permissions/route.ts(77,4): error TS1005: '}' expected.
+src/app/api/pod/route.ts(197,4): error TS1005: '}' expected.
+src/app/api/printing/machines/route.ts(89,1): error TS1005: ',' expected.
+src/app/api/printing/materials/route.ts(183,2): error TS1128: Declaration or statement expected.
+src/app/api/printing/runs/route.ts(183,3): error TS1005: ',' expected.
+src/app/api/quality-control/analytics/metrics/route.ts(122,3): error TS1005: 'try' expected.
+src/app/api/quality-control/analytics/metrics/route.ts(129,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/quality-control/analytics/pareto/route.ts(80,5): error TS1005: ',' expected.
+src/app/api/quality-control/analytics/pareto/route.ts(87,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/quality-control/analytics/spc/route.ts(108,5): error TS1005: 'try' expected.
+src/app/api/quality-control/analytics/spc/route.ts(115,4): error TS1005: '}' expected.
+src/app/api/quality-control/checklists/route.ts(24,5): error TS1005: 'try' expected.
+src/app/api/quality-control/checklists/route.ts(54,4): error TS1005: '}' expected.
+src/app/api/quality-control/defect-codes/route.ts(24,5): error TS1005: 'try' expected.
+src/app/api/quality-control/defect-codes/route.ts(55,4): error TS1005: '}' expected.
+src/app/api/quality-control/inspections/[id]/defect/route.ts(43,1): error TS1128: Declaration or statement expected.
+src/app/api/quality-control/inspections/[id]/defect/route.ts(43,2): error TS1128: Declaration or statement expected.
+src/app/api/quality-control/inspections/[id]/route.ts(55,1): error TS1005: ',' expected.
+src/app/api/quality-control/inspections/[id]/sample/route.ts(38,2): error TS1128: Declaration or statement expected.
+src/app/api/quality-control/inspections/route.ts(67,5): error TS1005: 'try' expected.
+src/app/api/quality-control/inspections/route.ts(74,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/quality-control/samples/route.ts(35,1): error TS1005: ',' expected.
+src/app/api/reports/route.ts(63,5): error TS1005: ',' expected.
+src/app/api/reports/route.ts(156,4): error TS1005: '}' expected.
+src/app/api/seed/route.ts(193,2): error TS1128: Declaration or statement expected.
+src/app/api/settings/audit-logs/export/route.ts(26,5): error TS1005: ',' expected.
+src/app/api/settings/audit-logs/export/route.ts(34,1): error TS1005: '}' expected.
+src/app/api/settings/audit-logs/route.ts(86,1): error TS1005: '}' expected.
+src/app/api/settings/avatar/route.ts(82,4): error TS1005: '}' expected.
+src/app/api/settings/general/route.ts(41,1): error TS1005: ',' expected.
+src/app/api/settings/notifications/route.ts(35,1): error TS1005: ',' expected.
+src/app/api/settings/sessions/route.ts(51,1): error TS1005: '}' expected.
+src/app/api/settings/workspace/logo/route.ts(82,4): error TS1005: '}' expected.
+src/app/api/settings/workspace/route.ts(54,1): error TS1005: ',' expected.
+src/app/api/sewing/operations/route.ts(68,5): error TS1005: ',' expected.
+src/app/api/sewing/operations/route.ts(75,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/tenants/limits/route.ts(59,5): error TS1005: ',' expected.
+src/app/api/tenants/limits/route.ts(66,2): error TS1472: 'catch' or 'finally' expected.

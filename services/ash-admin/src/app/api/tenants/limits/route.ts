@@ -4,7 +4,7 @@ import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/tenants/limits?workspace_id=xxx - Check tenant limits
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");

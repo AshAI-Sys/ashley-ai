@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");

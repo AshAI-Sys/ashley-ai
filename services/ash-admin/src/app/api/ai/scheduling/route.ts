@@ -8,7 +8,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { start_date, include_stages } = await req.json();
-    const workspace_id = user.workspaceId;
+    const _workspace_id = user.workspaceId;
 
     const startDate = start_date ? new Date(start_date) : new Date();
     const stages = include_stages || [
@@ -173,7 +173,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
   }
 });
 // GET /api/ai/scheduling/preview - Preview current schedule
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");

@@ -1,0 +1,117 @@
+src/app/api/ai-chat/conversations/[id]/route.ts(103,4): error TS1005: '}' expected.
+src/app/api/ai/bottleneck/route.ts(252,4): error TS1005: '}' expected.
+src/app/api/ai/scheduling/scenario/route.ts(107,5): error TS1005: ',' expected.
+src/app/api/ai/scheduling/scenario/route.ts(114,2): error TS1128: Declaration or statement expected.
+src/app/api/analytics/metrics/route.ts(16,5): error TS1005: ',' expected.
+src/app/api/analytics/metrics/route.ts(23,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/analytics/profit/route.ts(90,5): error TS1005: ',' expected.
+src/app/api/analytics/profit/route.ts(95,7): error TS1005: ')' expected.
+src/app/api/analytics/profit/route.ts(327,4): error TS1005: '}' expected.
+src/app/api/audit-logs/route.ts(64,3): error TS1005: 'try' expected.
+src/app/api/audit-logs/route.ts(71,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/auth/2fa/verify/route.ts(80,5): error TS1005: ',' expected.
+src/app/api/auth/2fa/verify/route.ts(87,5): error TS1005: ',' expected.
+src/app/api/auth/2fa/verify/route.ts(97,2): error TS1128: Declaration or statement expected.
+src/app/api/auth/me/route.ts(58,3): error TS1005: ',' expected.
+src/app/api/auth/me/route.ts(58,5): error TS1005: 'try' expected.
+src/app/api/auth/me/route.ts(61,2): error TS1128: Declaration or statement expected.
+src/app/api/automation/alerts/route.ts(320,1): error TS1005: ')' expected.
+src/app/api/automation/notifications/route.ts(211,1): error TS1005: ')' expected.
+src/app/api/automation/stats/route.ts(96,5): error TS1005: ',' expected.
+src/app/api/automation/stats/route.ts(122,2): error TS1128: Declaration or statement expected.
+src/app/api/automation/templates/route.ts(240,4): error TS1005: '}' expected.
+src/app/api/backups/route.ts(53,3): error TS1005: ',' expected.
+src/app/api/backups/route.ts(79,3): error TS1005: ',' expected.
+src/app/api/backups/route.ts(86,1): error TS1005: '}' expected.
+src/app/api/brands/route.ts(101,1): error TS1005: ',' expected.
+src/app/api/brands/route.ts(182,1): error TS1005: ',' expected.
+src/app/api/brands/route.ts(270,1): error TS1005: ',' expected.
+src/app/api/bundles/[id]/status/route.ts(81,5): error TS1005: ',' expected.
+src/app/api/bundles/[id]/status/route.ts(88,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/cutting/bundles/route.ts(113,1): error TS1005: ',' expected.
+src/app/api/cutting/bundles/route.ts(233,1): error TS1005: ',' expected.
+src/app/api/cutting/bundles/route.ts(243,1): error TS1005: ',' expected.
+src/app/api/cutting/fabric-batches/route.ts(161,1): error TS1005: ',' expected.
+src/app/api/cutting/fabric-batches/route.ts(227,1): error TS1005: ',' expected.
+src/app/api/cutting/issues/route.ts(92,1): error TS1005: ',' expected.
+src/app/api/cutting/issues/route.ts(201,1): error TS1005: ',' expected.
+src/app/api/cutting/issues/route.ts(277,1): error TS1005: ',' expected.
+src/app/api/cutting/lays/route.ts(27,1): error TS1005: ',' expected.
+src/app/api/cutting/lays/route.ts(108,1): error TS1005: ',' expected.
+src/app/api/dashboards/route.ts(48,5): error TS1005: ',' expected.
+src/app/api/dashboards/route.ts(120,5): error TS1472: 'catch' or 'finally' expected.
+src/app/api/delivery/stats/route.ts(163,1): error TS1005: ',' expected.
+src/app/api/delivery/stats/route.ts(206,1): error TS1005: ',' expected.
+src/app/api/delivery/stats/route.ts(256,1): error TS1005: ')' expected.
+src/app/api/designs/[id]/comments/route.ts(222,2): error TS1128: Declaration or statement expected.
+src/app/api/designs/[id]/send-approval/route.ts(184,2): error TS1128: Declaration or statement expected.
+src/app/api/designs/route.ts(179,3): error TS1005: 'try' expected.
+src/app/api/designs/route.ts(218,4): error TS1005: '}' expected.
+src/app/api/employees/route.ts(51,3): error TS1005: 'try' expected.
+src/app/api/employees/route.ts(58,2): error TS1128: Declaration or statement expected.
+src/app/api/employees/setup/route.ts(144,2): error TS1128: Declaration or statement expected.
+src/app/api/finance/bills/route.ts(22,1): error TS1005: ',' expected.
+src/app/api/finance/bills/route.ts(37,1): error TS1005: ',' expected.
+src/app/api/finance/invoices/route.ts(271,4): error TS1128: Declaration or statement expected.
+src/app/api/finance/payments/route.ts(52,1): error TS1005: ',' expected.
+src/app/api/finance/stats/route.ts(141,3): error TS1005: ',' expected.
+src/app/api/finance/stats/route.ts(148,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/finishing-packing/stats/route.ts(130,1): error TS1005: ',' expected.
+src/app/api/finishing-packing/stats/route.ts(164,1): error TS1005: ')' expected.
+src/app/api/hr/payroll/route.ts(283,1): error TS1005: ',' expected.
+src/app/api/hr/stats/route.ts(51,1): error TS1005: ',' expected.
+src/app/api/hr/stats/route.ts(370,1): error TS1005: ')' expected.
+src/app/api/integrations/notify/route.ts(278,5): error TS1005: ',' expected.
+src/app/api/integrations/notify/route.ts(285,2): error TS1128: Declaration or statement expected.
+src/app/api/maintenance/assets/route.ts(100,1): error TS1005: ',' expected.
+src/app/api/maintenance/assets/route.ts(160,1): error TS1005: ',' expected.
+src/app/api/merchandising/demand-forecast/route.ts(146,1): error TS1005: ',' expected.
+src/app/api/merchandising/market-trends/route.ts(98,1): error TS1005: ',' expected.
+src/app/api/mobile/stats/route.ts(186,5): error TS1005: 'try' expected.
+src/app/api/mobile/stats/route.ts(196,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/notifications/email/route.ts(189,2): error TS1128: Declaration or statement expected.
+src/app/api/orders/[id]/activity-logs/route.ts(95,2): error TS1128: Declaration or statement expected.
+src/app/api/orders/[id]/activity-logs/route.ts(96,2): error TS1128: Declaration or statement expected.
+src/app/api/orders/[id]/color-variants/route.ts(128,2): error TS1128: Declaration or statement expected.
+src/app/api/packing/cartons/route.ts(114,1): error TS1005: ',' expected.
+src/app/api/payments/create-checkout/route.ts(102,3): error TS1005: ',' expected.
+src/app/api/payments/create-checkout/route.ts(110,2): error TS1128: Declaration or statement expected.
+src/app/api/payments/create-intent/route.ts(158,2): error TS1128: Declaration or statement expected.
+src/app/api/permissions/route.ts(77,4): error TS1005: '}' expected.
+src/app/api/pod/route.ts(197,4): error TS1005: '}' expected.
+src/app/api/printing/machines/route.ts(89,1): error TS1005: ',' expected.
+src/app/api/printing/materials/route.ts(183,2): error TS1128: Declaration or statement expected.
+src/app/api/printing/runs/route.ts(183,3): error TS1005: ',' expected.
+src/app/api/quality-control/analytics/metrics/route.ts(122,3): error TS1005: 'try' expected.
+src/app/api/quality-control/analytics/metrics/route.ts(129,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/quality-control/analytics/pareto/route.ts(80,5): error TS1005: ',' expected.
+src/app/api/quality-control/analytics/pareto/route.ts(87,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/quality-control/analytics/spc/route.ts(108,5): error TS1005: 'try' expected.
+src/app/api/quality-control/analytics/spc/route.ts(115,4): error TS1005: '}' expected.
+src/app/api/quality-control/checklists/route.ts(24,5): error TS1005: 'try' expected.
+src/app/api/quality-control/checklists/route.ts(54,4): error TS1005: '}' expected.
+src/app/api/quality-control/defect-codes/route.ts(24,5): error TS1005: 'try' expected.
+src/app/api/quality-control/defect-codes/route.ts(55,4): error TS1005: '}' expected.
+src/app/api/quality-control/inspections/[id]/defect/route.ts(43,1): error TS1128: Declaration or statement expected.
+src/app/api/quality-control/inspections/[id]/defect/route.ts(43,2): error TS1128: Declaration or statement expected.
+src/app/api/quality-control/inspections/[id]/route.ts(55,1): error TS1005: ',' expected.
+src/app/api/quality-control/inspections/[id]/sample/route.ts(38,2): error TS1128: Declaration or statement expected.
+src/app/api/quality-control/inspections/route.ts(67,5): error TS1005: 'try' expected.
+src/app/api/quality-control/inspections/route.ts(74,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/quality-control/samples/route.ts(35,1): error TS1005: ',' expected.
+src/app/api/reports/route.ts(63,5): error TS1005: ',' expected.
+src/app/api/reports/route.ts(156,4): error TS1005: '}' expected.
+src/app/api/seed/route.ts(193,2): error TS1128: Declaration or statement expected.
+src/app/api/settings/audit-logs/export/route.ts(26,5): error TS1005: ',' expected.
+src/app/api/settings/audit-logs/export/route.ts(34,1): error TS1005: '}' expected.
+src/app/api/settings/audit-logs/route.ts(86,1): error TS1005: '}' expected.
+src/app/api/settings/avatar/route.ts(82,4): error TS1005: '}' expected.
+src/app/api/settings/general/route.ts(41,1): error TS1005: ',' expected.
+src/app/api/settings/notifications/route.ts(35,1): error TS1005: ',' expected.
+src/app/api/settings/sessions/route.ts(51,1): error TS1005: '}' expected.
+src/app/api/settings/workspace/logo/route.ts(82,4): error TS1005: '}' expected.
+src/app/api/settings/workspace/route.ts(54,1): error TS1005: ',' expected.
+src/app/api/sewing/operations/route.ts(68,5): error TS1005: ',' expected.
+src/app/api/sewing/operations/route.ts(75,2): error TS1472: 'catch' or 'finally' expected.
+src/app/api/tenants/limits/route.ts(59,5): error TS1005: ',' expected.
+src/app/api/tenants/limits/route.ts(66,2): error TS1472: 'catch' or 'finally' expected.

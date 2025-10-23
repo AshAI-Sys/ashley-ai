@@ -46,7 +46,7 @@ export default function UserManagementPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const router = useRouter();
+  const _router = useRouter();
 
   const roles = [
     { value: "admin", label: "Administrator" },

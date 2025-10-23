@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const prisma = db;
 
 // POST /api/auth/2fa/verify - Verify 2FA token and enable 2FA
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { user_id, token, enable_2fa = false } = body;

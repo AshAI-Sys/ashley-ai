@@ -63,7 +63,7 @@ export default function SMSNotificationsPage() {
     }
   };
 
-  const previewTemplate = async (
+  const _previewTemplate = async (
     templateId: string,
     variables: Record<string, string>
   ) => {

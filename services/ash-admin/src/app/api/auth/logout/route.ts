@@ -9,7 +9,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * POST /api/auth/logout
  * Logout current user and clear session
  */
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     // Get user from auth (optional - still logout even if not authenticated);
     const userOrResponse = await requireAuth(request);

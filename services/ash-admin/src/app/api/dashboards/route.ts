@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 const prisma = db;
 
 // GET /api/dashboards - List all dashboards
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";

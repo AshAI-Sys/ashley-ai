@@ -4,7 +4,7 @@ import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/scheduling/scenario - Analyze what-if scenarios
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { base_schedule, scenario_type, scenario_data, jobs, resources } = await req.json();
 

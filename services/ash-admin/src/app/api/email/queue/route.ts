@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 /**
  * GET /api/email/queue - Get queue statistics
  */
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const stats = await emailQueue.getStats();
 
@@ -26,7 +26,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 /**
  * POST /api/email/queue - Send email (add to queue)
  */
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { type, to, data, scheduledFor, maxAttempts } = await request.json();
 

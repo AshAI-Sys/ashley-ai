@@ -3,7 +3,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET /api/automation/stats - Get automation dashboard statistics (Demo Data)
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("time_range") || "7d"; // 24h, 7d, 30d

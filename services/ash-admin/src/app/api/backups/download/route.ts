@@ -4,7 +4,7 @@ import { backupService } from "@/lib/backup/service";
 import { requireRole } from "@/lib/auth-middleware";
 
 // GET /api/backups/download?id={backupId} - Download backup file (ADMIN ONLY)
-export const GET = requireRole("admin")(async (request: NextRequest, user) => {
+export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");

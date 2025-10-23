@@ -8,7 +8,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Force dynamic route (don't pre-render during build)
 export const dynamic = "force-dynamic";
 
-export const GET = requireAuth(async (request: NextRequest, authUser) => {
+export const GET = requireAuth(async (request: NextRequest, _authUser) => {
   try {
     // Return default notification settings;
     const settings = {
@@ -32,9 +32,9 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
   }
 }
 
-export const PUT = requireAuth(async (request: NextRequest, authUser) => {
+export const PUT = requireAuth(async (request: NextRequest, _authUser) => {
   try {
-    const body = await request.json();
+    const _body = await request.json();
     // TODO: Save to database
     return NextResponse.json({ success: true });
   } catch (error) {
