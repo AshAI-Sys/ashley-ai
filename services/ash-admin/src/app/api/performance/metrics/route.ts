@@ -156,7 +156,6 @@ function getRecommendations(
       "Slow uncached queries detected. Review database indexes and query optimization."
     );
     }
-      });
 
   if (queryMetrics.totalQueries < 100) {
     recommendations.push(

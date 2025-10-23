@@ -23,7 +23,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const results: Record<string, boolean> = {};
 
@@ -192,7 +191,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         console.error("Teams error:", error);
         results.teams = false;
       }
-      });
 
     // Email notifications
     if (channels.includes("email") && recipients.email) {
@@ -283,4 +281,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

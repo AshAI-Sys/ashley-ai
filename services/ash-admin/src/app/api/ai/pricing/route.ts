@@ -30,7 +30,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Get client history
     const client = await prisma.client.findUnique({
@@ -51,7 +50,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
-      });
 
     // Calculate client history metrics
     const totalOrders = client.orders.length;
@@ -149,7 +147,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // GET /api/ai/pricing/scenarios?client_id=xxx&... - Get multiple pricing scenarios
 export const GET = requireAuth(async (req: NextRequest, user) => {
@@ -173,7 +170,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Get client history (same as POST)
     const client = await prisma.client.findUnique({
@@ -194,7 +190,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
-      });
 
     const totalOrders = client.orders.length;
     const totalRevenue = client.orders.reduce((sum, order) => {
@@ -287,4 +282,3 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

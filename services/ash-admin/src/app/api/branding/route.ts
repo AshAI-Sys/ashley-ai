@@ -15,7 +15,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const branding = await brandingManager.getBranding(workspace_id);
 
@@ -48,7 +47,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // PUT /api/branding - Update branding configuration
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -61,7 +59,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const success = await brandingManager.updateBranding(workspace_id, updates);
 
@@ -86,4 +83,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

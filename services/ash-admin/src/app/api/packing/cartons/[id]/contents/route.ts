@@ -20,7 +20,6 @@ export async function POST(
     if (!carton) {
       return NextResponse.json({ error: "Carton not found" }, { status: 404 });
     }
-      });
 
     if (carton.status !== "OPEN") {
       return NextResponse.json(
@@ -28,7 +27,6 @@ export async function POST(
         { status: 400 }
       );
     }
-      });
 
     // Check capacity constraints
     const currentUnits = carton.contents.reduce(
@@ -72,7 +70,6 @@ export async function POST(
       { error: "Failed to add content to carton" },
       { status: 500 }
     );
-  });
 }
 
 export async function GET(
@@ -130,7 +127,6 @@ export async function DELETE(
     if (!content) {
       return NextResponse.json({ error: "Content not found" }, { status: 404 });
     }
-      });
 
     // Remove content from carton
     await prisma.cartonContent.delete({
@@ -150,5 +146,4 @@ export async function DELETE(
       { error: "Failed to remove content from carton" },
       { status: 500 }
     );
-  });
 };

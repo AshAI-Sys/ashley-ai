@@ -14,7 +14,6 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Get backup info first
     const backup = await backupService.getBackupInfo(backupId);
@@ -22,7 +21,6 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
     if (!backup) {
       return NextResponse.json({ error: "Backup not found" }, { status: 404 });
     }
-      });
 
     // Restore the backup
     await backupService.restoreBackup(backupId);
@@ -41,4 +39,3 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

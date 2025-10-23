@@ -68,7 +68,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
             recommendation: "Review and address defect",
           }
         }
-      });
 
       return {
         date: qc.created_at,
@@ -96,7 +95,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/ai/defect-detection/patterns/compare - Compare quality between operators/stations
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -109,7 +107,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Get QC checks with AI results
     const qcChecks = await prisma.qCInspection.findMany({
@@ -171,7 +168,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         entity_name: entityName,
         result,
       }
-      });
 
     // Prepare data for comparison
     const comparisonData = Object.entries(entityGroups).map(
@@ -197,4 +193,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

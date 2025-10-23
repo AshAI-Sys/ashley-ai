@@ -39,7 +39,6 @@ export async function GET(
       { success: false, error: "Failed to fetch print locations" },
       { status: 500 }
     );
-  });
 }
 
 export async function POST(
@@ -179,5 +178,4 @@ export async function DELETE(
       { success: false, error: "Failed to delete print location" },
       { status: 500 }
     );
-  });
 };

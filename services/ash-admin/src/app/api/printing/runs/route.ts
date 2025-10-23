@@ -131,7 +131,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Determine workcenter based on method
     const workcenters = {
@@ -213,4 +212,3 @@ function getMethodSpecificData(run: any) {
     default:
       return {};
   }
-});

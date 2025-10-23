@@ -111,7 +111,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -280,4 +279,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

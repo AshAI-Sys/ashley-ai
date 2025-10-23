@@ -188,7 +188,6 @@ async function getGeographicDistribution() {
 
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
-      });
 
     return Object.entries(cityCount).map(([city, count]) => ({
       location: city,
@@ -248,4 +247,3 @@ async function getMethodPerformance() {
     console.error("Error calculating method performance:", error);
     return [];
   }
-});

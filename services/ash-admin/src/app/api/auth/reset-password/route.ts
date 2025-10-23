@@ -30,7 +30,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const { token, password } = validation.data;
 
@@ -47,7 +46,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Find user with this reset token
     const user = await prisma.user.findFirst({
@@ -67,7 +65,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if token is expired (1 hour)
     if (
@@ -128,4 +125,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

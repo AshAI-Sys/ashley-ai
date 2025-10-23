@@ -66,7 +66,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/reports - Create new report
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -98,7 +97,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const report = await prisma.customReport.create({
       data: {
@@ -153,4 +151,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

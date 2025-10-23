@@ -99,7 +99,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // Helper function for demo chart data
 function generateDemoChart() {

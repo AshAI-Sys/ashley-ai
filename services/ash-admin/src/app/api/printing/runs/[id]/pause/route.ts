@@ -22,7 +22,6 @@ export async function POST(
         { status: 404 }
       );
     }
-      });
 
     if (run.status !== "IN_PROGRESS") {
       return NextResponse.json(
@@ -30,7 +29,6 @@ export async function POST(
         { status: 400 }
       );
     }
-      });
 
     // Pause the run
     const updatedRun = await prisma.printRun.update({
@@ -89,5 +87,4 @@ async function logRunEvent(
       },
   } catch (error) {
     console.error("Failed to log run event:", error);
-  });
 };

@@ -193,7 +193,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const data: any = {};
     if (updateData.title) data.title = updateData.title;
@@ -272,7 +271,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     await prisma.workOrder.delete({
       where: { id },
@@ -288,4 +286,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

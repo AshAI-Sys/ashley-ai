@@ -20,7 +20,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         where.period_start.gte = startYear;
         where.period_start.lte = endYear;
       }
-      });
 
     const payrollPeriods = await prisma.payrollPeriod.findMany({
       where,
@@ -145,7 +144,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               overtimeHours += hours - 8;
             }
           }
-      });
 
         // Get piece-rate earnings from production runs (sewing)
         const sewingEarnings = await tx.sewingRun.aggregate({
@@ -214,7 +212,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             salary_type: employee.salary_type,
           }),
         }
-      });
 
       // Create payroll earnings
       await tx.payrollEarning.createMany({
@@ -322,4 +319,3 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

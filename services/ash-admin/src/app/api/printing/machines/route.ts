@@ -106,7 +106,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Create machine
     const machine = await prisma.machine.create({
@@ -128,7 +127,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create machine" },
       { status: 500 }
     );
-  });
 }
 
 async function calculateMachineUtilization(machineId: string): Promise<number> {
@@ -188,4 +186,3 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
     console.error("Error checking maintenance due:", error);
     return false;
   }
-});

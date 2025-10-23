@@ -26,7 +26,6 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-      });
 
     return NextResponse.json(user);
   } catch (error) {
@@ -73,4 +72,3 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-});

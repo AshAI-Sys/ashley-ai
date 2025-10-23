@@ -100,7 +100,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     if (!employee.is_active) {
       return NextResponse.json(
@@ -108,7 +107,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const today = new Date();
     const dateOnly = new Date(
@@ -141,7 +139,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       ) {
         updateData.time_out = timestamp ? new Date(timestamp) : new Date();
     }
-      });
 
       if (Object.keys(updateData).length > 0) {
         attendanceLog = await prisma.attendanceLog.update({
@@ -163,7 +160,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { success: false, error: "Invalid attendance action" },
           { status: 400 }
         );
-      });
     } else {
       // Create new attendance record
       attendanceLog = await prisma.attendanceLog.create({
@@ -197,7 +193,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }
-      });
 
     return NextResponse.json(
       {
@@ -263,4 +258,3 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

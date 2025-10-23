@@ -111,7 +111,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         timestamp: date,
         metrics: dayMetrics,
       }
-      });
 
     // Analyze trends
     const trendAnalysis =
@@ -132,4 +131,3 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

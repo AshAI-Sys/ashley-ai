@@ -20,7 +20,6 @@ export async function GET() {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/sms/templates - Preview template with variables
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -34,7 +33,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const template = SMS_TEMPLATES[template_id as keyof typeof SMS_TEMPLATES];
 
@@ -44,7 +42,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Replace variables in template
     let preview = template.message;
@@ -55,7 +52,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           variables[key]
         );
       }
-      });
 
     return NextResponse.json({
       success: true,
@@ -72,4 +68,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

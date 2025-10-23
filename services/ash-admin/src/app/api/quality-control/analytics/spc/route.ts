@@ -25,7 +25,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       default:
         startDate.setDate(endDate.getDate() - 30);
     }
-      });
 
     // Get daily aggregated data
     const dailyData = (await prisma.$queryRaw`
@@ -80,7 +79,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (values.length === 0) {
       return NextResponse.json([]);
     }
-      });
 
     const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
     const variance =
@@ -113,4 +111,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

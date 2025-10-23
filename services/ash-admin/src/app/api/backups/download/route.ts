@@ -14,14 +14,12 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const backup = await backupService.getBackupInfo(backupId);
 
     if (!backup) {
       return NextResponse.json({ error: "Backup not found" }, { status: 404 });
     }
-      });
 
     const fileBuffer = await backupService.downloadBackup(backupId);
 
@@ -40,4 +38,3 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

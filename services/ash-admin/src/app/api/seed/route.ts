@@ -19,7 +19,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-      });
 
     // DEVELOPMENT ONLY: Security check with token
     const { searchParams } = new URL(request.url);
@@ -190,4 +189,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   } finally {
     await prisma.$disconnect();
   }
-});

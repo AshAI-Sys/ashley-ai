@@ -25,7 +25,6 @@ export const GET = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/backups - Create new backup (ADMIN ONLY)
 export const POST = requireRole("admin")(async (request: NextRequest, user) => {
@@ -55,7 +54,6 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // DELETE /api/backups?id={backupId} - Delete backup (ADMIN ONLY)
 export const DELETE = requireRole("admin")(async (request: NextRequest, user) => {
@@ -69,7 +67,6 @@ export const DELETE = requireRole("admin")(async (request: NextRequest, user) =>
         { status: 400 }
       );
     }
-      });
 
     await backupService.deleteBackup(backupId);
 
@@ -83,4 +80,3 @@ export const DELETE = requireRole("admin")(async (request: NextRequest, user) =>
       { status: 500 }
     );
   }
-});

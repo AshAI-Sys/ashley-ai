@@ -150,7 +150,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
               .toLowerCase()
               .includes(search.toLowerCase()));
     }
-      });
 
       if (status) {
         matches = matches && design.status === status;
@@ -214,4 +213,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

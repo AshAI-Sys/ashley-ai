@@ -27,7 +27,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const { email } = validation.data;
 
@@ -71,7 +70,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 429 }
         );
       }
-      });
 
     // Generate password reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -106,7 +104,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       console.log("🔗 Reset URL:", resetUrl);
       console.log("⏰ Expires:", resetExpires);
     }
-      });
 
     // Log event
     await logAuthEvent(
@@ -142,4 +139,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

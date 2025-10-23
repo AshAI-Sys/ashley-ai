@@ -90,7 +90,6 @@ export async function PUT(
         { status: 404 }
       );
     }
-      });
 
     if (existingBrand.client_id !== clientId) {
       return NextResponse.json(
@@ -98,7 +97,6 @@ export async function PUT(
         { status: 403 }
       );
     }
-      });
 
     // Check name uniqueness if name is being updated
     if (validatedData.name && validatedData.name !== existingBrand.name) {
@@ -119,7 +117,6 @@ export async function PUT(
           { status: 400 }
         );
       }
-      });
 
     const brand = await prisma.brand.update({
       where: { id: brandId },
@@ -190,7 +187,6 @@ export async function DELETE(
         { status: 404 }
       );
     }
-      });
 
     if (existingBrand.client_id !== clientId) {
       return NextResponse.json(
@@ -198,7 +194,6 @@ export async function DELETE(
         { status: 403 }
       );
     }
-      });
 
     // Soft delete by setting deleted_at
     await prisma.brand.update({
@@ -217,5 +212,4 @@ export async function DELETE(
       { success: false, error: "Failed to delete brand" },
       { status: 500 }
     );
-  });
 };

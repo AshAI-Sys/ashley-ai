@@ -103,7 +103,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if fabric batch exists and has sufficient quantity
     const fabricBatch = await prisma.fabricBatch.findUnique({
@@ -116,7 +115,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     if (fabricBatch.qty_on_hand < validatedData.qty_issued) {
       return NextResponse.json(
@@ -127,7 +125,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Create fabric issue and update batch quantity in a transaction
     const fabricIssue = await prisma.$transaction(async tx => {
@@ -224,7 +221,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     const fabricIssue = await prisma.cutIssue.update({
       where: { id },
@@ -284,7 +280,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if fabric issue exists
     const existingIssue = await prisma.cutIssue.findUnique({
@@ -300,7 +295,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Delete fabric issue and restore batch quantity in a transaction
     await prisma.$transaction(async tx => {
@@ -318,7 +312,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       }
-      });
 
     return NextResponse.json({
       success: true,
@@ -330,4 +323,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

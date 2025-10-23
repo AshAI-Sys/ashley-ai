@@ -52,7 +52,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/automation/notifications - Create notification
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -83,7 +82,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // If using template, populate content from template
     let finalSubject = subject;
@@ -104,7 +102,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           variables_data
         );
       }
-      });
 
     const notification = await prisma.notification.create({
       data: {
@@ -140,7 +137,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // PUT /api/automation/notifications - Update notification status
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -154,7 +150,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const updateData: any = {};
 
@@ -164,12 +159,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       if (status === "SENT" && sent_at) {
         updateData.sent_at = new Date(sent_at);
     }
-      });
 
       if (status === "DELIVERED" && delivered_at) {
         updateData.delivered_at = new Date(delivered_at);
     }
-      });
 
       if (status === "FAILED") {
         updateData.retry_count = { increment: 1 };
@@ -177,7 +170,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           updateData.error_message = error_message;
         }
       }
-      });
 
     const notification = await prisma.notification.update({
       where: { id },
@@ -195,7 +187,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // Helper function to interpolate template variables
 function interpolateTemplate(template: string, variables: any): string {

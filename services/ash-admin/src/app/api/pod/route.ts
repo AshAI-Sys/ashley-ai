@@ -33,7 +33,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Create POD record
     const podRecord = await prisma.pODRecord.create({
@@ -77,7 +76,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // GET /api/pod?delivery_id=xxx - Get POD records for a delivery
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -92,7 +90,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const where: any = {};
     if (delivery_id) where.delivery_id = delivery_id;
@@ -145,7 +142,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const body = await request.json();
     const {
@@ -197,4 +193,3 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

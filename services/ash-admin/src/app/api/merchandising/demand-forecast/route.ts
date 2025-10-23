@@ -22,7 +22,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) {
       return createValidationErrorResponse([workspaceError]);
     }
-      });
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
@@ -31,7 +30,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-      });
 
     // Validate period parameter
     const validPeriods = ["DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"];
@@ -39,7 +37,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (periodError) {
       return createValidationErrorResponse([periodError]);
     }
-      });
 
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 200);
@@ -75,7 +72,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
-  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {

@@ -119,7 +119,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Create cut lay with outputs in a transaction
     const cutLay = await prisma.$transaction(async tx => {;
@@ -191,4 +190,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

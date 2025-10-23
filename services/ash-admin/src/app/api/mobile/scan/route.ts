@@ -20,7 +20,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Try to identify what was scanned based on code format and database lookup
 
@@ -62,7 +61,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
           message: `Bundle ${bundle.qr_code} found - ${bundle.qty} pieces`,
         });
-      });
 
     // 2. Check if it's an Order (format: ORD-YYYY-XXXXXX)
     if (code.includes("ORD-") || code.includes("ORDER-")) {
@@ -105,7 +103,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
           message: `Order ${order.order_number} - ${order.client.name}`,
         });
-      });
 
     // 3. Check if it's a Finished Unit (format: FU-XXXXXX or SKU-XXXXXX)
     if (code.includes("FU-") || code.includes("SKU-")) {
@@ -146,7 +143,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
           message: `Finished Unit ${finishedUnit.sku} - 1 piece`,
         });
-      });
 
     // 4. Check if it's a Carton (format: CTN-XXXXXX)
     if (code.includes("CTN-") || code.includes("CARTON-")) {
@@ -189,7 +185,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
           message: `Carton ${carton.carton_no} - ${carton._count.contents} units`,
         });
-      });
 
     // 5. If nothing matches, try a generic search by ID
     // This handles cases where QR codes might just be UUIDs
@@ -267,4 +262,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

@@ -22,7 +22,6 @@ export const PUT = requireAuth(async (
         { status: 400 }
       );
     }
-      });
 
     // Verify bundle exists
     const bundle = await prisma.bundle.findFirst({
@@ -38,7 +37,6 @@ export const PUT = requireAuth(async (
         { status: 404 }
       );
     }
-      });
 
     // Update bundle status
     const updatedBundle = await prisma.bundle.update({
@@ -73,7 +71,6 @@ export const PUT = requireAuth(async (
       // Ignore if BundleStatusHistory table doesn't exist
       console.log("Bundle status history logging skipped");
     }
-      });
 
     return NextResponse.json({
       success: true,
@@ -86,4 +83,3 @@ export const PUT = requireAuth(async (
       { status: 500 }
     );
   }
-});

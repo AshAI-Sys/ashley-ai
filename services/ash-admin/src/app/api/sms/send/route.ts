@@ -15,7 +15,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Format and validate phone number
     const formattedPhone = smsService.formatPhoneNumber(to);
@@ -28,7 +27,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     let result;
 
@@ -60,7 +58,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
-      });
 
     return NextResponse.json({
       success: true,
@@ -74,7 +71,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // GET /api/sms/send - Get SMS provider status
 export async function GET() {
@@ -92,4 +88,3 @@ export async function GET() {
       { status: 500 }
     );
   }
-});

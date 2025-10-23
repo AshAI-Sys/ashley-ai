@@ -34,7 +34,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       // Generate specific report
       return await generateReport(report_type, searchParams, user);
     }
-      });
 
     // Return available reports and recent reports
     const availableReports = [
@@ -170,7 +169,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
-      });
 
 // POST - Generate new report
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -213,7 +211,6 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       { status: 500 }
     );
   }
-      });
 
 // Generate specific report
 async function generateReport(
@@ -240,7 +237,6 @@ async function generateReport(
     success: true,
     data: reportData,
   }
-      });
 
 // Generate report data based on type
 async function generateReportData(params: any, user: any) {
@@ -274,7 +270,6 @@ async function generateReportData(params: any, user: any) {
     default:
       throw new Error("Invalid report type");
   }
-      });
 
 // User Activity Report
 async function generateUserActivityReport(

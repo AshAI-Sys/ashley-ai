@@ -90,7 +90,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Calculate next escalation time based on severity
     const escalationMinutes = getEscalationDelay(severity);
@@ -129,7 +128,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // PUT /api/automation/alerts - Update alert (acknowledge/resolve)
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -143,7 +141,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const updateData: any = {};
     const now = new Date();
@@ -212,7 +209,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // DELETE /api/automation/alerts - Delete alert
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -226,7 +222,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     await prisma.alert.delete({
       where: { id },
@@ -242,7 +237,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // Helper functions
 async function getAlertSummary(workspaceId: string) {
@@ -314,4 +308,3 @@ Please acknowledge this alert in the system.`,
   } catch (error) {
     console.error("Error creating alert notification:", error);
   }
-});

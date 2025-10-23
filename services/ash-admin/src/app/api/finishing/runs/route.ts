@@ -70,7 +70,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch finishing runs" },
       { status: 500 }
     );
-  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -123,7 +122,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     if (updateData.status === "COMPLETED" && updateData.bundle_data) {
       await createFinishedUnits(finishingRun, updateData.bundle_data);
     }
-      });
 
     return NextResponse.json(finishingRun);
   } catch (error) {
@@ -158,7 +156,6 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
         color: bundleData.color || null,
         serial: `${bundleData.qr_code || finishingRun.id}-${(i + 1).toString().padStart(3, "0")}`,
       }
-      });
 
     await prisma.finishedUnit.createMany({
       data: finishedUnits,
@@ -170,4 +167,3 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
   } catch (error) {
     console.error("Error creating finished units:", error);
   }
-});

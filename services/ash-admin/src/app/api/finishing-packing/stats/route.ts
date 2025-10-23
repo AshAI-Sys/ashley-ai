@@ -159,4 +159,3 @@ async function getPackingEfficiency() {
     console.error("Error calculating packing efficiency:", error);
     return 0;
   }
-});

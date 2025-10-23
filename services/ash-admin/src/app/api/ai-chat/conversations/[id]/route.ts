@@ -38,7 +38,6 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
-      });
 
     return NextResponse.json({ conversation });
   } catch (error) {
@@ -78,7 +77,6 @@ export const PATCH = requireAuth(async (
       { status: 500 }
     );
   }
-      });
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
 export const DELETE = requireAuth(async (
@@ -101,4 +99,3 @@ export const DELETE = requireAuth(async (
       { status: 500 }
     );
   }
-});

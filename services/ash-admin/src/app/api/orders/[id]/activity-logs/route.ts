@@ -40,7 +40,6 @@ export async function GET(
       { success: false, error: "Failed to fetch activity logs" },
       { status: 500 }
     );
-  });
 }
 
 export async function POST(

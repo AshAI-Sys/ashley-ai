@@ -92,7 +92,6 @@ async function getBusinessContext(
           `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - ₱${order.total_amount?.toLocaleString() || "0"}`
         );
       }
-      });
 
     // Get clients summary
     const clients = await prisma.client.findMany({
@@ -113,7 +112,6 @@ async function getBusinessContext(
           `${idx + 1}. ${client.name} - ${client._count.brands} brands, ${client._count.orders} orders - Contact: ${client.email || "N/A"}`
         );
       }
-      });
 
     // Get production statistics
     const orderStats = await prisma.order.groupBy({
@@ -127,7 +125,6 @@ async function getBusinessContext(
       orderStats.forEach(stat => {
         contextParts.push(`- ${stat.status}: ${stat._count} orders`);
       }
-      });
 
     // Get recent employees if HR query detected
     if (
@@ -147,9 +144,7 @@ async function getBusinessContext(
           contextParts.push(
             `${idx + 1}. ${emp.first_name} ${emp.last_name} - ${emp.position || "N/A"} - ${emp.salary_type} (${emp.is_active ? "Active" : "Inactive"})`
           );
-        });
       }
-      });
 
     if (contextParts.length === 0) {
       return "\n## Current System Status:\nNo data available in the system yet. Ready to help you get started!";
@@ -159,7 +154,6 @@ async function getBusinessContext(
     console.error("Error getting business context:", error);
     return "\n## System Status:\nUnable to fetch current data, but ready to assist with general queries.";
   }
-      });
 
 // POST /api/ai-chat/chat - Send a message and get AI response
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -191,7 +185,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 503 }
       );
     }
-      });
 
     // Ensure workspace exists (create if needed for demo mode)
     try {
@@ -218,7 +211,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
-      });
 
     // Get or create conversation
     let conversationId = conversation_id;
@@ -245,7 +237,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         // Continue without conversation ID - one-off chat mode
         conversationId = "temp-" + Date.now();
       }
-      });
 
     // Save user message (skip if temp conversation)
     let userMessage;
@@ -382,7 +373,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // GET /api/ai-chat/chat - Check AI configuration status
 export const GET = requireAuth(async (request: NextRequest, user) => {;

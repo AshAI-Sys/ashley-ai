@@ -51,7 +51,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const {
       workspaceName,
@@ -96,7 +95,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
-      });
 
     // Check if user email already exists
     const existingUser = await prisma.user.findFirst({
@@ -119,7 +117,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
-      });
 
     // Hash password with bcrypt (10 rounds - optimized for speed while maintaining security)
     // 10 rounds = ~100-500ms (fast & secure, OWASP recommended minimum)
@@ -218,4 +215,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

@@ -20,7 +20,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const startTime = Date.now();
 
@@ -38,7 +37,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     const queryConfig = JSON.parse(report.query_config);
     const reportFilters = report.filters ? JSON.parse(report.filters) : [];
@@ -165,7 +163,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // Query executors for different data sources
 async function executeOrdersQuery(
@@ -183,7 +180,6 @@ async function executeOrdersQuery(
     if (filter.field === "created_at" && filter.operator === "gte") {
       where.created_at = { gte: new Date(filter.value) };
     }
-      });
 
   const orders = await prisma.order.findMany({
     where,

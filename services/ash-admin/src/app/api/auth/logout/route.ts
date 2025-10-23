@@ -27,7 +27,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         userId: userId,
         email: userOrResponse.email,
       }
-      });
 
     // Clear cookies
     const response = NextResponse.json({
@@ -78,4 +77,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     return response;
   }
-});

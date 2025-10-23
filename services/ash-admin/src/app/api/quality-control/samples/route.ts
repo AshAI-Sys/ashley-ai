@@ -42,7 +42,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const samples = await prisma.qCSample.findMany({
       where: { inspection_id: inspectionId },
@@ -64,4 +63,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

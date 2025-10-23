@@ -30,7 +30,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch defects" },
       { status: 500 }
     );
-  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -103,7 +102,6 @@ async function updateInspectionDefectCounts(inspectionId: string) {
     } else if (totalDefects >= inspection.rejection) {
       result = "REJECT";
     }
-      });
 
   await prisma.qCInspection.update({
     where: { id: inspectionId },

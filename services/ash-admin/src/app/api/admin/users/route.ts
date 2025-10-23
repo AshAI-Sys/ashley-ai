@@ -143,7 +143,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
-      });
 
 // POST - Create new user (Admin only)
 export const POST = requireAnyPermission(["admin:create"])(async (
@@ -174,7 +173,6 @@ export const POST = requireAnyPermission(["admin:create"])(async (
         { status: 400 }
       );
     }
-      });
 
     // Hash password (10 rounds - optimized for speed while maintaining security)
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
@@ -269,5 +267,4 @@ async function logUserAudit(
     // })
   } catch (error) {
     console.error("Error logging audit event:", error);
-  });
 };

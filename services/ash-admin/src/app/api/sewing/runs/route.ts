@@ -170,7 +170,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if operator exists
     const operator = await prisma.employee.findUnique({
@@ -183,7 +182,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if bundle exists
     const bundle = await prisma.bundle.findUnique({
@@ -196,7 +194,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if routing step exists
     const routingStep = await prisma.routingStep.findUnique({
@@ -209,7 +206,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     const sewingRun = await prisma.sewingRun.create({
       data: {
@@ -294,7 +290,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Calculate efficiency and metrics if times are provided
     let updateData: any = { ...validatedData };
@@ -314,7 +309,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         updateData.efficiency_pct =
           actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
       }
-      });
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
@@ -379,7 +373,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if sewing run exists
     const existingSewingRun = await prisma.sewingRun.findUnique({
@@ -392,7 +385,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if sewing run is completed (prevent deletion)
     if (existingSewingRun.status === "DONE") {
@@ -401,7 +393,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     await prisma.sewingRun.delete({
       where: { id },
@@ -417,4 +408,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

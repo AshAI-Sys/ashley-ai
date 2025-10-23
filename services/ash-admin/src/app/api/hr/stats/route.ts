@@ -195,7 +195,6 @@ async function calculateHRStats(
         (salaryTypeMap.get(emp.salary_type) || 0) + 1
       );
     }
-      });
 
   // Convert maps to arrays
   const departmentStats = Array.from(departmentMap.entries()).map(

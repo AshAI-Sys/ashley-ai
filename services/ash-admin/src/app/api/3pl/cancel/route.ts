@@ -14,7 +14,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const result = await threePLService.cancelShipment({
       provider,
@@ -29,7 +28,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     return NextResponse.json(result);
   } catch (error: any) {
@@ -42,4 +40,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

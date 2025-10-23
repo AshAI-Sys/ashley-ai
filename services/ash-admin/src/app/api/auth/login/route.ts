@@ -27,7 +27,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if account is locked
     const lockStatus = await isAccountLocked(email);
@@ -95,7 +94,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 401 }
       );
     }
-      });
 
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
@@ -127,7 +125,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 401 }
       );
     }
-      });
 
     // Email verification disabled - allow login directly
     // Email verification check removed to allow direct login after registration
@@ -209,4 +206,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

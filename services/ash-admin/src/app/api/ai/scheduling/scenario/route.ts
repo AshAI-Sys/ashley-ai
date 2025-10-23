@@ -16,7 +16,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Validate scenario type
     const validTypes = [
@@ -33,7 +32,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Build scenario object
     const scenario: any = { type: scenario_type };
@@ -112,4 +110,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

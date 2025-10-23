@@ -72,7 +72,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: 2, // Simplified
         timestamp: new Date(),
       }
-      });
 
     // Printing station metrics
     if (printRuns.length > 0) {
@@ -96,7 +95,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: 3,
         timestamp: new Date(),
       }
-      });
 
     // Sewing station metrics
     if (sewingRuns.length > 0) {
@@ -127,7 +125,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: totalTarget > 0 ? (totalReject / totalTarget) * 100 : 0,
         timestamp: new Date(),
       }
-      });
 
     // QC station metrics
     if (qcInspections.length > 0) {
@@ -151,7 +148,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: defectRate,
         timestamp: new Date(),
       }
-      });
 
     // Finishing station metrics
     if (finishingRuns.length > 0) {
@@ -170,7 +166,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         defect_rate: 1,
         timestamp: new Date(),
       }
-      });
 
     if (metrics.length === 0) {
       return NextResponse.json({
@@ -251,4 +246,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

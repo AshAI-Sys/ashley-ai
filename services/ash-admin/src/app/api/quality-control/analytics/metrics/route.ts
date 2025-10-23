@@ -24,7 +24,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
-      });
 
     // Get quality metrics
     const inspections = await prisma.qCInspection.findMany({
@@ -125,4 +124,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

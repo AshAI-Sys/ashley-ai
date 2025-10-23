@@ -117,7 +117,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const asset = await prisma.asset.create({
       data: {
@@ -146,7 +145,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
-      });
 
     return NextResponse.json(
       { success: false, error: "Failed to create asset" },
@@ -166,7 +164,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const data: any = {};
     if (updateData.name) data.name = updateData.name;
@@ -196,4 +193,3 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

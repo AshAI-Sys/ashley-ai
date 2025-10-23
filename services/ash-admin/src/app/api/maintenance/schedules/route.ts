@@ -256,7 +256,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const data: any = {};
     if (updateData.schedule_name) data.schedule_name = updateData.schedule_name;
@@ -328,7 +327,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if there are active work orders linked to this schedule
     const linkedWorkOrders = await prisma.workOrder.count({
@@ -347,7 +345,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 409 }
       );
     }
-      });
 
     await prisma.maintenanceSchedule.delete({
       where: { id },
@@ -363,4 +360,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

@@ -98,7 +98,6 @@ export const PUT = requireAuth(async (
     logError("Failed to update order", error, { orderId: context.params.id });
     return apiServerError(error);
   }
-      });
 
 // DELETE /api/orders/[id] - Delete order
 export const DELETE = requireAuth(async (
@@ -117,4 +116,3 @@ export const DELETE = requireAuth(async (
     logError("Failed to delete order", error, { orderId: context.params.id });
     return apiServerError(error);
   }
-});

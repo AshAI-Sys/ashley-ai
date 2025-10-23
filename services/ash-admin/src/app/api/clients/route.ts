@@ -147,7 +147,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
-      });
 
     // Convert address object to JSON string if it's an object
     const addressData =
@@ -211,4 +210,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

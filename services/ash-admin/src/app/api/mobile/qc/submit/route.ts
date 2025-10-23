@@ -31,7 +31,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Calculate defect rate
     const defectRate = inspected > 0 ? (failed / inspected) * 100 : 0;
@@ -117,7 +116,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         .catch(() => {
           console.log("CAPA task creation skipped");
         }
-      });
 
     return NextResponse.json({
       success: true,
@@ -134,4 +132,3 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

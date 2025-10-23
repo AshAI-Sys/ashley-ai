@@ -118,7 +118,6 @@ export const PATCH = requireAuth(async (
       if (status === "DONE") {
         updateData.ended_at = new Date();
       }
-      });
 
     const updatedRun = await prisma.printRun.update({
       where: { id: runId },
@@ -169,7 +168,6 @@ export const PATCH = requireAuth(async (
             notes: notes || null,
           },
         }
-      });
 
       // Create reject records if any
       if (qty_reject > 0 && reject_reasons) {
@@ -188,7 +186,6 @@ export const PATCH = requireAuth(async (
           )
         );
       }
-      });
 
     return NextResponse.json({
       success: true,
@@ -252,4 +249,3 @@ function getMethodDetails(run: any) {
     default:
       return { type: "unknown" };
   }
-});

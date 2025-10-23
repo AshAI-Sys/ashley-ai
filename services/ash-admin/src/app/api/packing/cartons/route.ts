@@ -69,7 +69,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to fetch cartons" },
       { status: 500 }
     );
-  });
 }
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -178,4 +177,3 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

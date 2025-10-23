@@ -23,7 +23,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) {
       return createValidationErrorResponse([workspaceError]);
     }
-      });
 
     // Validate workspace access
     if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
@@ -32,7 +31,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-      });
 
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 100);
@@ -114,7 +112,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-      });
 
     if (generateTrends) {
       // Generate AI-powered market trends based on current data and external factors
@@ -126,7 +123,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       if (!validation.isValid) {
         return createValidationErrorResponse(validation.errors);
     }
-      });
 
       const trend = await prisma.marketTrend.create({
         data: {
@@ -142,7 +138,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
-  });
 }
 
 async function generateMarketTrends(workspaceId: string) {
@@ -182,7 +177,6 @@ async function generateMarketTrends(workspaceId: string) {
     } catch (error) {
       // console.error('Error saving trend:', error)
     }
-      });
 
   return savedTrends;
 }
@@ -403,7 +397,6 @@ function getStyleTrends(workspaceId: string) {
       }),
       opportunity_score: styleTrend.impact,
     }
-      });
 
   return trends;
 }

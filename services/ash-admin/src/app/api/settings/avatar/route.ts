@@ -18,7 +18,6 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         { status: 400 }
       );
     }
-      });
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
@@ -27,7 +26,6 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         { status: 400 }
       );
     }
-      });
 
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
@@ -36,7 +34,6 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         { status: 400 }
       );
     }
-      });
 
     // TODO: In production, upload to cloud storage (S3, Cloudinary, etc.)
     // For now, we'll use a data URL (not recommended for production)
@@ -61,7 +58,6 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to upload avatar" },
       { status: 500 }
     );
-  });
 }
 
 export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
@@ -82,4 +78,3 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-});

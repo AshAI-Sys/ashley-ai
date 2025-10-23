@@ -17,7 +17,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     let report: any = null;
 
@@ -114,7 +113,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
     }
-      });
 
     return NextResponse.json({
       success: true,
@@ -128,7 +126,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // GET /api/government/bir - Calculate VAT or withholding tax
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -144,7 +141,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const numAmount = parseFloat(amount);
     let result: any = null;
@@ -202,4 +198,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

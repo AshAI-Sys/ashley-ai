@@ -25,7 +25,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       authLogger.warn("Refresh token missing in request");
       return apiUnauthorized("Refresh token required");
     }
-      });
 
     // Verify refresh token and generate new access token
     const newAccessToken = refreshAccessToken(refreshToken);
@@ -34,7 +33,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       authLogger.warn("Invalid or expired refresh token");
       return apiUnauthorized("Invalid or expired refresh token");
     }
-      });
 
     // Extract user info from refresh token for logging
     const payload = verifyRefreshToken(refreshToken);
@@ -43,7 +41,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         userId: payload.userId,
         email: payload.email,
       }
-      });
 
     // Return new access token
     const response = NextResponse.json({
@@ -65,4 +62,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     authLogger.error("Token refresh error", error);
     return apiServerError(error);
   }
-});

@@ -23,7 +23,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Validate slug format
     const slugRegex = /^[a-z0-9-]+$/;
@@ -36,7 +35,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const result = await tenantManager.createTenant({
       name,
@@ -78,7 +76,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const config = await tenantManager.getTenantConfig(workspace_id);
 
@@ -88,7 +85,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     const limits = await tenantManager.checkLimits(workspace_id);
     const stats = await tenantManager.getTenantStats(workspace_id);
@@ -105,7 +101,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // PUT /api/tenants - Update tenant configuration
 export const PUT = requireAuth(async (req: NextRequest, user) => {
@@ -118,7 +113,6 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const success = await tenantManager.updateTenantConfig(
       workspace_id,
@@ -131,7 +125,6 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
         { status: 500 }
       );
     }
-      });
 
     return NextResponse.json({
       success: true,
@@ -143,7 +136,6 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // DELETE /api/tenants?workspace_id=xxx&confirmation=slug - Delete tenant
 export const DELETE = requireAuth(async (req: NextRequest, user) => {
@@ -158,7 +150,6 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const success = await tenantManager.deleteTenant(
       workspace_id,
@@ -171,7 +162,6 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
         { status: 500 }
       );
     }
-      });
 
     return NextResponse.json({
       success: true,
@@ -183,4 +173,3 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
       { status: 400 }
     );
   }
-});

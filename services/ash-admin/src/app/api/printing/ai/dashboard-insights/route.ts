@@ -111,7 +111,6 @@ function calculateRunPerformanceScore(run: any) {
       const qualityScore = Math.max(0, 1 - defectRate);
       score = score * 0.6 + qualityScore * 0.4;
     }
-      });
 
   // Time efficiency factor
   if (run.started_at) {
@@ -154,7 +153,6 @@ function analyzeActiveRuns(activeRuns: any[]) {
         }
       }
     }
-      });
 
   return {
     total_active: totalActive,
@@ -195,7 +193,6 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       if (totalUsed > totalPlanned * 1.1) {
         materialWaste.push(run.id);
       }
-      });
 
     // Quality issues from outputs
     if (run.outputs && run.outputs.length > 0) {
@@ -204,7 +201,6 @@ function generateGlobalRecommendations(activeRuns: any[]) {
         qualityIssues.push(run.id);
       }
     }
-      });
 
   // Generate recommendations based on patterns
   Object.entries(methodIssues).forEach(([method, count]) => {
@@ -216,7 +212,6 @@ function generateGlobalRecommendations(activeRuns: any[]) {
         runs_affected: count,
       }
     }
-      });
 
   if (materialWaste.length > 0) {
     recommendations.push({
@@ -225,7 +220,6 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       message: `Material waste detected across ${materialWaste.length} runs - optimize calculations`,
       runs_affected: materialWaste.length,
     }
-      });
 
   if (qualityIssues.length > 0) {
     recommendations.push({
@@ -234,7 +228,6 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       message: `Quality issues identified - implement additional checkpoints`,
       runs_affected: qualityIssues.length,
     }
-      });
 
   // General optimization opportunities
   if (activeRuns.length > 5) {
@@ -244,7 +237,6 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       message: "High production volume - consider workload balancing",
       runs_affected: activeRuns.length,
     }
-      });
 
   return recommendations;
 }
@@ -356,7 +348,6 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
         methodStats[run.print_method].issues[issueType]++;
       }
     }
-      });
 
   // Calculate average scores and identify top issues
   const result = {};

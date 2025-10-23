@@ -20,7 +20,6 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
         success: true,
         data: stats,
       }
-      });
 
     const sessions = await getUserActiveSessions(user.id);
 
@@ -37,7 +36,6 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
       { status: 500 }
     );
   }
-      });
 
 // DELETE - Revoke sessions
 export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
@@ -62,7 +60,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
         { status: 400 }
       );
     }
-      });
 
     // Revoke specific session
     await revokeSession(sessionHash);
@@ -78,4 +75,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       { status: 500 }
     );
   }
-});

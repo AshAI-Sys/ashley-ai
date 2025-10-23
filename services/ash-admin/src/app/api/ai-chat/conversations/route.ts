@@ -44,7 +44,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // POST /api/ai-chat/conversations - Create a new conversation
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -70,4 +69,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

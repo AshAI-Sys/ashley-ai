@@ -34,7 +34,6 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
-      });
 
     const brands = await prisma.brand.findMany({
       where: { client_id: clientId },
@@ -99,7 +98,6 @@ export const POST = requireAuth(async (
         { status: 404 }
       );
     }
-      });
 
     // Check if brand with same name already exists for this client
     const existingBrand = await prisma.brand.findFirst({
@@ -118,7 +116,6 @@ export const POST = requireAuth(async (
         { status: 400 }
       );
     }
-      });
 
     // Ensure workspace exists before creating brand
     await prisma.workspace.upsert({
@@ -180,4 +177,3 @@ export const POST = requireAuth(async (
       { status: 500 }
     );
   }
-});

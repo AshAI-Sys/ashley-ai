@@ -18,7 +18,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Look up bundle by QR code
     const bundle = await prisma.bundle.findFirst({
@@ -50,7 +49,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Log scan event would go here if BundleScanLog model existed
     console.log(`Bundle ${bundle.qr_code} scanned at Production Floor`);
@@ -73,4 +71,3 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

@@ -20,7 +20,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       if (date_from) where.payment_date.gte = new Date(date_from);
       if (date_to) where.payment_date.lte = new Date(date_to);
     }
-      });
 
     const payments = await prisma.payment.findMany({
       where,
@@ -60,7 +59,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Get invoice to verify
     const invoice = await prisma.invoice.findUnique({
@@ -79,7 +77,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Start transaction
     const result = await prisma.$transaction(async tx => {
@@ -159,4 +156,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

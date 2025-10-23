@@ -108,7 +108,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Validate variables array if provided
     let variablesJson = null;
@@ -152,7 +151,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // PUT /api/automation/templates - Update notification template
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -166,13 +164,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Convert variables to JSON string if provided
     if (updateData.variables) {
       updateData.variables = JSON.stringify(updateData.variables);
     }
-      });
 
     const template = await prisma.notificationTemplate.update({
       where: { id },
@@ -195,7 +191,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // DELETE /api/automation/templates - Delete notification template
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -209,7 +204,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if template is system template
     const template = await prisma.notificationTemplate.findUnique({
@@ -222,7 +216,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     await prisma.notificationTemplate.delete({
       where: { id },
@@ -238,4 +231,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

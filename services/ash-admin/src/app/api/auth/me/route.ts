@@ -58,4 +58,3 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     authLogger.error("Auth verification error", error);
     return apiServerError(error);
   }
-});

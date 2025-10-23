@@ -14,7 +14,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const image = {
       url: image_url || "",
@@ -85,7 +84,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const bundleIds = bundleIdsParam.split(",");
 
@@ -124,4 +122,3 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

@@ -24,7 +24,6 @@ export async function POST(
           { status: 400 }
         );
     }
-      });
 
       // Validate file type
       const allowedTypes = [
@@ -39,7 +38,6 @@ export async function POST(
           { status: 400 }
         );
     }
-      });
 
       // Validate file size (max 5MB)
       const maxSize = 5 * 1024 * 1024; // 5MB
@@ -64,7 +62,6 @@ export async function POST(
           { status: 404 }
         );
     }
-      });
 
       // Create uploads directory if it doesn't exist
       const uploadsDir = join(process.cwd(), "public", "uploads", "employees");
@@ -97,7 +94,6 @@ export async function POST(
         } catch (error) {
           console.error("Error deleting old profile picture:", error);
         }
-      });
 
       // Update employee with new profile picture URL
       const profilePictureUrl = `/uploads/employees/${filename}`;
@@ -126,7 +122,6 @@ export async function POST(
       );
     }
   }
-      });
 
 // DELETE - Remove employee profile picture
 export async function DELETE(
@@ -151,7 +146,6 @@ export async function DELETE(
           { status: 404 }
         );
     }
-      });
 
       if (!employee.profile_picture) {
         return NextResponse.json(
@@ -159,7 +153,6 @@ export async function DELETE(
           { status: 400 }
         );
     }
-      });
 
       // Delete file from filesystem
       try {
@@ -193,5 +186,4 @@ export async function DELETE(
         { status: 500 }
       );
     }
-  });
 }

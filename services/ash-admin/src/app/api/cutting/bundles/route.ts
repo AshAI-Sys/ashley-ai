@@ -124,7 +124,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if cut lay exists
     const cutLay = await prisma.cutLay.findUnique({
@@ -137,7 +136,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     const createdBundles = [];
 
@@ -250,7 +248,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const body = await request.json();
     const validatedData = UpdateBundleSchema.parse(body);
@@ -266,7 +263,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     const bundle = await prisma.bundle.update({
       where: { id },
@@ -319,4 +315,3 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

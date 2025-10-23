@@ -114,7 +114,6 @@ export async function POST(
         { status: 400 }
       );
     }
-      });
 
     if (!version) {
       return NextResponse.json(
@@ -122,7 +121,6 @@ export async function POST(
         { status: 400 }
       );
     }
-      });
 
     // Verify design exists
     const designAsset = await prisma.designAsset.findUnique({
@@ -135,7 +133,6 @@ export async function POST(
         { status: 404 }
       );
     }
-      });
 
     // Handle file attachments
     const attachmentUrls: string[] = [];
@@ -146,7 +143,6 @@ export async function POST(
         attachmentUrls.push(`/uploads/comments/${filename}`);
         console.log(`Would upload file: ${filename}`);
       }
-      });
 
     // Create comment
     const comment = await prisma.designComment.create({
@@ -216,5 +212,4 @@ export async function POST(
     );
   } finally {
     await prisma.$disconnect();
-  });
 };

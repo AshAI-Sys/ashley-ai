@@ -81,7 +81,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to perform Ashley analysis" },
       { status: 500 }
     );
-  });
 }
 
 async function performDefectTrendAnalysis(inspection: any) {
@@ -129,7 +128,6 @@ async function performDefectTrendAnalysis(inspection: any) {
       total_defects: totalDefects,
       defect_rate: (totalDefects / insp.sample_size) * 100,
     }
-      });
 
   // Calculate trends
   const currentDefectRate =
@@ -187,7 +185,6 @@ async function performRootCausePrediction(inspection: any) {
       }
       defectPatterns[category].locations[defect.location] += defect.quantity;
     }
-      });
 
   // Root cause prediction logic based on defect patterns
   const rootCausePredictions = [];
@@ -251,7 +248,6 @@ async function performRootCausePrediction(inspection: any) {
       preventive_actions: preventiveActions,
       defect_pattern: pattern,
     }
-      });
 
   return {
     type: "root_cause_prediction",
@@ -467,7 +463,6 @@ function generateRiskMitigationRecommendations(
     recommendations.push("Initiate emergency CAPA process");
     recommendations.push("Notify quality manager and customer if applicable");
     }
-      });
 
   return recommendations;
 }
@@ -485,7 +480,6 @@ function generateSPCRecommendations(
       "Do not ship until process is brought back into control"
     );
     }
-      });
 
   return recommendations;
 }

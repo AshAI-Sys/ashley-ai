@@ -35,7 +35,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Hash password
     const saltRounds = 12;
@@ -139,4 +138,3 @@ export async function GET() {
       { status: 500 }
     );
   }
-});

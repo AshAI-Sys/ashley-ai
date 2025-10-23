@@ -18,7 +18,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     if (
       !["send_reminder", "extend_expiry", "cancel_approval"].includes(action)
@@ -28,7 +27,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Get approvals with related data
     const approvals = await prisma.designApproval.findMany({
@@ -212,7 +210,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             results.errors.push(
               `Failed to cancel approval for ${approval.design_asset.name}`
             );
-          });
         }
         break;
 
@@ -233,4 +230,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   } finally {
     await prisma.$disconnect();
   }
-});

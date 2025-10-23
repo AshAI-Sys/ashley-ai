@@ -14,7 +14,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const limits = await tenantManager.checkLimits(workspace_id);
 
@@ -33,7 +32,6 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         `User limit almost reached (${limits.users.current}/${limits.users.max})`
       );
     }
-      });
 
     if (ordersPercent >= 90) {
       warnings.push(
@@ -64,4 +62,3 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

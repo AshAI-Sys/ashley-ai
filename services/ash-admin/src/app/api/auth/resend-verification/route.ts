@@ -27,7 +27,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const { email } = validation.data;
 
@@ -52,7 +51,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 200 }
       );
     }
-      });
 
     // Check if already verified
     if (user.email_verified) {
@@ -64,7 +62,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check rate limiting - don't allow resending within 2 minutes
     if (user.email_verification_sent_at) {
@@ -119,7 +116,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       console.log("🔗 Verification URL:", verificationUrl);
       console.log("⏰ Expires:", verificationExpires);
     }
-      });
 
     // Log event
     await logAuthEvent(
@@ -157,4 +153,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

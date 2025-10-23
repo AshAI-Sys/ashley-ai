@@ -27,14 +27,12 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
   if (!rule) {
     throw new NotFoundError("Automation rule");
     }
-      });
 
   if (!rule.is_active) {
     throw new ValidationError("Automation rule is not active", "rule_id", {
       rule_id,
       status: "inactive",
     }
-      });
 
   // Create execution record
   const execution = await prisma.automationExecution.create({
@@ -57,7 +55,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
     if (conditions.length > 0) {
       conditionsMet = await evaluateConditions(conditions, trigger_data);
     }
-      });
 
     if (!conditionsMet) {
       await prisma.automationExecution.update({
@@ -75,7 +72,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
         execution_id: execution.id,
         status: "CONDITIONS_NOT_MET",
       }
-      });
 
     // Execute actions
     const actionResults = await executeActions(
@@ -128,7 +124,6 @@ export const POST = withErrorHandling(async (request: NextRequest) => {;
 
     throw error;
   }
-      });
 
 // Helper function to evaluate conditions
 async function evaluateConditions(
@@ -153,7 +148,6 @@ async function evaluateConditions(
         fieldValue = new Date(fieldValue);
         value = new Date(value);
     }
-      });
 
       // Evaluate condition based on operator
       switch (operator) {
@@ -223,7 +217,6 @@ async function executeActions(
         status: "FAILED",
       }
     }
-      });
 
   return results;
 
@@ -257,7 +250,6 @@ async function executeAction(
     default:
       throw new Error(`Unknown action type: ${type}`);
   }
-      });
 
 // Action implementations
 async function sendNotification(
@@ -311,7 +303,6 @@ async function updateOrderStatus(
       "order_id and status are required for UPDATE_ORDER_STATUS action"
     );
     }
-      });
 
   const order = await prisma.order.update({
     where: { id: orderId },

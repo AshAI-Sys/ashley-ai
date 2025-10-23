@@ -72,7 +72,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         { status: 404 }
       );
     }
-      });
 
     return NextResponse.json({
       success: true,
@@ -84,7 +83,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
-      });
 
 // PUT - Update user (Admin only)
 export const PUT = requireAnyPermission(["admin:update"])(async (
@@ -111,7 +109,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
         { status: 404 }
       );
     }
-      });
 
     // Check for email/username conflicts if being updated
     if (validatedData.email || validatedData.username) {
@@ -143,7 +140,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
           { status: 400 }
         );
       }
-      });
 
     // Prepare update data
     const updateData: any = { ...validatedData };
@@ -165,7 +161,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
           to: validatedData[key as keyof typeof validatedData],
         };
       }
-      });
 
     // Update user
     const updatedUser = await prisma.user.update({
@@ -246,7 +241,6 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
         { status: 404 }
       );
     }
-      });
 
     // Prevent self-deletion
     if (id === user.id) {
@@ -255,7 +249,6 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
         { status: 400 }
       );
     }
-      });
 
     // Soft delete user (set deleted_at timestamp)
     await prisma.user.update({
@@ -288,7 +281,6 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
       { status: 500 }
     );
   }
-      });
 
 // Helper function to log user audit events
 async function logUserAudit(

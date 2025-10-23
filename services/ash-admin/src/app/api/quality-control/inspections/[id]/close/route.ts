@@ -24,7 +24,6 @@ export async function POST(
         { status: 404 }
       );
     }
-      });
 
     // Calculate total defects by severity
     const criticalDefects = inspection.defects.filter(
@@ -75,7 +74,6 @@ export async function POST(
           created_by: inspection.inspector_id,
         },
       }
-      });
 
     return NextResponse.json({
       ...updatedInspection,

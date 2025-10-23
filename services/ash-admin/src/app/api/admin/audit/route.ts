@@ -223,17 +223,14 @@ export const GET = requireAnyPermission(["admin:read"])(async (
               .includes(search.toLowerCase()) ||
             log.performer?.email?.toLowerCase().includes(search.toLowerCase()));
     }
-      });
 
       if (date_from) {
         matches = matches && new Date(log.timestamp) >= new Date(date_from);
     }
-      });
 
       if (date_to) {
         matches = matches && new Date(log.timestamp) <= new Date(date_to);
     }
-      });
 
       return matches;
 
@@ -297,7 +294,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       { status: 500 }
     );
   }
-      });
 
 // POST - Create new audit log entry
 export const POST = requireAnyPermission(["admin:create"])(async (

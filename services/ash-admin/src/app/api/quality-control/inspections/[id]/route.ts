@@ -40,7 +40,6 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
-      });
 
     return NextResponse.json(inspection);
   } catch (error) {
@@ -80,4 +79,3 @@ export const PUT = requireAuth(async (
       { status: 500 }
     );
   }
-});

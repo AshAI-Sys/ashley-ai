@@ -83,14 +83,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         if (!materialRecord) {
           throw new Error(`Material ${material_id} not found`);
     }
-      });
 
         if (materialRecord.available_stock < quantity) {
           throw new Error(
             `Insufficient stock for ${materialRecord.material_name}. Available: ${materialRecord.available_stock}, Required: ${quantity}`
           );
     }
-      });
 
         // Create consumption record
         const consumptionRecord = await tx.printRunMaterial.create({
@@ -132,7 +130,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
         consumptionRecords.push(consumptionRecord);
     }
-      });
 
       return consumptionRecords;
 
@@ -153,7 +150,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-      });
 
 // Get material types for filtering
 export async function OPTIONS(request: NextRequest) {
@@ -177,4 +173,3 @@ export async function OPTIONS(request: NextRequest) {
       { status: 500 }
     );
   }
-});

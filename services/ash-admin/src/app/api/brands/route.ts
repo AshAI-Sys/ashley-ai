@@ -113,7 +113,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if brand with same name already exists for this client
     const existingBrand = await prisma.brand.findFirst({
@@ -132,7 +131,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     const brand = await prisma.brand.create({
       data: {
@@ -205,7 +203,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check name uniqueness if name is being updated
     if (validatedData.name && validatedData.name !== existingBrand.name) {
@@ -226,7 +223,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
       }
-      });
 
     const brand = await prisma.brand.update({
       where: { id },
@@ -278,7 +274,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
@@ -298,7 +293,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 404 }
       );
     }
-      });
 
     // Check if brand has orders (prevent deletion if they do)
     if (existingBrand._count.orders > 0) {
@@ -307,7 +301,6 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     await prisma.brand.delete({
       where: { id },
@@ -323,4 +316,3 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

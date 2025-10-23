@@ -17,7 +17,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Book with 3PL provider
     const booking = await threePLService.bookShipment({
@@ -32,7 +31,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-      });
 
     // Update shipment in database if shipment_id provided
     if (shipment_id) {
@@ -67,7 +65,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         });
       }
-      });
 
     return NextResponse.json(booking, { status: 201 });
   } catch (error: any) {
@@ -80,4 +77,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});

@@ -28,7 +28,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (!invoiceId) {
       return createErrorResponse(new ValidationError("Invoice ID is required"));
     }
-      });
 
     // Get invoice details
     const invoice = await prisma.invoice.findUnique({
@@ -41,14 +40,12 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (!invoice) {
       return createErrorResponse(new NotFoundError("Invoice"));
     }
-      });
 
     if (invoice.status === "paid") {
       return createErrorResponse(
         new ValidationError("Invoice is already paid")
       );
     }
-      });
 
     // Calculate remaining amount
     const payments = await prisma.payment.aggregate({
@@ -69,7 +66,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         new ValidationError("Invoice has no remaining balance")
       );
     }
-      });
 
     // Create payment based on provider
     if (provider === "stripe") {
@@ -98,7 +94,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           )
         );
     }
-      });
 
       return createSuccessResponse({
         paymentIntent: {
@@ -136,7 +131,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           )
         );
     }
-      });
 
       return createSuccessResponse({
         payment: {
@@ -160,4 +154,3 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     console.error("Error creating payment intent:", error);
     return handleApiError(error);
   }
-});

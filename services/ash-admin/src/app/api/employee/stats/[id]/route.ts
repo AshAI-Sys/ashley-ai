@@ -19,7 +19,6 @@ export const GET = withErrorHandling(
     if (!employee) {
       throw new NotFoundError("Employee not found");
     }
-      });
 
     // Get today's date range
     const today = new Date();
@@ -176,7 +175,6 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
-      });
 
     const stats = {
       total_pieces: totalPieces,

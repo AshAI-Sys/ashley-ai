@@ -26,7 +26,6 @@ export async function POST(
         { status: 400 }
       );
     }
-      });
 
     // Get the design asset with related data
     const designAsset = await prisma.designAsset.findUnique({
@@ -50,7 +49,6 @@ export async function POST(
         { status: 404 }
       );
     }
-      });
 
     if (designAsset.versions.length === 0) {
       return NextResponse.json(
@@ -180,5 +178,4 @@ export async function POST(
     );
   } finally {
     await prisma.$disconnect();
-  });
 };

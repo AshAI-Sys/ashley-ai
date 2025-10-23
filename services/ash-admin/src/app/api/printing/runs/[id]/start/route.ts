@@ -35,7 +35,6 @@ export async function POST(
         { status: 404 }
       );
     }
-      });
 
     if (run.status !== "CREATED" && run.status !== "PAUSED") {
       return NextResponse.json(
@@ -66,7 +65,6 @@ export async function POST(
           { status: 400 }
         );
       }
-      });
 
     // Start the run
     const updatedRun = await prisma.printRun.update({
@@ -188,7 +186,6 @@ async function initializeMethodSpecificData(
         break;
   } catch (error) {
     console.error("Error initializing method-specific data:", error);
-  });
 }
 
 async function createAshleyAnalysis(runId: string, run: any) {
@@ -224,7 +221,6 @@ async function createAshleyAnalysis(runId: string, run: any) {
       data: analysisData,
   } catch (error) {
     console.error("Error creating Ashley analysis:", error);
-  });
 }
 
 function calculateEstimatedRuntime(run: any): number {
