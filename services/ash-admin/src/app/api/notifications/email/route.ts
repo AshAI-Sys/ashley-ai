@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   sendEmail,
   sendOrderConfirmation,
@@ -12,7 +13,7 @@ import {
 const prisma = db;
 
 // POST /api/notifications/email - Send email notification
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { type, to, data, workspace_id } = body;
@@ -143,10 +144,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/notifications/email/test - Test email configuration
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const test_email = searchParams.get("test_email");
@@ -185,4 +186,4 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
+};

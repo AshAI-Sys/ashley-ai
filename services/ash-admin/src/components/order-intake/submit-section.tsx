@@ -177,7 +177,7 @@ export function SubmitSection({
       case "high":
         return "text-red-600 bg-red-50 border-red-200";
       default:
-        return "text-gray-300 bg-gray-50 border-gray-200";
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
@@ -437,7 +437,7 @@ export function SubmitSection({
                 <h4 className="mb-3 font-medium text-gray-900">
                   Business Insights
                 </h4>
-                <div className="text-sm text-white">
+                <div className="text-sm text-gray-900">
                   <p>
                     <strong>Market Position:</strong>{" "}
                     {ashleyValidation.businessInsights.marketPosition}

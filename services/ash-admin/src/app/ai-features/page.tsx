@@ -94,7 +94,7 @@ export default function AIFeaturesPage() {
               }`}
             >
               <Icon
-                className={`mb-3 h-8 w-8 ${isActive ? "text-indigo-600" : "text-gray-400"}`}
+                className={`mb-3 h-8 w-8 ${isActive ? "text-indigo-600" : "text-gray-500"}`}
               />
               <h3 className="mb-1 font-semibold text-gray-900">
                 {feature.name}
@@ -1175,7 +1175,7 @@ function DefectDetectionAI() {
                   </div>
                 ) : (
                   <div>
-                    <Target className="mx-auto mb-2 h-12 w-12 text-gray-400" />
+                    <Target className="mx-auto mb-2 h-12 w-12 text-gray-500" />
                     <label className="cursor-pointer">
                       <span className="text-blue-600 hover:text-blue-700">
                         Click to upload

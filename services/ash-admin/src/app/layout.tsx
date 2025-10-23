@@ -6,7 +6,7 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { GlobalKeyboardShortcutsProvider } from "@/components/keyboard-shortcuts-dialog";
 import { FetchInterceptorInit } from "@/components/fetch-interceptor-init";
-import { ThemeProvider } from "@/lib/theme-context";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import dynamic from "next/dynamic";
 
 // Load ChatWidget only on client side to prevent hydration issues
@@ -28,11 +28,6 @@ const PWAInstallPrompt = dynamic(
   }
 );
 const PWARegister = dynamic(() => import("@/components/pwa-register"), {
-  ssr: false,
-});
-
-// Load DarkModeToggle only on client side
-const DarkModeToggle = dynamic(() => import("@/components/dark-mode-toggle"), {
   ssr: false,
 });
 
@@ -132,9 +127,6 @@ export default function RootLayout({
                 {children}
                 {/* ChatWidget temporarily disabled for faster page load */}
                 {/* <ChatWidget /> */}
-
-                {/* Dark Mode Toggle */}
-                <DarkModeToggle />
 
                 {/* PWA Components */}
                 <PWARegister />

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { smsService } from "@/lib/sms";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/sms/send - Send SMS
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { to, message, template, variables, provider } = body;
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/sms/send - Get SMS provider status
 export async function GET() {
@@ -90,4 +91,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+};

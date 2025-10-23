@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
-    const runId = params.id;
+    const runId = context.params.id;
 
     const run = await prisma.printRun.findUnique({
       where: { id: runId },
@@ -96,14 +98,15 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-export async function PATCH(
+export const PATCH = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
-    const runId = params.id;
+    const runId = context.params.id;
     const body = await request.json();
     const { status, notes, material_consumption, quality_data } = body;
 
@@ -200,7 +203,7 @@ export async function PATCH(
       { status: 500 }
     );
   }
-}
+});
 
 async function getRunStartTime(runId: string) {
   const run = await prisma.printRun.findUnique({

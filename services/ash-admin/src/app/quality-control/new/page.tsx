@@ -474,7 +474,7 @@ export default function NewInspectionPage() {
                   </div>
                 ) : (
                   <div className="py-8 text-center text-gray-500">
-                    <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-gray-500" />
                     <p>Enter lot size to generate sampling plan</p>
                   </div>
                 )}

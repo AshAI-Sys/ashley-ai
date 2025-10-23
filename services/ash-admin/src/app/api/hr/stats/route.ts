@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   cachedQueryWithMetrics,
   CacheKeys,
@@ -8,7 +9,7 @@ import {
 
 // Fixed: Prisma groupBy nullable field issues - using manual grouping instead
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const workspaceId = "default";
     const today = new Date();
@@ -364,4 +365,4 @@ async function calculateHRStats(
         }
       : null,
   };
-}
+};

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // TODO: Fix Prisma client model name issue for Shipment
 // Temporarily disabled all shipment operations
@@ -25,4 +26,4 @@ export async function POST(_request: NextRequest) {
     },
     { status: 503 }
   );
-}
+};

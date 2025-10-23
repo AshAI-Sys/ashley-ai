@@ -435,7 +435,7 @@ export default function CuttingPage() {
                                   <div className="text-sm text-gray-500">
                                     {lay?.order?.client?.name || "No Client"}
                                   </div>
-                                  <div className="text-xs text-gray-400">
+                                  <div className="text-xs text-gray-500">
                                     {lay?.order?.brand?.name || "No Brand"}
                                   </div>
                                 </div>
@@ -598,7 +598,7 @@ export default function CuttingPage() {
               </CardHeader>
               <CardContent>
                 <div className="py-12 text-center">
-                  <BarChart3 className="mx-auto h-12 w-12 text-gray-400" />
+                  <BarChart3 className="mx-auto h-12 w-12 text-gray-500" />
                   <h3 className="mt-2 text-sm font-medium text-gray-900">
                     Efficiency Analytics
                   </h3>

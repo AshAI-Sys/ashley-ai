@@ -340,7 +340,7 @@ export default function SecuritySettingsPage() {
                           <span className="font-mono text-sm">{code}</span>
                           <button
                             onClick={() => copyToClipboard(code)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-500 hover:text-gray-600"
                           >
                             <Copy className="h-4 w-4" />
                           </button>
@@ -487,7 +487,7 @@ function TwoFactorSetupModal({
           </h3>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-500 hover:text-gray-600"
           >
             ✕
           </button>
@@ -625,7 +625,7 @@ function TwoFactorSetupModal({
                     <span className="font-mono text-sm">{code}</span>
                     <button
                       onClick={() => copyToClipboard(code)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-500 hover:text-gray-600"
                     >
                       <Copy className="h-4 w-4" />
                     </button>

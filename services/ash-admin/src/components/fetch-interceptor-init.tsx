@@ -32,17 +32,19 @@ export function FetchInterceptorInit() {
         const token = localStorage.getItem("ash_token");
 
         if (token) {
+          // Clone init to avoid mutating original
+          const newInit = { ...init };
+
           // Add Authorization header
           const headers = new Headers(init?.headers || {});
           if (!headers.has("Authorization")) {
             headers.set("Authorization", `Bearer ${token}`);
+            console.log("🔑 Adding Authorization header to request:", url);
           }
 
-          // Merge headers back into init
-          init = {
-            ...init,
-            headers,
-          };
+          // Assign headers object directly (fetch accepts Headers objects)
+          newInit.headers = headers;
+          init = newInit;
         }
       }
 

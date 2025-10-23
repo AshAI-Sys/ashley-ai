@@ -142,7 +142,7 @@ export function ProfilePictureUpload({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <User className="h-1/2 w-1/2 text-gray-400" />
+            <User className="h-1/2 w-1/2 text-gray-500" />
           </div>
         )}
 

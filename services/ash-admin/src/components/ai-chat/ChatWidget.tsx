@@ -254,7 +254,7 @@ export function ChatWidget() {
 
                 {messages.length === 0 && isConfigured && (
                   <div className="mt-8 text-center text-gray-500">
-                    <MessageCircle className="mx-auto mb-3 h-12 w-12 text-gray-300" />
+                    <MessageCircle className="mx-auto mb-3 h-12 w-12 text-gray-600" />
                     <p className="text-sm">
                       Start a conversation with Ashley AI
                     </p>
@@ -285,7 +285,7 @@ export function ChatWidget() {
                         className={`mt-1 text-xs ${
                           message.role === "USER"
                             ? "text-indigo-200"
-                            : "text-gray-400"
+                            : "text-gray-500"
                         }`}
                       >
                         {new Date(message.created_at).toLocaleTimeString()}

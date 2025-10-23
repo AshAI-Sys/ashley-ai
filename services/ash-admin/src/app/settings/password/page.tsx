@@ -138,7 +138,7 @@ export default function PasswordSettingsPage() {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           Change Password
         </h2>
-        <p className="mt-1 text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-gray-500 dark:text-gray-500">
           Update your password to keep your account secure
         </p>
       </div>
@@ -169,7 +169,7 @@ export default function PasswordSettingsPage() {
             <button
               type="button"
               onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200"
             >
               {showCurrentPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -195,7 +195,7 @@ export default function PasswordSettingsPage() {
             <button
               type="button"
               onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200"
             >
               {showNewPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -208,7 +208,7 @@ export default function PasswordSettingsPage() {
           {/* Password Strength Indicators */}
           {formData.newPassword && (
             <div className="mt-3 space-y-2">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-600">
                 Password must contain:
               </p>
               <div className="space-y-1">
@@ -254,7 +254,7 @@ export default function PasswordSettingsPage() {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-500 dark:hover:text-gray-200"
             >
               {showConfirmPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -305,13 +305,13 @@ function PasswordRequirement({ met, text }: { met: boolean; text: string }) {
       {met ? (
         <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
       ) : (
-        <XCircle className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+        <XCircle className="h-4 w-4 text-gray-500 dark:text-gray-500" />
       )}
       <span
         className={
           met
             ? "text-green-600 dark:text-green-400"
-            : "text-gray-600 dark:text-gray-400"
+            : "text-gray-600 dark:text-gray-500"
         }
       >
         {text}

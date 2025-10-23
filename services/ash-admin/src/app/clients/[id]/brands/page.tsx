@@ -487,7 +487,7 @@ export default function ClientBrandsPage() {
                     </>
                   ) : (
                     <>
-                      <ToggleLeft className="h-5 w-5 text-gray-400" />
+                      <ToggleLeft className="h-5 w-5 text-gray-500" />
                       <span className="font-medium text-gray-600">
                         Inactive
                       </span>
@@ -641,7 +641,7 @@ export default function ClientBrandsPage() {
           {brands.length === 0 && (
             <Card>
               <CardContent className="py-12 text-center">
-                <Building2 className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <Building2 className="mx-auto mb-4 h-12 w-12 text-gray-500" />
                 <p className="mb-4 text-muted-foreground">
                   No brands found for this client
                 </p>

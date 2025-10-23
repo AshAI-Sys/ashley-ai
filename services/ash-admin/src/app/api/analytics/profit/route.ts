@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // GET /api/analytics/profit - Get profit analysis data
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -109,10 +110,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/analytics/profit - Create profit analysis
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -207,10 +208,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/analytics/profit - Auto-generate profit analysis for an order
-export async function PUT(req: NextRequest) {
+export const PUT = requireAuth(async (req: NextRequest, user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -324,4 +325,4 @@ export async function PUT(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

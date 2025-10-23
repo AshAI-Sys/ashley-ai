@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/bottleneck/trends?days=7 - Analyze bottleneck trends over time
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");
@@ -133,4 +134,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

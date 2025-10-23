@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SMS_TEMPLATES } from "@/lib/sms/types";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/sms/templates - Get all SMS templates
 export async function GET() {
@@ -20,10 +21,10 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/sms/templates - Preview template with variables
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { template_id, variables } = body;
@@ -71,4 +72,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

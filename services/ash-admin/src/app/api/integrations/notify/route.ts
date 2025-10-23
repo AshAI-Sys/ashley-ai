@@ -4,9 +4,10 @@ import { smsService } from "@/lib/integrations/sms";
 import { slackService, teamsService } from "@/lib/integrations/slack";
 import { emailService } from "@/lib/integrations/email";
 import { webhookService } from "@/lib/integrations/webhooks";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/integrations/notify - Send notifications through all configured channels
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const body = await req.json();
     const {
@@ -287,4 +288,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const CreateCutLaySchema = z.object({
   order_id: z.string().min(1, "Order ID is required"),
@@ -22,7 +23,7 @@ const CreateCutLaySchema = z.object({
     .min(1, "At least one size output is required"),
 });
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -103,7 +104,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const validatedData = CreateCutLaySchema.parse(body);
@@ -191,4 +192,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const DEFAULT_WORKSPACE_ID = "default-workspace";
 
@@ -14,12 +15,13 @@ const CreateBrandSchema = z.object({
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
-export async function GET(
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
-    const clientId = params.id;
+    const clientId = context.params.id;
 
     // Check if client exists
     const client = await prisma.client.findUnique({
@@ -74,14 +76,15 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(
+export const POST = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
-    const clientId = params.id;
+    const clientId = context.params.id;
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
 
@@ -175,4 +178,4 @@ export async function POST(
       { status: 500 }
     );
   }
-}
+});

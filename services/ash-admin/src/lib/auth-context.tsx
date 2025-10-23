@@ -57,17 +57,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(userData);
           } catch (error) {
             console.error("❌ Error parsing stored user data:", error);
-            // Clear invalid token and user data
-            localStorage.removeItem("ash_token");
+            // Clear invalid user data only - keep token for now
             localStorage.removeItem("ash_user");
-            setToken(null);
             setUser(null);
           }
         } else {
-          // No user data - clear token and require re-login
-          localStorage.removeItem("ash_token");
-          setToken(null);
-          setUser(null);
+          console.log("⚠️ Token found but no user data - will attempt to fetch from API");
+          // Token exists but no user data - this could be a timing issue
+          // Keep the token and let the app try to use it
+          // If it's invalid, the API calls will fail and trigger logout
         }
       }
     }

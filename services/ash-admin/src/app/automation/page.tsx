@@ -352,7 +352,7 @@ export default function AutomationPage() {
                 <h3 className="text-lg font-semibold text-gray-900">
                   Recent Activity
                 </h3>
-                <Clock className="h-5 w-5 text-gray-400" />
+                <Clock className="h-5 w-5 text-gray-500" />
               </div>
 
               <div className="max-h-64 space-y-2 overflow-y-auto">
@@ -375,7 +375,7 @@ export default function AutomationPage() {
       {activeTab === "rules" && (
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <div className="py-12 text-center">
-            <Zap className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <Zap className="mx-auto mb-4 h-12 w-12 text-gray-500" />
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
               Automation Rules
             </h3>
@@ -393,7 +393,7 @@ export default function AutomationPage() {
       {activeTab === "notifications" && (
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <div className="py-12 text-center">
-            <Bell className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <Bell className="mx-auto mb-4 h-12 w-12 text-gray-500" />
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
               Notification Center
             </h3>
@@ -411,7 +411,7 @@ export default function AutomationPage() {
       {activeTab === "alerts" && (
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <div className="py-12 text-center">
-            <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-gray-500" />
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
               Alert Management
             </h3>
@@ -429,7 +429,7 @@ export default function AutomationPage() {
       {activeTab === "integrations" && (
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <div className="py-12 text-center">
-            <Link className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+            <Link className="mx-auto mb-4 h-12 w-12 text-gray-500" />
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
               System Integrations
             </h3>

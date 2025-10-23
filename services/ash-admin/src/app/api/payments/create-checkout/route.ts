@@ -7,6 +7,7 @@ import {
   NotFoundError,
 } from "@/lib/error-handling";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
@@ -16,7 +17,7 @@ const prisma = db;
  *
  * Creates a hosted Stripe Checkout session for invoice payment
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { invoiceId } = body;
@@ -106,4 +107,4 @@ export async function POST(request: NextRequest) {
       500
     );
   }
-}
+};

@@ -357,7 +357,7 @@ export function FilesNotesSection({
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <Upload className="mx-auto mb-4 h-10 w-10 text-gray-400" />
+            <Upload className="mx-auto mb-4 h-10 w-10 text-gray-700" />
             <p className="mb-2 text-lg font-medium">Upload Additional Files</p>
             <p className="mb-4 text-sm text-muted-foreground">
               Drag and drop files here, or click to browse
@@ -420,7 +420,7 @@ export function FilesNotesSection({
                               />
                             ) : (
                               <div className="flex h-16 w-16 items-center justify-center rounded border bg-gray-100">
-                                <FileText className="h-6 w-6 text-gray-400" />
+                                <FileText className="h-6 w-6 text-gray-700" />
                               </div>
                             )}
 

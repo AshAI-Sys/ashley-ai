@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireAnyPermission } from "../../../../../lib/auth-middleware";
 import { prisma } from "@/lib/db";
 import * as bcrypt from "bcryptjs";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const UpdateUserSchema = z.object({
   email: z.string().email().optional(),
@@ -36,10 +37,11 @@ const UpdateUserSchema = z.object({
 // GET - Get specific user (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
   request: NextRequest,
-  user: any
+  user: any,
+  context: { params: { id: string } }
 ) => {
   try {
-    const id = request.url.split("/").pop();
+    const id = context.params.id;
 
     const targetUser = await prisma.user.findFirst({
       where: {
@@ -87,10 +89,11 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 // PUT - Update user (Admin only)
 export const PUT = requireAnyPermission(["admin:update"])(async (
   request: NextRequest,
-  user: any
+  user: any,
+  context: { params: { id: string } }
 ) => {
   try {
-    const id = request.url.split("/").pop();
+    const id = context.params.id;
     const body = await request.json();
     const validatedData = UpdateUserSchema.parse(body);
 
@@ -225,10 +228,11 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
 // DELETE - Delete user (Admin only)
 export const DELETE = requireAnyPermission(["admin:delete"])(async (
   request: NextRequest,
-  user: any
+  user: any,
+  context: { params: { id: string } }
 ) => {
   try {
-    const id = request.url.split("/").pop();
+    const id = context.params.id;
 
     // Check if user exists
     const existingUser = await prisma.user.findFirst({
@@ -304,4 +308,4 @@ async function logUserAudit(
   } catch (error) {
     console.error("Error logging audit event:", error);
   }
-}
+};

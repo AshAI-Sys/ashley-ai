@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { emailQueue } from "@/lib/email/queue";
+import { requireAuth } from "@/lib/auth-middleware";
 
 /**
  * GET /api/email/queue - Get queue statistics
  */
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const stats = await emailQueue.getStats();
 
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/email/queue - Send email (add to queue)
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const { type, to, data, scheduledFor, maxAttempts } = await request.json();
 
@@ -52,4 +53,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

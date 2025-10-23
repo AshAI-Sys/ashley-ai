@@ -12,6 +12,7 @@ import {
   ValidationError,
 } from "../../../../lib/error-handling";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);

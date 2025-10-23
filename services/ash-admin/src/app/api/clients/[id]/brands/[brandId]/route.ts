@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const UpdateBrandSchema = z.object({
   name: z.string().min(1, "Brand name is required").optional(),
@@ -217,4 +218,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+};

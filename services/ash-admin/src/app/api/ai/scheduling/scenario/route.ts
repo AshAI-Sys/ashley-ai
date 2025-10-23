@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/scheduling/scenario - Analyze what-if scenarios
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { base_schedule, scenario_type, scenario_data, jobs, resources } =
       await req.json();
@@ -112,4 +113,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

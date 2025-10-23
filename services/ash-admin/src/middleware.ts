@@ -5,6 +5,7 @@ import type { NextRequest } from "next/server";
 import {
   generateNonce,
   getMaxSecurityHeaders,
+  createCSPHeader,
 } from "./lib/csp-nonce";
 
 // Note: Redis (ioredis) cannot be used in Edge Runtime middleware
@@ -12,8 +13,8 @@ import {
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 const csrfTokenStore = new Map<string, { token: string; expires: number }>();
 
-// Security headers configuration (CSP disabled for production compatibility)
-function getSecurityHeaders(_nonce: string) {
+// Security headers configuration with CSP enabled
+function getSecurityHeaders(nonce: string) {
   return {
     "X-DNS-Prefetch-Control": "on",
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
@@ -22,8 +23,7 @@ function getSecurityHeaders(_nonce: string) {
     "X-XSS-Protection": "1; mode=block",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
-    // CSP temporarily disabled for production - re-enable after converting inline styles to CSS
-    // 'Content-Security-Policy': createCSPHeader(nonce),
+    "Content-Security-Policy": createCSPHeader(nonce),
   };
 }
 

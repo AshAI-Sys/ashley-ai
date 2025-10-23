@@ -545,7 +545,7 @@ export function CommercialsSection({
             )}
 
             {!commercials.taxInclusive && (
-              <div className="flex items-center justify-between text-gray-300">
+              <div className="flex items-center justify-between text-gray-600">
                 <span>VAT (12%)</span>
                 <span>
                   ₱{((commercials.finalTotal / 1.12) * 0.12).toLocaleString()}
@@ -605,7 +605,7 @@ export function CommercialsSection({
         {commercials.unitPrice > 0 && (
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
             <div className="mb-2 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-gray-300" />
+              <AlertCircle className="h-4 w-4 text-gray-700" />
               <span className="font-medium text-gray-900">
                 Estimated Margin
               </span>

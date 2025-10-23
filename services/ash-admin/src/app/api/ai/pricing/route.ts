@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/pricing - Get pricing recommendation
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const {
       client_id,
@@ -148,10 +149,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/ai/pricing/scenarios?client_id=xxx&... - Get multiple pricing scenarios
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");
@@ -286,4 +287,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

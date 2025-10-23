@@ -6,6 +6,12 @@
  */
 export function registerServiceWorker(): void {
   if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+    // Only register service worker in production
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[PWA] Service Worker disabled in development mode");
+      return;
+    }
+
     window.addEventListener("load", async () => {
       try {
         const registration = await navigator.serviceWorker.register("/sw.js", {

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // POST /api/mobile/qc/submit - Submit mobile QC inspection
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -134,4 +135,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

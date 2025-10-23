@@ -581,7 +581,7 @@ export default function CartonBuilderPage() {
                     </div>
                   ) : (
                     <div className="py-8 text-center text-gray-500">
-                      <Box className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                      <Box className="mx-auto mb-4 h-12 w-12 text-gray-500" />
                       <p>No units added to carton</p>
                       <p className="text-sm">
                         Add units from the available list

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import * as bcrypt from "bcryptjs";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const CreateEmployeeSchema = z.object({
   email: z.string().email(),
@@ -18,7 +19,7 @@ const CreateEmployeeSchema = z.object({
   permissions: z.object({}).optional(),
 });
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const validatedData = CreateEmployeeSchema.parse(body);
@@ -139,4 +140,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+};

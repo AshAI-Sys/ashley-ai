@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { threePLService } from "@/lib/3pl";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/3pl/track?provider=LALAMOVE&tracking_number=xxx - Track shipment
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const provider = searchParams.get("provider");
@@ -31,4 +32,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

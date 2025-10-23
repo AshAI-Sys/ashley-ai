@@ -1,8 +1,9 @@
+import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/templates - Get notification templates
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/automation/templates - Create notification template
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest) {
   try {
     const body = await request.json();
     const {
@@ -157,7 +158,7 @@ export async function POST(request: NextRequest) {
 }
 
 // PUT /api/automation/templates - Update notification template
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest) {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -199,7 +200,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // DELETE /api/automation/templates - Delete notification template
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

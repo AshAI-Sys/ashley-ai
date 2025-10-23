@@ -193,7 +193,7 @@ export default function AuditLogsPage() {
       <div className="space-y-6 p-6">
         <div className="py-12 text-center">
           <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-          <p className="mt-4 text-gray-500 dark:text-gray-400">
+          <p className="mt-4 text-gray-500 dark:text-gray-500">
             Loading audit logs...
           </p>
         </div>
@@ -208,7 +208,7 @@ export default function AuditLogsPage() {
         <Button
           variant="ghost"
           onClick={() => router.push("/settings")}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
         >
           <ArrowLeft className="h-5 w-5" />
           <span>Back to Settings</span>
@@ -220,7 +220,7 @@ export default function AuditLogsPage() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             Audit Logs
           </h2>
-          <p className="mt-1 text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-gray-500 dark:text-gray-500">
             View security events and account changes
           </p>
         </div>
@@ -310,7 +310,7 @@ export default function AuditLogsPage() {
         </div>
 
         <div className="flex items-center justify-between border-t pt-2 dark:border-gray-700">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-500">
             Showing {filteredLogs.length} of {logs.length} logs
           </p>
           <Button
@@ -335,8 +335,8 @@ export default function AuditLogsPage() {
       <div className="space-y-2">
         {filteredLogs.length === 0 ? (
           <div className="rounded-lg bg-gray-50 py-12 text-center dark:bg-gray-800">
-            <FileText className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-            <p className="text-gray-500 dark:text-gray-400">
+            <FileText className="mx-auto mb-4 h-16 w-16 text-gray-500" />
+            <p className="text-gray-500 dark:text-gray-500">
               No audit logs found
             </p>
           </div>
@@ -364,11 +364,11 @@ export default function AuditLogsPage() {
                           <span className="font-semibold text-gray-900 dark:text-white">
                             {log.action}
                           </span>
-                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-600">
                             {log.category}
                           </span>
                         </div>
-                        <div className="mt-2 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="mt-2 flex items-center gap-4 text-sm text-gray-600 dark:text-gray-500">
                           <div className="flex items-center gap-1">
                             <User className="h-4 w-4" />
                             {log.user_name} ({log.user_email})
@@ -382,9 +382,9 @@ export default function AuditLogsPage() {
 
                       <div className="shrink-0">
                         {expandedLog === log.id ? (
-                          <ChevronUp className="h-5 w-5 text-gray-400" />
+                          <ChevronUp className="h-5 w-5 text-gray-500" />
                         ) : (
-                          <ChevronDown className="h-5 w-5 text-gray-400" />
+                          <ChevronDown className="h-5 w-5 text-gray-500" />
                         )}
                       </div>
                     </div>
@@ -396,7 +396,7 @@ export default function AuditLogsPage() {
                 <div className="border-t bg-gray-50 px-4 pb-4 dark:border-gray-700 dark:bg-gray-900">
                   <div className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-2">
                     <div>
-                      <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-600">
                         Resource
                       </div>
                       <div className="text-sm text-gray-900 dark:text-white">
@@ -406,7 +406,7 @@ export default function AuditLogsPage() {
                     </div>
 
                     <div>
-                      <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-600">
                         IP Address
                       </div>
                       <div className="font-mono text-sm text-gray-900 dark:text-white">
@@ -415,7 +415,7 @@ export default function AuditLogsPage() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-600">
                         User Agent
                       </div>
                       <div className="break-all text-sm text-gray-900 dark:text-white">
@@ -425,7 +425,7 @@ export default function AuditLogsPage() {
 
                     {log.details && Object.keys(log.details).length > 0 && (
                       <div className="md:col-span-2">
-                        <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <div className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-600">
                           Additional Details
                         </div>
                         <pre className="overflow-x-auto rounded border bg-white p-3 text-xs dark:border-gray-700 dark:bg-gray-800">

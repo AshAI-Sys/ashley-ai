@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export async function POST(
   request: NextRequest,
@@ -89,4 +90,4 @@ async function logRunEvent(
   } catch (error) {
     console.error("Failed to log run event:", error);
   }
-}
+};

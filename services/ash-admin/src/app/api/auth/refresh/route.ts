@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { refreshAccessToken, verifyRefreshToken } from "../../../../lib/jwt";
 import { authLogger } from "../../../../lib/logger";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   apiSuccess,
   apiUnauthorized,
@@ -11,7 +12,7 @@ import {
  * POST /api/auth/refresh
  * Refresh an expired access token using a valid refresh token
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     // Try to get refresh token from cookie or request body
     let refreshToken = request.cookies.get("refresh_token")?.value;
@@ -64,4 +65,4 @@ export async function POST(request: NextRequest) {
     authLogger.error("Token refresh error", error);
     return apiServerError(error);
   }
-}
+};

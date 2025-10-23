@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backupService } from "@/lib/backup/service";
 import { backupScheduler } from "@/lib/backup/scheduler";
+import { requireRole } from "@/lib/auth-middleware";
 
-// GET /api/backups - List all backups
-export async function GET(request: NextRequest) {
+// GET /api/backups - List all backups (ADMIN ONLY)
+export const GET = requireRole("admin")(async (request: NextRequest, user) => {
   try {
     const backups = await backupService.listBackups();
     const totalSize = await backupService.getTotalBackupSize();
@@ -25,10 +26,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// POST /api/backups - Create new backup
-export async function POST(request: NextRequest) {
+// POST /api/backups - Create new backup (ADMIN ONLY)
+export const POST = requireRole("admin")(async (request: NextRequest, user) => {
   try {
     const body = await request.json().catch(() => ({}));
     const {
@@ -55,10 +56,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// DELETE /api/backups?id={backupId} - Delete backup
-export async function DELETE(request: NextRequest) {
+// DELETE /api/backups?id={backupId} - Delete backup (ADMIN ONLY)
+export const DELETE = requireRole("admin")(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");
@@ -82,4 +83,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { brandingManager } from "@/lib/white-label/branding-manager";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/branding?workspace_id=xxx - Get branding configuration
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -49,10 +50,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/branding - Update branding configuration
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { workspace_id, ...updates } = await req.json();
 
@@ -87,4 +88,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

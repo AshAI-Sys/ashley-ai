@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const ColorVariantSchema = z.object({
   line_item_id: z.string().min(1, "Line item ID is required"),
@@ -123,4 +124,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+};

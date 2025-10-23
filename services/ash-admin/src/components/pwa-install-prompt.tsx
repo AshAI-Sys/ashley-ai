@@ -112,7 +112,7 @@ export default function PWAInstallPrompt() {
                 <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
                   Install Ashley AI
                 </h3>
-                <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
+                <p className="mb-3 text-xs text-gray-600 dark:text-gray-500">
                   Add to your home screen for quick access and offline use
                 </p>
 
@@ -140,7 +140,7 @@ export default function PWAInstallPrompt() {
               {/* Close button */}
               <button
                 onClick={handleDismiss}
-                className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="flex-shrink-0 p-1 text-gray-500 hover:text-gray-600 dark:hover:text-gray-600"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -164,7 +164,7 @@ export default function PWAInstallPrompt() {
                 <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
                   Install Ashley AI
                 </h3>
-                <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
+                <p className="mb-3 text-xs text-gray-600 dark:text-gray-500">
                   Install as an app for better performance and offline access
                 </p>
 
@@ -186,7 +186,7 @@ export default function PWAInstallPrompt() {
               {/* Close button */}
               <button
                 onClick={handleDismiss}
-                className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="flex-shrink-0 p-1 text-gray-500 hover:text-gray-600 dark:hover:text-gray-600"
               >
                 <X className="h-4 w-4" />
               </button>

@@ -477,7 +477,7 @@ export default function DeliveryPage() {
             <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
                   <Input
                     type="text"
                     placeholder="Search shipments..."
@@ -687,7 +687,7 @@ export default function DeliveryPage() {
 
             {!shipmentsLoading && filteredShipments.length === 0 && (
               <div className="py-12 text-center">
-                <Truck className="mx-auto h-12 w-12 text-gray-400" />
+                <Truck className="mx-auto h-12 w-12 text-gray-500" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">
                   No shipments found
                 </h3>

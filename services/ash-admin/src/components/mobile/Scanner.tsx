@@ -229,7 +229,7 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-white">
             <Camera className="mb-4 h-16 w-16 text-red-500" />
             <p className="mb-2 text-lg font-semibold">Camera Error</p>
-            <p className="mb-4 text-center text-sm text-gray-300">{error}</p>
+            <p className="mb-4 text-center text-sm text-gray-600">{error}</p>
             <Button
               onClick={startScanning}
               variant="outline"
@@ -277,7 +277,7 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
               {/* Recent scans */}
               {scanHistory.length > 0 && (
                 <div className="mb-4">
-                  <p className="mb-2 text-xs text-gray-400">
+                  <p className="mb-2 text-xs text-gray-500">
                     Recently Scanned:
                   </p>
                   <div className="space-y-1">
@@ -287,7 +287,7 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
                         className="flex justify-between rounded bg-gray-800 bg-opacity-50 px-3 py-2 text-xs"
                       >
                         <span className="font-mono">{scan.code}</span>
-                        <span className="text-gray-400">
+                        <span className="text-gray-500">
                           {Math.floor(
                             (Date.now() - scan.timestamp.getTime()) / 1000
                           )}

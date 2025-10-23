@@ -395,7 +395,7 @@ export default function EditClientPage() {
                   </>
                 ) : (
                   <>
-                    <ToggleLeft className="h-5 w-5 text-gray-400" />
+                    <ToggleLeft className="h-5 w-5 text-gray-500" />
                     <span className="font-medium text-gray-600">Inactive</span>
                   </>
                 )}

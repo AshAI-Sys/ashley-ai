@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { threePLService } from "@/lib/3pl";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // POST /api/3pl/book - Book shipment with 3PL provider
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { provider, shipment, shipment_id, reference_number } = body;
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
         data: {
           method: provider,
           carrier_ref: booking.booking_id,
-          tracking_code: booking.tracking_number, // Changed from tracking_number to tracking_code
+          tracking_number: booking.tracking_number,
           status: "BOOKED",
         },
       });
@@ -77,4 +78,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

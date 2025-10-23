@@ -1,20 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/dashboard-layout";
 import PermissionGate from "@/components/PermissionGate";
 import {
   Users,
   Plus,
   Search,
-  Filter,
   Edit,
   Trash2,
   UserCheck,
   UserX,
   Shield,
-  Eye,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -222,11 +219,11 @@ export default function UserManagementPage() {
       fallback={
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <Shield className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+            <Shield className="mx-auto mb-4 h-16 w-16 text-gray-500" />
             <h2 className="mb-2 text-2xl font-bold text-gray-900">
               Access Denied
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-500">
               You need Administrator privileges to access User Management.
             </p>
           </div>
@@ -243,7 +240,7 @@ export default function UserManagementPage() {
                   <Users className="mr-3 h-8 w-8 text-blue-600" />
                   User Management
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-500">
                   Manage employee accounts and permissions
                 </p>
               </div>
@@ -263,7 +260,7 @@ export default function UserManagementPage() {
               {/* Search */}
               <div className="min-w-64 flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
                   <input
                     type="text"
                     placeholder="Search users..."
@@ -321,7 +318,7 @@ export default function UserManagementPage() {
               {loading ? (
                 <div className="p-8 text-center">
                   <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-600 dark:text-gray-500">
                     Loading users...
                   </p>
                 </div>
@@ -362,10 +359,10 @@ export default function UserManagementPage() {
                                 <div className="text-sm font-medium text-gray-900 dark:text-white">
                                   {user.first_name} {user.last_name}
                                 </div>
-                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                <div className="text-sm text-gray-500 dark:text-gray-500">
                                   {user.email}
                                 </div>
-                                <div className="text-xs text-gray-400">
+                                <div className="text-xs text-gray-500">
                                   @{user.username}
                                 </div>
                               </div>
@@ -399,7 +396,7 @@ export default function UserManagementPage() {
                                 )}
                               </div>
                             </td>
-                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                            <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
                               {user.last_login_at
                                 ? new Date(
                                     user.last_login_at
@@ -437,7 +434,7 @@ export default function UserManagementPage() {
                   {totalPages > 1 && (
                     <div className="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
                       <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
+                        <div className="text-sm text-gray-700 dark:text-gray-600">
                           Page {page} of {totalPages}
                         </div>
                         <div className="flex space-x-2">

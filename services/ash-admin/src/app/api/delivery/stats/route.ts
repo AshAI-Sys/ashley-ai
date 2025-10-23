@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const workspaceId = getWorkspaceIdFromRequest(request);
     // Calculate delivery statistics using updated_at as proxy for delivery timestamp
@@ -249,4 +250,4 @@ async function getMethodPerformance() {
     console.error("Error calculating method performance:", error);
     return [];
   }
-}
+};

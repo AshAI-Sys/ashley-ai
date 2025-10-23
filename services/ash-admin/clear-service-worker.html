@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear Service Worker - Ashley AI</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f8fafc;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2563eb;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 10px 10px 10px 0;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    button.danger {
+      background: #ef4444;
+    }
+    button.danger:hover {
+      background: #dc2626;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+      display: block;
+    }
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      display: block;
+    }
+    .status.info {
+      background: #dbeafe;
+      color: #1e40af;
+      display: block;
+    }
+    pre {
+      background: #f1f5f9;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Clear Service Worker Cache</h1>
+    <p>This tool will help you clear the service worker and its cache that's causing the fetch errors.</p>
+
+    <div>
+      <button onclick="clearServiceWorker()">Clear Service Worker</button>
+      <button onclick="clearAllCaches()">Clear All Caches</button>
+      <button onclick="clearEverything()" class="danger">Clear Everything & Reload</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <h3 style="margin-top: 30px;">What's causing the errors?</h3>
+    <p>The service worker is trying to cache Next.js development files that change frequently. This has been fixed in the code, but your browser still has the old service worker active.</p>
+
+    <h3>Manual Steps (if needed):</h3>
+    <ol>
+      <li>Open Browser DevTools (F12)</li>
+      <li>Go to <strong>Application</strong> tab</li>
+      <li>Click <strong>Service Workers</strong> on the left</li>
+      <li>Click <strong>Unregister</strong> for localhost:3001</li>
+      <li>Click <strong>Storage</strong> on the left</li>
+      <li>Click <strong>Clear site data</strong></li>
+      <li>Reload the page (Ctrl+Shift+R)</li>
+    </ol>
+  </div>
+
+  <script>
+    function showStatus(message, type = 'info') {
+      const status = document.getElementById('status');
+      status.className = `status ${type}`;
+      status.innerHTML = message;
+    }
+
+    async function clearServiceWorker() {
+      try {
+        showStatus('Unregistering service worker...', 'info');
+
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+
+          if (registrations.length === 0) {
+            showStatus('✅ No service workers found!', 'success');
+            return;
+          }
+
+          for (const registration of registrations) {
+            await registration.unregister();
+          }
+
+          showStatus(`✅ Successfully unregistered ${registrations.length} service worker(s)!<br><br><strong>Please reload the page (Ctrl+Shift+R)</strong>`, 'success');
+        } else {
+          showStatus('❌ Service Workers not supported in this browser', 'error');
+        }
+      } catch (error) {
+        showStatus(`❌ Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function clearAllCaches() {
+      try {
+        showStatus('Clearing caches...', 'info');
+
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+
+          if (cacheNames.length === 0) {
+            showStatus('✅ No caches found!', 'success');
+            return;
+          }
+
+          await Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+          );
+
+          showStatus(`✅ Successfully cleared ${cacheNames.length} cache(s)!<br><br>Caches removed:<br><pre>${cacheNames.join('\n')}</pre><br><strong>Please reload the page (Ctrl+Shift+R)</strong>`, 'success');
+        } else {
+          showStatus('❌ Cache API not supported in this browser', 'error');
+        }
+      } catch (error) {
+        showStatus(`❌ Error: ${error.message}`, 'error');
+      }
+    }
+
+    async function clearEverything() {
+      try {
+        showStatus('Clearing everything...', 'info');
+        let results = [];
+
+        // Unregister service workers
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (const registration of registrations) {
+            await registration.unregister();
+          }
+          results.push(`✅ Unregistered ${registrations.length} service worker(s)`);
+        }
+
+        // Clear all caches
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map(cacheName => caches.delete(cacheName))
+          );
+          results.push(`✅ Cleared ${cacheNames.length} cache(s)`);
+        }
+
+        // Clear localStorage
+        localStorage.clear();
+        results.push('✅ Cleared localStorage');
+
+        // Clear sessionStorage
+        sessionStorage.clear();
+        results.push('✅ Cleared sessionStorage');
+
+        showStatus(`
+          <strong>✅ All cleared successfully!</strong><br><br>
+          ${results.join('<br>')}
+          <br><br>
+          <strong>Reloading in 2 seconds...</strong>
+        `, 'success');
+
+        // Reload after 2 seconds
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 2000);
+      } catch (error) {
+        showStatus(`❌ Error: ${error.message}`, 'error');
+      }
+    }
+
+    // Auto-check on load
+    window.addEventListener('load', async () => {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        if (registrations.length > 0) {
+          showStatus(`⚠️ Found ${registrations.length} active service worker(s). Click a button above to clear.`, 'info');
+        } else {
+          showStatus('✅ No service workers active', 'success');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

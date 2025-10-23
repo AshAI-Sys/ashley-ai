@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // TODO: Fix Prisma client model name issue for DesignComment
 // Temporarily disabled all comment operations
@@ -27,4 +28,4 @@ export async function DELETE(
     },
     { status: 503 }
   );
-}
+};

@@ -17,6 +17,16 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // Check if already logged in - redirect to dashboard
+      const token = localStorage.getItem("ash_token");
+      const user = localStorage.getItem("ash_user");
+
+      if (token && user) {
+        console.log("[LOGIN] User already logged in, redirecting to dashboard");
+        router.push("/dashboard");
+        return;
+      }
+
       // FORCE LIGHT MODE - Remove any dark class from document
       document.documentElement.classList.remove("dark");
       document.body.classList.remove("dark");
@@ -34,7 +44,7 @@ export default function LoginPage() {
         setPassword(savedPassword);
       }
     }
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,30 +115,15 @@ export default function LoginPage() {
           // Show redirecting state
           setRedirecting(true);
 
-          // Redirect with multiple fallback methods
+          // Redirect with window.location.replace (most reliable)
           const redirectPath =
             loginType === "admin" ? "/dashboard" : "/employee";
-          console.log("[LOGIN] Attempting redirect to:", redirectPath);
+          console.log("[LOGIN] Successful login! Redirecting to:", redirectPath);
 
-          // Method 1: Try Next.js router first
-          try {
-            await router.push(redirectPath);
-            console.log("[LOGIN] Router.push called");
-
-            // Wait a bit, then try fallback if still on login page
-            setTimeout(() => {
-              if (window.location.pathname === "/login") {
-                console.log(
-                  "[LOGIN] Router redirect failed, trying window.location"
-                );
-                window.location.href = redirectPath;
-              }
-            }, 500);
-          } catch (routerError) {
-            console.error("[LOGIN] Router error:", routerError);
-            // Method 2: Fallback to window.location
-            window.location.href = redirectPath;
-          }
+          // Use window.location.replace for reliable redirect (no history entry)
+          setTimeout(() => {
+            window.location.replace(redirectPath);
+          }, 300); // Small delay to ensure localStorage is written
         } else {
           console.error("[LOGIN] Invalid response format:", data);
           setError("Login failed: Invalid response format");

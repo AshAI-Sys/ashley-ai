@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // PUT /api/bundles/[id]/status - Update bundle status
-export async function PUT(
+export const PUT = requireAuth(async (
   req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
-    const workspaceId =
-      req.headers.get("x-workspace-id") || "default-workspace";
-    const userId = req.headers.get("x-user-id") || "mobile-scanner";
+    const workspaceId = user.workspaceId;
+    const userId = user.id;
     const body = await req.json();
     const { status, notes, location } = body;
 
@@ -25,7 +26,7 @@ export async function PUT(
     // Verify bundle exists
     const bundle = await prisma.bundle.findFirst({
       where: {
-        id: params.id,
+        id: context.params.id,
         workspace_id: workspaceId,
       },
     });
@@ -39,7 +40,7 @@ export async function PUT(
 
     // Update bundle status
     const updatedBundle = await prisma.bundle.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: {
         status,
         updated_at: new Date(),
@@ -58,7 +59,7 @@ export async function PUT(
       await prisma.bundleStatusHistory.create({
         data: {
           workspace_id: workspaceId,
-          bundle_id: params.id,
+          bundle_id: context.params.id,
           old_status: bundle.status,
           new_status: status,
           changed_by: userId,
@@ -84,4 +85,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});

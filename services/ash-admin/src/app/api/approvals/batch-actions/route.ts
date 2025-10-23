@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { approval_ids, action, template_id, message, extension_days } = body;
@@ -233,4 +234,4 @@ export async function POST(request: NextRequest) {
   } finally {
     await prisma.$disconnect();
   }
-}
+});

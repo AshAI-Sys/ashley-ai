@@ -130,8 +130,9 @@ export function ClientBrandSection({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...newBrand,
-          clientId: selectedClientId,
+          name: newBrand.name,
+          code: newBrand.code,
+          client_id: selectedClientId, // Use snake_case to match API
         }),
       });
 
@@ -233,7 +234,7 @@ export function ClientBrandSection({
                 <SelectValue placeholder="Select brand" />
               </SelectTrigger>
               <SelectContent>
-                {selectedClient?.brands.map(brand => (
+                {(selectedClient?.brands || []).map(brand => (
                   <SelectItem key={brand.id} value={brand.id}>
                     {brand.name} ({brand.code})
                   </SelectItem>
@@ -378,15 +379,25 @@ export function ClientBrandSection({
                 <Input
                   id="newBrandName"
                   value={newBrand.name}
-                  onChange={e =>
-                    setNewBrand({ ...newBrand, name: e.target.value })
-                  }
+                  onChange={e => {
+                    const name = e.target.value;
+                    // Auto-generate code from name (first 4-5 chars, uppercase, no spaces)
+                    const autoCode = name
+                      .replace(/[^a-zA-Z0-9]/g, '') // Remove special chars
+                      .slice(0, 5) // Take first 5 chars
+                      .toUpperCase();
+
+                    setNewBrand({
+                      name: name,
+                      code: autoCode
+                    });
+                  }}
                   placeholder="e.g., Nike, Adidas"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="newBrandCode" className="text-sm">
-                  Brand Code *
+                  Brand Code * (Auto-generated, editable)
                 </Label>
                 <Input
                   id="newBrandCode"

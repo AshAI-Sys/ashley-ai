@@ -190,7 +190,7 @@ export default function AccountSettingsPage() {
         <Button
           variant="ghost"
           onClick={() => router.push("/settings")}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white"
         >
           <ArrowLeft className="h-5 w-5" />
           <span>Back to Settings</span>
@@ -201,7 +201,7 @@ export default function AccountSettingsPage() {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           Account Settings
         </h2>
-        <p className="mt-1 text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-gray-500 dark:text-gray-500">
           Manage your account information and profile
         </p>
       </div>
@@ -219,7 +219,7 @@ export default function AccountSettingsPage() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <User className="h-12 w-12 text-gray-400 dark:text-gray-500" />
+                <User className="h-12 w-12 text-gray-500 dark:text-gray-500" />
               )}
             </div>
             {uploadingAvatar && (
@@ -259,7 +259,7 @@ export default function AccountSettingsPage() {
             />
           </div>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500 dark:text-gray-500">
           JPG, PNG or GIF. Max size 5MB.
         </p>
       </div>
@@ -330,7 +330,7 @@ export default function AccountSettingsPage() {
             maxLength={500}
             className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
           />
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
             {formData.bio.length}/500 characters
           </p>
         </div>

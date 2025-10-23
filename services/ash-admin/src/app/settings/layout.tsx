@@ -80,13 +80,13 @@ export default function SettingsLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-900">
             Settings
           </h1>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-gray-600">
             Manage your account settings and preferences
           </p>
         </div>
@@ -105,21 +105,21 @@ export default function SettingsLayout({
                     href={item.href}
                     className={`group flex items-start gap-3 rounded-lg px-4 py-3 transition-all ${
                       isActive
-                        ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-gray-100"
                     } `}
                   >
                     <Icon
-                      className={`mt-0.5 h-5 w-5 shrink-0 ${isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500"}`}
+                      className={`mt-0.5 h-5 w-5 shrink-0 ${isActive ? "text-blue-600" : "text-gray-500"}`}
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{item.title}</span>
                         {isActive && (
-                          <ChevronRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          <ChevronRight className="h-4 w-4 text-blue-600" />
                         )}
                       </div>
-                      <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      <p className="mt-0.5 text-xs text-gray-500">
                         {item.description}
                       </p>
                     </div>
@@ -131,7 +131,7 @@ export default function SettingsLayout({
 
           {/* Main Content */}
           <main className="min-w-0 flex-1">
-            <div className="rounded-lg bg-white shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white shadow">
               {children}
             </div>
           </main>

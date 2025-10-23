@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { defectDetectionAI } from "@/lib/ai/defect-detection";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/defect-detection - Detect defects in image
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { image_url, image_base64, garment_type, bundle_id } =
       await req.json();
@@ -72,10 +73,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/ai/defect-detection/batch?bundle_ids=xxx,yyy - Batch defect detection
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const bundleIdsParam = searchParams.get("bundle_ids");
@@ -126,4 +127,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

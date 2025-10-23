@@ -503,7 +503,7 @@ export default function HRPayrollPage() {
                 <div className="mb-6 flex gap-4">
                   <div className="max-w-sm flex-1">
                     <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         placeholder="Search employees..."
                         value={searchQuery}
@@ -562,7 +562,7 @@ export default function HRPayrollPage() {
                                 />
                               ) : (
                                 <div className="flex h-full w-full items-center justify-center">
-                                  <User className="h-8 w-8 text-gray-400" />
+                                  <User className="h-8 w-8 text-gray-500" />
                                 </div>
                               )}
                             </div>
@@ -1180,7 +1180,7 @@ export default function HRPayrollPage() {
                   setShowProfilePictureModal(false);
                   setSelectedEmployee(null);
                 }}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-500 hover:text-gray-600"
               >
                 <X className="h-5 w-5" />
               </button>

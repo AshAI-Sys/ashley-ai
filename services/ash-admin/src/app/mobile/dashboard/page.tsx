@@ -147,7 +147,7 @@ export default function MobileDashboardPage() {
 
         <div className="space-y-3">
           {loading ? (
-            <div className="rounded-lg bg-gray-800 p-4 text-center text-gray-400">
+            <div className="rounded-lg bg-gray-800 p-4 text-center text-gray-500">
               Loading tasks...
             </div>
           ) : stats?.activeTasks?.length > 0 ? (
@@ -159,14 +159,14 @@ export default function MobileDashboardPage() {
                 <div className="mb-2 flex items-start justify-between">
                   <div>
                     <p className="font-medium">{task.order_number}</p>
-                    <p className="text-sm text-gray-400">{task.description}</p>
+                    <p className="text-sm text-gray-500">{task.description}</p>
                   </div>
                   <span className="rounded-full bg-blue-900 px-2 py-1 text-xs text-blue-200">
                     {task.priority}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400">
+                  <span className="text-gray-500">
                     {task.completed} / {task.target} units
                   </span>
                   <span className="text-green-400">
@@ -186,7 +186,7 @@ export default function MobileDashboardPage() {
           ) : (
             <div className="rounded-lg bg-gray-800 p-8 text-center">
               <CheckCircle className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-              <p className="text-gray-400">No active tasks</p>
+              <p className="text-gray-500">No active tasks</p>
               <p className="mt-1 text-sm text-gray-500">
                 You're all caught up!
               </p>
@@ -210,7 +210,7 @@ export default function MobileDashboardPage() {
                     }}
                   ></div>
                 </div>
-                <p className="mt-2 text-xs text-gray-400">{day.day}</p>
+                <p className="mt-2 text-xs text-gray-500">{day.day}</p>
               </div>
             )) || (
               <div className="w-full text-center text-gray-500">

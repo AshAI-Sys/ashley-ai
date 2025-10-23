@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backupService } from "@/lib/backup/service";
+import { requireRole } from "@/lib/auth-middleware";
 
-// POST /api/backups/restore - Restore backup
-export async function POST(request: NextRequest) {
+// POST /api/backups/restore - Restore backup (ADMIN ONLY)
+export const POST = requireRole("admin")(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { backupId } = body;
@@ -39,4 +40,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

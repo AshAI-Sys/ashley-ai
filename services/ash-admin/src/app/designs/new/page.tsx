@@ -505,7 +505,7 @@ export default function NewDesignPage() {
       <Label className="text-sm font-medium">{title}</Label>
       <DropZone type={type}>
         <div className="text-center">
-          <FileImage className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+          <FileImage className="mx-auto mb-2 h-8 w-8 text-gray-500" />
           <p className="text-sm text-gray-600">
             Drop files here or click to browse
           </p>

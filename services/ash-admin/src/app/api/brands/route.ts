@@ -1,22 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const CreateBrandSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
+  code: z.string().optional(), // Brand code (auto-generated, editable)
   client_id: z.string().min(1, "Client ID is required"),
-  description: z.string().optional(),
-  logo_url: z.string().url().optional().or(z.literal("")),
-  brand_colors: z.array(z.string()).optional(),
-  default_pricing: z.record(z.number()).optional(),
-  guidelines: z.string().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
-  metadata: z.record(z.any()).optional(),
+  logo_url: z.string().optional(),
+  settings: z.string().optional(), // JSON string for brand settings
+  is_active: z.boolean().default(true),
 });
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -99,7 +97,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
@@ -180,7 +178,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -268,7 +266,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -322,4 +320,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

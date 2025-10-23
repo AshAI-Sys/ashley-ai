@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const BundleConfigSchema = z.object({
   sizeCode: z.string().min(1, "Size code is required"),
@@ -25,7 +26,7 @@ const UpdateBundleSchema = z.object({
   notes: z.string().optional(),
 });
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -106,9 +107,9 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const validatedData = CreateBundlesSchema.parse(body);
@@ -226,7 +227,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 function generateQRCode(
   orderId: string,

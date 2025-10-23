@@ -1,8 +1,9 @@
+import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/notifications - Get notifications
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/automation/notifications - Create notification
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest) {
   try {
     const body = await request.json();
     const {
@@ -143,7 +144,7 @@ export async function POST(request: NextRequest) {
 }
 
 // PUT /api/automation/notifications - Update notification status
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest) {
   try {
     const body = await request.json();
     const { id, status, error_message, sent_at, delivered_at } = body;

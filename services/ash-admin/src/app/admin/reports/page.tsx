@@ -6,18 +6,14 @@ import PermissionGate from "@/components/PermissionGate";
 import {
   BarChart3,
   Download,
-  Calendar,
   Filter,
   FileText,
   TrendingUp,
   Users,
   Shield,
   Clock,
-  AlertTriangle,
   CheckCircle,
-  Eye,
   RefreshCw,
-  Settings,
   PieChart,
   Activity,
 } from "lucide-react";
@@ -201,11 +197,11 @@ export default function ReportsPage() {
       fallback={
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <BarChart3 className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+            <BarChart3 className="mx-auto mb-4 h-16 w-16 text-gray-500" />
             <h2 className="mb-2 text-2xl font-bold text-gray-900">
               Access Denied
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-500">
               You need Administrator privileges to access Reports.
             </p>
           </div>
@@ -222,7 +218,7 @@ export default function ReportsPage() {
                   <BarChart3 className="mr-3 h-8 w-8 text-blue-600" />
                   Reports & Analytics
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-500">
                   Generate comprehensive reports and analytics
                 </p>
               </div>
@@ -246,7 +242,7 @@ export default function ReportsPage() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {availableReports.length}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-500">
                       Available Reports
                     </p>
                   </div>
@@ -260,7 +256,7 @@ export default function ReportsPage() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {recentReports.length}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-500">
                       Recent Reports
                     </p>
                   </div>
@@ -274,7 +270,7 @@ export default function ReportsPage() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {categories.length}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-500">
                       Categories
                     </p>
                   </div>
@@ -288,7 +284,7 @@ export default function ReportsPage() {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {departments.length}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-500">
                       Departments
                     </p>
                   </div>
@@ -300,8 +296,8 @@ export default function ReportsPage() {
             <div className="mb-6 rounded-lg bg-white p-4 shadow-sm">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center">
-                  <Filter className="mr-2 h-4 w-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <Filter className="mr-2 h-4 w-4 text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-600">
                     Filters:
                   </span>
                 </div>
@@ -347,7 +343,7 @@ export default function ReportsPage() {
                   {loading ? (
                     <div className="p-8 text-center">
                       <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-                      <p className="text-gray-600 dark:text-gray-400">
+                      <p className="text-gray-600 dark:text-gray-500">
                         Loading reports...
                       </p>
                     </div>
@@ -434,8 +430,8 @@ export default function ReportsPage() {
                   <div className="p-6">
                     {recentReports.length === 0 ? (
                       <div className="py-8 text-center">
-                        <FileText className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                        <p className="text-gray-500 dark:text-gray-400">
+                        <FileText className="mx-auto mb-4 h-12 w-12 text-gray-600" />
+                        <p className="text-gray-500 dark:text-gray-500">
                           No recent reports
                         </p>
                       </div>
@@ -562,7 +558,7 @@ function ReportDataModal({ reportType, data, onClose }: any) {
             </button>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
+              className="text-gray-500 hover:text-gray-600 dark:text-gray-500"
             >
               ✕
             </button>
@@ -575,13 +571,13 @@ function ReportDataModal({ reportType, data, onClose }: any) {
             <h4 className="mb-3 font-medium text-gray-900">Report Summary</h4>
             <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
               <div>
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-gray-600 dark:text-gray-500">
                   Report ID:
                 </span>
                 <p className="font-medium">{data.report_id}</p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-gray-600 dark:text-gray-500">
                   Generated:
                 </span>
                 <p className="font-medium">
@@ -589,12 +585,12 @@ function ReportDataModal({ reportType, data, onClose }: any) {
                 </p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">Type:</span>
+                <span className="text-gray-600 dark:text-gray-500">Type:</span>
                 <p className="font-medium">{data.report_type}</p>
               </div>
               {data.period && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-600 dark:text-gray-500">
                     Period:
                   </span>
                   <p className="font-medium">

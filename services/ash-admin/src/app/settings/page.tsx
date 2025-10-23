@@ -73,10 +73,10 @@ export default function GeneralSettingsPage() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl font-bold text-gray-900">
           General Settings
         </h2>
-        <p className="mt-1 text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-gray-600">
           Update your profile information and preferences
         </p>
       </div>
@@ -84,7 +84,7 @@ export default function GeneralSettingsPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Profile Information */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900">
             <User className="h-5 w-5" />
             <span>Profile Information</span>
           </div>
@@ -100,7 +100,6 @@ export default function GeneralSettingsPage() {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="Enter your full name"
-                className="dark:bg-gray-800 dark:text-white"
               />
             </div>
 
@@ -111,9 +110,9 @@ export default function GeneralSettingsPage() {
                 type="email"
                 value={formData.email}
                 disabled
-                className="cursor-not-allowed bg-gray-50 dark:bg-gray-800 dark:text-white"
+                className="cursor-not-allowed bg-gray-50"
               />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-gray-500">
                 Email cannot be changed here. Go to Account Settings.
               </p>
             </div>
@@ -128,7 +127,6 @@ export default function GeneralSettingsPage() {
                   setFormData({ ...formData, position: e.target.value })
                 }
                 placeholder="e.g., Production Manager"
-                className="dark:bg-gray-800 dark:text-white"
               />
             </div>
 
@@ -142,15 +140,14 @@ export default function GeneralSettingsPage() {
                   setFormData({ ...formData, department: e.target.value })
                 }
                 placeholder="e.g., Manufacturing"
-                className="dark:bg-gray-800 dark:text-white"
               />
             </div>
           </div>
         </div>
 
         {/* Regional Settings */}
-        <div className="space-y-4 border-t pt-6 dark:border-gray-700">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="space-y-4 border-t border-gray-200 pt-6">
+          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900">
             <Globe className="h-5 w-5" />
             <span>Regional Settings</span>
           </div>
@@ -164,7 +161,7 @@ export default function GeneralSettingsPage() {
                 onChange={e =>
                   setFormData({ ...formData, timezone: e.target.value })
                 }
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900"
               >
                 <option value="Asia/Manila">Asia/Manila (GMT+8)</option>
                 <option value="Asia/Singapore">Asia/Singapore (GMT+8)</option>
@@ -188,7 +185,7 @@ export default function GeneralSettingsPage() {
                 onChange={e =>
                   setFormData({ ...formData, language: e.target.value })
                 }
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900"
               >
                 <option value="en">English</option>
                 <option value="tl">Tagalog</option>
@@ -201,8 +198,8 @@ export default function GeneralSettingsPage() {
         </div>
 
         {/* Date & Time Format */}
-        <div className="space-y-4 border-t pt-6 dark:border-gray-700">
-          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+        <div className="space-y-4 border-t border-gray-200 pt-6">
+          <div className="flex items-center gap-2 text-lg font-semibold text-gray-900">
             <Clock className="h-5 w-5" />
             <span>Date & Time Format</span>
           </div>
@@ -216,7 +213,7 @@ export default function GeneralSettingsPage() {
                 onChange={e =>
                   setFormData({ ...formData, date_format: e.target.value })
                 }
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900"
               >
                 <option value="MM/DD/YYYY">MM/DD/YYYY (12/31/2025)</option>
                 <option value="DD/MM/YYYY">DD/MM/YYYY (31/12/2025)</option>
@@ -232,7 +229,7 @@ export default function GeneralSettingsPage() {
                 onChange={e =>
                   setFormData({ ...formData, time_format: e.target.value })
                 }
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900"
               >
                 <option value="12h">12-hour (2:30 PM)</option>
                 <option value="24h">24-hour (14:30)</option>
@@ -242,7 +239,7 @@ export default function GeneralSettingsPage() {
         </div>
 
         {/* Save Button */}
-        <div className="border-t pt-6 dark:border-gray-700">
+        <div className="border-t border-gray-200 pt-6">
           <Button type="submit" disabled={loading} className="w-full md:w-auto">
             <Save className="mr-2 h-4 w-4" />
             {loading ? "Saving..." : "Save Changes"}

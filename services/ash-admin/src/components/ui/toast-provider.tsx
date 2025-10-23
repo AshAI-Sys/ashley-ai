@@ -1,15 +1,8 @@
 "use client";
 
 import React from "react";
-import toast, { Toaster, ToastBar, Toast as HotToast } from "react-hot-toast";
-import {
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Info,
-  X,
-  Loader2,
-} from "lucide-react";
+import toast, { Toaster, ToastBar } from "react-hot-toast";
+import { CheckCircle2, XCircle, AlertTriangle, Info, X, Loader2 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 /**
@@ -30,8 +23,7 @@ export function ToastProvider() {
           border: `1px solid ${effectiveTheme === "dark" ? "#374151" : "#e5e7eb"}`,
           padding: "16px",
           borderRadius: "8px",
-          boxShadow:
-            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
           maxWidth: "500px",
         },
         success: {
@@ -48,7 +40,7 @@ export function ToastProvider() {
         },
       }}
     >
-      {t => (
+      {(t) => (
         <ToastBar toast={t}>
           {({ icon, message }) => (
             <div className="flex w-full items-start gap-3">
@@ -63,6 +55,7 @@ export function ToastProvider() {
                 <button
                   onClick={() => toast.dismiss(t.id)}
                   className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="Dismiss notification"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -84,15 +77,15 @@ export const showToast = {
    */
   success: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      t => (
+      (t) => (
         <div
           className={`${
             t.visible ? "animate-fade-in" : "animate-fade-out"
           } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-              <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             </div>
           </div>
           <div className="min-w-0 flex-1">
@@ -102,6 +95,7 @@ export const showToast = {
           <button
             onClick={() => toast.dismiss(t.id)}
             className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Dismiss"
           >
             <X className="h-4 w-4" />
           </button>
@@ -116,15 +110,15 @@ export const showToast = {
    */
   error: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      t => (
+      (t) => (
         <div
           className={`${
             t.visible ? "animate-fade-in" : "animate-fade-out"
           } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-              <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
+              <XCircle className="h-5 w-5 text-red-600" />
             </div>
           </div>
           <div className="min-w-0 flex-1">
@@ -134,6 +128,7 @@ export const showToast = {
           <button
             onClick={() => toast.dismiss(t.id)}
             className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Dismiss"
           >
             <X className="h-4 w-4" />
           </button>
@@ -148,15 +143,15 @@ export const showToast = {
    */
   warning: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      t => (
+      (t) => (
         <div
           className={`${
             t.visible ? "animate-fade-in" : "animate-fade-out"
           } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100">
+              <AlertTriangle className="h-5 w-5 text-yellow-600" />
             </div>
           </div>
           <div className="min-w-0 flex-1">
@@ -166,6 +161,7 @@ export const showToast = {
           <button
             onClick={() => toast.dismiss(t.id)}
             className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Dismiss"
           >
             <X className="h-4 w-4" />
           </button>
@@ -180,15 +176,15 @@ export const showToast = {
    */
   info: (message: string, options?: { duration?: number }) => {
     return toast.custom(
-      t => (
+      (t) => (
         <div
           className={`${
             t.visible ? "animate-fade-in" : "animate-fade-out"
           } flex max-w-md items-start gap-3 rounded-lg border border-border bg-card p-4 shadow-lg`}
         >
           <div className="flex-shrink-0">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-              <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+              <Info className="h-5 w-5 text-blue-600" />
             </div>
           </div>
           <div className="min-w-0 flex-1">
@@ -198,6 +194,7 @@ export const showToast = {
           <button
             onClick={() => toast.dismiss(t.id)}
             className="flex-shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Dismiss"
           >
             <X className="h-4 w-4" />
           </button>
@@ -212,7 +209,7 @@ export const showToast = {
    */
   loading: (message: string) => {
     return toast.custom(
-      t => (
+      (t) => (
         <div
           className={`${
             t.visible ? "animate-fade-in" : "animate-fade-out"
@@ -245,11 +242,11 @@ export const showToast = {
       promise,
       {
         loading: messages.loading,
-        success: data =>
+        success: (data) =>
           typeof messages.success === "function"
             ? messages.success(data)
             : messages.success,
-        error: error =>
+        error: (error) =>
           typeof messages.error === "function"
             ? messages.error(error)
             : messages.error,

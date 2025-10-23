@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/ai/scheduling - Generate optimized schedule
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
-    const { start_date, include_stages, workspace_id } = await req.json();
+    const { start_date, include_stages } = await req.json();
+    const workspace_id = user.workspaceId;
 
     const startDate = start_date ? new Date(start_date) : new Date();
     const stages = include_stages || [
@@ -170,10 +172,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/ai/scheduling/preview - Preview current schedule
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");
@@ -247,4 +249,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

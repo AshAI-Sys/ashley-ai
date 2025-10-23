@@ -172,7 +172,7 @@ export default function AnalyticsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-500">
                 Total Reports
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -186,7 +186,7 @@ export default function AnalyticsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-500">
                 Dashboards
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -200,7 +200,7 @@ export default function AnalyticsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-500">
                 Favorites
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-gray-600 dark:text-gray-500">
                 Public Reports
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -298,12 +298,12 @@ export default function AnalyticsPage() {
 
             {loading ? (
               <div className="py-12 text-center">
-                <RefreshCw className="mx-auto h-8 w-8 animate-spin text-gray-400" />
+                <RefreshCw className="mx-auto h-8 w-8 animate-spin text-gray-500" />
                 <p className="mt-2 text-gray-600">Loading reports...</p>
               </div>
             ) : reports.length === 0 ? (
               <div className="rounded-lg bg-gray-50 py-12 text-center">
-                <BarChart3 className="mx-auto h-12 w-12 text-gray-400" />
+                <BarChart3 className="mx-auto h-12 w-12 text-gray-500" />
                 <p className="mt-4 text-gray-600">No reports created yet</p>
                 <button
                   onClick={() => setShowCreateModal(true)}
@@ -328,7 +328,7 @@ export default function AnalyticsPage() {
                           <h3 className="font-semibold text-gray-900 dark:text-white">
                             {report.name}
                           </h3>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <p className="text-xs text-gray-500 dark:text-gray-500">
                             {report.report_type}
                           </p>
                         </div>
@@ -352,13 +352,13 @@ export default function AnalyticsPage() {
                       >
                         {report.data_source}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-500 dark:text-gray-500">
                         {report.view_count} views
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between border-t border-gray-200 pt-3 dark:border-gray-700">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-500 dark:text-gray-500">
                         by {report.creator?.first_name}{" "}
                         {report.creator?.last_name}
                       </span>
@@ -409,7 +409,7 @@ export default function AnalyticsPage() {
 
             {dashboards.length === 0 ? (
               <div className="rounded-lg bg-gray-50 py-12 text-center">
-                <PieChart className="mx-auto h-12 w-12 text-gray-400" />
+                <PieChart className="mx-auto h-12 w-12 text-gray-500" />
                 <p className="mt-4 text-gray-600">No dashboards created yet</p>
                 <button
                   onClick={() => setShowCreateModal(true)}
@@ -443,10 +443,10 @@ export default function AnalyticsPage() {
 
                     <div className="flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
                       <div className="flex items-center space-x-4">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-gray-500 dark:text-gray-500">
                           {dashboard.widgets_data?.length || 0} widgets
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-xs text-gray-500 dark:text-gray-500">
                           {dashboard.dashboard_type}
                         </span>
                       </div>
@@ -526,7 +526,7 @@ export default function AnalyticsPage() {
                           {Array.from({ length: 24 }, (_, i) => (
                             <th
                               key={i}
-                              className="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400"
+                              className="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-500"
                             >
                               {i}:00
                             </th>
@@ -580,7 +580,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="rounded-lg bg-gray-50 p-4">
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-gray-600 dark:text-gray-500">
                     <strong>Legend:</strong>
                     <span className="ml-2 inline-block h-4 w-4 bg-green-500 align-middle"></span>{" "}
                     90-100%
@@ -597,7 +597,7 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <div className="rounded-lg bg-gray-50 py-12 text-center">
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-500">
                   No heatmap data available. Data will appear as production runs
                   are tracked.
                 </p>
@@ -723,7 +723,7 @@ export default function AnalyticsPage() {
               </div>
             ) : (
               <div className="rounded-lg bg-gray-50 py-12 text-center">
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-500">
                   No profit analysis data available. Analyze your orders to see
                   profitability insights.
                 </p>

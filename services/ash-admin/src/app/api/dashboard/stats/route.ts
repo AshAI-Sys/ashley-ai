@@ -5,12 +5,11 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const dynamic = "force-dynamic";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, authUser) => {
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("timeRange") || "30d";
     const includeCharts = searchParams.get("includeCharts") !== "false";
-    const workspaceId = user.workspaceId; // From authenticated user
 
     // Calculate date range
     const days = parseInt(timeRange.replace("d", ""));
@@ -32,20 +31,20 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       // Total orders
       prisma.order.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: authUser.workspaceId,
           created_at: { gte: startDate },
         },
       }),
 
       // Total clients
       prisma.client.count({
-        where: { workspace_id: workspaceId },
+        where: { workspace_id: authUser.workspaceId },
       }),
 
       // Total revenue
       prisma.order.aggregate({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: authUser.workspaceId,
           created_at: { gte: startDate },
         },
         _sum: { total_amount: true },
@@ -54,14 +53,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       // Active orders (in production)
       prisma.order.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: authUser.workspaceId,
           status: "in_production",
         },
       }),
 
       // Recent orders
       prisma.order.findMany({
-        where: { workspace_id: workspaceId },
+        where: { workspace_id: authUser.workspaceId },
         orderBy: { created_at: "desc" },
         take: 10,
         include: {
@@ -77,7 +76,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       // Orders by status
       prisma.order.groupBy({
         by: ["status"],
-        where: { workspace_id: workspaceId },
+        where: { workspace_id: authUser.workspaceId },
         _count: { status: true },
       }),
 
@@ -171,7 +170,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     const completedToday = await prisma.order.count({
       where: {
-        workspace_id: workspaceId,
+        workspace_id: authUser.workspaceId,
         status: "completed",
         updated_at: {
           gte: todayStart,

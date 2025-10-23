@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   createSuccessResponse,
   withErrorHandling,

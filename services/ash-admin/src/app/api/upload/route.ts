@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   validateFile,
   generateSafeFilename,
@@ -15,7 +16,7 @@ cloudinary.config({
 });
 
 // POST /api/upload - Upload file to Cloudinary
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File;
@@ -109,10 +110,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/upload - Delete file from Cloudinary
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const publicId = searchParams.get("public_id");
@@ -140,7 +141,7 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/upload - Check upload configuration status
 export async function GET() {
@@ -150,4 +151,4 @@ export async function GET() {
     ),
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null,
   });
-}
+};

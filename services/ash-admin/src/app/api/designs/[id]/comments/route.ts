@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET - Fetch all comments for a design
 export async function GET(
@@ -217,4 +218,4 @@ export async function POST(
   } finally {
     await prisma.$disconnect();
   }
-}
+};

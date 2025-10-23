@@ -496,7 +496,7 @@ export default function FabricBatchSelector({
                   </div>
 
                   <Package
-                    className={`h-5 w-5 ${selected ? "text-blue-600" : "text-gray-400"}`}
+                    className={`h-5 w-5 ${selected ? "text-blue-600" : "text-gray-500"}`}
                   />
                 </div>
               </div>
@@ -505,7 +505,7 @@ export default function FabricBatchSelector({
 
           {filteredBatches.length === 0 && (
             <div className="py-8 text-center text-muted-foreground">
-              <Package className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+              <Package className="mx-auto mb-4 h-12 w-12 text-gray-600" />
               <p>No fabric batches found matching your criteria</p>
             </div>
           )}

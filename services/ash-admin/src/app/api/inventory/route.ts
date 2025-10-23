@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { inventoryManager } from "@/lib/inventory/inventory-manager";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/inventory - Get inventory summary and alerts
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -77,10 +78,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/inventory - Create material or update stock
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const body = await req.json();
     const { action, ...data } = body;
@@ -183,4 +184,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

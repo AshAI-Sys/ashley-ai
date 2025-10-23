@@ -122,7 +122,7 @@ export default function AutoReorderSettingsPage() {
                 {globalSettings.auto_approve_pos ? (
                   <ToggleRight className="h-10 w-10" />
                 ) : (
-                  <ToggleLeft className="h-10 w-10 text-gray-400" />
+                  <ToggleLeft className="h-10 w-10 text-gray-500" />
                 )}
               </button>
             </div>
@@ -149,7 +149,7 @@ export default function AutoReorderSettingsPage() {
                 {globalSettings.notify_on_creation ? (
                   <ToggleRight className="h-10 w-10" />
                 ) : (
-                  <ToggleLeft className="h-10 w-10 text-gray-400" />
+                  <ToggleLeft className="h-10 w-10 text-gray-500" />
                 )}
               </button>
             </div>
@@ -260,7 +260,7 @@ export default function AutoReorderSettingsPage() {
                           </>
                         ) : (
                           <>
-                            <ToggleLeft className="h-8 w-8 text-gray-400" />
+                            <ToggleLeft className="h-8 w-8 text-gray-500" />
                             <span className="text-sm font-medium text-gray-500">
                               Disabled
                             </span>

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // GET /api/ai-chat/conversations/:id - Get a specific conversation with messages
-export async function GET(
+export const GET = requireAuth(async (
   request: NextRequest,
+  user,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
     const conversation = await prisma.aIChatConversation.findUnique({
       where: {
@@ -45,13 +47,14 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
 // PATCH /api/ai-chat/conversations/:id - Update conversation
-export async function PATCH(
+export const PATCH = requireAuth(async (
   request: NextRequest,
+  user,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
     const body = await request.json();
     const { title, is_archived, is_pinned } = body;
@@ -75,13 +78,14 @@ export async function PATCH(
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
-export async function DELETE(
+export const DELETE = requireAuth(async (
   request: NextRequest,
+  user,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
     await prisma.aIChatConversation.delete({
       where: {
@@ -97,4 +101,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

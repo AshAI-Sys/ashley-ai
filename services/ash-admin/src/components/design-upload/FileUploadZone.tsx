@@ -209,7 +209,7 @@ export default function FileUploadZone({
           }
         >
           <div className="text-center">
-            <FileImage className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+            <FileImage className="mx-auto mb-2 h-8 w-8 text-gray-500" />
             <p className="mb-1 text-sm text-gray-600">
               Drop files here or click to browse
             </p>

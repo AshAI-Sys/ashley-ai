@@ -93,6 +93,10 @@ interface CommercialsData {
 export default function NewOrderPageContent() {
   const router = useRouter();
 
+  // Prevent hydration mismatch by only rendering on client
+  const [mounted, setMounted] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
+
   // Loading and submission states
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -177,11 +181,22 @@ export default function NewOrderPageContent() {
   const [notesRemarks, setNotesRemarks] = useState("");
   const [printLocations, setPrintLocations] = useState<any[]>([]);
 
-  // Load clients on component mount
+  // Set mounted state on client
   useEffect(() => {
-    fetchClients();
-    loadDraft();
+    setMounted(true);
+    // Check for draft only on client
+    if (typeof window !== "undefined") {
+      setHasDraft(!!localStorage.getItem("orderFormDraft"));
+    }
   }, []);
+
+  // Load clients on component mount (only on client)
+  useEffect(() => {
+    if (mounted) {
+      fetchClients();
+      loadDraft();
+    }
+  }, [mounted]);
 
   // Auto-save draft every time form data changes
   useEffect(() => {
@@ -213,6 +228,7 @@ export default function NewOrderPageContent() {
     // Save to localStorage
     if (typeof window !== "undefined") {
       localStorage.setItem("orderFormDraft", JSON.stringify(draftData));
+      setHasDraft(true);
     }
   }, [
     selectedClientId,
@@ -281,6 +297,7 @@ export default function NewOrderPageContent() {
   const clearDraft = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("orderFormDraft");
+      setHasDraft(false);
       toast.success("Draft cleared");
     }
   };
@@ -288,14 +305,65 @@ export default function NewOrderPageContent() {
   const fetchClients = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/clients?include=brands");
+      // Get token from localStorage
+      const token = localStorage.getItem("ash_token");
+
+      if (!token) {
+        console.error("❌ No authentication token found in localStorage");
+        toast.error("Session expired. Please log in again.");
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+        setLoading(false);
+        return;
+      }
+
+      console.log("🔍 Fetching clients with token:", token.substring(0, 20) + "...");
+
+      const response = await fetch("/api/clients?include=brands", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("📡 Response status:", response.status, response.statusText);
+
+      if (!response.ok) {
+        // Handle 401 Unauthorized - token invalid/expired
+        if (response.status === 401) {
+          console.error("❌ 401 Unauthorized - Token invalid or expired");
+          toast.error("Session expired. Please log in again.");
+
+          // Clear invalid token
+          localStorage.removeItem("ash_token");
+          localStorage.removeItem("ash_user");
+
+          // Redirect to login after 1.5 seconds
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1500);
+          setLoading(false);
+          return;
+        }
+
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("❌ API Error:", errorData);
+        throw new Error(`HTTP ${response.status}: ${errorData.error || response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log("✅ Clients data:", data);
+
       if (data.data && data.data.clients) {
         setClients(data.data.clients);
+      } else if (Array.isArray(data)) {
+        // Handle if API returns array directly
+        setClients(data);
       }
     } catch (error) {
       console.error("Failed to fetch clients:", error);
-      toast.error("Failed to load clients");
+      toast.error("Failed to load clients. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -303,7 +371,20 @@ export default function NewOrderPageContent() {
 
   // Event handlers
   const handleClientCreated = (newClient: Client) => {
-    setClients(prev => [...prev, newClient]);
+    setClients(prev => {
+      // Check if client already exists (update scenario when adding brand)
+      const existingIndex = prev.findIndex(c => c.id === newClient.id);
+
+      if (existingIndex >= 0) {
+        // Update existing client (e.g., when new brand was added)
+        const updated = [...prev];
+        updated[existingIndex] = newClient;
+        return updated;
+      } else {
+        // Add new client
+        return [...prev, newClient];
+      }
+    });
   };
 
   const handlePricingUpdate = (
@@ -499,8 +580,28 @@ export default function NewOrderPageContent() {
     );
   }
 
-  const hasDraft =
-    typeof window !== "undefined" && localStorage.getItem("orderFormDraft");
+  // Prevent hydration mismatch - don't render until mounted on client
+  if (!mounted) {
+    return (
+      <div className="container mx-auto py-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="col-span-2 space-y-6">
+              <div className="h-48 bg-gray-200 rounded"></div>
+              <div className="h-48 bg-gray-200 rounded"></div>
+              <div className="h-48 bg-gray-200 rounded"></div>
+            </div>
+            <div className="space-y-6">
+              <div className="h-64 bg-gray-200 rounded"></div>
+              <div className="h-64 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-6">

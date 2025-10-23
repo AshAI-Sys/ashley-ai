@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Audit log validation schema
 const CreateAuditLogSchema = z.object({
@@ -399,4 +400,4 @@ async function createAuditLog(
     console.error("Error creating audit log:", error);
     return false;
   }
-}
+};

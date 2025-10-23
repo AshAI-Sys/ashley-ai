@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
     const inspection = await prisma.qCInspection.findUnique({
-      where: { id: params.id },
+      where: { id: context.params.id },
       include: {
         order: { select: { order_number: true } },
         bundle: { select: { qr_code: true, size_code: true, qty: true } },
@@ -47,17 +49,18 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-export async function PUT(
+export const PUT = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
     const data = await request.json();
 
     const inspection = await prisma.qCInspection.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: {
         ...data,
         updated_at: new Date(),
@@ -76,4 +79,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});

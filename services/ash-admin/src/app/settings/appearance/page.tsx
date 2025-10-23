@@ -156,7 +156,7 @@ export default function AppearanceSettingsPage() {
               </button>
             ))}
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-500">
             Choose your preferred accent color for buttons and highlights
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function AppearanceSettingsPage() {
                 <div className="font-medium text-gray-900 dark:text-white">
                   Compact Mode
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-gray-500 dark:text-gray-500">
                   Reduce spacing and padding for a denser layout
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function AppearanceSettingsPage() {
                 <div className="font-medium text-gray-900 dark:text-white">
                   Show Avatars
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-gray-500 dark:text-gray-500">
                   Display user avatars throughout the interface
                 </div>
               </div>
@@ -216,7 +216,7 @@ export default function AppearanceSettingsPage() {
             <option value="large">Large</option>
             <option value="extra-large">Extra Large</option>
           </select>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-500">
             Adjust the base font size for better readability
           </p>
         </div>
@@ -240,7 +240,7 @@ export default function AppearanceSettingsPage() {
                   Ashley AI Manufacturing
                 </div>
                 <div
-                  className={`text-gray-500 dark:text-gray-400 ${fontSize === "small" ? "text-xs" : fontSize === "large" ? "text-base" : fontSize === "extra-large" ? "text-lg" : "text-sm"}`}
+                  className={`text-gray-500 dark:text-gray-500 ${fontSize === "small" ? "text-xs" : fontSize === "large" ? "text-base" : fontSize === "extra-large" ? "text-lg" : "text-sm"}`}
                 >
                   admin@ashleyai.com
                 </div>

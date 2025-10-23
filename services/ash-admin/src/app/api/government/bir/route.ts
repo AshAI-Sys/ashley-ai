@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { birService } from "@/lib/government/bir";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // POST /api/government/bir - Generate BIR reports (Sales Book, Purchase Book, 2307)
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { report_type, period, workspace_id, data } = body;
@@ -126,10 +127,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/government/bir - Calculate VAT or withholding tax
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const operation = searchParams.get("operation"); // 'vat' or 'withholding'
@@ -199,4 +200,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

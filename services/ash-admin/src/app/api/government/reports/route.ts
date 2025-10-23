@@ -4,11 +4,12 @@ import { birService } from "@/lib/government/bir";
 import { sssService } from "@/lib/government/sss";
 import { philHealthService } from "@/lib/government/philhealth";
 import { pagIBIGService } from "@/lib/government/pagibig";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // POST /api/government/reports - Generate government remittance reports
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { agency, period, workspace_id, employer_details, employee_ids } =
@@ -154,10 +155,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/government/reports - Get contribution calculations for a single employee
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
@@ -258,4 +259,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

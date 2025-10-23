@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Ashley AI Quality Control Analytics
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const { inspection_id, analysis_type } = await request.json();
 
@@ -537,4 +538,4 @@ function calculateProcessCapability(historicalInspections: any[]) {
 
   // Simplified capability calculation
   return { cp: 1.33, cpk: 1.2, note: "Process capable" };
-}
+};

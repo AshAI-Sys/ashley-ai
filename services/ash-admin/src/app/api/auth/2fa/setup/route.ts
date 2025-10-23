@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { setup2FA } from "@/lib/2fa-server";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // POST /api/auth/2fa/setup - Generate 2FA secret and QR code
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { user_id } = body;
@@ -66,10 +67,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/auth/2fa/setup - Disable 2FA
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const user_id = searchParams.get("user_id");
@@ -104,4 +105,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

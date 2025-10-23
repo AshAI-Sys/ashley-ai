@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Note: Supplier model not yet implemented in schema
 // Using expense.supplier field as temporary solution
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
@@ -44,9 +45,9 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     // Supplier model not implemented yet
     // Return success but don't create anything
@@ -65,4 +66,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

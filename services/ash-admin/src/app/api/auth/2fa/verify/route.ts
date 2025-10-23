@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { verify2FA } from "@/lib/2fa-server";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // POST /api/auth/2fa/verify - Verify 2FA token and enable 2FA
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { user_id, token, enable_2fa = false } = body;
@@ -95,4 +96,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

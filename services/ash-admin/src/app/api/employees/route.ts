@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     // Fixed: Changed createdAt to created_at
     const { searchParams } = new URL(request.url);
@@ -56,4 +57,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

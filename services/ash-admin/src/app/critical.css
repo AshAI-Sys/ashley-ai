@@ -28,13 +28,7 @@
     --radius: 0.75rem;
   }
 
-  /* Force light mode */
-  .dark {
-    --background: 215 25% 97%;
-    --foreground: 215 25% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
-  }
+  /* Light mode only */
 
   * {
     @apply border-border;

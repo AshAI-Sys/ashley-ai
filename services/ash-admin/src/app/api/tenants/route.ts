@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/tenants - Create new tenant workspace
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const {
       name,
@@ -62,10 +63,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/tenants?workspace_id=xxx - Get tenant information
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -102,10 +103,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/tenants - Update tenant configuration
-export async function PUT(req: NextRequest) {
+export const PUT = requireAuth(async (req: NextRequest, user) => {
   try {
     const { workspace_id, ...updates } = await req.json();
 
@@ -139,10 +140,10 @@ export async function PUT(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/tenants?workspace_id=xxx&confirmation=slug - Delete tenant
-export async function DELETE(req: NextRequest) {
+export const DELETE = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -178,4 +179,4 @@ export async function DELETE(req: NextRequest) {
       { status: 400 }
     );
   }
-}
+};

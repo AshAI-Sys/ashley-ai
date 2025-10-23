@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { defectDetectionAI } from "@/lib/ai/defect-detection";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/defect-detection/patterns - Analyze defect patterns
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "30");
@@ -98,10 +99,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/ai/defect-detection/patterns/compare - Compare quality between operators/stations
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { entity_type, days = 30 } = await req.json();
 
@@ -202,4 +203,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

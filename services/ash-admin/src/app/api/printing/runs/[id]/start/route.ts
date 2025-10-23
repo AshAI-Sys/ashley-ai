@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export async function POST(
   request: NextRequest,
@@ -254,4 +255,4 @@ function estimateMaterialConsumption(run: any) {
   };
 
   return estimates[run.method as keyof typeof estimates] || {};
-}
+};

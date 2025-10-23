@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // GET /api/qc/defect-types - Get all defect types
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -121,4 +122,4 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

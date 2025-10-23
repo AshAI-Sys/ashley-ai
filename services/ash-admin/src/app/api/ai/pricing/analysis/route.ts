@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");
@@ -114,10 +115,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { product_type, target_margin, min_acceptance_rate } =
       await req.json();
@@ -287,4 +288,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

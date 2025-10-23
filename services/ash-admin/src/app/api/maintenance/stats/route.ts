@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const workspace_id = "default";
     const today = new Date();
@@ -265,4 +266,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

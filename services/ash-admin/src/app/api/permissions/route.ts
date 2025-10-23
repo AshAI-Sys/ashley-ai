@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { permissionManager } from "@/lib/rbac/permission-manager";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/permissions - Get all available permissions
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const user_id = searchParams.get("user_id");
@@ -39,10 +40,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/permissions/check - Check if user has permission
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { user_id, resource, action } = await req.json();
 
@@ -73,4 +74,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

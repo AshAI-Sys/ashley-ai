@@ -88,7 +88,7 @@ export default function EmployeeLoginPage() {
             <div>
               <label className="mb-2 block text-sm font-medium">Email</label>
               <div className="relative">
-                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
                 <Input
                   type="email"
                   value={email}
@@ -104,7 +104,7 @@ export default function EmployeeLoginPage() {
             <div>
               <label className="mb-2 block text-sm font-medium">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
                 <Input
                   type="password"
                   value={password}

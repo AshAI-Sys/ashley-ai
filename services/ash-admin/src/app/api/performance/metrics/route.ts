@@ -6,8 +6,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getQueryMetrics } from "@/lib/performance/query-cache";
 import { checkRedisAvailable, getRedisInfo } from "@/lib/redis";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     // Get query performance metrics
     const queryMetrics = getQueryMetrics();
@@ -186,4 +187,4 @@ function getRecommendations(
   }
 
   return recommendations;
-}
+};

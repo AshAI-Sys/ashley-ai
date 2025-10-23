@@ -237,11 +237,11 @@ export function GraphicEditingSection({
                 id="mockup-file-input"
               />
               <label htmlFor="mockup-file-input" className="cursor-pointer">
-                <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                <p className="text-sm font-medium text-gray-300">
+                <Upload className="mx-auto mb-2 h-8 w-8 text-gray-700" />
+                <p className="text-sm font-medium text-gray-600">
                   Drag & drop image here or click to browse
                 </p>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-700">
                   Supports JPG, PNG, GIF (Max 10MB)
                 </p>
               </label>
@@ -269,7 +269,7 @@ export function GraphicEditingSection({
                   <div className="flex h-64 w-full items-center justify-center rounded bg-gray-100">
                     <div className="text-center">
                       <div className="mx-auto mb-2 h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-                      <p className="text-sm text-gray-300">Loading image...</p>
+                      <p className="text-sm text-gray-600">Loading image...</p>
                     </div>
                   </div>
                 ) : imageError ? (
@@ -337,7 +337,7 @@ export function GraphicEditingSection({
                   className={`rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
                     isSelected
                       ? "border-blue-500 bg-blue-50 text-blue-900"
-                      : "border-gray-200 text-white hover:border-gray-300"
+                      : "border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50"
                   } `}
                 >
                   {location.label}

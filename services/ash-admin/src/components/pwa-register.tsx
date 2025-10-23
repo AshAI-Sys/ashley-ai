@@ -41,7 +41,7 @@ export default function PWARegister() {
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <div className="text-sm font-medium">Update Available</div>
-              <div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+              <div className="mt-1 text-xs text-gray-600 dark:text-gray-500">
                 A new version of Ashley AI is available
               </div>
             </div>

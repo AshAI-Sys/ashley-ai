@@ -21,6 +21,10 @@ export async function createSession(
   const expiresAt = new Date();
   expiresAt.setHours(expiresAt.getHours() + expiresInHours);
 
+  console.log("[SESSION] Creating session for user:", userId);
+  console.log("[SESSION] Token hash:", tokenHash.substring(0, 20) + "...");
+  console.log("[SESSION] Expires at:", expiresAt);
+
   await prisma.userSession.create({
     data: {
       user_id: userId,
@@ -31,6 +35,7 @@ export async function createSession(
     },
   });
 
+  console.log("[SESSION] Session created successfully in database");
   return tokenHash;
 }
 
@@ -39,22 +44,33 @@ export async function createSession(
  */
 export async function validateSession(token: string): Promise<boolean> {
   const tokenHash = hash(token);
+  console.log("[SESSION] Validating session for token hash:", tokenHash.substring(0, 20) + "...");
 
   const session = await prisma.userSession.findUnique({
     where: { token_hash: tokenHash },
   });
 
   if (!session) {
+    console.error("[SESSION] No session found in database for this token hash");
     return false;
   }
 
+  console.log("[SESSION] Session found:", {
+    userId: session.user_id,
+    isActive: session.is_active,
+    expiresAt: session.expires_at,
+    revokedAt: session.revoked_at
+  });
+
   // Check if session is active and not expired
   if (!session.is_active || session.revoked_at) {
+    console.error("[SESSION] Session is inactive or revoked");
     return false;
   }
 
   if (new Date() > session.expires_at) {
     // Session expired, revoke it
+    console.error("[SESSION] Session expired at:", session.expires_at);
     await revokeSession(tokenHash);
     return false;
   }
@@ -65,6 +81,7 @@ export async function validateSession(token: string): Promise<boolean> {
     data: { last_activity: new Date() },
   });
 
+  console.log("[SESSION] Session validated successfully");
   return true;
 }
 

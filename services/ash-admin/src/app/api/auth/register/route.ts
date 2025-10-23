@@ -4,6 +4,7 @@ import * as bcrypt from "bcryptjs";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
 import { z } from "zod";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
@@ -31,7 +32,7 @@ const RegisterSchema = z.object({
   companyPhone: z.string().optional(),
 });
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
 
@@ -213,4 +214,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

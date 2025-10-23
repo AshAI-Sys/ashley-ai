@@ -99,6 +99,17 @@ self.addEventListener("fetch", event => {
     return;
   }
 
+  // Skip Next.js dev chunks and HMR requests
+  if (
+    url.pathname.includes("/_next/") ||
+    url.pathname.includes("/__webpack") ||
+    url.searchParams.has("_next_data") ||
+    url.pathname.endsWith(".hot-update.json")
+  ) {
+    // Let Next.js handle its own files
+    return;
+  }
+
   // Static assets - Cache first, fallback to network
   if (
     url.pathname.match(
@@ -171,11 +182,20 @@ async function cacheFirstStrategy(request, cacheName) {
 
     if (networkResponse && networkResponse.status === 200) {
       const cache = await caches.open(cacheName);
-      cache.put(request, networkResponse.clone());
+      // Only cache successful responses
+      cache.put(request, networkResponse.clone()).catch(err => {
+        console.warn("[Service Worker] Failed to cache:", request.url);
+      });
     }
 
     return networkResponse;
   } catch (error) {
+    // Fail silently for Next.js dev chunks - they change frequently
+    if (request.url.includes("/_next/static/")) {
+      console.warn("[Service Worker] Skipping cache for Next.js static file:", request.url);
+      // Return a basic response to prevent errors
+      return new Response("", { status: 200 });
+    }
     console.error("[Service Worker] Fetch failed for:", request.url, error);
     throw error;
   }

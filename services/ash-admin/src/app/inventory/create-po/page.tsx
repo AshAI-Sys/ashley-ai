@@ -288,7 +288,7 @@ function CreatePOForm() {
                           type="button"
                           onClick={() => removeLineItem(item.id)}
                           disabled={lineItems.length === 1}
-                          className="text-red-600 hover:text-red-800 disabled:cursor-not-allowed disabled:text-gray-300"
+                          className="text-red-600 hover:text-red-800 disabled:cursor-not-allowed disabled:text-gray-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

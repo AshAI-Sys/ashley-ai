@@ -211,7 +211,7 @@ export default function QRScannerPage() {
           </div>
           <button
             onClick={() => router.push("/dashboard")}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-500 hover:text-white"
           >
             Dashboard
           </button>
@@ -263,7 +263,7 @@ export default function QRScannerPage() {
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-90">
                   <div className="text-center">
                     <Camera className="mx-auto mb-4 h-24 w-24 text-gray-600" />
-                    <p className="text-gray-400">Camera is off</p>
+                    <p className="text-gray-500">Camera is off</p>
                   </div>
                 </div>
               )}
@@ -291,7 +291,7 @@ export default function QRScannerPage() {
             {/* Instructions */}
             <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
               <h3 className="mb-2 font-medium">How to scan:</h3>
-              <ol className="list-inside list-decimal space-y-1 text-sm text-gray-300">
+              <ol className="list-inside list-decimal space-y-1 text-sm text-gray-600">
                 <li>Click "Start Scanning" to activate camera</li>
                 <li>Point camera at QR code on bundle</li>
                 <li>Hold steady until code is detected</li>
@@ -320,32 +320,32 @@ export default function QRScannerPage() {
               </div>
               <div className="space-y-3 p-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Bundle ID:</span>
+                  <span className="text-gray-500">Bundle ID:</span>
                   <span className="font-medium">
                     {bundleInfo.bundle_number}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Order:</span>
+                  <span className="text-gray-500">Order:</span>
                   <span className="font-medium">
                     {bundleInfo.order?.order_number || "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Quantity:</span>
+                  <span className="text-gray-500">Quantity:</span>
                   <span className="font-medium">
                     {bundleInfo.quantity} units
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Status:</span>
+                  <span className="text-gray-500">Status:</span>
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${
                       bundleInfo.status === "COMPLETED"
                         ? "bg-green-900 text-green-200"
                         : bundleInfo.status === "IN_PROGRESS"
                           ? "bg-blue-900 text-blue-200"
-                          : "bg-gray-700 text-gray-300"
+                          : "bg-gray-700 text-gray-600"
                     }`}
                   >
                     {bundleInfo.status}

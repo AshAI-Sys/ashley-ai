@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -60,14 +61,35 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      spacing: {
+        xs: "0.5rem",    // 8px
+        sm: "0.75rem",   // 12px
+        md: "1rem",      // 16px
+        lg: "1.5rem",    // 24px
+        xl: "2rem",      // 32px
+        "2xl": "3rem",   // 48px
+        "3xl": "4rem",   // 64px
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "1rem",      // 16px
+        "2xl": "1.5rem", // 24px - modern cards
+        "3xl": "2rem",   // 32px
       },
       boxShadow: {
+        // Modern design system shadows
         corporate: "0 2px 10px rgba(0, 0, 0, 0.08)",
         "corporate-hover": "0 4px 16px rgba(0, 0, 0, 0.12)",
+        sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+        "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        glow: "0 0 20px rgba(37, 99, 235, 0.3)",
+        "glow-lg": "0 0 30px rgba(37, 99, 235, 0.4)",
       },
       keyframes: {
         "accordion-down": {

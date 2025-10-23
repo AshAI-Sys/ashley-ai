@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const workcenter = searchParams.get("workcenter");
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { name, workcenter, specifications = {}, is_active = true } = body;
@@ -187,4 +188,4 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
     console.error("Error checking maintenance due:", error);
     return false;
   }
-}
+};

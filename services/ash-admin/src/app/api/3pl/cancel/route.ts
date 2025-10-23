@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { threePLService } from "@/lib/3pl";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // POST /api/3pl/cancel - Cancel shipment with 3PL provider
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { provider, booking_id, tracking_number, reason } = body;
@@ -39,4 +40,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/automation/rules - Get all automation rules
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
-    const workspaceId = searchParams.get("workspace_id") || "workspace_1";
+    const workspaceId = user.workspaceId;
     const isActive = searchParams.get("is_active");
     const triggerType = searchParams.get("trigger_type");
 
@@ -55,14 +56,13 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/automation/rules - Create new automation rule
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
-      workspace_id = "workspace_1",
       name,
       description,
       trigger_type,
@@ -71,8 +71,10 @@ export async function POST(request: NextRequest) {
       actions,
       priority = 1,
       is_active = true,
-      created_by = "user_1",
     } = body;
+
+    const workspace_id = user.workspaceId;
+    const created_by = user.id;
 
     // Validate required fields
     if (!name || !trigger_type || !actions) {
@@ -134,10 +136,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/automation/rules - Update automation rule
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -182,10 +184,10 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/automation/rules - Delete automation rule
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -212,4 +214,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

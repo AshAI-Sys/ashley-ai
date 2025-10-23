@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { translationManager } from "@/lib/i18n/translation-manager";
 import { currencyManager } from "@/lib/i18n/currency-manager";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/i18n?action=languages|translations|currencies
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const action = searchParams.get("action") || "languages";
@@ -51,10 +52,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/i18n/convert - Convert currency
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { amount, from, to } = await req.json();
 
@@ -81,4 +82,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

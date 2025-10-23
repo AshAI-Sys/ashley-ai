@@ -149,7 +149,7 @@ export function FileUpload({
                 />
               ) : (
                 <div className="flex h-32 w-full items-center justify-center rounded-lg border border-gray-200 bg-gray-100">
-                  <File className="h-8 w-8 text-gray-400" />
+                  <File className="h-8 w-8 text-gray-500" />
                 </div>
               )}
               <button

@@ -10,6 +10,7 @@ import {
   handleApiError,
 } from "@/lib/error-handling";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
@@ -19,7 +20,7 @@ const prisma = db;
  *
  * Creates a Stripe Payment Intent for invoice payment
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { invoiceId, provider = "stripe" } = body;
@@ -154,4 +155,4 @@ export async function POST(request: NextRequest) {
     console.error("Error creating payment intent:", error);
     return handleApiError(error);
   }
-}
+};

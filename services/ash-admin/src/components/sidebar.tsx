@@ -248,7 +248,7 @@ export default function Sidebar() {
 
     // SIMPLE FIX: If user role contains "admin" (case-insensitive), show everything
     const userRole = (user.role || "").toLowerCase();
-    if (userRole === "admin" || userRole === "administrator") {
+    if (userRole === "admin" || userRole === "administrator" || userRole.includes("admin")) {
       return allNavigation;
     }
 
@@ -289,10 +289,10 @@ export default function Sidebar() {
       {/* Mobile Menu Button - Fixed top-left */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed left-4 top-4 z-50 rounded-md bg-corporate-blue p-2 text-white shadow-corporate transition-all hover:bg-blue-700 lg:hidden"
+        className="fixed left-4 top-4 z-50 rounded-lg bg-corporate-blue p-3 text-white shadow-corporate transition-all hover:bg-blue-700 lg:hidden"
         aria-label="Toggle menu"
       >
-        <HydrationSafeIcon Icon={mobileOpen ? X : Menu} className="h-6 w-6" />
+        <HydrationSafeIcon Icon={mobileOpen ? X : Menu} className="h-7 w-7" />
       </button>
 
       {/* Mobile Overlay */}
@@ -322,7 +322,7 @@ export default function Sidebar() {
             ) : (
               // Show full logo and text when expanded
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg">
                   <img
                     src="/ash-ai-logo.png"
                     alt="Ashley AI Logo"
@@ -330,10 +330,10 @@ export default function Sidebar() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-base font-bold leading-tight text-white">
+                  <h1 className="text-xl font-bold leading-tight text-white">
                     Ashley AI
                   </h1>
-                  <p className="text-xs leading-tight text-white/80">
+                  <p className="text-sm leading-tight text-white/90">
                     Apparel Smart Hub
                   </p>
                 </div>
@@ -372,9 +372,9 @@ export default function Sidebar() {
               >
                 <HydrationSafeIcon
                   Icon={Icon}
-                  className={`${collapsed ? "h-5 w-5" : "mr-3 h-5 w-5"} flex-shrink-0`}
+                  className={`${collapsed ? "h-6 w-6" : "mr-3 h-6 w-6"} flex-shrink-0`}
                 />
-                {!collapsed && <span className="text-sm">{item.name}</span>}
+                {!collapsed && <span className="text-base font-medium">{item.name}</span>}
               </Link>
             );
           })}
@@ -383,20 +383,20 @@ export default function Sidebar() {
         {/* Footer - Professional user info */}
         <div className="space-y-3 border-t border-white/10 p-5">
           {!collapsed && user && (
-            <div className="rounded-lg bg-white/10 p-3.5 text-xs text-white backdrop-blur-sm">
-              <p className="mb-1 text-sm font-semibold text-white">
+            <div className="rounded-lg bg-white/10 p-4 text-white backdrop-blur-sm">
+              <p className="mb-1 text-base font-semibold text-white">
                 {user.name}
               </p>
-              <p className="text-xs text-white/90">{user.position}</p>
-              <p className="mt-1.5 text-[10px] text-white/70">
+              <p className="text-sm text-white/90">{user.position}</p>
+              <p className="mt-1.5 text-xs text-white/70">
                 {user.department} • {user.role}
               </p>
             </div>
           )}
           {!collapsed && (
-            <div className="text-xs">
-              <p className="text-xs font-semibold text-white">Ashley AI v1.0</p>
-              <p className="text-xs text-white/70">Manufacturing ERP</p>
+            <div className="text-sm">
+              <p className="text-sm font-semibold text-white">Ashley AI v1.0</p>
+              <p className="text-sm text-white/70">Manufacturing ERP</p>
             </div>
           )}
         </div>

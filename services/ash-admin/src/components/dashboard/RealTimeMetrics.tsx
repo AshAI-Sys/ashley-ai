@@ -55,7 +55,7 @@ function MetricCard({
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="mb-1 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mb-1 text-sm text-gray-600 dark:text-gray-500">
               {title}
             </p>
             <p
@@ -214,7 +214,7 @@ export default function RealTimeMetrics() {
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                     {activity.action}
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                  <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">
                     {activity.time}
                   </p>
                 </div>

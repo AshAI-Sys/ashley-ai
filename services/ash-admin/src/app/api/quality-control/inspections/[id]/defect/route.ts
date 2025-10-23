@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export async function POST(
   request: NextRequest,
@@ -37,4 +38,4 @@ export async function POST(
       { status: 500 }
     );
   }
-}
+};

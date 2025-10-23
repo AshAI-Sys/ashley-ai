@@ -214,7 +214,7 @@ export default function MobileQCPage() {
           </div>
           <button
             onClick={() => router.push("/mobile/dashboard")}
-            className="text-sm text-gray-400 hover:text-white"
+            className="text-sm text-gray-500 hover:text-white"
           >
             Dashboard
           </button>
@@ -230,7 +230,7 @@ export default function MobileQCPage() {
               <h2 className="mb-2 text-lg font-semibold">
                 Start QC Inspection
               </h2>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-500">
                 Enter bundle code or scan QR code
               </p>
             </div>
@@ -278,7 +278,7 @@ export default function MobileQCPage() {
           {/* Instructions */}
           <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
             <h3 className="mb-2 font-medium">How to inspect:</h3>
-            <ol className="list-inside list-decimal space-y-1 text-sm text-gray-300">
+            <ol className="list-inside list-decimal space-y-1 text-sm text-gray-600">
               <li>Find and scan the bundle</li>
               <li>Inspect sample units one by one</li>
               <li>Mark each unit as Pass or Fail</li>
@@ -297,7 +297,7 @@ export default function MobileQCPage() {
             <div className="mb-2 flex items-start justify-between">
               <div>
                 <p className="font-medium">{bundle.bundle_number}</p>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-500">
                   Order: {bundle.order?.order_number || "N/A"}
                 </p>
               </div>
@@ -305,7 +305,7 @@ export default function MobileQCPage() {
                 {bundle.quantity} units
               </span>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-500">
               Sample Size: {inspectionData.sample_size} units
             </p>
           </div>
@@ -314,7 +314,7 @@ export default function MobileQCPage() {
           <div className="rounded-lg bg-gray-800 p-4">
             <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-medium">Inspection Progress</span>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-gray-500">
                 {inspectionData.inspected} / {inspectionData.sample_size}
               </span>
             </div>
@@ -389,7 +389,7 @@ export default function MobileQCPage() {
                       <p className="text-sm font-medium">
                         {defect.defect_name}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-500">
                         {defect.defect_code}
                       </p>
                     </div>
@@ -451,7 +451,7 @@ export default function MobileQCPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">{defectType.name}</p>
-                      <p className="text-sm text-gray-400">{defectType.code}</p>
+                      <p className="text-sm text-gray-500">{defectType.code}</p>
                       <p className="mt-1 text-xs text-gray-500">
                         {defectType.description}
                       </p>
@@ -494,13 +494,13 @@ export default function MobileQCPage() {
               {/* Results */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="rounded-lg bg-gray-700 p-4">
-                  <p className="text-sm text-gray-400">Inspected</p>
+                  <p className="text-sm text-gray-500">Inspected</p>
                   <p className="text-2xl font-bold">
                     {inspectionData.inspected}
                   </p>
                 </div>
                 <div className="rounded-lg bg-gray-700 p-4">
-                  <p className="text-sm text-gray-400">Sample Size</p>
+                  <p className="text-sm text-gray-500">Sample Size</p>
                   <p className="text-2xl font-bold">
                     {inspectionData.sample_size}
                   </p>

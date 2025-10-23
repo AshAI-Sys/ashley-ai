@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
 
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const { id, ...updateData } = data;
@@ -172,4 +173,4 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
   } catch (error) {
     console.error("Error creating finished units:", error);
   }
-}
+};

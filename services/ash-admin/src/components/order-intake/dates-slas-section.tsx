@@ -544,7 +544,7 @@ export function DatesSLAsSection({
                     <div className={`font-medium text-${colors[index]}-900`}>
                       {types[index]} Delivery
                     </div>
-                    <div className="mt-1 text-sm text-gray-300">
+                    <div className="mt-1 text-sm text-gray-600">
                       {format(date, "MMM dd, yyyy")}
                     </div>
                     <div className={`text-xs text-${colors[index]}-600 mt-1`}>

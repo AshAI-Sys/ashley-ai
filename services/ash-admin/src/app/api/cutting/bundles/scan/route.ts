@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const qrCode = searchParams.get("qrCode");
@@ -66,4 +67,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

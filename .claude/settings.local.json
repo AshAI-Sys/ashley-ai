@@ -163,7 +163,16 @@
       "Bash(git credential reject:*)",
       "Bash(cmdkey /list:*)",
       "Bash(git revert:*)",
-      "Bash(start https://github.com/AshAI-Sys/ashley-ai/pull/new/fix/auto-errors)"
+      "Bash(start https://github.com/AshAI-Sys/ashley-ai/pull/new/fix/auto-errors)",
+      "Bash(for file in cutting-api.test.ts finance-api.test.ts hr-api.test.ts printing-api.test.ts qc-delivery-api.test.ts)",
+      "Bash(do sed -i 's/authToken = data\\.token || data\\.accessToken/authToken = data.access_token/g' \"$file\")",
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\create-backup-security-perf.ps1\")",
+      "Bash(for file in \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\cutting\\lays\\route.ts\" \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\hr\\employees\\route.ts\" \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\delivery\\shipments\\route.ts\")",
+      "Bash(head:*)",
+      "Bash(for file in \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\finance\\bills\\route.ts\" \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\finance\\payments\\route.ts\" \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\finance\\stats\\route.ts\" \"C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin\\src\\app\\api\\finance\\suppliers\\route.ts\")",
+      "Bash(do if [ -f \"$file\" ])",
+      "Bash(for file in heatmap/route.ts profit/route.ts metrics/route.ts)",
+      "Bash(for file in alerts/route.ts execute/route.ts integrations/route.ts notifications/route.ts rules/route.ts stats/route.ts templates/route.ts)"
     ],
     "deny": [],
     "ask": []

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/bottleneck - Detect bottlenecks in production system
-export async function GET(req: NextRequest) {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     // Get production metrics for all active stations
     const [cutLays, sewingRuns, printRuns, qcInspections, finishingRuns] =
@@ -207,10 +208,10 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST /api/ai/bottleneck/station - Analyze specific station
-export async function POST(req: NextRequest) {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const metrics = await req.json();
 
@@ -255,4 +256,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

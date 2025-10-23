@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Finance statistics API endpoint
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const today = new Date();
     const yearStart = new Date(today.getFullYear(), 0, 1);
@@ -144,4 +145,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

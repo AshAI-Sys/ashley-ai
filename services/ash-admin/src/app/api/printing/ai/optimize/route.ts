@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -428,4 +429,4 @@ function calculateQualityPrediction(factors: any, requirements: any) {
     0.99,
     Math.round(baseQuality * requirementsFactor * 100) / 100
   );
-}
+};

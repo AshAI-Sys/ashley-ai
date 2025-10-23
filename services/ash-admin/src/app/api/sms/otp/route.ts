@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { smsService } from "@/lib/sms";
 import crypto from "crypto";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // In-memory OTP storage (use Redis in production)
 const otpStore = new Map<string, { code: string; expires: number }>();
 
 // POST /api/sms/otp - Send OTP code
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { phone } = body;
@@ -67,10 +68,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/sms/otp - Verify OTP code
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { phone, code } = body;
@@ -126,4 +127,4 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+};

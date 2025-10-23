@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import * as bcrypt from "bcryptjs";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     // PRODUCTION SECURITY: Disable seed endpoint in production
     if (process.env.NODE_ENV === "production") {
@@ -189,4 +190,4 @@ export async function GET(request: NextRequest) {
   } finally {
     await prisma.$disconnect();
   }
-}
+};

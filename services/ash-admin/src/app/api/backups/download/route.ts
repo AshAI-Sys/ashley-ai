@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backupService } from "@/lib/backup/service";
+import { requireRole } from "@/lib/auth-middleware";
 
-// GET /api/backups/download?id={backupId} - Download backup file
-export async function GET(request: NextRequest) {
+// GET /api/backups/download?id={backupId} - Download backup file (ADMIN ONLY)
+export const GET = requireRole("admin")(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");
@@ -38,4 +39,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

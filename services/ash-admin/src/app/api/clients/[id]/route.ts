@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
-import { getWorkspaceIdFromRequest } from "@/lib/workspace";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;
 
 // GET /api/clients/[id] - Get single client
-export async function GET(
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
+    const workspaceId = user.workspaceId;
     const client = await prisma.client.findFirst({
       where: {
-        id: params.id,
+        id: context.params.id,
         workspace_id: workspaceId,
       },
       include: {
@@ -67,13 +68,14 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
 // PUT /api/clients/[id] - Update client
-export async function PUT(
+export const PUT = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
     const body = await request.json();
 
@@ -84,7 +86,7 @@ export async function PUT(
         : body.address;
 
     const client = await prisma.client.update({
-      where: { id: params.id },
+      where: { id: context.params.id },
       data: {
         name: body.name,
         contact_person: body.contact_person,
@@ -118,16 +120,17 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE /api/clients/[id] - Delete client
-export async function DELETE(
+export const DELETE = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context: { params: { id: string } }
+) => {
   try {
     await prisma.client.delete({
-      where: { id: params.id },
+      where: { id: context.params.id },
     });
 
     return NextResponse.json({
@@ -141,4 +144,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

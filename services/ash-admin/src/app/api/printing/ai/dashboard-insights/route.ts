@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     // Get active runs with their outputs
     const activeRuns = await prisma.printRun.findMany({
@@ -406,4 +407,4 @@ function getPerformanceGrade(score: number) {
   if (score >= 0.75) return "C+";
   if (score >= 0.7) return "C";
   return "D";
-}
+};

@@ -1,8 +1,9 @@
+import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 // GET /api/automation/alerts - Get alerts
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/automation/alerts - Create alert
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest) {
   try {
     const body = await request.json();
     const {
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
 }
 
 // PUT /api/automation/alerts - Update alert (acknowledge/resolve)
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest) {
   try {
     const body = await request.json();
     const { id, action, user_id = "user_1", resolution_notes } = body;
@@ -216,7 +217,7 @@ export async function PUT(request: NextRequest) {
 }
 
 // DELETE /api/automation/alerts - Delete alert
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

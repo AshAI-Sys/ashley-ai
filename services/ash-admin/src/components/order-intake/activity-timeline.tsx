@@ -64,7 +64,7 @@ const EVENT_TYPE_CONFIG: Record<
   },
   COMMENT_ADDED: {
     icon: Info,
-    color: "text-gray-300",
+    color: "text-gray-600",
     bgColor: "bg-gray-100",
   },
   FILE_UPLOADED: {
@@ -74,7 +74,7 @@ const EVENT_TYPE_CONFIG: Record<
   },
   DEFAULT: {
     icon: Info,
-    color: "text-gray-300",
+    color: "text-gray-600",
     bgColor: "bg-gray-100",
   },
 };
@@ -178,7 +178,7 @@ export function ActivityTimeline({
                       </p>
                     )}
 
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-gray-700">
                       {activity.performed_by && (
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
@@ -195,7 +195,7 @@ export function ActivityTimeline({
                     {activity.metadata &&
                       Object.keys(activity.metadata).length > 0 && (
                         <div className="mt-3 border-t pt-3">
-                          <div className="space-y-1 text-xs text-gray-500">
+                          <div className="space-y-1 text-xs text-gray-700">
                             {Object.entries(activity.metadata).map(
                               ([key, value]) => (
                                 <div key={key} className="flex gap-2">

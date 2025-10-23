@@ -1,7 +1,4 @@
-@import '@fontsource/inter/400.css';
-@import '@fontsource/inter/500.css';
-@import '@fontsource/inter/600.css';
-@import '@fontsource/inter/700.css';
+/* Inter font is loaded via Next.js Google Fonts in layout.tsx */
 
 @tailwind base;
 @tailwind components;
@@ -10,20 +7,20 @@
 @layer base {
   :root {
     /* Modern Corporate Theme - Light Mode */
-    --background: 220 20% 97%; /* #F8FAFC */
-    --foreground: 222 47% 11%; /* #0F172A */
-    --card: 0 0% 100%; /* #FFFFFF */
-    --card-foreground: 222 47% 11%;
+    --background: 220 20% 97%; /* #F8FAFC - Light gray background */
+    --foreground: 222 47% 11%; /* #0F172A - Very dark text (11% lightness = almost black) */
+    --card: 0 0% 100%; /* #FFFFFF - White cards */
+    --card-foreground: 222 47% 11%; /* #0F172A - Very dark text on cards */
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     --primary: 217 91% 60%; /* #2563EB */
     --primary-foreground: 0 0% 100%;
     --secondary: 214 32% 95%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary-foreground: 222 47% 11%; /* Dark text */
     --accent: 199 89% 61%; /* #38BDF8 */
-    --accent-foreground: 222 47% 11%;
+    --accent-foreground: 222 47% 11%; /* Dark text */
     --muted: 214 32% 95%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 16% 35%; /* Darker muted text for better contrast */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;
@@ -33,25 +30,26 @@
   }
 
   .dark {
+    /* Modern Corporate Theme - Dark Mode */
     --background: 222 47% 11%; /* #0F172A */
-    --foreground: 210 40% 98%; /* #F8FAFC */
-    --card: 217 32% 17%; /* #1E293B */
-    --card-foreground: 210 40% 98%;
-    --popover: 217 32% 17%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%; /* #2563EB */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217 32% 23%;
-    --secondary-foreground: 210 40% 98%;
-    --accent: 199 89% 61%; /* #38BDF8 */
-    --accent-foreground: 0 0% 100%;
-    --muted: 217 32% 23%;
-    --muted-foreground: 215 20% 65%;
-    --destructive: 0 62% 50%;
+    --foreground: 220 20% 97%; /* #F8FAFC */
+    --card: 215 25% 15%; /* #1E293B */
+    --card-foreground: 220 20% 97%;
+    --popover: 215 25% 15%;
+    --popover-foreground: 220 20% 97%;
+    --primary: 214 95% 68%; /* #60A5FA - Lighter blue for dark mode */
+    --primary-foreground: 222 47% 11%;
+    --secondary: 215 25% 20%;
+    --secondary-foreground: 220 20% 97%;
+    --accent: 199 95% 74%; /* #7DD3FC - Lighter sky blue */
+    --accent-foreground: 222 47% 11%;
+    --muted: 215 25% 20%;
+    --muted-foreground: 215 16% 65%;
+    --destructive: 0 84% 65%;
     --destructive-foreground: 0 0% 100%;
-    --border: 217 32% 23%;
-    --input: 217 32% 23%;
-    --ring: 217 91% 60%;
+    --border: 215 25% 25%; /* #334155 */
+    --input: 215 25% 20%;
+    --ring: 214 95% 68%;
   }
 }
 
@@ -66,6 +64,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-feature-settings: 'cv05' 1, 'cv08' 1;
+    /* Force dark text color for better visibility */
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Ensure all text elements have proper color */
+  p, span, div, label, input, textarea, select, button, a {
+    color: inherit;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -73,12 +78,104 @@
     font-weight: 600;
     line-height: 1.3;
     letter-spacing: -0.02em;
+    /* Force foreground color */
+    color: hsl(var(--foreground)) !important;
   }
 
   h1 { font-size: 2rem; font-weight: 700; }
   h2 { font-size: 1.5rem; font-weight: 600; }
   h3 { font-size: 1.25rem; font-weight: 600; }
   h4 { font-size: 1.125rem; font-weight: 600; }
+
+  /* Fix for text in cards */
+  .card, [class*="card"] {
+    color: hsl(var(--card-foreground)) !important;
+  }
+
+  /* Fix for any text that might be invisible */
+  * {
+    -webkit-text-fill-color: initial;
+  }
+
+  /* ============================================
+     COMPREHENSIVE TEXT VISIBILITY FIXES
+     ============================================ */
+
+  /* Input Fields - Dark text */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  input[type="time"],
+  textarea,
+  select {
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--background)) !important;
+  }
+
+  /* Placeholder text - Visible but lighter */
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground)) !important;
+    opacity: 0.7 !important;
+  }
+
+  /* Labels - Dark and bold */
+  label {
+    color: hsl(var(--foreground)) !important;
+    font-weight: 500;
+  }
+
+  /* Select dropdowns */
+  select option {
+    color: hsl(var(--foreground)) !important;
+    background-color: hsl(var(--background)) !important;
+  }
+
+  /* Buttons - Ensure text is visible */
+  button {
+    color: inherit;
+  }
+
+  button[class*="primary"] {
+    color: hsl(var(--primary-foreground)) !important;
+  }
+
+  /* Links */
+  a {
+    color: hsl(var(--primary));
+  }
+
+  a:hover {
+    color: hsl(var(--primary) / 0.8);
+  }
+
+  /* Table text */
+  table, th, td {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Modal/Dialog text */
+  [role="dialog"],
+  [role="alertdialog"] {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Dropdown menu items */
+  [role="menu"],
+  [role="menuitem"] {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Badge/Tag text */
+  .badge,
+  [class*="badge"] {
+    color: inherit;
+  }
 }
 
 /* ============================================
@@ -88,25 +185,32 @@
 @layer utilities {
   /* Modern Cards */
   .modern-card {
-    @apply bg-card text-card-foreground;
-    border-radius: 1rem; /* rounded-2xl */
+    @apply bg-card text-card-foreground border border-border;
+    border-radius: 1.5rem; /* Modern rounded-2xl (24px) */
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
   }
 
   .modern-card:hover {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    transform: scale(1.02) translateY(-2px);
+    transform: scale(1.02) translateY(-4px);
+    border-color: hsl(var(--primary) / 0.2);
+  }
+
+  /* Dark mode card adjustments */
+  .dark .modern-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  }
+
+  .dark .modern-card:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+    border-color: hsl(var(--primary) / 0.4);
   }
 
   /* Sidebar */
   .modern-sidebar {
     background: #1E293B;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .dark .modern-sidebar {
-    background: #0F172A;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
 
@@ -123,16 +227,25 @@
   /* Buttons */
   .modern-button {
     @apply bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium;
-    transition: all 0.2s ease-in-out;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   }
 
   .modern-button:hover {
     @apply shadow-lg;
-    transform: translateY(-1px);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
 
   .modern-button:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+
+  /* Dark mode button adjustments */
+  .dark .modern-button:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2), 0 0 20px hsl(var(--primary) / 0.3);
   }
 
   /* Animations */
@@ -152,23 +265,40 @@
   }
 
   .glow {
-    transition: all 0.3s ease-in-out;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: box-shadow;
   }
 
   .glow:hover {
-    box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+
+  .dark .glow:hover {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.4);
   }
 
   /* Stats Cards */
   .stats-card {
-    @apply bg-card rounded-2xl p-6 border border-border;
+    @apply bg-card text-card-foreground rounded-2xl p-6 border border-border;
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-    transition: all 0.3s ease;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
   }
 
   .stats-card:hover {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     transform: translateY(-4px) scale(1.02);
+    border-color: hsl(var(--primary) / 0.15);
+  }
+
+  /* Dark mode stats card adjustments */
+  .dark .stats-card {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4);
+  }
+
+  .dark .stats-card:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 0 20px hsl(var(--primary) / 0.2);
+    border-color: hsl(var(--primary) / 0.3);
   }
 }
 
@@ -186,7 +316,8 @@
   input[type="date"],
   textarea,
   select {
-    @apply bg-card text-foreground border-border rounded-lg px-3 py-2;
+    @apply bg-card border-border rounded-lg px-3 py-2;
+    color: hsl(var(--foreground)) !important;
     transition: all 0.2s ease;
   }
 
@@ -194,35 +325,29 @@
   textarea:focus,
   select:focus {
     @apply outline-none ring-2 ring-primary border-primary;
+    color: hsl(var(--foreground)) !important;
   }
 
   input::placeholder,
   textarea::placeholder {
-    @apply text-muted-foreground;
+    color: hsl(var(--muted-foreground)) !important;
+    opacity: 0.7 !important;
+  }
+
+  /* Force dark text in all inputs */
+  input, textarea, select {
+    color: hsl(var(--foreground)) !important;
   }
 }
 
-/* ============================================
-   DARK MODE TOGGLE
-   ============================================ */
-
-.dark-mode-toggle {
-  @apply fixed bottom-6 right-6 z-50;
-  @apply bg-card border border-border rounded-full p-3;
-  @apply shadow-lg hover:shadow-xl;
-  @apply transition-all duration-300;
-  @apply cursor-pointer;
-}
-
-.dark-mode-toggle:hover {
-  transform: scale(1.1) rotate(10deg);
-}
+/* Dark mode toggle removed - using light theme only */
 
 /* ============================================
    RESPONSIVE UTILITIES
    ============================================ */
 
 @layer utilities {
+  /* Responsive Grid - 1 to 4 columns */
   .responsive-grid {
     @apply grid grid-cols-1 gap-6;
   }
@@ -242,6 +367,146 @@
   @media (min-width: 1280px) {
     .responsive-grid {
       @apply grid-cols-4;
+    }
+  }
+
+  /* Responsive 2-Column Grid (Mobile: 1, Desktop: 2) */
+  .responsive-2-col {
+    @apply grid grid-cols-1 gap-6;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-2-col {
+      @apply grid-cols-2;
+    }
+  }
+
+  /* Responsive 3-Column Grid (Mobile: 1, Tablet: 2, Desktop: 3) */
+  .responsive-3-col {
+    @apply grid grid-cols-1 gap-6;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-3-col {
+      @apply grid-cols-2;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-3-col {
+      @apply grid-cols-3;
+    }
+  }
+
+  /* Responsive Container with Max Width */
+  .responsive-container {
+    @apply mx-auto w-full px-4;
+    max-width: 1536px; /* 2xl breakpoint */
+  }
+
+  @media (min-width: 640px) {
+    .responsive-container {
+      @apply px-6;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-container {
+      @apply px-8;
+    }
+  }
+
+  /* Responsive Padding */
+  .responsive-padding {
+    @apply p-4;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-padding {
+      @apply p-6;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-padding {
+      @apply p-8;
+    }
+  }
+
+  /* Responsive Text Sizes */
+  .responsive-heading {
+    @apply text-2xl font-bold;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-heading {
+      @apply text-3xl;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-heading {
+      @apply text-4xl;
+    }
+  }
+
+  .responsive-subheading {
+    @apply text-lg font-semibold;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-subheading {
+      @apply text-xl;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-subheading {
+      @apply text-2xl;
+    }
+  }
+
+  /* Responsive Flex Layout */
+  .responsive-flex {
+    @apply flex flex-col gap-4;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-flex {
+      @apply flex-row items-center justify-between gap-6;
+    }
+  }
+
+  /* Hide on Mobile */
+  .hide-mobile {
+    @apply hidden;
+  }
+
+  @media (min-width: 768px) {
+    .hide-mobile {
+      @apply block;
+    }
+  }
+
+  /* Hide on Desktop */
+  .hide-desktop {
+    @apply block;
+  }
+
+  @media (min-width: 768px) {
+    .hide-desktop {
+      @apply hidden;
+    }
+  }
+
+  /* Responsive Stack (vertical on mobile, horizontal on desktop) */
+  .responsive-stack {
+    @apply flex flex-col gap-4;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-stack {
+      @apply flex-row gap-6;
     }
   }
 }
@@ -265,19 +530,6 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-foreground;
-}
-
-/* Dark mode scrollbar */
-.dark ::-webkit-scrollbar-track {
-  @apply bg-card;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  @apply bg-muted;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground;
 }
 
 /* ============================================
@@ -361,31 +613,84 @@ tr:hover {
   @apply rounded-lg;
 }
 
-.dark .recharts-cartesian-grid-horizontal line,
-.dark .recharts-cartesian-grid-vertical line {
-  stroke: rgba(255, 255, 255, 0.1);
-}
-
-.dark .recharts-text {
-  fill: rgba(255, 255, 255, 0.7);
-}
-
 /* ============================================
    MOBILE RESPONSIVE
    ============================================ */
 
 @media (max-width: 768px) {
+  /* Card adjustments for mobile */
   .modern-card {
-    border-radius: 0.75rem;
+    border-radius: 0.75rem; /* 12px instead of 24px on mobile */
+    padding: 1rem; /* Less padding on mobile */
   }
 
   .stats-card {
     @apply p-4;
+    border-radius: 1rem; /* 16px on mobile */
   }
 
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.25rem; }
-  h3 { font-size: 1.125rem; }
+  /* Typography adjustments for mobile */
+  h1 {
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.4;
+  }
+  h2 {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.4;
+  }
+  h3 {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.4;
+  }
+  h4 {
+    font-size: 1rem; /* 16px */
+  }
+
+  /* Button adjustments for mobile - easier touch targets */
+  .modern-button {
+    @apply px-4 py-3;
+    min-height: 44px; /* iOS recommended touch target */
+  }
+
+  /* Reduce spacing on mobile for better use of screen real estate */
+  .responsive-grid,
+  .responsive-2-col,
+  .responsive-3-col {
+    gap: 1rem; /* 16px instead of 24px */
+  }
+
+  /* Ensure forms are mobile-friendly */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="date"],
+  textarea,
+  select {
+    @apply px-4 py-3;
+    min-height: 44px; /* iOS recommended touch target */
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Tablet-specific adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .modern-card {
+    border-radius: 1.25rem; /* 20px on tablet */
+  }
+
+  .stats-card {
+    @apply p-5;
+  }
+
+  /* Slightly smaller gaps on tablets */
+  .responsive-grid,
+  .responsive-2-col,
+  .responsive-3-col {
+    gap: 1.25rem; /* 20px on tablet */
+  }
 }
 
 /* ============================================
@@ -410,4 +715,47 @@ a:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ===== CUSTOM SCROLLBAR STYLES ===== */
+/* For Webkit browsers (Chrome, Safari, Edge) */
+.scrollbar-visible::-webkit-scrollbar,
+[data-radix-select-viewport]::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+  display: block !important; /* Force scrollbar to always display */
+}
+
+.scrollbar-visible::-webkit-scrollbar-track,
+[data-radix-select-viewport]::-webkit-scrollbar-track {
+  background: #F1F5F9 !important; /* Light gray track */
+  border-radius: 4px;
+  display: block !important;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb,
+[data-radix-select-viewport]::-webkit-scrollbar-thumb {
+  background: #CBD5E1 !important; /* Gray thumb - always visible */
+  border-radius: 4px;
+  border: 2px solid #F1F5F9;
+  min-height: 40px !important; /* Minimum thumb height */
+  display: block !important;
+}
+
+.scrollbar-visible::-webkit-scrollbar-thumb:hover,
+[data-radix-select-viewport]::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8 !important; /* Darker on hover */
+}
+
+/* Scrollbar corner */
+.scrollbar-visible::-webkit-scrollbar-corner,
+[data-radix-select-viewport]::-webkit-scrollbar-corner {
+  background: #F1F5F9;
+}
+
+/* For Firefox */
+.scrollbar-visible,
+[data-radix-select-viewport] {
+  scrollbar-width: thin !important;
+  scrollbar-color: #CBD5E1 #F1F5F9 !important;
 }

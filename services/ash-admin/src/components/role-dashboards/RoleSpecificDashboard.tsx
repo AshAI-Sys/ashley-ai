@@ -4,8 +4,9 @@ import { useAuth } from "../../lib/auth-context";
 import { Suspense, lazy } from "react";
 import { DashboardStatsSkeleton } from "@/components/ui/loading-skeletons";
 
-// Lazy load dashboard components for better performance
-const AdminDashboard = lazy(() => import("./AdminDashboard"));
+// TEMPORARY: Direct import instead of lazy loading for debugging
+import AdminDashboard from "./AdminDashboard";
+// const AdminDashboard = lazy(() => import("./AdminDashboard"));
 const ManagerDashboard = lazy(() => import("./ManagerDashboard"));
 const DesignerDashboard = lazy(() => import("./DesignerDashboard"));
 const CuttingOperatorDashboard = lazy(
@@ -28,17 +29,15 @@ const DeliveryCoordinatorDashboard = lazy(
 const DashboardLoader = () => <DashboardStatsSkeleton />;
 
 export default function RoleSpecificDashboard() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  if (!user) {
+  // Show loading state while checking auth
+  if (isLoading) {
     return (
-      <div
-        className="flex min-h-screen items-center justify-center"
-        style={{ backgroundColor: "#F8FAFC" }}
-      >
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-corporate-blue" />
-          <p className="text-base font-medium text-gray-700">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
+          <p className="text-base font-medium text-muted-foreground">
             Loading dashboard...
           </p>
         </div>
@@ -46,8 +45,17 @@ export default function RoleSpecificDashboard() {
     );
   }
 
+  // If not loading and no user, redirect to login
+  if (!user) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+    return null;
+  }
+
   // Map roles to their specific dashboards
   const roleDashboardMap: Record<string, JSX.Element> = {
+    SUPER_ADMIN: <AdminDashboard />,
     ADMIN: <AdminDashboard />,
     admin: <AdminDashboard />,
     MANAGER: <ManagerDashboard />,
@@ -69,29 +77,23 @@ export default function RoleSpecificDashboard() {
   const DashboardComponent = roleDashboardMap[user.role] || <AdminDashboard />;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F8FAFC" }}>
+    <div className="min-h-screen bg-background">
       {/* Professional Header */}
-      <header className="border-b border-gray-200 bg-white px-6 py-5 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <header className="border-b border-border bg-card px-6 py-5 shadow-sm">
+        <div className="responsive-flex">
           <div className="min-w-0 flex-1">
-            <h1
-              className="truncate text-2xl font-bold text-gray-900 sm:text-3xl"
-              style={{ letterSpacing: "-0.02em" }}
-            >
+            <h1 className="responsive-heading truncate text-foreground">
               {user.position || "Dashboard"}
             </h1>
-            <p className="mt-1 truncate text-sm font-medium text-gray-600 sm:text-base">
+            <p className="mt-1 truncate text-sm font-medium text-muted-foreground sm:text-base">
               Welcome back, {user.name || user.email}
               {user.department && (
-                <span className="hidden sm:inline"> • {user.department}</span>
+                <span className="hide-mobile"> • {user.department}</span>
               )}
             </p>
           </div>
           <div className="flex flex-shrink-0 items-center gap-3 sm:gap-4">
-            <span
-              className="inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold shadow-sm"
-              style={{ backgroundColor: "#EFF6FF", color: "#2563EB" }}
-            >
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary shadow-sm">
               {user.role || "user"}
             </span>
           </div>
@@ -99,7 +101,7 @@ export default function RoleSpecificDashboard() {
       </header>
 
       {/* Role-specific content with Suspense for lazy loading */}
-      <main className="mx-auto max-w-7xl px-6 py-6">
+      <main className="responsive-container responsive-padding">
         <Suspense fallback={<DashboardLoader />}>{DashboardComponent}</Suspense>
       </main>
     </div>

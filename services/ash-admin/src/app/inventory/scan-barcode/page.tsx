@@ -41,7 +41,7 @@ export default function ScanBarcodePage() {
         <div className="rounded-lg bg-white p-8 shadow">
           <div className="mb-8 text-center">
             <div className="mx-auto mb-4 flex h-64 w-64 items-center justify-center rounded-lg bg-gray-100">
-              <QrCode className="h-32 w-32 text-gray-400" />
+              <QrCode className="h-32 w-32 text-gray-500" />
             </div>
             <button
               onClick={handleScan}

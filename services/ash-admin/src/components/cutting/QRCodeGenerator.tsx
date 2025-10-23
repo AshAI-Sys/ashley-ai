@@ -117,7 +117,7 @@ export default function QRCodeGenerator({
         {/* QR Code Display - In production, render actual QR code */}
         <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-4 text-center">
           <div className="mx-auto flex h-32 w-32 items-center justify-center rounded border bg-gray-100">
-            <QrCode className="h-16 w-16 text-gray-400" />
+            <QrCode className="h-16 w-16 text-gray-500" />
           </div>
           <div className="mt-2 break-all font-mono text-xs text-muted-foreground">
             {qrCode}

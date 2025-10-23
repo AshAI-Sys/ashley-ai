@@ -528,7 +528,7 @@ export default function ShipmentTrackingPage({
                         )}
 
                         {event.gps_coordinates && (
-                          <div className="mt-1 text-xs text-gray-400">
+                          <div className="mt-1 text-xs text-gray-500">
                             GPS: {event.gps_coordinates.lat.toFixed(6)},{" "}
                             {event.gps_coordinates.lng.toFixed(6)}
                           </div>
@@ -543,7 +543,7 @@ export default function ShipmentTrackingPage({
 
                   {shipment.status !== "DELIVERED" &&
                     shipment.status !== "FAILED" && (
-                      <div className="flex items-center space-x-4 text-gray-400">
+                      <div className="flex items-center space-x-4 text-gray-500">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-gray-300">
                           <Clock className="h-4 w-4" />
                         </div>

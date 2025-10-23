@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
+import { requireAuth } from "@/lib/auth-middleware";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 
@@ -162,7 +163,7 @@ async function getBusinessContext(
 }
 
 // POST /api/ai-chat/chat - Send a message and get AI response
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -387,10 +388,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // GET /api/ai-chat/chat - Check AI configuration status
-export async function GET() {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   return NextResponse.json({
     configured: !!(groq || anthropic || openai),
     providers: {
@@ -406,4 +407,4 @@ export async function GET() {
           ? "openai"
           : null,
   });
-}
+});
