@@ -15,10 +15,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (severity && severity !== "all") {
       where.severity = severity;
 
+    }
     const defectCodes = await prisma.qCDefectCode.findMany({
       where,
       orderBy: { code: "asc" },
-        });
+        
       
         return NextResponse.json(defectCodes);
   } catch (error) {
@@ -42,7 +43,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         severity: data.severity,
         description: data.description,
       },
-        });
+        
       
         return NextResponse.json(defectCode, { status: 201 });
   } catch (error) {
@@ -51,4 +52,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to create defect code" },
       { status: 500 }
     );
-  });
+  }
+  }

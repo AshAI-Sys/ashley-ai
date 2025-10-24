@@ -21,6 +21,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
+      }
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -36,12 +37,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const validPeriods = ["DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"];
     const periodError = validateEnum(period, validPeriods, "period");
     if (periodError) {
+      }
       return createValidationErrorResponse([periodError]);
     }
 
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 200);
     if (limitError) {
+      }
       return createValidationErrorResponse([limitError]);
     }
     const limit = parseInt(limitParam);
@@ -62,7 +65,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       orderBy: { forecast_date: "asc" },
       take: limit,
-        });
+        
       
         return NextResponse.json({ forecasts });
   } catch (error) {
@@ -101,6 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) errors.push(workspaceError);
 
     if (errors.length > 0) {
+      }
       return createValidationErrorResponse(errors);
     }
 
@@ -129,7 +133,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       trendFactor,
       externalFactors,
       modelVersion: modelVersion || "v1.0",
-        });
+        
       
         return NextResponse.json({ forecast });
   } catch (error) {

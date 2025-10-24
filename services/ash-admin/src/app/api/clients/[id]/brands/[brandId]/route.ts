@@ -53,12 +53,12 @@ export async function GET(
       });
 
     if (!brand) {
+      }
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
-
     return NextResponse.json({
       success: true,
       data: brand,
@@ -87,13 +87,16 @@ export async function PUT(
       });
 
     if (!existingBrand) {
+      }
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
+    });
 
     if (existingBrand.client_id !== clientId) {
+      }
       return NextResponse.json(
         { success: false, error: "Brand does not belong to this client" },
         { status: 403 }
@@ -102,6 +105,7 @@ export async function PUT(
 
     // Check name uniqueness if name is being updated
     if (validatedData.name && validatedData.name !== existingBrand.name) {
+      }
       const nameExists = await prisma.brand.findFirst({
         where: {
           name: validatedData.name,
@@ -111,6 +115,7 @@ export async function PUT(
       });
 
       if (nameExists) {
+        }
         return NextResponse.json(
           {
             success: false,
@@ -119,8 +124,6 @@ export async function PUT(
           { status: 400 }
         );
       }
-    }
-
     const brand = await prisma.brand.update({
       where: { id: brandId },
       data: {
@@ -144,7 +147,7 @@ export async function PUT(
           },
         },
       },
-    });
+    
 
     return NextResponse.json({
       success: true,
@@ -153,6 +156,7 @@ export async function PUT(
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -187,13 +191,16 @@ export async function DELETE(
       });
 
     if (!existingBrand) {
+      }
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
       );
     }
+    });
 
     if (existingBrand.client_id !== clientId) {
+      }
       return NextResponse.json(
         { success: false, error: "Brand does not belong to this client" },
         { status: 403 }
@@ -206,7 +213,7 @@ export async function DELETE(
       data: {
         deleted_at: new Date(),
       },
-    });
+    
 
     return NextResponse.json({
       success: true,

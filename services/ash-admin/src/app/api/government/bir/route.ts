@@ -13,12 +13,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { report_type, period, workspace_id, data } = body;
 
     if (!report_type || !period || !workspace_id) {
+      }
       return NextResponse.json(
         { error: "report_type, period, and workspace_id are required" },
         { status: 400 }
       );
     }
-
     let report: any = null;
 
     switch (report_type.toUpperCase()) {
@@ -36,9 +36,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           include: {
             client: true,
           },
-      });
+        });
 
-        const salesEntries = invoices.map(inv => {;
+        const salesEntries = invoices.map(inv => {
           const vat = birService.calculateVAT(inv.total_amount);
           return {
             date: inv.issue_date.toISOString().split("T")[0],
@@ -50,7 +50,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             vat_amount: vat.vat,
             total_amount: inv.total_amount,
           };
-        }
+        });
 
         report = await birService.generateSalesBook(salesEntries, period);
         break;
@@ -68,7 +68,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
       });
 
-        const purchaseEntries = expenses.map(exp => {;
+        const purchaseEntries = expenses.map(exp => {
           const vat = birService.calculateVAT(exp.amount);
           return {
             date: exp.expense_date.toISOString().split("T")[0],
@@ -87,6 +87,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "FORM_2307":
         if (!data || !data.payor || !data.payee || !data.withholding_entries) {
+          }
           return NextResponse.json(
             {
               error:
@@ -105,6 +106,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         }
         break;
 
+      }
+        break;
+
       default:
         return NextResponse.json(
           {
@@ -114,7 +118,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           { status: 400 }
         );
     }
-
     return NextResponse.json({
       success: true,
       report_type,
@@ -137,12 +140,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const atc_code = searchParams.get("atc_code");
 
     if (!operation || !amount) {
+      }
       return NextResponse.json(
         { error: "operation and amount are required" },
         { status: 400 }
       );
     }
-
     const numAmount = parseFloat(amount);
     let result: any = null;
 
@@ -157,6 +160,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
       case "withholding":
         if (!atc_code) {
+          }
           return NextResponse.json(
             { error: "atc_code is required for withholding calculation" },
             { status: 400 }
@@ -169,6 +173,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       case "validate_tin":
         const tin = searchParams.get("tin");
         if (!tin) {
+          }
           return NextResponse.json(
             { error: "tin is required for validation" },
             { status: 400 }
@@ -181,6 +186,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         };
         break;
 
+      }
+        break;
+
       default:
         return NextResponse.json(
           {
@@ -190,7 +198,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
     }
-
     return NextResponse.json({ success: true, operation, result });
   } catch (error: any) {
     console.error("Error in BIR calculation:", error);
@@ -198,4 +205,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to perform BIR calculation", details: error.message },
       { status: 500 }
     );
+  }
   });

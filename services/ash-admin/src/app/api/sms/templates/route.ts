@@ -29,15 +29,18 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const { template_id, variables } = body;
 
     if (!template_id) {
+      }
       return NextResponse.json(
         { error: "template_id is required" },
         { status: 400 }
       );
     }
+    }
 
     const template = SMS_TEMPLATES[template_id as keyof typeof SMS_TEMPLATES];
 
     if (!template) {
+      }
       return NextResponse.json(
         { error: "Template not found" },
         { status: 404 }
@@ -53,8 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           variables[key]
         );
       }
-
-    return NextResponse.json({
+      return NextResponse.json({
       success: true,
       template: {
         id: template_id,
@@ -69,4 +71,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to preview template", details: error.message },
       { status: 500 }
     );
+  }
   });

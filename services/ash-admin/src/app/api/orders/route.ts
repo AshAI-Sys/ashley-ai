@@ -71,11 +71,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (search) {
       where.OR = [{ order_number: { contains: search, mode: "insensitive" } }];
-    }
+    });
 
     if (status) {
       where.status = status;
-    }
+    });
 
     if (clientId) {
       where.client_id = clientId;
@@ -200,7 +200,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     } catch (cacheError) {
       console.warn("Failed to invalidate cache:", cacheError);
       // Don't fail the request if cache invalidation fails
-    }
+    
 
     return NextResponse.json(
       {
@@ -210,8 +210,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -227,4 +229,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create order" },
       { status: 500 }
     );
+  }
   });

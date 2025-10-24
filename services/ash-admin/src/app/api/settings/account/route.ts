@@ -22,6 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     });
 
     if (!user) {
+      }
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -49,6 +50,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     // Check if email is being changed
     let emailVerificationRequired = false;
     if (email) {
+      }
       const currentUser = await prisma.user.findUnique({
         where: { id: authUser.id },
         select: { email: true },
@@ -56,6 +58,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
       if (currentUser && currentUser.email !== email) {
         // Check if email is already taken with workspace
+        }
         const existingUser = await prisma.user.findFirst({
           where: {
             email,
@@ -64,6 +67,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         });
 
         if (existingUser && existingUser.id !== authUser.id) {
+          }
           return NextResponse.json(
             { error: "Email already in use" },
             { status: 400 }
@@ -72,31 +76,30 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
         emailVerificationRequired = true;
       }
-    }
-
     const updateData: any = {
       updated_at: new Date(),
     };
 
     // Split name into first and last if provided
     if (name) {
+      }
       const nameParts = name.split(' ');
       updateData.first_name = nameParts[0] || '';
       updateData.last_name = nameParts.slice(1).join(' ') || '';
-    }
+    });
 
     if (email) {
       updateData.email = email;
-    }
+    });
 
     if (phone !== undefined) {
       updateData.phone_number = phone;
-    }
+    });
 
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: updateData,
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -109,4 +112,5 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to update account" },
       { status: 500 }
     );
-  });
+  }
+  }

@@ -121,6 +121,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!order) {
+      }
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 }
@@ -133,12 +134,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!cutLay) {
+      }
       return NextResponse.json(
         { success: false, error: "Cut lay not found" },
         { status: 404 }
       );
     }
-
     const createdBundles = [];
 
     // Create bundles in a transaction
@@ -204,8 +205,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           createdBundles.push(bundle);
         }
       }
-    });
-
     return NextResponse.json(
       {
         success: true,
@@ -214,8 +213,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -246,12 +247,12 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Bundle ID is required" },
         { status: 400 }
       );
     }
-
     const body = await request.json();
     const validatedData = UpdateBundleSchema.parse(body);
 
@@ -261,12 +262,12 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!existingBundle) {
+      }
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }
       );
     }
-
     const bundle = await prisma.bundle.update({
       where: { id },
       data: {
@@ -299,7 +300,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-    });
+    
 
     return NextResponse.json({
       success: true,
@@ -308,6 +309,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }

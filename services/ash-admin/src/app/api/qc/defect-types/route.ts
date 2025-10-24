@@ -23,6 +23,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     // If no defect types exist, return default ones
     if (defectTypes.length === 0) {
+      }
       const defaultDefectTypes = [
         {
           id: "def-1",
@@ -109,7 +110,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       return NextResponse.json({
         success: true,
         defectTypes: defaultDefectTypes,
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -121,4 +122,5 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
   });

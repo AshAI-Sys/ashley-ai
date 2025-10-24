@@ -17,13 +17,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where.material_type = type;
 
     // Search by name if provided
+    }
     if (search) {
       where.OR = [
         { material_name: { contains: search, mode: "insensitive" } },
         { supplier: { contains: search, mode: "insensitive" } },
-      ];
-
-    const materials = await prisma.materialInventory.findMany({
+      ];const}const$3 materials = await prisma.materialInventory.findMany({
       where,
       orderBy: [{ material_type: "asc" }, { material_name: "asc" });],
       });
@@ -54,7 +53,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch materials" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -82,7 +82,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
         if (!materialRecord) {
           throw new Error(`Material ${material_id} not found`);
-    }
+    });
 
         if (materialRecord.available_stock < quantity) {
           throw new Error(
@@ -129,7 +129,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         }
 
         consumptionRecords.push(consumptionRecord);
-    }
+    });
 
       return consumptionRecords;
 
@@ -172,4 +172,5 @@ export async function OPTIONS(request: NextRequest) {
       { success: false, error: "Failed to fetch material types" },
       { status: 500 }
     );
-  });
+  }
+  }

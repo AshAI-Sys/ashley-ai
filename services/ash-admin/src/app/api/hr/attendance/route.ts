@@ -20,6 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       else if (status === "PENDING") where.status = "PENDING";
 
     // Date filtering
+    }
     if (date_from || date_to) {
       where.date = {};
       if (date_from) where.date.gte = new Date(date_from);
@@ -73,7 +74,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch attendance logs" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -95,19 +97,21 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!employee) {
+      }
       return NextResponse.json(
         { success: false, error: "Employee not found" },
         { status: 404 }
       );
     }
+    });
 
     if (!employee.is_active) {
+      }
       return NextResponse.json(
         { success: false, error: "Employee is not active" },
         { status: 400 }
       );
     }
-
     const today = new Date();
     const dateOnly = new Date(
       today.getFullYear(),
@@ -128,6 +132,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     let attendanceLog;
     if (existingAttendance) {
       // Update existing record based on type
+      }
       const updateData: any = {};
       if (type === "IN" && !existingAttendance.time_in) {
         updateData.time_in = timestamp ? new Date(timestamp) : new Date();
@@ -138,7 +143,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         !existingAttendance.time_out
       ) {
         updateData.time_out = timestamp ? new Date(timestamp) : new Date();
-    }
+    });
 
       if (Object.keys(updateData).length > 0) {
         attendanceLog = await prisma.attendanceLog.update({
@@ -192,7 +197,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             },
           },
             });
-          }
+          
         
         return NextResponse.json(
       {
@@ -215,13 +220,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     console.error("Error creating attendance log:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create attendance log" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -244,7 +251,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -256,4 +263,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update attendance log" },
       { status: 500 }
     );
-  });
+  }
+  }

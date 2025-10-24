@@ -25,6 +25,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Bills feature not yet implemented" },
       { status: 501 }
     );
+  
   } catch (error) {
     console.error("Error creating bill:", error);
     return NextResponse.json(
@@ -40,6 +41,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Bills feature not yet implemented" },
       { status: 501 }
     );
+  
   } catch (error) {
     console.error("Error updating bill:", error);
     return NextResponse.json(

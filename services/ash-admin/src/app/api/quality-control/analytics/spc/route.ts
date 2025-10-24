@@ -23,6 +23,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         startDate.setDate(endDate.getDate() - 90); // Get 90 days
         break;
+      }
+        break;
       default:
         startDate.setDate(endDate.getDate() - 30);
     }
@@ -49,7 +51,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     }>;
 
     // Process data based on selected metric
-    const spcData = dailyData.map(day => {;
+    const spcData = dailyData.map(day => {
       let value: number;
 
       switch (metric) {
@@ -65,6 +67,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         case "cycle_time":
           value = Math.random() * 2 + 6; // Mock cycle time data
           break;
+        }
+          break;
         default:
           value = day.avg_defects;
 
@@ -78,6 +82,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const values = spcData.map(d => d.value).filter(v => !isNaN(v));
 
     if (values.length === 0) {
+      }
       return NextResponse.json([]);
     }
 
@@ -111,4 +116,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to generate SPC data" },
       { status: 500 }
     );
-  });
+  }
+  }

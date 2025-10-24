@@ -31,7 +31,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   if (overdue_only === "true") {
     where.due_date = { lt: new Date() };
     where.status = { in: ["sent", "pending"] };
-  }
+  });
 
   const invoices = await prisma.invoice.findMany({
     where,
@@ -161,11 +161,10 @@ export const POST = requireAnyPermission(["finance:create"])(
           `lines[${i}]`
         );
     }
-
-      const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
+    const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
       if (qtyError) {
         throw qtyError;
-  }
+  });
 
   const priceError = validateNumber(
         line.unit_price,
@@ -179,6 +178,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     // Validate due date if provided
     if (due_date) {
       const dateError = validateDate(due_date, "due_date");
+      }
       if (dateError) {
         throw dateError;
       }
@@ -191,6 +191,7 @@ export const POST = requireAnyPermission(["finance:create"])(
 
     // Verify order exists if provided
     if (order_id) {
+      }
       const order = await prisma.order.findUnique({ where: { id: order_id }});
       if (!order) {
         throw new NotFoundError("Order");
@@ -206,11 +207,12 @@ export const POST = requireAnyPermission(["finance:create"])(
           lt: new Date(year + 1, 0, 1),
         },
       },
+    });
     const invoiceNo = `INV-${year}-${String(invoiceCount + 1).padStart(5, "0")}`;
 
     // Calculate totals
     let subtotal = 0;
-    const processedLines = lines.map((line: any) => {;
+    const processedLines = lines.map((line: any) => {
       const lineTotal = line.qty * line.unit_price;
       subtotal += lineTotal;
       return {
@@ -232,6 +234,7 @@ export const POST = requireAnyPermission(["finance:create"])(
       total = netAmount + vatAmount;
 
     // Create invoice with transaction
+    }
     const invoice = await prisma.invoice.create({
       data: {
         workspace_id: "default",

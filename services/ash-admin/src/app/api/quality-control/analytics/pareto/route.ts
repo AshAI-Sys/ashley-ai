@@ -22,6 +22,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         startDate.setMonth(endDate.getMonth() - 3);
         break;
+      }
+        break;
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
@@ -50,6 +52,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     }>;
 
     if (defectData.length === 0) {
+      }
       return NextResponse.json([]);
     }
 
@@ -83,4 +86,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to generate Pareto data" },
       { status: 500 }
     );
-  });
+  }
+  }

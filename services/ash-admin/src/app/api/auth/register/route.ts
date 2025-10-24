@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     const validation = RegisterSchema.safeParse(body);
 
     if (!validation.success) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -49,7 +50,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     const {
       workspaceName,
       workspaceSlug,
@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
 
     if (!passwordValidation.valid) {
       console.log("Password validation failed:", passwordValidation.errors);
+      }
       return NextResponse.json(
         {
           success: false,
@@ -85,6 +86,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (existingWorkspace) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -105,7 +107,7 @@ export async function POST(request: NextRequest) {
       await logAuthEvent("REGISTER_FAILED", "system", undefined, request, {
         email,
         reason: "Email already exists",
-        });
+        
       
         return NextResponse.json(
         {
@@ -175,7 +177,7 @@ export async function POST(request: NextRequest) {
       workspaceName: workspace.name,
       userId: user.id,
       email: user.email,
-      });
+      
     
       return NextResponse.json(
       {
@@ -196,6 +198,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
+  
   } catch (error: any) {
     console.error("Registration error:", error);
     return NextResponse.json(

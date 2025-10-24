@@ -32,6 +32,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
       });
 
   if (!employee) {
+    }
     return NextResponse.json(
       { error: "Invalid email or password" },
       { status: 401 }
@@ -40,6 +41,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
   // Check if employee is active
   if (!employee.is_active) {
+    }
     return NextResponse.json(
       { error: "Your account has been deactivated. Please contact HR." },
       { status: 403 }
@@ -52,6 +54,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
     employee.password_hash
   );
   if (!isPasswordValid) {
+    }
     return NextResponse.json(
       { error: "Invalid email or password" },
       { status: 401 }

@@ -128,6 +128,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Validate required fields
     if (!order_id || !method || !target_qty) {
+      }
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -174,7 +175,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         machine: true,
         outputs: true,
       },
-        });
+        
       
         return NextResponse.json({
       success: true,

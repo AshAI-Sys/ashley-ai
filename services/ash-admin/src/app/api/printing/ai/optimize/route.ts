@@ -17,6 +17,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!print_method || !order_id || !quantity) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -91,7 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         result: "SUCCESS",
         created_by: "system",
       },
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -185,8 +186,10 @@ function calculateQuantityEfficiency(quantity: number, method: string) {
   const range = optimalRanges[method] || optimalRanges.SUBLIMATION;
 
   if (quantity >= range.min && quantity <= range.optimal) {
+    }
     return 0.95 + (quantity / range.optimal) * 0.05;
   } else if (quantity <= range.max) {
+    }
     return (
       0.85 +
       (1 - (quantity - range.optimal) / (range.max - range.optimal)) * 0.1
@@ -304,7 +307,7 @@ function generateRecommendations(
       message: "Consider adjusting quantity for optimal batch size",
       impact: "cost_reduction",
     });
-  }
+  });
 
   if (baseFactors.machine_efficiency < 0.8) {
     recommendations.push({
@@ -359,7 +362,7 @@ function generateRecommendations(
         });
       }
       break;
-  }
+  });
 
   return recommendations;
 }

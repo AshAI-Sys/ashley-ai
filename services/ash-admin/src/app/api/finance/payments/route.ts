@@ -20,7 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where.payment_date = {};
       if (date_from) where.payment_date.gte = new Date(date_from);
       if (date_to) where.payment_date.lte = new Date(date_to);
-    }
+    });
 
     const payments = await prisma.payment.findMany({
       where,
@@ -34,7 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         },
       },
       orderBy: { payment_date: "desc" },
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -56,6 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       data;
 
     if (!invoice_id) {
+      }
       return NextResponse.json(
         { success: false, error: "Invoice ID is required" },
         { status: 400 }
@@ -74,6 +75,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!invoice) {
+      }
       return NextResponse.json(
         { success: false, error: "Invoice not found" },
         { status: 404 }
@@ -143,7 +145,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-      });
+      
     
       return NextResponse.json(
       {
@@ -152,6 +154,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     console.error("Error processing payment:", error);
     return NextResponse.json(

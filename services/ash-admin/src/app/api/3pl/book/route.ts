@@ -13,6 +13,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { provider, shipment, shipment_id, reference_number } = body;
 
     if (!provider || !shipment) {
+      }
       return NextResponse.json(
         { error: "provider and shipment details are required" },
         { status: 400 }
@@ -27,6 +28,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!booking.success) {
+      }
       return NextResponse.json(
         { error: booking.error || "Booking failed" },
         { status: 400 }
@@ -66,8 +68,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         });
       }
-    }
-
     return NextResponse.json(booking, { status: 201 });
   } catch (error: any) {
     console.error("Error booking 3PL shipment:", error);
@@ -78,4 +78,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 500 }
     );
+  }
   });

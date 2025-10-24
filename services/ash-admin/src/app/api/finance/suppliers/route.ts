@@ -60,10 +60,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 501 }
     );
+  
   } catch (error) {
     console.error("Error creating supplier:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create supplier" },
       { status: 500 }
     );
-  });
+  }
+});

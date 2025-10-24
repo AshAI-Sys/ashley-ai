@@ -56,7 +56,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { email: { contains: search, mode: "insensitive" } },
         { contact_person: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     if (is_active !== null && is_active !== undefined) {
       where.is_active = is_active === "true";
@@ -187,7 +187,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json(
       {
@@ -197,8 +197,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,

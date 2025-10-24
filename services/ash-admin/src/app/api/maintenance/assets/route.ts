@@ -21,9 +21,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         { name: { contains: search, mode: "insensitive" } },
         { asset_number: { contains: search, mode: "insensitive" } },
         { location: { contains: search, mode: "insensitive" } },
-      ];
-
-    const assets = await prisma.asset.findMany({
+      ];const}const$3 assets = await prisma.asset.findMany({
       where,
       include: {
         work_orders: {
@@ -47,7 +45,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: [{ name: "asc" }],
       });
 
-    const processedAssets = assets.map(asset => {;
+    const processedAssets = assets.map(asset => {
       const activeWorkOrders = asset.work_orders;
       const overdueSchedules = asset.maintenance_schedules.filter(
         schedule => new Date(schedule.next_due_date) < new Date()
@@ -92,7 +90,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch assets" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -109,6 +108,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!name || !asset_number || !type) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -117,7 +117,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-
     const asset = await prisma.asset.create({
       data: {
         workspace_id: "default",
@@ -131,7 +130,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         metadata: metadata ? JSON.stringify(metadata) : null,
         status: "active",
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -140,16 +139,17 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     console.error("Error creating asset:", error);
 
     if (error.code === "P2002") {
+      }
       return NextResponse.json(
         { success: false, error: "Asset number already exists" },
         { status: 409 }
       );
     }
-
     return NextResponse.json(
       { success: false, error: "Failed to create asset" },
       { status: 500 }
     );
+    }
     });
   
   export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -158,12 +158,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Asset ID is required" },
         { status: 400 }
       );
     }
-
     const data: any = {};
     if (updateData.name) data.name = updateData.name;
     if (updateData.type) data.type = updateData.type;
@@ -180,7 +180,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const asset = await prisma.asset.update({
       where: { id },
       data,
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -191,4 +191,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update asset" },
       { status: 500 }
     );
-  });
+  }
+  }

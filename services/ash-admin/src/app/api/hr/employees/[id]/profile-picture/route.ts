@@ -20,6 +20,7 @@ export async function POST(
       const file = formData.get("file") as File;
 
       if (!file) {
+        }
         return NextResponse.json(
           { error: "No file provided" },
           { status: 400 }
@@ -43,6 +44,7 @@ export async function POST(
       // Validate file size (max 5MB)
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
+        }
         return NextResponse.json(
           { error: "File size too large. Maximum 5MB allowed" },
           { status: 400 }
@@ -58,6 +60,7 @@ export async function POST(
       });
 
       if (!employee) {
+        }
         return NextResponse.json(
           { error: "Employee not found" },
           { status: 404 }
@@ -89,6 +92,7 @@ export async function POST(
             "public",
             employee.profile_picture
           );
+          }
           if (existsSync(oldFilepath)) {
             await unlink(oldFilepath);
             });
@@ -104,7 +108,7 @@ export async function POST(
           profile_picture: profilePictureUrl,
           updated_at: new Date(),
         },
-        });
+        
       
         return NextResponse.json({
         success: true,
@@ -143,13 +147,16 @@ export async function DELETE(
       });
 
       if (!employee) {
+        }
         return NextResponse.json(
           { error: "Employee not found" },
           { status: 404 }
         );
     }
+    }
 
       if (!employee.profile_picture) {
+        }
         return NextResponse.json(
           { error: "No profile picture to delete" },
           { status: 400 }

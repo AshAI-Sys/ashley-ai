@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!email || !password) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -31,6 +32,7 @@ export async function POST(request: NextRequest) {
     // Check if account is locked
     const lockStatus = await isAccountLocked(email);
     if (lockStatus.isLocked) {
+      }
       const minutesRemaining = lockStatus.canRetryAt
         ? Math.ceil((lockStatus.canRetryAt.getTime() - Date.now()) / 60000)
         : 30;
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
         email,
         reason: "Account locked",
         lockoutExpiresAt: lockStatus.lockoutExpiresAt,
-        });
+        
       
         return NextResponse.json(
         {
@@ -68,7 +70,7 @@ export async function POST(request: NextRequest) {
       await logAuthEvent("LOGIN_FAILED", "system", undefined, request, {
         email,
         reason: "User not found",
-        });
+        
       
         return NextResponse.json(
         {
@@ -85,7 +87,7 @@ export async function POST(request: NextRequest) {
       await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
         email,
         reason: "No password hash",
-        });
+        
       
         return NextResponse.json(
         {
@@ -95,10 +97,10 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
       // Record failed login attempt
+      }
       const lockStatus = await recordFailedLogin(email);
 
       // Log failed login attempt
@@ -116,7 +118,7 @@ export async function POST(request: NextRequest) {
         lockStatus.remainingAttempts > 0
       ) {
         errorMessage += `. Warning: ${lockStatus.remainingAttempts} ${lockStatus.remainingAttempts === 1 ? "attempt" : "attempts"} remaining before account lockout.`;
-      }
+      
 
       return NextResponse.json(
         {

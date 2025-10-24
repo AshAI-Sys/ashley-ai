@@ -32,7 +32,7 @@ export async function GET(
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -63,7 +63,7 @@ export async function POST(
         percentage: validatedData.percentage,
         quantity: validatedData.quantity,
       },
-        });
+        
       
         return NextResponse.json(
       {
@@ -73,8 +73,10 @@ export async function POST(
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -102,6 +104,7 @@ export async function DELETE(
     const variantId = searchParams.get("variantId");
 
     if (!variantId) {
+      }
       return NextResponse.json(
         { success: false, error: "Variant ID is required" },
         { status: 400 }
@@ -122,4 +125,5 @@ export async function DELETE(
       { success: false, error: "Failed to delete color variant" },
       { status: 500 }
     );
-  });
+  }
+  }

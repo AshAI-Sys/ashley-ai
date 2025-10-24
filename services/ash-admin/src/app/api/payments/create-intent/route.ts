@@ -27,6 +27,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { invoiceId, provider = "stripe" } = body;
 
     if (!invoiceId) {
+      }
       return createErrorResponse(new ValidationError("Invoice ID is required"));
     }
 
@@ -39,10 +40,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!invoice) {
+      }
       return createErrorResponse(new NotFoundError("Invoice"));
     }
 
     if (invoice.status === "paid") {
+      }
       return createErrorResponse(
         new ValidationError("Invoice is already paid")
       );
@@ -63,6 +66,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       parseFloat(paidAmount.toString());
 
     if (remainingAmount <= 0) {
+      }
       return createErrorResponse(
         new ValidationError("Invoice has no remaining balance")
       );
@@ -70,6 +74,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Create payment based on provider
     if (provider === "stripe") {
+      }
       const result = await paymentService.createStripePaymentIntent({
         amount: paymentService.toSmallestUnit(
           remainingAmount,
@@ -87,6 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
       if (!result.success) {
+        }
         return createErrorResponse(
           new AppError(
             ErrorCode.EXTERNAL_SERVICE_ERROR,
@@ -95,8 +101,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           )
         );
     }
-
-      return createSuccessResponse({
+    return createSuccessResponse({
         paymentIntent: {
           id: result.transactionId,
           clientSecret: result.clientSecret,
@@ -114,6 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } else if (provider === "gcash") {
       const baseUrl =
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001";
+      }
       const result = await paymentService.createGCashPayment({
         amount: paymentService.toSmallestUnit(remainingAmount, "PHP"),
         description: `Invoice ${invoice.invoice_number}`,
@@ -124,6 +130,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         failureUrl: `${baseUrl}/payments/failed?invoice=${invoice.id}`,
 
       if (!result.success) {
+        }
         return createErrorResponse(
           new AppError(
             ErrorCode.EXTERNAL_SERVICE_ERROR,
@@ -132,8 +139,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           )
         );
     }
-
-      return createSuccessResponse({
+    return createSuccessResponse({
         payment: {
           id: result.transactionId,
           url: result.paymentUrl,
@@ -150,6 +156,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       return createErrorResponse(
         new ValidationError("Unsupported payment provider")
       );
+      }
       });
     } catch (error) {
     console.error("Error creating payment intent:", error);

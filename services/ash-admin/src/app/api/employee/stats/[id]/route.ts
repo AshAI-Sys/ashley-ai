@@ -41,6 +41,7 @@ export const GET = withErrorHandling(
 
     if (employee.department === "Sewing") {
       // Count pieces from sewing runs
+      }
       const sewingRuns = await prisma.sewingRun.findMany({
         where: { operator_id: employeeId },
       });
@@ -68,6 +69,7 @@ export const GET = withErrorHandling(
       ).length;
     } else if (employee.department === "Quality Control") {
       // Count QC inspections
+      }
       const qcInspections = await prisma.qCInspection.findMany({
         where: { inspector_id: employeeId },
       });
@@ -89,6 +91,7 @@ export const GET = withErrorHandling(
       ).length;
     } else if (employee.department === "Cutting") {
       // Count cut lays (no cutter tracking in schema)
+      }
       const cutLays = await prisma.cutLay.findMany({
         where: {
           created_by: employeeId,
@@ -116,6 +119,7 @@ export const GET = withErrorHandling(
       ).length;
     } else if (employee.department === "Printing") {
       // Count print runs (no printer tracking in schema, use created_by)
+      }
       const printRuns = await prisma.printRun.findMany({
         where: {
           created_by: employeeId,
@@ -160,6 +164,7 @@ export const GET = withErrorHandling(
     let qualityScore = 95; // Default quality score
 
     if (employee.department === "Sewing" || employee.department === "Cutting") {
+      }
       const recentInspections = await prisma.qCInspection.findMany({
         where: {
           created_at: {
@@ -170,6 +175,7 @@ export const GET = withErrorHandling(
       });
 
       if (recentInspections.length > 0) {
+        }
         const passedInspections = recentInspections.filter(
           check => check.result === "PASSED"
         ).length;
@@ -177,8 +183,6 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
-    }
-
     const stats = {
       total_pieces: totalPieces,
       today_pieces: todayPieces,

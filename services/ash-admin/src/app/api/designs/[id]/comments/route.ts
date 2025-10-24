@@ -18,7 +18,7 @@ export async function GET(
 
     if (version) {
       where.version_id = `${params.id}-${version}`;
-    }
+    });
 
     const comments = await prisma.designComment.findMany({
       where,
@@ -118,8 +118,10 @@ export async function POST(
         { status: 400 }
       );
     }
+    });
 
     if (!version) {
+      }
       return NextResponse.json(
         { success: false, message: "Version is required" },
         { status: 400 }
@@ -132,6 +134,7 @@ export async function POST(
       });
 
     if (!designAsset) {
+      }
       return NextResponse.json(
         { success: false, message: "Design not found" },
         { status: 404 }

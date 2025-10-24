@@ -55,6 +55,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
       // Cutting
       if (cutLays.length > 0 || i === 0) {
+        }
         const efficiency = 75 + Math.random() * 20;
         dayMetrics.push({
           station_id: "CUTTING_MAIN",

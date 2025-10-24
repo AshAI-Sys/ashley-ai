@@ -85,6 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required fields
     if (!alert_type || !title || !description) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -118,7 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Trigger automatic notification for high/critical alerts
     if (severity === "HIGH" || severity === "CRITICAL") {
       await createAlertNotification(alert);
-    }
+    
 
     return NextResponse.json({
       success: true,
@@ -141,12 +142,12 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, action, user_id = "user_1", resolution_notes } = body;
 
     if (!id || !action) {
+      }
       return NextResponse.json(
         { success: false, error: "Alert ID and action are required" },
         { status: 400 }
       );
     }
-
     const updateData: any = {};
     const now = new Date();
 
@@ -170,6 +171,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         updateData.escalation_level = { increment: 1 };
         const currentAlert = await prisma.alert.findUnique({ where: { id } });
         if (currentAlert) {
+          }
           const escalationMinutes = getEscalationDelay(
             currentAlert.severity,
             currentAlert.escalation_level + 1
@@ -178,6 +180,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
             Date.now() + escalationMinutes * 60 * 1000
           );
         }
+        break;
+
+      }
         break;
 
       default:
@@ -189,7 +194,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
     }
-
     const alert = await prisma.alert.update({
       where: { id },
       data: updateData,
@@ -201,7 +205,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -224,6 +228,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Alert ID is required" },
         { status: 400 }
@@ -232,7 +237,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.alert.delete({
       where: { id },
-        });
+        
       
         return NextResponse.json({
       success: true,

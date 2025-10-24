@@ -13,13 +13,13 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   const _position = searchParams.get("position");
 
   if (!department) {
+    }
     return NextResponse.json(
       { success: false, error: "Department is required" },
       { status: 400 }
     );
     }
-
-  let tasks: any[] = [];
+    let tasks: any[] = [];
 
   // Get department-specific tasks
   switch (department) {
@@ -233,10 +233,13 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       }));
       break;
 
+    }
+      break;
+
     default:
       // For other departments, return empty array or generic tasks
       tasks = [];
-  }
+  });
 
   return createSuccessResponse(tasks);
 });

@@ -29,6 +29,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!workspace_id || !delivery_id || !recipient_name) {
+      }
       return NextResponse.json(
         { error: "workspace_id, delivery_id, and recipient_name are required" },
         { status: 400 }
@@ -64,7 +65,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         status: delivery_status,
         actual_delivery_date: new Date(),
       },
-        });
+        
       
         return NextResponse.json(podRecord, { status: 201 });
   } catch (error: any) {
@@ -86,12 +87,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const workspace_id = searchParams.get("workspace_id");
 
     if (!delivery_id && !workspace_id) {
+      }
       return NextResponse.json(
         { error: "delivery_id or workspace_id is required" },
         { status: 400 }
       );
     }
-
     const where: any = {};
     if (delivery_id) where.delivery_id = delivery_id;
     if (workspace_id) where.workspace_id = workspace_id;
@@ -138,12 +139,12 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { error: "POD record ID is required" },
         { status: 400 }
       );
     }
-
     const body = await request.json();
     const {
       recipient_name,
@@ -181,7 +182,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const updatedRecord = await prisma.pODRecord.update({
       where: { id },
       data: updateData,
-        });
+        
       
         return NextResponse.json(updatedRecord);
   } catch (error: any) {
@@ -193,4 +194,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
   });

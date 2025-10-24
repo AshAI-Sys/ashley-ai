@@ -10,12 +10,12 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const workspace_id = searchParams.get("workspace_id");
 
     if (!workspace_id) {
+      }
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
       );
     }
-
     const limits = await tenantManager.checkLimits(workspace_id);
 
     // Calculate percentages
@@ -33,19 +33,20 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         `User limit almost reached (${limits.users.current}/${limits.users.max})`
       );
     }
+    });
 
     if (ordersPercent >= 90) {
       warnings.push(
         `Monthly order limit almost reached (${limits.orders.current_month}/${limits.orders.max})`
       );
     }
+    });
 
     if (storagePercent >= 90) {
       warnings.push(
         `Storage quota almost full (${limits.storage.used_gb.toFixed(2)}GB/${limits.storage.max_gb}GB)`
       );
     }
-
     return NextResponse.json({
       success: true,
       limits,
@@ -62,5 +63,6 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { error: "Failed to check limits", details: error.message },
       { status: 500 }
     );
+  }
   });
 });

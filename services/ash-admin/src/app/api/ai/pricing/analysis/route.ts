@@ -84,6 +84,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     );
 
     if (validData.length === 0) {
+      }
       return NextResponse.json({
         success: true,
         analysis: {
@@ -179,6 +180,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const validStats = stats.filter(s => s.cost > 0 && s.price > 0);
 
     if (validStats.length < 5) {
+      }
       return NextResponse.json({
         success: true,
         recommendations: {
@@ -219,6 +221,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     ) {
       // Can increase prices
       const suggestedPrice = avgCost / (1 - targetMarginValue / 100);
+      }
       const priceIncrease = ((suggestedPrice - avgPrice) / avgPrice) * 100;
 
       recommendations.insights.push(
@@ -234,6 +237,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     ) {
       // Should decrease prices
       const suggestedPrice = avgPrice * 0.95; // 5% reduction
+      }
       const priceDecrease = ((avgPrice - suggestedPrice) / avgPrice) * 100;
 
       recommendations.insights.push(

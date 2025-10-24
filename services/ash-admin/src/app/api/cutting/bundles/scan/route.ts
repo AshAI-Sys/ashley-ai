@@ -9,12 +9,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const qrCode = searchParams.get("qrCode");
 
     if (!qrCode) {
+      }
       return NextResponse.json(
         { success: false, error: "QR code is required" },
         { status: 400 }
       );
     }
-
     const bundle = await prisma.bundle.findUnique({
       where: { qr_code: qrCode },
       include: {
@@ -51,12 +51,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!bundle) {
+      }
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }
       );
     }
-
     return NextResponse.json({
       success: true,
       bundle,

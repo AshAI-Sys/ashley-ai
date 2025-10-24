@@ -56,7 +56,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         fill_percent: carton.fill_percent || 0,
         units_count: unitsCount,
       };
-      });
+      
     
       return NextResponse.json({
       cartons: processedCartons,
@@ -99,7 +99,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       include: {
         order: { select: { order_number: true } },
       },
-      });
+      
     
       return NextResponse.json(carton, { status: 201 });
   } catch (error) {
@@ -118,6 +118,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
 
     // Calculate metrics if closing carton
     if (updateData.status === "CLOSED") {
+      }
       const cartonWithContents = await prisma.carton.findUnique({
         where: { id },
         include: {
@@ -152,11 +153,10 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
         updateData.fill_percent = fillPercentage;
 
         // Calculate dimensional weight for shipping
+        }
         const dimWeight = cartonVolume / 5000; // Divisor varies by carrier
         updateData.dim_weight_kg = dimWeight;
       }
-    }
-
     const carton = await prisma.carton.update({
       where: { id },
       data: {
@@ -173,7 +173,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-      });
+      
     
       return NextResponse.json(carton);
   } catch (error) {
@@ -182,4 +182,5 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to update carton" },
       { status: 500 }
     );
-  });
+  }
+  }

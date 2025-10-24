@@ -11,6 +11,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Validate input
     if (!to) {
+      }
       return NextResponse.json(
         { error: "Recipient phone number is required" },
         { status: 400 }
@@ -28,7 +29,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-
     let result;
 
     // Send using template
@@ -36,6 +36,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       result = await smsService.sendTemplatedSMS(
         formattedPhone,
         template,
+        }
         variables
       );
     }
@@ -52,14 +53,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
+    });
 
     if (!result.success) {
+      }
       return NextResponse.json(
         { error: result.error || "Failed to send SMS" },
         { status: 500 }
       );
     }
-
     return NextResponse.json({
       success: true,
       message_id: result.message_id,
@@ -88,5 +90,6 @@ export async function GET() {
       { error: "Failed to get SMS status", details: error.message },
       { status: 500 }
     );
+  }
   });
 });

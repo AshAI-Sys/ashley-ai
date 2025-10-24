@@ -29,7 +29,7 @@ export async function GET(
       orderBy: {
         created_at: "asc",
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -65,7 +65,7 @@ export async function POST(
         offset_y_cm: validatedData.offset_y_cm || null,
         notes: validatedData.notes || null,
       },
-        });
+        
       
         return NextResponse.json(
       {
@@ -75,8 +75,10 @@ export async function POST(
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -104,12 +106,12 @@ export async function PUT(
     const locationId = searchParams.get("locationId");
 
     if (!locationId) {
+      }
       return NextResponse.json(
         { success: false, error: "Location ID is required" },
         { status: 400 }
       );
     }
-
     const body = await request.json();
     const validatedData = PrintLocationSchema.partial().parse(body);
 
@@ -126,7 +128,7 @@ export async function PUT(
         offset_y_cm: validatedData.offset_y_cm,
         notes: validatedData.notes,
       },
-    });
+    
 
     return NextResponse.json({
       success: true,
@@ -135,6 +137,7 @@ export async function PUT(
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -162,6 +165,7 @@ export async function DELETE(
     const locationId = searchParams.get("locationId");
 
     if (!locationId) {
+      }
       return NextResponse.json(
         { success: false, error: "Location ID is required" },
         { status: 400 }
@@ -172,7 +176,7 @@ export async function DELETE(
       where: {
         id: locationId,
       },
-    });
+    
 
     return NextResponse.json({
       success: true,

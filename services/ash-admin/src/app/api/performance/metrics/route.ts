@@ -22,6 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     let redisStats = null;
     if (redisInfo) {
       const lines = redisInfo.split("\r\n");
+      }
       const stats: any = {};
 
       lines.forEach(line => {
@@ -48,9 +49,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (redisStats) {
       const hits = parseInt(redisStats.keyspace_hits) || 0;
       const misses = parseInt(redisStats.keyspace_misses) || 0;
+      }
       const total = hits + misses;
       redisCacheHitRate = total > 0 ? (hits / total) * 100 : 0;
-    }
+    
 
     return NextResponse.json({
       success: true,
@@ -150,12 +152,14 @@ function getRecommendations(
       "Low cache hit rate detected. Consider increasing cache TTL for frequently accessed data."
     );
   }
+  });
 
   if (queryMetrics.avgUncachedDuration > 500) {
     recommendations.push(
       "Slow uncached queries detected. Review database indexes and query optimization."
     );
   }
+  });
 
   if (queryMetrics.totalQueries < 100) {
     recommendations.push(
@@ -180,12 +184,12 @@ function getRecommendations(
       "Average query duration is high. Consider implementing more aggressive caching."
     );
   }
+  });
 
   if (recommendations.length === 0) {
     recommendations.push(
       "Performance is excellent! No immediate optimizations needed."
     );
   }
-
   return recommendations;
 }

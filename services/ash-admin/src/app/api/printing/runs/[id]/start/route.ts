@@ -31,13 +31,16 @@ export async function POST(
       });
 
     if (!run) {
+      }
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
       );
     }
+    });
 
     if (run.status !== "CREATED" && run.status !== "PAUSED") {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -49,6 +52,7 @@ export async function POST(
 
     // Check machine availability if assigned
     if (run.machine_id) {
+      }
       const busyMachine = await prisma.printRun.findFirst({
         where: {
           machine_id: run.machine_id,
@@ -58,6 +62,7 @@ export async function POST(
       });
 
       if (busyMachine) {
+        }
         return NextResponse.json(
           {
             success: false,

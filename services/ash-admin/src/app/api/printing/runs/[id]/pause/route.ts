@@ -18,13 +18,16 @@ export async function POST(
       });
 
     if (!run) {
+      }
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
       );
     }
+    });
 
     if (run.status !== "IN_PROGRESS") {
+      }
       return NextResponse.json(
         { success: false, error: "Only in-progress runs can be paused" },
         { status: 400 }

@@ -45,7 +45,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         },
       },
       orderBy: { created_at: "desc" },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -93,12 +93,12 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
     // Validate required fields
     if (!name || !report_type || !data_source || !query_config || !columns) {
+      }
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
-
     const report = await prisma.customReport.create({
       data: {
         workspace_id: workspaceId,
@@ -128,7 +128,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -152,4 +152,5 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
   });

@@ -11,12 +11,12 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const format = searchParams.get("format"); // 'json' | 'css' | 'preview'
 
     if (!workspace_id) {
+      }
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
       );
     }
-
     const branding = await brandingManager.getBranding(workspace_id);
 
     // Return in requested format
@@ -59,15 +59,18 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { workspace_id, ...updates } = await req.json();
 
     if (!workspace_id) {
+      }
       return NextResponse.json(
         { error: "workspace_id is required" },
         { status: 400 }
       );
     }
+    }
 
     const success = await brandingManager.updateBranding(workspace_id, updates);
 
     if (!success) {
+      }
       return NextResponse.json(
         { error: "Failed to update branding" },
         { status: 500 }

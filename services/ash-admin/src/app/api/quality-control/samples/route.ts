@@ -20,7 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         sample_data: data.sample_data ? JSON.stringify(data.sample_data) : null,
         sampled_at: new Date(),
       },
-        });
+        
       
         return NextResponse.json(sample, { status: 201 });
   } catch (error) {
@@ -38,12 +38,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const inspectionId = searchParams.get("inspection_id");
 
     if (!inspectionId) {
+      }
       return NextResponse.json(
         { error: "inspection_id is required" },
         { status: 400 }
       );
     }
-
     const samples = await prisma.qCSample.findMany({
       where: { inspection_id: inspectionId },
       include: {
@@ -54,7 +54,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         },
       },
       orderBy: { sample_no: "asc" },
-        });
+        
       
         return NextResponse.json(samples);
   } catch (error) {
@@ -63,4 +63,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to fetch samples" },
       { status: 500 }
     );
-  });
+  }
+  }

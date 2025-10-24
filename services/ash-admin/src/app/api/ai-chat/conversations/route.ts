@@ -35,7 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
+      
     
       return NextResponse.json({ conversations });
   } catch (error) {
@@ -61,7 +61,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         context_type: context_type || "GENERAL",
         context_id: context_id || null,
       },
-    });
+    
 
     return NextResponse.json({ conversation }, { status: 201 });
   } catch (error) {

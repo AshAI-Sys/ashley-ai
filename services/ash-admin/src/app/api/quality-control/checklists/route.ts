@@ -15,10 +15,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (method && method !== "all") {
       where.method = method;
 
+    }
     const checklists = await prisma.qCChecklist.findMany({
       where,
       orderBy: { name: "asc" },
-        });
+        
       
         return NextResponse.json(checklists);
   } catch (error) {
@@ -41,7 +42,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         category: data.category || "VISUAL", // Added category field
         items: JSON.stringify(data.items),
       },
-        });
+        
       
         return NextResponse.json(checklist, { status: 201 });
   } catch (error) {
@@ -50,4 +51,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to create checklist" },
       { status: 500 }
     );
-  });
+  }
+  }

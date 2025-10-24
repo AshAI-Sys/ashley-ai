@@ -30,7 +30,7 @@ export async function GET(
         created_at: "desc",
       },
       take: limit,
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -64,7 +64,7 @@ export async function POST(
         performed_by: validatedData.performed_by || null,
         metadata: validatedData.metadata || null,
       },
-        });
+        
       
         return NextResponse.json(
       {
@@ -74,8 +74,10 @@ export async function POST(
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -91,4 +93,5 @@ export async function POST(
       { success: false, error: "Failed to create activity log" },
       { status: 500 }
     );
+  }
   });

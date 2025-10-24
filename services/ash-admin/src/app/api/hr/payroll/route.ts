@@ -16,11 +16,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (year || month) {
       where.period_start = {};
       if (year) {
+        }
         const startYear = new Date(`${year}-01-01`);
         const endYear = new Date(`${year}-12-31`);
         where.period_start.gte = startYear;
         where.period_start.lte = endYear;
-      }
+      });
 
     const payrollPeriods = await prisma.payrollPeriod.findMany({
       where,
@@ -47,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     // Calculate summary for each payroll period
-    const processedRuns = payrollPeriods.map(period => {;
+    const processedRuns = payrollPeriods.map(period => {
       const totalAmount = period.earnings.reduce(
         (sum, earning) => sum + (earning.net_pay || 0),
         0
@@ -75,7 +76,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch payroll runs" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -140,6 +142,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             totalHours += hours;
 
             // Calculate overtime (over 8 hours per day)
+            }
             if (hours > 8) {
               overtimeHours += hours - 8;
             }
@@ -247,7 +250,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json(
       {
@@ -264,13 +267,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     console.error("Error creating payroll run:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create payroll run" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -297,7 +302,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -318,4 +323,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update payroll run" },
       { status: 500 }
     );
-  });
+  }
+  }

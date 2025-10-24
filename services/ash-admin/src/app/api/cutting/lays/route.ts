@@ -116,6 +116,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!order) {
+      }
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 }
@@ -169,7 +170,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         });
       
         return { ...newCutLay, outputs };
-      });
+      
     
       return NextResponse.json(
       {
@@ -179,8 +180,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }

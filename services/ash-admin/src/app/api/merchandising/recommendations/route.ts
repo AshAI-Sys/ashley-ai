@@ -20,6 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
+      }
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -34,6 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 100);
     if (limitError) {
+      }
       return createValidationErrorResponse([limitError]);
     }
     const limit = parseInt(limitParam);
@@ -43,6 +45,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       const validTypes = ["REORDER", "CROSS_SELL", "SEASONAL", "TRENDING"];
       const typeError = validateEnum(recommendationType, validTypes, "type");
       if (typeError) {
+        }
         return createValidationErrorResponse([typeError]);
       }
     }
@@ -68,7 +71,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
-      });
+      
     
       return NextResponse.json({ recommendations });
   } catch (error) {
@@ -89,6 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
+      }
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -99,11 +103,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-
     let recommendations = [];
 
     if (generateAll) {
       // Generate recommendations for all active clients
+      }
       const clients = await prisma.client.findMany({
         where: {
           workspace_id: workspaceId,
@@ -130,7 +134,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-
     return NextResponse.json({
       recommendations,
       count: recommendations.length,
@@ -167,8 +170,9 @@ async function generateRecommendationsForClient(
   });
 
   if (clientOrders.length === 0) {
+    }
     return [];
-  }
+  });
 
   const recommendations = [];
 
@@ -256,6 +260,7 @@ async function generateReorderRecommendations(
         // 80% of typical interval
         const [productType, color] = productKey.split("-");
         const confidence = Math.min(0.95, 0.6 + data.count * 0.1);
+        }
         const avgQuantity = Math.round(data.avgQuantity / data.count);
 
         recommendations.push(
@@ -278,8 +283,6 @@ async function generateReorderRecommendations(
         );
       }
     }
-  }
-
   return recommendations;
 }
 
@@ -320,6 +323,7 @@ async function generateCrossSellRecommendations(
   for (const recentProduct of recentProducts) {
     if (productCombinations[recentProduct]) {
       for (const suggestedProduct of productCombinations[recentProduct]) {
+        }
         if (suggestedProduct !== recentProduct) {
           recommendations.push(
             await prisma.productRecommendation.create({
@@ -342,8 +346,6 @@ async function generateCrossSellRecommendations(
         }
       }
     }
-  }
-
   return recommendations.slice(0, 3); // Limit to 3 cross-sell recommendations
 }
 
@@ -392,7 +394,6 @@ async function generateSeasonalRecommendations(
       })
     );
   }
-
   return recommendations.slice(0, 2); // Limit to 2 seasonal recommendations
 }
 
@@ -448,6 +449,5 @@ async function generateTrendingRecommendations(
       })
     );
   }
-
   return recommendations;
 }

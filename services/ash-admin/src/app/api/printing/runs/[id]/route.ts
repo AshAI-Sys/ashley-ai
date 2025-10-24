@@ -62,6 +62,7 @@ export const GET = requireAuth(async (
       },
 
     if (!run) {
+      }
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
@@ -96,7 +97,8 @@ export const GET = requireAuth(async (
       { success: false, error: "Failed to fetch print run" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const PATCH = requireAuth(async (
   request: NextRequest,
@@ -112,12 +114,13 @@ export const GET = requireAuth(async (
     const updateData: any = {};
     if (status) {
       updateData.status = status;
+      }
       if (status === "IN_PROGRESS" && !(await getRunStartTime(runId))) {
         updateData.started_at = new Date();
     }
       if (status === "DONE") {
         updateData.ended_at = new Date();
-      }
+      });
 
     const updatedRun = await prisma.printRun.update({
       where: { id: runId },
@@ -155,6 +158,7 @@ export const GET = requireAuth(async (
 
     // Handle quality data if provided
     if (quality_data) {
+      }
       const { qty_good, qty_reject, bundle_id, reject_reasons } = quality_data;
 
       // Create output record
@@ -186,8 +190,7 @@ export const GET = requireAuth(async (
           )
         );
       }
-
-    return NextResponse.json({
+      return NextResponse.json({
       success: true,
       data: updatedRun,
   } catch (error) {

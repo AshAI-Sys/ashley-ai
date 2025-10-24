@@ -10,12 +10,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { image_url, image_base64, garment_type, bundle_id } = await req.json();
 
     if (!image_url && !image_base64) {
+      }
       return NextResponse.json(
         { error: "Either image_url or image_base64 is required" },
         { status: 400 }
       );
     }
-
     const image = {
       url: image_url || "",
       base64: image_base64,
@@ -27,6 +27,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     // Optionally save results to database if bundle_id provided
     if (bundle_id && result.defects_found > 0) {
       // Create QC check record
+      }
       const _qcCheck = await prisma.qCInspection.create({
         data: {
           workspace_id: "default",
@@ -60,8 +61,6 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           `Detected ${defect.type}: ${defect.description} (${defect.severity})`
         );
       }
-    }
-
     return NextResponse.json({
       success: true,
       result,
@@ -82,12 +81,12 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const bundleIdsParam = searchParams.get("bundle_ids");
 
     if (!bundleIdsParam) {
+      }
       return NextResponse.json(
         { error: "bundle_ids parameter required" },
         { status: 400 }
       );
     }
-
     const bundleIds = bundleIdsParam.split(",");
 
     // Get QC checks with photos for these bundles
@@ -101,6 +100,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     });
 
     if (qcChecks.length === 0) {
+      }
       return NextResponse.json({
         success: true,
         results: [],

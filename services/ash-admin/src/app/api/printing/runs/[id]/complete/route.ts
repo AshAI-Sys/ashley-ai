@@ -29,13 +29,16 @@ export async function POST(
       });
 
     if (!run) {
+      }
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
       );
     }
+    });
 
     if (run.status !== "IN_PROGRESS" && run.status !== "PAUSED") {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -122,7 +125,7 @@ export async function POST(
         rejects: true,
         materials: true,
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -315,8 +318,9 @@ function identifyIssues(completionData: any): string[] {
         (completionData.qty_completed + completionData.qty_rejected)) *
       100;
     if (rejectRate > 10) issues.push("High reject rate detected");
+    }
     if (rejectRate > 5) issues.push("Moderate reject rate - review process");
-  }
+  });
 
   return issues;
 }
@@ -342,11 +346,11 @@ function generateRecommendations(
     case "EMBROIDERY":
       recommendations.push("Review thread tension and stabilizer selection");
       break;
-  }
+  });
 
   if (completionData.qty_rejected > 0) {
     recommendations.push("Implement additional quality checkpoints");
-  }
+  });
 
   return recommendations;
 }

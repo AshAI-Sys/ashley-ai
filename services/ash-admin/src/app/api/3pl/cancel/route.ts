@@ -10,12 +10,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { provider, booking_id, tracking_number, reason } = body;
 
     if (!provider || !booking_id) {
+      }
       return NextResponse.json(
         { error: "provider and booking_id are required" },
         { status: 400 }
       );
     }
-
     const result = await threePLService.cancelShipment({
       provider,
       booking_id,
@@ -24,12 +24,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!result.success) {
+      }
       return NextResponse.json(
         { error: result.error || "Cancellation failed" },
         { status: 400 }
       );
     }
-
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("Error cancelling 3PL shipment:", error);
@@ -40,4 +40,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 500 }
     );
+  }
   });

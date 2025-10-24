@@ -20,6 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Validate request
     const validation = ResendSchema.safeParse(body);
     if (!validation.success) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -28,7 +29,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-
     const { email } = validation.data;
 
     // Find user
@@ -43,6 +43,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     if (!user) {
       // Don't reveal if user exists or not for security
+      }
       return NextResponse.json(
         {
           success: true,
@@ -55,6 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Check if already verified
     if (user.email_verified) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -73,6 +75,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             twoMinutesAgo.getTime()) /
             1000
         );
+        }
         return NextResponse.json(
           {
             success: false,
@@ -143,6 +146,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 200 }
     );
+  
   } catch (error: any) {
     console.error("Resend verification error:", error);
     return NextResponse.json(

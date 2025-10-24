@@ -20,6 +20,7 @@ export async function POST() {
       });
 
     if (existingAdmin) {
+      }
       return NextResponse.json({
         success: false,
         message: "Admin user already exists",
@@ -48,7 +49,7 @@ export async function POST() {
         is_active: true,
         workspace_id: workspace.id,
       },
-        });
+        
       
         return NextResponse.json({
       success: true,

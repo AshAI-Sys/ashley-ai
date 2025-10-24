@@ -52,12 +52,12 @@ export const GET = requireAuth(async (
     });
 
     if (!client) {
+      }
       return NextResponse.json(
         { success: false, error: "Client not found" },
         { status: 404 }
       );
     }
-
     return NextResponse.json({
       success: true,
       data: client,
@@ -107,7 +107,7 @@ export const PUT = requireAuth(async (
           },
         },
       },
-    });
+    
 
     return NextResponse.json({
       success: true,
@@ -132,7 +132,7 @@ export const DELETE = requireAuth(async (
   try {
     await prisma.client.delete({
       where: { id: context.params.id },
-    });
+    
 
     return NextResponse.json({
       success: true,

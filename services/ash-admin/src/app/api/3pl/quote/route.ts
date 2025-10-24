@@ -10,6 +10,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { provider, shipment } = body;
 
     if (!shipment) {
+      }
       return NextResponse.json(
         { error: "shipment details are required" },
         { status: 400 }
@@ -22,6 +23,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       !shipment.delivery_address ||
       !shipment.package_details
     ) {
+      }
       return NextResponse.json(
         {
           error:
@@ -55,4 +57,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 500 }
     );
+  }
   });

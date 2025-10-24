@@ -34,10 +34,12 @@ export const GET = requireAuth(async (
       });
 
     if (!conversation) {
+      }
       return NextResponse.json(
         { error: "Conversation not found" },
         { status: 404 }
       );
+    }
     }
 
     return NextResponse.json({ conversation });
@@ -69,7 +71,7 @@ export const PATCH = requireAuth(async (
         ...(is_archived !== undefined && { is_archived }),
         ...(is_pinned !== undefined && { is_pinned }),
       },
-        });
+        
       
         return NextResponse.json({ conversation });
   } catch (error) {
@@ -92,7 +94,7 @@ export const DELETE = requireAuth(async (
       where: {
         id: params.id,
       },
-    });
+    
 
     return NextResponse.json({ success: true });
   } catch (error) {

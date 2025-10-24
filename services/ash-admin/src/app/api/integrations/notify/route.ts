@@ -19,12 +19,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     } = body;
 
     if (!event || !channels || !data) {
+      }
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
-
     const results: Record<string, boolean> = {};
 
     // WhatsApp notifications
@@ -61,6 +61,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.due_date,
               data.pdf_url
             );
+            break;
+          }
             break;
           default:
             results.whatsapp = false;
@@ -102,12 +104,15 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.location
             );
             break;
+          }
+            break;
           default:
             results.sms = await smsService.sendCustomAlert(
               recipients.sms,
               data.message,
               data.priority || "medium"
             );
+          }
           });
         } catch (error) {
         console.error("SMS error:", error);
@@ -149,12 +154,15 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           case "daily.summary":
             results.slack = await slackService.sendDailySummary(data.stats);
             break;
+          }
+            break;
           default:
             results.slack = await slackService.notifyTeam(
               data.title,
               data.message,
               data.channel
             );
+          }
           });
         } catch (error) {
         console.error("Slack error:", error);
@@ -184,6 +192,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.title,
               data.description
             );
+            break;
+          }
             break;
           default:
             results.teams = false;
@@ -248,6 +258,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.stats
             );
             break;
+          }
+            break;
           default:
             results.email = false;
           });
@@ -281,4 +293,5 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
   });

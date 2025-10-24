@@ -23,12 +23,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (assetId) where.asset_id = assetId;
     if (is_active !== null && is_active !== "all") {
       where.is_active = is_active === "true";
+    }
     if (overdue === "true") {
       where.next_due_date = {
         lt: new Date(),
-      };
-
-    if (search) {
+      };if}if$3 (search) {
       where.OR = [
         { schedule_name: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
@@ -67,7 +66,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: [{ next_due_date: "asc" }, { priority: "desc" }],
       });
 
-    const processedSchedules = schedules.map(schedule => {;
+    const processedSchedules = schedules.map(schedule => {
       const nextDueDate = new Date(schedule.next_due_date);
       const today = new Date();
       const daysUntilDue = Math.ceil(
@@ -133,6 +132,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch maintenance schedules" },
       { status: 500 }
     );
+    }
     });
   
   export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -161,6 +161,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       !frequency_type ||
       !frequency_value
     ) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -177,6 +178,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       : new Date();
 
     if (!next_due_date) {
+      }
       const now = new Date();
       switch (frequency_type) {
         case "DAILY":
@@ -196,9 +198,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             now.getFullYear() + frequency_value
           );
           break;
+        }
+          break;
         default:
           calculatedNextDueDate.setDate(now.getDate() + frequency_value);
-      }
+      });
 
     const schedule = await prisma.maintenanceSchedule.create({
       data: {
@@ -230,7 +234,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -242,6 +246,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create maintenance schedule" },
       { status: 500 }
     );
+    }
     });
   
   export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -250,12 +255,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Schedule ID is required" },
         { status: 400 }
       );
     }
-
     const data: any = {};
     if (updateData.schedule_name) data.schedule_name = updateData.schedule_name;
     if (updateData.description !== undefined)
@@ -290,6 +295,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (updateData.safety_notes !== undefined)
       data.safety_notes = updateData.safety_notes;
 
+    }
     const schedule = await prisma.maintenanceSchedule.update({
       where: { id },
       data,
@@ -301,7 +307,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -312,6 +318,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update maintenance schedule" },
       { status: 500 }
     );
+    }
     });
   
   export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -320,6 +327,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Schedule ID is required" },
         { status: 400 }
@@ -335,6 +343,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (linkedWorkOrders > 0) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -346,7 +355,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     await prisma.maintenanceSchedule.delete({
       where: { id },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -357,4 +366,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to delete maintenance schedule" },
       { status: 500 }
     );
+  }
   });

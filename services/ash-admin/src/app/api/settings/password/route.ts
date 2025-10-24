@@ -16,6 +16,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
     // Validate inputs
     if (!current_password || !new_password) {
+      }
       return NextResponse.json(
         { error: "Both current and new password are required" },
         { status: 400 }
@@ -28,6 +29,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       });
 
     if (!user) {
+      }
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -37,6 +39,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       user.password_hash
     );
     if (!isPasswordValid) {
+      }
       return NextResponse.json(
         { error: "Current password is incorrect" },
         { status: 401 }
@@ -49,6 +52,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       user.password_hash
     );
     if (isSamePassword) {
+      }
       return NextResponse.json(
         { error: "New password must be different from current password" },
         { status: 400 }
@@ -57,6 +61,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
     // Validate new password strength
     if (new_password.length < 8) {
+      }
       return NextResponse.json(
         { error: "Password must be at least 8 characters" },
         { status: 400 }
@@ -107,4 +112,5 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to change password" },
       { status: 500 }
     );
-  });
+  }
+  }

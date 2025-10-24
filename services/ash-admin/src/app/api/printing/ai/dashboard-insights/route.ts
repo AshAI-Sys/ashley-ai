@@ -78,6 +78,7 @@ function calculateOverallPerformance(activeRuns: any[], recentRuns: any[]) {
   const allRuns = [...activeRuns, ...recentRuns];
 
   if (allRuns.length === 0) {
+    }
     return { score: 0.85, grade: "B+" };
 
   // Calculate weighted scores
@@ -109,6 +110,7 @@ function calculateRunPerformanceScore(run: any) {
     const totalQty = (output.qty_good || 0) + (output.qty_reject || 0);
     if (totalQty > 0) {
       const defectRate = (output.qty_reject || 0) / totalQty;
+      }
       const qualityScore = Math.max(0, 1 - defectRate);
       score = score * 0.6 + qualityScore * 0.4;
     }
@@ -125,6 +127,7 @@ function calculateRunPerformanceScore(run: any) {
       estimatedHours > 0 ? Math.min(1, estimatedHours / elapsedHours) : 0.8;
     score = score * 0.9 + timeEfficiency * 0.1;
 
+  }
   return Math.max(0, Math.min(1, score));
 }
 
@@ -148,14 +151,13 @@ function analyzeActiveRuns(activeRuns: any[]) {
       const totalQty = (output.qty_good || 0) + (output.qty_reject || 0);
       if (totalQty > 0) {
         const defectRate = (output.qty_reject || 0) / totalQty;
+        }
         if (defectRate > 0.1) {
           // More than 10% defect rate
           optimizationOpportunities++;
         }
       }
-    }
-
-  return {
+    return {
     total_active: totalActive,
     high_risk_runs: highRiskRuns,
     optimization_opportunities: optimizationOpportunities,
@@ -176,6 +178,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
 
     // Method-specific issues
     if (score < 0.8) {
+      }
       if (!methodIssues[run.print_method]) {
         methodIssues[run.print_method] = 0;
       }
@@ -191,6 +194,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
         (sum, mat) => sum + (mat.actual_qty || mat.qty || 0),
         0
       );
+      }
       if (totalUsed > totalPlanned * 1.1) {
         materialWaste.push(run.id);
       }
@@ -198,6 +202,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
     // Quality issues from outputs
     if (run.outputs && run.outputs.length > 0) {
       const output = run.outputs[0];
+      }
       if ((output.qty_reject || 0) > 0) {
         qualityIssues.push(run.id);
       }
@@ -212,7 +217,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
         message: `Multiple ${method} runs underperforming - review process parameters`,
         runs_affected: count,
       }
-    }
+    });
 
   if (materialWaste.length > 0) {
     recommendations.push({
@@ -220,7 +225,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       priority: "MEDIUM",
       message: `Material waste detected across ${materialWaste.length} runs - optimize calculations`,
       runs_affected: materialWaste.length,
-    }
+    });
 
   if (qualityIssues.length > 0) {
     recommendations.push({
@@ -237,13 +242,14 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       priority: "LOW",
       message: "High production volume - consider workload balancing",
       runs_affected: activeRuns.length,
-    }
+    });
 
   return recommendations;
 }
 
 function calculatePerformanceTrends(recentRuns: any[]) {
   if (recentRuns.length < 4) {
+    }
     return {
       efficiency_trend: "stable" as const,
       quality_trend: "stable" as const,
@@ -277,6 +283,7 @@ function calculatePerformanceTrends(recentRuns: any[]) {
 
 function calculatePeriodMetrics(runs: any[]) {
   if (runs.length === 0) {
+    }
     return { efficiency: 0.8, quality: 0.9, cost: 5.0 };
 
   let totalEfficiency = 0;
@@ -292,6 +299,7 @@ function calculatePeriodMetrics(runs: any[]) {
       const output = run.outputs[0];
       const totalQty = (output.qty_good || 0) + (output.qty_reject || 0);
       if (totalQty > 0) {
+        }
         const defectRate = (output.qty_reject || 0) / totalQty;
         totalQuality += Math.max(0, 1 - defectRate);
       } else {
@@ -343,6 +351,7 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
       const output = run.outputs[0];
       if ((output.qty_reject || 0) > 0) {
         const issueType = "quality_reject";
+        }
         if (!methodStats[run.print_method].issues[issueType]) {
           methodStats[run.print_method].issues[issueType] = 0;
         }

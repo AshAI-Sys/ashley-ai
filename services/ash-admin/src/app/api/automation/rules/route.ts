@@ -15,11 +15,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (isActive !== null) {
       where.is_active = isActive === "true";
-    }
+    });
 
     if (triggerType) {
       where.trigger_type = triggerType;
-    }
+    });
 
     const rules = await prisma.automationRule.findMany({
       where,
@@ -40,7 +40,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -79,6 +79,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required fields
     if (!name || !trigger_type || !actions) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -104,7 +105,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 400 }
       );
     }
-
     const rule = await prisma.automationRule.create({
       data: {
         workspace_id,
@@ -123,7 +123,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -145,6 +145,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Rule ID is required" },
         { status: 400 }
@@ -160,7 +161,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     }
     if (updateData.actions) {
       updateData.actions = JSON.stringify(updateData.actions);
-    }
+    });
 
     const rule = await prisma.automationRule.update({
       where: { id },
@@ -170,7 +171,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           select: { id: true, email: true, username: true },
         },
       },
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -192,6 +193,7 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Rule ID is required" },
         { status: 400 }
@@ -200,7 +202,7 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
 
     await prisma.automationRule.delete({
       where: { id },
-      });
+      
     
       return NextResponse.json({
       success: true,

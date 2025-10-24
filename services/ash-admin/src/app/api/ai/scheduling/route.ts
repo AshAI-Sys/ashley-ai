@@ -132,6 +132,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     );
 
     if (jobs.length === 0) {
+      }
       return NextResponse.json({
         success: true,
         message: "No jobs to schedule",
@@ -229,7 +230,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           .map(run => `${run.operator?.first_name} ${run.operator?.last_name}`)
           .filter(Boolean),
       };
-      });
+      
     
       return NextResponse.json({
       success: true,

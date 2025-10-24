@@ -60,12 +60,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { amount, from, to } = await req.json();
 
     if (!amount || !from || !to) {
+      }
       return NextResponse.json(
         { error: "amount, from, and to are required" },
         { status: 400 }
       );
     }
-
     const converted = currencyManager.convert(amount, from, to);
     const formatted = currencyManager.formatAmount(converted, to);
 
@@ -81,4 +81,5 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       { error: "Failed to convert currency", details: error.message },
       { status: 500 }
     );
+  }
   });

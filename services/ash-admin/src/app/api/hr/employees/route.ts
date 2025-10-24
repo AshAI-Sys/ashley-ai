@@ -27,6 +27,7 @@ export const GET = requireAuth(
     const where: any = { workspace_id: user.workspaceId };
     if (status && status !== "all") {
       if (status === "ACTIVE") where.is_active = true;
+      }
       if (status === "INACTIVE") where.is_active = false;
     }
     if (position && position !== "all") where.position = position;
@@ -38,7 +39,7 @@ export const GET = requireAuth(
         { last_name: { contains: search, mode: "insensitive" } },
         { employee_number: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     const employees = await prisma.employee.findMany({
       where,
@@ -72,13 +73,12 @@ export const GET = requireAuth(
       if (todayAttendance) {
         lastCheckin = todayAttendance.time_in;
         // If there's time_in but no time_out, employee is present
+        }
         if (todayAttendance.time_in && !todayAttendance.time_out) {
           attendanceStatus = "PRESENT";
         } else if (todayAttendance.time_out) {
           attendanceStatus = "ABSENT"; // Clocked out
         }
-      }
-
       return {
         id: employee.id,
         name: `${employee.first_name} ${employee.last_name}`,
@@ -160,6 +160,7 @@ export const POST = requireAnyPermission(["hr:create"])(
         ["DAILY", "HOURLY", "PIECE", "MONTHLY"],
         "salary_type"
       );
+      }
       if (salaryTypeError) {
         throw salaryTypeError;
       }
@@ -168,6 +169,7 @@ export const POST = requireAnyPermission(["hr:create"])(
     // Validate hire date if provided
     if (hire_date) {
       const dateError = validateDate(hire_date, "hire_date");
+      }
       if (dateError) {
         throw dateError;
       }
@@ -245,6 +247,7 @@ export const PUT = requireAuth(
         ["DAILY", "HOURLY", "PIECE", "MONTHLY"],
         "salary_type"
       );
+      }
       if (salaryTypeError) {
         throw salaryTypeError;
       }
@@ -253,6 +256,7 @@ export const PUT = requireAuth(
     // Handle date conversion and validation
     if (updateData.hire_date) {
       const dateError = validateDate(updateData.hire_date, "hire_date");
+      }
       if (dateError) {
         throw dateError;
       }
@@ -263,11 +267,12 @@ export const PUT = requireAuth(
         updateData.separation_date,
         "separation_date"
       );
+      }
       if (dateError) {
         throw dateError;
       }
       updateData.separation_date = new Date(updateData.separation_date);
-    }
+    });
 
     const employee = await prisma.employee.update({
       where: { id },

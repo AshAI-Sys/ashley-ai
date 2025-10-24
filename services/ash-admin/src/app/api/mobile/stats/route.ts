@@ -20,6 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!employee) {
+      }
       return NextResponse.json({
         success: true,
         data: {
@@ -98,6 +99,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           ? new Date(attendance.time_out)
           : new Date();
         const breakMinutes = attendance.break_minutes || 0;
+        }
         const workedMinutes =
           (timeOut.getTime() - timeIn.getTime()) / (1000 * 60) - breakMinutes;
         hoursWorked = workedMinutes / 60;
@@ -114,6 +116,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       currentShift = "Night Shift";
 
     // Count pending tasks
+    }
     const [pendingSewingTasks, pendingPrintTasks] = await Promise.all([
       prisma.sewingRun.count({
         where: {
@@ -190,4 +193,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
+  }
   });

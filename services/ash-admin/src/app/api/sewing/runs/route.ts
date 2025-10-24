@@ -166,6 +166,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!order) {
+      }
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 }
@@ -178,6 +179,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!operator) {
+      }
       return NextResponse.json(
         { success: false, error: "Operator not found" },
         { status: 404 }
@@ -190,6 +192,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!bundle) {
+      }
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }
@@ -202,12 +205,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!routingStep) {
+      }
       return NextResponse.json(
         { success: false, error: "Routing step not found" },
         { status: 404 }
       );
     }
-
     const sewingRun = await prisma.sewingRun.create({
       data: {
         ...validatedData,
@@ -249,8 +252,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -262,6 +267,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create sewing run" },
       { status: 500 }
     );
+    }
     });
   
   export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -270,12 +276,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Sewing run ID is required" },
         { status: 400 }
       );
     }
-
     const body = await request.json();
     const validatedData = UpdateSewingRunSchema.parse(body);
 
@@ -285,6 +291,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!existingSewingRun) {
+      }
       return NextResponse.json(
         { success: false, error: "Sewing run not found" },
         { status: 404 }
@@ -304,11 +311,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Calculate efficiency if qty_good is provided
       if (validatedData.qty_good) {
         // Simplified efficiency calculation - would normally use SMV from routing step
+        }
         const earnedMinutes = validatedData.qty_good * 0.5; // placeholder SMV
         updateData.earned_minutes = earnedMinutes;
         updateData.efficiency_pct =
           actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
-      }
+      });
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
@@ -340,7 +348,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -348,6 +356,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       message: "Sewing run updated successfully",
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -359,6 +368,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update sewing run" },
       { status: 500 }
     );
+    }
     });
   
   export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -367,6 +377,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Sewing run ID is required" },
         { status: 400 }
@@ -379,6 +390,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!existingSewingRun) {
+      }
       return NextResponse.json(
         { success: false, error: "Sewing run not found" },
         { status: 404 }
@@ -387,6 +399,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Check if sewing run is completed (prevent deletion)
     if (existingSewingRun.status === "DONE") {
+      }
       return NextResponse.json(
         { success: false, error: "Cannot delete completed sewing run" },
         { status: 400 }
@@ -395,7 +408,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     await prisma.sewingRun.delete({
       where: { id },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -406,4 +419,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to delete sewing run" },
       { status: 500 }
     );
-  });
+  }
+  }

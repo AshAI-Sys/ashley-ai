@@ -17,10 +17,11 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
 
     if (statsOnly) {
       const stats = await getUserSessionStats(user.id);
+      }
       return NextResponse.json({
         success: true,
         data: stats,
-      }
+      });
 
     const sessions = await getUserActiveSessions(user.id);
 
@@ -50,6 +51,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       // Revoke all sessions for the user
       const count = await revokeAllUserSessions(user.id);
 
+      }
       return NextResponse.json({
         success: true,
         message: `Revoked ${count} active sessions`,
@@ -57,6 +59,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       });
 
     if (!sessionHash) {
+      }
       return NextResponse.json(
         { success: false, error: "sessionHash parameter is required" },
         { status: 400 }
@@ -76,4 +79,5 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       { success: false, error: "Failed to revoke session" },
       { status: 500 }
     );
-  });
+  }
+  }

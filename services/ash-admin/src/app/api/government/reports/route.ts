@@ -17,6 +17,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       body;
 
     if (!agency || !period || !workspace_id) {
+      }
       return NextResponse.json(
         { error: "agency, period, and workspace_id are required" },
         { status: 400 }
@@ -44,16 +45,16 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (employees.length === 0) {
+      }
       return NextResponse.json(
         { error: "No active employees found" },
         { status: 404 }
       );
     }
-
     let report: any = null;
 
     // Parse contact_info JSON to extract government IDs
-    const employeesWithGovIds = employees.map(emp => {;
+    const employeesWithGovIds = employees.map(emp => {
       let contactInfo: any = {};
       try {
         contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
@@ -134,13 +135,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         );
         break;
 
+      }
+        break;
+
       default:
         return NextResponse.json(
           { error: "Invalid agency. Must be SSS, PHILHEALTH, or PAGIBIG" },
           { status: 400 }
         );
     }
-
     return NextResponse.json({
       success: true,
       agency,
@@ -162,12 +165,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const monthly_salary = searchParams.get("monthly_salary");
 
     if (!monthly_salary) {
+      }
       return NextResponse.json(
         { error: "monthly_salary is required" },
         { status: 400 }
       );
     }
-
     const salary = parseFloat(monthly_salary);
 
     // Calculate all contributions
@@ -189,6 +192,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Get employee details if ID provided
     let employee = null;
     if (employee_id) {
+      }
       const emp = await prisma.employee.findUnique({
         where: { id: employee_id },
         select: {
@@ -200,6 +204,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       });
 
       if (emp) {
+        }
         let contactInfo: any = {};
         try {
           contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
@@ -215,7 +220,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           philhealth_number: contactInfo.philhealth_number || null,
           pagibig_number: contactInfo.pagibig_number || null,
         };
-      }
+      
 
     return NextResponse.json({
       employee,
@@ -254,4 +259,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { error: "Failed to calculate contributions", details: error.message },
       { status: 500 }
     );
+  }
   });

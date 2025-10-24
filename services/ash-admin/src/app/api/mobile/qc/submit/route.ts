@@ -27,6 +27,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     } = body;
 
     if (!bundle_id || !order_id) {
+      }
       return NextResponse.json(
         { success: false, error: "Bundle ID and Order ID are required" },
         { status: 400 }
@@ -116,7 +117,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         })
         .catch(() => {
           console.log("CAPA task creation skipped");
-        }
+        
 
     return NextResponse.json({
       success: true,
@@ -132,4 +133,5 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
+  }
   });

@@ -19,12 +19,14 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     let refreshToken = request.cookies.get("refresh_token")?.value;
 
     if (!refreshToken) {
+      }
       const body = await request.json().catch(() => ({}));
       refreshToken = body.refresh_token;
-    }
+    });
 
     if (!refreshToken) {
       authLogger.warn("Refresh token missing in request");
+      }
       return apiUnauthorized("Refresh token required");
     }
 
@@ -33,6 +35,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     if (!newAccessToken) {
       authLogger.warn("Invalid or expired refresh token");
+      }
       return apiUnauthorized("Invalid or expired refresh token");
     }
 

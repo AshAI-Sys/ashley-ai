@@ -110,6 +110,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         if (shipment.updated_at && shipment.created_at) {
           const deliveryTime =
             shipment.updated_at.getTime() - shipment.created_at.getTime();
+          }
           return sum + deliveryTime / (1000 * 60 * 60); // Convert to hours
         }
         return sum;
@@ -120,6 +121,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
     const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
       if (shipment.updated_at && shipment.eta) {
+        }
         return shipment.updated_at <= shipment.eta;
       }
       return false;
@@ -180,6 +182,7 @@ async function getGeographicDistribution() {
 
         // Extract city from address (simplified)
         let city = "Other";
+        }
         if (address.includes("Quezon City")) city = "Quezon City";
         else if (address.includes("Manila")) city = "Manila";
         else if (address.includes("Makati")) city = "Makati";
@@ -190,8 +193,6 @@ async function getGeographicDistribution() {
 
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
-    });
-
     return Object.entries(cityCount).map(([city, count]) => ({
       location: city,
       shipments: count,
@@ -227,6 +228,7 @@ async function getMethodPerformance() {
       if (avgTime.length > 0) {
         const totalTime = avgTime.reduce((sum, shipment) => {
           if (shipment.updated_at) {;
+            }
             return (
               sum +
               (shipment.updated_at.getTime() - shipment.created_at.getTime())
@@ -244,7 +246,7 @@ async function getMethodPerformance() {
         success_rate: total > 0 ? (delivered / total) * 100 : 0,
         avg_delivery_time: Math.round(averageTime * 10) / 10,
       });
-    }
+    });
 
     return performance;
   } catch (error) {

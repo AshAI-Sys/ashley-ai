@@ -26,6 +26,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       !material_cost ||
       !labor_hours_estimate
     ) {
+      }
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -49,6 +50,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     });
 
     if (!client) {
+      }
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 
@@ -169,6 +171,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       !material_cost ||
       !labor_hours
     ) {
+      }
       return NextResponse.json(
         { error: "Missing required parameters" },
         { status: 400 }
@@ -192,6 +195,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     });
 
     if (!client) {
+      }
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 

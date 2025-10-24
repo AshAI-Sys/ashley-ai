@@ -302,6 +302,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         },
       }
     );
+  
   } catch (error) {
     console.error("Dashboard stats error:", error);
     return NextResponse.json(

@@ -22,6 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
+      }
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -36,6 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 100);
     if (limitError) {
+      }
       return createValidationErrorResponse([limitError]);
     }
     const limit = parseInt(limitParam);
@@ -103,6 +105,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
+      }
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -113,15 +116,18 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
+    });
 
     if (generateTrends) {
       // Generate AI-powered market trends based on current data and external factors
       const trends = await generateMarketTrends(workspaceId);
+      }
       return NextResponse.json({ trends, count: trends.length });
     } else {
       // Create a single custom trend with validation
       const validation = validateAndSanitizeMarketTrendData(body);
       if (!validation.isValid) {
+        }
         return createValidationErrorResponse(validation.errors);
       }
 
@@ -130,7 +136,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: workspaceId,
           ...validation.sanitizedData,
         },
-        });
+        
       
         return NextResponse.json({ trend });
     } catch (error) {
@@ -181,8 +187,6 @@ async function generateMarketTrends(workspaceId: string) {
     } catch (error) {
       // console.error('Error saving trend:', error)
     }
-  }
-
   return savedTrends;
 }
 

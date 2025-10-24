@@ -89,15 +89,15 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         { last_name: { contains: search, mode: "insensitive" } },
         { username: { contains: search, mode: "insensitive" } },
       ];
-    }
+    });
 
     if (role && role !== "all") {
       where.role = role;
-    }
+    });
 
     if (department && department !== "all") {
       where.department = department;
-    }
+    });
 
     if (status && status !== "all") {
       where.is_active = status === "active";
@@ -128,7 +128,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+      
     
       return NextResponse.json({
       success: true,
@@ -172,6 +172,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
     });
 
     if (existingUser) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -226,8 +227,10 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,

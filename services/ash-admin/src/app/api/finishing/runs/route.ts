@@ -41,6 +41,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       let materialsUsed = [];
       try {
         if (run.materials) {
+          }
           const parsedMaterials = JSON.parse(run.materials);
           materialsUsed = parsedMaterials.map((m: any) => ({
             item_name: m.item_name || "Unknown",
@@ -57,7 +58,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         total_tasks: totalTasks,
         materials_used: materialsUsed,
       };
-      });
+      
     
       return NextResponse.json({
       runs: processedRuns,
@@ -94,7 +95,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
       },
-      });
+      
     
       return NextResponse.json(finishingRun, { status: 201 });
   } catch (error) {
@@ -126,7 +127,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     // If marking as completed, create finished units if data provided
     if (updateData.status === "COMPLETED" && updateData.bundle_data) {
       await createFinishedUnits(finishingRun, updateData.bundle_data);
-    }
+    
 
     return NextResponse.json(finishingRun);
   } catch (error) {
@@ -169,6 +170,7 @@ async function createFinishedUnits(finishingRun: any, bundleData: any) {
     console.log(
       `Created ${finishedUnits.length} finished units for finishing run ${finishingRun.id}`
     );
+  
   } catch (error) {
     console.error("Error creating finished units:", error);
   }

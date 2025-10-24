@@ -29,4 +29,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { error: "Failed to export logs" },
         { status: 500 }
       );
-    });
+    }
+    }

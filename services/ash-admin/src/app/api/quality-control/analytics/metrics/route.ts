@@ -22,6 +22,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         startDate.setMonth(endDate.getMonth() - 3);
         break;
+      }
+        break;
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
@@ -125,4 +127,5 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to calculate metrics" },
       { status: 500 }
     );
-  });
+  }
+  }

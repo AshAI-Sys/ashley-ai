@@ -35,7 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+      
     
       return NextResponse.json({
       capa_tasks: capaTasks,
@@ -71,9 +71,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     let nextNumber = 1;
     if (lastCapa) {
+      }
       const lastNumber = parseInt(lastCapa.capa_number.split("-").pop() || "0");
       nextNumber = lastNumber + 1;
-    }
+    });
 
     const capaNumber = `CAPA-${currentYear}-${nextNumber.toString().padStart(4, "0")}`;
 
@@ -101,7 +102,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         assignee: { select: { first_name: true, last_name: true } },
         creator: { select: { first_name: true, last_name: true } },
       },
-      });
+      
     
       return NextResponse.json(capaTask, { status: 201 });
   } catch (error) {
@@ -110,4 +111,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to create CAPA task" },
       { status: 500 }
     );
-  });
+  }
+  }

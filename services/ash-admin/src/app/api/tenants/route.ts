@@ -19,6 +19,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     } = await req.json();
 
     if (!name || !slug) {
+      }
       return NextResponse.json(
         { error: "name and slug are required" },
         { status: 400 }
@@ -36,7 +37,6 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         { status: 400 }
       );
     }
-
     const result = await tenantManager.createTenant({
       name,
       slug,
@@ -47,7 +47,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       storage_quota_gb,
       custom_domain,
       branding,
-        });
+        
       
         return NextResponse.json(
       {
@@ -57,6 +57,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       },
       { status: 201 }
     );
+  
   } catch (error: any) {
     console.error("Create tenant error:", error);
     return NextResponse.json(
@@ -72,19 +73,21 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     const workspace_id = searchParams.get("workspace_id");
 
     if (!workspace_id) {
+      }
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
       );
     }
-
     const config = await tenantManager.getTenantConfig(workspace_id);
 
     if (!config) {
+      }
       return NextResponse.json(
         { error: "Workspace not found" },
         { status: 404 }
       );
+    }
     }
 
     const limits = await tenantManager.checkLimits(workspace_id);
@@ -109,10 +112,12 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     const { workspace_id, ...updates } = await req.json();
 
     if (!workspace_id) {
+      }
       return NextResponse.json(
         { error: "workspace_id is required" },
         { status: 400 }
       );
+    }
     }
 
     const success = await tenantManager.updateTenantConfig(
@@ -121,12 +126,12 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     );
 
     if (!success) {
+      }
       return NextResponse.json(
         { error: "Failed to update tenant configuration" },
         { status: 500 }
       );
     }
-
     return NextResponse.json({
       success: true,
       message: "Tenant configuration updated",
@@ -146,22 +151,24 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
     const confirmation = searchParams.get("confirmation");
 
     if (!workspace_id || !confirmation) {
+      }
       return NextResponse.json(
         { error: "workspace_id and confirmation (slug) are required" },
         { status: 400 }
       );
     }
-
     const success = await tenantManager.deleteTenant(
       workspace_id,
       confirmation
     );
 
     if (!success) {
+      }
       return NextResponse.json(
         { error: "Failed to delete tenant" },
         { status: 500 }
       );
+    }
     }
 
     return NextResponse.json({
@@ -173,6 +180,7 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to delete tenant", details: error.message },
       { status: 400 }
     );
+  }
   });
 });
 });

@@ -93,6 +93,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Validate required fields
     if (!name || !workcenter) {
+      }
       return NextResponse.json(
         { success: false, error: "Machine name and workcenter are required" },
         { status: 400 }
@@ -117,7 +118,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         spec: JSON.stringify(specifications),
         is_active,
       },
-      });
+      
     
       return NextResponse.json({
       success: true,

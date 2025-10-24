@@ -9,6 +9,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { base_schedule, scenario_type, scenario_data, jobs, resources } = await req.json();
 
     if (!base_schedule || !scenario_type || !jobs || !resources) {
+      }
       return NextResponse.json(
         {
           error:
@@ -40,6 +41,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     switch (scenario_type) {
       case "ADD_JOB":
         if (!scenario_data.job) {
+          }
           return NextResponse.json(
             { error: "scenario_data.job is required for ADD_JOB" },
             { status: 400 }
@@ -50,6 +52,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       case "REMOVE_JOB":
         if (!scenario_data.job_id) {
+          }
           return NextResponse.json(
             { error: "scenario_data.job_id is required for REMOVE_JOB" },
             { status: 400 }
@@ -60,6 +63,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       case "ADD_RESOURCE":
         if (!scenario_data.resource) {
+          }
           return NextResponse.json(
             { error: "scenario_data.resource is required for ADD_RESOURCE" },
             { status: 400 }
@@ -70,6 +74,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       case "CHANGE_DEADLINE":
         if (!scenario_data.job_id || !scenario_data.new_deadline) {
+          }
           return NextResponse.json(
             {
               error:

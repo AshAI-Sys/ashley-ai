@@ -150,7 +150,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             design.order.order_number
               .toLowerCase()
               .includes(search.toLowerCase()));
-      }
+      });
 
       if (status) {
         matches = matches && design.status === status;
@@ -158,7 +158,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
       if (method) {
         matches = matches && design.method === method;
-      }
+      });
 
       return matches;
     });
@@ -211,6 +211,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 201 }
     );
+  
   } catch (error) {
     console.error("Error creating design:", error);
     return NextResponse.json(

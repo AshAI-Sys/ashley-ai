@@ -36,10 +36,12 @@ export const GET = requireAuth(async (
     });
 
     if (!inspection) {
+      }
       return NextResponse.json(
         { error: "Inspection not found" },
         { status: 404 }
       );
+    }
     }
 
     return NextResponse.json(inspection);
@@ -49,7 +51,8 @@ export const GET = requireAuth(async (
       { error: "Failed to fetch inspection" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const PUT = requireAuth(async (
   request: NextRequest,
@@ -69,7 +72,7 @@ export const GET = requireAuth(async (
         order: { select: { order_number: true } },
         inspector: { select: { first_name: true, last_name: true } },
       },
-      });
+      
     
       return NextResponse.json(inspection);
   } catch (error) {
@@ -78,4 +81,5 @@ export const GET = requireAuth(async (
       { error: "Failed to update inspection" },
       { status: 500 }
     );
-  });
+  }
+  }

@@ -71,5 +71,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch sewing operations" },
       { status: 500 }
     );
-  });
+  }
+  }
 });

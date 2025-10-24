@@ -25,7 +25,7 @@ export async function POST(
         qty_sampled: data.qty_sampled || 1,
         result: data.result || "OK",
       },
-        });
+        
       
         return NextResponse.json(sample, { status: 201 });
   } catch (error) {

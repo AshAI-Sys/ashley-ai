@@ -12,6 +12,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (inspectionId) {
       where.inspection_id = inspectionId;
 
+    }
     const defects = await prisma.qCDefect.findMany({
       where,
       include: {
@@ -22,7 +23,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         },
       },
       orderBy: { created_at: "desc" },
-        });
+        
       
         return NextResponse.json(defects);
   } catch (error) {
@@ -98,6 +99,7 @@ async function updateInspectionDefectCounts(inspectionId: string) {
   let result = "PENDING_REVIEW";
   if (inspection) {
     const totalDefects = criticalFound + majorFound + minorFound;
+    }
     if (totalDefects <= inspection.acceptance) {
       result = "ACCEPT";
     } else if (totalDefects >= inspection.rejection) {

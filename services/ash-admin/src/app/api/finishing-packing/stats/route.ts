@@ -117,15 +117,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         total_cartons: totalCartons,
         cartons_today: packedTodayCartons,
       },
-});
-} catch (error) {
+  });
+  } catch (error) {
     console.error("Error calculating finishing & packing stats:", error);
     return NextResponse.json(
       { error: "Failed to calculate statistics" },
       { status: 500 }
     );
   }
-}
+});
 
 async function getPackingEfficiency() {
   try {

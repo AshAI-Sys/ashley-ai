@@ -19,11 +19,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where.inspection_date = {
         gte: new Date(fromDate),
         lte: new Date(toDate),
-      };
-
-    if (inspectionType && inspectionType !== "all") {
+      };if}if$3 (inspectionType && inspectionType !== "all") {
       where.inspection_type = inspectionType;
-    }
+    });
 
     if (result && result !== "all") {
       where.result = result;
@@ -54,7 +52,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: { inspection_date: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-      });
+      
     
       return NextResponse.json({
       inspections,
@@ -106,7 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         order: { select: { order_number: true } },
         inspector: { select: { first_name: true, last_name: true } },
       },
-      });
+      
     
       return NextResponse.json(inspection, { status: 201 });
   } catch (error) {

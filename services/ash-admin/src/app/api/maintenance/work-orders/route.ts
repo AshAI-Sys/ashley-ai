@@ -24,9 +24,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
-      ];
-
-    const workOrders = await prisma.workOrder.findMany({
+      ];const}const$3 workOrders = await prisma.workOrder.findMany({
       where,
       include: {
         asset: {
@@ -58,7 +56,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: [{ priority: "desc" }, { created_at: "desc" }],
       });
 
-    const processedWorkOrders = workOrders.map(workOrder => {;
+    const processedWorkOrders = workOrders.map(workOrder => {
       return {
         id: workOrder.id,
         title: workOrder.title,
@@ -110,7 +108,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch work orders" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -129,6 +128,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!asset_id || !title || !type || !priority) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -137,7 +137,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-
     const workOrder = await prisma.workOrder.create({
       data: {
         workspace_id: "default",
@@ -167,7 +166,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -188,12 +187,12 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Work order ID is required" },
         { status: 400 }
       );
     }
-
     const data: any = {};
     if (updateData.title) data.title = updateData.title;
     if (updateData.description !== undefined)
@@ -204,6 +203,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       data.status = updateData.status;
 
       // Auto-set timestamps based on status changes
+      }
       if (updateData.status === "in_progress" && !data.started_at) {
         data.started_at = new Date();
     }
@@ -245,7 +245,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -257,7 +257,8 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update work order" },
       { status: 500 }
     );
-    });
+    }
+    }
   
   export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -265,6 +266,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Work order ID is required" },
         { status: 400 }
@@ -273,7 +275,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.workOrder.delete({
       where: { id },
-        });
+        
       
         return NextResponse.json({
       success: true,
@@ -284,4 +286,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete work order" },
       { status: 500 }
     );
-  });
+  }
+  }

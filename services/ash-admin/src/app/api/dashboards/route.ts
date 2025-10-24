@@ -30,7 +30,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         widgets_data: true,
       },
       orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
-    });
+    
 
     return NextResponse.json({
       success: true,
@@ -74,12 +74,12 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     } = body;
 
     if (!name || !dashboard_type || !layout || !widgets) {
+      }
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
-
     const dashboard = await prisma.executiveDashboard.create({
       data: {
         workspace_id: workspaceId,
@@ -102,7 +102,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-        });
+        
       
         return NextResponse.json({
       success: true,

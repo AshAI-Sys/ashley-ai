@@ -323,8 +323,10 @@ export const POST = requireAnyPermission(["admin:create", "hr:create"])(async (
       },
       { status: 201 }
     );
+  
   } catch (error) {
     if (error instanceof z.ZodError) {
+      }
       return NextResponse.json(
         {
           success: false,

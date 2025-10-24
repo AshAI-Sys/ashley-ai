@@ -81,4 +81,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { error: "Failed to fetch logs" },
         { status: 500 }
       );
-    });
+    }
+    }

@@ -12,14 +12,16 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     if (action === "roles") {
       const roles = permissionManager.getAvailableRoles();
+      }
       return NextResponse.json({
         success: true,
         roles,
-      }
+      });
 
     if (action === "user" && user_id) {
       const userPermissions =
         await permissionManager.getUserPermissions(user_id);
+      }
       return NextResponse.json({
         success: true,
         user_permissions: userPermissions,
@@ -46,12 +48,12 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     const { user_id, resource, action } = await req.json();
 
     if (!user_id || !resource || !action) {
+      }
       return NextResponse.json(
         { error: "user_id, resource, and action are required" },
         { status: 400 }
       );
     }
-
     const hasPermission = await permissionManager.hasPermission(
       user_id,
       resource,
@@ -70,6 +72,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to check permission", details: error.message },
       { status: 500 }
     );
+  }
   });
 });
 });

@@ -20,6 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Validate request
     const validation = ForgotPasswordSchema.safeParse(body);
     if (!validation.success) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -28,7 +29,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-
     const { email } = validation.data;
 
     // Find user
@@ -45,6 +45,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // This prevents email enumeration attacks
     if (!user) {
       console.log("📧 Password reset requested for non-existent email:", email);
+      }
       return NextResponse.json(
         {
           success: true,
@@ -63,6 +64,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           (user.password_reset_sent_at.getTime() - twoMinutesAgo.getTime()) /
             1000
         );
+        }
         return NextResponse.json(
           {
             success: false,
@@ -129,6 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 200 }
     );
+  
   } catch (error: any) {
     console.error("Forgot password error:", error);
     return NextResponse.json(

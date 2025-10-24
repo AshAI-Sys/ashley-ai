@@ -77,6 +77,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required fields
     if (!recipient_type || !channel || !content) {
+      }
       return NextResponse.json(
         {
           success: false,
@@ -91,6 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     let finalContent = content;
 
     if (template_id) {
+      }
       const template = await prisma.notificationTemplate.findUnique({
         where: { id: template_id },
       });
@@ -102,11 +104,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         );
         finalContent = interpolateTemplate(
           template.body_template,
+          }
           variables_data
         );
       }
-    }
-
     const notification = await prisma.notification.create({
       data: {
         workspace_id,
@@ -128,7 +129,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, name: true, category: true },
         },
       },
-    });
+    
 
     return NextResponse.json({
       success: true,
@@ -151,24 +152,25 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, status, error_message, sent_at, delivered_at } = body;
 
     if (!id) {
+      }
       return NextResponse.json(
         { success: false, error: "Notification ID is required" },
         { status: 400 }
       );
     }
-
     const updateData: any = {};
 
     if (status) {
       updateData.status = status;
 
+      }
       if (status === "SENT" && sent_at) {
         updateData.sent_at = new Date(sent_at);
-      }
+      });
 
       if (status === "DELIVERED" && delivered_at) {
         updateData.delivered_at = new Date(delivered_at);
-      }
+      });
 
       if (status === "FAILED") {
         updateData.retry_count = { increment: 1 };
@@ -176,12 +178,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           updateData.error_message = error_message;
         }
       }
-    }
-
     const notification = await prisma.notification.update({
       where: { id },
       data: updateData,
-    });
+    
 
     return NextResponse.json({
       success: true,

@@ -16,12 +16,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { report_id, filters: additionalFilters } = body;
 
     if (!report_id) {
+      }
       return NextResponse.json(
         { success: false, error: "Report ID is required" },
         { status: 400 }
       );
     }
-
     const startTime = Date.now();
 
     // Fetch report configuration
@@ -33,12 +33,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       });
 
     if (!report) {
+      }
       return NextResponse.json(
         { success: false, error: "Report not found" },
         { status: 404 }
       );
     }
-
     const queryConfig = JSON.parse(report.query_config);
     const reportFilters = report.filters ? JSON.parse(report.filters) : [];
     const sortOrder = report.sort_order ? JSON.parse(report.sort_order) : null;
@@ -97,6 +97,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
             sortOrder
           );
           break;
+        }
+          break;
         default:
           throw new Error(`Unsupported data source: ${report.data_source}`);
       }
@@ -127,7 +129,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         data: {
           view_count: { increment: 1 },
         },
-        });
+        
       
         return NextResponse.json({
         success: true,
@@ -181,7 +183,7 @@ async function executeOrdersQuery(
     if (filter.field === "client_id") where.client_id = filter.value;
     if (filter.field === "created_at" && filter.operator === "gte") {
       where.created_at = { gte: new Date(filter.value) };
-    }
+    });
 
   const orders = await prisma.order.findMany({
     where,

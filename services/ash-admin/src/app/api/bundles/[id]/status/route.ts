@@ -18,6 +18,7 @@ export const PUT = requireAuth(async (
     const { status, notes, location } = body;
 
     if (!status) {
+      }
       return NextResponse.json(
         { success: false, error: "Status is required" },
         { status: 400 }
@@ -33,6 +34,7 @@ export const PUT = requireAuth(async (
       });
 
     if (!bundle) {
+      }
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }
@@ -72,7 +74,7 @@ export const PUT = requireAuth(async (
 } catch (err) {
       // Ignore if BundleStatusHistory table doesn't exist
       console.log("Bundle status history logging skipped");
-    }
+    
 
     return NextResponse.json({
       success: true,

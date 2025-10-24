@@ -19,10 +19,12 @@ export async function POST(
       });
 
     if (!carton) {
+      }
       return NextResponse.json({ error: "Carton not found" }, { status: 404 });
     }
 
     if (carton.status !== "OPEN") {
+      }
       return NextResponse.json(
         { error: "Carton is not open for packing" },
         { status: 400 }
@@ -37,6 +39,7 @@ export async function POST(
     const maxCapacity = data.max_capacity || 50; // Default max units per carton
 
     if (currentUnits + data.quantity > maxCapacity) {
+      }
       return NextResponse.json(
         {
           error: `Cannot add ${data.quantity} units. Carton capacity: ${maxCapacity}, current: ${currentUnits}`,
@@ -62,7 +65,7 @@ export async function POST(
     await prisma.finishedUnit.updateMany({
       where: { id: data.finished_unit_id },
       data: { packed: true },
-        });
+        
       
         return NextResponse.json(cartonContent, { status: 201 });
   } catch (error) {
@@ -92,7 +95,7 @@ export async function GET(
         },
       },
       orderBy: { created_at: "asc" },
-        });
+        
       
         return NextResponse.json(contents);
   } catch (error) {
@@ -113,6 +116,7 @@ export async function DELETE(
     const contentId = searchParams.get("content_id");
 
     if (!contentId) {
+      }
       return NextResponse.json(
         { error: "content_id is required" },
         { status: 400 }
@@ -126,6 +130,7 @@ export async function DELETE(
       });
 
     if (!content) {
+      }
       return NextResponse.json({ error: "Content not found" }, { status: 404 });
     }
 
@@ -138,7 +143,7 @@ export async function DELETE(
     await prisma.finishedUnit.update({
       where: { id: content.finished_unit_id },
       data: { packed: false },
-        });
+        
       
         return NextResponse.json({ message: "Content removed from carton" });
   } catch (error) {

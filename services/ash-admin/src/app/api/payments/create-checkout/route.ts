@@ -24,6 +24,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { invoiceId } = body;
 
     if (!invoiceId) {
+      }
       return createErrorResponse(new ValidationError("Invoice ID is required"));
     }
 
@@ -36,10 +37,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!invoice) {
+      }
       return createErrorResponse(new NotFoundError("Invoice not found"));
     }
 
     if (invoice.status === "PAID") {
+      }
       return createErrorResponse(
         new ValidationError("Invoice is already paid")
       );
@@ -60,6 +63,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       parseFloat(paidAmount.toString());
 
     if (remainingAmount <= 0) {
+      }
       return createErrorResponse(
         new ValidationError("Invoice has no remaining balance")
       );
@@ -82,11 +86,11 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!result.success) {
+      }
       return createErrorResponse(
         new ValidationError(result.error || "Failed to create checkout session")
       );
     }
-
     return createSuccessResponse({
       checkoutSession: {
         id: result.transactionId,
