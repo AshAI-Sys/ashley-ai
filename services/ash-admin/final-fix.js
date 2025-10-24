@@ -6,31 +6,31 @@ const fixes = [
   {
     file: 'src/app/api/automation/stats/route.ts',
     replacements: [
-      { from: /(\n  }\n}\n)$/, to: '\n  }\n});\n' }
+      { from: /(\n {2}}\n}\n)$/, to: '\n  }\n});\n' }
     ]
   },
   {
     file: 'src/app/api/automation/templates/route.ts',
     replacements: [
-      { from: /(\n  }\n}\);\n\n\/\/ PUT)/, to: '\n  }\n});\n\n// PUT' }
+      { from: /(\n {2}}\n}\);\n\n\/\/ PUT)/, to: '\n  }\n});\n\n// PUT' }
     ]
   },
   {
     file: 'src/app/api/backups/route.ts',
     replacements: [
-      { from: /(\n  }\);\n$)/, to: '\n  }\n});\n' }
+      { from: /(\n {2}}\);\n$)/, to: '\n  }\n});\n' }
     ]
   },
   {
     file: 'src/app/api/brands/route.ts',
     replacements: [
-      { from: /(\n  }\);\n$)/, to: '\n  }\n});\n' }
+      { from: /(\n {2}}\);\n$)/, to: '\n  }\n});\n' }
     ]
   },
   {
     file: 'src/app/api/clients/[id]/brands/[brandId]/route.ts',
     replacements: [
-      { from: /(message: "Brand updated successfully",\n  } catch)/, to: 'message: "Brand updated successfully",\n    });\n  } catch' }
+      { from: /(message: "Brand updated successfully",\n {2}} catch)/, to: 'message: "Brand updated successfully",\n    });\n  } catch' }
     ]
   }
 ];

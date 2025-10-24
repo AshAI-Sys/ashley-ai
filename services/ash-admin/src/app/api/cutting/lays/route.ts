@@ -22,7 +22,7 @@ const CreateCutLaySchema = z.object({
       })
     )
     .min(1, "At least one size output is required"),
-}
+});
 
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
@@ -192,4 +192,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create cut lay" },
       { status: 500 }
     );
-  });
+  }
+});

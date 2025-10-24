@@ -107,18 +107,21 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     let avgDeliveryTime = 0;
     if (averageDeliveryTimes.length > 0) {
       const totalDeliveryTime = averageDeliveryTimes.reduce((sum, shipment) => {
-        if (shipment.updated_at && shipment.created_at) {;
+        if (shipment.updated_at && shipment.created_at) {
           const deliveryTime =
             shipment.updated_at.getTime() - shipment.created_at.getTime();
           return sum + deliveryTime / (1000 * 60 * 60); // Convert to hours
+        }
         return sum;
       }, 0);
       avgDeliveryTime = totalDeliveryTime / averageDeliveryTimes.length;
+    }
 
     // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
     const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
-      if (shipment.updated_at && shipment.eta) {;
+      if (shipment.updated_at && shipment.eta) {
         return shipment.updated_at <= shipment.eta;
+      }
       return false;
     }).length;
 
@@ -155,7 +158,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-}
+});
 
 async function getGeographicDistribution() {
   try {
@@ -187,6 +190,7 @@ async function getGeographicDistribution() {
 
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
+    });
 
     return Object.entries(cityCount).map(([city, count]) => ({
       location: city,

@@ -48,6 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
+    });
 
     if (!bundle) {
       return NextResponse.json(
@@ -59,11 +60,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       bundle,
+    });
   } catch (error) {
     console.error("Error scanning bundle:", error);
     return NextResponse.json(
       { success: false, error: "Failed to scan bundle" },
       { status: 500 }
     );
-  });
+  }
 });

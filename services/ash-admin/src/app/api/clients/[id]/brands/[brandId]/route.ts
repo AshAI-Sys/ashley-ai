@@ -119,6 +119,7 @@ export async function PUT(
           { status: 400 }
         );
       }
+    }
 
     const brand = await prisma.brand.update({
       where: { id: brandId },
@@ -205,16 +206,17 @@ export async function DELETE(
       data: {
         deleted_at: new Date(),
       },
-        });
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       message: "Brand deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting brand:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete brand" },
       { status: 500 }
     );
-};
-});
+  }
+}

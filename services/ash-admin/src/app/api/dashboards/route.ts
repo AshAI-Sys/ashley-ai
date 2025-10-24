@@ -30,9 +30,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         widgets_data: true,
       },
       orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
-        });
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       dashboards: dashboards.map(d => ({
         ...d,
@@ -45,6 +45,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           position: JSON.parse(w.position),
         })),
       })),
+    });
   } catch (error: any) {
     console.error("Error fetching dashboards:", error);
     return NextResponse.json(
@@ -52,6 +53,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/dashboards - Create new dashboard
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -109,11 +111,12 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         layout: JSON.parse(dashboard.layout),
         widgets: JSON.parse(dashboard.widgets),
       },
-});
-} catch (error: any) {
+    });
+  } catch (error: any) {
     console.error("Error creating dashboard:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
     );
-  });
+  }
+});

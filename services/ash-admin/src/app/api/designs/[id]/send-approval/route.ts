@@ -172,7 +172,7 @@ export async function POST(
         expires_at: expiresAt,
       },
 });
-} catch (error) {
+  } catch (error) {
     console.error("Error sending approval:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
@@ -180,5 +180,5 @@ export async function POST(
     );
   } finally {
     await prisma.$disconnect();
-};
-});
+  }
+}

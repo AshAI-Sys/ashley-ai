@@ -18,6 +18,7 @@ export async function GET(
 
     if (version) {
       where.version_id = `${params.id}-${version}`;
+    }
 
     const comments = await prisma.designComment.findMany({
       where,
@@ -53,6 +54,7 @@ export async function GET(
         },
       },
       orderBy: { created_at: "desc" },
+    });
 
     // Parse attachments JSON
     const commentsWithParsedData = comments.map(comment => ({
@@ -79,8 +81,8 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: commentsWithParsedData,
-      });
-    } catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching comments:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch comments" },
@@ -89,6 +91,7 @@ export async function GET(
   } finally {
     await prisma.$disconnect();
   }
+}
 
 // POST - Create a new comment
 export async function POST(
@@ -205,8 +208,8 @@ export async function POST(
         mentioned_users: mentionedUsers ? JSON.parse(mentionedUsers) : [],
         annotation_area: annotationArea ? JSON.parse(annotationArea) : null,
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error creating comment:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create comment" },
@@ -214,5 +217,5 @@ export async function POST(
     );
   } finally {
     await prisma.$disconnect();
-};
-});
+  }
+}

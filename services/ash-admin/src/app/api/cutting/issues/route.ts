@@ -169,9 +169,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             decrement: validatedData.qty_issued,
           },
         },
-        });
-      
-        return newFabricIssue;
+      });
+
+      return newFabricIssue;
+    });
 
     return NextResponse.json(
       {
@@ -194,9 +195,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to issue fabric to cutting" },
       { status: 500 }
     );
-    });
-  
-  export const PUT = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -249,11 +251,13 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
+    });
 
     return NextResponse.json({
       success: true,
       data: fabricIssue,
       message: "Fabric issue updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -267,9 +271,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update fabric issue" },
       { status: 500 }
     );
-    });
-  
-  export const DELETE = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -310,16 +315,19 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           qty_on_hand: {
             increment: existingIssue.qty_issued,
           },
-            });
-          }
-        
-        return NextResponse.json({
+        },
+      });
+    });
+
+    return NextResponse.json({
       success: true,
       message: "Fabric issue deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting fabric issue:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete fabric issue" },
       { status: 500 }
     );
-  });
+  }
+});

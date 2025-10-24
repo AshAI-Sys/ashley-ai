@@ -64,12 +64,9 @@ export const GET = requireAuth(async (
         },
       },
       orderBy: { created_at: "desc" },
+    });
 
-      });
-
-    
-
-      return NextResponse.json({
+    return NextResponse.json({
       success: true,
       data: brands,
     });
@@ -158,9 +155,9 @@ export const POST = requireAuth(async (
           },
         },
       },
-        });
-      
-        return NextResponse.json(
+    });
+
+    return NextResponse.json(
       {
         success: true,
         data: brand,
@@ -181,4 +178,5 @@ export const POST = requireAuth(async (
       { success: false, error: "Failed to create brand" },
       { status: 500 }
     );
-  });
+  }
+});

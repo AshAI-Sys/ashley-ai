@@ -30,12 +30,12 @@ files.forEach(file => {
     // Fix pattern: `  });` at end of file should be `  }\n});`
     // Match catch blocks ending with `  });`
     content = content.replace(
-      /(  } catch \([^)]+\) \{[\s\S]+?    \);\n  }\);)$/gm,
-      (match) => match.replace(/  }\);$/, '  }\n});')
+      /( {2}} catch \([^)]+\) \{[\s\S]+? {4}\);\n {2}}\);)$/gm,
+      (match) => match.replace(/ {2}}\);$/, '  }\n});')
     );
 
     // Fix pattern: missing } before });
-    content = content.replace(/(\n    \);\n  }\);)/g, '\n    );\n  }\n});');
+    content = content.replace(/(\n {4}\);\n {2}}\);)/g, '\n    );\n  }\n});');
 
     if (content !== original) {
       fs.writeFileSync(file, content, 'utf8');

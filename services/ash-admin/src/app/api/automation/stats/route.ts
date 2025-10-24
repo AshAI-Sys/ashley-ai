@@ -115,8 +115,9 @@ function generateDemoChart() {
       successful: Math.floor(Math.random() * 50) + 10,
       failed: Math.floor(Math.random() * 10),
       total: 0,
-      });
-    
+    });
+  }
+
   return chartData.map(item => ({
     ...item,
     total: item.successful + item.failed,

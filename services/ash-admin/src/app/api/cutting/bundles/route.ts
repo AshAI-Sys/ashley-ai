@@ -199,11 +199,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
                 },
               },
             },
-          }
+          });
 
           createdBundles.push(bundle);
         }
       }
+    });
 
     return NextResponse.json(
       {
@@ -227,7 +228,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-}
+});
 
 function generateQRCode(
   orderId: string,
@@ -298,11 +299,13 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
+    });
 
     return NextResponse.json({
       success: true,
       data: bundle,
       message: "Bundle updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -316,4 +319,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update bundle" },
       { status: 500 }
     );
-  });
+  }
+});

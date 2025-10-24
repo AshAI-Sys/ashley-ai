@@ -35,12 +35,13 @@ export async function GET(
       success: true,
       data: { printLocations },
 });
-} catch (error) {
+  } catch (error) {
     console.error("Error fetching print locations:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch print locations" },
       { status: 500 }
     );
+  }
 }
 
 export async function POST(
@@ -125,12 +126,13 @@ export async function PUT(
         offset_y_cm: validatedData.offset_y_cm,
         notes: validatedData.notes,
       },
-        });
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       data: { printLocation },
       message: "Print location updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -170,15 +172,17 @@ export async function DELETE(
       where: {
         id: locationId,
       },
+    });
 
     return NextResponse.json({
       success: true,
       message: "Print location deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting print location:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete print location" },
       { status: 500 }
     );
-};
-});
+  }
+}

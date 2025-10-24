@@ -201,12 +201,13 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-        });
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       data: fabricBatch,
       message: "Fabric batch updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -220,9 +221,10 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to update fabric batch" },
       { status: 500 }
     );
-    });
-  
-  export const DELETE = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -266,15 +268,17 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
 
     await prisma.fabricBatch.delete({
       where: { id },
-        });
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       message: "Fabric batch deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting fabric batch:", error);
     return NextResponse.json(
       { success: false, error: "Failed to delete fabric batch" },
       { status: 500 }
     );
-  });
+  }
+});
