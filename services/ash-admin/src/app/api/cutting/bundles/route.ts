@@ -205,6 +205,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           createdBundles.push(bundle);
         }
       }
+    });
+
     return NextResponse.json(
       {
         success: true,
@@ -213,7 +215,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
-  
   } catch (error) {
     if (error instanceof z.ZodError) {
       

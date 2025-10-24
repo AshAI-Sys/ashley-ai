@@ -70,11 +70,11 @@ export const PUT = requireAuth(async (
           location,
           changed_at: new Date(),
         },
-});
-} catch (err) {
+    });
+    } catch (err) {
       // Ignore if BundleStatusHistory table doesn't exist
       console.log("Bundle status history logging skipped");
-    
+    }
 
     return NextResponse.json({
       success: true,

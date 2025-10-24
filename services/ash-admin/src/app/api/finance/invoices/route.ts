@@ -31,7 +31,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   if (overdue_only === "true") {
     where.due_date = { lt: new Date() };
     where.status = { in: ["sent", "pending"] };
-  });
+  }
 
   const invoices = await prisma.invoice.findMany({
     where,

@@ -45,12 +45,12 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       compress,
       includeData,
       includeSchema,
-        
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       backup,
-      });
+    });
     } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to create backup", details: error.message },

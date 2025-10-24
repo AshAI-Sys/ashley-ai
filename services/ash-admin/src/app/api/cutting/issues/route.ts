@@ -113,12 +113,11 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!fabricBatch) {
-      
+
       return NextResponse.json(
         { success: false, error: "Fabric batch not found" },
         { status: 404 }
       );
-    }
     }
 
     if (fabricBatch.qty_on_hand < validatedData.qty_issued) {
@@ -176,7 +175,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
       return newFabricIssue;
-    
+    });
 
     return NextResponse.json(
       {
@@ -186,7 +185,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
-  
   } catch (error) {
     if (error instanceof z.ZodError) {
       
@@ -328,7 +326,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
           },
         },
       });
-    
+    });
 
     return NextResponse.json({
       success: true,

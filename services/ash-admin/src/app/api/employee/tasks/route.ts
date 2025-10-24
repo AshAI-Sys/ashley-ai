@@ -233,9 +233,6 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       }));
       break;
 
-    }
-      break;
-
     default:
       // For other departments, return empty array or generic tasks
       tasks = [];

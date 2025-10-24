@@ -107,6 +107,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           variables_data
         );
       }
+    }
+
     const notification = await prisma.notification.create({
       data: {
         workspace_id,
@@ -161,25 +163,27 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 
     if (status) {
       updateData.status = status;
-
       }
+
       if (status === "SENT" && sent_at) {
         updateData.sent_at = new Date(sent_at);
-      });
+      }
 
       if (status === "DELIVERED" && delivered_at) {
         updateData.delivered_at = new Date(delivered_at);
-      });
+      }
 
       if (status === "FAILED") {
         updateData.retry_count = { increment: 1 };
         if (error_message) {
           updateData.error_message = error_message;
         }
-          const notification = await prisma.notification.update({
+      }
+
+    const notification = await prisma.notification.update({
       where: { id },
       data: updateData,
-    
+    });
 
     return NextResponse.json({
       success: true,

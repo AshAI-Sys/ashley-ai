@@ -224,7 +224,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       });
 
       if (nameExists) {
-        
+
         return NextResponse.json(
           {
             success: false,
@@ -233,6 +233,8 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           { status: 400 }
         );
       }
+    }
+
     const brand = await prisma.brand.update({
       where: { id },
       data: validatedData,

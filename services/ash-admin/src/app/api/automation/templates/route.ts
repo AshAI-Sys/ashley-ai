@@ -117,7 +117,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     let variablesJson = null;
     if (variables) {
       try {
-        }
         variablesJson = JSON.stringify(variables);
       } catch (err) {
         return NextResponse.json(
@@ -125,6 +124,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { status: 400 }
         );
       }
+    }
+
     const template = await prisma.notificationTemplate.create({
       data: {
         workspace_id,
@@ -177,7 +178,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Convert variables to JSON string if provided
     if (updateData.variables) {
       updateData.variables = JSON.stringify(updateData.variables);
-    });
+    }
 
     const template = await prisma.notificationTemplate.update({
       where: { id },

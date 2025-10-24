@@ -165,7 +165,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     }
     if (updateData.actions) {
       updateData.actions = JSON.stringify(updateData.actions);
-    });
+    }
 
     const rule = await prisma.automationRule.update({
       where: { id },

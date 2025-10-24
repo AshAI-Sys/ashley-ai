@@ -56,7 +56,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { email: { contains: search, mode: "insensitive" } },
         { contact_person: { contains: search, mode: "insensitive" } },
       ];
-    });
+    }
 
     if (is_active !== null && is_active !== undefined) {
       where.is_active = is_active === "true";

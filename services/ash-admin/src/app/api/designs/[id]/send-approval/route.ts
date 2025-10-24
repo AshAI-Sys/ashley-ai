@@ -52,7 +52,6 @@ export async function POST(
         { status: 404 }
       );
     }
-    }
 
     if (designAsset.versions.length === 0) {
       

@@ -116,7 +116,7 @@ function generateDemoChart() {
       failed: Math.floor(Math.random() * 10),
       total: 0,
     });
-  });
+  }
 
   return chartData.map(item => ({
     ...item,

@@ -167,12 +167,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Fetch the created outputs
       const outputs = await tx.cutOutput.findMany({
         where: { cut_lay_id: newCutLay.id },
-        });
-      
-        return { ...newCutLay, outputs };
-      
-    
-      return NextResponse.json(
+      });
+
+      return { ...newCutLay, outputs };
+    });
+
+    return NextResponse.json(
       {
         success: true,
         data: cutLay,

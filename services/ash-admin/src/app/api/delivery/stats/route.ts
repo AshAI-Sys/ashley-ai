@@ -110,7 +110,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         if (shipment.updated_at && shipment.created_at) {
           const deliveryTime =
             shipment.updated_at.getTime() - shipment.created_at.getTime();
-          }
           return sum + deliveryTime / (1000 * 60 * 60); // Convert to hours
         }
         return sum;
@@ -182,7 +181,6 @@ async function getGeographicDistribution() {
 
         // Extract city from address (simplified)
         let city = "Other";
-        }
         if (address.includes("Quezon City")) city = "Quezon City";
         else if (address.includes("Manila")) city = "Manila";
         else if (address.includes("Makati")) city = "Makati";
@@ -193,6 +191,8 @@ async function getGeographicDistribution() {
 
         cityCount[city] = (cityCount[city] || 0) + 1;
       }
+    });
+
     return Object.entries(cityCount).map(([city, count]) => ({
       location: city,
       shipments: count,

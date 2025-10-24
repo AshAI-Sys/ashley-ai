@@ -18,7 +18,7 @@ export async function GET(
 
     if (version) {
       where.version_id = `${params.id}-${version}`;
-    });
+    }
 
     const comments = await prisma.designComment.findMany({
       where,
@@ -117,7 +117,6 @@ export async function POST(
         { success: false, message: "Comment text is required" },
         { status: 400 }
       );
-    }
     }
 
     if (!version) {

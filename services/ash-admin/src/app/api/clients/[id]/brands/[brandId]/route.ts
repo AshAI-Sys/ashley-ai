@@ -84,15 +84,14 @@ export async function PUT(
     // Check if brand exists
     const existingBrand = await prisma.brand.findUnique({
       where: { id: brandId },
-      });
+    });
 
     if (!existingBrand) {
-      
+
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
       );
-    }
     }
 
     if (existingBrand.client_id !== clientId) {
@@ -115,7 +114,7 @@ export async function PUT(
       });
 
       if (nameExists) {
-        
+
         return NextResponse.json(
           {
             success: false,
@@ -124,6 +123,8 @@ export async function PUT(
           { status: 400 }
         );
       }
+    }
+
     const brand = await prisma.brand.update({
       where: { id: brandId },
       data: {
@@ -193,12 +194,11 @@ export async function DELETE(
       });
 
     if (!existingBrand) {
-      
+
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
       );
-    }
     }
 
     if (existingBrand.client_id !== clientId) {

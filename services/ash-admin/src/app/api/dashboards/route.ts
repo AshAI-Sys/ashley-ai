@@ -30,7 +30,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         widgets_data: true,
       },
       orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
-    
+    });
 
     return NextResponse.json({
       success: true,

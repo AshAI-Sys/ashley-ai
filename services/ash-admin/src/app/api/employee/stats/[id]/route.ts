@@ -41,7 +41,6 @@ export const GET = withErrorHandling(
 
     if (employee.department === "Sewing") {
       // Count pieces from sewing runs
-      }
       const sewingRuns = await prisma.sewingRun.findMany({
         where: { operator_id: employeeId },
       });
@@ -69,7 +68,6 @@ export const GET = withErrorHandling(
       ).length;
     } else if (employee.department === "Quality Control") {
       // Count QC inspections
-      }
       const qcInspections = await prisma.qCInspection.findMany({
         where: { inspector_id: employeeId },
       });

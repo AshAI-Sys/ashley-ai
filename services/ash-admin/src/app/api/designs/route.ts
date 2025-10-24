@@ -150,7 +150,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             design.order.order_number
               .toLowerCase()
               .includes(search.toLowerCase()));
-      });
+      }
 
       if (status) {
         matches = matches && design.status === status;
@@ -158,7 +158,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
       if (method) {
         matches = matches && design.method === method;
-      });
+      }
 
       return matches;
     });

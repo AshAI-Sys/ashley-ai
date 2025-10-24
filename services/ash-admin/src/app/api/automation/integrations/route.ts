@@ -244,6 +244,7 @@ function maskSensitiveConfig(config: any): any {
     if (masked[key]) {
       masked[key] = "***MASKED***";
     }
+  }
   return masked;
 }
 
@@ -284,18 +285,19 @@ function validateIntegrationConfig(
 
   const providerConfig = typeConfig[provider];
   if (!providerConfig) {
-    
+
     return {
       valid: false,
       error: `Unsupported provider for ${type}: ${provider}`,
     };
-  });
+  }
 
   for (const field of providerConfig) {
     if (!config[field]) {
-      
+
       return { valid: false, error: `Missing required field: ${field}` };
     }
+  }
   return { valid: true };
 }
 
@@ -329,17 +331,14 @@ async function testConnection(
 
       case "SLACK":
         if (provider === "SLACK" && config.webhook_url) {
-          
+
           return { success: true };
         }
         break;
 
-      }
-        break;
-
       default:
         return { success: true }; // Assume success for other types
-    });
+    }
 
     return { success: false, error: "Invalid configuration" };
   } catch (error) {
