@@ -104,7 +104,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         );
         finalContent = interpolateTemplate(
           template.body_template,
-          }
           variables_data
         );
       }

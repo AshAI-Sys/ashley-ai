@@ -182,9 +182,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         }
         break;
 
-      }
-        break;
-
       default:
         return NextResponse.json(
           {

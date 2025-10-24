@@ -13,32 +13,29 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { user_id, token, enable_2fa = false } = body;
 
     if (!user_id || !token) {
-      
       return NextResponse.json(
         { error: "user_id and token are required" },
         { status: 400 }
       );
-      }
+    }
 
     // Get user with 2FA settings
     const user = await prisma.user.findUnique({
       where: { id: user_id },
-      });
+    });
 
     if (!user) {
-      
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (!user.two_factor_secret) {
-      
       return NextResponse.json(
         {
           error: "2FA not setup for this user. Call /api/auth/2fa/setup first",
         },
         { status: 400 }
       );
-      }
+    }
 
     // Parse encrypted secret
     const secretData = JSON.parse(user.two_factor_secret);
@@ -81,6 +78,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           two_factor_enabled: true,
         },
       });
+    }
 
     return NextResponse.json({
       valid: true,

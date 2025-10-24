@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
     const validation = RegisterSchema.safeParse(body);
 
     if (!validation.success) {
-      
       return NextResponse.json(
         {
           success: false,
@@ -50,6 +49,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
     const {
       workspaceName,
       workspaceSlug,
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
         },
         { status: 409 }
       );
-      
+    }
 
     // Check if user email already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         email: email.toLowerCase(),
       },
-      });
+    });
 
     if (existingUser) {
       await logAuthEvent("REGISTER_FAILED", "system", undefined, request, {
@@ -154,9 +154,9 @@ export async function POST(request: NextRequest) {
           is_active: true,
           permissions: JSON.stringify(["*"]), // Full permissions
         },
-        });
-      
-        return { workspace, user };
+      });
+
+      return { workspace, user };
     });
 
     const { workspace, user } = result;
@@ -174,7 +174,8 @@ export async function POST(request: NextRequest) {
       workspaceId: workspace.id,
       workspaceName: workspace.name,
       userId: user.id,
-      email: user.email});
+      email: user.email,
+    });
 
     return NextResponse.json(
       {

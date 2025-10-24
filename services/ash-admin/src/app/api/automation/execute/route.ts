@@ -57,7 +57,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
     let conditionsMet = true;
     if (conditions.length > 0) {
       conditionsMet = await evaluateConditions(conditions, trigger_data);
-    });
+    }
 
     if (!conditionsMet) {
       await prisma.automationExecution.update({
@@ -195,8 +195,7 @@ async function evaluateConditions(
           )
             return false;
           break;
-        }
-          break;
+
         default:
           throw new Error(`Unknown operator: ${operator}`);
       }

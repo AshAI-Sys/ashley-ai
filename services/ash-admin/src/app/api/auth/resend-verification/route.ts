@@ -43,7 +43,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     if (!user) {
       // Don't reveal if user exists or not for security
-      }
       return NextResponse.json(
         {
           success: true,

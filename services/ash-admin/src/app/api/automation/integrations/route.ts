@@ -165,7 +165,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     // Convert config to JSON string if provided
     if (updateData.config) {
       updateData.config = JSON.stringify(updateData.config);
-    });
+    }
 
     const integration = await prisma.integration.update({
       where: { id },
