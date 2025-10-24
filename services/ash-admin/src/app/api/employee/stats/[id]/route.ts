@@ -123,7 +123,7 @@ export const GET = withErrorHandling(
         include: {
           outputs: true,
         },
-      }
+      });
 
       totalPieces = printRuns.reduce(
         (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
@@ -187,6 +187,11 @@ export const GET = withErrorHandling(
     };
 
     return createSuccessResponse(stats);
+  } catch (error) {
+    console.error("Error fetching employee stats:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch employee statistics" },
+      { status: 500 }
+    );
   }
-);
 });

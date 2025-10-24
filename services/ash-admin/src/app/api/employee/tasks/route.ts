@@ -117,7 +117,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      }
+      });
 
       tasks = sewingRuns.map(run => ({
         id: run.id,
@@ -151,7 +151,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      }
+      });
 
       tasks = qcInspections.map(check => ({
         id: check.id,

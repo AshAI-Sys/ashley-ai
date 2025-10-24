@@ -18,7 +18,7 @@ const CreateEmployeeSchema = z.object({
   base_salary: z.number().optional(),
   piece_rate: z.number().optional(),
   permissions: z.object({}).optional(),
-}
+});
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
