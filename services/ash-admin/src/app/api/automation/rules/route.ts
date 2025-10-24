@@ -15,11 +15,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     if (isActive !== null) {
       where.is_active = isActive === "true";
-    });
+    }
 
     if (triggerType) {
       where.trigger_type = triggerType;
-    });
+    }
 
     const rules = await prisma.automationRule.findMany({
       where,

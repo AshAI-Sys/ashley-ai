@@ -279,9 +279,8 @@ function validateIntegrationConfig(
 
   const typeConfig = requiredFields[type];
   if (!typeConfig) {
-    
     return { valid: false, error: `Unsupported integration type: ${type}` };
-  });
+  }
 
   const providerConfig = typeConfig[provider];
   if (!providerConfig) {

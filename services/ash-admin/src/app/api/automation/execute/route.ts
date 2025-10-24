@@ -199,6 +199,8 @@ async function evaluateConditions(
         default:
           throw new Error(`Unknown operator: ${operator}`);
       }
+    }
+
     return true; // All conditions passed
   } catch (error) {
     console.error("Error evaluating conditions:", error);
