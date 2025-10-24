@@ -68,7 +68,6 @@ export async function POST(request: NextRequest) {
 
     if (!passwordValidation.valid) {
       console.log("Password validation failed:", passwordValidation.errors);
-      }
       return NextResponse.json(
         {
           success: false,
@@ -78,12 +77,12 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
-      }
+    }
 
     // Check if workspace slug already exists
     const existingWorkspace = await prisma.workspace.findUnique({
       where: { slug: workspaceSlug },
-      });
+    });
 
     if (existingWorkspace) {
       
@@ -94,7 +93,7 @@ export async function POST(request: NextRequest) {
         },
         { status: 409 }
       );
-      }
+      
 
     // Check if user email already exists
     const existingUser = await prisma.user.findFirst({
@@ -177,7 +176,7 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       email: user.email});
 
-      return NextResponse.json(
+    return NextResponse.json(
       {
         success: true,
         message: "Account created successfully! You can now login.",
@@ -196,7 +195,6 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-
   } catch (error: any) {
     console.error("Registration error:", error);
     return NextResponse.json(
@@ -209,4 +207,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -34,7 +34,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     if (!newAccessToken) {
       authLogger.warn("Invalid or expired refresh token");
-      }
       return apiUnauthorized("Invalid or expired refresh token");
     }
 
@@ -61,9 +60,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       sameSite: "lax",
       maxAge: 15 * 60, // 15 minutes
       path: "/",
-      });
-    
-      return response;
+    });
+
+    return response;
   } catch (error: any) {
     authLogger.error("Token refresh error", error);
     return apiServerError(error);

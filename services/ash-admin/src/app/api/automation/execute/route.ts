@@ -24,11 +24,11 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
   // Get the automation rule
   const rule = await prisma.automationRule.findUnique({
     where: { id: rule_id },
-      });
+  });
 
   if (!rule) {
     throw new NotFoundError("Automation rule");
-  });
+  }
 
   if (!rule.is_active) {
     throw new ValidationError("Automation rule is not active", "rule_id", {

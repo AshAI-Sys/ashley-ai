@@ -81,7 +81,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           two_factor_enabled: true,
         },
       });
-    
 
     return NextResponse.json({
       valid: true,

@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!email || !password) {
-      
       return NextResponse.json(
         {
           success: false,
@@ -27,7 +26,7 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
-      }
+    }
 
     // Check if account is locked
     const lockStatus = await isAccountLocked(email);
@@ -98,31 +97,30 @@ export async function POST(request: NextRequest) {
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
       // Record failed login attempt
-      }
-      const lockStatus = await recordFailedLogin(email);
+      const failedLoginStatus = await recordFailedLogin(email);
 
       // Log failed login attempt
       await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
         email,
         reason: "Invalid password",
-        failedAttempts: lockStatus.failedAttempts,
-        remainingAttempts: lockStatus.remainingAttempts,
+        failedAttempts: failedLoginStatus.failedAttempts,
+        remainingAttempts: failedLoginStatus.remainingAttempts,
       });
 
       // Inform user of remaining attempts
       let errorMessage = "Invalid email or password";
       if (
-        lockStatus.remainingAttempts <= 2 &&
-        lockStatus.remainingAttempts > 0
+        failedLoginStatus.remainingAttempts <= 2 &&
+        failedLoginStatus.remainingAttempts > 0
       ) {
-        errorMessage += `. Warning: ${lockStatus.remainingAttempts} ${lockStatus.remainingAttempts === 1 ? "attempt" : "attempts"} remaining before account lockout.`;
-      
+        errorMessage += `. Warning: ${failedLoginStatus.remainingAttempts} ${failedLoginStatus.remainingAttempts === 1 ? "attempt" : "attempts"} remaining before account lockout.`;
+      }
 
       return NextResponse.json(
         {
           success: false,
           error: errorMessage,
-          remainingAttempts: lockStatus.remainingAttempts,
+          remainingAttempts: failedLoginStatus.remainingAttempts,
         },
         { status: 401 }
       );

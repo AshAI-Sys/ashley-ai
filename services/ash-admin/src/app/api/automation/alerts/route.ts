@@ -119,7 +119,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Trigger automatic notification for high/critical alerts
     if (severity === "HIGH" || severity === "CRITICAL") {
       await createAlertNotification(alert);
-    
+    }
 
     return NextResponse.json({
       success: true,

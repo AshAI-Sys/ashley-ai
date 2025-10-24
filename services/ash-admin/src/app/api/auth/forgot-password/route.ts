@@ -45,7 +45,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // This prevents email enumeration attacks
     if (!user) {
       console.log("📧 Password reset requested for non-existent email:", email);
-      }
       return NextResponse.json(
         {
           success: true,
