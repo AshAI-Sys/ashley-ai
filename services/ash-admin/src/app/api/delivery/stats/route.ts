@@ -227,13 +227,12 @@ async function getMethodPerformance() {
       let averageTime = 0;
       if (avgTime.length > 0) {
         const totalTime = avgTime.reduce((sum, shipment) => {
-          if (shipment.updated_at) {;
-            }
+          if (shipment.updated_at) {
             return (
               sum +
               (shipment.updated_at.getTime() - shipment.created_at.getTime())
             );
-    }
+          }
           return sum;
         }, 0);
         averageTime = totalTime / avgTime.length / (1000 * 60 * 60); // Convert to hours
@@ -246,7 +245,7 @@ async function getMethodPerformance() {
         success_rate: total > 0 ? (delivered / total) * 100 : 0,
         avg_delivery_time: Math.round(averageTime * 10) / 10,
       });
-    });
+    }
 
     return performance;
   } catch (error) {

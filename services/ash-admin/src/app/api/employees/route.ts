@@ -27,7 +27,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     if (position) {
       where.position = position;
-    });
+    }
 
     const [employees, total] = await Promise.all([
       prisma.employee.findMany({

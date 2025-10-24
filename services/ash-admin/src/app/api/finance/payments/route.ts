@@ -20,7 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where.payment_date = {};
       if (date_from) where.payment_date.gte = new Date(date_from);
       if (date_to) where.payment_date.lte = new Date(date_to);
-    });
+    }
 
     const payments = await prisma.payment.findMany({
       where,

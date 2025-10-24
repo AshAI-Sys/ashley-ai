@@ -58,9 +58,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         total_tasks: totalTasks,
         materials_used: materialsUsed,
       };
-      
-    
-      return NextResponse.json({
+    });
+
+    return NextResponse.json({
       runs: processedRuns,
       pagination: {
         page,

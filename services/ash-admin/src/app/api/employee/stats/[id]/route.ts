@@ -89,7 +89,6 @@ export const GET = withErrorHandling(
       ).length;
     } else if (employee.department === "Cutting") {
       // Count cut lays (no cutter tracking in schema)
-      }
       const cutLays = await prisma.cutLay.findMany({
         where: {
           created_by: employeeId,
@@ -117,7 +116,6 @@ export const GET = withErrorHandling(
       ).length;
     } else if (employee.department === "Printing") {
       // Count print runs (no printer tracking in schema, use created_by)
-      }
       const printRuns = await prisma.printRun.findMany({
         where: {
           created_by: employeeId,

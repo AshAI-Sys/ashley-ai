@@ -236,7 +236,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     default:
       // For other departments, return empty array or generic tasks
       tasks = [];
-  });
+  }
 
   return createSuccessResponse(tasks);
 });

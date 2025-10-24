@@ -160,13 +160,14 @@ export const POST = requireAnyPermission(["finance:create"])(
           `Line ${i + 1}: ${lineError.message}`,
           `lines[${i}]`
         );
-    }
-    const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
+      }
+
+      const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
       if (qtyError) {
         throw qtyError;
-  });
+      }
 
-  const priceError = validateNumber(
+      const priceError = validateNumber(
         line.unit_price,
         `lines[${i}].unit_price`,
         0
@@ -174,14 +175,15 @@ export const POST = requireAnyPermission(["finance:create"])(
       if (priceError) {
         throw priceError;
       }
+    }
 
     // Validate due date if provided
     if (due_date) {
       const dateError = validateDate(due_date, "due_date");
-      }
       if (dateError) {
         throw dateError;
       }
+    }
 
     // Verify client exists
     const client = await prisma.client.findUnique({ where: { id: client_id }});
@@ -232,9 +234,9 @@ export const POST = requireAnyPermission(["finance:create"])(
     } else if (tax_mode === "VAT_EXCLUSIVE") {
       vatAmount = netAmount * 0.12;
       total = netAmount + vatAmount;
+    }
 
     // Create invoice with transaction
-    }
     const invoice = await prisma.invoice.create({
       data: {
         workspace_id: "default",
@@ -263,9 +265,20 @@ export const POST = requireAnyPermission(["finance:create"])(
         client: { select: { name: true } },
         invoice_items: true,
       },
-        });
-      
-        return createSuccessResponse(invoice, 201);
-  })
-);
+    });
+
+    return createSuccessResponse(invoice, 201);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      return NextResponse.json(
+        { success: false, error: error.message, field: error.field },
+        { status: 400 }
+      );
+    }
+    console.error("Error creating invoice:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to create invoice" },
+      { status: 500 }
+    );
+  }
 });
