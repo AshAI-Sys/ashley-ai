@@ -150,15 +150,18 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             design.order.order_number
               .toLowerCase()
               .includes(search.toLowerCase()));
-    }
+      }
 
       if (status) {
         matches = matches && design.status === status;
+      }
 
       if (method) {
         matches = matches && design.method === method;
+      }
 
       return matches;
+    });
 
     // Apply pagination
     const skip = (page - 1) * limit;
@@ -214,5 +217,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create design" },
       { status: 500 }
     );
-  });
+  }
 });

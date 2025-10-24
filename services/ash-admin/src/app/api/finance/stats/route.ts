@@ -137,8 +137,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         payment_distribution: [],
         top_clients: topClientsWithNames,
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error calculating finance stats:", error);
     return NextResponse.json(
       { success: false, error: "Failed to calculate finance statistics" },

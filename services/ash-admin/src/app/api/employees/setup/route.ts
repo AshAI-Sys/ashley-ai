@@ -50,6 +50,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           description: "Main manufacturing workspace",
         },
       });
+    }
 
     // Create employee
     const employee = await prisma.employee.create({
@@ -103,6 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // Get all employees
 export async function GET() {
@@ -138,4 +140,5 @@ export async function GET() {
       { success: false, error: "Failed to fetch employees" },
       { status: 500 }
     );
-  });
+  }
+}

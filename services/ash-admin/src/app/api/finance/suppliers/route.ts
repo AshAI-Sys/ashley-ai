@@ -58,7 +58,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         error:
           "Supplier model not yet implemented. Suppliers are tracked via Expense records.",
       },
-      { status: 501 });
+      { status: 501 }
     );
   } catch (error) {
     console.error("Error creating supplier:", error);

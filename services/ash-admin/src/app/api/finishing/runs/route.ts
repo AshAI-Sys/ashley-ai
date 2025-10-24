@@ -47,8 +47,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             quantity: m.quantity || 0,
             uom: m.uom || "pcs",
           }));
-          });
-        } catch (e) {
+        }
+      } catch (e) {
         materialsUsed = [];
       }
       return {

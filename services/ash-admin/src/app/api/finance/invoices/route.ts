@@ -31,6 +31,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   if (overdue_only === "true") {
     where.due_date = { lt: new Date() };
     where.status = { in: ["sent", "pending"] };
+  }
 
   const invoices = await prisma.invoice.findMany({
     where,
@@ -53,7 +54,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       });
 
   // Calculate days overdue and other metrics
-  const processedInvoices = (invoices || []).map(invoice => {;
+  const processedInvoices = (invoices || []).map(invoice => {
     const today = new Date();
     const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
     const daysOverdue =
@@ -92,9 +93,10 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         date: payment.created_at,
       })),
     };
+  });
 
   return createSuccessResponse(processedInvoices);
-}
+});
 
 export const POST = requireAnyPermission(["finance:create"])(
   withErrorHandling(async (request: NextRequest, user: any) => {

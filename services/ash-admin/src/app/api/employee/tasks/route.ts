@@ -185,7 +185,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      }
+      });
 
       tasks = finishingRuns.map(run => ({
         id: run.id,
@@ -219,7 +219,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      }
+      });
 
       tasks = shipments.map(shipment => ({
         id: shipment.id,
@@ -236,6 +236,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     default:
       // For other departments, return empty array or generic tasks
       tasks = [];
+  }
 
   return createSuccessResponse(tasks);
-    }
+});

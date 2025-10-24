@@ -96,6 +96,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
         },
       },
+    });
 
     const efficiencyRate =
       totalFinishingRuns > 0 ? (completedRuns / totalFinishingRuns) * 100 : 0;

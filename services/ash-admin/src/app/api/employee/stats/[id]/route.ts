@@ -147,6 +147,7 @@ export const GET = withErrorHandling(
       );
 
       tasksCompleted = printRuns.filter(run => run.status === "DONE").length;
+    }
 
     // Calculate efficiency rate (simplified - can be enhanced based on targets)
     const targetPiecesPerDay = employee.salary_type === "PIECE" ? 200 : 100;
@@ -176,6 +177,7 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
+    }
 
     const stats = {
       total_pieces: totalPieces,
@@ -187,11 +189,5 @@ export const GET = withErrorHandling(
     };
 
     return createSuccessResponse(stats);
-  } catch (error) {
-    console.error("Error fetching employee stats:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch employee statistics" },
-      { status: 500 }
-    );
   }
-});
+);

@@ -158,4 +158,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to process payment" },
       { status: 500 }
     );
-  });
+  }
+});
