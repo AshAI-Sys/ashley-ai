@@ -83,5 +83,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to generate Pareto data" },
       { status: 500 }
     );
-  }
-});
+  });

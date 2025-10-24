@@ -61,9 +61,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       sameSite: "lax",
       maxAge: 0,
       path: "/",
-    });
-
-    return response;
+      });
+    
+      return response;
   } catch (error) {
     authLogger.error("Logout error", error);
 

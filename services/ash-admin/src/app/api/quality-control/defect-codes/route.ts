@@ -18,9 +18,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const defectCodes = await prisma.qCDefectCode.findMany({
       where,
       orderBy: { code: "asc" },
-      });
-
-    return NextResponse.json(defectCodes);
+        });
+      
+        return NextResponse.json(defectCodes);
   } catch (error) {
     console.error("Error fetching defect codes:", error);
     return NextResponse.json(
@@ -42,14 +42,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         severity: data.severity,
         description: data.description,
       },
-      });
-
-    return NextResponse.json(defectCode, { status: 201 });
+        });
+      
+        return NextResponse.json(defectCode, { status: 201 });
   } catch (error) {
     console.error("Error creating defect code:", error);
     return NextResponse.json(
       { error: "Failed to create defect code" },
       { status: 500 }
     );
-  }
-});
+  });

@@ -62,6 +62,7 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: brand,
+    });
   } catch (error) {
     console.error("Error fetching brand:", error);
     return NextResponse.json(
@@ -142,11 +143,13 @@ export async function PUT(
           },
         },
       },
+    });
 
     return NextResponse.json({
       success: true,
       data: brand,
       message: "Brand updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -202,9 +205,9 @@ export async function DELETE(
       data: {
         deleted_at: new Date(),
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Brand deleted successfully",
   } catch (error) {

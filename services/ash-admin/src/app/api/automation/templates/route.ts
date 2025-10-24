@@ -83,6 +83,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/automation/templates - Create notification template
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -130,7 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         category,
         type,
         subject_template,
-        body_template,;
+        body_template,
         variables: variablesJson,
         is_active,
         created_by,
@@ -140,12 +141,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: template,
       message: "Notification template created successfully",
+    });
   } catch (error) {
     console.error("Error creating notification template:", error);
     return NextResponse.json(
@@ -153,6 +155,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // PUT /api/automation/templates - Update notification template
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -180,9 +183,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: template,
       message: "Notification template updated successfully",
@@ -221,9 +224,9 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.notificationTemplate.delete({
       where: { id },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Notification template deleted successfully",
   } catch (error) {
@@ -232,5 +235,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete notification template" },
       { status: 500 }
     );
-  }
-});
+  });

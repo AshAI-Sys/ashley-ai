@@ -117,9 +117,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         spec: JSON.stringify(specifications),
         is_active,
       },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: machine,
     });
@@ -182,9 +182,9 @@ async function checkMaintenanceDue(machineId: string): Promise<boolean> {
         status: { in: ["open", "scheduled"] },
         type: { in: ["preventive_maintenance", "repair"] },
       },
-    });
-
-    return !!pendingMaintenance;
+      });
+    
+      return !!pendingMaintenance;
   } catch (error) {
     console.error("Error checking maintenance due:", error);
     return false;

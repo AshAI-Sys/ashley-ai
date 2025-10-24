@@ -93,6 +93,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: demoStats,
+    });
   } catch (error) {
     console.error("Error fetching automation stats:", error);
     return NextResponse.json(
@@ -100,6 +101,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // Helper function for demo chart data
 function generateDemoChart() {
@@ -113,10 +115,10 @@ function generateDemoChart() {
       successful: Math.floor(Math.random() * 50) + 10,
       failed: Math.floor(Math.random() * 10),
       total: 0,
-    });
-
+      });
+    
   return chartData.map(item => ({
     ...item,
     total: item.successful + item.failed,
   }));
-});
+}

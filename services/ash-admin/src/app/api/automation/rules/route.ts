@@ -40,9 +40,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         },
       },
       orderBy: { updated_at: "desc" },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: rules,
       meta: {
@@ -123,9 +123,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: rule,
       message: "Automation rule created successfully",
@@ -170,9 +170,9 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           select: { id: true, email: true, username: true },
         },
       },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: rule,
       message: "Automation rule updated successfully",
@@ -200,9 +200,9 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
 
     await prisma.automationRule.delete({
       where: { id },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       message: "Automation rule deleted successfully",
     });

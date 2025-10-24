@@ -166,11 +166,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Fetch the created outputs
       const outputs = await tx.cutOutput.findMany({
         where: { cut_lay_id: newCutLay.id },
+        });
+      
+        return { ...newCutLay, outputs };
       });
-
-      return { ...newCutLay, outputs };
-    });
-    return NextResponse.json(
+    
+      return NextResponse.json(
       {
         success: true,
         data: cutLay,
@@ -191,5 +192,4 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create cut lay" },
       { status: 500 }
     );
-  }
-});
+  });

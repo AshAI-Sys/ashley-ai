@@ -67,6 +67,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           two_factor_backup_codes: JSON.stringify(backupCodes),
         },
       });
+    }
 
     // If this is the first verification (enabling 2FA), enable it now
     if (enable_2fa && !user.two_factor_enabled) {
@@ -75,7 +76,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         data: {
           two_factor_enabled: true,
         },
-      }
+      });
+    }
 
     return NextResponse.json({
       valid: true,
@@ -84,6 +86,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       message: result.usedBackupCode
         ? "Backup code verified. Please generate new backup codes."
         : "2FA code verified successfully",
+    });
   } catch (error: any) {
     console.error("Error verifying 2FA:", error);
     return NextResponse.json(

@@ -68,17 +68,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: processedRuns,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching payroll runs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch payroll runs" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const {
@@ -227,9 +226,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       await tx.payrollPeriod.update({
         where: { id: payrollPeriod.id },
         data: { total_amount: totalAmount },
-      });
-
-      return payrollPeriod;
+        });
+      
+        return payrollPeriod;
 
     // Return the complete payroll period with earnings
     const completePeriod = await prisma.payrollPeriod.findUnique({
@@ -248,9 +247,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: {
@@ -271,10 +270,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create payroll run" },
       { status: 500 }
     );
-  }
-}
-
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const { id, status, approval_notes } = data;
@@ -299,9 +297,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: {
         id: payrollPeriod.id,
@@ -320,5 +318,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update payroll run" },
       { status: 500 }
     );
-  }
-});
+  });

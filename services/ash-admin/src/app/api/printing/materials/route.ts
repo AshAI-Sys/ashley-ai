@@ -47,17 +47,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: transformedMaterials,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Materials API error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch materials" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { run_id, materials } = body;
@@ -173,5 +172,4 @@ export async function OPTIONS(request: NextRequest) {
       { success: false, error: "Failed to fetch material types" },
       { status: 500 }
     );
-  }
-});
+  });

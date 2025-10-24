@@ -66,6 +66,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         email_verification_token: null,
         email_verification_expires: null,
       },
+    });
 
     // Log successful verification
     await logAuthEvent("EMAIL_VERIFIED", user.workspace_id, user.id, request, {

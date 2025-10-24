@@ -66,17 +66,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: processedLogs,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching attendance logs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch attendance logs" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const {
@@ -192,10 +191,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               department: true,
             },
           },
-        },
-      }
-
-    return NextResponse.json(
+            });
+          }
+        
+        return NextResponse.json(
       {
         success: true,
         data: {
@@ -222,10 +221,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create attendance log" },
       { status: 500 }
     );
-  }
-}
-
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const { id, approved, approver_notes } = data;
@@ -246,17 +244,16 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: attendanceLog,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error updating attendance log:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update attendance log" },
       { status: 500 }
     );
-  }
-});
+  });

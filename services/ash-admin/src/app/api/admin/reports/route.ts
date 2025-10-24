@@ -190,9 +190,9 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       generated_by: user.id,
       timestamp: new Date().toISOString(),
       filters: validatedData.filters,
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: reportData,
       message: "Report generated successfully",

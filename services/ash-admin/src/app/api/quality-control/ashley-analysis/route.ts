@@ -70,9 +70,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       data: {
         ashley_analysis: JSON.stringify(ashleyAnalysis),
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       inspection_id,
       analysis_type,
       ashley_analysis: ashleyAnalysis,
@@ -131,7 +131,6 @@ async function performDefectTrendAnalysis(inspection: any) {
       total_defects: totalDefects,
       defect_rate: (totalDefects / insp.sample_size) * 100,
     });
-  });
 
   // Calculate trends
   const currentDefectRate =

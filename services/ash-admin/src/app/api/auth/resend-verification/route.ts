@@ -81,6 +81,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           { status: 429 }
         );
       }
+    }
 
     // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -108,7 +109,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       await sendEmailVerification(user.email, {
         user_name: `${user.first_name} ${user.last_name}`,
         verification_link: verificationUrl,
-      }
+      });
       console.log("✅ Verification email sent to:", user.email);
     } catch (emailError) {
       console.error("❌ Failed to send verification email:", emailError);

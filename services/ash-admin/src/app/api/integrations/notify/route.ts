@@ -64,8 +64,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
             break;
           default:
             results.whatsapp = false;
-        }
-      } catch (error) {
+          });
+        } catch (error) {
         console.error("WhatsApp error:", error);
         results.whatsapp = false;
       }
@@ -108,8 +108,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.message,
               data.priority || "medium"
             );
-        }
-      } catch (error) {
+          });
+        } catch (error) {
         console.error("SMS error:", error);
         results.sms = false;
       }
@@ -155,8 +155,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.message,
               data.channel
             );
-        }
-      } catch (error) {
+          });
+        } catch (error) {
         console.error("Slack error:", error);
         results.slack = false;
       }
@@ -187,8 +187,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
             break;
           default:
             results.teams = false;
-        }
-      } catch (error) {
+          });
+        } catch (error) {
         console.error("Teams error:", error);
         results.teams = false;
       }
@@ -250,8 +250,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
             break;
           default:
             results.email = false;
-        }
-      } catch (error) {
+          });
+        } catch (error) {
         console.error("Email error:", error);
         results.email = false;
       }
@@ -281,5 +281,4 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
-  }
-});
+  });

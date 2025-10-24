@@ -394,9 +394,9 @@ async function createAuditLog(
       performer_user_id,
       ...auditLog,
       timestamp: new Date().toISOString(),
-    });
-
-    return true;
+      });
+    
+      return true;
   } catch (error) {
     console.error("Error creating audit log:", error);
     return false;

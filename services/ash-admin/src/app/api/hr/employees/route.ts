@@ -98,9 +98,9 @@ export const GET = requireAuth(
           ? JSON.parse(employee.contact_info)
           : null,
       };
-    });
-
-    return createSuccessResponse(processedEmployees);
+      });
+    
+      return createSuccessResponse(processedEmployees);
   })
 );
 
@@ -273,8 +273,8 @@ export const PUT = requireAuth(
       where: { id },
       data: updateData,
       // Employee model doesn't have brands relation - removed
-    });
-
-    return createSuccessResponse(employee);
+      });
+    
+      return createSuccessResponse(employee);
   })
 );

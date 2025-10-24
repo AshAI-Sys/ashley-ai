@@ -130,10 +130,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: workspaceId,
           ...validation.sanitizedData,
         },
-      });
-      return NextResponse.json({ trend });
-    }
-  } catch (error) {
+        });
+      
+        return NextResponse.json({ trend });
+    } catch (error) {
     console.error("Market trend creation error:", error);
     return NextResponse.json(
       {
@@ -259,9 +259,9 @@ function getSeasonalTrends(season: string, workspaceId: string) {
       lifestyle: ["active", "professional", "casual"],
     }),
     opportunity_score: currentSeasonData.impact,
-  });
-
-  return trends;
+    });
+  
+    return trends;
 }
 
 function getColorTrends(workspaceId: string) {
@@ -328,9 +328,8 @@ function getColorTrends(workspaceId: string) {
       }),
       opportunity_score: colorTrend.impact,
     });
-  });
-
-  return trends;
+  
+    return trends;
 }
 
 function getStyleTrends(workspaceId: string) {
@@ -404,9 +403,8 @@ function getStyleTrends(workspaceId: string) {
       }),
       opportunity_score: styleTrend.impact,
     });
-  });
-
-  return trends;
+  
+    return trends;
 }
 
 function getSustainabilityTrends(workspaceId: string) {

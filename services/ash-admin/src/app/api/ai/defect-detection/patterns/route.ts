@@ -32,7 +32,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       orderBy: {
         created_at: "desc",
       },
-      });
+    });
 
     if (qcChecks.length === 0) {
       return NextResponse.json({
@@ -126,7 +126,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         order: true,
         inspector: true,
       },
-      });
+    });
 
     if (qcChecks.length === 0) {
       return NextResponse.json({

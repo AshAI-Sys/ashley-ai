@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
         email,
         reason: "Account locked",
         lockoutExpiresAt: lockStatus.lockoutExpiresAt,
-      });
-
-      return NextResponse.json(
+        });
+      
+        return NextResponse.json(
         {
           success: false,
           error: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minutes.`,
@@ -68,9 +68,9 @@ export async function POST(request: NextRequest) {
       await logAuthEvent("LOGIN_FAILED", "system", undefined, request, {
         email,
         reason: "User not found",
-      });
-
-      return NextResponse.json(
+        });
+      
+        return NextResponse.json(
         {
           success: false,
           error: "Invalid email or password",
@@ -85,9 +85,9 @@ export async function POST(request: NextRequest) {
       await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
         email,
         reason: "No password hash",
-      });
-
-      return NextResponse.json(
+        });
+      
+        return NextResponse.json(
         {
           success: false,
           error: "Invalid email or password",
@@ -196,9 +196,9 @@ export async function POST(request: NextRequest) {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       path: "/",
-    });
-
-    return response;
+      });
+    
+      return response;
   } catch (error: any) {
     authLogger.error("Login error", error);
     return NextResponse.json(

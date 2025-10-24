@@ -1,0 +1,130 @@
+
+> @ash/admin@1.0.0 build C:\Users\Khell\Desktop\Ashley AI\services\ash-admin
+> npx prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+✔ Generated Prisma Client (v5.22.0) to .\..\..\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client in 2.44s
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Easily identify and fix slow SQL queries in your app. Optimize helps you enhance your visibility: https://pris.ly/--optimize
+
+  ▲ Next.js 14.2.33
+  - Environments: .env.production.local, .env.production, .env
+  - Experiments (use with caution):
+    · scrollRestoration
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./src/app/api/auth/2fa/setup/route.ts
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\auth\2fa\setup\route.ts[0m:105:1]
+ [2m105[0m |       },
+ [2m106[0m |       { status: 500 }
+ [2m107[0m |     );
+ [2m108[0m |   });
+     : [31;1m   ^[0m
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/auth/2fa/setup/route.ts
+
+./src/app/api/auth/2fa/verify/route.ts
+Error: 
+  [31mx[0m Expression expected
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\auth\2fa\verify\route.ts[0m:96:1]
+ [2m96[0m |       },
+ [2m97[0m |       { status: 500 }
+ [2m98[0m |     );
+ [2m99[0m |   });
+    : [31;1m   ^[0m
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/auth/2fa/verify/route.ts
+
+./src/app/api/automation/execute/route.ts
+Error: 
+  [31mx[0m Expected a semicolon
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\automation\execute\route.ts[0m:200:1]
+ [2m200[0m |       }
+ [2m201[0m | 
+ [2m202[0m |     return true; // All conditions passed
+ [2m203[0m |   } catch (error) {
+     : [31;1m    ^^^^^[0m
+ [2m204[0m |     console.error("Error evaluating conditions:", error);
+ [2m205[0m |     return false;
+ [2m205[0m |   }
+     `----
+
+  [31mx[0m Expected ',', got '}'
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\automation\execute\route.ts[0m:223:1]
+ [2m223[0m |         result: error instanceof Error ? error.message : "Unknown error",
+ [2m224[0m |         status: "FAILED",
+ [2m225[0m |       }
+ [2m226[0m |     }
+     : [31;1m    ^[0m
+ [2m227[0m | 
+ [2m228[0m |   return results;
+ [2m228[0m | 
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/automation/execute/route.ts
+
+./src/app/api/automation/integrations/route.ts
+Error: 
+  [31mx[0m Expected ',', got 'catch'
+     ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\automation\integrations\route.ts[0m:134:1]
+ [2m134[0m |       },
+ [2m135[0m |       message: "Integration created successfully",
+ [2m136[0m |       connection_test: connectionTest,
+ [2m137[0m |   } catch (error) {
+     : [31;1m    ^^^^^[0m
+ [2m138[0m |     console.error("Error creating integration:", error);
+ [2m139[0m |     return NextResponse.json(
+ [2m139[0m |       { success: false, error: "Failed to create integration" },
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/automation/integrations/route.ts
+
+./src/app/api/automation/notifications/route.ts
+Error: 
+  [31mx[0m 'import', and 'export' cannot be used outside of module code
+    ,-[[36;1;4mC:\Users\Khell\Desktop\Ashley AI\services\ash-admin\src\app\api\automation\notifications\route.ts[0m:56:1]
+ [2m56[0m |   }
+ [2m57[0m | 
+ [2m58[0m | // POST /api/automation/notifications - Create notification
+ [2m59[0m | export const POST = requireAuth(async (request: NextRequest, user) => {
+    : [31;1m^^^^^^[0m
+ [2m60[0m |   try {
+ [2m61[0m |     const body = await request.json();
+ [2m61[0m |     const {
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/api/automation/notifications/route.ts
+
+
+> Build failed because of webpack errors
+ ELIFECYCLE  Command failed with exit code 1.

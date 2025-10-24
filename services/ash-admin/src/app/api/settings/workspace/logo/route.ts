@@ -50,9 +50,9 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
         logo_url,
         updated_at: new Date(),
       },
-      });
-
-    return NextResponse.json({ success: true, logo_url });
+        });
+      
+        return NextResponse.json({ success: true, logo_url });
   } catch (error) {
     console.error("Error uploading logo:", error);
     return NextResponse.json(
@@ -69,14 +69,13 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
         logo_url: null,
         updated_at: new Date(),
       },
-      });
-
-    return NextResponse.json({ success: true });
+        });
+      
+        return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error removing logo:", error);
     return NextResponse.json(
       { error: "Failed to remove logo" },
       { status: 500 }
     );
-  }
-});
+  });

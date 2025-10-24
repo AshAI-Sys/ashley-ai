@@ -50,9 +50,9 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
       offset,
       startDate,
       endDate,
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: {
         logs: result.logs,

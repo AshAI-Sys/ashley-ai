@@ -127,9 +127,9 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         data: {
           view_count: { increment: 1 },
         },
-      });
-
-      return NextResponse.json({
+        });
+      
+        return NextResponse.json({
         success: true,
         data,
         metadata: {
@@ -226,9 +226,9 @@ async function executeProductionQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-      });
-
-  return bundles;
+        });
+      
+        return bundles;
 }
 
 async function executeFinanceQuery(
@@ -251,9 +251,9 @@ async function executeFinanceQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-      });
-
-  return invoices;
+        });
+      
+        return invoices;
 }
 
 async function executeHRQuery(
@@ -280,9 +280,9 @@ async function executeHRQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-      });
-
-  return employees;
+        });
+      
+        return employees;
 }
 
 async function executeInventoryQuery(
@@ -299,9 +299,9 @@ async function executeInventoryQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-      });
-
-  return inventory;
+        });
+      
+        return inventory;
 }
 
 async function executeQualityQuery(
@@ -322,7 +322,7 @@ async function executeQualityQuery(
       ? { [sortOrder.column]: sortOrder.direction }
       : { created_at: "desc" },
     take: 1000,
-      });
-
-  return inspections;
+        });
+      
+        return inspections;
 });

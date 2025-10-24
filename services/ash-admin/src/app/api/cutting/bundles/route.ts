@@ -316,5 +316,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update bundle" },
       { status: 500 }
     );
-  }
-});
+  });

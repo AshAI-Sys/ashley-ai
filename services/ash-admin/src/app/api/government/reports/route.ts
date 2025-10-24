@@ -247,12 +247,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_employer_contribution: Math.round(totalER * 100) / 100,
         grand_total: Math.round(grandTotal * 100) / 100,
       },
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Error calculating contributions:", error);
     return NextResponse.json(
       { error: "Failed to calculate contributions", details: error.message },
       { status: 500 }
     );
-  }
-});
+  });

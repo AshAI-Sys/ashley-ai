@@ -65,7 +65,8 @@ export async function POST(
             qty_reject: qty_rejected,
             notes: quality_notes || "Final run completion",
           },
-        }
+        });
+      }
 
       // Record reject reasons if any
       if (qty_rejected > 0 && reject_reasons.length > 0) {
@@ -80,6 +81,7 @@ export async function POST(
             },
           });
         }
+      }
 
       // Record material consumption
       if (material_consumption.length > 0) {
@@ -94,6 +96,7 @@ export async function POST(
             },
           });
         }
+      }
 
       // Update method-specific completion data
       await updateMethodSpecificCompletion(tx, runId, run.method, body);
@@ -103,7 +106,7 @@ export async function POST(
         qty_completed,
         qty_rejected,
         ashley_feedback,
-      }
+      });
 
     // Fetch completed run data
     const completedRun = await prisma.printRun.findUnique({
@@ -119,12 +122,13 @@ export async function POST(
         rejects: true,
         materials: true,
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: completedRun,
       message: "Print run completed successfully",
+    });
   } catch (error) {
     console.error("Complete print run error:", error);
     return NextResponse.json(
@@ -151,7 +155,8 @@ async function updateMethodSpecificCompletion(
             seconds: data.curing_time,
             belt_speed: data.belt_speed || "MEDIUM",
           },
-        }
+        });
+      }
 
       // Update ink consumption in specs
       if (data.actual_ink_g) {
@@ -186,7 +191,7 @@ async function updateMethodSpecificCompletion(
             temp_c: data.powder_cure_temp,
             seconds: data.powder_cure_time,
           },
-        }
+        });
       }
       break;
 
@@ -208,7 +213,7 @@ async function updateMethodSpecificCompletion(
               runtime_minutes: data.runtime_minutes,
             }),
           },
-        }
+        });
       }
       break;
   }
@@ -268,8 +273,10 @@ async function createFinalAnalysis(
 
     await tx.aIAnalysis.create({
       data: analysisData,
+    });
   } catch (error) {
     console.error("Error creating final analysis:", error);
+  }
 }
 
 function calculateEfficiencyScore(run: any, completionData: any): number {
@@ -309,7 +316,7 @@ function identifyIssues(completionData: any): string[] {
       100;
     if (rejectRate > 10) issues.push("High reject rate detected");
     if (rejectRate > 5) issues.push("Moderate reject rate - review process");
-    }
+  }
 
   return issues;
 }
@@ -335,11 +342,11 @@ function generateRecommendations(
     case "EMBROIDERY":
       recommendations.push("Review thread tension and stabilizer selection");
       break;
+  }
 
   if (completionData.qty_rejected > 0) {
     recommendations.push("Implement additional quality checkpoints");
-    }
+  }
 
   return recommendations;
-};
-});
+}

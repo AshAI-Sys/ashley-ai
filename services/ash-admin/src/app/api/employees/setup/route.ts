@@ -71,9 +71,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           ? JSON.stringify(validatedData.permissions)
           : null,
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: {
@@ -126,17 +126,16 @@ export async function GET() {
         created_at: true,
       },
       orderBy: { created_at: "desc" },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: employees,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching employees:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch employees" },
       { status: 500 }
     );
-  }
-});
+  });

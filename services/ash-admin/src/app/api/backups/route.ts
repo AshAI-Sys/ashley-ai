@@ -27,6 +27,7 @@ export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/backups - Create new backup (ADMIN ONLY)
 export const POST = requireRole("admin")(async (request: NextRequest, user) => {
@@ -44,18 +45,19 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
       compress,
       includeData,
       includeSchema,
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       backup,
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to create backup", details: error.message },
       { status: 500 }
     );
   }
+});
 
 // DELETE /api/backups?id={backupId} - Delete backup (ADMIN ONLY)
 export const DELETE = requireRole("admin")(async (request: NextRequest, user) => {
@@ -75,7 +77,7 @@ export const DELETE = requireRole("admin")(async (request: NextRequest, user) =>
     return NextResponse.json({
       success: true,
       message: "Backup deleted successfully",
-    }
+      });
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to delete backup", details: error.message },

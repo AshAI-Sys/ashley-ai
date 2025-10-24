@@ -66,14 +66,13 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         department,
         updated_at: new Date(),
       },
-    });
-
-    return NextResponse.json({ success: true, user: updatedUser });
+      });
+    
+      return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
     console.error("Error updating general settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
       { status: 500 }
     );
-  }
-});
+  });

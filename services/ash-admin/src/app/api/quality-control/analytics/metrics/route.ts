@@ -125,5 +125,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to calculate metrics" },
       { status: 500 }
     );
-  }
-});
+  });

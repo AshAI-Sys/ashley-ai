@@ -150,8 +150,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       return createErrorResponse(
         new ValidationError("Unsupported payment provider")
       );
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error creating payment intent:", error);
     return handleApiError(error);
 });

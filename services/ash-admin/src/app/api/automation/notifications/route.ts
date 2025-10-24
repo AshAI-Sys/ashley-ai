@@ -46,14 +46,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         offset,
         pages: Math.ceil(total / limit),
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch notifications" },
       { status: 500 }
     );
   }
+});
 
 // POST /api/automation/notifications - Create notification
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -104,6 +105,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           variables_data
         );
       }
+    }
 
     const notification = await prisma.notification.create({
       data: {
@@ -115,7 +117,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         recipient_phone,
         channel,
         subject: finalSubject,
-        content: finalContent,;
+        content: finalContent,
         variables_data: variables_data ? JSON.stringify(variables_data) : null,
         priority,
         scheduled_for: scheduled_for ? new Date(scheduled_for) : null,
@@ -126,12 +128,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           select: { id: true, name: true, category: true },
         },
       },
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: notification,
       message: "Notification created successfully",
+    });
   } catch (error) {
     console.error("Error creating notification:", error);
     return NextResponse.json(
@@ -139,6 +142,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // PUT /api/automation/notifications - Update notification status
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -160,11 +164,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 
       if (status === "SENT" && sent_at) {
         updateData.sent_at = new Date(sent_at);
-    }
+      }
 
       if (status === "DELIVERED" && delivered_at) {
         updateData.delivered_at = new Date(delivered_at);
-    }
+      }
 
       if (status === "FAILED") {
         updateData.retry_count = { increment: 1 };
@@ -172,16 +176,18 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           updateData.error_message = error_message;
         }
       }
+    }
 
     const notification = await prisma.notification.update({
       where: { id },
       data: updateData,
-      });
+    });
 
     return NextResponse.json({
       success: true,
       data: notification,
       message: "Notification updated successfully",
+    });
   } catch (error) {
     console.error("Error updating notification:", error);
     return NextResponse.json(
@@ -189,6 +195,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // Helper function to interpolate template variables
 function interpolateTemplate(template: string, variables: any): string {
@@ -197,9 +204,9 @@ function interpolateTemplate(template: string, variables: any): string {
   return template.replace(/\{\{(\w+(?:\.\w+)*)\}\}/g, (match, path) => {
     const value = getNestedValue(variables, path);
     return value !== undefined ? String(value) : match;
-  }
+  });
 }
 
 function getNestedValue(obj: any, path: string): any {
   return path.split(".").reduce((current, key) => current?.[key], obj);
-});
+}

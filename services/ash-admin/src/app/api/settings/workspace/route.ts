@@ -88,14 +88,13 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     const updatedWorkspace = await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: updateData,
-      });
-
-    return NextResponse.json({ success: true, workspace: updatedWorkspace });
+        });
+      
+        return NextResponse.json({ success: true, workspace: updatedWorkspace });
   } catch (error) {
     console.error("Error updating workspace settings:", error);
     return NextResponse.json(
       { error: "Failed to update workspace" },
       { status: 500 }
     );
-  }
-});
+  });

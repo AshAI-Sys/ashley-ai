@@ -56,9 +56,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         fill_percent: carton.fill_percent || 0,
         units_count: unitsCount,
       };
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       cartons: processedCartons,
       pagination: {
         page,
@@ -99,9 +99,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       include: {
         order: { select: { order_number: true } },
       },
-    });
-
-    return NextResponse.json(carton, { status: 201 });
+      });
+    
+      return NextResponse.json(carton, { status: 201 });
   } catch (error) {
     console.error("Error creating carton:", error);
     return NextResponse.json(
@@ -173,14 +173,13 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-    });
-
-    return NextResponse.json(carton);
+      });
+    
+      return NextResponse.json(carton);
   } catch (error) {
     console.error("Error updating carton:", error);
     return NextResponse.json(
       { error: "Failed to update carton" },
       { status: 500 }
     );
-  }
-});
+  });

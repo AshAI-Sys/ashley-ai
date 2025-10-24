@@ -34,9 +34,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         },
       },
       orderBy: { payment_date: "desc" },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: payments,
     });
@@ -127,9 +127,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           status: newStatus,
           paid_at: newStatus === "paid" ? new Date() : null,
         },
-      });
-
-      return payment;
+        });
+      
+        return payment;
     });
     // Fetch the complete payment record with relationships
     const paymentWithDetails = await prisma.payment.findUnique({
@@ -143,9 +143,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-    });
-
-    return NextResponse.json(
+      });
+    
+      return NextResponse.json(
       {
         success: true,
         data: paymentWithDetails,
@@ -158,5 +158,4 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to process payment" },
       { status: 500 }
     );
-  }
-});
+  });

@@ -45,9 +45,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         },
       },
       orderBy: { created_at: "desc" },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       reports: reports.map(r => ({
         ...r,
@@ -128,9 +128,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       report: {
         ...report,
@@ -152,5 +152,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
-  }
-});
+  });

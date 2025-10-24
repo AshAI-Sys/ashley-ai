@@ -98,8 +98,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         amount: remainingAmount,
         currency: invoice.currency,
       },
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error creating checkout session:", error);
     return createErrorResponse(
       error instanceof Error

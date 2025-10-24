@@ -174,13 +174,13 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         machine: true,
         outputs: true,
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: printRun,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Create print run error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create print run" },

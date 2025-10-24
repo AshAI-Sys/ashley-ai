@@ -128,8 +128,8 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: result.result === "ok",
       result: result.result,
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Error deleting file:", error);
     return NextResponse.json(
       {

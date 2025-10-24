@@ -141,8 +141,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         });
         console.log("Workspace created successfully");
-      }
-    } catch (error: any) {
+        });
+      } catch (error: any) {
       console.error("Error with workspace:", error.message);
       return NextResponse.json(
         {
@@ -187,9 +187,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: newClient,
@@ -214,5 +214,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create client" },
       { status: 500 }
     );
-  }
-});
+  });

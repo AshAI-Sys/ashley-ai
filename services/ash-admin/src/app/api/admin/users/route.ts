@@ -128,9 +128,9 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       orderBy: { created_at: "desc" },
       skip: (page - 1) * limit,
       take: limit,
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: {
         users,

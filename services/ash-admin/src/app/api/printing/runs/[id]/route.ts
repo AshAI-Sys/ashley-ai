@@ -96,10 +96,9 @@ export const GET = requireAuth(async (
       { success: false, error: "Failed to fetch print run" },
       { status: 500 }
     );
-  }
-}
-
-export const PATCH = requireAuth(async (
+    });
+  
+  export const PATCH = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
@@ -249,4 +248,5 @@ function getMethodDetails(run: any) {
       };
     default:
       return { type: "unknown" };
+});
 });

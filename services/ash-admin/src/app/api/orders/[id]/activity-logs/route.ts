@@ -30,9 +30,9 @@ export async function GET(
         created_at: "desc",
       },
       take: limit,
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: { activities },
 });
@@ -64,9 +64,9 @@ export async function POST(
         performed_by: validatedData.performed_by || null,
         metadata: validatedData.metadata || null,
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: { activityLog },
@@ -91,5 +91,4 @@ export async function POST(
       { success: false, error: "Failed to create activity log" },
       { status: 500 }
     );
-  }
-});
+  });

@@ -64,9 +64,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         status: delivery_status,
         actual_delivery_date: new Date(),
       },
-      });
-
-    return NextResponse.json(podRecord, { status: 201 });
+        });
+      
+        return NextResponse.json(podRecord, { status: 201 });
   } catch (error: any) {
     console.error("Error creating POD record:", error);
     return NextResponse.json(
@@ -181,9 +181,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const updatedRecord = await prisma.pODRecord.update({
       where: { id },
       data: updateData,
-      });
-
-    return NextResponse.json(updatedRecord);
+        });
+      
+        return NextResponse.json(updatedRecord);
   } catch (error: any) {
     console.error("Error updating POD record:", error);
     return NextResponse.json(
@@ -193,5 +193,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 500 }
     );
-  }
-});
+  });

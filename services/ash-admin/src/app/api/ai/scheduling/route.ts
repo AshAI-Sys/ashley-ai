@@ -229,8 +229,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           .map(run => `${run.operator?.first_name} ${run.operator?.last_name}`)
           .filter(Boolean),
       };
-    });
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       preview: schedulePreview,
       total_orders: schedulePreview.length,

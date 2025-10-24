@@ -62,9 +62,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
       orderBy: { forecast_date: "asc" },
       take: limit,
-      });
-
-    return NextResponse.json({ forecasts });
+        });
+      
+        return NextResponse.json({ forecasts });
   } catch (error) {
     console.error("Demand forecast fetch error:", error);
     return NextResponse.json(
@@ -129,9 +129,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       trendFactor,
       externalFactors,
       modelVersion: modelVersion || "v1.0",
-      });
-
-    return NextResponse.json({ forecast });
+        });
+      
+        return NextResponse.json({ forecast });
   } catch (error) {
     console.error("Demand forecast creation error:", error);
     return NextResponse.json(
@@ -232,7 +232,7 @@ async function generateDemandForecast(params: any) {
       }),
       model_version: params.modelVersion,
     },
-      });
-
-  return forecast;
+        });
+      
+        return forecast;
 });

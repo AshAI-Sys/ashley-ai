@@ -68,9 +68,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
-    });
-
-    return NextResponse.json({ recommendations });
+      });
+    
+      return NextResponse.json({ recommendations });
   } catch (error) {
     console.error("Recommendations fetch error:", error);
     return NextResponse.json(
@@ -242,7 +242,6 @@ async function generateReorderRecommendations(
         productFrequency[key].lastOrder = order.created_at;
       }
     });
-  });
 
   // Generate reorder recommendations for frequently ordered items
   for (const [productKey, data] of Object.entries(productFrequency)) {
@@ -309,10 +308,7 @@ async function generateCrossSellRecommendations(
           !productCombinations[product].includes(otherProduct)
         ) {
           productCombinations[product].push(otherProduct);
-        }
-      });
-    });
-  });
+        }  });
 
   // Generate cross-sell recommendations
   const recentProducts = clientOrders
@@ -427,7 +423,6 @@ async function generateTrendingRecommendations(
       productPopularity[productType] =
         (productPopularity[productType] || 0) + (item.quantity || 0);
     });
-  });
 
   // Get top 2 trending products
   const trendingProducts = Object.entries(productPopularity)

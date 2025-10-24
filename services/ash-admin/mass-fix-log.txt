@@ -1,0 +1,23 @@
+At C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\fix-all-routes.ps1:25 char:70
++ ... content = $content -replace '(\n    \);(\n  }\);)$', "`n    );`n  }`n ...
++                                                                 ~
+Unexpected token ')' in expression or statement.
+At C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\fix-all-routes.ps1:25 char:76
++ ... ent = $content -replace '(\n    \);(\n  }\);)$', "`n    );`n  }`n});"
++                                                                   ~
+Unexpected token '}' in expression or statement.
+At C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\fix-all-routes.ps1:25 char:79
++ ... ent = $content -replace '(\n    \);(\n  }\);)$', "`n    );`n  }`n});"
++                                                                      ~
+Unexpected token '}' in expression or statement.
+At C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\fix-all-routes.ps1:25 char:80
++ ... ent = $content -replace '(\n    \);(\n  }\);)$', "`n    );`n  }`n});"
++                                                                       ~
+Unexpected token ')' in expression or statement.
+At C:\Users\Khell\Desktop\Ashley AI\services\ash-admin\fix-all-routes.ps1:36 char:25
++             Write-Host "ƒo. Fixed: $($file.Name)" -ForegroundColor Gr ...
++                         ~~~
+Unexpected token 'ƒo.' in expression or statement.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnexpectedToken
+ 

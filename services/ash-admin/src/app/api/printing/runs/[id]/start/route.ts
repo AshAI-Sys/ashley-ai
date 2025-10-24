@@ -66,6 +66,7 @@ export async function POST(
           { status: 400 }
         );
       }
+    }
 
     // Start the run
     const updatedRun = await prisma.printRun.update({
@@ -98,6 +99,7 @@ export async function POST(
       success: true,
       data: updatedRun,
       message: "Print run started successfully",
+    });
   } catch (error) {
     console.error("Start print run error:", error);
     return NextResponse.json(
@@ -125,7 +127,7 @@ async function initializeMethodSpecificData(
             exposure_seconds: 120,
             registration_notes: "Auto-initialized for print run",
           },
-      });
+        });
 
         // Initialize silkscreen specs
         await prisma.silkscreenSpec.create({
@@ -137,7 +139,7 @@ async function initializeMethodSpecificData(
             floodbar: "MEDIUM",
             expected_ink_g: 15.0, // Ashley AI will calculate this
           },
-        }
+        });
         break;
 
       case "SUBLIMATION":
@@ -147,7 +149,7 @@ async function initializeMethodSpecificData(
             paper_m2: 1.0, // Will be updated during printing
             ink_g: null, // Will be measured
           },
-        }
+        });
         break;
 
       case "DTF":
@@ -157,7 +159,7 @@ async function initializeMethodSpecificData(
             film_m2: 1.0, // Will be updated during printing
             ink_g: null, // Will be measured
           },
-      });
+        });
 
         await prisma.dtfPowderCure.create({
           data: {
@@ -166,7 +168,7 @@ async function initializeMethodSpecificData(
             temp_c: 160,
             seconds: 60,
           },
-        }
+        });
         break;
 
       case "EMBROIDERY":
@@ -185,8 +187,10 @@ async function initializeMethodSpecificData(
           });
         }
         break;
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error initializing method-specific data:", error);
+  }
 }
 
 async function createAshleyAnalysis(runId: string, run: any) {
@@ -220,8 +224,10 @@ async function createAshleyAnalysis(runId: string, run: any) {
 
     await prisma.aIAnalysis.create({
       data: analysisData,
+    });
   } catch (error) {
     console.error("Error creating Ashley analysis:", error);
+  }
 }
 
 function calculateEstimatedRuntime(run: any): number {
@@ -249,4 +255,5 @@ function estimateMaterialConsumption(run: any) {
     EMBROIDERY: { thread_m: 150, stabilizer_m2: 0.3 },
   };
 
-  return estimates[run.method as keyof typeof estimates] || {});
+  return estimates[run.method as keyof typeof estimates] || {};
+}

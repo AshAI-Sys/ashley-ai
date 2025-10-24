@@ -153,9 +153,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: brand,
@@ -225,6 +225,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           { status: 400 }
         );
       }
+    }
 
     const brand = await prisma.brand.update({
       where: { id },
@@ -243,12 +244,13 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: brand,
       message: "Brand updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -263,7 +265,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-}
+});
 
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -306,11 +308,12 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.brand.delete({
       where: { id },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Brand deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting brand:", error);
     return NextResponse.json(

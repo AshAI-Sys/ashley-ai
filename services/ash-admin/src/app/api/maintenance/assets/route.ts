@@ -85,17 +85,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: processedAssets,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching assets:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch assets" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -132,9 +131,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         metadata: metadata ? JSON.stringify(metadata) : null,
         status: "active",
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: asset,
   } catch (error: any) {
@@ -151,10 +150,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create asset" },
       { status: 500 }
     );
-  }
-}
-
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -182,9 +180,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const asset = await prisma.asset.update({
       where: { id },
       data,
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: asset,
   } catch (error) {
@@ -193,5 +191,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update asset" },
       { status: 500 }
     );
-  }
-});
+  });

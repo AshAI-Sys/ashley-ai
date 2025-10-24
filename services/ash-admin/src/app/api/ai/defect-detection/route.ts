@@ -98,7 +98,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       include: {
         order: true,
       },
-      });
+    });
 
     if (qcChecks.length === 0) {
       return NextResponse.json({

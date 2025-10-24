@@ -107,5 +107,4 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to change password" },
       { status: 500 }
     );
-  }
-});
+  });

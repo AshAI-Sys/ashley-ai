@@ -49,10 +49,9 @@ export const GET = requireAuth(async (
       { error: "Failed to fetch inspection" },
       { status: 500 }
     );
-  }
-}
-
-export const PUT = requireAuth(async (
+    });
+  
+  export const PUT = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
@@ -70,14 +69,13 @@ export const PUT = requireAuth(async (
         order: { select: { order_number: true } },
         inspector: { select: { first_name: true, last_name: true } },
       },
-    });
-
-    return NextResponse.json(inspection);
+      });
+    
+      return NextResponse.json(inspection);
   } catch (error) {
     console.error("Error updating inspection:", error);
     return NextResponse.json(
       { error: "Failed to update inspection" },
       { status: 500 }
     );
-  }
-});
+  });

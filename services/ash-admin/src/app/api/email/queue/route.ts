@@ -13,8 +13,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       stats,
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Error getting email queue stats:", error);
     return NextResponse.json(
       { error: "Failed to get queue statistics", details: error.message },
@@ -40,9 +40,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const jobId = await emailQueue.enqueue(type, to, data, {
       scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
       maxAttempts,
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       jobId,
       message: "Email queued for delivery",
@@ -52,5 +52,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to queue email", details: error.message },
       { status: 500 }
     );
-  }
+  });
 });

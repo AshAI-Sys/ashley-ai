@@ -96,9 +96,9 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: updateData,
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       user: updatedUser,
       email_verification_required: emailVerificationRequired,
@@ -109,5 +109,4 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to update account" },
       { status: 500 }
     );
-  }
-});
+  });

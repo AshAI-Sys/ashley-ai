@@ -15,10 +15,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch bills" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },
@@ -45,5 +44,6 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update bill" },
       { status: 500 }
     );
-  }
+  });
+});
 });

@@ -47,8 +47,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             quantity: m.quantity || 0,
             uom: m.uom || "pcs",
           }));
-        }
-      } catch (e) {
+          });
+        } catch (e) {
         materialsUsed = [];
       }
       return {
@@ -57,8 +57,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         total_tasks: totalTasks,
         materials_used: materialsUsed,
       };
-    });
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       runs: processedRuns,
       pagination: {
         page,
@@ -93,9 +94,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         order: { select: { order_number: true } },
         operator: { select: { first_name: true, last_name: true } },
       },
-    });
-
-    return NextResponse.json(finishingRun, { status: 201 });
+      });
+    
+      return NextResponse.json(finishingRun, { status: 201 });
   } catch (error) {
     console.error("Error creating finishing run:", error);
     return NextResponse.json(

@@ -78,6 +78,7 @@ export const PUT = requireAuth(async (
       success: true,
       bundle: updatedBundle,
       message: `Bundle status updated to ${status}`,
+    });
   } catch (error: any) {
     console.error("Bundle status update error:", error);
     return NextResponse.json(

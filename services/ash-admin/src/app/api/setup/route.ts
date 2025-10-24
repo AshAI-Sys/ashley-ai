@@ -48,9 +48,9 @@ export async function POST() {
         is_active: true,
         workspace_id: workspace.id,
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Admin user created successfully",
       user: {

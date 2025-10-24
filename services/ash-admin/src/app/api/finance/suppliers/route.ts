@@ -38,8 +38,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: suppliers,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching suppliers:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch suppliers" },
@@ -66,5 +66,4 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create supplier" },
       { status: 500 }
     );
-  }
-});
+  });

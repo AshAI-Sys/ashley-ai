@@ -145,8 +145,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: transformedRuns,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching sewing runs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch sewing runs" },
@@ -262,10 +262,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create sewing run" },
       { status: 500 }
     );
-  }
-}
-
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -341,9 +340,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: sewingRun,
       message: "Sewing run updated successfully",
@@ -360,10 +359,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update sewing run" },
       { status: 500 }
     );
-  }
-}
-
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -397,9 +395,9 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.sewingRun.delete({
       where: { id },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Sewing run deleted successfully",
   } catch (error) {
@@ -408,5 +406,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete sewing run" },
       { status: 500 }
     );
-  }
-});
+  });

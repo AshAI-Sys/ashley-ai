@@ -105,9 +105,9 @@ export async function POST(request: NextRequest) {
       await logAuthEvent("REGISTER_FAILED", "system", undefined, request, {
         email,
         reason: "Email already exists",
-      });
-
-      return NextResponse.json(
+        });
+      
+        return NextResponse.json(
         {
           success: false,
           error: "An account with this email already exists",
@@ -154,9 +154,9 @@ export async function POST(request: NextRequest) {
           is_active: true,
           permissions: JSON.stringify(["*"]), // Full permissions
         },
-      });
-
-      return { workspace, user };
+        });
+      
+        return { workspace, user };
     });
 
     const { workspace, user } = result;
@@ -175,9 +175,9 @@ export async function POST(request: NextRequest) {
       workspaceName: workspace.name,
       userId: user.id,
       email: user.email,
-    });
-
-    return NextResponse.json(
+      });
+    
+      return NextResponse.json(
       {
         success: true,
         message: "Account created successfully! You can now login.",

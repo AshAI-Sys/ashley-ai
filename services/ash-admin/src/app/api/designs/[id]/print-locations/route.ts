@@ -29,9 +29,9 @@ export async function GET(
       orderBy: {
         created_at: "asc",
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: { printLocations },
 });
@@ -64,9 +64,9 @@ export async function POST(
         offset_y_cm: validatedData.offset_y_cm || null,
         notes: validatedData.notes || null,
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: { printLocation },
@@ -125,9 +125,9 @@ export async function PUT(
         offset_y_cm: validatedData.offset_y_cm,
         notes: validatedData.notes,
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: { printLocation },
       message: "Print location updated successfully",

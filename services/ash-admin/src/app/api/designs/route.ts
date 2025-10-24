@@ -182,10 +182,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch designs" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
 
@@ -214,5 +213,5 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to create design" },
       { status: 500 }
     );
-  }
+  });
 });

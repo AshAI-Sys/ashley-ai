@@ -117,12 +117,12 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       message: "OTP verified successfully",
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Error verifying OTP:", error);
     return NextResponse.json(
       { error: "Failed to verify OTP", details: error.message },
       { status: 500 }
     );
-  }
+  });
 });

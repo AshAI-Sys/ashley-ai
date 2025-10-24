@@ -367,9 +367,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       data: {
         last_message_at: new Date(),
       },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       conversation_id: conversationId,
       user_message: userMessage,
       assistant_message: assistantMessage,

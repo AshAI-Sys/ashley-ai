@@ -308,5 +308,4 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       { success: false, error: "Failed to fetch dashboard statistics" },
       { status: 500 }
     );
-  }
-});
+  });

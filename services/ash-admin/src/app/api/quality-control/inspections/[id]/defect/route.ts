@@ -29,9 +29,9 @@ export async function POST(
         defect_code: true,
         sample: true,
       },
-      });
-
-    return NextResponse.json(defect, { status: 201 });
+        });
+      
+        return NextResponse.json(defect, { status: 201 });
   } catch (error) {
     console.error("Error creating defect:", error);
     return NextResponse.json(
@@ -40,4 +40,3 @@ export async function POST(
     );
   }
 }
-});

@@ -47,9 +47,9 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       storage_quota_gb,
       custom_domain,
       branding,
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         ...result,
@@ -173,5 +173,10 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to delete tenant", details: error.message },
       { status: 400 }
     );
-  }
+  });
+});
+});
+});
+});
+});
 });

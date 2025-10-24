@@ -79,8 +79,8 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: commentsWithParsedData,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching comments:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch comments" },

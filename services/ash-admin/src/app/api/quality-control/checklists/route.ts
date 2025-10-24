@@ -18,9 +18,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const checklists = await prisma.qCChecklist.findMany({
       where,
       orderBy: { name: "asc" },
-      });
-
-    return NextResponse.json(checklists);
+        });
+      
+        return NextResponse.json(checklists);
   } catch (error) {
     console.error("Error fetching checklists:", error);
     return NextResponse.json(
@@ -41,14 +41,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         category: data.category || "VISUAL", // Added category field
         items: JSON.stringify(data.items),
       },
-      });
-
-    return NextResponse.json(checklist, { status: 201 });
+        });
+      
+        return NextResponse.json(checklist, { status: 201 });
   } catch (error) {
     console.error("Error creating checklist:", error);
     return NextResponse.json(
       { error: "Failed to create checklist" },
       { status: 500 }
     );
-  }
-});
+  });

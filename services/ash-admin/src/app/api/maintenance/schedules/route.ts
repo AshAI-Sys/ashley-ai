@@ -126,17 +126,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: processedSchedules,
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error fetching maintenance schedules:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch maintenance schedules" },
       { status: 500 }
     );
-  }
-}
-
-export const POST = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -231,22 +230,21 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: schedule,
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Error creating maintenance schedule:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create maintenance schedule" },
       { status: 500 }
     );
-  }
-}
-
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -303,9 +301,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: schedule,
   } catch (error) {
@@ -314,10 +312,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update maintenance schedule" },
       { status: 500 }
     );
-  }
-}
-
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+    });
+  
+  export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -349,9 +346,9 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     await prisma.maintenanceSchedule.delete({
       where: { id },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Maintenance schedule deleted successfully",
   } catch (error) {
@@ -360,5 +357,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to delete maintenance schedule" },
       { status: 500 }
     );
-  }
-});
+  });

@@ -88,5 +88,5 @@ export async function GET() {
       { error: "Failed to get SMS status", details: error.message },
       { status: 500 }
     );
-  }
+  });
 });

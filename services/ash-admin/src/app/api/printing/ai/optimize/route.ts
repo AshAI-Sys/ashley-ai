@@ -91,9 +91,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         result: "SUCCESS",
         created_by: "system",
       },
-    });
-
-    return NextResponse.json({
+      });
+    
+      return NextResponse.json({
       success: true,
       data: {
         analysis_id: aiAnalysis.id,
@@ -242,9 +242,9 @@ function calculateHistoricalPerformance(runs: any[]) {
 
     const defectRate = (output.qty_reject || 0) / totalQty;
     return Math.max(0.5, 1 - defectRate);
-  });
-
-  return (
+    });
+  
+    return (
     qualityScores.reduce((sum, score) => sum + score, 0) / qualityScores.length
   );
 }

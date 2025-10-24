@@ -65,6 +65,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       hourlyData[key].defect_rate.push(item.defect_rate);
       hourlyData[key].output += item.output_units;
       hourlyData[key].target += item.target_units;
+    });
 
     // Calculate averages
     const heatmapGrid = Object.values(hourlyData).map((item: any) => ({
@@ -140,10 +141,11 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
         operators_count: operators_count || 1,
       },
       });
-
-    return NextResponse.json({
+    
+      return NextResponse.json({
       success: true,
       heatmap,
+    });
   } catch (error: any) {
     console.error("Error creating heatmap data:", error);
     return NextResponse.json(

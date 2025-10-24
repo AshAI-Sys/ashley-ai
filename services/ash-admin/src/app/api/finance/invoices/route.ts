@@ -117,8 +117,9 @@ export const POST = requireAnyPermission(["finance:create"])(
     ]);
     if (validationError) {
       throw validationError;
+  }
 
-    // Validate tax mode enum
+  // Validate tax mode enum
     const taxModeError = validateEnum(
       tax_mode,
       ["VAT_INCLUSIVE", "VAT_EXCLUSIVE", "ZERO_RATED"],
@@ -126,8 +127,9 @@ export const POST = requireAnyPermission(["finance:create"])(
     );
     if (taxModeError) {
       throw taxModeError;
+  }
 
-    // Validate discount percentage
+  // Validate discount percentage
     if (discount < 0 || discount > 100) {
       throw new ValidationError(
         "Discount must be between 0 and 100",
@@ -161,8 +163,9 @@ export const POST = requireAnyPermission(["finance:create"])(
       const qtyError = validateNumber(line.qty, `lines[${i}].qty`, 0.01);
       if (qtyError) {
         throw qtyError;
+  }
 
-      const priceError = validateNumber(
+  const priceError = validateNumber(
         line.unit_price,
         `lines[${i}].unit_price`,
         0
@@ -255,9 +258,9 @@ export const POST = requireAnyPermission(["finance:create"])(
         client: { select: { name: true } },
         invoice_items: true,
       },
-      });
-
-    return createSuccessResponse(invoice, 201);
+        });
+      
+        return createSuccessResponse(invoice, 201);
   })
 );
 });

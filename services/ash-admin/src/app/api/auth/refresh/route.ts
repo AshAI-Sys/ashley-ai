@@ -21,6 +21,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     if (!refreshToken) {
       const body = await request.json().catch(() => ({}));
       refreshToken = body.refresh_token;
+    }
 
     if (!refreshToken) {
       authLogger.warn("Refresh token missing in request");
@@ -41,13 +42,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       authLogger.info("Access token refreshed", {
         userId: payload.userId,
         email: payload.email,
-      }
+      });
+    }
 
     // Return new access token
     const response = NextResponse.json({
       success: true,
       access_token: newAccessToken,
       expires_in: 15 * 60, // 15 minutes in seconds
+    });
 
     // Update auth_token cookie with new access token
     response.cookies.set("auth_token", newAccessToken, {
@@ -57,9 +60,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       maxAge: 15 * 60, // 15 minutes
       path: "/",
       });
-
-    return response;
+    
+      return response;
   } catch (error: any) {
     authLogger.error("Token refresh error", error);
     return apiServerError(error);
+  }
 });

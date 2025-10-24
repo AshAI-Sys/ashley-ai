@@ -71,8 +71,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           success: true,
           summary,
         });
-    }
-  } catch (error: any) {
+    } catch (error: any) {
     console.error("Inventory API error:", error);
     return NextResponse.json(
       { error: "Failed to process inventory request", details: error.message },
@@ -177,12 +176,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    }
-  } catch (error: any) {
+    } catch (error: any) {
     console.error("Inventory operation error:", error);
     return NextResponse.json(
       { error: "Failed to complete operation", details: error.message },
       { status: 500 }
     );
-  }
-});
+  });

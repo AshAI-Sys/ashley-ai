@@ -176,8 +176,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         password: "password123",
       },
       nextStep: "Go to /login and use the credentials above",
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("❌ Error seeding database:", error);
     return NextResponse.json(
       {

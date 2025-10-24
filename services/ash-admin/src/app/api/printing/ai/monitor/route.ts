@@ -381,9 +381,9 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
         action: risk.recommendation,
       });
     }
-  });
-
-  return recommendations;
+    });
+  
+    return recommendations;
 }
 
 function calculatePerformanceScore(printRun: any, insights: any) {

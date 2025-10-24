@@ -91,8 +91,8 @@ export async function POST(
           );
           if (existsSync(oldFilepath)) {
             await unlink(oldFilepath);
-          }
-        } catch (error) {
+            });
+          } catch (error) {
           console.error("Error deleting old profile picture:", error);
         }
 
@@ -104,9 +104,9 @@ export async function POST(
           profile_picture: profilePictureUrl,
           updated_at: new Date(),
         },
-      });
-
-      return NextResponse.json({
+        });
+      
+        return NextResponse.json({
         success: true,
         profile_picture: profilePictureUrl,
         employee: {
@@ -165,8 +165,8 @@ export async function DELETE(
         );
         if (existsSync(filepath)) {
           await unlink(filepath);
-        }
-      } catch (error) {
+          });
+        } catch (error) {
         console.error("Error deleting profile picture file:", error);
     }
 
@@ -188,5 +188,4 @@ export async function DELETE(
         { status: 500 }
       );
     }
-}
 });

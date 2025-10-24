@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { NextRequest } from "next/server";
-import { requireAuth } from "../../../../lib/auth-guards";
 import { apiSuccess, apiServerError } from "../../../../lib/api-response";
 import { authLogger } from "../../../../lib/logger";
 import { prisma } from "../../../../lib/db";
@@ -16,6 +15,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const userOrResponse = await requireAuth(request);
     if (userOrResponse instanceof Response) {
       return userOrResponse;
+    }
 
     const authUser = userOrResponse;
 
@@ -35,16 +35,13 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         created_at: true,
         last_login_at: true,
       },
-      });
+    });
 
     if (!user) {
-      authLogger.warn("User not found in database", { userId: authUser.id });
-      return apiServerError("User not found");
+      authLogger.warn("User not found in database", { userId: authUser.id   });    return apiServerError("User not found");
     }
 
-    authLogger.debug("User authenticated successfully", { userId: user.id });
-
-    return apiSuccess({
+    authLogger.debug("User authenticated successfully", { userId: user.id   });    return apiSuccess({
       id: user.id,
       email: user.email,
       name: `${user.first_name} ${user.last_name}`,
@@ -54,8 +51,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       workspaceId: user.workspace_id,
       isActive: user.is_active,
       lastLoginAt: user.last_login_at,
-    }
+    });
   } catch (error) {
     authLogger.error("Auth verification error", error);
     return apiServerError(error);
+  }
 });

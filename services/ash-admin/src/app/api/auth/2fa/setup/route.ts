@@ -57,6 +57,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       otpauth_url: result.otpauth_url,
       backup_codes: result.backup_codes,
       message: "Scan QR code with Google Authenticator or similar app",
+    });
   } catch (error: any) {
     console.error("Error setting up 2FA:", error);
     return NextResponse.json(
@@ -67,6 +68,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // DELETE /api/auth/2fa/setup - Disable 2FA
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -89,10 +91,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         two_factor_secret: null,
         two_factor_backup_codes: null,
       },
-      });
+    });
 
     return NextResponse.json({
       message: "2FA has been disabled",
+    });
   } catch (error: any) {
     console.error("Error disabling 2FA:", error);
     return NextResponse.json(

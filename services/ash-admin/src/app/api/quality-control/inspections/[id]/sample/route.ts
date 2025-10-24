@@ -25,14 +25,13 @@ export async function POST(
         qty_sampled: data.qty_sampled || 1,
         result: data.result || "OK",
       },
-      });
-
-    return NextResponse.json(sample, { status: 201 });
+        });
+      
+        return NextResponse.json(sample, { status: 201 });
   } catch (error) {
     console.error("Error creating sample:", error);
     return NextResponse.json(
       { error: "Failed to create sample" },
       { status: 500 }
     );
-}
 });

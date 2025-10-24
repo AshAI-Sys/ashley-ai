@@ -69,12 +69,11 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
     return NextResponse.json({
       success: true,
       message: "Session revoked successfully",
-    }
-  } catch (error) {
+      });
+    } catch (error) {
     console.error("Error revoking session:", error);
     return NextResponse.json(
       { success: false, error: "Failed to revoke session" },
       { status: 500 }
     );
-  }
-});
+  });

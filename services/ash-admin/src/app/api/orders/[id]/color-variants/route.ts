@@ -32,9 +32,9 @@ export async function GET(
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: { lineItems },
 });
@@ -63,9 +63,9 @@ export async function POST(
         percentage: validatedData.percentage,
         quantity: validatedData.quantity,
       },
-      });
-
-    return NextResponse.json(
+        });
+      
+        return NextResponse.json(
       {
         success: true,
         data: { colorVariant },
@@ -122,5 +122,4 @@ export async function DELETE(
       { success: false, error: "Failed to delete color variant" },
       { status: 500 }
     );
-  }
-});
+  });

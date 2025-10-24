@@ -62,9 +62,9 @@ export async function POST(
     await prisma.finishedUnit.updateMany({
       where: { id: data.finished_unit_id },
       data: { packed: true },
-      });
-
-    return NextResponse.json(cartonContent, { status: 201 });
+        });
+      
+        return NextResponse.json(cartonContent, { status: 201 });
   } catch (error) {
     console.error("Error adding content to carton:", error);
     return NextResponse.json(
@@ -92,9 +92,9 @@ export async function GET(
         },
       },
       orderBy: { created_at: "asc" },
-      });
-
-    return NextResponse.json(contents);
+        });
+      
+        return NextResponse.json(contents);
   } catch (error) {
     console.error("Error fetching carton contents:", error);
     return NextResponse.json(
@@ -138,9 +138,9 @@ export async function DELETE(
     await prisma.finishedUnit.update({
       where: { id: content.finished_unit_id },
       data: { packed: false },
-      });
-
-    return NextResponse.json({ message: "Content removed from carton" });
+        });
+      
+        return NextResponse.json({ message: "Content removed from carton" });
   } catch (error) {
     console.error("Error removing content from carton:", error);
     return NextResponse.json(

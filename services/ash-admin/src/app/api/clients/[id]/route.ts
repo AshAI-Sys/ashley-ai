@@ -107,9 +107,9 @@ export const PUT = requireAuth(async (
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       data: client,
       message: "Client updated successfully",
@@ -132,9 +132,9 @@ export const DELETE = requireAuth(async (
   try {
     await prisma.client.delete({
       where: { id: context.params.id },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       message: "Client deleted successfully",
     });
@@ -144,5 +144,4 @@ export const DELETE = requireAuth(async (
       { success: false, error: "Failed to delete client" },
       { status: 500 }
     );
-  }
-});
+  });

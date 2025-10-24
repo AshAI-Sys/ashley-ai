@@ -20,9 +20,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         sample_data: data.sample_data ? JSON.stringify(data.sample_data) : null,
         sampled_at: new Date(),
       },
-      });
-
-    return NextResponse.json(sample, { status: 201 });
+        });
+      
+        return NextResponse.json(sample, { status: 201 });
   } catch (error) {
     console.error("Error creating sample:", error);
     return NextResponse.json(
@@ -54,14 +54,13 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         },
       },
       orderBy: { sample_no: "asc" },
-      });
-
-    return NextResponse.json(samples);
+        });
+      
+        return NextResponse.json(samples);
   } catch (error) {
     console.error("Error fetching samples:", error);
     return NextResponse.json(
       { error: "Failed to fetch samples" },
       { status: 500 }
     );
-  }
-});
+  });

@@ -109,17 +109,16 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       return NextResponse.json({
         success: true,
         defectTypes: defaultDefectTypes,
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       defectTypes,
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Defect types fetch error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
     );
-  }
-});
+  });

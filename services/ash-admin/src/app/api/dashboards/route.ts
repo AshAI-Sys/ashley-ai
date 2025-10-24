@@ -30,9 +30,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         widgets_data: true,
       },
       orderBy: [{ is_default: "desc" }, { created_at: "desc" }],
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       dashboards: dashboards.map(d => ({
         ...d,
@@ -100,9 +100,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
           },
         },
       },
-      });
-
-    return NextResponse.json({
+        });
+      
+        return NextResponse.json({
       success: true,
       dashboard: {
         ...dashboard,
@@ -116,5 +116,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { success: false, error: error.message },
       { status: 500 }
     );
-  }
-});
+  });

@@ -22,12 +22,11 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           "Content-Type": "text/csv",
           "Content-Disposition": 'attachment; filename="audit-logs.csv"',
         },
-      }
-    } catch (error) {
+        });
+      } catch (error) {
       console.error("Error exporting audit logs:", error);
       return NextResponse.json(
         { error: "Failed to export logs" },
         { status: 500 }
       );
-    }
-});
+    });

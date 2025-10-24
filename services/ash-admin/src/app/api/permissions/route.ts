@@ -31,8 +31,8 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       success: true,
       permissions,
       total: permissions.length,
-    }
-  } catch (error: any) {
+      });
+    } catch (error: any) {
     console.error("Get permissions error:", error);
     return NextResponse.json(
       { error: "Failed to get permissions", details: error.message },
@@ -70,5 +70,6 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { error: "Failed to check permission", details: error.message },
       { status: 500 }
     );
-  }
+  });
+});
 });

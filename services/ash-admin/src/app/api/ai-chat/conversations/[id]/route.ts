@@ -69,9 +69,9 @@ export const PATCH = requireAuth(async (
         ...(is_archived !== undefined && { is_archived }),
         ...(is_pinned !== undefined && { is_pinned }),
       },
-      });
-
-    return NextResponse.json({ conversation });
+        });
+      
+        return NextResponse.json({ conversation });
   } catch (error) {
     console.error("Error updating conversation:", error);
     return NextResponse.json(
@@ -92,7 +92,7 @@ export const DELETE = requireAuth(async (
       where: {
         id: params.id,
       },
-      });
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
