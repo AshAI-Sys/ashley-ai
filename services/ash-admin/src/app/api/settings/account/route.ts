@@ -22,7 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     });
 
     if (!user) {
-      }
+      
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -50,7 +50,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     // Check if email is being changed
     let emailVerificationRequired = false;
     if (email) {
-      }
+      
       const currentUser = await prisma.user.findUnique({
         where: { id: authUser.id },
         select: { email: true },
@@ -67,7 +67,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         });
 
         if (existingUser && existingUser.id !== authUser.id) {
-          }
+          
           return NextResponse.json(
             { error: "Email already in use" },
             { status: 400 }
@@ -82,7 +82,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
     // Split name into first and last if provided
     if (name) {
-      }
+      
       const nameParts = name.split(' ');
       updateData.first_name = nameParts[0] || '';
       updateData.last_name = nameParts.slice(1).join(' ') || '';

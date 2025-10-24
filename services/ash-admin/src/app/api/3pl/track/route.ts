@@ -11,7 +11,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const tracking_number = searchParams.get("tracking_number");
 
     if (!provider || !tracking_number) {
-      }
+      
       return NextResponse.json(
         { error: "provider and tracking_number are required" },
         { status: 400 }

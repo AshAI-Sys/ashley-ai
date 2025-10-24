@@ -31,7 +31,9 @@ export async function POST(
       },
         
       
-        return NextResponse.json(defect, { status: 201 });
+        });
+
+    return NextResponse.json(defect, { status: 201 });
   } catch (error) {
     console.error("Error creating defect:", error);
     return NextResponse.json(

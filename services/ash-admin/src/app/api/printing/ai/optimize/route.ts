@@ -17,7 +17,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!print_method || !order_id || !quantity) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -94,7 +94,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       
     
-      return NextResponse.json({
+      });
+
+    return NextResponse.json({
       success: true,
       data: {
         analysis_id: aiAnalysis.id,
@@ -186,10 +188,10 @@ function calculateQuantityEfficiency(quantity: number, method: string) {
   const range = optimalRanges[method] || optimalRanges.SUBLIMATION;
 
   if (quantity >= range.min && quantity <= range.optimal) {
-    }
+    
     return 0.95 + (quantity / range.optimal) * 0.05;
   } else if (quantity <= range.max) {
-    }
+    
     return (
       0.85 +
       (1 - (quantity - range.optimal) / (range.max - range.optimal)) * 0.1

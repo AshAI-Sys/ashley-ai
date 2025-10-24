@@ -10,7 +10,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const workspace_id = searchParams.get("workspace_id");
 
     if (!workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
@@ -33,14 +33,14 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         `User limit almost reached (${limits.users.current}/${limits.users.max})`
       );
     }
-    });
+    }
 
     if (ordersPercent >= 90) {
       warnings.push(
         `Monthly order limit almost reached (${limits.orders.current_month}/${limits.orders.max})`
       );
     }
-    });
+    }
 
     if (storagePercent >= 90) {
       warnings.push(

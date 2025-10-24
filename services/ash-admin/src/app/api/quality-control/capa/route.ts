@@ -71,7 +71,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     let nextNumber = 1;
     if (lastCapa) {
-      }
+      
       const lastNumber = parseInt(lastCapa.capa_number.split("-").pop() || "0");
       nextNumber = lastNumber + 1;
     });
@@ -104,7 +104,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       
     
-      return NextResponse.json(capaTask, { status: 201 });
+      });
+
+    return NextResponse.json(capaTask, { status: 201 });
   } catch (error) {
     console.error("Error creating CAPA task:", error);
     return NextResponse.json(

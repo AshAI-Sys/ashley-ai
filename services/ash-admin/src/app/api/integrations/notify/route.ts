@@ -19,7 +19,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     } = body;
 
     if (!event || !channels || !data) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }

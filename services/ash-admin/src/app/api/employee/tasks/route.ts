@@ -13,7 +13,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   const _position = searchParams.get("position");
 
   if (!department) {
-    }
+    
     return NextResponse.json(
       { success: false, error: "Department is required" },
       { status: 400 }

@@ -100,7 +100,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!order) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 }
@@ -113,16 +113,16 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!fabricBatch) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric batch not found" },
         { status: 404 }
       );
     }
-    });
+    }
 
     if (fabricBatch.qty_on_hand < validatedData.qty_issued) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -189,7 +189,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -210,7 +210,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric issue ID is required" },
         { status: 400 }
@@ -225,7 +225,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!existingIssue) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric issue not found" },
         { status: 404 }
@@ -259,6 +259,8 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       },
     
 
+    });
+
     return NextResponse.json({
       success: true,
       data: fabricIssue,
@@ -266,7 +268,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -287,7 +289,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric issue ID is required" },
         { status: 400 }
@@ -303,7 +305,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!existingIssue) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric issue not found" },
         { status: 404 }

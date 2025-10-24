@@ -20,7 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Validate request
     const validation = ForgotPasswordSchema.safeParse(body);
     if (!validation.success) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -64,7 +64,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           (user.password_reset_sent_at.getTime() - twoMinutesAgo.getTime()) /
             1000
         );
-        }
         return NextResponse.json(
           {
             success: false,
@@ -131,7 +130,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 200 }
     );
-  
+
   } catch (error: any) {
     console.error("Forgot password error:", error);
     return NextResponse.json(

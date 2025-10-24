@@ -29,18 +29,16 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     const { template_id, variables } = body;
 
     if (!template_id) {
-      }
+      
       return NextResponse.json(
         { error: "template_id is required" },
         { status: 400 }
       );
     }
-    }
-
-    const template = SMS_TEMPLATES[template_id as keyof typeof SMS_TEMPLATES];
+        const template = SMS_TEMPLATES[template_id as keyof typeof SMS_TEMPLATES];
 
     if (!template) {
-      }
+      
       return NextResponse.json(
         { error: "Template not found" },
         { status: 404 }

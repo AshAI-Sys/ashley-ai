@@ -20,7 +20,7 @@ export async function POST(
       });
 
     if (!inspection) {
-      }
+      
       return NextResponse.json(
         { error: "Inspection not found" },
         { status: 404 }

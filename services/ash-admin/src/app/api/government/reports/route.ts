@@ -17,7 +17,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       body;
 
     if (!agency || !period || !workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "agency, period, and workspace_id are required" },
         { status: 400 }
@@ -45,7 +45,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (employees.length === 0) {
-      }
+      
       return NextResponse.json(
         { error: "No active employees found" },
         { status: 404 }
@@ -165,7 +165,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const monthly_salary = searchParams.get("monthly_salary");
 
     if (!monthly_salary) {
-      }
+      
       return NextResponse.json(
         { error: "monthly_salary is required" },
         { status: 400 }
@@ -192,7 +192,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Get employee details if ID provided
     let employee = null;
     if (employee_id) {
-      }
+      
       const emp = await prisma.employee.findUnique({
         where: { id: employee_id },
         select: {
@@ -204,7 +204,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       });
 
       if (emp) {
-        }
+        
         let contactInfo: any = {};
         try {
           contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};

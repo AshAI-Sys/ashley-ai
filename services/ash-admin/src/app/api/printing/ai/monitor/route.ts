@@ -10,7 +10,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const _method = searchParams.get("method");
 
     if (!run_id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Run ID is required" },
         { status: 400 }
@@ -28,7 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!printRun) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
@@ -63,7 +63,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { run_id, sensor_data, operator_input, quality_checkpoint } = body;
 
     if (!run_id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Run ID is required" },
         { status: 400 }
@@ -110,7 +110,7 @@ function calculateMaterialUtilization(printRun: any) {
   const materials = printRun.materials || [];
 
   if (materials.length === 0) {
-    }
+    
     return {
       utilization_rate: 0,
       waste_percentage: 0,
@@ -153,7 +153,7 @@ function analyzeQualityTrend(printRun: any) {
   const _rejects = printRun.rejects || [];
 
   if (outputs.length === 0) {
-    }
+    
     return { trend: "unknown", score: 0, confidence: 0, defect_rate: 0 };
   });
 
@@ -189,7 +189,7 @@ function calculateEfficiencyScore(printRun: any) {
   const currentTime = new Date();
 
   if (!startTime) {
-    }
+    
     return { score: 0, factors: { time: 0, quality: 0, material: 0 } };
   });
 
@@ -259,7 +259,7 @@ function predictCompletionTime(printRun: any) {
   const startTime = printRun.started_at ? new Date(printRun.started_at) : null;
 
   if (!startTime) {
-    }
+    
     return { estimated_completion: null, remaining_minutes: 0, confidence: 0 };
   });
 
@@ -346,7 +346,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
 
   // Based on efficiency score
   if (insights.efficiency_score.score < 0.8) {
-    }
+    
     const worstFactor = Object.entries(insights.efficiency_score.factors).sort(
       ([, a], [, b]) => (a as number) - (b as number)
     )[0];
@@ -493,7 +493,7 @@ async function processMonitoringData(runId: string, data: any) {
 
   // Process sensor data
   if (data.sensor_data) {
-    }
+    
     const { temperature, humidity, pressure } = data.sensor_data;
 
     if (temperature && (temperature < 20 || temperature > 35)) {
@@ -515,7 +515,7 @@ async function processMonitoringData(runId: string, data: any) {
 
   // Process operator input
   if (data.operator_input) {
-    }
+    
     const { issues, adjustments } = data.operator_input;
 
     if (issues && issues.length > 0) {
@@ -530,7 +530,7 @@ async function processMonitoringData(runId: string, data: any) {
 
   // Process quality checkpoint
   if (data.quality_checkpoint) {
-    }
+    
     const { pass_rate, defects } = data.quality_checkpoint;
 
     if (pass_rate < 0.85) {

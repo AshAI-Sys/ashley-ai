@@ -22,7 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     });
 
     if (!user) {
-      }
+      
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -69,7 +69,9 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       },
       
     
-      return NextResponse.json({ success: true, user: updatedUser });
+      });
+
+    return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
     console.error("Error updating general settings:", error);
     return NextResponse.json(

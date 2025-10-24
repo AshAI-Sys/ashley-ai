@@ -19,7 +19,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     } = await req.json();
 
     if (!name || !slug) {
-      }
+      
       return NextResponse.json(
         { error: "name and slug are required" },
         { status: 400 }
@@ -73,7 +73,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     const workspace_id = searchParams.get("workspace_id");
 
     if (!workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
@@ -82,15 +82,13 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
     const config = await tenantManager.getTenantConfig(workspace_id);
 
     if (!config) {
-      }
+      
       return NextResponse.json(
         { error: "Workspace not found" },
         { status: 404 }
       );
     }
-    }
-
-    const limits = await tenantManager.checkLimits(workspace_id);
+        const limits = await tenantManager.checkLimits(workspace_id);
     const stats = await tenantManager.getTenantStats(workspace_id);
 
     return NextResponse.json({
@@ -112,21 +110,19 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     const { workspace_id, ...updates } = await req.json();
 
     if (!workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "workspace_id is required" },
         { status: 400 }
       );
     }
-    }
-
-    const success = await tenantManager.updateTenantConfig(
+        const success = await tenantManager.updateTenantConfig(
       workspace_id,
       updates
     );
 
     if (!success) {
-      }
+      
       return NextResponse.json(
         { error: "Failed to update tenant configuration" },
         { status: 500 }
@@ -151,7 +147,7 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
     const confirmation = searchParams.get("confirmation");
 
     if (!workspace_id || !confirmation) {
-      }
+      
       return NextResponse.json(
         { error: "workspace_id and confirmation (slug) are required" },
         { status: 400 }
@@ -163,7 +159,7 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
     );
 
     if (!success) {
-      }
+      
       return NextResponse.json(
         { error: "Failed to delete tenant" },
         { status: 500 }

@@ -31,7 +31,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (existingEmployee) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Email already exists" },
         { status: 400 }
@@ -75,7 +75,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: {
@@ -94,7 +96,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -133,7 +135,9 @@ export async function GET() {
       orderBy: { created_at: "desc" },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: employees,
       });

@@ -189,7 +189,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: newClient,
@@ -200,7 +202,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         {
           success: false,

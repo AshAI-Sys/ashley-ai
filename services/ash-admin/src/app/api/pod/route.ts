@@ -29,7 +29,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!workspace_id || !delivery_id || !recipient_name) {
-      }
+      
       return NextResponse.json(
         { error: "workspace_id, delivery_id, and recipient_name are required" },
         { status: 400 }
@@ -67,7 +67,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json(podRecord, { status: 201 });
+        });
+
+    return NextResponse.json(podRecord, { status: 201 });
   } catch (error: any) {
     console.error("Error creating POD record:", error);
     return NextResponse.json(
@@ -87,7 +89,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const workspace_id = searchParams.get("workspace_id");
 
     if (!delivery_id && !workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "delivery_id or workspace_id is required" },
         { status: 400 }
@@ -139,7 +141,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { error: "POD record ID is required" },
         { status: 400 }

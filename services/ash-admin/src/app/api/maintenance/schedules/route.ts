@@ -161,7 +161,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       !frequency_type ||
       !frequency_value
     ) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -178,7 +178,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       : new Date();
 
     if (!next_due_date) {
-      }
+      
       const now = new Date();
       switch (frequency_type) {
         case "DAILY":
@@ -236,7 +236,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: schedule,
       });
@@ -255,7 +257,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Schedule ID is required" },
         { status: 400 }
@@ -309,7 +311,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: schedule,
   } catch (error) {
@@ -327,7 +331,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Schedule ID is required" },
         { status: 400 }
@@ -343,7 +347,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (linkedWorkOrders > 0) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -357,7 +361,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where: { id },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Maintenance schedule deleted successfully",
   } catch (error) {

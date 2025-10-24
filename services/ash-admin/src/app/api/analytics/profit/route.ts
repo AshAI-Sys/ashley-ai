@@ -29,7 +29,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
-    });
+    }
 
     const analyses = await prisma.profitAnalysis.findMany({
       where,
@@ -145,7 +145,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       !material_cost ||
       !labor_cost
     ) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -199,7 +199,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       },
       
     
-      return NextResponse.json({
+      });
+
+    return NextResponse.json({
       success: true,
       analysis,
     });
@@ -221,7 +223,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     const { order_id } = body;
 
     if (!order_id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Order ID is required" },
         { status: 400 }
@@ -243,7 +245,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     });
 
     if (!order) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 }
@@ -317,7 +319,9 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       },
       
     
-      return NextResponse.json({
+      });
+
+    return NextResponse.json({
       success: true,
       analysis,
       message: "Profit analysis auto-generated successfully",

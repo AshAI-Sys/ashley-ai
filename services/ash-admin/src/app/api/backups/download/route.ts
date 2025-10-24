@@ -10,18 +10,16 @@ export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
     const backupId = searchParams.get("id");
 
     if (!backupId) {
-      }
+      
       return NextResponse.json(
         { error: "Backup ID is required" },
         { status: 400 }
       );
     }
-    }
-
-    const backup = await backupService.getBackupInfo(backupId);
+        const backup = await backupService.getBackupInfo(backupId);
 
     if (!backup) {
-      }
+      
       return NextResponse.json({ error: "Backup not found" }, { status: 404 });
     }
 

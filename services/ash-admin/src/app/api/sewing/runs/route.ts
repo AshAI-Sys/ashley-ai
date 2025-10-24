@@ -166,7 +166,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!order) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Order not found" },
         { status: 404 }
@@ -179,7 +179,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!operator) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Operator not found" },
         { status: 404 }
@@ -192,7 +192,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!bundle) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }
@@ -205,7 +205,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!routingStep) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Routing step not found" },
         { status: 404 }
@@ -255,7 +255,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -276,7 +276,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Sewing run ID is required" },
         { status: 400 }
@@ -291,7 +291,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!existingSewingRun) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Sewing run not found" },
         { status: 404 }
@@ -350,13 +350,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: sewingRun,
       message: "Sewing run updated successfully",
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -377,7 +379,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Sewing run ID is required" },
         { status: 400 }
@@ -390,7 +392,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!existingSewingRun) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Sewing run not found" },
         { status: 404 }
@@ -399,7 +401,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Check if sewing run is completed (prevent deletion)
     if (existingSewingRun.status === "DONE") {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Cannot delete completed sewing run" },
         { status: 400 }
@@ -410,7 +412,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       where: { id },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Sewing run deleted successfully",
   } catch (error) {

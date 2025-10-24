@@ -36,7 +36,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: { payment_date: "desc" },
       
     
-      return NextResponse.json({
+      });
+
+    return NextResponse.json({
       success: true,
       data: payments,
     });
@@ -56,7 +58,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       data;
 
     if (!invoice_id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Invoice ID is required" },
         { status: 400 }
@@ -75,7 +77,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!invoice) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Invoice not found" },
         { status: 404 }
@@ -147,7 +149,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       
     
-      return NextResponse.json(
+      });
+
+    return NextResponse.json(
       {
         success: true,
         data: paymentWithDetails,

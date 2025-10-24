@@ -33,7 +33,6 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
     if (report_type) {
       // Generate specific report
-      }
       return await generateReport(report_type, searchParams, user);
     }
 
@@ -191,16 +190,15 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       generated_by: user.id,
       timestamp: new Date().toISOString(),
       filters: validatedData.filters,
-      
-    
-      return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       data: reportData,
       message: "Report generated successfully",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
       return NextResponse.json(
         {
           success: false,

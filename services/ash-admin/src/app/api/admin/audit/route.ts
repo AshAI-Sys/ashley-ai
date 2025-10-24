@@ -212,7 +212,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
       if (target_user_id) {
         matches = matches && log.target_user_id === target_user_id;
-      });
+      }
 
       if (severity && severity !== "all") {
         matches = matches && log.severity === severity;
@@ -226,7 +226,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
               ?.toLowerCase()
               .includes(search.toLowerCase()) ||
             log.performer?.email?.toLowerCase().includes(search.toLowerCase()));
-      });
+      }
 
       if (date_from) {
         matches = matches && new Date(log.timestamp) >= new Date(date_from);
@@ -234,7 +234,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
       if (date_to) {
         matches = matches && new Date(log.timestamp) <= new Date(date_to);
-      });
+      }
 
       return matches;
     });
@@ -352,7 +352,6 @@ export const POST = requireAnyPermission(["admin:create"])(async (
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
       return NextResponse.json(
         {
           success: false,

@@ -22,7 +22,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Validate request
     const validation = ResetPasswordSchema.safeParse(body);
     if (!validation.success) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -37,7 +37,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Validate password strength
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -59,7 +59,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
     });
     if (!user) {
-      }
+      
       return NextResponse.json(
         {
           success: false,

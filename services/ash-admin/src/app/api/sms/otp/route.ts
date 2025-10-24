@@ -14,7 +14,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { phone } = body;
 
     if (!phone) {
-      }
+      
       return NextResponse.json(
         { error: "Phone number is required" },
         { status: 400 }
@@ -44,7 +44,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const result = await smsService.sendOTP(formattedPhone, code);
 
     if (!result.success) {
-      }
+      
       return NextResponse.json(
         { error: result.error || "Failed to send OTP" },
         { status: 500 }
@@ -77,7 +77,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { phone, code } = body;
 
     if (!phone || !code) {
-      }
+      
       return NextResponse.json(
         { error: "Phone number and code are required" },
         { status: 400 }
@@ -91,7 +91,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const storedOTP = otpStore.get(formattedPhone);
 
     if (!storedOTP) {
-      }
+      
       return NextResponse.json(
         { error: "OTP not found or expired. Please request a new code." },
         { status: 404 }
@@ -109,7 +109,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 
     // Verify code
     if (storedOTP.code !== code) {
-      }
+      
       return NextResponse.json(
         { error: "Invalid OTP code. Please try again." },
         { status: 401 }

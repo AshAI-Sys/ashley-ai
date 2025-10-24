@@ -68,12 +68,12 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     });
 
     if (!targetUser) {
-      }
       return NextResponse.json(
         { success: false, error: "User not found" },
         { status: 404 }
       );
     }
+
     return NextResponse.json({
       success: true,
       data: { user: targetUser },
@@ -107,7 +107,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
     });
 
     if (!existingUser) {
-      }
       return NextResponse.json(
         { success: false, error: "User not found" },
         { status: 404 }
@@ -116,7 +115,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
 
     // Check for email/username conflicts if being updated
     if (validatedData.email || validatedData.username) {
-      }
       const conflictUser = await prisma.user.findFirst({
         where: {
           AND: [
@@ -137,7 +135,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
       });
 
       if (conflictUser) {
-        }
         return NextResponse.json(
           {
             success: false,
@@ -211,7 +208,6 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
       return NextResponse.json(
         {
           success: false,
@@ -248,7 +244,6 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
     });
 
     if (!existingUser) {
-      }
       return NextResponse.json(
         { success: false, error: "User not found" },
         { status: 404 }
@@ -257,7 +252,6 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
 
     // Prevent self-deletion
     if (id === user.id) {
-      }
       return NextResponse.json(
         { success: false, error: "Cannot delete your own account" },
         { status: 400 }

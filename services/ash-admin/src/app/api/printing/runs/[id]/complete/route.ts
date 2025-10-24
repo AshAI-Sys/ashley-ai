@@ -29,16 +29,16 @@ export async function POST(
       });
 
     if (!run) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
       );
     }
-    });
+    }
 
     if (run.status !== "IN_PROGRESS" && run.status !== "PAUSED") {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -127,7 +127,9 @@ export async function POST(
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: completedRun,
       message: "Print run completed successfully",

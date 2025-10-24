@@ -56,7 +56,6 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           const wastePercentage =
             (((lay.offcuts || 0) + (lay.defects || 0)) / lay.gross_used) * 100;
           const efficiency = Math.max(0, 100 - wastePercentage);
-          }
           return sum + efficiency;
         }, 0) / cutLays.length;
 
@@ -80,7 +79,6 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       // Calculate total good quantity from outputs instead of non-existent quantity field
       const _totalGood = printRuns.reduce((sum, run) => {
         // Note: Need to fetch outputs separately since they're not included
-        }
         return sum + 100; // Simplified for now
       }, 0);
 
@@ -110,7 +108,6 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         0
       );
       const totalTarget = totalPieces + totalReject; // Calculate target from actual production
-      }
       const efficiency =
         totalTarget > 0 ? (totalPieces / totalTarget) * 100 : 80;
 
@@ -135,7 +132,6 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       const failedInspections = qcInspections.filter(
         qc => qc.result === "REJECT"
       ).length;
-      }
       const defectRate = (failedInspections / qcInspections.length) * 100;
 
       metrics.push({
@@ -173,7 +169,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       });
     }
     if (metrics.length === 0) {
-      }
+      
       return NextResponse.json({
         success: true,
         message: "No active production stations to analyze",
@@ -231,7 +227,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
     const missingFields = requiredFields.filter(field => !(field in metrics));
     if (missingFields.length > 0) {
-      }
+      
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(", ")}` },
         { status: 400 }

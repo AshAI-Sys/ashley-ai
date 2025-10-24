@@ -97,16 +97,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!employee) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Employee not found" },
         { status: 404 }
       );
     }
-    });
+    }
 
     if (!employee.is_active) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Employee is not active" },
         { status: 400 }
@@ -253,7 +253,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: attendanceLog,
       });

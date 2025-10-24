@@ -24,10 +24,12 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         gte: new Date(startDate),
         lte: new Date(endDate),
       };
-    });
+    }
 
     if (stationType) where.station_type = stationType;
-    if (shift) where.shift = shift;const}const$3 heatmapData = await prisma.productionHeatmap.findMany({
+    if (shift) where.shift = shift;
+
+    const heatmapData = await prisma.productionHeatmap.findMany({
       where,
       orderBy: [{ date: "asc" }, { hour: "asc" }],
     });
@@ -117,7 +119,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     } = body;
 
     if (!date || hour === undefined || !station_type) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -140,7 +142,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       },
       
     
-      return NextResponse.json({
+      });
+
+    return NextResponse.json({
       success: true,
       heatmap,
     });

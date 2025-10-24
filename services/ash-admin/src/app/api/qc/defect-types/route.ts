@@ -23,7 +23,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     // If no defect types exist, return default ones
     if (defectTypes.length === 0) {
-      }
+      
       const defaultDefectTypes = [
         {
           id: "def-1",

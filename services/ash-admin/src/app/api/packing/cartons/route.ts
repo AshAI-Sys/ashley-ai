@@ -101,7 +101,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       
     
-      return NextResponse.json(carton, { status: 201 });
+      });
+
+    return NextResponse.json(carton, { status: 201 });
   } catch (error) {
     console.error("Error creating carton:", error);
     return NextResponse.json(
@@ -118,7 +120,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
 
     // Calculate metrics if closing carton
     if (updateData.status === "CLOSED") {
-      }
+      
       const cartonWithContents = await prisma.carton.findUnique({
         where: { id },
         include: {
@@ -175,7 +177,9 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       },
       
     
-      return NextResponse.json(carton);
+      });
+
+    return NextResponse.json(carton);
   } catch (error) {
     console.error("Error updating carton:", error);
     return NextResponse.json(

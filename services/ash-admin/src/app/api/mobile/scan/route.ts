@@ -12,7 +12,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { code, format } = await request.json();
 
     if (!code) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -48,7 +48,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
       if (bundle) {
-        }
+        
         return NextResponse.json({
           success: true,
           type: "bundle",
@@ -92,7 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         },
 
       if (order) {
-        }
+        
         return NextResponse.json({
           success: true,
           type: "order",
@@ -134,7 +134,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         },
 
       if (finishedUnit) {
-        }
+        
         return NextResponse.json({
           success: true,
           type: "finished_unit",
@@ -172,7 +172,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         },
 
       if (carton) {
-        }
+        
         return NextResponse.json({
           success: true,
           type: "carton",
@@ -204,7 +204,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const [bundle, order, finishedUnit, carton] = results;
 
     if (bundle) {
-      }
+      
       return NextResponse.json({
         success: true,
         type: "bundle",
@@ -219,7 +219,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (order) {
-      }
+      
       return NextResponse.json({
         success: true,
         type: "order",
@@ -232,7 +232,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (finishedUnit) {
-      }
+      
       return NextResponse.json({
         success: true,
         type: "finished_unit",
@@ -245,7 +245,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (carton) {
-      }
+      
       return NextResponse.json({
         success: true,
         type: "carton",

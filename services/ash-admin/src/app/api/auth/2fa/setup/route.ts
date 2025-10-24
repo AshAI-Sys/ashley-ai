@@ -13,7 +13,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { user_id } = body;
 
     if (!user_id) {
-      }
+      
       return NextResponse.json(
         { error: "user_id is required" },
         { status: 400 }
@@ -26,12 +26,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!user) {
-      }
+      
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (user.two_factor_enabled) {
-      }
+      
       return NextResponse.json(
         { error: "2FA is already enabled for this user" },
         { status: 400 }
@@ -80,7 +80,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const user_id = searchParams.get("user_id");
 
     if (!user_id) {
-      }
+      
       return NextResponse.json(
         { error: "user_id is required" },
         { status: 400 }
@@ -96,6 +96,8 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
         two_factor_backup_codes: null,
       },
     
+
+    });
 
     return NextResponse.json({
       message: "2FA has been disabled",

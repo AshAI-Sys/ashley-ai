@@ -31,15 +31,13 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { type, to, data, scheduledFor, maxAttempts } = await request.json();
 
     if (!type || !to) {
-      }
+      
       return NextResponse.json(
         { error: "type and to are required" },
         { status: 400 }
       );
     }
-    }
-
-    const jobId = await emailQueue.enqueue(type, to, data, {
+        const jobId = await emailQueue.enqueue(type, to, data, {
       scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
       maxAttempts,
     

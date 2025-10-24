@@ -66,7 +66,7 @@ export const DELETE = requireRole("admin")(async (request: NextRequest, user) =>
     const backupId = searchParams.get("id");
 
     if (!backupId) {
-      }
+      
       return NextResponse.json(
         { error: "Backup ID is required" },
         { status: 400 }

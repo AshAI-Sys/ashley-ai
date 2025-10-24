@@ -164,7 +164,7 @@ export const GET = withErrorHandling(
     let qualityScore = 95; // Default quality score
 
     if (employee.department === "Sewing" || employee.department === "Cutting") {
-      }
+      
       const recentInspections = await prisma.qCInspection.findMany({
         where: {
           created_at: {
@@ -175,7 +175,7 @@ export const GET = withErrorHandling(
       });
 
       if (recentInspections.length > 0) {
-        }
+        
         const passedInspections = recentInspections.filter(
           check => check.result === "PASSED"
         ).length;

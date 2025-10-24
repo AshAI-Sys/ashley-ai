@@ -13,7 +13,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const token = searchParams.get("token");
 
     if (!token) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -35,7 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!user) {
-      }
+      
       return NextResponse.json(
         {
           success: false,

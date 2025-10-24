@@ -14,7 +14,7 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
     const file = formData.get("logo") as File;
 
     if (!file) {
-      }
+      
       return NextResponse.json(
         { error: "No file provided" },
         { status: 400 }
@@ -31,7 +31,7 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
 
     // Validate file size (5MB)
     if (file.size > 5 * 1024 * 1024) {
-      }
+      
       return NextResponse.json(
         { error: "File size must be less than 5MB" },
         { status: 400 }
@@ -54,7 +54,9 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       },
         
       
-        return NextResponse.json({ success: true, logo_url });
+        });
+
+    return NextResponse.json({ success: true, logo_url });
   } catch (error) {
     console.error("Error uploading logo:", error);
     return NextResponse.json(
@@ -73,7 +75,9 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
       },
         
       
-        return NextResponse.json({ success: true });
+        });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error removing logo:", error);
     return NextResponse.json(

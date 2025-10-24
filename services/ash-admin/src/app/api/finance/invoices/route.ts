@@ -191,7 +191,7 @@ export const POST = requireAnyPermission(["finance:create"])(
 
     // Verify order exists if provided
     if (order_id) {
-      }
+      
       const order = await prisma.order.findUnique({ where: { id: order_id }});
       if (!order) {
         throw new NotFoundError("Order");

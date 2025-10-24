@@ -47,7 +47,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       orderBy: { created_at: "desc" },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       reports: reports.map(r => ({
         ...r,
@@ -93,7 +95,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
     // Validate required fields
     if (!name || !report_type || !data_source || !query_config || !columns) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -130,7 +132,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       report: {
         ...report,

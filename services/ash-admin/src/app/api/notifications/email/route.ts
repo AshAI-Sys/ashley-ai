@@ -20,7 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { type, to, data, workspace_id } = body;
 
     if (!type || !to) {
-      }
+      
       return NextResponse.json(
         { error: "type and to are required" },
         { status: 400 }
@@ -33,7 +33,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     switch (type) {
       case "ORDER_CONFIRMATION":
         if (!data.order_number || !data.client_name || !data.total_amount) {
-          }
+          
           return NextResponse.json(
             { error: "Missing required order data" },
             { status: 400 }
@@ -44,7 +44,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "DELIVERY_NOTIFICATION":
         if (!data.order_number || !data.tracking_number || !data.carrier_name) {
-          }
+          
           return NextResponse.json(
             { error: "Missing required delivery data" },
             { status: 400 }
@@ -55,7 +55,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "INVOICE":
         if (!data.invoice_number || !data.client_name || !data.amount) {
-          }
+          
           return NextResponse.json(
             { error: "Missing required invoice data" },
             { status: 400 }
@@ -66,7 +66,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "PASSWORD_RESET":
         if (!data.user_name || !data.reset_link) {
-          }
+          
           return NextResponse.json(
             { error: "Missing required password reset data" },
             { status: 400 }
@@ -77,7 +77,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "2FA_SETUP":
         if (!data.user_name || !data.backup_codes) {
-          }
+          
           return NextResponse.json(
             { error: "Missing required 2FA data" },
             { status: 400 }
@@ -112,10 +112,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           { status: 400 }
         );
     }
-    });
+    }
 
     if (!result.success) {
-      }
+      
       return NextResponse.json(
         { error: result.error || "Failed to send email" },
         { status: 500 }
@@ -163,7 +163,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const test_email = searchParams.get("test_email");
 
     if (!test_email) {
-      }
+      
       return NextResponse.json({
         configured: !!process.env.RESEND_API_KEY,
         from_address: process.env.EMAIL_FROM || "not configured",
@@ -182,7 +182,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!result.success) {
-      }
+      
       return NextResponse.json(
         { error: result.error || "Test email failed" },
         { status: 500 }

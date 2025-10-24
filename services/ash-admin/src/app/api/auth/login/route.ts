@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!email || !password) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     // Check if account is locked
     const lockStatus = await isAccountLocked(email);
     if (lockStatus.isLocked) {
-      }
+      
       const minutesRemaining = lockStatus.canRetryAt
         ? Math.ceil((lockStatus.canRetryAt.getTime() - Date.now()) / 60000)
         : 30;
@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
         email,
         reason: "Account locked",
         lockoutExpiresAt: lockStatus.lockoutExpiresAt,
-        
-      
-        return NextResponse.json(
+      });
+
+      return NextResponse.json(
         {
           success: false,
           error: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minutes.`,
@@ -69,10 +69,9 @@ export async function POST(request: NextRequest) {
       // Log failed login attempt
       await logAuthEvent("LOGIN_FAILED", "system", undefined, request, {
         email,
-        reason: "User not found",
-        
-      
-        return NextResponse.json(
+        reason: "User not found"});
+
+      return NextResponse.json(
         {
           success: false,
           error: "Invalid email or password",
@@ -86,10 +85,9 @@ export async function POST(request: NextRequest) {
       // Log failed login attempt
       await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
         email,
-        reason: "No password hash",
-        
-      
-        return NextResponse.json(
+        reason: "No password hash"});
+
+      return NextResponse.json(
         {
           success: false,
           error: "Invalid email or password",

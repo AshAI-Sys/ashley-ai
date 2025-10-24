@@ -128,7 +128,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!asset_id || !title || !type || !priority) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -168,7 +168,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: workOrder,
       });
@@ -187,7 +189,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Work order ID is required" },
         { status: 400 }
@@ -247,7 +249,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: workOrder,
       });
@@ -266,7 +270,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Work order ID is required" },
         { status: 400 }
@@ -277,7 +281,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       where: { id },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Work order deleted successfully",
   } catch (error) {

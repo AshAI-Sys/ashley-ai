@@ -20,7 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!employee) {
-      }
+      
       return NextResponse.json({
         success: true,
         data: {

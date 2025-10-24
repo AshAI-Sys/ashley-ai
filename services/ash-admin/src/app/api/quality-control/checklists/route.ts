@@ -21,7 +21,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: { name: "asc" },
         
       
-        return NextResponse.json(checklists);
+        });
+
+    return NextResponse.json(checklists);
   } catch (error) {
     console.error("Error fetching checklists:", error);
     return NextResponse.json(
@@ -44,7 +46,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
         
       
-        return NextResponse.json(checklist, { status: 201 });
+        });
+
+    return NextResponse.json(checklist, { status: 201 });
   } catch (error) {
     console.error("Error creating checklist:", error);
     return NextResponse.json(

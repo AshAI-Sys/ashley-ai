@@ -25,7 +25,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: { created_at: "desc" },
         
       
-        return NextResponse.json(defects);
+        });
+
+    return NextResponse.json(defects);
   } catch (error) {
     console.error("Error fetching defects:", error);
     return NextResponse.json(

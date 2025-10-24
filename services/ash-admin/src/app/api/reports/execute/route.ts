@@ -16,7 +16,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { report_id, filters: additionalFilters } = body;
 
     if (!report_id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Report ID is required" },
         { status: 400 }
@@ -33,7 +33,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       });
 
     if (!report) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Report not found" },
         { status: 404 }
@@ -131,7 +131,9 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
         success: true,
         data,
         metadata: {

@@ -20,7 +20,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      }
+      
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -35,7 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 100);
     if (limitError) {
-      }
+      
       return createValidationErrorResponse([limitError]);
     }
     const limit = parseInt(limitParam);
@@ -45,12 +45,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       const validTypes = ["REORDER", "CROSS_SELL", "SEASONAL", "TRENDING"];
       const typeError = validateEnum(recommendationType, validTypes, "type");
       if (typeError) {
-        }
+        
         return createValidationErrorResponse([typeError]);
       }
-    }
-
-    const where: any = {
+        const where: any = {
       workspace_id: workspaceId,
       expires_at: {
         gte: new Date(), // Only non-expired recommendations
@@ -92,7 +90,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      }
+      
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -170,7 +168,7 @@ async function generateRecommendationsForClient(
   });
 
   if (clientOrders.length === 0) {
-    }
+    
     return [];
   });
 

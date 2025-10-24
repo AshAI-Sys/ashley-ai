@@ -31,7 +31,9 @@ export async function GET(
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: { printLocations },
 });
@@ -67,7 +69,9 @@ export async function POST(
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: { printLocation },
@@ -78,7 +82,7 @@ export async function POST(
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -106,7 +110,7 @@ export async function PUT(
     const locationId = searchParams.get("locationId");
 
     if (!locationId) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Location ID is required" },
         { status: 400 }
@@ -130,6 +134,8 @@ export async function PUT(
       },
     
 
+    });
+
     return NextResponse.json({
       success: true,
       data: { printLocation },
@@ -137,7 +143,7 @@ export async function PUT(
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -165,7 +171,7 @@ export async function DELETE(
     const locationId = searchParams.get("locationId");
 
     if (!locationId) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Location ID is required" },
         { status: 400 }
@@ -177,6 +183,8 @@ export async function DELETE(
         id: locationId,
       },
     
+
+    });
 
     return NextResponse.json({
       success: true,

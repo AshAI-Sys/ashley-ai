@@ -121,7 +121,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
     const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
       if (shipment.updated_at && shipment.eta) {
-        }
+        
         return shipment.updated_at <= shipment.eta;
       }
       return false;

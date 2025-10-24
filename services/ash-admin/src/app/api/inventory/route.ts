@@ -11,7 +11,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const action = searchParams.get("action"); // 'summary' | 'alerts' | 'costing' | 'scan'
 
     if (!workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
@@ -41,7 +41,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         const type = searchParams.get("type"); // 'barcode' | 'rfid'
 
         if (!code) {
-          }
+          
           return NextResponse.json(
             { error: "code parameter required for scan" },
             { status: 400 }
@@ -53,7 +53,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
             : await inventoryManager.scanBarcode(code);
 
         if (!scanned) {
-          }
+          
           return NextResponse.json(
             { error: "Material not found", code },
             { status: 404 }
@@ -105,7 +105,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           quantity_change === undefined ||
           !transaction_type
         ) {
-          }
+          
           return NextResponse.json(
             {
               error:
@@ -146,7 +146,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         const { po_id, received_items } = data;
 
         if (!po_id || !received_items) {
-          }
+          
           return NextResponse.json(
             { error: "po_id and received_items are required" },
             { status: 400 }
@@ -164,7 +164,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         const { material_id: matId } = data;
 
         if (!matId) {
-          }
+          
           return NextResponse.json(
             { error: "material_id is required" },
             { status: 400 }

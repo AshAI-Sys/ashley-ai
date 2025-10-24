@@ -30,7 +30,7 @@ export const GET = requireAuth(async (
       });
 
     if (!client) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Client not found" },
         { status: 404 }
@@ -66,6 +66,8 @@ export const GET = requireAuth(async (
       orderBy: { created_at: "desc" },
     
 
+    });
+
     return NextResponse.json({
       success: true,
       data: brands,
@@ -95,7 +97,7 @@ export const POST = requireAuth(async (
       });
 
     if (!client) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Client not found" },
         { status: 404 }
@@ -111,7 +113,7 @@ export const POST = requireAuth(async (
       });
 
     if (existingBrand) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -159,6 +161,8 @@ export const POST = requireAuth(async (
       },
     
 
+    });
+
     return NextResponse.json(
       {
         success: true,
@@ -170,7 +174,7 @@ export const POST = requireAuth(async (
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }

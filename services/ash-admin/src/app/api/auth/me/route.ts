@@ -14,9 +14,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Use auth guard to verify authentication;
     const userOrResponse = await requireAuth(request);
     if (userOrResponse instanceof Response) {
-      }
+      
       return userOrResponse;
-    });
+    }
 
     const authUser = userOrResponse;
 

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     const validation = RegisterSchema.safeParse(body);
 
     if (!validation.success) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       });
 
     if (existingWorkspace) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -106,10 +106,9 @@ export async function POST(request: NextRequest) {
     if (existingUser) {
       await logAuthEvent("REGISTER_FAILED", "system", undefined, request, {
         email,
-        reason: "Email already exists",
-        
-      
-        return NextResponse.json(
+        reason: "Email already exists"});
+
+      return NextResponse.json(
         {
           success: false,
           error: "An account with this email already exists",
@@ -176,9 +175,8 @@ export async function POST(request: NextRequest) {
       workspaceId: workspace.id,
       workspaceName: workspace.name,
       userId: user.id,
-      email: user.email,
-      
-    
+      email: user.email});
+
       return NextResponse.json(
       {
         success: true,
@@ -198,7 +196,7 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  
+
   } catch (error: any) {
     console.error("Registration error:", error);
     return NextResponse.json(

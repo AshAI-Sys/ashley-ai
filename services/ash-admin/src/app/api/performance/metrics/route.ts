@@ -152,14 +152,14 @@ function getRecommendations(
       "Low cache hit rate detected. Consider increasing cache TTL for frequently accessed data."
     );
   }
-  });
+  }
 
   if (queryMetrics.avgUncachedDuration > 500) {
     recommendations.push(
       "Slow uncached queries detected. Review database indexes and query optimization."
     );
   }
-  });
+  }
 
   if (queryMetrics.totalQueries < 100) {
     recommendations.push(
@@ -184,7 +184,7 @@ function getRecommendations(
       "Average query duration is high. Consider implementing more aggressive caching."
     );
   }
-  });
+  }
 
   if (recommendations.length === 0) {
     recommendations.push(

@@ -9,7 +9,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const qrCode = searchParams.get("qrCode");
 
     if (!qrCode) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "QR code is required" },
         { status: 400 }
@@ -51,7 +51,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!bundle) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }

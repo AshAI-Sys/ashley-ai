@@ -18,7 +18,7 @@ export const PUT = requireAuth(async (
     const { status, notes, location } = body;
 
     if (!status) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Status is required" },
         { status: 400 }
@@ -34,7 +34,7 @@ export const PUT = requireAuth(async (
       });
 
     if (!bundle) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }

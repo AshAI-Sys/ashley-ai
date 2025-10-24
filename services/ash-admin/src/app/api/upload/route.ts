@@ -25,7 +25,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const type = (formData.get("type") as string) || "image"; // image, document, video
 
     if (!file) {
-      }
+      
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
@@ -43,7 +43,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const validation = await validateFile(file, allowedTypes, MAX_FILE_SIZE);
 
     if (!validation.valid) {
-      }
+      
       return NextResponse.json(
         {
           error: validation.error,
@@ -55,7 +55,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Check if Cloudinary is configured
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
-      }
+      
       return NextResponse.json(
         {
           error:
@@ -120,15 +120,13 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const publicId = searchParams.get("public_id");
 
     if (!publicId) {
-      }
+      
       return NextResponse.json(
         { error: "public_id is required" },
         { status: 400 }
       );
     }
-    }
-
-    const result = await cloudinary.uploader.destroy(publicId);
+        const result = await cloudinary.uploader.destroy(publicId);
 
     return NextResponse.json({
       success: result.result === "ok",

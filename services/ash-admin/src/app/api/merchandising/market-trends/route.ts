@@ -22,7 +22,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      }
+      
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -37,7 +37,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 100);
     if (limitError) {
-      }
+      
       return createValidationErrorResponse([limitError]);
     }
     const limit = parseInt(limitParam);
@@ -105,7 +105,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      }
+      
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -116,7 +116,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-    });
+    }
 
     if (generateTrends) {
       // Generate AI-powered market trends based on current data and external factors
@@ -127,7 +127,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       // Create a single custom trend with validation
       const validation = validateAndSanitizeMarketTrendData(body);
       if (!validation.isValid) {
-        }
+        
         return createValidationErrorResponse(validation.errors);
       }
 
@@ -138,7 +138,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         },
         
       
-        return NextResponse.json({ trend });
+        });
+
+    return NextResponse.json({ trend });
     } catch (error) {
     console.error("Market trend creation error:", error);
     return NextResponse.json(

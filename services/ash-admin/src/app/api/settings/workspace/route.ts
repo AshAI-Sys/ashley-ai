@@ -35,7 +35,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       });
 
     if (!workspace) {
-      }
+      
       return NextResponse.json(
         { error: "Workspace not found" },
         { status: 404 }

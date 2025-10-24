@@ -39,7 +39,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!inspection) {
-      }
+      
       return NextResponse.json(
         { error: "Inspection not found" },
         { status: 404 }
@@ -76,7 +76,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       inspection_id,
       analysis_type,
       ashley_analysis: ashleyAnalysis,
@@ -187,7 +189,7 @@ async function performRootCausePrediction(inspection: any) {
       defect.quantity;
 
     if (defect.location) {
-      }
+      
       if (!defectPatterns[category].locations[defect.location]) {
         defectPatterns[category].locations[defect.location] = 0;
       }
@@ -507,7 +509,7 @@ function generateOverallRecommendation(
     risk.risk_level === "HIGH" ||
     spc.control_status === "OUT_OF_CONTROL_HIGH"
   ) {
-    }
+    
     return {
       priority: "IMMEDIATE",
       action: "STOP_PRODUCTION",
@@ -516,7 +518,7 @@ function generateOverallRecommendation(
   });
 
   if (risk.risk_level === "MEDIUM" || trend.trend_direction === "INCREASING") {
-    }
+    
     return {
       priority: "HIGH",
       action: "INVESTIGATE",
@@ -534,7 +536,7 @@ function generateOverallRecommendation(
 
 function calculateProcessCapability(historicalInspections: any[]) {
   if (historicalInspections.length < 30) {
-    }
+    
     return {
       cp: null,
       cpk: null,

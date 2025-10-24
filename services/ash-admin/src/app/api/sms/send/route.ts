@@ -11,7 +11,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Validate input
     if (!to) {
-      }
+      
       return NextResponse.json(
         { error: "Recipient phone number is required" },
         { status: 400 }
@@ -53,10 +53,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-    });
+    }
 
     if (!result.success) {
-      }
+      
       return NextResponse.json(
         { error: result.error || "Failed to send SMS" },
         { status: 500 }

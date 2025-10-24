@@ -34,7 +34,9 @@ export async function GET(
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: { lineItems },
 });
@@ -65,7 +67,9 @@ export async function POST(
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: { colorVariant },
@@ -76,7 +80,7 @@ export async function POST(
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -104,7 +108,7 @@ export async function DELETE(
     const variantId = searchParams.get("variantId");
 
     if (!variantId) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Variant ID is required" },
         { status: 400 }

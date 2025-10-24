@@ -20,7 +20,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Validate request
     const validation = ResendSchema.safeParse(body);
     if (!validation.success) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -56,7 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Check if already verified
     if (user.email_verified) {
-      }
+      
       return NextResponse.json(
         {
           success: false,

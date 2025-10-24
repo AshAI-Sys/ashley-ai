@@ -35,7 +35,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     });
 
     if (qcChecks.length === 0) {
-      }
+      
       return NextResponse.json({
         success: true,
         pattern_analysis: {
@@ -71,6 +71,8 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
             recommendation: "Review and address defect",
           });
         }
+      }
+
       return {
         date: qc.created_at,
         operator_id: qc.inspector_id,
@@ -128,7 +130,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     });
 
     if (qcChecks.length === 0) {
-      }
+      
       return NextResponse.json({
         success: true,
         comparison: [],
@@ -149,7 +151,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       } else {
         entityId = qc.stage || "UNKNOWN";
         entityName = qc.stage || "Unknown Station";
-      });
+      }
 
       if (!entityGroups[entityId]) {
         entityGroups[entityId] = [];

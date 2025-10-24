@@ -19,12 +19,12 @@ export async function POST(
       });
 
     if (!carton) {
-      }
+      
       return NextResponse.json({ error: "Carton not found" }, { status: 404 });
     }
 
     if (carton.status !== "OPEN") {
-      }
+      
       return NextResponse.json(
         { error: "Carton is not open for packing" },
         { status: 400 }
@@ -39,7 +39,7 @@ export async function POST(
     const maxCapacity = data.max_capacity || 50; // Default max units per carton
 
     if (currentUnits + data.quantity > maxCapacity) {
-      }
+      
       return NextResponse.json(
         {
           error: `Cannot add ${data.quantity} units. Carton capacity: ${maxCapacity}, current: ${currentUnits}`,
@@ -67,7 +67,9 @@ export async function POST(
       data: { packed: true },
         
       
-        return NextResponse.json(cartonContent, { status: 201 });
+        });
+
+    return NextResponse.json(cartonContent, { status: 201 });
   } catch (error) {
     console.error("Error adding content to carton:", error);
     return NextResponse.json(
@@ -97,7 +99,9 @@ export async function GET(
       orderBy: { created_at: "asc" },
         
       
-        return NextResponse.json(contents);
+        });
+
+    return NextResponse.json(contents);
   } catch (error) {
     console.error("Error fetching carton contents:", error);
     return NextResponse.json(
@@ -116,7 +120,7 @@ export async function DELETE(
     const contentId = searchParams.get("content_id");
 
     if (!contentId) {
-      }
+      
       return NextResponse.json(
         { error: "content_id is required" },
         { status: 400 }
@@ -130,7 +134,7 @@ export async function DELETE(
       });
 
     if (!content) {
-      }
+      
       return NextResponse.json({ error: "Content not found" }, { status: 404 });
     }
 
@@ -145,7 +149,9 @@ export async function DELETE(
       data: { packed: false },
         
       
-        return NextResponse.json({ message: "Content removed from carton" });
+        });
+
+    return NextResponse.json({ message: "Content removed from carton" });
   } catch (error) {
     console.error("Error removing content from carton:", error);
     return NextResponse.json(

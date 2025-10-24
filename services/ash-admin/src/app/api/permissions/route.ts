@@ -48,7 +48,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     const { user_id, resource, action } = await req.json();
 
     if (!user_id || !resource || !action) {
-      }
+      
       return NextResponse.json(
         { error: "user_id, resource, and action are required" },
         { status: 400 }

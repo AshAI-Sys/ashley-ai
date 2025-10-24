@@ -10,7 +10,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { provider, booking_id, tracking_number, reason } = body;
 
     if (!provider || !booking_id) {
-      }
+      
       return NextResponse.json(
         { error: "provider and booking_id are required" },
         { status: 400 }
@@ -24,7 +24,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!result.success) {
-      }
+      
       return NextResponse.json(
         { error: result.error || "Cancellation failed" },
         { status: 400 }

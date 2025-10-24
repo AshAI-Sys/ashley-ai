@@ -62,7 +62,7 @@ export const GET = requireAuth(async (
       },
 
     if (!run) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
@@ -158,7 +158,7 @@ export const GET = requireAuth(async (
 
     // Handle quality data if provided
     if (quality_data) {
-      }
+      
       const { qty_good, qty_reject, bundle_id, reject_reasons } = quality_data;
 
       // Create output record

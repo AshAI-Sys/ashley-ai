@@ -30,7 +30,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const SEED_TOKEN = process.env.SEED_TOKEN || "ashley-ai-seed-2024";
 
     if (token !== SEED_TOKEN) {
-      }
+      
       return NextResponse.json(
         {
           error: "Unauthorized - Invalid token",

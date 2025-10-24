@@ -60,7 +60,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { amount, from, to } = await req.json();
 
     if (!amount || !from || !to) {
-      }
+      
       return NextResponse.json(
         { error: "amount, from, and to are required" },
         { status: 400 }

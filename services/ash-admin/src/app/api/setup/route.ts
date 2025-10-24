@@ -20,7 +20,7 @@ export async function POST() {
       });
 
     if (existingAdmin) {
-      }
+      
       return NextResponse.json({
         success: false,
         message: "Admin user already exists",
@@ -51,7 +51,9 @@ export async function POST() {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Admin user created successfully",
       user: {

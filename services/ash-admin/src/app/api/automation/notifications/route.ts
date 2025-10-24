@@ -77,7 +77,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required fields
     if (!recipient_type || !channel || !content) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -92,7 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     let finalContent = content;
 
     if (template_id) {
-      }
+      
       const template = await prisma.notificationTemplate.findUnique({
         where: { id: template_id },
       });
@@ -131,6 +131,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
     
 
+    });
+
     return NextResponse.json({
       success: true,
       data: notification,
@@ -152,7 +154,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, status, error_message, sent_at, delivered_at } = body;
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Notification ID is required" },
         { status: 400 }
@@ -177,8 +179,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         if (error_message) {
           updateData.error_message = error_message;
         }
-      }
-    const notification = await prisma.notification.update({
+          const notification = await prisma.notification.update({
       where: { id },
       data: updateData,
     

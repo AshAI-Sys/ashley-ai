@@ -108,7 +108,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!name || !asset_number || !type) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -132,14 +132,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: asset,
   } catch (error: any) {
     console.error("Error creating asset:", error);
 
     if (error.code === "P2002") {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Asset number already exists" },
         { status: 409 }
@@ -158,7 +160,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Asset ID is required" },
         { status: 400 }

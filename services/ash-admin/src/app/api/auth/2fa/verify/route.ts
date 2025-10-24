@@ -13,7 +13,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { user_id, token, enable_2fa = false } = body;
 
     if (!user_id || !token) {
-      }
+      
       return NextResponse.json(
         { error: "user_id and token are required" },
         { status: 400 }
@@ -26,12 +26,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!user) {
-      }
+      
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (!user.two_factor_secret) {
-      }
+      
       return NextResponse.json(
         {
           error: "2FA not setup for this user. Call /api/auth/2fa/setup first",
@@ -55,7 +55,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     );
 
     if (!result.valid) {
-      }
+      
       return NextResponse.json(
         { error: "Invalid verification code" },
         { status: 401 }

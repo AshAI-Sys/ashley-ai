@@ -31,7 +31,6 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
       const hours = parseInt(searchParams.get("hours") || "24");
       const alerts = await getSecurityAlerts(user.workspaceId, hours);
 
-      }
       return NextResponse.json({
         success: true,
         data: {
@@ -51,9 +50,9 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
       offset,
       startDate,
       endDate,
-        
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       data: {
         logs: result.logs,

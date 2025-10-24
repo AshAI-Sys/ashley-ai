@@ -13,7 +13,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const { report_type, period, workspace_id, data } = body;
 
     if (!report_type || !period || !workspace_id) {
-      }
+      
       return NextResponse.json(
         { error: "report_type, period, and workspace_id are required" },
         { status: 400 }
@@ -87,7 +87,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "FORM_2307":
         if (!data || !data.payor || !data.payee || !data.withholding_entries) {
-          }
+          
           return NextResponse.json(
             {
               error:
@@ -140,7 +140,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const atc_code = searchParams.get("atc_code");
 
     if (!operation || !amount) {
-      }
+      
       return NextResponse.json(
         { error: "operation and amount are required" },
         { status: 400 }
@@ -160,7 +160,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
       case "withholding":
         if (!atc_code) {
-          }
+          
           return NextResponse.json(
             { error: "atc_code is required for withholding calculation" },
             { status: 400 }
@@ -173,7 +173,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       case "validate_tin":
         const tin = searchParams.get("tin");
         if (!tin) {
-          }
+          
           return NextResponse.json(
             { error: "tin is required for validation" },
             { status: 400 }

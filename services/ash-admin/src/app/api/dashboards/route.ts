@@ -74,7 +74,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
     } = body;
 
     if (!name || !dashboard_type || !layout || !widgets) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
         { status: 400 }
@@ -104,7 +104,9 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       dashboard: {
         ...dashboard,

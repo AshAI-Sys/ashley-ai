@@ -48,7 +48,7 @@ export const GET = requireAuth(async (
     });
 
     if (!order) {
-      }
+      
       return apiNotFound("Order");
     }
 

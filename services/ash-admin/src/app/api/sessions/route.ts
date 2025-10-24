@@ -59,7 +59,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       });
 
     if (!sessionHash) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "sessionHash parameter is required" },
         { status: 400 }

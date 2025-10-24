@@ -21,7 +21,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
     if (workspaceError) {
-      }
+      
       return createValidationErrorResponse([workspaceError]);
     }
 
@@ -37,14 +37,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const validPeriods = ["DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"];
     const periodError = validateEnum(period, validPeriods, "period");
     if (periodError) {
-      }
+      
       return createValidationErrorResponse([periodError]);
     }
 
     // Validate limit parameter
     const limitError = validateNumber(limitParam, "limit", 1, 200);
     if (limitError) {
-      }
+      
       return createValidationErrorResponse([limitError]);
     }
     const limit = parseInt(limitParam);
@@ -104,7 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     if (workspaceError) errors.push(workspaceError);
 
     if (errors.length > 0) {
-      }
+      
       return createValidationErrorResponse(errors);
     }
 

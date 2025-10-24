@@ -22,7 +22,7 @@ export async function POST(
 
     // Validate input
     if (!version || !email_subject || !message) {
-      }
+      
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
         { status: 400 }
@@ -46,16 +46,16 @@ export async function POST(
       });
 
     if (!designAsset) {
-      }
+      
       return NextResponse.json(
         { success: false, message: "Design not found" },
         { status: 404 }
       );
     }
-    });
+    }
 
     if (designAsset.versions.length === 0) {
-      }
+      
       return NextResponse.json(
         { success: false, message: "Design version not found" },
         { status: 404 }
@@ -166,7 +166,9 @@ export async function POST(
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Approval request sent successfully",
       data: {

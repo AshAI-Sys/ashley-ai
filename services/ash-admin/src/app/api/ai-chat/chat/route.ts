@@ -92,7 +92,6 @@ async function getBusinessContext(
         contextParts.push(
           `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - ₱${order.total_amount?.toLocaleString() || "0"}`
         );
-      }
       });
     }
 
@@ -114,7 +113,6 @@ async function getBusinessContext(
         contextParts.push(
           `${idx + 1}. ${client.name} - ${client._count.brands} brands, ${client._count.orders} orders - Contact: ${client.email || "N/A"}`
         );
-      }
       });
     }
 
@@ -150,13 +148,11 @@ async function getBusinessContext(
           contextParts.push(
             `${idx + 1}. ${emp.first_name} ${emp.last_name} - ${emp.position || "N/A"} - ${emp.salary_type} (${emp.is_active ? "Active" : "Inactive"})`
           );
-        }
         });
       }
-    });
+    }
 
     if (contextParts.length === 0) {
-      }
       return "\n## Current System Status:\nNo data available in the system yet. Ready to help you get started!";
     }
     return contextParts.join("\n");
@@ -179,7 +175,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } = body;
 
     if (!message || !workspace_id) {
-      }
       return NextResponse.json(
         { error: "message and workspace_id are required" },
         { status: 400 }
@@ -188,7 +183,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
     // Check if any AI provider is configured
     if (!anthropic && !openai && !groq) {
-      }
       return NextResponse.json(
         {
           error:
@@ -231,7 +225,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     if (!conversationId) {
       try {
         // First verify workspace exists
-        }
         const workspace = await prisma.workspace.findFirst({
           where: { slug: workspace_id },
         });
@@ -306,7 +299,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Priority: Groq (FREE & FAST) > Anthropic > OpenAI
     if (groq) {
       // Use Groq (FREE!) - Llama 3.3 70B with enhanced context
-      }
       const response = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile", // FREE model, super fast!
         messages: [
@@ -323,7 +315,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       modelUsed = "groq-llama-3.3-70b";
     } else if (anthropic) {
       // Use Anthropic Claude with enhanced context
-      }
       const response = await anthropic.messages.create({
         model: "claude-3-5-sonnet-20241022",
         max_tokens: 3000,
@@ -338,7 +329,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       modelUsed = "claude-3-5-sonnet";
     } else if (openai) {
       // Use OpenAI with enhanced context
-      }
       const response = await openai.chat.completions.create({
         model: "gpt-4-turbo-preview",
         messages: [
@@ -377,9 +367,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       data: {
         last_message_at: new Date(),
       },
-      
-    
-      return NextResponse.json({
+    });
+
+    return NextResponse.json({
       conversation_id: conversationId,
       user_message: userMessage,
       assistant_message: assistantMessage,

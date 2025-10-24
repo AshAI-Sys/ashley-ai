@@ -102,7 +102,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!brand) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
@@ -134,7 +134,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: fabricBatch,
@@ -145,7 +147,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -166,7 +168,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric batch ID is required" },
         { status: 400 }
@@ -181,7 +183,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!existingBatch) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric batch not found" },
         { status: 404 }
@@ -205,6 +207,8 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       },
     
 
+    });
+
     return NextResponse.json({
       success: true,
       data: fabricBatch,
@@ -212,7 +216,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -233,7 +237,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric batch ID is required" },
         { status: 400 }
@@ -253,7 +257,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!existingBatch) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Fabric batch not found" },
         { status: 404 }
@@ -262,7 +266,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     // Check if fabric batch has issues (prevent deletion if they do)
     if (existingBatch._count.cut_issues > 0) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -275,6 +279,8 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     await prisma.fabricBatch.delete({
       where: { id },
     
+
+    });
 
     return NextResponse.json({
       success: true,

@@ -85,7 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required fields
     if (!name || !type || !provider || !config) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -98,7 +98,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Validate configuration based on integration type
     const validationResult = validateIntegrationConfig(type, provider, config);
     if (!validationResult.valid) {
-      }
+      
       return NextResponse.json(
         { success: false, error: validationResult.error },
         { status: 400 }
@@ -128,6 +128,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
     
 
+    });
+
     return NextResponse.json({
       success: true,
       data: {
@@ -153,7 +155,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, ...updateData } = body;
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Integration ID is required" },
         { status: 400 }
@@ -174,6 +176,8 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         },
       },
     
+
+    });
 
     return NextResponse.json({
       success: true,
@@ -199,7 +203,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Integration ID is required" },
         { status: 400 }
@@ -209,6 +213,8 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     await prisma.integration.delete({
       where: { id },
     
+
+    });
 
     return NextResponse.json({
       success: true,
@@ -273,13 +279,13 @@ function validateIntegrationConfig(
 
   const typeConfig = requiredFields[type];
   if (!typeConfig) {
-    }
+    
     return { valid: false, error: `Unsupported integration type: ${type}` };
   });
 
   const providerConfig = typeConfig[provider];
   if (!providerConfig) {
-    }
+    
     return {
       valid: false,
       error: `Unsupported provider for ${type}: ${provider}`,
@@ -288,7 +294,7 @@ function validateIntegrationConfig(
 
   for (const field of providerConfig) {
     if (!config[field]) {
-      }
+      
       return { valid: false, error: `Missing required field: ${field}` };
     }
   return { valid: true };
@@ -306,25 +312,25 @@ async function testConnection(
     switch (type) {
       case "EMAIL":
         if (provider === "MAILGUN" && config.api_key && config.domain) {
-          }
+          
           return { success: true };
         }
         if (provider === "SENDGRID" && config.api_key) {
-          }
+          
           return { success: true };
         }
         break;
 
       case "SMS":
         if (provider === "TWILIO" && config.account_sid && config.auth_token) {
-          }
+          
           return { success: true };
         }
         break;
 
       case "SLACK":
         if (provider === "SLACK" && config.webhook_url) {
-          }
+          
           return { success: true };
         }
         break;

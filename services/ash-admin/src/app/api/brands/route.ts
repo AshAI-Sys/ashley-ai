@@ -110,7 +110,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (!client) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Client not found" },
         { status: 404 }
@@ -126,7 +126,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (existingBrand) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -156,7 +156,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: brand,
@@ -167,7 +169,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -188,7 +190,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Brand ID is required" },
         { status: 400 }
@@ -203,7 +205,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!existingBrand) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
@@ -212,7 +214,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
 
     // Check name uniqueness if name is being updated
     if (validatedData.name && validatedData.name !== existingBrand.name) {
-      }
+      
       const nameExists = await prisma.brand.findFirst({
         where: {
           name: validatedData.name,
@@ -222,7 +224,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       });
 
       if (nameExists) {
-        }
+        
         return NextResponse.json(
           {
             success: false,
@@ -250,14 +252,16 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: brand,
       message: "Brand updated successfully",
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
@@ -278,7 +282,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Brand ID is required" },
         { status: 400 }
@@ -298,7 +302,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       });
 
     if (!existingBrand) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Brand not found" },
         { status: 404 }
@@ -307,7 +311,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
 
     // Check if brand has orders (prevent deletion if they do)
     if (existingBrand._count.orders > 0) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Cannot delete brand with existing orders" },
         { status: 400 }
@@ -318,7 +322,9 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       where: { id },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Brand deleted successfully",
     });

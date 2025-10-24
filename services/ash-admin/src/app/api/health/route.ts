@@ -17,7 +17,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
   // Database seeding - Disabled in production
   // Use 'pnpm init-db' script for production database initialization
   if (seed === "ashley-ai-2024" && process.env.NODE_ENV !== "production") {
-    }
+    
     return createSuccessResponse({
       message:
         "Database seeding disabled - Use production initialization script",

@@ -41,7 +41,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       let materialsUsed = [];
       try {
         if (run.materials) {
-          }
+          
           const parsedMaterials = JSON.parse(run.materials);
           materialsUsed = parsedMaterials.map((m: any) => ({
             item_name: m.item_name || "Unknown",
@@ -97,7 +97,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       
     
-      return NextResponse.json(finishingRun, { status: 201 });
+      });
+
+    return NextResponse.json(finishingRun, { status: 201 });
   } catch (error) {
     console.error("Error creating finishing run:", error);
     return NextResponse.json(

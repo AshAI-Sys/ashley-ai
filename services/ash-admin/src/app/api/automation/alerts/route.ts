@@ -85,7 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required fields
     if (!alert_type || !title || !description) {
-      }
+      
       return NextResponse.json(
         {
           success: false,
@@ -142,7 +142,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const { id, action, user_id = "user_1", resolution_notes } = body;
 
     if (!id || !action) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Alert ID and action are required" },
         { status: 400 }
@@ -171,7 +171,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         updateData.escalation_level = { increment: 1 };
         const currentAlert = await prisma.alert.findUnique({ where: { id } });
         if (currentAlert) {
-          }
+          
           const escalationMinutes = getEscalationDelay(
             currentAlert.severity,
             currentAlert.escalation_level + 1
@@ -207,7 +207,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: alert,
       message: `Alert ${action}d successfully`,
@@ -228,7 +230,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
     const id = searchParams.get("id");
 
     if (!id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Alert ID is required" },
         { status: 400 }
@@ -239,7 +241,9 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       where: { id },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       message: "Alert deleted successfully",
     });

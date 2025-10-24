@@ -10,7 +10,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     const { image_url, image_base64, garment_type, bundle_id } = await req.json();
 
     if (!image_url && !image_base64) {
-      }
+      
       return NextResponse.json(
         { error: "Either image_url or image_base64 is required" },
         { status: 400 }
@@ -81,7 +81,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const bundleIdsParam = searchParams.get("bundle_ids");
 
     if (!bundleIdsParam) {
-      }
+      
       return NextResponse.json(
         { error: "bundle_ids parameter required" },
         { status: 400 }
@@ -100,7 +100,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     });
 
     if (qcChecks.length === 0) {
-      }
+      
       return NextResponse.json({
         success: true,
         results: [],

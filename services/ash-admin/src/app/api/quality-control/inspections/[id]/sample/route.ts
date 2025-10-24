@@ -27,7 +27,9 @@ export async function POST(
       },
         
       
-        return NextResponse.json(sample, { status: 201 });
+        });
+
+    return NextResponse.json(sample, { status: 201 });
   } catch (error) {
     console.error("Error creating sample:", error);
     return NextResponse.json(

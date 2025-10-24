@@ -16,7 +16,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (year || month) {
       where.period_start = {};
       if (year) {
-        }
+        
         const startYear = new Date(`${year}-01-01`);
         const endYear = new Date(`${year}-12-31`);
         where.period_start.gte = startYear;
@@ -252,7 +252,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json(
+        });
+
+    return NextResponse.json(
       {
         success: true,
         data: {
@@ -304,7 +306,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
         
       
-        return NextResponse.json({
+        });
+
+    return NextResponse.json({
       success: true,
       data: {
         id: payrollPeriod.id,

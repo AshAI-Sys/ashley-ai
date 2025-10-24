@@ -82,7 +82,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const values = spcData.map(d => d.value).filter(v => !isNaN(v));
 
     if (values.length === 0) {
-      }
+      
       return NextResponse.json([]);
     }
 

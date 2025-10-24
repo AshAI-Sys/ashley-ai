@@ -27,7 +27,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     } = body;
 
     if (!bundle_id || !order_id) {
-      }
+      
       return NextResponse.json(
         { success: false, error: "Bundle ID and Order ID are required" },
         { status: 400 }

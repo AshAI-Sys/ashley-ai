@@ -19,7 +19,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-    });
 
     if (
       !["send_reminder", "extend_expiry", "cancel_approval"].includes(action)
@@ -52,7 +51,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     });
 
     if (approvals.length === 0) {
-      }
+      
       return NextResponse.json(
         { success: false, message: "No valid approvals found" },
         { status: 404 }
@@ -140,13 +139,11 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "extend_expiry":
         if (!extension_days || extension_days < 1) {
-          }
           return NextResponse.json(
             { success: false, message: "Invalid extension period" },
             { status: 400 }
           );
         }
-        });
 
         for (const approval of approvals) {
           try {
@@ -218,7 +215,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           }
         }
         break;
-    
+    }
 
     return NextResponse.json({
       success: true,

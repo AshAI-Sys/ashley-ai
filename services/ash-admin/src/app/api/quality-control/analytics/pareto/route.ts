@@ -52,7 +52,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     }>;
 
     if (defectData.length === 0) {
-      }
+      
       return NextResponse.json([]);
     }
 

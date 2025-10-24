@@ -36,7 +36,7 @@ export const GET = requireAuth(async (
     });
 
     if (!inspection) {
-      }
+      
       return NextResponse.json(
         { error: "Inspection not found" },
         { status: 404 }
@@ -74,7 +74,9 @@ export const GET = requireAuth(async (
       },
       
     
-      return NextResponse.json(inspection);
+      });
+
+    return NextResponse.json(inspection);
   } catch (error) {
     console.error("Error updating inspection:", error);
     return NextResponse.json(
