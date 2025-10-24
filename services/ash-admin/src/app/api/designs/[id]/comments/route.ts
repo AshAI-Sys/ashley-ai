@@ -147,6 +147,7 @@ export async function POST(
         attachmentUrls.push(`/uploads/comments/${filename}`);
         console.log(`Would upload file: ${filename}`);
       }
+    }
 
     // Create comment
     const comment = await prisma.designComment.create({

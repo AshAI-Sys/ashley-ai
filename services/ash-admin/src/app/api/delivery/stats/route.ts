@@ -243,10 +243,12 @@ async function getMethodPerformance() {
         delivered: delivered,
         success_rate: total > 0 ? (delivered / total) * 100 : 0,
         avg_delivery_time: Math.round(averageTime * 10) / 10,
-      }
+      });
+    }
 
     return performance;
   } catch (error) {
     console.error("Error calculating method performance:", error);
     return [];
-});
+  }
+}

@@ -47,7 +47,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      }
+      });
 
       tasks = cutLays.map(lay => ({
         id: lay.id,
@@ -83,7 +83,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         },
         orderBy: { created_at: "desc" },
         take: 20,
-      }
+      });
 
       tasks = printRuns.map(run => ({
         id: run.id,

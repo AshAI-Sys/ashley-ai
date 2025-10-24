@@ -43,7 +43,7 @@ export const GET = withErrorHandling(
       // Count pieces from sewing runs
       const sewingRuns = await prisma.sewingRun.findMany({
         where: { operator_id: employeeId },
-      }
+      });
 
       totalPieces = sewingRuns.reduce(
         (sum, run) => sum + (run.qty_good || 0),
@@ -70,7 +70,7 @@ export const GET = withErrorHandling(
       // Count QC inspections
       const qcInspections = await prisma.qCInspection.findMany({
         where: { inspector_id: employeeId },
-      }
+      });
 
       totalPieces = qcInspections.length;
 
@@ -97,7 +97,7 @@ export const GET = withErrorHandling(
           bundles: true,
           outputs: true,
         },
-      }
+      });
 
       totalPieces = cutLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
 

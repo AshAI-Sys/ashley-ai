@@ -40,17 +40,18 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const jobId = await emailQueue.enqueue(type, to, data, {
       scheduledFor: scheduledFor ? new Date(scheduledFor) : undefined,
       maxAttempts,
-        });
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       jobId,
       message: "Email queued for delivery",
+    });
   } catch (error: any) {
     console.error("Error queueing email:", error);
     return NextResponse.json(
       { error: "Failed to queue email", details: error.message },
       { status: 500 }
     );
-  });
+  }
 });

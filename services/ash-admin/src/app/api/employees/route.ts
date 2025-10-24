@@ -47,11 +47,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         total,
         pages: Math.ceil(total / limit),
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching employees:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch employees" },
       { status: 500 }
     );
-  });
+  }
+});

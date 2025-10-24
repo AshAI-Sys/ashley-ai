@@ -176,7 +176,14 @@
       "Bash(for file in \"seed/route.ts\" \"reports/execute/route.ts\" \"printing/dashboard/route.ts\" \"payments/create-intent/route.ts\")",
       "Bash(bc:*)",
       "Bash(if exist fix-changes.ps1 powershell -ExecutionPolicy Bypass -File fix-changes.ps1)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(for:*)",
+      "Bash(tail:*)",
+      "Bash(Select-String -Pattern \"route.ts\")",
+      "Bash(Select-Object -First 20)",
+      "Bash(do echo \"=== Fixing $file ===\")",
+      "Bash(do echo \"=== $f ===\")",
+      "Bash(if exist node_modules.cache rd /s /q node_modules.cache)"
     ],
     "deny": [],
     "ask": []
