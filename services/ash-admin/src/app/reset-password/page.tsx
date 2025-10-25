@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,7 +16,8 @@ import {
 // Force dynamic rendering (prevent static generation during build)
 export const dynamic = "force-dynamic";
 
-export default function ResetPasswordPage() {
+// Component that uses useSearchParams (must be wrapped in Suspense)
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -303,5 +304,27 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="flex min-h-screen items-center justify-center p-4"
+          style={{ backgroundColor: "#F8FAFC", colorScheme: "light" }}
+        >
+          <div className="corporate-card w-full max-w-md p-10">
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-corporate-blue" />
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
