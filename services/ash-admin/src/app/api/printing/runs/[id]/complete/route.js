@@ -20,71 +20,69 @@ async function POST(request, { params }) {
         if (!run) {
             return server_1.NextResponse.json({ success: false, error: "Print run not found" }, { status: 404 });
         }
-    }
-    finally {
-    }
-    if (run.status !== "IN_PROGRESS" && run.status !== "PAUSED") {
-        return server_1.NextResponse.json({
-            success: false,
-            error: "Only in-progress or paused runs can be completed",
-        }, { status: 400 });
-    }
-    // Start transaction to complete run
-    await db_1.prisma.$transaction(async (tx) => {
-        // Complete the run
-        await tx.printRun.update({
-            where: { id: runId },
-            data: {
-                status: "DONE",
-                ended_at: new Date(),
-            },
-        });
-        // Record final output if provided
-        if (qty_completed > 0 || qty_rejected > 0) {
-            await tx.printRunOutput.create({
+        if (run.status !== "IN_PROGRESS" && run.status !== "PAUSED") {
+            return server_1.NextResponse.json({
+                success: false,
+                error: "Only in-progress or paused runs can be completed",
+            }, { status: 400 });
+        }
+        // Start transaction to complete run
+        await db_1.prisma.$transaction(async (tx) => {
+            // Complete the run
+            await tx.printRun.update({
+                where: { id: runId },
                 data: {
-                    run_id: runId,
-                    qty_good: qty_completed,
-                    qty_reject: qty_rejected,
-                    notes: quality_notes || "Final run completion",
+                    status: "DONE",
+                    ended_at: new Date(),
                 },
             });
-        }
-        // Record reject reasons if any
-        if (qty_rejected > 0 && reject_reasons.length > 0) {
-            for (const reject of reject_reasons) {
-                await tx.printReject.create({
+            // Record final output if provided
+            if (qty_completed > 0 || qty_rejected > 0) {
+                await tx.printRunOutput.create({
                     data: {
                         run_id: runId,
-                        reason_code: reject.reason_code,
-                        qty: reject.qty,
-                        photo_url: reject.photo_url || null,
-                        cost_attribution: reject.cost_attribution || "COMPANY",
+                        qty_good: qty_completed,
+                        qty_reject: qty_rejected,
+                        notes: quality_notes || "Final run completion",
                     },
                 });
             }
-        }
-        // Record material consumption
-        if (material_consumption.length > 0) {
-            for (const material of material_consumption) {
-                await tx.printRunMaterial.create({
-                    data: {
-                        run_id: runId,
-                        item_id: material.item_id,
-                        uom: material.uom,
-                        qty: material.qty,
-                        source_batch_id: material.source_batch_id || null,
-                    },
-                });
+            // Record reject reasons if any
+            if (qty_rejected > 0 && reject_reasons.length > 0) {
+                for (const reject of reject_reasons) {
+                    await tx.printReject.create({
+                        data: {
+                            run_id: runId,
+                            reason_code: reject.reason_code,
+                            qty: reject.qty,
+                            photo_url: reject.photo_url || null,
+                            cost_attribution: reject.cost_attribution || "COMPANY",
+                        },
+                    });
+                }
             }
-        }
-        // Update method-specific completion data
-        await updateMethodSpecificCompletion(tx, runId, run.method, body);
-        // Create Ashley AI final analysis
-        await createFinalAnalysis(tx, runId, run, {
-            qty_completed,
-            qty_rejected,
-            ashley_feedback,
+            // Record material consumption
+            if (material_consumption.length > 0) {
+                for (const material of material_consumption) {
+                    await tx.printRunMaterial.create({
+                        data: {
+                            run_id: runId,
+                            item_id: material.item_id,
+                            uom: material.uom,
+                            qty: material.qty,
+                            source_batch_id: material.source_batch_id || null,
+                        },
+                    });
+                }
+            }
+            // Update method-specific completion data
+            await updateMethodSpecificCompletion(tx, runId, run.method, body);
+            // Create Ashley AI final analysis
+            await createFinalAnalysis(tx, runId, run, {
+                qty_completed,
+                qty_rejected,
+                ashley_feedback,
+            });
         });
         // Fetch completed run data
         const completedRun = await db_1.prisma.printRun.findUnique({
@@ -106,8 +104,7 @@ async function POST(request, { params }) {
             data: completedRun,
             message: "Print run completed successfully",
         });
-    });
-    try { }
+    }
     catch (error) {
         console.error("Complete print run error:", error);
         return server_1.NextResponse.json({ success: false, error: "Failed to complete print run" }, { status: 500 });
@@ -252,12 +249,11 @@ function identifyIssues(completionData) {
             100;
         if (rejectRate > 10)
             issues.push("High reject rate detected");
+        if (rejectRate > 5)
+            issues.push("Moderate reject rate - review process");
     }
-    if (rejectRate > 5)
-        issues.push("Moderate reject rate - review process");
+    return issues;
 }
-;
-return issues;
 function generateRecommendations(method, completionData) {
     const recommendations = [];
     // Method-specific recommendations
@@ -276,10 +272,8 @@ function generateRecommendations(method, completionData) {
             recommendations.push("Review thread tension and stabilizer selection");
             break;
     }
-    ;
     if (completionData.qty_rejected > 0) {
         recommendations.push("Implement additional quality checkpoints");
     }
-    ;
     return recommendations;
 }

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GET = void 0;
+/* eslint-disable */
+const server_1 = require("next/server");
 const db_1 = require("@/lib/db");
 const auth_middleware_1 = require("@/lib/auth-middleware");
 exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
@@ -21,15 +23,11 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
             case "quarter":
                 startDate.setDate(endDate.getDate() - 90); // Get 90 days
                 break;
+            default:
+                startDate.setDate(endDate.getDate() - 30);
         }
-        break;
-    }
-    finally {
-    }
-});
-startDate.setDate(endDate.getDate() - 30);
-// Get daily aggregated data
-const dailyData = (await db_1.prisma.$queryRaw `
+        // Get daily aggregated data
+        const dailyData = (await db_1.prisma.$queryRaw `
       SELECT
         DATE(inspection_date) as date,
         COUNT(*) as total_inspections,
@@ -42,57 +40,58 @@ const dailyData = (await db_1.prisma.$queryRaw `
       GROUP BY DATE(inspection_date)
       ORDER BY date ASC
     `);
-// Process data based on selected metric
-const spcData = dailyData.map(day => {
-    let value;
-    switch (metric) {
-        case "defect_rate":
-            value =
-                day.avg_sample_size > 0
-                    ? (day.avg_defects / day.avg_sample_size) * 100
-                    : 0;
-            break;
-        case "first_pass_yield":
-            value = day.pass_rate;
-            break;
-        case "cycle_time":
-            value = Math.random() * 2 + 6; // Mock cycle time data
-            break;
+        // Process data based on selected metric
+        const spcData = dailyData.map(day => {
+            let value;
+            switch (metric) {
+                case "defect_rate":
+                    value =
+                        day.avg_sample_size > 0
+                            ? (day.avg_defects / day.avg_sample_size) * 100
+                            : 0;
+                    break;
+                case "first_pass_yield":
+                    value = day.pass_rate;
+                    break;
+                case "cycle_time":
+                    value = Math.random() * 2 + 6; // Mock cycle time data
+                    break;
+                default:
+                    value = day.avg_defects;
+            }
+            return {
+                date: day.date,
+                value: value,
+                inspections: Number(day.total_inspections),
+            };
+        });
+        // Calculate control limits (simplified X-bar chart)
+        const values = spcData.map(d => d.value).filter(v => !isNaN(v));
+        if (values.length === 0) {
+            return server_1.NextResponse.json([]);
+        }
+        const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
+        const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) /
+            (values.length - 1);
+        const stdDev = Math.sqrt(variance);
+        // Control limits (3-sigma)
+        const controlLimits = {
+            ucl: mean + 3 * stdDev,
+            lcl: Math.max(0, mean - 3 * stdDev),
+            center_line: mean,
+        };
+        // Add control limits and outlier detection to each point
+        const finalData = spcData.map(point => ({
+            date: point.date,
+            value: point.value,
+            inspections: point.inspections,
+            is_outlier: point.value > controlLimits.ucl || point.value < controlLimits.lcl,
+            control_limits: controlLimits,
+        }));
+        return server_1.NextResponse.json(finalData);
     }
-    break;
+    catch (error) {
+        console.error("Error generating SPC data:", error);
+        return server_1.NextResponse.json({ error: "Failed to generate SPC data" }, { status: 500 });
+    }
 });
-value = day.avg_defects;
-return {
-    date: day.date,
-    value: value,
-    inspections: Number(day.total_inspections),
-};
-// Calculate control limits (simplified X-bar chart)
-const values = spcData.map(d => d.value).filter(v => !isNaN(v));
-if (values.length === 0) {
-    return server_1.NextResponse.json([]);
-}
-const mean = values.reduce((sum, v) => sum + v, 0) / values.length;
-const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) /
-    (values.length - 1);
-const stdDev = Math.sqrt(variance);
-// Control limits (3-sigma)
-const controlLimits = {
-    ucl: mean + 3 * stdDev,
-    lcl: Math.max(0, mean - 3 * stdDev),
-    center_line: mean,
-};
-// Add control limits and outlier detection to each point
-const finalData = spcData.map(point => ({
-    date: point.date,
-    value: point.value,
-    inspections: point.inspections,
-    is_outlier: point.value > controlLimits.ucl || point.value < controlLimits.lcl,
-    control_limits: controlLimits,
-}));
-return server_1.NextResponse.json(finalData);
-try { }
-catch (error) {
-    console.error("Error generating SPC data:", error);
-    return server_1.NextResponse.json({ error: "Failed to generate SPC data" }, { status: 500 });
-}

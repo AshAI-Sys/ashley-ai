@@ -38,7 +38,7 @@ export const GET = requireAuth(
         { last_name: { contains: search, mode: "insensitive" } },
         { employee_number: { contains: search, mode: "insensitive" } },
       ];
-    });
+    }
 
     const employees = await prisma.employee.findMany({
       where,
@@ -159,7 +159,6 @@ export const POST = requireAnyPermission(["hr:create"])(
         ["DAILY", "HOURLY", "PIECE", "MONTHLY"],
         "salary_type"
       );
-      }
       if (salaryTypeError) {
         throw salaryTypeError;
       }
@@ -168,7 +167,6 @@ export const POST = requireAnyPermission(["hr:create"])(
     // Validate hire date if provided
     if (hire_date) {
       const dateError = validateDate(hire_date, "hire_date");
-      }
       if (dateError) {
         throw dateError;
       }
@@ -246,7 +244,6 @@ export const PUT = requireAuth(
         ["DAILY", "HOURLY", "PIECE", "MONTHLY"],
         "salary_type"
       );
-      }
       if (salaryTypeError) {
         throw salaryTypeError;
       }
@@ -255,7 +252,6 @@ export const PUT = requireAuth(
     // Handle date conversion and validation
     if (updateData.hire_date) {
       const dateError = validateDate(updateData.hire_date, "hire_date");
-      }
       if (dateError) {
         throw dateError;
       }
@@ -266,12 +262,11 @@ export const PUT = requireAuth(
         updateData.separation_date,
         "separation_date"
       );
-      }
       if (dateError) {
         throw dateError;
       }
       updateData.separation_date = new Date(updateData.separation_date);
-    });
+    }
 
     const employee = await prisma.employee.update({
       where: { id },

@@ -111,9 +111,11 @@ export const DELETE = requireAuth(async (
     const _workspaceId = user.workspaceId;
     await prisma.order.delete({
       where: { id: context.params.id },
-      });
-    
-      return apiSuccess({ id: context.params.id }, "Order deleted successfully");
+    });
+
+    return apiSuccess({ id: context.params.id }, "Order deleted successfully");
   } catch (error) {
-    logError("Failed to delete order", error, { orderId: context.params.id   });    return apiServerError(error);
+    logError("Failed to delete order", error, { orderId: context.params.id });
+    return apiServerError(error);
   }
+});

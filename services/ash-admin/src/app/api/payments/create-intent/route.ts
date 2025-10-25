@@ -115,11 +115,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           paidAmount,
           remainingAmount,
         },
-      }
+      });
     } else if (provider === "gcash") {
       const baseUrl =
         process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001";
-      }
       const result = await paymentService.createGCashPayment({
         amount: paymentService.toSmallestUnit(remainingAmount, "PHP"),
         description: `Invoice ${invoice.invoice_number}`,
@@ -128,6 +127,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         customerEmail: undefined,
         successUrl: `${baseUrl}/payments/success?invoice=${invoice.id}`,
         failureUrl: `${baseUrl}/payments/failed?invoice=${invoice.id}`,
+      });
 
       if (!result.success) {
         
@@ -151,14 +151,14 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           id: invoice.id,
           number: invoice.invoice_number,
         },
-      }
+      });
     } else {
       return createErrorResponse(
         new ValidationError("Unsupported payment provider")
       );
-      }
-      });
-    } catch (error) {
+    }
+  } catch (error) {
     console.error("Error creating payment intent:", error);
     return handleApiError(error);
+  }
 });

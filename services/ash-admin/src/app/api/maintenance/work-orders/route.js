@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = void 0;
+exports.DELETE = exports.PUT = exports.POST = exports.GET = void 0;
 /* eslint-disable */
 const server_1 = require("next/server");
 const db_1 = require("@/lib/db");
@@ -30,10 +30,8 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 { title: { contains: search, mode: "insensitive" } },
                 { description: { contains: search, mode: "insensitive" } },
             ];
-            const ;
         }
-        const$3;
-        workOrders = await db_1.prisma.workOrder.findMany({
+        const workOrders = await db_1.prisma.workOrder.findMany({
             where,
             include: {
                 asset: {
@@ -100,161 +98,156 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 created_at: workOrder.created_at.toISOString(),
                 updated_at: workOrder.updated_at.toISOString(),
             };
-            return server_1.NextResponse.json({
-                success: true,
-                data: processedWorkOrders,
-            });
         });
-        try { }
-        catch (error) {
-            console.error("Error fetching work orders:", error);
-            return server_1.NextResponse.json({ success: false, error: "Failed to fetch work orders" }, { status: 500 });
-        }
+        return server_1.NextResponse.json({
+            success: true,
+            data: processedWorkOrders,
+        });
     }
-    finally {
+    catch (error) {
+        console.error("Error fetching work orders:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to fetch work orders" }, { status: 500 });
     }
-    export const POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
-        try {
-            const body = await request.json();
-            const { asset_id, maintenance_schedule_id, title, description, type, priority, assigned_to, scheduled_date, parts_used, notes, } = body;
-            if (!asset_id || !title || !type || !priority) {
-                return server_1.NextResponse.json({
-                    success: false,
-                    error: "Missing required fields: asset_id, title, type, priority",
-                }, { status: 400 });
-            }
-            const workOrder = await db_1.prisma.workOrder.create({
-                data: {
-                    workspace_id: "default",
-                    asset_id,
-                    maintenance_schedule_id: maintenance_schedule_id || null,
-                    title,
-                    description,
-                    type,
-                    priority,
-                    assigned_to: assigned_to || null,
-                    scheduled_date: scheduled_date ? new Date(scheduled_date) : null,
-                    parts_used: parts_used ? JSON.stringify(parts_used) : null,
-                    notes,
-                    status: "open",
-                },
-                include: {
-                    asset: {
-                        select: {
-                            name: true,
-                            asset_number: true,
-                        },
-                    },
-                    assignee: {
-                        select: {
-                            first_name: true,
-                            last_name: true,
-                        },
+});
+exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
+    try {
+        const body = await request.json();
+        const { asset_id, maintenance_schedule_id, title, description, type, priority, assigned_to, scheduled_date, parts_used, notes, } = body;
+        if (!asset_id || !title || !type || !priority) {
+            return server_1.NextResponse.json({
+                success: false,
+                error: "Missing required fields: asset_id, title, type, priority",
+            }, { status: 400 });
+        }
+        const workOrder = await db_1.prisma.workOrder.create({
+            data: {
+                workspace_id: "default",
+                asset_id,
+                maintenance_schedule_id: maintenance_schedule_id || null,
+                title,
+                description,
+                type,
+                priority,
+                assigned_to: assigned_to || null,
+                scheduled_date: scheduled_date ? new Date(scheduled_date) : null,
+                parts_used: parts_used ? JSON.stringify(parts_used) : null,
+                notes,
+                status: "open",
+            },
+            include: {
+                asset: {
+                    select: {
+                        name: true,
+                        asset_number: true,
                     },
                 },
-            });
-            return server_1.NextResponse.json({
-                success: true,
-                data: workOrder,
-            });
-        }
-        catch (error) {
-            console.error("Error creating work order:", error);
-            return server_1.NextResponse.json({ success: false, error: "Failed to create work order" }, { status: 500 });
-        }
-    });
-    export const PUT = (0, auth_middleware_1.requireAuth)(async (request, user) => {
-        try {
-            const body = await request.json();
-            const { id, ...updateData } = body;
-            if (!id) {
-                return server_1.NextResponse.json({ success: false, error: "Work order ID is required" }, { status: 400 });
-            }
-            const data = {};
-            if (updateData.title)
-                data.title = updateData.title;
-            if (updateData.description !== undefined)
-                data.description = updateData.description;
-            if (updateData.type)
-                data.type = updateData.type;
-            if (updateData.priority)
-                data.priority = updateData.priority;
-            if (updateData.status) {
-                data.status = updateData.status;
-                // Auto-set timestamps based on status changes
-            }
-            if (updateData.status === "in_progress" && !data.started_at) {
-                data.started_at = new Date();
-            }
-            if (updateData.status === "completed" && !data.completed_at) {
-                data.completed_at = new Date();
-            }
-            if (updateData.assigned_to !== undefined)
-                data.assigned_to = updateData.assigned_to;
-            if (updateData.scheduled_date)
-                data.scheduled_date = new Date(updateData.scheduled_date);
-            if (updateData.cost !== undefined)
-                data.cost = updateData.cost ? parseFloat(updateData.cost) : null;
-            if (updateData.labor_hours !== undefined)
-                data.labor_hours = updateData.labor_hours
-                    ? parseFloat(updateData.labor_hours)
-                    : null;
-            if (updateData.parts_used !== undefined)
-                data.parts_used = updateData.parts_used
-                    ? JSON.stringify(updateData.parts_used)
-                    : null;
-            if (updateData.notes !== undefined)
-                data.notes = updateData.notes;
-            if (updateData.completion_notes !== undefined)
-                data.completion_notes = updateData.completion_notes;
-            const workOrder = await db_1.prisma.workOrder.update({
-                where: { id },
-                data,
-                include: {
-                    asset: {
-                        select: {
-                            name: true,
-                            asset_number: true,
-                        },
-                    },
-                    assignee: {
-                        select: {
-                            first_name: true,
-                            last_name: true,
-                        },
+                assignee: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
                     },
                 },
-            });
-            return server_1.NextResponse.json({
-                success: true,
-                data: workOrder,
-            });
+            },
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            data: workOrder,
+        });
+    }
+    catch (error) {
+        console.error("Error creating work order:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to create work order" }, { status: 500 });
+    }
+});
+exports.PUT = (0, auth_middleware_1.requireAuth)(async (request, user) => {
+    try {
+        const body = await request.json();
+        const { id, ...updateData } = body;
+        if (!id) {
+            return server_1.NextResponse.json({ success: false, error: "Work order ID is required" }, { status: 400 });
         }
-        catch (error) {
-            console.error("Error updating work order:", error);
-            return server_1.NextResponse.json({ success: false, error: "Failed to update work order" }, { status: 500 });
+        const data = {};
+        if (updateData.title)
+            data.title = updateData.title;
+        if (updateData.description !== undefined)
+            data.description = updateData.description;
+        if (updateData.type)
+            data.type = updateData.type;
+        if (updateData.priority)
+            data.priority = updateData.priority;
+        if (updateData.status) {
+            data.status = updateData.status;
+            // Auto-set timestamps based on status changes
         }
-    });
-    export const DELETE = (0, auth_middleware_1.requireAuth)(async (request, user) => {
-        try {
-            const { searchParams } = new URL(request.url);
-            const id = searchParams.get("id");
-            if (!id) {
-                return server_1.NextResponse.json({ success: false, error: "Work order ID is required" }, { status: 400 });
-            }
-            await db_1.prisma.workOrder.delete({
-                where: { id },
-            });
-            return server_1.NextResponse.json({
-                success: true,
-                message: "Work order deleted successfully",
-            });
-            try { }
-            catch (error) {
-                console.error("Error deleting work order:", error);
-                return server_1.NextResponse.json({ success: false, error: "Failed to delete work order" }, { status: 500 });
-            }
+        if (updateData.status === "in_progress" && !data.started_at) {
+            data.started_at = new Date();
         }
-        finally { }
-    });
+        if (updateData.status === "completed" && !data.completed_at) {
+            data.completed_at = new Date();
+        }
+        if (updateData.assigned_to !== undefined)
+            data.assigned_to = updateData.assigned_to;
+        if (updateData.scheduled_date)
+            data.scheduled_date = new Date(updateData.scheduled_date);
+        if (updateData.cost !== undefined)
+            data.cost = updateData.cost ? parseFloat(updateData.cost) : null;
+        if (updateData.labor_hours !== undefined)
+            data.labor_hours = updateData.labor_hours
+                ? parseFloat(updateData.labor_hours)
+                : null;
+        if (updateData.parts_used !== undefined)
+            data.parts_used = updateData.parts_used
+                ? JSON.stringify(updateData.parts_used)
+                : null;
+        if (updateData.notes !== undefined)
+            data.notes = updateData.notes;
+        if (updateData.completion_notes !== undefined)
+            data.completion_notes = updateData.completion_notes;
+        const workOrder = await db_1.prisma.workOrder.update({
+            where: { id },
+            data,
+            include: {
+                asset: {
+                    select: {
+                        name: true,
+                        asset_number: true,
+                    },
+                },
+                assignee: {
+                    select: {
+                        first_name: true,
+                        last_name: true,
+                    },
+                },
+            },
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            data: workOrder,
+        });
+    }
+    catch (error) {
+        console.error("Error updating work order:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to update work order" }, { status: 500 });
+    }
+});
+exports.DELETE = (0, auth_middleware_1.requireAuth)(async (request, user) => {
+    try {
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get("id");
+        if (!id) {
+            return server_1.NextResponse.json({ success: false, error: "Work order ID is required" }, { status: 400 });
+        }
+        await db_1.prisma.workOrder.delete({
+            where: { id },
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            message: "Work order deleted successfully",
+        });
+    }
+    catch (error) {
+        console.error("Error deleting work order:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to delete work order" }, { status: 500 });
+    }
 });

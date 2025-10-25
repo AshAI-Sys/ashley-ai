@@ -44,5 +44,4 @@ export const PUT = requireAuth(async (request: NextRequest, _authUser) => {
       { status: 500 }
     );
   }
-  }
 });

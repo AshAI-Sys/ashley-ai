@@ -76,7 +76,7 @@ export async function POST(
           created_by: inspection.inspector_id,
         },
       });
-    
+    }
 
     return NextResponse.json({
       ...updatedInspection,

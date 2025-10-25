@@ -106,17 +106,15 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
             return server_1.NextResponse.json({
                 success: true,
                 defectTypes: defaultDefectTypes,
-                return: server_1.NextResponse.json({
-                    success: true,
-                    defectTypes,
-                })
             });
-            try { }
-            catch (error) {
-                console.error("Defect types fetch error:", error);
-                return server_1.NextResponse.json({ success: false, error: error.message }, { status: 500 });
-            }
         }
+        return server_1.NextResponse.json({
+            success: true,
+            defectTypes,
+        });
     }
-    finally { }
+    catch (error) {
+        console.error("Defect types fetch error:", error);
+        return server_1.NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
 });

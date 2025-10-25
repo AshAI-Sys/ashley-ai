@@ -63,7 +63,8 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to upload logo" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
   try {
@@ -84,5 +85,5 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to remove logo" },
       { status: 500 }
     );
-  }
-  }
+    }
+});

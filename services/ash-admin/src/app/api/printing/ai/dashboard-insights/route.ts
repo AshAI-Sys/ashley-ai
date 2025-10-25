@@ -39,6 +39,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: insights,
+    });
   } catch (error) {
     console.error("Dashboard AI insights error:", error);
     return NextResponse.json(
@@ -46,7 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-}
+});
 
 function generateDashboardInsights(activeRuns: any[], recentRuns: any[]) {
   // Calculate overall performance metrics
@@ -78,8 +79,9 @@ function calculateOverallPerformance(activeRuns: any[], recentRuns: any[]) {
   const allRuns = [...activeRuns, ...recentRuns];
 
   if (allRuns.length === 0) {
-    
+
     return { score: 0.85, grade: "B+" };
+  }
 
   // Calculate weighted scores
   let totalWeightedScore = 0;
@@ -91,6 +93,7 @@ function calculateOverallPerformance(activeRuns: any[], recentRuns: any[]) {
 
     totalWeightedScore += runScore * weight;
     totalWeight += weight;
+  });
 
   const avgScore = totalWeightedScore / totalWeight;
   const grade = getPerformanceGrade(avgScore);
@@ -110,10 +113,10 @@ function calculateRunPerformanceScore(run: any) {
     const totalQty = (output.qty_good || 0) + (output.qty_reject || 0);
     if (totalQty > 0) {
       const defectRate = (output.qty_reject || 0) / totalQty;
-      }
       const qualityScore = Math.max(0, 1 - defectRate);
       score = score * 0.6 + qualityScore * 0.4;
     }
+  }
 
   // Time efficiency factor
   if (run.started_at) {
@@ -144,6 +147,7 @@ function analyzeActiveRuns(activeRuns: any[]) {
     // Identify high-risk runs
     if (performanceScore < 0.7) {
       highRiskRuns++;
+    }
 
     // Identify optimization opportunities from output quality
     if (run.outputs && run.outputs.length > 0) {
@@ -151,13 +155,15 @@ function analyzeActiveRuns(activeRuns: any[]) {
       const totalQty = (output.qty_good || 0) + (output.qty_reject || 0);
       if (totalQty > 0) {
         const defectRate = (output.qty_reject || 0) / totalQty;
-        }
         if (defectRate > 0.1) {
           // More than 10% defect rate
           optimizationOpportunities++;
         }
       }
-    return {
+    }
+  });
+
+  return {
     total_active: totalActive,
     high_risk_runs: highRiskRuns,
     optimization_opportunities: optimizationOpportunities,
@@ -178,11 +184,12 @@ function generateGlobalRecommendations(activeRuns: any[]) {
 
     // Method-specific issues
     if (score < 0.8) {
-      
+
       if (!methodIssues[run.print_method]) {
         methodIssues[run.print_method] = 0;
       }
       methodIssues[run.print_method]++;
+    }
 
     // Material waste issues
     if (run.materials) {
@@ -194,19 +201,19 @@ function generateGlobalRecommendations(activeRuns: any[]) {
         (sum, mat) => sum + (mat.actual_qty || mat.qty || 0),
         0
       );
-      }
       if (totalUsed > totalPlanned * 1.1) {
         materialWaste.push(run.id);
       }
+    }
 
     // Quality issues from outputs
     if (run.outputs && run.outputs.length > 0) {
       const output = run.outputs[0];
-      }
       if ((output.qty_reject || 0) > 0) {
         qualityIssues.push(run.id);
       }
     }
+  });
 
   // Generate recommendations based on patterns
   Object.entries(methodIssues).forEach(([method, count]) => {
@@ -216,8 +223,9 @@ function generateGlobalRecommendations(activeRuns: any[]) {
         priority: "HIGH",
         message: `Multiple ${method} runs underperforming - review process parameters`,
         runs_affected: count,
-      }
+      });
     }
+  });
 
   if (materialWaste.length > 0) {
     recommendations.push({
@@ -226,6 +234,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       message: `Material waste detected across ${materialWaste.length} runs - optimize calculations`,
       runs_affected: materialWaste.length,
     });
+  }
 
   if (qualityIssues.length > 0) {
     recommendations.push({
@@ -233,7 +242,8 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       priority: qualityIssues.length > 2 ? "HIGH" : "MEDIUM",
       message: `Quality issues identified - implement additional checkpoints`,
       runs_affected: qualityIssues.length,
-    }
+    });
+  }
 
   // General optimization opportunities
   if (activeRuns.length > 5) {
@@ -243,13 +253,14 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       message: "High production volume - consider workload balancing",
       runs_affected: activeRuns.length,
     });
+  }
 
   return recommendations;
 }
 
 function calculatePerformanceTrends(recentRuns: any[]) {
   if (recentRuns.length < 4) {
-    
+
     return {
       efficiency_trend: "stable" as const,
       quality_trend: "stable" as const,
@@ -258,6 +269,7 @@ function calculatePerformanceTrends(recentRuns: any[]) {
       quality_change: 0,
       cost_change: 0,
     };
+  }
 
   // Split runs into two periods for comparison
   const midPoint = Math.floor(recentRuns.length / 2);
@@ -283,8 +295,9 @@ function calculatePerformanceTrends(recentRuns: any[]) {
 
 function calculatePeriodMetrics(runs: any[]) {
   if (runs.length === 0) {
-    
+
     return { efficiency: 0.8, quality: 0.9, cost: 5.0 };
+  }
 
   let totalEfficiency = 0;
   let totalQuality = 0;
@@ -299,7 +312,7 @@ function calculatePeriodMetrics(runs: any[]) {
       const output = run.outputs[0];
       const totalQty = (output.qty_good || 0) + (output.qty_reject || 0);
       if (totalQty > 0) {
-        
+
         const defectRate = (output.qty_reject || 0) / totalQty;
         totalQuality += Math.max(0, 1 - defectRate);
       } else {
@@ -307,10 +320,12 @@ function calculatePeriodMetrics(runs: any[]) {
       }
     } else {
       totalQuality += 0.9;
+    }
 
     // Estimated cost per unit based on method
     const costPerUnit = getMethodCost(run.print_method);
     totalCost += costPerUnit;
+  });
 
   return {
     efficiency: totalEfficiency / runs.length,
@@ -339,25 +354,27 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
         activeCount: 0,
         issues: {},
       };
+    }
 
     const score = calculateRunPerformanceScore(run);
     methodStats[run.print_method].scores.push(score);
 
     if (run.status === "IN_PROGRESS" || run.status === "PAUSED") {
       methodStats[run.print_method].activeCount++;
+    }
 
     // Track common issues from outputs
     if (run.outputs && run.outputs.length > 0) {
       const output = run.outputs[0];
       if ((output.qty_reject || 0) > 0) {
         const issueType = "quality_reject";
-        }
         if (!methodStats[run.print_method].issues[issueType]) {
           methodStats[run.print_method].issues[issueType] = 0;
         }
         methodStats[run.print_method].issues[issueType]++;
       }
     }
+  });
 
   // Calculate average scores and identify top issues
   const result = {};
@@ -373,6 +390,7 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
       runs_count: stats.activeCount,
       top_issue: topIssue ? topIssue[0] : undefined,
     };
+  });
 
   return result;
 }
@@ -395,4 +413,4 @@ function getPerformanceGrade(score: number) {
   if (score >= 0.75) return "C+";
   if (score >= 0.7) return "C";
   return "D";
-});
+}

@@ -9,10 +9,9 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  return requireAuth(async (request: NextRequest, _user) => {
-    try {
-      // Return mock sessions;
-      const sessions = [
+  try {
+    // Return mock sessions
+    const sessions = [
         {
           id: "1",
           device_type: "Desktop",
@@ -47,4 +46,5 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
-    }
+});
+

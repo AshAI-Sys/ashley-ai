@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = void 0;
+exports.POST = exports.GET = void 0;
 /* eslint-disable */
 const server_1 = require("next/server");
 const permission_manager_1 = require("@/lib/rbac/permission-manager");
@@ -20,11 +20,11 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
         });
         if (action === "user" && user_id) {
             const userPermissions = await permission_manager_1.permissionManager.getUserPermissions(user_id);
+            return server_1.NextResponse.json({
+                success: true,
+                user_permissions: userPermissions,
+            });
         }
-        return server_1.NextResponse.json({
-            success: true,
-            user_permissions: userPermissions,
-        });
         // Default: return all system permissions
         const permissions = permission_manager_1.permissionManager.getAllPermissions();
         return server_1.NextResponse.json({
@@ -37,28 +37,25 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
         console.error("Get permissions error:", error);
         return server_1.NextResponse.json({ error: "Failed to get permissions", details: error.message }, { status: 500 });
     }
-    // POST /api/permissions/check - Check if user has permission
-    export const POST = (0, auth_middleware_1.requireAuth)(async (req, user) => {
-        try {
-            const { user_id, resource, action } = await req.json();
-            if (!user_id || !resource || !action) {
-                return server_1.NextResponse.json({ error: "user_id, resource, and action are required" }, { status: 400 });
-            }
-            const hasPermission = await permission_manager_1.permissionManager.hasPermission(user_id, resource, action);
-            return server_1.NextResponse.json({
-                success: true,
-                has_permission: hasPermission,
-                user_id,
-                resource,
-                action,
-            });
-            try { }
-            catch (error) {
-                console.error("Check permission error:", error);
-                return server_1.NextResponse.json({ error: "Failed to check permission", details: error.message }, { status: 500 });
-            }
-        }
-        finally { }
-    });
 });
-;
+// POST /api/permissions/check - Check if user has permission
+exports.POST = (0, auth_middleware_1.requireAuth)(async (req, user) => {
+    try {
+        const { user_id, resource, action } = await req.json();
+        if (!user_id || !resource || !action) {
+            return server_1.NextResponse.json({ error: "user_id, resource, and action are required" }, { status: 400 });
+        }
+        const hasPermission = await permission_manager_1.permissionManager.hasPermission(user_id, resource, action);
+        return server_1.NextResponse.json({
+            success: true,
+            has_permission: hasPermission,
+            user_id,
+            resource,
+            action,
+        });
+    }
+    catch (error) {
+        console.error("Check permission error:", error);
+        return server_1.NextResponse.json({ error: "Failed to check permission", details: error.message }, { status: 500 });
+    }
+});

@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.POST = exports.GET = void 0;
-/* eslint-disable */
-const server_1 = require("next/server");
 const db_1 = require("@/lib/db");
 const error_handling_1 = require("../../../../lib/error-handling");
 const auth_middleware_1 = require("../../../../lib/auth-middleware");
@@ -140,78 +138,70 @@ exports.POST = (0, auth_middleware_1.requireAnyPermission)(["finance:create"])((
         if (!order) {
             throw new error_handling_1.NotFoundError("Order");
         }
-        // Generate invoice number
-        const year = new Date().getFullYear();
-        const invoiceCount = await db_1.prisma.invoice.count({
-            where: {
-                workspace_id: "default",
-                issue_date: {
-                    gte: new Date(year, 0, 1),
-                    lt: new Date(year + 1, 0, 1),
-                },
-            },
-        });
-        const invoiceNo = `INV-${year}-${String(invoiceCount + 1).padStart(5, "0")}`;
-        // Calculate totals
-        let subtotal = 0;
-        const processedLines = lines.map((line) => {
-            const lineTotal = line.qty * line.unit_price;
-            subtotal += lineTotal;
-            return {
-                ...line,
-                line_total: lineTotal,
-            };
-            const discountAmount = (subtotal * discount) / 100;
-            const netAmount = subtotal - discountAmount;
-            let vatAmount = 0;
-            let total = netAmount;
-            if (tax_mode === "VAT_INCLUSIVE") {
-                vatAmount = (netAmount * 0.12) / 1.12;
-                total = netAmount;
-            }
-            else if (tax_mode === "VAT_EXCLUSIVE") {
-                vatAmount = netAmount * 0.12;
-                total = netAmount + vatAmount;
-            }
-            // Create invoice with transaction
-            const invoice = await db_1.prisma.invoice.create({
-                data: {
-                    workspace_id: "default",
-                    client_id,
-                    order_id,
-                    invoice_number: invoiceNo,
-                    issue_date: new Date(),
-                    due_date: due_date ? new Date(due_date) : null,
-                    status: "draft",
-                    subtotal,
-                    discount_amount: discountAmount,
-                    tax_amount: vatAmount,
-                    total_amount: total,
-                    currency: "PHP",
-                    invoice_items: {
-                        create: processedLines.map((line) => ({
-                            description: line.description,
-                            quantity: line.qty,
-                            unit_price: line.unit_price,
-                            tax_rate: 0.12,
-                            line_total: line.line_total,
-                        })),
-                    },
-                },
-                include: {
-                    client: { select: { name: true } },
-                    invoice_items: true,
-                },
-            });
-            return (0, error_handling_1.createSuccessResponse)(invoice, 201);
-        });
-        try { }
-        catch (error) {
-            if (error instanceof error_handling_1.ValidationError) {
-                return server_1.NextResponse.json({ success: false, error: error.message, field: error.field }, { status: 400 });
-            }
-            console.error("Error creating invoice:", error);
-            return server_1.NextResponse.json({ success: false, error: "Failed to create invoice" }, { status: 500 });
-        }
     }
+    // Generate invoice number
+    const year = new Date().getFullYear();
+    const invoiceCount = await db_1.prisma.invoice.count({
+        where: {
+            workspace_id: "default",
+            issue_date: {
+                gte: new Date(year, 0, 1),
+                lt: new Date(year + 1, 0, 1),
+            },
+        },
+    });
+    const invoiceNo = `INV-${year}-${String(invoiceCount + 1).padStart(5, "0")}`;
+    // Calculate totals
+    let subtotal = 0;
+    const processedLines = lines.map((line) => {
+        const lineTotal = line.qty * line.unit_price;
+        subtotal += lineTotal;
+        return {
+            ...line,
+            line_total: lineTotal,
+        };
+    });
+    const discountAmount = (subtotal * discount) / 100;
+    const netAmount = subtotal - discountAmount;
+    let vatAmount = 0;
+    let total = netAmount;
+    if (tax_mode === "VAT_INCLUSIVE") {
+        vatAmount = (netAmount * 0.12) / 1.12;
+        total = netAmount;
+    }
+    else if (tax_mode === "VAT_EXCLUSIVE") {
+        vatAmount = netAmount * 0.12;
+        total = netAmount + vatAmount;
+    }
+    // Create invoice with transaction
+    const invoice = await db_1.prisma.invoice.create({
+        data: {
+            workspace_id: "default",
+            client_id,
+            order_id,
+            invoice_number: invoiceNo,
+            issue_date: new Date(),
+            due_date: due_date ? new Date(due_date) : null,
+            status: "draft",
+            subtotal,
+            discount_amount: discountAmount,
+            tax_amount: vatAmount,
+            total_amount: total,
+            currency: "PHP",
+            invoice_items: {
+                create: processedLines.map((line) => ({
+                    description: line.description,
+                    quantity: line.qty,
+                    unit_price: line.unit_price,
+                    tax_rate: 0.12,
+                    line_total: line.line_total,
+                })),
+            },
+        },
+        include: {
+            client: { select: { name: true } },
+            invoice_items: true,
+        },
+    });
+    return (0, error_handling_1.createSuccessResponse)(invoice, 201);
 }));

@@ -80,6 +80,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/pod?delivery_id=xxx - Get POD records for a delivery
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -133,6 +134,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // PUT /api/pod/:id - Update POD record
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -184,9 +186,9 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     const updatedRecord = await prisma.pODRecord.update({
       where: { id },
       data: updateData,
-        
-      
-        return NextResponse.json(updatedRecord);
+    });
+
+    return NextResponse.json(updatedRecord);
   } catch (error: any) {
     console.error("Error updating POD record:", error);
     return NextResponse.json(

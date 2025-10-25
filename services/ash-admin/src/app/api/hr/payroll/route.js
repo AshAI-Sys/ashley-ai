@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.POST = exports.GET = void 0;
+exports.PUT = exports.POST = exports.GET = void 0;
 /* eslint-disable */
 const server_1 = require("next/server");
 const db_1 = require("@/lib/db");
@@ -23,56 +23,54 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 where.period_start.lte = endYear;
             }
         }
-    }
-    finally { }
-});
-const payrollPeriods = await db_1.prisma.payrollPeriod.findMany({
-    where,
-    include: {
-        earnings: {
+        const payrollPeriods = await db_1.prisma.payrollPeriod.findMany({
+            where,
             include: {
-                employee: {
+                earnings: {
+                    include: {
+                        employee: {
+                            select: {
+                                first_name: true,
+                                last_name: true,
+                                position: true,
+                                department: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
                     select: {
-                        first_name: true,
-                        last_name: true,
-                        position: true,
-                        department: true,
+                        earnings: true,
                     },
                 },
             },
-        },
-        _count: {
-            select: {
-                earnings: true,
-            },
-        },
-    },
-    orderBy: { period_start: "desc" },
+            orderBy: { period_start: "desc" },
+        });
+        // Calculate summary for each payroll period
+        const processedRuns = payrollPeriods.map(period => {
+            const totalAmount = period.earnings.reduce((sum, earning) => sum + (earning.net_pay || 0), 0);
+            const employeeCount = period._count.earnings;
+            return {
+                id: period.id,
+                period_start: period.period_start.toISOString(),
+                period_end: period.period_end.toISOString(),
+                status: period.status,
+                total_amount: totalAmount || period.total_amount,
+                employee_count: employeeCount,
+                created_at: period.created_at.toISOString(),
+                processed_at: period.processed_at?.toISOString() || null,
+            };
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            data: processedRuns,
+        });
+    }
+    catch (error) {
+        console.error("Error fetching payroll runs:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to fetch payroll runs" }, { status: 500 });
+    }
 });
-// Calculate summary for each payroll period
-const processedRuns = payrollPeriods.map(period => {
-    const totalAmount = period.earnings.reduce((sum, earning) => sum + (earning.net_pay || 0), 0);
-    const employeeCount = period._count.earnings;
-    return {
-        id: period.id,
-        period_start: period.period_start.toISOString(),
-        period_end: period.period_end.toISOString(),
-        status: period.status,
-        total_amount: totalAmount || period.total_amount,
-        employee_count: employeeCount,
-        created_at: period.created_at.toISOString(),
-        processed_at: period.processed_at?.toISOString() || null,
-    };
-    return server_1.NextResponse.json({
-        success: true,
-        data: processedRuns,
-    });
-});
-try { }
-catch (error) {
-    console.error("Error fetching payroll runs:", error);
-    return server_1.NextResponse.json({ success: false, error: "Failed to fetch payroll runs" }, { status: 500 });
-}
 exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
         const data = await request.json();
@@ -122,9 +120,9 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
                             (1000 * 60 * 60);
                         totalHours += hours;
                         // Calculate overtime (over 8 hours per day)
-                    }
-                    if (hours > 8) {
-                        overtimeHours += hours - 8;
+                        if (hours > 8) {
+                            overtimeHours += hours - 8;
+                        }
                     }
                 });
                 // Get piece-rate earnings from production runs (sewing)
@@ -167,121 +165,117 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
                         const monthlyRate = employee.base_salary || 0;
                         grossPay = (monthlyRate / 22) * workDays; // Assuming 22 working days per month
                         break;
-                        // Calculate deductions (10% as simplified deductions)
-                        const deductions = grossPay * 0.1;
-                        const netPay = grossPay - deductions;
-                        payrollItems.push({
-                            workspace_id: "default",
-                            payroll_period_id: payrollPeriod.id,
-                            employee_id: employee.id,
-                            regular_hours: regularHours,
-                            overtime_hours: overtimeCalculatedHours,
-                            piece_count: pieceCount,
-                            piece_rate: employee.piece_rate,
-                            gross_pay: grossPay,
-                            deductions: deductions,
-                            net_pay: netPay,
-                            metadata: JSON.stringify({
-                                attendance_days: attendanceLogs.length,
-                                total_hours: totalHours,
-                                salary_type: employee.salary_type,
-                            }),
-                        }
-                        // Create payroll earnings
-                        , 
-                        // Create payroll earnings
-                        await tx.payrollEarning.createMany({
-                            data: payrollItems,
-                        }));
-                        // Update total amount in payroll period
-                        const totalAmount = payrollItems.reduce((sum, item) => sum + item.net_pay, 0);
-                        await tx.payrollPeriod.update({
-                            where: { id: payrollPeriod.id },
-                            data: { total_amount: totalAmount },
-                        });
-                        return payrollPeriod;
-                        // Return the complete payroll period with earnings
-                        const completePeriod = await db_1.prisma.payrollPeriod.findUnique({
-                            where: { id: result.id },
-                            include: {
-                                earnings: {
-                                    include: {
-                                        employee: {
-                                            select: {
-                                                first_name: true,
-                                                last_name: true,
-                                                position: true,
-                                                department: true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        });
-                        return server_1.NextResponse.json({
-                            success: true,
-                            data: {
-                                id: completePeriod.id,
-                                period_start: completePeriod.period_start.toISOString(),
-                                period_end: completePeriod.period_end.toISOString(),
-                                status: completePeriod.status,
-                                total_amount: completePeriod.total_amount,
-                                employee_count: completePeriod.earnings.length,
-                                created_at: completePeriod.created_at.toISOString(),
-                            },
-                        }, { status: 201 });
                 }
-                try { }
-                catch (error) {
-                    console.error("Error creating payroll run:", error);
-                    return server_1.NextResponse.json({ success: false, error: "Failed to create payroll run" }, { status: 500 });
-                }
+                // Calculate deductions (10% as simplified deductions)
+                const deductions = grossPay * 0.1;
+                const netPay = grossPay - deductions;
+                payrollItems.push({
+                    workspace_id: "default",
+                    payroll_period_id: payrollPeriod.id,
+                    employee_id: employee.id,
+                    regular_hours: regularHours,
+                    overtime_hours: overtimeCalculatedHours,
+                    piece_count: pieceCount,
+                    piece_rate: employee.piece_rate,
+                    gross_pay: grossPay,
+                    deductions: deductions,
+                    net_pay: netPay,
+                    metadata: JSON.stringify({
+                        attendance_days: attendanceLogs.length,
+                        total_hours: totalHours,
+                        salary_type: employee.salary_type,
+                    }),
+                });
             }
-            export const PUT = (0, auth_middleware_1.requireAuth)(async (request, user) => {
-                try {
-                    const data = await request.json();
-                    const { id, status, approval_notes } = data;
-                    const payrollPeriod = await db_1.prisma.payrollPeriod.update({
-                        where: { id },
-                        data: {
-                            status,
-                            processed_at: status === "completed" ? new Date() : null,
-                        },
-                        include: {
-                            earnings: {
-                                include: {
-                                    employee: {
-                                        select: {
-                                            first_name: true,
-                                            last_name: true,
-                                            position: true,
-                                            department: true,
-                                        },
-                                    },
-                                },
+            // Create payroll earnings
+            await tx.payrollEarning.createMany({
+                data: payrollItems,
+            });
+            // Update total amount in payroll period
+            const totalAmount = payrollItems.reduce((sum, item) => sum + item.net_pay, 0);
+            await tx.payrollPeriod.update({
+                where: { id: payrollPeriod.id },
+                data: { total_amount: totalAmount },
+            });
+            return payrollPeriod;
+        });
+        // Return the complete payroll period with earnings
+        const completePeriod = await db_1.prisma.payrollPeriod.findUnique({
+            where: { id: result.id },
+            include: {
+                earnings: {
+                    include: {
+                        employee: {
+                            select: {
+                                first_name: true,
+                                last_name: true,
+                                position: true,
+                                department: true,
                             },
                         },
-                    });
-                    return server_1.NextResponse.json({
-                        success: true,
-                        data: {
-                            id: payrollPeriod.id,
-                            period_start: payrollPeriod.period_start.toISOString(),
-                            period_end: payrollPeriod.period_end.toISOString(),
-                            status: payrollPeriod.status,
-                            total_amount: payrollPeriod.total_amount,
-                            employee_count: payrollPeriod.earnings.length,
-                            created_at: payrollPeriod.created_at.toISOString(),
-                            processed_at: payrollPeriod.processed_at?.toISOString() || null,
+                    },
+                },
+            },
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            data: {
+                id: completePeriod.id,
+                period_start: completePeriod.period_start.toISOString(),
+                period_end: completePeriod.period_end.toISOString(),
+                status: completePeriod.status,
+                total_amount: completePeriod.total_amount,
+                employee_count: completePeriod.earnings.length,
+                created_at: completePeriod.created_at.toISOString(),
+            },
+        }, { status: 201 });
+    }
+    catch (error) {
+        console.error("Error creating payroll run:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to create payroll run" }, { status: 500 });
+    }
+});
+exports.PUT = (0, auth_middleware_1.requireAuth)(async (request, user) => {
+    try {
+        const data = await request.json();
+        const { id, status, approval_notes } = data;
+        const payrollPeriod = await db_1.prisma.payrollPeriod.update({
+            where: { id },
+            data: {
+                status,
+                processed_at: status === "completed" ? new Date() : null,
+            },
+            include: {
+                earnings: {
+                    include: {
+                        employee: {
+                            select: {
+                                first_name: true,
+                                last_name: true,
+                                position: true,
+                                department: true,
+                            },
                         },
-                    });
-                }
-                catch (error) {
-                    console.error("Error updating payroll run:", error);
-                    return server_1.NextResponse.json({ success: false, error: "Failed to update payroll run" }, { status: 500 });
-                }
-            });
+                    },
+                },
+            },
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            data: {
+                id: payrollPeriod.id,
+                period_start: payrollPeriod.period_start.toISOString(),
+                period_end: payrollPeriod.period_end.toISOString(),
+                status: payrollPeriod.status,
+                total_amount: payrollPeriod.total_amount,
+                employee_count: payrollPeriod.earnings.length,
+                created_at: payrollPeriod.created_at.toISOString(),
+                processed_at: payrollPeriod.processed_at?.toISOString() || null,
+            },
         });
     }
-    finally { }
+    catch (error) {
+        console.error("Error updating payroll run:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to update payroll run" }, { status: 500 });
+    }
 });

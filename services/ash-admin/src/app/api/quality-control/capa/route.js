@@ -37,22 +37,20 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
             orderBy: { created_at: "desc" },
             skip: (page - 1) * limit,
             take: limit,
-            return: server_1.NextResponse.json({
-                capa_tasks: capaTasks,
-                pagination: {
-                    page,
-                    limit,
-                    total: await db_1.prisma.cAPATask.count({ where }),
-                },
-            })
         });
-        try { }
-        catch (error) {
-            console.error("Error fetching CAPA tasks:", error);
-            return server_1.NextResponse.json({ error: "Failed to fetch CAPA tasks" }, { status: 500 });
-        }
+        return server_1.NextResponse.json({
+            capa_tasks: capaTasks,
+            pagination: {
+                page,
+                limit,
+                total: await db_1.prisma.cAPATask.count({ where }),
+            },
+        });
     }
-    finally { }
+    catch (error) {
+        console.error("Error fetching CAPA tasks:", error);
+        return server_1.NextResponse.json({ error: "Failed to fetch CAPA tasks" }, { status: 500 });
+    }
 });
 exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
     try {
@@ -72,38 +70,36 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
             const lastNumber = parseInt(lastCapa.capa_number.split("-").pop() || "0");
             nextNumber = lastNumber + 1;
         }
+        const capaNumber = `CAPA-${currentYear}-${nextNumber.toString().padStart(4, "0")}`;
+        const capaTask = await db_1.prisma.cAPATask.create({
+            data: {
+                workspace_id: data.workspace_id || "default",
+                order_id: data.order_id,
+                capa_number: capaNumber,
+                title: data.title,
+                type: data.type || "CORRECTIVE",
+                priority: data.priority || "MEDIUM",
+                source_type: data.source_type || "QC_INSPECTION",
+                source_id: data.source_id,
+                inspection_id: data.inspection_id,
+                defect_id: data.defect_id,
+                root_cause: data.root_cause,
+                corrective_action: data.corrective_action,
+                preventive_action: data.preventive_action,
+                assigned_to: data.assigned_to,
+                due_date: data.due_date ? new Date(data.due_date) : null,
+                notes: data.notes,
+                created_by: data.created_by,
+            },
+            include: {
+                assignee: { select: { first_name: true, last_name: true } },
+                creator: { select: { first_name: true, last_name: true } },
+            },
+        });
+        return server_1.NextResponse.json(capaTask, { status: 201 });
     }
-    finally { }
+    catch (error) {
+        console.error("Error creating CAPA task:", error);
+        return server_1.NextResponse.json({ error: "Failed to create CAPA task" }, { status: 500 });
+    }
 });
-const capaNumber = `CAPA-${currentYear}-${nextNumber.toString().padStart(4, "0")}`;
-const capaTask = await db_1.prisma.cAPATask.create({
-    data: {
-        workspace_id: data.workspace_id || "default",
-        order_id: data.order_id,
-        capa_number: capaNumber,
-        title: data.title,
-        type: data.type || "CORRECTIVE",
-        priority: data.priority || "MEDIUM",
-        source_type: data.source_type || "QC_INSPECTION",
-        source_id: data.source_id,
-        inspection_id: data.inspection_id,
-        defect_id: data.defect_id,
-        root_cause: data.root_cause,
-        corrective_action: data.corrective_action,
-        preventive_action: data.preventive_action,
-        assigned_to: data.assigned_to,
-        due_date: data.due_date ? new Date(data.due_date) : null,
-        notes: data.notes,
-        created_by: data.created_by,
-    },
-    include: {
-        assignee: { select: { first_name: true, last_name: true } },
-        creator: { select: { first_name: true, last_name: true } },
-    },
-});
-return server_1.NextResponse.json(capaTask, { status: 201 });
-try { }
-catch (error) {
-    console.error("Error creating CAPA task:", error);
-    return server_1.NextResponse.json({ error: "Failed to create CAPA task" }, { status: 500 });
-}

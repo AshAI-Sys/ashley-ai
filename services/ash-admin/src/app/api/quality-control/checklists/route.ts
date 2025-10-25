@@ -12,10 +12,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const where: any = {};
     if (productType && productType !== "all") {
       where.product_type = productType;
+    }
     if (method && method !== "all") {
       where.method = method;
-
     }
+
     const checklists = await prisma.qCChecklist.findMany({
       where,
       orderBy: { name: "asc" },
@@ -30,7 +31,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to fetch checklists" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -56,4 +58,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-  }
+  });

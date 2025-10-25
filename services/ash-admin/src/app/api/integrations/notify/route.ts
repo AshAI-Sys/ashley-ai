@@ -62,15 +62,14 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.pdf_url
             );
             break;
-          }
-            break;
           default:
             results.whatsapp = false;
-          });
-        } catch (error) {
+        }
+      } catch (error) {
         console.error("WhatsApp error:", error);
         results.whatsapp = false;
       }
+    }
 
     // SMS notifications
     if (channels.includes("sms") && recipients.sms) {
@@ -104,20 +103,18 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.location
             );
             break;
-          }
-            break;
           default:
             results.sms = await smsService.sendCustomAlert(
               recipients.sms,
               data.message,
               data.priority || "medium"
             );
-          }
-          });
-        } catch (error) {
+        }
+      } catch (error) {
         console.error("SMS error:", error);
         results.sms = false;
       }
+    }
 
     // Slack notifications
     if (channels.includes("slack")) {
@@ -154,20 +151,18 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           case "daily.summary":
             results.slack = await slackService.sendDailySummary(data.stats);
             break;
-          }
-            break;
           default:
             results.slack = await slackService.notifyTeam(
               data.title,
               data.message,
               data.channel
             );
-          }
-          });
-        } catch (error) {
+        }
+      } catch (error) {
         console.error("Slack error:", error);
         results.slack = false;
       }
+    }
 
     // Microsoft Teams notifications
     if (channels.includes("teams")) {
@@ -193,15 +188,14 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.description
             );
             break;
-          }
-            break;
           default:
             results.teams = false;
-          });
-        } catch (error) {
+        }
+      } catch (error) {
         console.error("Teams error:", error);
         results.teams = false;
       }
+    }
 
     // Email notifications
     if (channels.includes("email") && recipients.email) {
@@ -258,15 +252,14 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               data.stats
             );
             break;
-          }
-            break;
           default:
             results.email = false;
-          });
-        } catch (error) {
+        }
+      } catch (error) {
         console.error("Email error:", error);
         results.email = false;
       }
+    }
 
     // Webhook notifications
     if (channels.includes("webhook") && data.webhook_subscriptions) {
@@ -282,11 +275,13 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         console.error("Webhook error:", error);
         results.webhook = false;
       }
+    }
 
     return NextResponse.json({
       success: true,
       results,
       message: "Notifications sent",
+    });
   } catch (error: any) {
     console.error("Integration notify error:", error);
     return NextResponse.json(

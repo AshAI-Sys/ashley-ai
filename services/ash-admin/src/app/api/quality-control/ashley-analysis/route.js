@@ -41,45 +41,41 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
         if (!inspection) {
             return server_1.NextResponse.json({ error: "Inspection not found" }, { status: 404 });
         }
+        let ashleyAnalysis = {};
+        switch (analysis_type) {
+            case "defect_trend_analysis":
+                ashleyAnalysis = await performDefectTrendAnalysis(inspection);
+                break;
+            case "root_cause_prediction":
+                ashleyAnalysis = await performRootCausePrediction(inspection);
+                break;
+            case "quality_risk_assessment":
+                ashleyAnalysis = await performQualityRiskAssessment(inspection);
+                break;
+            case "process_control_analysis":
+                ashleyAnalysis = await performProcessControlAnalysis(inspection);
+                break;
+            default:
+                ashleyAnalysis = await performComprehensiveAnalysis(inspection);
+        }
+        // Update inspection with Ashley analysis
+        await db_1.prisma.qCInspection.update({
+            where: { id: inspection_id },
+            data: {
+                ashley_analysis: JSON.stringify(ashleyAnalysis),
+            },
+        });
+        return server_1.NextResponse.json({
+            inspection_id,
+            analysis_type,
+            ashley_analysis: ashleyAnalysis,
+        });
     }
-    finally {
+    catch (error) {
+        console.error("Error in Ashley QC analysis:", error);
+        return server_1.NextResponse.json({ error: "Failed to perform Ashley analysis" }, { status: 500 });
     }
-    let ashleyAnalysis = {};
-    switch (analysis_type) {
-        case "defect_trend_analysis":
-            ashleyAnalysis = await performDefectTrendAnalysis(inspection);
-            break;
-        case "root_cause_prediction":
-            ashleyAnalysis = await performRootCausePrediction(inspection);
-            break;
-        case "quality_risk_assessment":
-            ashleyAnalysis = await performQualityRiskAssessment(inspection);
-            break;
-        case "process_control_analysis":
-            ashleyAnalysis = await performProcessControlAnalysis(inspection);
-            break;
-    }
-    break;
 });
-ashleyAnalysis = await performComprehensiveAnalysis(inspection);
-// Update inspection with Ashley analysis
-await db_1.prisma.qCInspection.update({
-    where: { id: inspection_id },
-    data: {
-        ashley_analysis: JSON.stringify(ashleyAnalysis),
-    },
-});
-return server_1.NextResponse.json({
-    inspection_id,
-    analysis_type,
-    ashley_analysis: ashleyAnalysis,
-});
-try { }
-catch (error) {
-    console.error("Error in Ashley QC analysis:", error);
-    return server_1.NextResponse.json({ error: "Failed to perform Ashley analysis" }, { status: 500 });
-}
-;
 async function performDefectTrendAnalysis(inspection) {
     // Analyze defect patterns over time for this order/production line
     const historicalData = await db_1.prisma.qCInspection.findMany({
@@ -121,108 +117,109 @@ async function performDefectTrendAnalysis(inspection) {
             total_defects: totalDefects,
             defect_rate: (totalDefects / insp.sample_size) * 100,
         });
-        // Calculate trends
-        const currentDefectRate = ((inspection.critical_found +
-            inspection.major_found +
-            inspection.minor_found) /
-            inspection.sample_size) *
-            100;
-        const avgDefectRate = timeSeriesData.reduce((sum, data) => sum + data.defect_rate, 0) /
-            timeSeriesData.length || 0;
-        const trendDirection = currentDefectRate > avgDefectRate * 1.2
-            ? "INCREASING"
-            : currentDefectRate < avgDefectRate * 0.8
-                ? "DECREASING"
-                : "STABLE";
-        return {
-            type: "defect_trend_analysis",
-            current_defect_rate: currentDefectRate,
-            average_defect_rate: avgDefectRate,
-            trend_direction: trendDirection,
-            trend_confidence: Math.min(timeSeriesData.length * 10, 100), // More data = higher confidence
-            defect_categories: defectTrends,
-            time_series: timeSeriesData,
-            recommendations: generateDefectTrendRecommendations(trendDirection, defectTrends),
-        };
-    }, async function performRootCausePrediction(inspection) {
-        const defectPatterns = {};
-        inspection.defects.forEach(defect => {
-            const category = defect.defect_code.category;
-            if (!defectPatterns[category]) {
-                defectPatterns[category] = {
-                    count: 0,
-                    severity_distribution: { CRITICAL: 0, MAJOR: 0, MINOR: 0 },
-                    locations: {},
-                };
+    });
+    // Calculate trends
+    const currentDefectRate = ((inspection.critical_found +
+        inspection.major_found +
+        inspection.minor_found) /
+        inspection.sample_size) *
+        100;
+    const avgDefectRate = timeSeriesData.reduce((sum, data) => sum + data.defect_rate, 0) /
+        timeSeriesData.length || 0;
+    const trendDirection = currentDefectRate > avgDefectRate * 1.2
+        ? "INCREASING"
+        : currentDefectRate < avgDefectRate * 0.8
+            ? "DECREASING"
+            : "STABLE";
+    return {
+        type: "defect_trend_analysis",
+        current_defect_rate: currentDefectRate,
+        average_defect_rate: avgDefectRate,
+        trend_direction: trendDirection,
+        trend_confidence: Math.min(timeSeriesData.length * 10, 100), // More data = higher confidence
+        defect_categories: defectTrends,
+        time_series: timeSeriesData,
+        recommendations: generateDefectTrendRecommendations(trendDirection, defectTrends),
+    };
+}
+async function performRootCausePrediction(inspection) {
+    const defectPatterns = {};
+    inspection.defects.forEach(defect => {
+        const category = defect.defect_code.category;
+        if (!defectPatterns[category]) {
+            defectPatterns[category] = {
+                count: 0,
+                severity_distribution: { CRITICAL: 0, MAJOR: 0, MINOR: 0 },
+                locations: {},
+            };
+        }
+        defectPatterns[category].count += defect.quantity;
+        defectPatterns[category].severity_distribution[defect.severity] +=
+            defect.quantity;
+        if (defect.location) {
+            if (!defectPatterns[category].locations[defect.location]) {
+                defectPatterns[category].locations[defect.location] = 0;
             }
-            defectPatterns[category].count += defect.quantity;
-            defectPatterns[category].severity_distribution[defect.severity] +=
-                defect.quantity;
-            if (defect.location) {
-                if (!defectPatterns[category].locations[defect.location]) {
-                    defectPatterns[category].locations[defect.location] = 0;
-                }
-                defectPatterns[category].locations[defect.location] += defect.quantity;
-            }
-        });
-        // Root cause prediction logic based on defect patterns
-        const rootCausePredictions = [];
-        for (const [category, pattern] of Object.entries(defectPatterns)) {
-            let likelyRootCause = "Unknown";
-            let confidence = 0;
-            let preventiveActions = [];
-            switch (category) {
-                case "PRINTING":
-                    if (pattern?.severity_distribution?.CRITICAL > 0) {
-                        likelyRootCause = "Ink viscosity or screen registration issue";
-                        confidence = 85;
-                        preventiveActions = [
-                            "Check ink viscosity and adjust if needed",
-                            "Verify screen registration accuracy",
-                            "Inspect squeegee condition",
-                        ];
-                    }
-                    else if (pattern?.severity_distribution?.MAJOR >
-                        pattern?.severity_distribution?.MINOR) {
-                        likelyRootCause = "Print pressure or speed settings";
-                        confidence = 70;
-                        preventiveActions = [
-                            "Adjust print pressure settings",
-                            "Review print speed parameters",
-                            "Check substrate preparation",
-                        ];
-                    }
-                    break;
-                case "SEWING":
-                    if (Object.keys(pattern?.locations || {}).length > 3) {
-                        likelyRootCause = "Machine calibration or operator training issue";
-                        confidence = 80;
-                        preventiveActions = [
-                            "Recalibrate sewing machine",
-                            "Provide additional operator training",
-                            "Review thread tension settings",
-                        ];
-                    }
-                    break;
-                case "FABRIC":
-                    likelyRootCause = "Material quality or storage conditions";
-                    confidence = 75;
-                    preventiveActions = [
-                        "Review fabric supplier quality",
-                        "Check fabric storage conditions",
-                        "Inspect incoming fabric batches",
-                    ];
-                    break;
-            }
-            rootCausePredictions.push({
-                defect_category: category,
-                predicted_root_cause: likelyRootCause,
-                confidence_score: confidence,
-                preventive_actions: preventiveActions,
-                defect_pattern: pattern,
-            });
+            defectPatterns[category].locations[defect.location] += defect.quantity;
         }
     });
+    // Root cause prediction logic based on defect patterns
+    const rootCausePredictions = [];
+    for (const [category, pattern] of Object.entries(defectPatterns)) {
+        let likelyRootCause = "Unknown";
+        let confidence = 0;
+        let preventiveActions = [];
+        switch (category) {
+            case "PRINTING":
+                if (pattern?.severity_distribution?.CRITICAL > 0) {
+                    likelyRootCause = "Ink viscosity or screen registration issue";
+                    confidence = 85;
+                    preventiveActions = [
+                        "Check ink viscosity and adjust if needed",
+                        "Verify screen registration accuracy",
+                        "Inspect squeegee condition",
+                    ];
+                }
+                else if (pattern?.severity_distribution?.MAJOR >
+                    pattern?.severity_distribution?.MINOR) {
+                    likelyRootCause = "Print pressure or speed settings";
+                    confidence = 70;
+                    preventiveActions = [
+                        "Adjust print pressure settings",
+                        "Review print speed parameters",
+                        "Check substrate preparation",
+                    ];
+                }
+                break;
+            case "SEWING":
+                if (Object.keys(pattern?.locations || {}).length > 3) {
+                    likelyRootCause = "Machine calibration or operator training issue";
+                    confidence = 80;
+                    preventiveActions = [
+                        "Recalibrate sewing machine",
+                        "Provide additional operator training",
+                        "Review thread tension settings",
+                    ];
+                }
+                break;
+            case "FABRIC":
+                likelyRootCause = "Material quality or storage conditions";
+                confidence = 75;
+                preventiveActions = [
+                    "Review fabric supplier quality",
+                    "Check fabric storage conditions",
+                    "Inspect incoming fabric batches",
+                ];
+                break;
+        }
+        rootCausePredictions.push({
+            defect_category: category,
+            predicted_root_cause: likelyRootCause,
+            confidence_score: confidence,
+            preventive_actions: preventiveActions,
+            defect_pattern: pattern,
+        });
+    }
     return {
         type: "root_cause_prediction",
         predictions: rootCausePredictions,
@@ -283,7 +280,6 @@ async function performQualityRiskAssessment(inspection) {
         });
         overallRiskScore += 35;
     }
-    ;
     const riskLevel = overallRiskScore >= 70 ? "HIGH" : overallRiskScore >= 40 ? "MEDIUM" : "LOW";
     return {
         type: "quality_risk_assessment",
@@ -320,34 +316,32 @@ async function performProcessControlAnalysis(inspection) {
         // Calculate control limits for p-chart
         const p = avgDefectRate;
         const n = avgSampleSize;
+        const sigma = Math.sqrt((p * (1 - p)) / n);
+        controlLimits.centerline = p;
+        controlLimits.ucl = p + 3 * sigma;
+        controlLimits.lcl = Math.max(0, p - 3 * sigma);
     }
-    const sigma = Math.sqrt((p * (1 - p)) / n);
-    controlLimits.centerline = p;
-    controlLimits.ucl = p + 3 * sigma;
-    controlLimits.lcl = Math.max(0, p - 3 * sigma);
+    const currentDefectRate = (inspection.critical_found +
+        inspection.major_found +
+        inspection.minor_found) /
+        inspection.sample_size;
+    let controlStatus = "IN_CONTROL";
+    if (currentDefectRate > controlLimits.ucl) {
+        controlStatus = "OUT_OF_CONTROL_HIGH";
+    }
+    else if (currentDefectRate < controlLimits.lcl) {
+        controlStatus = "OUT_OF_CONTROL_LOW";
+    }
+    return {
+        type: "process_control_analysis",
+        control_chart_type: "p-chart",
+        control_limits: controlLimits,
+        current_defect_rate: currentDefectRate,
+        control_status: controlStatus,
+        process_capability: calculateProcessCapability(historicalInspections),
+        recommendations: generateSPCRecommendations(controlStatus, currentDefectRate, controlLimits),
+    };
 }
-;
-const currentDefectRate = (inspection.critical_found +
-    inspection.major_found +
-    inspection.minor_found) /
-    inspection.sample_size;
-let controlStatus = "IN_CONTROL";
-if (currentDefectRate > controlLimits.ucl) {
-    controlStatus = "OUT_OF_CONTROL_HIGH";
-}
-else if (currentDefectRate < controlLimits.lcl) {
-    controlStatus = "OUT_OF_CONTROL_LOW";
-}
-;
-return {
-    type: "process_control_analysis",
-    control_chart_type: "p-chart",
-    control_limits: controlLimits,
-    current_defect_rate: currentDefectRate,
-    control_status: controlStatus,
-    process_capability: calculateProcessCapability(historicalInspections),
-    recommendations: generateSPCRecommendations(controlStatus, currentDefectRate, controlLimits),
-};
 async function performComprehensiveAnalysis(inspection) {
     const [trendAnalysis, rootCauseAnalysis, riskAssessment, spcAnalysis] = await Promise.all([
         performDefectTrendAnalysis(inspection),

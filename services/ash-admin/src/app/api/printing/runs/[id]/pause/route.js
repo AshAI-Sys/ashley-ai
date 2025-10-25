@@ -16,39 +16,36 @@ async function POST(request, { params }) {
         if (!run) {
             return server_1.NextResponse.json({ success: false, error: "Print run not found" }, { status: 404 });
         }
-    }
-    finally {
-    }
-    if (run.status !== "IN_PROGRESS") {
-        return server_1.NextResponse.json({ success: false, error: "Only in-progress runs can be paused" }, { status: 400 });
-    }
-    // Pause the run
-    const updatedRun = await db_1.prisma.printRun.update({
-        where: { id: runId },
-        data: {
-            status: "PAUSED",
-        },
-        include: {
-            order: {
-                include: {
-                    brand: true,
-                },
+        if (run.status !== "IN_PROGRESS") {
+            return server_1.NextResponse.json({ success: false, error: "Only in-progress runs can be paused" }, { status: 400 });
+        }
+        // Pause the run
+        const updatedRun = await db_1.prisma.printRun.update({
+            where: { id: runId },
+            data: {
+                status: "PAUSED",
             },
-            machine: true,
-        },
-    });
-    // Log the pause event
-    await logRunEvent(runId, "PAUSED", reason, notes);
-    return server_1.NextResponse.json({
-        success: true,
-        data: updatedRun,
-        message: "Print run paused successfully",
-    });
-}
-try { }
-catch (error) {
-    console.error("Pause print run error:", error);
-    return server_1.NextResponse.json({ success: false, error: "Failed to pause print run" }, { status: 500 });
+            include: {
+                order: {
+                    include: {
+                        brand: true,
+                    },
+                },
+                machine: true,
+            },
+        });
+        // Log the pause event
+        await logRunEvent(runId, "PAUSED", reason, notes);
+        return server_1.NextResponse.json({
+            success: true,
+            data: updatedRun,
+            message: "Print run paused successfully",
+        });
+    }
+    catch (error) {
+        console.error("Pause print run error:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to pause print run" }, { status: 500 });
+    }
 }
 async function logRunEvent(runId, event, reason, notes) {
     // In a real app, you might have a separate events table

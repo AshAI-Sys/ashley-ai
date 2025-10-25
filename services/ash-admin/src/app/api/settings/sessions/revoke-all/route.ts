@@ -16,4 +16,6 @@ export const POST = requireAuth(async (request: NextRequest, _authUser) => {
       { status: 500 }
     );
   }
-  }
+});
+
+

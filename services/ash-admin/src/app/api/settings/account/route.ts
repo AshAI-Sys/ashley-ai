@@ -82,26 +82,26 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
     // Split name into first and last if provided
     if (name) {
-      
+
       const nameParts = name.split(' ');
       updateData.first_name = nameParts[0] || '';
       updateData.last_name = nameParts.slice(1).join(' ') || '';
-    });
+    }
 
     if (email) {
       updateData.email = email;
-    });
+    }
 
     if (phone !== undefined) {
       updateData.phone_number = phone;
-    });
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: authUser.id },
       data: updateData,
-      
-    
-      return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       user: updatedUser,
       email_verification_required: emailVerificationRequired,
@@ -113,4 +113,4 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-  }
+});

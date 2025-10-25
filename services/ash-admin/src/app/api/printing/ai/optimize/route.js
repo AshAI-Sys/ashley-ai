@@ -231,7 +231,6 @@ function generateRecommendations(method, methodOpt, baseFactors) {
             impact: "cost_reduction",
         });
     }
-    ;
     if (baseFactors.machine_efficiency < 0.8) {
         recommendations.push({
             type: "MAINTENANCE",
@@ -281,7 +280,6 @@ function generateRecommendations(method, methodOpt, baseFactors) {
             }
             break;
     }
-    ;
     return recommendations;
 }
 function calculateConfidenceScore(factors, historicalCount) {

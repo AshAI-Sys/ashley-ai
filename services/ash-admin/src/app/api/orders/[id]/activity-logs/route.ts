@@ -30,18 +30,19 @@ export async function GET(
         created_at: "desc",
       },
       take: limit,
-        
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       data: { activities },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching activity logs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch activity logs" },
       { status: 500 }
     );
+  }
 }
 
 export async function POST(
@@ -96,4 +97,4 @@ export async function POST(
       { status: 500 }
     );
   }
-  });
+}

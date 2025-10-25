@@ -22,8 +22,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         startDate.setMonth(endDate.getMonth() - 3);
         break;
-      }
-        break;
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
@@ -40,7 +38,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       JOIN qc_defect_codes dc ON qd.defect_code_id = dc.id
       JOIN qc_inspections qi ON qd.inspection_id = qi.id
       WHERE qi.inspection_date >= ${startDate}
-        AND qi.inspection_date <= ${endDate});
+        AND qi.inspection_date <= ${endDate}
       GROUP BY dc.id, dc.code, dc.name, dc.category
       ORDER BY total_quantity DESC
     `) as Array<{
@@ -78,6 +76,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         percentage: percentage,
         cumulative_percentage: cumulativePercentage,
       };
+    });
 
     return NextResponse.json(paretoData);
   } catch (error) {
@@ -87,4 +86,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});

@@ -60,14 +60,13 @@ export async function POST(
           select: { sku: true, size_code: true, color: true, serial: true },
         },
       },
+    });
 
     // Update finished unit status
     await prisma.finishedUnit.updateMany({
       where: { id: data.finished_unit_id },
       data: { packed: true },
-        
-      
-        });
+    });
 
     return NextResponse.json(cartonContent, { status: 201 });
   } catch (error) {
@@ -76,6 +75,7 @@ export async function POST(
       { error: "Failed to add content to carton" },
       { status: 500 }
     );
+  }
 }
 
 export async function GET(
@@ -158,5 +158,5 @@ export async function DELETE(
       { error: "Failed to remove content from carton" },
       { status: 500 }
     );
-};
-});
+  }
+}

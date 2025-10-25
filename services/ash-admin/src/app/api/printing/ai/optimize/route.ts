@@ -309,7 +309,7 @@ function generateRecommendations(
       message: "Consider adjusting quantity for optimal batch size",
       impact: "cost_reduction",
     });
-  });
+  }
 
   if (baseFactors.machine_efficiency < 0.8) {
     recommendations.push({
@@ -364,7 +364,7 @@ function generateRecommendations(
         });
       }
       break;
-  });
+  }
 
   return recommendations;
 }

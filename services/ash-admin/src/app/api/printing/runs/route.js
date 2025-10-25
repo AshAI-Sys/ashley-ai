@@ -191,5 +191,4 @@ function getMethodSpecificData(run) {
         default:
             return {};
     }
-    ;
 }

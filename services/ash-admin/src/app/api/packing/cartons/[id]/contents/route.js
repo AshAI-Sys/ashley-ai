@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.POST = POST;
+exports.GET = GET;
+exports.DELETE = DELETE;
 /* eslint-disable */
 const server_1 = require("next/server");
 const db_1 = require("@/lib/db");
@@ -40,76 +42,71 @@ async function POST(request, { params }) {
                     select: { sku: true, size_code: true, color: true, serial: true },
                 },
             },
-            // Update finished unit status
-            await: db_1.prisma.finishedUnit.updateMany({
-                where: { id: data.finished_unit_id },
-                data: { packed: true },
-            }),
-            return: server_1.NextResponse.json(cartonContent, { status: 201 })
         });
-        try { }
-        catch (error) {
-            console.error("Error adding content to carton:", error);
-            return server_1.NextResponse.json({ error: "Failed to add content to carton" }, { status: 500 });
-        }
-        export async function GET(request, { params }) {
-            try {
-                const contents = await db_1.prisma.cartonContent.findMany({
-                    where: { carton_id: params.id },
-                    include: {
-                        finished_unit: {
-                            select: {
-                                sku: true,
-                                size_code: true,
-                                color: true,
-                                serial: true,
-                                order: { select: { order_number: true } },
-                            },
-                        },
-                    },
-                    orderBy: { created_at: "asc" },
-                });
-                return server_1.NextResponse.json(contents);
-            }
-            catch (error) {
-                console.error("Error fetching carton contents:", error);
-                return server_1.NextResponse.json({ error: "Failed to fetch carton contents" }, { status: 500 });
-            }
-        }
-        export async function DELETE(request, { params }) {
-            try {
-                const { searchParams } = new URL(request.url);
-                const contentId = searchParams.get("content_id");
-                if (!contentId) {
-                    return server_1.NextResponse.json({ error: "content_id is required" }, { status: 400 });
-                }
-                // Get content details before deletion
-                const content = await db_1.prisma.cartonContent.findUnique({
-                    where: { id: contentId },
-                    include: { finished_unit: true },
-                });
-                if (!content) {
-                    return server_1.NextResponse.json({ error: "Content not found" }, { status: 404 });
-                }
-                // Remove content from carton
-                await db_1.prisma.cartonContent.delete({
-                    where: { id: contentId },
-                });
-                // Update finished unit status back to FINISHED
-                await db_1.prisma.finishedUnit.update({
-                    where: { id: content.finished_unit_id },
-                    data: { packed: false },
-                });
-                return server_1.NextResponse.json({ message: "Content removed from carton" });
-            }
-            catch (error) {
-                console.error("Error removing content from carton:", error);
-                return server_1.NextResponse.json({ error: "Failed to remove content from carton" }, { status: 500 });
-            }
-            ;
-        }
-        ;
+        // Update finished unit status
+        await db_1.prisma.finishedUnit.updateMany({
+            where: { id: data.finished_unit_id },
+            data: { packed: true },
+        });
+        return server_1.NextResponse.json(cartonContent, { status: 201 });
     }
-    finally {
+    catch (error) {
+        console.error("Error adding content to carton:", error);
+        return server_1.NextResponse.json({ error: "Failed to add content to carton" }, { status: 500 });
+    }
+}
+async function GET(request, { params }) {
+    try {
+        const contents = await db_1.prisma.cartonContent.findMany({
+            where: { carton_id: params.id },
+            include: {
+                finished_unit: {
+                    select: {
+                        sku: true,
+                        size_code: true,
+                        color: true,
+                        serial: true,
+                        order: { select: { order_number: true } },
+                    },
+                },
+            },
+            orderBy: { created_at: "asc" },
+        });
+        return server_1.NextResponse.json(contents);
+    }
+    catch (error) {
+        console.error("Error fetching carton contents:", error);
+        return server_1.NextResponse.json({ error: "Failed to fetch carton contents" }, { status: 500 });
+    }
+}
+async function DELETE(request, { params }) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const contentId = searchParams.get("content_id");
+        if (!contentId) {
+            return server_1.NextResponse.json({ error: "content_id is required" }, { status: 400 });
+        }
+        // Get content details before deletion
+        const content = await db_1.prisma.cartonContent.findUnique({
+            where: { id: contentId },
+            include: { finished_unit: true },
+        });
+        if (!content) {
+            return server_1.NextResponse.json({ error: "Content not found" }, { status: 404 });
+        }
+        // Remove content from carton
+        await db_1.prisma.cartonContent.delete({
+            where: { id: contentId },
+        });
+        // Update finished unit status back to FINISHED
+        await db_1.prisma.finishedUnit.update({
+            where: { id: content.finished_unit_id },
+            data: { packed: false },
+        });
+        return server_1.NextResponse.json({ message: "Content removed from carton" });
+    }
+    catch (error) {
+        console.error("Error removing content from carton:", error);
+        return server_1.NextResponse.json({ error: "Failed to remove content from carton" }, { status: 500 });
     }
 }

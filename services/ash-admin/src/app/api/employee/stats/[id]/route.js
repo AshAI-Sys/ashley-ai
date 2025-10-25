@@ -106,14 +106,14 @@ exports.GET = (0, error_handling_1.withErrorHandling)(async (request, { params }
             const passedInspections = recentInspections.filter(check => check.result === "PASSED").length;
             qualityScore = Math.round((passedInspections / recentInspections.length) * 100);
         }
-        const stats = {
-            total_pieces: totalPieces,
-            today_pieces: todayPieces,
-            week_pieces: weekPieces,
-            efficiency_rate: efficiencyRate,
-            quality_score: qualityScore,
-            tasks_completed: tasksCompleted,
-        };
-        return (0, error_handling_1.createSuccessResponse)(stats);
     }
+    const stats = {
+        total_pieces: totalPieces,
+        today_pieces: todayPieces,
+        week_pieces: weekPieces,
+        efficiency_rate: efficiencyRate,
+        quality_score: qualityScore,
+        tasks_completed: tasksCompleted,
+    };
+    return (0, error_handling_1.createSuccessResponse)(stats);
 });

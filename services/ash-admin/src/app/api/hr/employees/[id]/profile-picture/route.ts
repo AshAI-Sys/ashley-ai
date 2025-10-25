@@ -197,4 +197,5 @@ export async function DELETE(
         { status: 500 }
       );
     }
-});
+  })(request, user);
+}

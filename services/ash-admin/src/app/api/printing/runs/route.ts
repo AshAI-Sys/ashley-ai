@@ -190,7 +190,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-})
+});
 
 function getMethodSpecificData(run: any) {
   switch (run.method) {
@@ -216,4 +216,5 @@ function getMethodSpecificData(run: any) {
       };
     default:
       return {};
-});
+  }
+}

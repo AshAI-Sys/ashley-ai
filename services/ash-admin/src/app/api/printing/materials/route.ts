@@ -15,17 +15,20 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Filter by material type if provided
     if (type) {
       where.material_type = type;
+    }
 
     // Search by name if provided
-    }
     if (search) {
       where.OR = [
         { material_name: { contains: search, mode: "insensitive" } },
         { supplier: { contains: search, mode: "insensitive" } },
-      ];const}const$3 materials = await prisma.materialInventory.findMany({
+      ];
+    }
+
+    const materials = await prisma.materialInventory.findMany({
       where,
-      orderBy: [{ material_type: "asc" }, { material_name: "asc" });],
-      });
+      orderBy: [{ material_type: "asc" }, { material_name: "asc" }],
+    });
 
     // Transform data for frontend
     const transformedMaterials = materials.map(material => ({
@@ -53,10 +56,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to fetch materials" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const POST = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { run_id, materials } = body;
@@ -69,7 +72,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Process material consumption in transaction
-    const result = await prisma.$transaction(async tx => {;
+    const result = await prisma.$transaction(async tx => {
       const consumptionRecords = [];
 
       for (const material of materials) {
@@ -78,11 +81,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         // Check if material exists and has sufficient stock
         const materialRecord = await tx.materialInventory.findUnique({
           where: { id: material_id },
-      });
+        });
 
         if (!materialRecord) {
           throw new Error(`Material ${material_id} not found`);
-    });
+        }
 
         if (materialRecord.available_stock < quantity) {
           throw new Error(
@@ -126,17 +129,19 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             notes: notes || `Material consumption for print run ${run_id}`,
             created_by: "system", // Should come from auth
           },
-        }
+        });
 
         consumptionRecords.push(consumptionRecord);
-    });
+      }
 
       return consumptionRecords;
+    });
 
     return NextResponse.json({
       success: true,
       data: result,
       message: `${materials.length} material(s) consumed and inventory updated`,
+    });
   } catch (error) {
     console.error("Material consumption error:", error);
     return NextResponse.json(
@@ -150,6 +155,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // Get material types for filtering
 export async function OPTIONS(request: NextRequest) {
@@ -166,6 +172,7 @@ export async function OPTIONS(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: types,
+    });
   } catch (error) {
     console.error("Material types API error:", error);
     return NextResponse.json(
@@ -173,4 +180,4 @@ export async function OPTIONS(request: NextRequest) {
       { status: 500 }
     );
   }
-  }
+}

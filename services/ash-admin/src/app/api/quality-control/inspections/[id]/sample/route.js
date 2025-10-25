@@ -28,5 +28,5 @@ async function POST(request, { params }) {
         console.error("Error creating sample:", error);
         return server_1.NextResponse.json({ error: "Failed to create sample" }, { status: 500 });
     }
-    ;
 }
+;

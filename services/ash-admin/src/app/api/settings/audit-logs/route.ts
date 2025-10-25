@@ -9,10 +9,9 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const dynamic = "force-dynamic";
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
-  return requireAuth(async (request: NextRequest, user) => {
-    try {
-      // Return mock audit logs;
-      const logs = [
+  try {
+    // Return mock audit logs
+    const logs = [
         {
           id: "1",
           user_email: "admin@ashleyai.com",
@@ -82,4 +81,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { status: 500 }
       );
     }
-    }
+  });

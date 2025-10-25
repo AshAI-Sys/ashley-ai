@@ -224,4 +224,3 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
         return server_1.NextResponse.json({ success: false, error: "Failed to fetch maintenance statistics" }, { status: 500 });
     }
 });
-;

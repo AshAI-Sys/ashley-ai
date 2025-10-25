@@ -55,7 +55,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-})
+});
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
@@ -91,7 +91,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-})
+});
 
 async function generateRealTimeInsights(printRun: any) {
   const insights = {
@@ -117,7 +117,7 @@ function calculateMaterialUtilization(printRun: any) {
       cost_efficiency: 0,
       total_cost: 0,
     };
-  });
+  }
 
   let totalPlanned = 0;
   let totalUsed = 0;
@@ -153,9 +153,9 @@ function analyzeQualityTrend(printRun: any) {
   const _rejects = printRun.rejects || [];
 
   if (outputs.length === 0) {
-    
+
     return { trend: "unknown", score: 0, confidence: 0, defect_rate: 0 };
-  });
+  }
 
   const totalGood = outputs.reduce(
     (sum: number, o: any) => sum + (o.qty_good || 0),
@@ -189,9 +189,9 @@ function calculateEfficiencyScore(printRun: any) {
   const currentTime = new Date();
 
   if (!startTime) {
-    
+
     return { score: 0, factors: { time: 0, quality: 0, material: 0 } };
-  });
+  }
 
   const elapsedHours =
     (currentTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
@@ -259,9 +259,9 @@ function predictCompletionTime(printRun: any) {
   const startTime = printRun.started_at ? new Date(printRun.started_at) : null;
 
   if (!startTime) {
-    
+
     return { estimated_completion: null, remaining_minutes: 0, confidence: 0 };
-  });
+  }
 
   const elapsedMinutes =
     (new Date().getTime() - startTime.getTime()) / (1000 * 60);
@@ -336,7 +336,7 @@ function identifyRiskFactors(printRun: any) {
       description: `Low profit margin: ${Math.round(costTracking.profit_margin * 100)}%`,
       recommendation: "Review pricing or optimize costs",
     });
-  });
+  }
 
   return risks;
 }
@@ -389,7 +389,9 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
         action: risk.recommendation,
       });
     }
-    return recommendations;
+  });
+
+  return recommendations;
 }
 
 function calculatePerformanceScore(printRun: any, insights: any) {
@@ -502,7 +504,7 @@ async function processMonitoringData(runId: string, data: any) {
         severity: "MEDIUM",
         message: `Temperature out of optimal range: ${temperature}°C`,
       });
-    });
+    }
 
     if (humidity && (humidity < 40 || humidity > 70)) {
       analysis.alerts.push({
@@ -546,5 +548,7 @@ async function processMonitoringData(runId: string, data: any) {
         message: "Immediate quality intervention required",
       });
     }
+  }
+
   return analysis;
 }

@@ -71,7 +71,8 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                         vat_amount: vat.vat,
                         total_amount: exp.amount,
                     };
-                }, report = await bir_1.birService.generatePurchaseBook(purchaseEntries, period));
+                });
+                report = await bir_1.birService.generatePurchaseBook(purchaseEntries, period);
                 break;
             case "FORM_2307":
                 if (!data || !data.payor || !data.payee || !data.withholding_entries) {
@@ -87,26 +88,23 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                     total_tax_withheld: 0, // Will be calculated
                 });
                 break;
+            default:
+                return server_1.NextResponse.json({
+                    error: "Invalid report_type. Must be SALES_BOOK, PURCHASE_BOOK, or FORM_2307",
+                }, { status: 400 });
         }
-        break;
+        return server_1.NextResponse.json({
+            success: true,
+            report_type,
+            period,
+            report,
+        });
     }
-    finally {
+    catch (error) {
+        console.error("Error generating BIR report:", error);
+        return server_1.NextResponse.json({ error: "Failed to generate BIR report", details: error.message }, { status: 500 });
     }
 });
-return server_1.NextResponse.json({
-    error: "Invalid report_type. Must be SALES_BOOK, PURCHASE_BOOK, or FORM_2307",
-}, { status: 400 });
-return server_1.NextResponse.json({
-    success: true,
-    report_type,
-    period,
-    report,
-});
-try { }
-catch (error) {
-    console.error("Error generating BIR report:", error);
-    return server_1.NextResponse.json({ error: "Failed to generate BIR report", details: error.message }, { status: 500 });
-}
 // GET /api/government/bir - Calculate VAT or withholding tax
 exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
@@ -144,19 +142,15 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user) => {
                     formatted: bir_1.birService.formatTIN(tin),
                 };
                 break;
+            default:
+                return server_1.NextResponse.json({
+                    error: "Invalid operation. Must be calculate_vat, add_vat, withholding, or validate_tin",
+                }, { status: 400 });
         }
-        break;
+        return server_1.NextResponse.json({ success: true, operation, result });
     }
-    finally {
+    catch (error) {
+        console.error("Error in BIR calculation:", error);
+        return server_1.NextResponse.json({ error: "Failed to perform BIR calculation", details: error.message }, { status: 500 });
     }
 });
-return server_1.NextResponse.json({
-    error: "Invalid operation. Must be calculate_vat, add_vat, withholding, or validate_tin",
-}, { status: 400 });
-return server_1.NextResponse.json({ success: true, operation, result });
-try { }
-catch (error) {
-    console.error("Error in BIR calculation:", error);
-    return server_1.NextResponse.json({ error: "Failed to perform BIR calculation", details: error.message }, { status: 500 });
-}
-;

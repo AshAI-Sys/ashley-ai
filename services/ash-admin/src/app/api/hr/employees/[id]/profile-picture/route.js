@@ -63,44 +63,39 @@ async function POST(request, { params }) {
             if (employee.profile_picture) {
                 try {
                     const oldFilepath = (0, path_1.join)(process.cwd(), "public", employee.profile_picture);
+                    if ((0, fs_1.existsSync)(oldFilepath)) {
+                        await (0, promises_1.unlink)(oldFilepath);
+                    }
                 }
-                finally {
-                }
-                if ((0, fs_1.existsSync)(oldFilepath)) {
-                    await (0, promises_1.unlink)(oldFilepath);
+                catch (error) {
+                    console.error("Error deleting old profile picture:", error);
                 }
             }
+            // Update employee with new profile picture URL
+            const profilePictureUrl = `/uploads/employees/${filename}`;
+            const updatedEmployee = await prisma.employee.update({
+                where: { id },
+                data: {
+                    profile_picture: profilePictureUrl,
+                    updated_at: new Date(),
+                },
+            });
+            return server_1.NextResponse.json({
+                success: true,
+                profile_picture: profilePictureUrl,
+                employee: {
+                    id: updatedEmployee.id,
+                    first_name: updatedEmployee.first_name,
+                    last_name: updatedEmployee.last_name,
+                    profile_picture: updatedEmployee.profile_picture,
+                },
+            });
         }
-        finally { }
-    });
-}
-try { }
-catch (error) {
-    console.error("Error deleting old profile picture:", error);
-}
-// Update employee with new profile picture URL
-const profilePictureUrl = `/uploads/employees/${filename}`;
-const updatedEmployee = await prisma.employee.update({
-    where: { id },
-    data: {
-        profile_picture: profilePictureUrl,
-        updated_at: new Date(),
-    },
-});
-return server_1.NextResponse.json({
-    success: true,
-    profile_picture: profilePictureUrl,
-    employee: {
-        id: updatedEmployee.id,
-        first_name: updatedEmployee.first_name,
-        last_name: updatedEmployee.last_name,
-        profile_picture: updatedEmployee.profile_picture,
-    },
-});
-try { }
-catch (error) {
-    console.error("Error uploading employee profile picture:", error);
-    return server_1.NextResponse.json({ error: "Failed to upload profile picture" }, { status: 500 });
+        catch (error) {
+            console.error("Error uploading employee profile picture:", error);
+            return server_1.NextResponse.json({ error: "Failed to upload profile picture" }, { status: 500 });
+        }
+    })(request, user);
 }
 // DELETE - Remove employee profile picture
 async function DELETE(request, { params }) {
@@ -117,38 +112,35 @@ async function DELETE(request, { params }) {
             if (!employee) {
                 return server_1.NextResponse.json({ error: "Employee not found" }, { status: 404 });
             }
-        }
-        finally {
-        }
-        if (!employee.profile_picture) {
-            return server_1.NextResponse.json({ error: "No profile picture to delete" }, { status: 400 });
-        }
-        // Delete file from filesystem
-        try {
-            const filepath = (0, path_1.join)(process.cwd(), "public", employee.profile_picture);
-            if ((0, fs_1.existsSync)(filepath)) {
-                await (0, promises_1.unlink)(filepath);
+            if (!employee.profile_picture) {
+                return server_1.NextResponse.json({ error: "No profile picture to delete" }, { status: 400 });
             }
+            // Delete file from filesystem
+            try {
+                const filepath = (0, path_1.join)(process.cwd(), "public", employee.profile_picture);
+                if ((0, fs_1.existsSync)(filepath)) {
+                    await (0, promises_1.unlink)(filepath);
+                }
+            }
+            catch (error) {
+                console.error("Error deleting profile picture file:", error);
+            }
+            // Update employee to remove profile picture
+            await prisma.employee.update({
+                where: { id },
+                data: {
+                    profile_picture: null,
+                    updated_at: new Date(),
+                },
+            });
+            return server_1.NextResponse.json({
+                success: true,
+                message: "Profile picture deleted successfully",
+            });
         }
-        finally { }
-    });
+        catch (error) {
+            console.error("Error deleting employee profile picture:", error);
+            return server_1.NextResponse.json({ error: "Failed to delete profile picture" }, { status: 500 });
+        }
+    })(request, user);
 }
-try { }
-catch (error) {
-    console.error("Error deleting profile picture file:", error);
-}
-// Update employee to remove profile picture
-await prisma.employee.update({
-    where: { id },
-    data: {
-        profile_picture: null,
-        updated_at: new Date(),
-    },
-    return: server_1.NextResponse.json({
-        success: true,
-        message: "Profile picture deleted successfully",
-    }), catch(error) {
-        console.error("Error deleting employee profile picture:", error);
-        return server_1.NextResponse.json({ error: "Failed to delete profile picture" }, { status: 500 });
-    }
-});

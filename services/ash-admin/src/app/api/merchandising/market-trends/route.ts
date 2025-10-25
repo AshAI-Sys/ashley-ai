@@ -116,12 +116,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         { status: 403 }
       );
     }
-    }
 
     if (generateTrends) {
       // Generate AI-powered market trends based on current data and external factors
       const trends = await generateMarketTrends(workspaceId);
-      }
       return NextResponse.json({ trends, count: trends.length });
     } else {
       // Create a single custom trend with validation
@@ -136,12 +134,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           workspace_id: workspaceId,
           ...validation.sanitizedData,
         },
-        
-      
-        });
+      });
 
-    return NextResponse.json({ trend });
-    } catch (error) {
+      return NextResponse.json({ trend });
+    }
+  } catch (error) {
     console.error("Market trend creation error:", error);
     return NextResponse.json(
       {
@@ -189,6 +186,7 @@ async function generateMarketTrends(workspaceId: string) {
     } catch (error) {
       // console.error('Error saving trend:', error)
     }
+  }
   return savedTrends;
 }
 
@@ -334,8 +332,9 @@ function getColorTrends(workspaceId: string) {
       }),
       opportunity_score: colorTrend.impact,
     });
-  
-    return trends;
+  });
+
+  return trends;
 }
 
 function getStyleTrends(workspaceId: string) {
@@ -409,8 +408,9 @@ function getStyleTrends(workspaceId: string) {
       }),
       opportunity_score: styleTrend.impact,
     });
-  
-    return trends;
+  });
+
+  return trends;
 }
 
 function getSustainabilityTrends(workspaceId: string) {

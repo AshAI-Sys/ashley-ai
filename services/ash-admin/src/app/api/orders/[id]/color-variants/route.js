@@ -40,7 +40,7 @@ async function GET(request, { params }) {
         return server_1.NextResponse.json({ success: false, error: "Failed to fetch color variants" }, { status: 500 });
     }
 }
-async function POST(request, { params: _params }, { id: string }) {
+async function POST(request, { params }) {
     try {
         const body = await request.json();
         const validatedData = ColorVariantSchema.parse(body);
@@ -71,7 +71,7 @@ async function POST(request, { params: _params }, { id: string }) {
         return server_1.NextResponse.json({ success: false, error: "Failed to create color variant" }, { status: 500 });
     }
 }
-async function DELETE(request, { params: _params }, { id: string }) {
+async function DELETE(request, { params }) {
     try {
         const { searchParams } = new URL(request.url);
         const variantId = searchParams.get("variantId");
@@ -82,14 +82,14 @@ async function DELETE(request, { params: _params }, { id: string }) {
             where: {
                 id: variantId,
             },
-            return: server_1.NextResponse.json({
-                success: true,
-                message: "Color variant deleted successfully",
-            }), catch(error) {
-                console.error("Error deleting color variant:", error);
-                return server_1.NextResponse.json({ success: false, error: "Failed to delete color variant" }, { status: 500 });
-            }
+        });
+        return server_1.NextResponse.json({
+            success: true,
+            message: "Color variant deleted successfully",
         });
     }
-    finally { }
+    catch (error) {
+        console.error("Error deleting color variant:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to delete color variant" }, { status: 500 });
+    }
 }

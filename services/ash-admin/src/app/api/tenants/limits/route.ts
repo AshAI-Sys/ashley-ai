@@ -33,13 +33,11 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         `User limit almost reached (${limits.users.current}/${limits.users.max})`
       );
     }
-    }
 
     if (ordersPercent >= 90) {
       warnings.push(
         `Monthly order limit almost reached (${limits.orders.current_month}/${limits.orders.max})`
       );
-    }
     }
 
     if (storagePercent >= 90) {
@@ -57,6 +55,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       },
       warnings,
       needs_upgrade: warnings.length > 0,
+    });
   } catch (error: any) {
     console.error("Check limits error:", error);
     return NextResponse.json(
@@ -65,4 +64,3 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     );
   }
   });
-});

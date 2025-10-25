@@ -60,6 +60,7 @@ export const GET = requireAuth(async (
           },
         },
       },
+    });
 
     if (!run) {
       
@@ -91,16 +92,17 @@ export const GET = requireAuth(async (
     return NextResponse.json({
       success: true,
       data: transformedRun,
+    });
   } catch (error) {
     console.error("Get print run error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch print run" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const PATCH = requireAuth(async (
+  }
+});
+
+export const PATCH = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
@@ -114,13 +116,13 @@ export const GET = requireAuth(async (
     const updateData: any = {};
     if (status) {
       updateData.status = status;
-      }
-      if (status === "IN_PROGRESS" && !(await getRunStartTime(runId))) {
-        updateData.started_at = new Date();
     }
-      if (status === "DONE") {
-        updateData.ended_at = new Date();
-      });
+    if (status === "IN_PROGRESS" && !(await getRunStartTime(runId))) {
+      updateData.started_at = new Date();
+    }
+    if (status === "DONE") {
+      updateData.ended_at = new Date();
+    }
 
     const updatedRun = await prisma.printRun.update({
       where: { id: runId },
@@ -171,7 +173,8 @@ export const GET = requireAuth(async (
             qty_reject: qty_reject || 0,
             notes: notes || null,
           },
-        }
+        });
+      }
 
       // Create reject records if any
       if (qty_reject > 0 && reject_reasons) {
@@ -190,9 +193,12 @@ export const GET = requireAuth(async (
           )
         );
       }
-      return NextResponse.json({
+    }
+
+    return NextResponse.json({
       success: true,
       data: updatedRun,
+    });
   } catch (error) {
     console.error("Update print run error:", error);
     return NextResponse.json(
@@ -200,12 +206,13 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-}
+});
 
 async function getRunStartTime(runId: string) {
   const run = await prisma.printRun.findUnique({
     where: { id: runId },
     select: { started_at: true },
+  });
   return run?.started_at;
 }
 
@@ -251,5 +258,5 @@ function getMethodDetails(run: any) {
       };
     default:
       return { type: "unknown" };
-});
-});
+  }
+}

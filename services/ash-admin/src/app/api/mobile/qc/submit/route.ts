@@ -61,6 +61,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         created_at: new Date(),
         updated_at: new Date(),
       },
+    });
 
     // Create defect records
     if (defects && defects.length > 0) {
@@ -90,7 +91,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         status: aqlResult === "PASS" ? "QC_PASSED" : "QC_FAILED",
         updated_at: new Date(),
       },
-      });
+    });
 
     // Create CAPA task if failed
     if (aqlResult === "FAIL") {
@@ -117,7 +118,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         })
         .catch(() => {
           console.log("CAPA task creation skipped");
-        
+        });
+    }
 
     return NextResponse.json({
       success: true,
@@ -127,6 +129,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         defect_rate: defectRate,
       },
       message: `Inspection ${aqlResult === "PASS" ? "passed" : "failed"} - ${defectRate.toFixed(2)}% defect rate`,
+    });
   } catch (error: any) {
     console.error("QC submission error:", error);
     return NextResponse.json(

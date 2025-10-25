@@ -163,6 +163,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           { success: false, error: "Invalid attendance action" },
           { status: 400 }
         );
+      }
     } else {
       // Create new attendance record
       attendanceLog = await prisma.attendanceLog.create({
@@ -194,10 +195,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
               department: true,
             },
           },
-            });
-          
-        
-        return NextResponse.json(
+        },
+      });
+    }
+
+    return NextResponse.json(
       {
         success: true,
         data: {
@@ -218,17 +220,16 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       },
       { status: 201 }
     );
-  
   } catch (error) {
     console.error("Error creating attendance log:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create attendance log" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const PUT = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const { id, approved, approver_notes } = data;
@@ -257,11 +258,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       success: true,
       data: attendanceLog,
       });
-    } catch (error) {
+  } catch (error) {
     console.error("Error updating attendance log:", error);
     return NextResponse.json(
       { success: false, error: "Failed to update attendance log" },
       { status: 500 }
     );
   }
-  }
+});

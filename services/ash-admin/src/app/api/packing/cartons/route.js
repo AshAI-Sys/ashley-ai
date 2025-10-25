@@ -53,22 +53,20 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 fill_percent: carton.fill_percent || 0,
                 units_count: unitsCount,
             };
-            return server_1.NextResponse.json({
-                cartons: processedCartons,
-                pagination: {
-                    page,
-                    limit,
-                    total: await db_1.prisma.carton.count({ where }),
-                },
-            });
         });
-        try { }
-        catch (error) {
-            console.error("Error fetching cartons:", error);
-            return server_1.NextResponse.json({ error: "Failed to fetch cartons" }, { status: 500 });
-        }
+        return server_1.NextResponse.json({
+            cartons: processedCartons,
+            pagination: {
+                page,
+                limit,
+                total: await db_1.prisma.carton.count({ where }),
+            },
+        });
     }
-    finally { }
+    catch (error) {
+        console.error("Error fetching cartons:", error);
+        return server_1.NextResponse.json({ error: "Failed to fetch cartons" }, { status: 500 });
+    }
 });
 exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
     try {

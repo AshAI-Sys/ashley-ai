@@ -65,12 +65,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: operations,
+    });
   } catch (error) {
     console.error("Error fetching sewing operations:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch sewing operations" },
       { status: 500 }
     );
-  }
   }
 });

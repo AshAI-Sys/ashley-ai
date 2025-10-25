@@ -21,4 +21,4 @@ export const DELETE = requireAuth(async (
       { status: 500 }
     );
   }
-  }
+});

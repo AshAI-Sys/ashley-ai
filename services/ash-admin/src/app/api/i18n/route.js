@@ -43,13 +43,11 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
             default:
                 return server_1.NextResponse.json({ error: "Invalid action" }, { status: 400 });
         }
-        try { }
-        catch (error) {
-            console.error("i18n API error:", error);
-            return server_1.NextResponse.json({ error: "Failed to process request", details: error.message }, { status: 500 });
-        }
     }
-    finally { }
+    catch (error) {
+        console.error("i18n API error:", error);
+        return server_1.NextResponse.json({ error: "Failed to process request", details: error.message }, { status: 500 });
+    }
 });
 // POST /api/i18n/convert - Convert currency
 exports.POST = (0, auth_middleware_1.requireAuth)(async (req, _user) => {

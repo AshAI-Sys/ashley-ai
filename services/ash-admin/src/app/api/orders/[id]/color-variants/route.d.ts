@@ -12,10 +12,10 @@ export declare function GET(request: NextRequest, { params }: {
     success: boolean;
     error: string;
 }>>;
-export declare function POST(request: NextRequest, { params: _params }: {
-    params: _params;
-}, { id: string }: {
-    id: any;
+export declare function POST(request: NextRequest, { params }: {
+    params: {
+        id: string;
+    };
 }): Promise<NextResponse<{
     success: boolean;
     data: {
@@ -26,11 +26,14 @@ export declare function POST(request: NextRequest, { params: _params }: {
     success: boolean;
     error: string;
 }>>;
-export declare function DELETE(request: NextRequest, { params: _params }: {
-    params: _params;
-}, { id: string }: {
-    id: any;
+export declare function DELETE(request: NextRequest, { params }: {
+    params: {
+        id: string;
+    };
 }): Promise<NextResponse<{
     success: boolean;
     error: string;
+}> | NextResponse<{
+    success: boolean;
+    message: string;
 }>>;

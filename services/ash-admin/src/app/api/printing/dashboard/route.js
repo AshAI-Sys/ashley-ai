@@ -83,45 +83,44 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 outputs: true,
                 rejects: true,
             },
-            const: totalProduced = completedToday.reduce((sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0), 0),
-            const: totalRejects = completedToday.reduce((sum, run) => sum + run.rejects.reduce((s, r) => s + r.qty, 0), 0),
-            const: qualityRate =
-                totalProduced > 0
-                    ? (((totalProduced - totalRejects) / totalProduced) * 100).toFixed(1)
-                    : "0",
-            const: dashboard = {
-                active_runs: activeRuns,
-                todays_runs: todayRuns,
-                quality_rate: parseFloat(qualityRate),
-                total_produced: totalProduced,
-                method_breakdown: methodBreakdown,
-                recent_rejects: recentRejects.map(reject => ({
-                    id: reject.id,
-                    reason: reject.reason_code,
-                    qty_rejected: reject.qty,
-                    run: {
-                        method: reject.run.method,
-                        order: {
-                            order_number: reject.run.order.order_number,
-                        },
+        });
+        const totalProduced = completedToday.reduce((sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0), 0);
+        const totalRejects = completedToday.reduce((sum, run) => sum + run.rejects.reduce((s, r) => s + r.qty, 0), 0);
+        const qualityRate = totalProduced > 0
+            ? (((totalProduced - totalRejects) / totalProduced) * 100).toFixed(1)
+            : "0";
+        const dashboard = {
+            active_runs: activeRuns,
+            todays_runs: todayRuns,
+            quality_rate: parseFloat(qualityRate),
+            total_produced: totalProduced,
+            method_breakdown: methodBreakdown,
+            recent_rejects: recentRejects.map(reject => ({
+                id: reject.id,
+                reason: reject.reason_code,
+                qty_rejected: reject.qty,
+                run: {
+                    method: reject.run.method,
+                    order: {
+                        order_number: reject.run.order.order_number,
                     },
-                })),
-                machine_utilization: machineUtilization.map(machine => ({
-                    id: machine.id,
-                    name: machine.name,
-                    workcenter: machine.workcenter,
-                    is_busy: machine.print_runs.length > 0,
-                    current_run: machine.print_runs[0]?.id || null,
-                })),
-            },
-            return: server_1.NextResponse.json({
-                success: true,
-                data: dashboard,
-            }), catch(error) {
-                console.error("Dashboard API error:", error);
-                return server_1.NextResponse.json({ success: false, error: "Failed to fetch dashboard data" }, { status: 500 });
-            }
+                },
+            })),
+            machine_utilization: machineUtilization.map(machine => ({
+                id: machine.id,
+                name: machine.name,
+                workcenter: machine.workcenter,
+                is_busy: machine.print_runs.length > 0,
+                current_run: machine.print_runs[0]?.id || null,
+            })),
+        };
+        return server_1.NextResponse.json({
+            success: true,
+            data: dashboard,
         });
     }
-    finally { }
+    catch (error) {
+        console.error("Dashboard API error:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to fetch dashboard data" }, { status: 500 });
+    }
 });

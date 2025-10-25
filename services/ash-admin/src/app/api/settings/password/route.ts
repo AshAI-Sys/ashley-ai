@@ -16,7 +16,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
 
     // Validate inputs
     if (!current_password || !new_password) {
-      
+
       return NextResponse.json(
         { error: "Both current and new password are required" },
         { status: 400 }
@@ -31,7 +31,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     if (!user) {
       
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+  }
 
     // Verify current password
     const isPasswordValid = await bcrypt.compare(
@@ -44,7 +44,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { error: "Current password is incorrect" },
         { status: 401 }
       );
-    }
+  }
 
     // Check if new password is same as old
     const isSamePassword = await bcrypt.compare(
@@ -57,7 +57,7 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { error: "New password must be different from current password" },
         { status: 400 }
       );
-    }
+  }
 
     // Validate new password strength
     if (new_password.length < 8) {
@@ -66,31 +66,31 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { error: "Password must be at least 8 characters" },
         { status: 400 }
       );
-    }
+  }
     if (!/[A-Z]/.test(new_password)) {
       return NextResponse.json(
         { error: "Password must contain an uppercase letter" },
         { status: 400 }
       );
-    }
+  }
     if (!/[a-z]/.test(new_password)) {
       return NextResponse.json(
         { error: "Password must contain a lowercase letter" },
         { status: 400 }
       );
-    }
+  }
     if (!/[0-9]/.test(new_password)) {
       return NextResponse.json(
         { error: "Password must contain a number" },
         { status: 400 }
       );
-    }
+  }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(new_password)) {
       return NextResponse.json(
         { error: "Password must contain a special character" },
         { status: 400 }
       );
-    }
+  }
 
     // Hash new password (10 rounds - optimized for speed while maintaining security)
     const passwordHash = await bcrypt.hash(new_password, 10);
@@ -102,10 +102,12 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         password_hash: passwordHash,
         updated_at: new Date(),
       },
+    });
 
     return NextResponse.json({
       success: true,
       message: "Password changed successfully",
+    });
   } catch (error) {
     console.error("Error changing password:", error);
     return NextResponse.json(
@@ -113,4 +115,4 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-  }
+});

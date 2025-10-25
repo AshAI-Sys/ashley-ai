@@ -102,29 +102,27 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 client_name: clientInfo?.name || "Unknown",
                 revenue: client._sum.total_amount || 0,
             };
-            const cashFlow = 0; // Will be calculated from payments later
-            return server_1.NextResponse.json({
-                success: true,
-                data: {
-                    total_revenue: currentRevenue,
-                    outstanding_invoices: outstandingInvoicesResult._sum.total_amount || 0,
-                    overdue_invoices: overdueInvoicesResult._sum.total_amount || 0,
-                    pending_bills: 0, // No bills table yet
-                    ytd_revenue: ytdRevenue,
-                    total_cogs: totalCogs,
-                    gross_margin: Math.round(grossMargin * 10) / 10,
-                    cash_flow: cashFlow,
-                    revenue_growth: Math.round(revenueGrowth * 10) / 10,
-                    payment_distribution: [],
-                    top_clients: topClientsWithNames,
-                },
-            });
         });
-        try { }
-        catch (error) {
-            console.error("Error calculating finance stats:", error);
-            return server_1.NextResponse.json({ success: false, error: "Failed to calculate finance statistics" }, { status: 500 });
-        }
+        const cashFlow = 0; // Will be calculated from payments later
+        return server_1.NextResponse.json({
+            success: true,
+            data: {
+                total_revenue: currentRevenue,
+                outstanding_invoices: outstandingInvoicesResult._sum.total_amount || 0,
+                overdue_invoices: overdueInvoicesResult._sum.total_amount || 0,
+                pending_bills: 0, // No bills table yet
+                ytd_revenue: ytdRevenue,
+                total_cogs: totalCogs,
+                gross_margin: Math.round(grossMargin * 10) / 10,
+                cash_flow: cashFlow,
+                revenue_growth: Math.round(revenueGrowth * 10) / 10,
+                payment_distribution: [],
+                top_clients: topClientsWithNames,
+            },
+        });
     }
-    finally { }
+    catch (error) {
+        console.error("Error calculating finance stats:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to calculate finance statistics" }, { status: 500 });
+    }
 });

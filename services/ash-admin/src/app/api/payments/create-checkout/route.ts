@@ -111,4 +111,5 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         : "Failed to create checkout session",
       500
     );
+  }
 });

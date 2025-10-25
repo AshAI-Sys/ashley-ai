@@ -63,78 +63,74 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user) => {
         if (search) {
             where.OR = [{ order_number: { contains: search, mode: "insensitive" } }];
         }
-    }
-    finally { }
-});
-if (status) {
-    where.status = status;
-}
-;
-if (clientId) {
-    where.client_id = clientId;
-}
-// Generate cache key
-const cacheKey = query_cache_1.CacheKeys.ordersList(page, limit, {
-    search,
-    status,
-    clientId,
-});
-// Use cached query
-const result = await (0, query_cache_1.cachedQueryWithMetrics)(cacheKey, async () => {
-    const [orders, total] = await Promise.all([
-        db_1.prisma.order.findMany({
-            where,
-            skip,
-            take: limit,
-            include: {
-                client: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                    },
-                },
-                brand: {
-                    select: {
-                        id: true,
-                        name: true,
-                        code: true,
-                    },
-                },
-                line_items: true,
-                _count: {
-                    select: {
+        if (status) {
+            where.status = status;
+        }
+        if (clientId) {
+            where.client_id = clientId;
+        }
+        // Generate cache key
+        const cacheKey = query_cache_1.CacheKeys.ordersList(page, limit, {
+            search,
+            status,
+            clientId,
+        });
+        // Use cached query
+        const result = await (0, query_cache_1.cachedQueryWithMetrics)(cacheKey, async () => {
+            const [orders, total] = await Promise.all([
+                db_1.prisma.order.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    include: {
+                        client: {
+                            select: {
+                                id: true,
+                                name: true,
+                                email: true,
+                            },
+                        },
+                        brand: {
+                            select: {
+                                id: true,
+                                name: true,
+                                code: true,
+                            },
+                        },
                         line_items: true,
-                        design_assets: true,
-                        bundles: true,
+                        _count: {
+                            select: {
+                                line_items: true,
+                                design_assets: true,
+                                bundles: true,
+                            },
+                        },
                     },
+                    orderBy: { created_at: "desc" },
+                }),
+                db_1.prisma.order.count({ where }),
+            ]);
+            return {
+                orders,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
                 },
-            },
-            orderBy: { created_at: "desc" },
-        }),
-        db_1.prisma.order.count({ where }),
-    ]);
-    return {
-        orders,
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-        },
-    };
-}, query_cache_1.CACHE_DURATION.ORDERS // 5 minutes cache
-);
-return server_1.NextResponse.json({
-    success: true,
-    data: result,
+            };
+        }, query_cache_1.CACHE_DURATION.ORDERS // 5 minutes cache
+        );
+        return server_1.NextResponse.json({
+            success: true,
+            data: result,
+        });
+    }
+    catch (error) {
+        console.error("Error fetching orders:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to fetch orders" }, { status: 500 });
+    }
 });
-try { }
-catch (error) {
-    console.error("Error fetching orders:", error);
-    return server_1.NextResponse.json({ success: false, error: "Failed to fetch orders" }, { status: 500 });
-}
-;
 exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
     try {
         const workspaceId = user.workspaceId;
@@ -180,24 +176,22 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, user) => {
         catch (cacheError) {
             console.warn("Failed to invalidate cache:", cacheError);
             // Don't fail the request if cache invalidation fails
-            return server_1.NextResponse.json({
-                success: true,
-                data: { order: newOrder },
-                message: "Order created successfully",
-            }, { status: 201 });
         }
-        try { }
-        catch (error) {
-            if (error instanceof zod_1.z.ZodError) {
-                return server_1.NextResponse.json({
-                    success: false,
-                    error: "Validation failed",
-                    details: error.errors,
-                }, { status: 400 });
-            }
-            console.error("Error creating order:", error);
-            return server_1.NextResponse.json({ success: false, error: "Failed to create order" }, { status: 500 });
-        }
+        return server_1.NextResponse.json({
+            success: true,
+            data: { order: newOrder },
+            message: "Order created successfully",
+        }, { status: 201 });
     }
-    finally { }
+    catch (error) {
+        if (error instanceof zod_1.z.ZodError) {
+            return server_1.NextResponse.json({
+                success: false,
+                error: "Validation failed",
+                details: error.errors,
+            }, { status: 400 });
+        }
+        console.error("Error creating order:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to create order" }, { status: 500 });
+    }
 });

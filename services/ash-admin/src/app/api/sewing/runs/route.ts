@@ -243,6 +243,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         },
       },
+    });
 
     return NextResponse.json(
       {
@@ -311,12 +312,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Calculate efficiency if qty_good is provided
       if (validatedData.qty_good) {
         // Simplified efficiency calculation - would normally use SMV from routing step
-        }
         const earnedMinutes = validatedData.qty_good * 0.5; // placeholder SMV
         updateData.earned_minutes = earnedMinutes;
         updateData.efficiency_pct =
           actualMinutes > 0 ? (earnedMinutes / actualMinutes) * 100 : 0;
-      });
+      }
+    }
 
     const sewingRun = await prisma.sewingRun.update({
       where: { id },
@@ -356,6 +357,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       success: true,
       data: sewingRun,
       message: "Sewing run updated successfully",
+    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       
@@ -417,6 +419,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       message: "Sewing run deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting sewing run:", error);
     return NextResponse.json(
@@ -424,4 +427,4 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});

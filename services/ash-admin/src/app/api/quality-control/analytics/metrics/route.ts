@@ -22,8 +22,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         startDate.setMonth(endDate.getMonth() - 3);
         break;
-      }
-        break;
       default:
         startDate.setMonth(endDate.getMonth() - 1);
     }
@@ -82,6 +80,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         prevStartDate.setMonth(prevStartDate.getMonth() - 3);
         break;
+      default:
+        prevStartDate.setMonth(prevStartDate.getMonth() - 1);
+    }
 
     const prevInspections = await prisma.qCInspection.findMany({
       where: {
@@ -120,12 +121,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         total_samples: totalSamples,
         total_defects: totalDefects,
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error calculating quality metrics:", error);
     return NextResponse.json(
       { error: "Failed to calculate metrics" },
       { status: 500 }
     );
   }
-  }
+});

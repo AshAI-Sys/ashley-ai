@@ -174,120 +174,112 @@ async function calculateHRStats(workspaceId, today, startOfToday, endOfToday, th
         const totalMonths = employeesWithTenure.reduce((sum, emp) => {
             const months = (today.getTime() - emp.hire_date.getTime()) /
                 (1000 * 60 * 60 * 24 * 30.44);
-        });
-        return sum + months;
+            return sum + months;
+        }, 0);
+        averageTenureMonths = totalMonths / employeesWithTenure.length;
     }
-    0;
-    ;
-    averageTenureMonths = totalMonths / employeesWithTenure.length;
-}
-// Productivity metrics (from production runs)
-// Note: SewingRun doesn't have pieces_per_hour or efficiency_percentage fields
-// Calculate these manually from qty_good and time
-const sewingRuns = await db_1.prisma.sewingRun.findMany({
-    where: {
-        started_at: {
-            gte: thisMonth,
+    // Productivity metrics (from production runs)
+    // Note: SewingRun doesn't have pieces_per_hour or efficiency_percentage fields
+    // Calculate these manually from qty_good and time
+    const sewingRuns = await db_1.prisma.sewingRun.findMany({
+        where: {
+            started_at: {
+                gte: thisMonth,
+            },
+            status: "DONE",
         },
-        status: "DONE",
-    },
-    take: 100, // Limit to last 100 completed runs
-    select: {
-        qty_good: true,
-        qty_reject: true,
-        started_at: true,
-        ended_at: true,
-    },
-});
-// Calculate average efficiency from sewing runs
-const sewingProductivity = {
-    _avg: {
-        pieces_per_hour: sewingRuns.length > 0
-            ? sewingRuns.reduce((sum, run) => {
-                if (run.started_at && run.ended_at) {
-                    const hours = (run.ended_at.getTime() - run.started_at.getTime()) /
-                        (1000 * 60 * 60);
-                    const piecesPerHour = hours > 0 ? (run.qty_good || 0) / hours : 0;
-                }
-                return sum + piecesPerHour;
-            })
-            :
-        ,
-        return: sum
-    }, 0: 
-} / sewingRuns.length;
-0,
-    efficiency_percentage;
-sewingRuns.length > 0
-    ? sewingRuns.reduce((sum, run) => {
-        const total = (run.qty_good || 0) + (run.qty_reject || 0);
-        const efficiency = total > 0 ? ((run.qty_good || 0) / total) * 100 : 0;
-        return sum + efficiency;
-    }, 0) / sewingRuns.length
-    : 0,
-;
-;
-// PrintRun doesn't have operator tracking - use simplified metric
-const printingProductivity = {
-    _avg: {
-        pieces_per_hour: 0,
-        efficiency_percentage: 0,
-    },
-};
-// Next payroll date estimation
-const nextPayrollDate = new Date();
-const currentDate = nextPayrollDate.getDate();
-if (currentDate <= 15) {
-    nextPayrollDate.setDate(31); // End of month
-}
-if (nextPayrollDate.getDate() !== 31) {
-    nextPayrollDate.setDate(0); // Last day of month
-}
-{
-    nextPayrollDate.setMonth(nextPayrollDate.getMonth() + 1);
-    nextPayrollDate.setDate(15);
-}
-;
-return {
-    // Basic counts
-    total_employees: totalEmployees,
-    active_employees: activeEmployees,
-    present_today: presentToday,
-    absent_today: absentToday,
-    // Pending approvals
-    overtime_requests: pendingOvertimeRequests,
-    pending_leaves: pendingLeaveRequests,
-    // Financial
-    total_payroll_cost: currentMonthPayroll._sum.net_pay || 0,
-    upcoming_payroll: nextPayrollDate.toISOString().split("T")[0],
-    // Analytics
-    average_tenure_months: Math.round(averageTenureMonths * 10) / 10,
-    attendance_rate: activeEmployees > 0 ? (presentToday / activeEmployees) * 100 : 0,
-    // Productivity
-    avg_sewing_efficiency: sewingProductivity._avg.efficiency_percentage || 0,
-    avg_printing_efficiency: printingProductivity._avg.efficiency_percentage || 0,
-    avg_pieces_per_hour: ((sewingProductivity._avg.pieces_per_hour || 0) +
-        (printingProductivity._avg.pieces_per_hour || 0)) /
-        2,
-    // Distributions
-    department_distribution: departmentStats.map(dept => ({
-        department: dept.department,
-        count: dept._count.id,
-    })),
-    position_distribution: positionStats.map(position => ({
-        position: position.position,
-        count: position._count.id,
-    })),
-    salary_type_distribution: salaryTypeStats.map(salaryType => ({
-        salary_type: salaryType.salary_type,
-        count: salaryType._count.id,
-    })),
-    // Last payroll info
-    last_payroll: lastPayrollRun
-        ? {
-            period: `${lastPayrollRun.period_start.toISOString().split("T")[0]} - ${lastPayrollRun.period_end.toISOString().split("T")[0]}`,
-            employee_count: lastPayrollRun._count.earnings,
-            status: lastPayrollRun.status,
+        take: 100, // Limit to last 100 completed runs
+        select: {
+            qty_good: true,
+            qty_reject: true,
+            started_at: true,
+            ended_at: true,
+        },
+    });
+    // Calculate average efficiency from sewing runs
+    const sewingProductivity = {
+        _avg: {
+            pieces_per_hour: sewingRuns.length > 0
+                ? sewingRuns.reduce((sum, run) => {
+                    if (run.started_at && run.ended_at) {
+                        const hours = (run.ended_at.getTime() - run.started_at.getTime()) /
+                            (1000 * 60 * 60);
+                        const piecesPerHour = hours > 0 ? (run.qty_good || 0) / hours : 0;
+                        return sum + piecesPerHour;
+                    }
+                    return sum;
+                }, 0) / sewingRuns.length
+                : 0,
+            efficiency_percentage: sewingRuns.length > 0
+                ? sewingRuns.reduce((sum, run) => {
+                    const total = (run.qty_good || 0) + (run.qty_reject || 0);
+                    const efficiency = total > 0 ? ((run.qty_good || 0) / total) * 100 : 0;
+                    return sum + efficiency;
+                }, 0) / sewingRuns.length
+                : 0,
+        },
+    };
+    // PrintRun doesn't have operator tracking - use simplified metric
+    const printingProductivity = {
+        _avg: {
+            pieces_per_hour: 0,
+            efficiency_percentage: 0,
+        },
+    };
+    // Next payroll date estimation
+    const nextPayrollDate = new Date();
+    const currentDate = nextPayrollDate.getDate();
+    if (currentDate <= 15) {
+        nextPayrollDate.setDate(31); // End of month
+        if (nextPayrollDate.getDate() !== 31) {
+            nextPayrollDate.setDate(0); // Last day of month
         }
-        : null,
-};
+    }
+    else {
+        nextPayrollDate.setMonth(nextPayrollDate.getMonth() + 1);
+        nextPayrollDate.setDate(15);
+    }
+    return {
+        // Basic counts
+        total_employees: totalEmployees,
+        active_employees: activeEmployees,
+        present_today: presentToday,
+        absent_today: absentToday,
+        // Pending approvals
+        overtime_requests: pendingOvertimeRequests,
+        pending_leaves: pendingLeaveRequests,
+        // Financial
+        total_payroll_cost: currentMonthPayroll._sum.net_pay || 0,
+        upcoming_payroll: nextPayrollDate.toISOString().split("T")[0],
+        // Analytics
+        average_tenure_months: Math.round(averageTenureMonths * 10) / 10,
+        attendance_rate: activeEmployees > 0 ? (presentToday / activeEmployees) * 100 : 0,
+        // Productivity
+        avg_sewing_efficiency: sewingProductivity._avg.efficiency_percentage || 0,
+        avg_printing_efficiency: printingProductivity._avg.efficiency_percentage || 0,
+        avg_pieces_per_hour: ((sewingProductivity._avg.pieces_per_hour || 0) +
+            (printingProductivity._avg.pieces_per_hour || 0)) /
+            2,
+        // Distributions
+        department_distribution: departmentStats.map(dept => ({
+            department: dept.department,
+            count: dept._count.id,
+        })),
+        position_distribution: positionStats.map(position => ({
+            position: position.position,
+            count: position._count.id,
+        })),
+        salary_type_distribution: salaryTypeStats.map(salaryType => ({
+            salary_type: salaryType.salary_type,
+            count: salaryType._count.id,
+        })),
+        // Last payroll info
+        last_payroll: lastPayrollRun
+            ? {
+                period: `${lastPayrollRun.period_start.toISOString().split("T")[0]} - ${lastPayrollRun.period_end.toISOString().split("T")[0]}`,
+                employee_count: lastPayrollRun._count.earnings,
+                status: lastPayrollRun.status,
+            }
+            : null,
+    };
+}

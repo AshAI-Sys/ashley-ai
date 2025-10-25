@@ -45,10 +45,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       const validTypes = ["REORDER", "CROSS_SELL", "SEASONAL", "TRENDING"];
       const typeError = validateEnum(recommendationType, validTypes, "type");
       if (typeError) {
-        
+
         return createValidationErrorResponse([typeError]);
       }
-        const where: any = {
+    }
+
+    const where: any = {
       workspace_id: workspaceId,
       expires_at: {
         gte: new Date(), // Only non-expired recommendations
@@ -69,9 +71,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { created_at: "desc" },
       ],
       take: limit,
-      
-    
-      return NextResponse.json({ recommendations });
+    });
+
+    return NextResponse.json({ recommendations });
   } catch (error) {
     console.error("Recommendations fetch error:", error);
     return NextResponse.json(
@@ -81,7 +83,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-})
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -105,7 +107,6 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     if (generateAll) {
       // Generate recommendations for all active clients
-      }
       const clients = await prisma.client.findMany({
         where: {
           workspace_id: workspaceId,
@@ -168,9 +169,9 @@ async function generateRecommendationsForClient(
   });
 
   if (clientOrders.length === 0) {
-    
+
     return [];
-  });
+  }
 
   const recommendations = [];
 
@@ -244,6 +245,7 @@ async function generateReorderRecommendations(
         productFrequency[key].lastOrder = order.created_at;
       }
     });
+  });
 
   // Generate reorder recommendations for frequently ordered items
   for (const [productKey, data] of Object.entries(productFrequency)) {
@@ -258,7 +260,6 @@ async function generateReorderRecommendations(
         // 80% of typical interval
         const [productType, color] = productKey.split("-");
         const confidence = Math.min(0.95, 0.6 + data.count * 0.1);
-        }
         const avgQuantity = Math.round(data.avgQuantity / data.count);
 
         recommendations.push(
@@ -281,6 +282,7 @@ async function generateReorderRecommendations(
         );
       }
     }
+  }
   return recommendations;
 }
 
@@ -309,7 +311,10 @@ async function generateCrossSellRecommendations(
           !productCombinations[product].includes(otherProduct)
         ) {
           productCombinations[product].push(otherProduct);
-        }  });
+        }
+      });
+    });
+  });
 
   // Generate cross-sell recommendations
   const recentProducts = clientOrders
@@ -321,7 +326,6 @@ async function generateCrossSellRecommendations(
   for (const recentProduct of recentProducts) {
     if (productCombinations[recentProduct]) {
       for (const suggestedProduct of productCombinations[recentProduct]) {
-        }
         if (suggestedProduct !== recentProduct) {
           recommendations.push(
             await prisma.productRecommendation.create({
@@ -344,6 +348,7 @@ async function generateCrossSellRecommendations(
         }
       }
     }
+  }
   return recommendations.slice(0, 3); // Limit to 3 cross-sell recommendations
 }
 
@@ -422,6 +427,7 @@ async function generateTrendingRecommendations(
       productPopularity[productType] =
         (productPopularity[productType] || 0) + (item.quantity || 0);
     });
+  });
 
   // Get top 2 trending products
   const trendingProducts = Object.entries(productPopularity)

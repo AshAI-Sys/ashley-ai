@@ -11,13 +11,11 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const action = searchParams.get("action"); // 'summary' | 'alerts' | 'costing' | 'scan'
 
     if (!workspace_id) {
-      
       return NextResponse.json(
         { error: "workspace_id parameter required" },
         { status: 400 }
       );
     }
-    });
 
     switch (action) {
       case "alerts":
@@ -73,7 +71,8 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           success: true,
           summary,
         });
-    } catch (error: any) {
+    }
+  } catch (error: any) {
     console.error("Inventory API error:", error);
     return NextResponse.json(
       { error: "Failed to process inventory request", details: error.message },
@@ -180,7 +179,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    } catch (error: any) {
+    }
+  } catch (error: any) {
     console.error("Inventory operation error:", error);
     return NextResponse.json(
       { error: "Failed to complete operation", details: error.message },

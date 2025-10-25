@@ -63,7 +63,8 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
       { error: "Failed to upload avatar" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
   try {
@@ -85,4 +86,4 @@ export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
       { status: 500 }
     );
   }
-  }
+});

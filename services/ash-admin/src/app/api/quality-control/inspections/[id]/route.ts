@@ -42,7 +42,6 @@ export const GET = requireAuth(async (
         { status: 404 }
       );
     }
-    }
 
     return NextResponse.json(inspection);
   } catch (error) {
@@ -51,10 +50,10 @@ export const GET = requireAuth(async (
       { error: "Failed to fetch inspection" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const PUT = requireAuth(async (
+  }
+});
+
+export const PUT = requireAuth(async (
   request: NextRequest,
   user,
   context: { params: { id: string } }
@@ -84,4 +83,4 @@ export const GET = requireAuth(async (
       { status: 500 }
     );
   }
-  }
+});

@@ -1,6 +1,5 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "../../../lib/auth-middleware";
 import { requireAuth } from "@/lib/auth-middleware";
 import {
   getUserActiveSessions,
@@ -39,6 +38,7 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
       { status: 500 }
     );
   }
+});
 
 // DELETE - Revoke sessions
 export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
@@ -80,4 +80,4 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
       { status: 500 }
     );
   }
-  }
+});

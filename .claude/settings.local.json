@@ -183,7 +183,12 @@
       "Bash(Select-Object -First 20)",
       "Bash(do echo \"=== Fixing $file ===\")",
       "Bash(do echo \"=== $f ===\")",
-      "Bash(if exist node_modules.cache rd /s /q node_modules.cache)"
+      "Bash(if exist node_modules.cache rd /s /q node_modules.cache)",
+      "Read(//c//**)",
+      "Bash(1)",
+      "Bash(then echo \"Fixing $file\")",
+      "Bash(do echo \"Fixing $file\")",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []

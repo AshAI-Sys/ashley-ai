@@ -62,6 +62,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           ? JSON.parse(r.schedule_config)
           : null,
       })),
+    });
   } catch (error: any) {
     console.error("Error fetching reports:", error);
     return NextResponse.json(
@@ -69,6 +70,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/reports - Create new report
 export const POST = requireAuth(async (req: NextRequest, user) => {

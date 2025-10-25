@@ -56,9 +56,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         fill_percent: carton.fill_percent || 0,
         units_count: unitsCount,
       };
-      
-    
-      return NextResponse.json({
+    });
+
+    return NextResponse.json({
       cartons: processedCartons,
       pagination: {
         page,
@@ -187,4 +187,4 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});

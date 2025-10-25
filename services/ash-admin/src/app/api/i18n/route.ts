@@ -45,7 +45,8 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    } catch (error: any) {
+    }
+  } catch (error: any) {
     console.error("i18n API error:", error);
     return NextResponse.json(
       { error: "Failed to process request", details: error.message },

@@ -93,6 +93,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         outputs: true,
         rejects: true,
       },
+    });
 
     const totalProduced = completedToday.reduce(
       (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
@@ -138,12 +139,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: dashboard,
+    });
   } catch (error) {
     console.error("Dashboard API error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch dashboard data" },
       { status: 500 }
     );
-  }
   }
 });

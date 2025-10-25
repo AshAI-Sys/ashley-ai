@@ -12,10 +12,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const where: any = {};
     if (category && category !== "all") {
       where.category = category;
+    }
     if (severity && severity !== "all") {
       where.severity = severity;
-
     }
+
     const defectCodes = await prisma.qCDefectCode.findMany({
       where,
       orderBy: { code: "asc" },
@@ -30,7 +31,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { error: "Failed to fetch defect codes" },
       { status: 500 }
     );
-}
+  }
+});
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -57,4 +59,4 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-  }
+  });

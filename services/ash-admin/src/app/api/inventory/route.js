@@ -14,54 +14,51 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
         if (!workspace_id) {
             return server_1.NextResponse.json({ error: "workspace_id parameter required" }, { status: 400 });
         }
+        switch (action) {
+            case "alerts":
+                const alerts = await inventory_manager_1.inventoryManager.getStockAlerts(workspace_id);
+                return server_1.NextResponse.json({
+                    success: true,
+                    alerts,
+                    total: alerts.length,
+                });
+            case "costing":
+                const costings = await inventory_manager_1.inventoryManager.calculateMaterialCost(workspace_id);
+                return server_1.NextResponse.json({
+                    success: true,
+                    material_costings: costings,
+                });
+            case "scan":
+                const code = searchParams.get("code");
+                const type = searchParams.get("type"); // 'barcode' | 'rfid'
+                if (!code) {
+                    return server_1.NextResponse.json({ error: "code parameter required for scan" }, { status: 400 });
+                }
+                const scanned = type === "rfid"
+                    ? await inventory_manager_1.inventoryManager.scanRFID(code)
+                    : await inventory_manager_1.inventoryManager.scanBarcode(code);
+                if (!scanned) {
+                    return server_1.NextResponse.json({ error: "Material not found", code }, { status: 404 });
+                }
+                return server_1.NextResponse.json({
+                    success: true,
+                    material: scanned,
+                    scan_type: type || "barcode",
+                });
+            case "summary":
+            default:
+                const summary = await inventory_manager_1.inventoryManager.getInventorySummary(workspace_id);
+                return server_1.NextResponse.json({
+                    success: true,
+                    summary,
+                });
+        }
     }
-    finally { }
+    catch (error) {
+        console.error("Inventory API error:", error);
+        return server_1.NextResponse.json({ error: "Failed to process inventory request", details: error.message }, { status: 500 });
+    }
 });
-switch (action) {
-    case "alerts":
-        const alerts = await inventory_manager_1.inventoryManager.getStockAlerts(workspace_id);
-        return server_1.NextResponse.json({
-            success: true,
-            alerts,
-            total: alerts.length,
-        });
-    case "costing":
-        const costings = await inventory_manager_1.inventoryManager.calculateMaterialCost(workspace_id);
-        return server_1.NextResponse.json({
-            success: true,
-            material_costings: costings,
-        });
-    case "scan":
-        const code = searchParams.get("code");
-        const type = searchParams.get("type"); // 'barcode' | 'rfid'
-        if (!code) {
-            return server_1.NextResponse.json({ error: "code parameter required for scan" }, { status: 400 });
-        }
-        const scanned = type === "rfid"
-            ? await inventory_manager_1.inventoryManager.scanRFID(code)
-            : await inventory_manager_1.inventoryManager.scanBarcode(code);
-        if (!scanned) {
-            return server_1.NextResponse.json({ error: "Material not found", code }, { status: 404 });
-        }
-        return server_1.NextResponse.json({
-            success: true,
-            material: scanned,
-            scan_type: type || "barcode",
-        });
-    case "summary":
-    default:
-        const summary = await inventory_manager_1.inventoryManager.getInventorySummary(workspace_id);
-        return server_1.NextResponse.json({
-            success: true,
-            summary,
-        });
-}
-try { }
-catch (error) {
-    console.error("Inventory API error:", error);
-    return server_1.NextResponse.json({ error: "Failed to process inventory request", details: error.message }, { status: 500 });
-}
-;
 // POST /api/inventory - Create material or update stock
 exports.POST = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
     try {
@@ -127,11 +124,9 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (req, _user) => {
             default:
                 return server_1.NextResponse.json({ error: "Invalid action" }, { status: 400 });
         }
-        try { }
-        catch (error) {
-            console.error("Inventory operation error:", error);
-            return server_1.NextResponse.json({ error: "Failed to complete operation", details: error.message }, { status: 500 });
-        }
     }
-    finally { }
+    catch (error) {
+        console.error("Inventory operation error:", error);
+        return server_1.NextResponse.json({ error: "Failed to complete operation", details: error.message }, { status: 500 });
+    }
 });

@@ -24,10 +24,10 @@ export const GET = requireAuth(async (request: NextRequest, _authUser) => {
     console.error("Error fetching appearance settings:", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 });
+      { status: 500 }
     );
   }
-})
+});
 
 export const PUT = requireAuth(async (request: NextRequest, _authUser) => {
   try {
@@ -40,6 +40,5 @@ export const PUT = requireAuth(async (request: NextRequest, _authUser) => {
       { error: "Failed to update settings" },
       { status: 500 }
     );
-  }
   }
 });

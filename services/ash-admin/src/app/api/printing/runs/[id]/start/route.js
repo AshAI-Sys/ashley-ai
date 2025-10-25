@@ -29,61 +29,58 @@ async function POST(request, { params }) {
         if (!run) {
             return server_1.NextResponse.json({ success: false, error: "Print run not found" }, { status: 404 });
         }
-    }
-    finally {
-    }
-    if (run.status !== "CREATED" && run.status !== "PAUSED") {
-        return server_1.NextResponse.json({
-            success: false,
-            error: "Print run cannot be started from current status",
-        }, { status: 400 });
-    }
-    // Check machine availability if assigned
-    if (run.machine_id) {
-        const busyMachine = await db_1.prisma.printRun.findFirst({
-            where: {
-                machine_id: run.machine_id,
-                status: "IN_PROGRESS",
-                id: { not: runId },
-            },
-        });
-        if (busyMachine) {
+        if (run.status !== "CREATED" && run.status !== "PAUSED") {
             return server_1.NextResponse.json({
                 success: false,
-                error: "Machine is currently busy with another run",
+                error: "Print run cannot be started from current status",
             }, { status: 400 });
         }
-    }
-    // Start the run
-    const updatedRun = await db_1.prisma.printRun.update({
-        where: { id: runId },
-        data: {
-            status: "IN_PROGRESS",
-            started_at: new Date(),
-        },
-        include: {
-            order: {
-                include: {
-                    brand: true,
+        // Check machine availability if assigned
+        if (run.machine_id) {
+            const busyMachine = await db_1.prisma.printRun.findFirst({
+                where: {
+                    machine_id: run.machine_id,
+                    status: "IN_PROGRESS",
+                    id: { not: runId },
                 },
+            });
+            if (busyMachine) {
+                return server_1.NextResponse.json({
+                    success: false,
+                    error: "Machine is currently busy with another run",
+                }, { status: 400 });
+            }
+        }
+        // Start the run
+        const updatedRun = await db_1.prisma.printRun.update({
+            where: { id: runId },
+            data: {
+                status: "IN_PROGRESS",
+                started_at: new Date(),
             },
-            machine: true,
-        },
-    });
-    // Initialize method-specific data based on method
-    await initializeMethodSpecificData(runId, run.method, run.order.design_assets[0]?.versions[0]);
-    // Create Ashley AI analysis for optimization
-    await createAshleyAnalysis(runId, run);
-    return server_1.NextResponse.json({
-        success: true,
-        data: updatedRun,
-        message: "Print run started successfully",
-    });
-}
-try { }
-catch (error) {
-    console.error("Start print run error:", error);
-    return server_1.NextResponse.json({ success: false, error: "Failed to start print run" }, { status: 500 });
+            include: {
+                order: {
+                    include: {
+                        brand: true,
+                    },
+                },
+                machine: true,
+            },
+        });
+        // Initialize method-specific data based on method
+        await initializeMethodSpecificData(runId, run.method, run.order.design_assets[0]?.versions[0]);
+        // Create Ashley AI analysis for optimization
+        await createAshleyAnalysis(runId, run);
+        return server_1.NextResponse.json({
+            success: true,
+            data: updatedRun,
+            message: "Print run started successfully",
+        });
+    }
+    catch (error) {
+        console.error("Start print run error:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to start print run" }, { status: 500 });
+    }
 }
 async function initializeMethodSpecificData(runId, method, designVersion) {
     try {
@@ -155,7 +152,6 @@ async function initializeMethodSpecificData(runId, method, designVersion) {
                 }
                 break;
         }
-        ;
     }
     catch (error) {
         console.error("Error initializing method-specific data:", error);

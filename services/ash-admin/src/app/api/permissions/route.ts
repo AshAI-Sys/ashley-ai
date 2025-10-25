@@ -21,11 +21,11 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     if (action === "user" && user_id) {
       const userPermissions =
         await permissionManager.getUserPermissions(user_id);
-      }
       return NextResponse.json({
         success: true,
         user_permissions: userPermissions,
-      }
+      });
+    }
 
     // Default: return all system permissions
     const permissions = permissionManager.getAllPermissions();
@@ -41,6 +41,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // POST /api/permissions/check - Check if user has permission
 export const POST = requireAuth(async (req: NextRequest, user) => {
@@ -66,6 +67,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       user_id,
       resource,
       action,
+    });
   } catch (error: any) {
     console.error("Check permission error:", error);
     return NextResponse.json(
@@ -73,6 +75,4 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
-  });
-});
 });

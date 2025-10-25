@@ -23,8 +23,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       case "quarter":
         startDate.setDate(endDate.getDate() - 90); // Get 90 days
         break;
-      }
-        break;
       default:
         startDate.setDate(endDate.getDate() - 30);
     }
@@ -67,16 +65,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         case "cycle_time":
           value = Math.random() * 2 + 6; // Mock cycle time data
           break;
-        }
-          break;
         default:
           value = day.avg_defects;
+      }
 
       return {
         date: day.date,
         value: value,
         inspections: Number(day.total_inspections),
       };
+    });
 
     // Calculate control limits (simplified X-bar chart)
     const values = spcData.map(d => d.value).filter(v => !isNaN(v));
@@ -117,4 +115,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});

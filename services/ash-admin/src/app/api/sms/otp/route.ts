@@ -55,13 +55,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     for (const [key, value] of otpStore.entries()) {
       if (value.expires < Date.now()) {
         otpStore.delete(key);
-      
+      }
+    }
 
     return NextResponse.json({
       success: true,
       message: "OTP sent successfully",
       expires_in: 300, // 5 minutes
       message_id: result.message_id,
+    });
   } catch (error: any) {
     console.error("Error sending OTP:", error);
     return NextResponse.json(
@@ -69,6 +71,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // PUT /api/sms/otp - Verify OTP code
 export const PUT = requireAuth(async (request: NextRequest, user) => {
@@ -130,5 +133,5 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-  });
 });
+

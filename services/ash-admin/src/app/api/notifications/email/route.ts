@@ -26,7 +26,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 400 }
       );
     }
-    }
 
     let result;
 
@@ -100,10 +99,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           text: data.text,
           from: data.from,
           reply_to: data.reply_to,
-        }
-        break;
-
-      }
+        });
         break;
 
       default:
@@ -111,7 +107,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           { error: `Unknown email type: ${type}` },
           { status: 400 }
         );
-    }
     }
 
     if (!result.success) {
@@ -136,15 +131,17 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             status: "SENT",
             sent_at: new Date(),
           },
-});
-} catch (error) {
+        });
+      } catch (error) {
         console.error("Failed to log notification:", error);
       }
+    }
 
     return NextResponse.json({
       success: true,
       message: "Email sent successfully",
       email_id: result.id,
+    });
   } catch (error: any) {
     console.error("Error sending email notification:", error);
     return NextResponse.json(
@@ -155,6 +152,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/notifications/email/test - Test email configuration
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -163,11 +161,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const test_email = searchParams.get("test_email");
 
     if (!test_email) {
-      
+
       return NextResponse.json({
         configured: !!process.env.RESEND_API_KEY,
         from_address: process.env.EMAIL_FROM || "not configured",
       });
+    }
 
     // Send test email
     const result = await sendEmail({
@@ -177,9 +176,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         <h1>Email Configuration Test</h1>
         <p>This is a test email from Ashley AI Manufacturing ERP.</p>
         <p>If you received this email, your email configuration is working correctly!</p>
-        <p><strong>Timestamp:</strong> ${new Date().toISOString()});</p>
+        <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
       `,
-      });
+    });
 
     if (!result.success) {
       
@@ -192,5 +191,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       success: true,
       message: `Test email sent to ${test_email}`,
       email_id: result.id,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+});

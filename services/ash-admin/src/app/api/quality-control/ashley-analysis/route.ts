@@ -39,12 +39,11 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
     if (!inspection) {
-      
+
       return NextResponse.json(
         { error: "Inspection not found" },
         { status: 404 }
       );
-    }
     }
 
     let ashleyAnalysis = {};
@@ -61,8 +60,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         break;
       case "process_control_analysis":
         ashleyAnalysis = await performProcessControlAnalysis(inspection);
-        break;
-      }
         break;
       default:
         ashleyAnalysis = await performComprehensiveAnalysis(inspection);
@@ -137,6 +134,7 @@ async function performDefectTrendAnalysis(inspection: any) {
       total_defects: totalDefects,
       defect_rate: (totalDefects / insp.sample_size) * 100,
     });
+  });
 
   // Calculate trends
   const currentDefectRate =
@@ -258,7 +256,7 @@ async function performRootCausePrediction(inspection: any) {
       preventive_actions: preventiveActions,
       defect_pattern: pattern,
     });
-  });
+  }
 
   return {
     type: "root_cause_prediction",
@@ -334,7 +332,7 @@ async function performQualityRiskAssessment(inspection: any) {
         "Defects found at final inspection indicate upstream process issues",
     });
     overallRiskScore += 35;
-  });
+  }
 
   const riskLevel =
     overallRiskScore >= 70 ? "HIGH" : overallRiskScore >= 40 ? "MEDIUM" : "LOW";
@@ -387,13 +385,12 @@ async function performProcessControlAnalysis(inspection: any) {
     // Calculate control limits for p-chart
     const p = avgDefectRate;
     const n = avgSampleSize;
-    }
     const sigma = Math.sqrt((p * (1 - p)) / n);
 
     controlLimits.centerline = p;
     controlLimits.ucl = p + 3 * sigma;
     controlLimits.lcl = Math.max(0, p - 3 * sigma);
-    });
+  }
 
   const currentDefectRate =
     (inspection.critical_found +
@@ -406,7 +403,7 @@ async function performProcessControlAnalysis(inspection: any) {
     controlStatus = "OUT_OF_CONTROL_HIGH";
   } else if (currentDefectRate < controlLimits.lcl) {
     controlStatus = "OUT_OF_CONTROL_LOW";
-  });
+  }
 
   return {
     type: "process_control_analysis",
@@ -478,7 +475,7 @@ function generateRiskMitigationRecommendations(
     );
     recommendations.push("Initiate emergency CAPA process");
     recommendations.push("Notify quality manager and customer if applicable");
-  });
+  }
 
   return recommendations;
 }
@@ -509,13 +506,13 @@ function generateOverallRecommendation(
     risk.risk_level === "HIGH" ||
     spc.control_status === "OUT_OF_CONTROL_HIGH"
   ) {
-    
+
     return {
       priority: "IMMEDIATE",
       action: "STOP_PRODUCTION",
       summary: "High risk detected - immediate intervention required",
     };
-  });
+  }
 
   if (risk.risk_level === "MEDIUM" || trend.trend_direction === "INCREASING") {
     
@@ -525,7 +522,7 @@ function generateOverallRecommendation(
       summary:
         "Quality issues detected - investigation and corrective action needed",
     };
-  });
+  }
 
   return {
     priority: "NORMAL",

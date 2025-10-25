@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GET = void 0;
+exports.PATCH = exports.GET = void 0;
 /* eslint-disable */
 const server_1 = require("next/server");
 const db_1 = require("@/lib/db");
@@ -57,52 +57,50 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user, context) 
                     },
                 },
             },
-            if(, run) {
-                return server_1.NextResponse.json({ success: false, error: "Print run not found" }, { status: 404 });
-            }
-            // Transform data for frontend
-            ,
-            // Transform data for frontend
-            const: transformedRun = {
-                ...run,
-                target_qty: run.outputs.reduce((sum, o) => sum + o.qty_good + o.qty_reject, 0) ||
-                    100,
-                completed_qty: run.outputs.reduce((sum, o) => sum + o.qty_good, 0),
-                rejected_qty: run.rejects.reduce((sum, r) => sum + r.qty, 0),
-                runtime_minutes: run.started_at && run.ended_at
-                    ? Math.round((new Date(run.ended_at).getTime() -
-                        new Date(run.started_at).getTime()) /
-                        60000)
-                    : null,
-                method_details: getMethodDetails(run),
-            },
-            return: server_1.NextResponse.json({
-                success: true,
-                data: transformedRun,
-            }), catch(error) {
-                console.error("Get print run error:", error);
-                return server_1.NextResponse.json({ success: false, error: "Failed to fetch print run" }, { status: 500 });
-            }
         });
-        export const PATCH = (0, auth_middleware_1.requireAuth)(async (request, user, context) => {
-            try {
-                const runId = context.params.id;
-                const body = await request.json();
-                const { status, notes, material_consumption, quality_data } = body;
-                // Update print run
-                const updateData = {};
-                if (status) {
-                    updateData.status = status;
-                }
-                if (status === "IN_PROGRESS" && !(await getRunStartTime(runId))) {
-                    updateData.started_at = new Date();
-                }
-                if (status === "DONE") {
-                    updateData.ended_at = new Date();
-                }
-            }
-            finally { }
+        if (!run) {
+            return server_1.NextResponse.json({ success: false, error: "Print run not found" }, { status: 404 });
+        }
+        // Transform data for frontend
+        const transformedRun = {
+            ...run,
+            target_qty: run.outputs.reduce((sum, o) => sum + o.qty_good + o.qty_reject, 0) ||
+                100,
+            completed_qty: run.outputs.reduce((sum, o) => sum + o.qty_good, 0),
+            rejected_qty: run.rejects.reduce((sum, r) => sum + r.qty, 0),
+            runtime_minutes: run.started_at && run.ended_at
+                ? Math.round((new Date(run.ended_at).getTime() -
+                    new Date(run.started_at).getTime()) /
+                    60000)
+                : null,
+            method_details: getMethodDetails(run),
+        };
+        return server_1.NextResponse.json({
+            success: true,
+            data: transformedRun,
         });
+    }
+    catch (error) {
+        console.error("Get print run error:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to fetch print run" }, { status: 500 });
+    }
+});
+exports.PATCH = (0, auth_middleware_1.requireAuth)(async (request, user, context) => {
+    try {
+        const runId = context.params.id;
+        const body = await request.json();
+        const { status, notes, material_consumption, quality_data } = body;
+        // Update print run
+        const updateData = {};
+        if (status) {
+            updateData.status = status;
+        }
+        if (status === "IN_PROGRESS" && !(await getRunStartTime(runId))) {
+            updateData.started_at = new Date();
+        }
+        if (status === "DONE") {
+            updateData.ended_at = new Date();
+        }
         const updatedRun = await db_1.prisma.printRun.update({
             where: { id: runId },
             data: updateData,
@@ -145,80 +143,79 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user, context) 
                         notes: notes || null,
                     },
                 });
-                // Create reject records if any
-                if (qty_reject > 0 && reject_reasons) {
-                    await Promise.all(reject_reasons.map((reject) => db_1.prisma.printReject.create({
-                        data: {
-                            run_id: runId,
-                            bundle_id: bundle_id || null,
-                            reason_code: reject.reason_code,
-                            qty: reject.qty,
-                            photo_url: reject.photo_url || null,
-                            cost_attribution: reject.cost_attribution || null,
-                        },
-                    })));
-                }
-                return server_1.NextResponse.json({
-                    success: true,
-                    data: updatedRun,
-                });
-                try { }
-                catch (error) {
-                    console.error("Update print run error:", error);
-                    return server_1.NextResponse.json({ success: false, error: "Failed to update print run" }, { status: 500 });
-                }
             }
-            async function getRunStartTime(runId) {
-                const run = await db_1.prisma.printRun.findUnique({
-                    where: { id: runId },
-                    select: { started_at: true },
-                    return: run?.started_at
-                }, function getMethodDetails(run) {
-                    switch (run.method) {
-                        case "SILKSCREEN":
-                            return {
-                                type: "silkscreen",
-                                preparation: run.silkscreen_prep,
-                                specifications: run.silkscreen_specs,
-                                curing: run.curing_logs.map((log) => ({
-                                    ...log,
-                                    dryer_name: log.dryer?.name || "Unknown",
-                                })),
-                            };
-                        case "SUBLIMATION":
-                            return {
-                                type: "sublimation",
-                                prints: run.sublimation_prints.map((print) => ({
-                                    ...print,
-                                    printer_name: print.printer?.name || "Unknown",
-                                })),
-                                heat_press: run.heat_press_logs.map((log) => ({
-                                    ...log,
-                                    press_name: log.press?.name || "Unknown",
-                                })),
-                            };
-                        case "DTF":
-                            return {
-                                type: "dtf",
-                                prints: run.dtf_prints,
-                                powder_curing: run.dtf_powder_cures,
-                            };
-                        case "EMBROIDERY":
-                            return {
-                                type: "embroidery",
-                                runs: run.embroidery_runs.map((embRun) => ({
-                                    ...embRun,
-                                    design_file: embRun.design?.files
-                                        ? JSON.parse(embRun.design.files).dst_url
-                                        : null,
-                                })),
-                            };
-                        default:
-                            return { type: "unknown" };
-                    }
-                });
+            // Create reject records if any
+            if (qty_reject > 0 && reject_reasons) {
+                await Promise.all(reject_reasons.map((reject) => db_1.prisma.printReject.create({
+                    data: {
+                        run_id: runId,
+                        bundle_id: bundle_id || null,
+                        reason_code: reject.reason_code,
+                        qty: reject.qty,
+                        photo_url: reject.photo_url || null,
+                        cost_attribution: reject.cost_attribution || null,
+                    },
+                })));
             }
         }
+        return server_1.NextResponse.json({
+            success: true,
+            data: updatedRun,
+        });
     }
-    finally { }
+    catch (error) {
+        console.error("Update print run error:", error);
+        return server_1.NextResponse.json({ success: false, error: "Failed to update print run" }, { status: 500 });
+    }
 });
+async function getRunStartTime(runId) {
+    const run = await db_1.prisma.printRun.findUnique({
+        where: { id: runId },
+        select: { started_at: true },
+    });
+    return run?.started_at;
+}
+function getMethodDetails(run) {
+    switch (run.method) {
+        case "SILKSCREEN":
+            return {
+                type: "silkscreen",
+                preparation: run.silkscreen_prep,
+                specifications: run.silkscreen_specs,
+                curing: run.curing_logs.map((log) => ({
+                    ...log,
+                    dryer_name: log.dryer?.name || "Unknown",
+                })),
+            };
+        case "SUBLIMATION":
+            return {
+                type: "sublimation",
+                prints: run.sublimation_prints.map((print) => ({
+                    ...print,
+                    printer_name: print.printer?.name || "Unknown",
+                })),
+                heat_press: run.heat_press_logs.map((log) => ({
+                    ...log,
+                    press_name: log.press?.name || "Unknown",
+                })),
+            };
+        case "DTF":
+            return {
+                type: "dtf",
+                prints: run.dtf_prints,
+                powder_curing: run.dtf_powder_cures,
+            };
+        case "EMBROIDERY":
+            return {
+                type: "embroidery",
+                runs: run.embroidery_runs.map((embRun) => ({
+                    ...embRun,
+                    design_file: embRun.design?.files
+                        ? JSON.parse(embRun.design.files).dst_url
+                        : null,
+                })),
+            };
+        default:
+            return { type: "unknown" };
+    }
+}

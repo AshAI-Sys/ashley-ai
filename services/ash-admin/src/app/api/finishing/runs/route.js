@@ -115,15 +115,13 @@ exports.PUT = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
         // If marking as completed, create finished units if data provided
         if (updateData.status === "COMPLETED" && updateData.bundle_data) {
             await createFinishedUnits(finishingRun, updateData.bundle_data);
-            return server_1.NextResponse.json(finishingRun);
         }
-        try { }
-        catch (error) {
-            console.error("Error updating finishing run:", error);
-            return server_1.NextResponse.json({ error: "Failed to update finishing run" }, { status: 500 });
-        }
+        return server_1.NextResponse.json(finishingRun);
     }
-    finally { }
+    catch (error) {
+        console.error("Error updating finishing run:", error);
+        return server_1.NextResponse.json({ error: "Failed to update finishing run" }, { status: 500 });
+    }
 });
 async function createFinishedUnits(finishingRun, bundleData) {
     try {

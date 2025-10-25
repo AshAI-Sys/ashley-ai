@@ -21,7 +21,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         { name: { contains: search, mode: "insensitive" } },
         { asset_number: { contains: search, mode: "insensitive" } },
         { location: { contains: search, mode: "insensitive" } },
-      ];const}const$3 assets = await prisma.asset.findMany({
+      ];
+    }
+
+    const assets = await prisma.asset.findMany({
       where,
       include: {
         work_orders: {
@@ -79,21 +82,22 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         created_at: asset.created_at.toISOString(),
         updated_at: asset.updated_at.toISOString(),
       };
+    });
 
     return NextResponse.json({
       success: true,
       data: processedAssets,
-      });
-    } catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching assets:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch assets" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const POST = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -137,6 +141,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: asset,
+    });
   } catch (error: any) {
     console.error("Error creating asset:", error);
 
@@ -151,10 +156,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { success: false, error: "Failed to create asset" },
       { status: 500 }
     );
-    }
-    });
-  
-  export const PUT = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -182,11 +187,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const asset = await prisma.asset.update({
       where: { id },
       data,
-        
-      
-        return NextResponse.json({
+    });
+
+    return NextResponse.json({
       success: true,
       data: asset,
+    });
   } catch (error) {
     console.error("Error updating asset:", error);
     return NextResponse.json(
@@ -194,4 +200,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});

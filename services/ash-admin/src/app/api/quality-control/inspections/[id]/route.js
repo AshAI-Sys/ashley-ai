@@ -35,16 +35,13 @@ exports.GET = (0, auth_middleware_1.requireAuth)(async (request, user, context) 
         if (!inspection) {
             return server_1.NextResponse.json({ error: "Inspection not found" }, { status: 404 });
         }
+        return server_1.NextResponse.json(inspection);
     }
-    finally {
+    catch (error) {
+        console.error("Error fetching inspection:", error);
+        return server_1.NextResponse.json({ error: "Failed to fetch inspection" }, { status: 500 });
     }
-    return server_1.NextResponse.json(inspection);
 });
-try { }
-catch (error) {
-    console.error("Error fetching inspection:", error);
-    return server_1.NextResponse.json({ error: "Failed to fetch inspection" }, { status: 500 });
-}
 exports.PUT = (0, auth_middleware_1.requireAuth)(async (request, user, context) => {
     try {
         const data = await request.json();

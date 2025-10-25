@@ -70,6 +70,6 @@ async function POST(request, { params }) {
             return server_1.NextResponse.json({ error: "Failed to close inspection" }, { status: 500 });
         }
     }
-    finally {
-    }
+    finally { }
+    ;
 }

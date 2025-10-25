@@ -89,7 +89,6 @@ function calculateMaterialUtilization(printRun) {
             total_cost: 0,
         };
     }
-    ;
     let totalPlanned = 0;
     let totalUsed = 0;
     let totalCost = 0;
@@ -116,7 +115,6 @@ function analyzeQualityTrend(printRun) {
     if (outputs.length === 0) {
         return { trend: "unknown", score: 0, confidence: 0, defect_rate: 0 };
     }
-    ;
     const totalGood = outputs.reduce((sum, o) => sum + (o.qty_good || 0), 0);
     const totalReject = outputs.reduce((sum, o) => sum + (o.qty_reject || 0), 0);
     const total = totalGood + totalReject;
@@ -144,7 +142,6 @@ function calculateEfficiencyScore(printRun) {
     if (!startTime) {
         return { score: 0, factors: { time: 0, quality: 0, material: 0 } };
     }
-    ;
     const elapsedHours = (currentTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
     // Estimate 8 hours if not specified
     const estimatedHours = elapsedHours * 1.2;
@@ -196,7 +193,6 @@ function predictCompletionTime(printRun) {
     if (!startTime) {
         return { estimated_completion: null, remaining_minutes: 0, confidence: 0 };
     }
-    ;
     const elapsedMinutes = (new Date().getTime() - startTime.getTime()) / (1000 * 60);
     // Estimate based on method and quantity
     const outputs = printRun.outputs || [];
@@ -254,7 +250,6 @@ function identifyRiskFactors(printRun) {
             recommendation: "Review pricing or optimize costs",
         });
     }
-    ;
     return risks;
 }
 function generateRealTimeRecommendations(printRun, insights) {
@@ -297,140 +292,146 @@ function generateRealTimeRecommendations(printRun, insights) {
                 action: risk.recommendation,
             });
         }
-        return recommendations;
-    }, function calculatePerformanceScore(printRun, insights) {
-        const weights = {
-            efficiency: 0.3,
-            quality: 0.3,
-            cost: 0.25,
-            time: 0.15,
-        };
-        const scores = {
-            efficiency: insights.efficiency_score.score,
-            quality: insights.quality_trend.score,
-            cost: Math.max(0, insights.cost_tracking.profit_margin * 5), // Scale to 0-1
-            time: insights.time_prediction.confidence,
-        };
-        const weightedScore = Object.entries(weights).reduce((sum, [key, weight]) => {
-            return sum + (scores[key] || 0) * weight;
-        }, 0);
-        return {
-            overall_score: Math.round(weightedScore * 100) / 100,
-            component_scores: scores,
-            grade: getPerformanceGrade(weightedScore),
-        };
-    }, function getEstimatedRevenuePerPiece(method) {
-        const revenues = {
-            SILKSCREEN: 5.5,
-            SUBLIMATION: 7.25,
-            DTF: 8.75,
-            EMBROIDERY: 15.0,
-            RUBBERIZED: 6.5,
-        };
-        return revenues[method] || 6.0;
-    }, function getMethodEstimatedTime(method, quantity) {
-        const timePerPiece = {
-            SILKSCREEN: 0.8,
-            SUBLIMATION: 2.5,
-            DTF: 1.5,
-            EMBROIDERY: 8.0,
-            RUBBERIZED: 1.2,
-        };
-        return (timePerPiece[method] || 2.0) * quantity;
-    }, function getEfficiencyAction(factor, method) {
-        const actions = {
-            time: {
-                SILKSCREEN: "Optimize screen setup and ink flow",
-                SUBLIMATION: "Adjust heat press timing and temperature",
-                DTF: "Optimize film feeding and curing process",
-                EMBROIDERY: "Check thread tension and machine speed",
-                RUBBERIZED: "Optimize rubber application process",
-            },
-            quality: {
-                SILKSCREEN: "Check squeegee pressure and ink viscosity",
-                SUBLIMATION: "Verify paper alignment and heat distribution",
-                DTF: "Check powder application and curing temperature",
-                EMBROIDERY: "Inspect thread quality and needle condition",
-                RUBBERIZED: "Check rubber consistency and application",
-            },
-            material: {
-                SILKSCREEN: "Optimize ink usage and screen mesh",
-                SUBLIMATION: "Reduce paper waste and improve positioning",
-                DTF: "Optimize film usage and powder application",
-                EMBROIDERY: "Reduce thread breaks and optimize thread usage",
-                RUBBERIZED: "Optimize rubber material usage",
-            },
-        };
-        return (actions[factor]?.[method] ||
-            "Review process parameters and equipment settings");
-    }, function getPerformanceGrade(score) {
-        if (score >= 0.9)
-            return "A+";
-        if (score >= 0.85)
-            return "A";
-        if (score >= 0.8)
-            return "B+";
-        if (score >= 0.75)
-            return "B";
-        if (score >= 0.7)
-            return "C+";
-        if (score >= 0.65)
-            return "C";
-        return "D";
-    }, async function processMonitoringData(runId, data) {
-        // Process sensor data, operator input, and quality checkpoints
-        // This is a simplified implementation for demo purposes
-        const analysis = {
-            recommendations: [],
-            confidence_score: 0.85,
-            alerts: [],
-        };
-        // Process sensor data
-        if (data.sensor_data) {
-            const { temperature, humidity, pressure } = data.sensor_data;
-            if (temperature && (temperature < 20 || temperature > 35)) {
-                analysis.alerts.push({
-                    type: "ENVIRONMENTAL",
-                    severity: "MEDIUM",
-                    message: `Temperature out of optimal range: ${temperature}°C`,
-                });
-            }
-        }
     });
-    if (humidity && (humidity < 40 || humidity > 70)) {
-        analysis.alerts.push({
-            type: "ENVIRONMENTAL",
-            severity: "LOW",
-            message: `Humidity suboptimal: ${humidity}%`,
-        });
-    }
+    return recommendations;
 }
-// Process operator input
-if (data.operator_input) {
-    const { issues, adjustments } = data.operator_input;
-    if (issues && issues.length > 0) {
-        analysis.recommendations.push({
-            type: "OPERATOR_FEEDBACK",
-            priority: "HIGH",
-            message: "Address operator-reported issues",
-            details: issues,
-        });
-    }
+function calculatePerformanceScore(printRun, insights) {
+    const weights = {
+        efficiency: 0.3,
+        quality: 0.3,
+        cost: 0.25,
+        time: 0.15,
+    };
+    const scores = {
+        efficiency: insights.efficiency_score.score,
+        quality: insights.quality_trend.score,
+        cost: Math.max(0, insights.cost_tracking.profit_margin * 5), // Scale to 0-1
+        time: insights.time_prediction.confidence,
+    };
+    const weightedScore = Object.entries(weights).reduce((sum, [key, weight]) => {
+        return sum + (scores[key] || 0) * weight;
+    }, 0);
+    return {
+        overall_score: Math.round(weightedScore * 100) / 100,
+        component_scores: scores,
+        grade: getPerformanceGrade(weightedScore),
+    };
 }
-// Process quality checkpoint
-if (data.quality_checkpoint) {
-    const { pass_rate, defects } = data.quality_checkpoint;
-    if (pass_rate < 0.85) {
-        analysis.alerts.push({
-            type: "QUALITY",
-            severity: "HIGH",
-            message: `Quality checkpoint below threshold: ${Math.round(pass_rate * 100)}%`,
-        });
-        analysis.recommendations.push({
-            type: "QUALITY",
-            priority: "CRITICAL",
-            message: "Immediate quality intervention required",
-        });
+function getEstimatedRevenuePerPiece(method) {
+    const revenues = {
+        SILKSCREEN: 5.5,
+        SUBLIMATION: 7.25,
+        DTF: 8.75,
+        EMBROIDERY: 15.0,
+        RUBBERIZED: 6.5,
+    };
+    return revenues[method] || 6.0;
+}
+function getMethodEstimatedTime(method, quantity) {
+    const timePerPiece = {
+        SILKSCREEN: 0.8,
+        SUBLIMATION: 2.5,
+        DTF: 1.5,
+        EMBROIDERY: 8.0,
+        RUBBERIZED: 1.2,
+    };
+    return (timePerPiece[method] || 2.0) * quantity;
+}
+function getEfficiencyAction(factor, method) {
+    const actions = {
+        time: {
+            SILKSCREEN: "Optimize screen setup and ink flow",
+            SUBLIMATION: "Adjust heat press timing and temperature",
+            DTF: "Optimize film feeding and curing process",
+            EMBROIDERY: "Check thread tension and machine speed",
+            RUBBERIZED: "Optimize rubber application process",
+        },
+        quality: {
+            SILKSCREEN: "Check squeegee pressure and ink viscosity",
+            SUBLIMATION: "Verify paper alignment and heat distribution",
+            DTF: "Check powder application and curing temperature",
+            EMBROIDERY: "Inspect thread quality and needle condition",
+            RUBBERIZED: "Check rubber consistency and application",
+        },
+        material: {
+            SILKSCREEN: "Optimize ink usage and screen mesh",
+            SUBLIMATION: "Reduce paper waste and improve positioning",
+            DTF: "Optimize film usage and powder application",
+            EMBROIDERY: "Reduce thread breaks and optimize thread usage",
+            RUBBERIZED: "Optimize rubber material usage",
+        },
+    };
+    return (actions[factor]?.[method] ||
+        "Review process parameters and equipment settings");
+}
+function getPerformanceGrade(score) {
+    if (score >= 0.9)
+        return "A+";
+    if (score >= 0.85)
+        return "A";
+    if (score >= 0.8)
+        return "B+";
+    if (score >= 0.75)
+        return "B";
+    if (score >= 0.7)
+        return "C+";
+    if (score >= 0.65)
+        return "C";
+    return "D";
+}
+async function processMonitoringData(runId, data) {
+    // Process sensor data, operator input, and quality checkpoints
+    // This is a simplified implementation for demo purposes
+    const analysis = {
+        recommendations: [],
+        confidence_score: 0.85,
+        alerts: [],
+    };
+    // Process sensor data
+    if (data.sensor_data) {
+        const { temperature, humidity, pressure } = data.sensor_data;
+        if (temperature && (temperature < 20 || temperature > 35)) {
+            analysis.alerts.push({
+                type: "ENVIRONMENTAL",
+                severity: "MEDIUM",
+                message: `Temperature out of optimal range: ${temperature}°C`,
+            });
+        }
+        if (humidity && (humidity < 40 || humidity > 70)) {
+            analysis.alerts.push({
+                type: "ENVIRONMENTAL",
+                severity: "LOW",
+                message: `Humidity suboptimal: ${humidity}%`,
+            });
+        }
+    }
+    // Process operator input
+    if (data.operator_input) {
+        const { issues, adjustments } = data.operator_input;
+        if (issues && issues.length > 0) {
+            analysis.recommendations.push({
+                type: "OPERATOR_FEEDBACK",
+                priority: "HIGH",
+                message: "Address operator-reported issues",
+                details: issues,
+            });
+        }
+    }
+    // Process quality checkpoint
+    if (data.quality_checkpoint) {
+        const { pass_rate, defects } = data.quality_checkpoint;
+        if (pass_rate < 0.85) {
+            analysis.alerts.push({
+                type: "QUALITY",
+                severity: "HIGH",
+                message: `Quality checkpoint below threshold: ${Math.round(pass_rate * 100)}%`,
+            });
+            analysis.recommendations.push({
+                type: "QUALITY",
+                priority: "CRITICAL",
+                message: "Immediate quality intervention required",
+            });
+        }
     }
     return analysis;
 }

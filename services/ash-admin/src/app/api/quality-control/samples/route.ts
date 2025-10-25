@@ -32,7 +32,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-})
+});
 
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
@@ -68,4 +68,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});

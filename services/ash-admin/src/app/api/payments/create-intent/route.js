@@ -17,7 +17,7 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
         const body = await request.json();
         const { invoiceId, provider = "stripe" } = body;
         if (!invoiceId) {
-            return createErrorResponse(new error_handling_1.ValidationError("Invoice ID is required"));
+            return (0, error_handling_1.createErrorResponse)(new error_handling_1.ValidationError("Invoice ID is required"));
         }
         // Get invoice details
         const invoice = await prisma.invoice.findUnique({
@@ -27,10 +27,10 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
             },
         });
         if (!invoice) {
-            return createErrorResponse(new error_handling_1.NotFoundError("Invoice"));
+            return (0, error_handling_1.createErrorResponse)(new error_handling_1.NotFoundError("Invoice"));
         }
         if (invoice.status === "paid") {
-            return createErrorResponse(new error_handling_1.ValidationError("Invoice is already paid"));
+            return (0, error_handling_1.createErrorResponse)(new error_handling_1.ValidationError("Invoice is already paid"));
         }
         // Calculate remaining amount
         const payments = await prisma.payment.aggregate({
@@ -44,7 +44,7 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
         const remainingAmount = parseFloat(invoice.total_amount.toString()) -
             parseFloat(paidAmount.toString());
         if (remainingAmount <= 0) {
-            return createErrorResponse(new error_handling_1.ValidationError("Invoice has no remaining balance"));
+            return (0, error_handling_1.createErrorResponse)(new error_handling_1.ValidationError("Invoice has no remaining balance"));
         }
         // Create payment based on provider
         if (provider === "stripe") {
@@ -61,7 +61,7 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
                 },
             });
             if (!result.success) {
-                return createErrorResponse(new error_handling_1.AppError(error_handling_1.ErrorCode.EXTERNAL_SERVICE_ERROR, result.error || "Failed to create payment intent", 500));
+                return (0, error_handling_1.createErrorResponse)(new error_handling_1.AppError(error_handling_1.ErrorCode.EXTERNAL_SERVICE_ERROR, result.error || "Failed to create payment intent", 500));
             }
             return (0, error_handling_1.createSuccessResponse)({
                 paymentIntent: {
@@ -81,41 +81,38 @@ exports.POST = (0, auth_middleware_1.requireAuth)(async (request, _user) => {
         }
         else if (provider === "gcash") {
             const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3001";
+            const result = await paymentService_1.paymentService.createGCashPayment({
+                amount: paymentService_1.paymentService.toSmallestUnit(remainingAmount, "PHP"),
+                description: `Invoice ${invoice.invoice_number}`,
+                referenceNumber: invoice.invoice_number,
+                customerName: invoice.client.name,
+                customerEmail: undefined,
+                successUrl: `${baseUrl}/payments/success?invoice=${invoice.id}`,
+                failureUrl: `${baseUrl}/payments/failed?invoice=${invoice.id}`,
+            });
+            if (!result.success) {
+                return (0, error_handling_1.createErrorResponse)(new error_handling_1.AppError(error_handling_1.ErrorCode.EXTERNAL_SERVICE_ERROR, result.error || "Failed to create GCash payment", 500));
+            }
+            return (0, error_handling_1.createSuccessResponse)({
+                payment: {
+                    id: result.transactionId,
+                    url: result.paymentUrl,
+                    amount: remainingAmount,
+                    currency: "PHP",
+                    provider: "gcash",
+                },
+                invoice: {
+                    id: invoice.id,
+                    number: invoice.invoice_number,
+                },
+            });
         }
-        const result = await paymentService_1.paymentService.createGCashPayment({
-            amount: paymentService_1.paymentService.toSmallestUnit(remainingAmount, "PHP"),
-            description: `Invoice ${invoice.invoice_number}`,
-            referenceNumber: invoice.invoice_number,
-            customerName: invoice.client.name,
-            customerEmail: undefined,
-            successUrl: `${baseUrl}/payments/success?invoice=${invoice.id}`,
-            failureUrl: `${baseUrl}/payments/failed?invoice=${invoice.id}`,
-            if(, result) { }, : .success
-        }), { return: createErrorResponse };
-        (new error_handling_1.AppError(error_handling_1.ErrorCode.EXTERNAL_SERVICE_ERROR, result.error || "Failed to create GCash payment", 500));
+        else {
+            return (0, error_handling_1.createErrorResponse)(new error_handling_1.ValidationError("Unsupported payment provider"));
+        }
     }
-    finally {
+    catch (error) {
+        console.error("Error creating payment intent:", error);
+        return (0, error_handling_1.handleApiError)(error);
     }
-    return (0, error_handling_1.createSuccessResponse)({
-        payment: {
-            id: result.transactionId,
-            url: result.paymentUrl,
-            amount: remainingAmount,
-            currency: "PHP",
-            provider: "gcash",
-        },
-        invoice: {
-            id: invoice.id,
-            number: invoice.invoice_number,
-        },
-    });
-}, {
-    return: (0, error_handling_1.createErrorResponse)(new error_handling_1.ValidationError("Unsupported payment provider"))
 });
-;
-try { }
-catch (error) {
-    console.error("Error creating payment intent:", error);
-    return (0, error_handling_1.handleApiError)(error);
-}
-;

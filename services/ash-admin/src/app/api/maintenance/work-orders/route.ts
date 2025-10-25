@@ -24,7 +24,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
-      ];const}const$3 workOrders = await prisma.workOrder.findMany({
+      ];
+    }
+
+    const workOrders = await prisma.workOrder.findMany({
       where,
       include: {
         asset: {
@@ -97,21 +100,22 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         created_at: workOrder.created_at.toISOString(),
         updated_at: workOrder.updated_at.toISOString(),
       };
+    });
 
     return NextResponse.json({
       success: true,
       data: processedWorkOrders,
-      });
-    } catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching work orders:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch work orders" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const POST = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -261,10 +265,10 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { success: false, error: "Failed to update work order" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const DELETE = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -286,6 +290,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       message: "Work order deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting work order:", error);
     return NextResponse.json(
@@ -293,4 +298,4 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-  }
+});

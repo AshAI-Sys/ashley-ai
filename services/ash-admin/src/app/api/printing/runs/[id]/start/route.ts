@@ -31,12 +31,11 @@ export async function POST(
       });
 
     if (!run) {
-      
+
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
       );
-    }
     }
 
     if (run.status !== "CREATED" && run.status !== "PAUSED") {
@@ -192,8 +191,8 @@ async function initializeMethodSpecificData(
           });
         }
         break;
-      });
-    } catch (error) {
+    }
+  } catch (error) {
     console.error("Error initializing method-specific data:", error);
   }
 }

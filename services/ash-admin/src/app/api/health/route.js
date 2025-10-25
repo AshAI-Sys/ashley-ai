@@ -23,12 +23,12 @@ exports.GET = (0, error_handling_1.withErrorHandling)(async (request) => {
             expectedFormat: "none",
         });
     }
-});
-return (0, error_handling_1.createSuccessResponse)({
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-    version: "1.0.0",
-    message: "Ashley AI API is running successfully",
+    return (0, error_handling_1.createSuccessResponse)({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        version: "1.0.0",
+        message: "Ashley AI API is running successfully",
+    });
 });
 exports.POST = (0, error_handling_1.withErrorHandling)(async (request) => {
     const body = await request.json();

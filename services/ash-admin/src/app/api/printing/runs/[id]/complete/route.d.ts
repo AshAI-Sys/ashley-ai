@@ -6,4 +6,8 @@ export declare function POST(request: NextRequest, { params }: {
 }): Promise<NextResponse<{
     success: boolean;
     error: string;
+}> | NextResponse<{
+    success: boolean;
+    data: any;
+    message: string;
 }>>;

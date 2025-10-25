@@ -51,7 +51,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params: _params }: { params: _params : { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
@@ -101,7 +101,7 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params: _params }: { params: _params : { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -119,10 +119,12 @@ export async function DELETE(
       where: {
         id: variantId,
       },
+    });
 
     return NextResponse.json({
       success: true,
       message: "Color variant deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting color variant:", error);
     return NextResponse.json(

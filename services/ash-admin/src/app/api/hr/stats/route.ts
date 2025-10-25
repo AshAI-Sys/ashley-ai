@@ -240,7 +240,6 @@ async function calculateHRStats(
       const months =
         (today.getTime() - emp.hire_date!.getTime()) /
         (1000 * 60 * 60 * 24 * 30.44);
-      }
       return sum + months;
     }, 0);
     averageTenureMonths = totalMonths / employeesWithTenure.length;
@@ -277,7 +276,6 @@ async function calculateHRStats(
                   (1000 * 60 * 60);
                 const piecesPerHour =
                   hours > 0 ? (run.qty_good || 0) / hours : 0;
-                }
                 return sum + piecesPerHour;
               }
               return sum;
@@ -308,14 +306,13 @@ async function calculateHRStats(
   const currentDate = nextPayrollDate.getDate();
   if (currentDate <= 15) {
     nextPayrollDate.setDate(31); // End of month
-    }
     if (nextPayrollDate.getDate() !== 31) {
       nextPayrollDate.setDate(0); // Last day of month
     }
   } else {
     nextPayrollDate.setMonth(nextPayrollDate.getMonth() + 1);
     nextPayrollDate.setDate(15);
-  });
+  }
 
   return {
     // Basic counts

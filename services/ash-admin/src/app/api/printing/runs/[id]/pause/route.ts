@@ -18,12 +18,11 @@ export async function POST(
       });
 
     if (!run) {
-      
+
       return NextResponse.json(
         { success: false, error: "Print run not found" },
         { status: 404 }
       );
-    }
     }
 
     if (run.status !== "IN_PROGRESS") {

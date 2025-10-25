@@ -65,21 +65,22 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         created_at: period.created_at.toISOString(),
         processed_at: period.processed_at?.toISOString() || null,
       };
+    });
 
     return NextResponse.json({
       success: true,
       data: processedRuns,
-      });
-    } catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching payroll runs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch payroll runs" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const POST = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const {
@@ -142,11 +143,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             totalHours += hours;
 
             // Calculate overtime (over 8 hours per day)
-            }
             if (hours > 8) {
               overtimeHours += hours - 8;
             }
           }
+        });
 
         // Get piece-rate earnings from production runs (sewing)
         const sewingEarnings = await tx.sewingRun.aggregate({
@@ -193,6 +194,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             const monthlyRate = employee.base_salary || 0;
             grossPay = (monthlyRate / 22) * workDays; // Assuming 22 working days per month
             break;
+        }
 
         // Calculate deductions (10% as simplified deductions)
         const deductions = grossPay * 0.1;
@@ -214,10 +216,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
             total_hours: totalHours,
             salary_type: employee.salary_type,
           }),
-        }
+        });
+      }
 
       // Create payroll earnings
-      await tx.payrollEarning.createMany({
+        await tx.payrollEarning.createMany({
         data: payrollItems,
       });
 
@@ -229,9 +232,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       await tx.payrollPeriod.update({
         where: { id: payrollPeriod.id },
         data: { total_amount: totalAmount },
-        });
-      
-        return payrollPeriod;
+      });
+
+      return payrollPeriod;
+    });
 
     // Return the complete payroll period with earnings
     const completePeriod = await prisma.payrollPeriod.findUnique({
@@ -269,17 +273,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
-  
   } catch (error) {
     console.error("Error creating payroll run:", error);
     return NextResponse.json(
       { success: false, error: "Failed to create payroll run" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const PUT = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const { id, status, approval_notes } = data;
@@ -328,4 +331,4 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  }
+});
