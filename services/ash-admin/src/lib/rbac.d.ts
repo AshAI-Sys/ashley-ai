@@ -1,0 +1,11 @@
+export type Permission = "clients:read" | "clients:create" | "clients:update" | "clients:delete" | "orders:read" | "orders:create" | "orders:update" | "orders:delete" | "designs:read" | "designs:create" | "designs:update" | "designs:delete" | "designs:approve" | "cutting:read" | "cutting:create" | "cutting:update" | "cutting:operate" | "printing:read" | "printing:create" | "printing:update" | "printing:operate" | "sewing:read" | "sewing:create" | "sewing:update" | "sewing:operate" | "qc:read" | "qc:create" | "qc:update" | "qc:inspect" | "qc:approve" | "finishing:read" | "finishing:create" | "finishing:update" | "finishing:operate" | "delivery:read" | "delivery:create" | "delivery:update" | "delivery:dispatch" | "finance:read" | "finance:create" | "finance:update" | "finance:approve" | "hr:read" | "hr:create" | "hr:update" | "hr:delete" | "payroll:read" | "payroll:process" | "maintenance:read" | "maintenance:create" | "maintenance:update" | "automation:read" | "automation:create" | "automation:update" | "analytics:read" | "reports:generate" | "admin:read" | "admin:create" | "admin:update" | "admin:delete";
+export type Role = "admin" | "manager" | "designer" | "cutting_operator" | "printing_operator" | "sewing_operator" | "qc_inspector" | "finishing_operator" | "warehouse_staff" | "finance_staff" | "hr_staff" | "maintenance_tech";
+export declare const ROLE_PERMISSIONS: Record<Role, Permission[]>;
+export declare const NAVIGATION_PERMISSIONS: Record<string, Permission[]>;
+export declare function hasPermission(userPermissions: Permission[], requiredPermission: Permission): boolean;
+export declare function hasAnyPermission(userPermissions: Permission[], requiredPermissions: Permission[]): boolean;
+export declare function getRolePermissions(role: Role): Permission[];
+export declare function canAccessPage(userPermissions: Permission[], page: string): boolean;
+export declare const ROLE_HIERARCHY: Record<Role, Role[]>;
+export declare function getAllPermissionsForRole(role: Role): Permission[];
+export declare function getRoleBasedPermissions(roleName: string): Permission[];

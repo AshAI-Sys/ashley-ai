@@ -32,7 +32,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       providedValue: test,
       expectedFormat: "none",
     });
-  });
+  }
 
   return createSuccessResponse({
     status: "healthy",
@@ -40,6 +40,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     version: "1.0.0",
     message: "Ashley AI API is running successfully",
   });
+});
 
 export const POST = withErrorHandling(async (request: NextRequest) => {
   const body = await request.json();
@@ -49,3 +50,4 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
     receivedData: body,
     timestamp: new Date().toISOString(),
   });
+});

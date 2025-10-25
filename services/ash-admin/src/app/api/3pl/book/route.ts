@@ -68,6 +68,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         });
       }
+    }
+
     return NextResponse.json(booking, { status: 201 });
   } catch (error: any) {
     console.error("Error booking 3PL shipment:", error);
@@ -79,4 +81,4 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-  });
+});

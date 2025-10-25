@@ -80,7 +80,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             vat_amount: vat.vat,
             total_amount: exp.amount,
           };
-        }
+        });
 
         report = await birService.generatePurchaseBook(purchaseEntries, period);
         break;
@@ -103,10 +103,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           payee: data.payee,
           withholding_entries: data.withholding_entries,
           total_tax_withheld: 0, // Will be calculated
-        }
-        break;
-
-      }
+        });
         break;
 
       default:
@@ -123,6 +120,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       report_type,
       period,
       report,
+    });
   } catch (error: any) {
     console.error("Error generating BIR report:", error);
     return NextResponse.json(
@@ -130,6 +128,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/government/bir - Calculate VAT or withholding tax
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -184,9 +183,6 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           is_valid: birService.validateTIN(tin),
           formatted: birService.formatTIN(tin),
         };
-        break;
-
-      }
         break;
 
       default:

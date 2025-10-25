@@ -38,6 +38,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         ...ALLOWED_FILE_TYPES.documents,
         ...ALLOWED_FILE_TYPES.spreadsheets,
       ];
+    }
 
     // Validate file
     const validation = await validateFile(file, allowedTypes, MAX_FILE_SIZE);
@@ -91,7 +92,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         }
       );
       uploadStream.end(buffer);
-    
+    });
 
     return NextResponse.json({
       url: result.secure_url,
@@ -102,6 +103,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       height: result.height,
       bytes: result.bytes,
       created_at: result.created_at,
+    });
   } catch (error: any) {
     console.error("Error uploading file:", error);
     return NextResponse.json(
@@ -112,6 +114,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // DELETE /api/upload - Delete file from Cloudinary
 export const DELETE = requireAuth(async (request: NextRequest, user) => {
@@ -142,6 +145,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/upload - Check upload configuration status
 export async function GET() {
@@ -151,3 +155,4 @@ export async function GET() {
     ),
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME || null,
   });
+}

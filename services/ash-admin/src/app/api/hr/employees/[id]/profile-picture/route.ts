@@ -92,13 +92,13 @@ export async function POST(
             "public",
             employee.profile_picture
           );
-          }
           if (existsSync(oldFilepath)) {
             await unlink(oldFilepath);
-            });
-          } catch (error) {
+          }
+        } catch (error) {
           console.error("Error deleting old profile picture:", error);
         }
+      }
 
       // Update employee with new profile picture URL
       const profilePictureUrl = `/uploads/employees/${filename}`;
@@ -129,7 +129,8 @@ export async function POST(
         { status: 500 }
       );
     }
-  }
+  })(request, user);
+}
 
 // DELETE - Remove employee profile picture
 export async function DELETE(
@@ -149,21 +150,18 @@ export async function DELETE(
       });
 
       if (!employee) {
-        
         return NextResponse.json(
           { error: "Employee not found" },
           { status: 404 }
         );
-    }
-    }
+      }
 
       if (!employee.profile_picture) {
-        
         return NextResponse.json(
           { error: "No profile picture to delete" },
           { status: 400 }
         );
-    }
+      }
 
       // Delete file from filesystem
       try {
@@ -174,10 +172,10 @@ export async function DELETE(
         );
         if (existsSync(filepath)) {
           await unlink(filepath);
-          });
-        } catch (error) {
+        }
+      } catch (error) {
         console.error("Error deleting profile picture file:", error);
-    }
+      }
 
       // Update employee to remove profile picture
       await prisma.employee.update({
@@ -186,10 +184,12 @@ export async function DELETE(
           profile_picture: null,
           updated_at: new Date(),
         },
+      });
 
       return NextResponse.json({
         success: true,
         message: "Profile picture deleted successfully",
+      });
     } catch (error) {
       console.error("Error deleting employee profile picture:", error);
       return NextResponse.json(

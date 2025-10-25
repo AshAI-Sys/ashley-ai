@@ -129,7 +129,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
     // If marking as completed, create finished units if data provided
     if (updateData.status === "COMPLETED" && updateData.bundle_data) {
       await createFinishedUnits(finishingRun, updateData.bundle_data);
-    
+    }
 
     return NextResponse.json(finishingRun);
   } catch (error) {

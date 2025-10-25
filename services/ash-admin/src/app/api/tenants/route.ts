@@ -47,9 +47,9 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       storage_quota_gb,
       custom_domain,
       branding,
-        
-      
-        return NextResponse.json(
+    });
+
+    return NextResponse.json(
       {
         success: true,
         ...result,
@@ -65,6 +65,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/tenants?workspace_id=xxx - Get tenant information
 export const GET = requireAuth(async (req: NextRequest, user) => {
@@ -96,6 +97,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       config,
       limits,
       stats,
+    });
   } catch (error: any) {
     console.error("Get tenant error:", error);
     return NextResponse.json(
@@ -103,6 +105,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // PUT /api/tenants - Update tenant configuration
 export const PUT = requireAuth(async (req: NextRequest, user) => {
@@ -131,6 +134,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     return NextResponse.json({
       success: true,
       message: "Tenant configuration updated",
+    });
   } catch (error: any) {
     console.error("Update tenant error:", error);
     return NextResponse.json(
@@ -138,6 +142,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       { status: 500 }
     );
   }
+});
 
 // DELETE /api/tenants?workspace_id=xxx&confirmation=slug - Delete tenant
 export const DELETE = requireAuth(async (req: NextRequest, user) => {
@@ -159,28 +164,22 @@ export const DELETE = requireAuth(async (req: NextRequest, user) => {
     );
 
     if (!success) {
-      
+
       return NextResponse.json(
         { error: "Failed to delete tenant" },
         { status: 500 }
       );
     }
-    }
 
     return NextResponse.json({
       success: true,
       message: "Tenant deleted successfully",
+    });
   } catch (error: any) {
     console.error("Delete tenant error:", error);
     return NextResponse.json(
       { error: "Failed to delete tenant", details: error.message },
-      { status: 400 }
+      { status: 500 }
     );
   }
-  });
-});
-});
-});
-});
-});
 });

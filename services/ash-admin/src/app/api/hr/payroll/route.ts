@@ -16,12 +16,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     if (year || month) {
       where.period_start = {};
       if (year) {
-        
         const startYear = new Date(`${year}-01-01`);
         const endYear = new Date(`${year}-12-31`);
         where.period_start.gte = startYear;
         where.period_start.lte = endYear;
-      });
+      }
+    }
 
     const payrollPeriods = await prisma.payrollPeriod.findMany({
       where,

@@ -60,6 +60,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
       } catch (e) {
         // If parsing fails, use empty object
+      }
 
       const monthlySalary = emp.base_salary || emp.piece_rate || 0;
 
@@ -70,6 +71,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         pagibig_number: contactInfo.pagibig_number || null,
         monthly_salary: monthlySalary,
       };
+    });
 
     switch (agency.toUpperCase()) {
       case "SSS":
@@ -135,9 +137,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         );
         break;
 
-      }
-        break;
-
       default:
         return NextResponse.json(
           { error: "Invalid agency. Must be SSS, PHILHEALTH, or PAGIBIG" },
@@ -149,6 +148,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       agency,
       period,
       report,
+    });
   } catch (error: any) {
     console.error("Error generating government report:", error);
     return NextResponse.json(
@@ -156,6 +156,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/government/reports - Get contribution calculations for a single employee
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -220,7 +221,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           philhealth_number: contactInfo.philhealth_number || null,
           pagibig_number: contactInfo.pagibig_number || null,
         };
-      
+      }
+    }
 
     return NextResponse.json({
       employee,
@@ -252,12 +254,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         total_employer_contribution: Math.round(totalER * 100) / 100,
         grand_total: Math.round(grandTotal * 100) / 100,
       },
-      });
-    } catch (error: any) {
+    });
+  } catch (error: any) {
     console.error("Error calculating contributions:", error);
     return NextResponse.json(
       { error: "Failed to calculate contributions", details: error.message },
       { status: 500 }
     );
   }
-  });
+});

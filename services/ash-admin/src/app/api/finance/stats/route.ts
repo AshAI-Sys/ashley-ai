@@ -119,6 +119,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         client_name: clientInfo?.name || "Unknown",
         revenue: client._sum.total_amount || 0,
       };
+    });
 
     const cashFlow = 0; // Will be calculated from payments later
 

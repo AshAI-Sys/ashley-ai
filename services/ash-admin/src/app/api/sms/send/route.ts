@@ -36,7 +36,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       result = await smsService.sendTemplatedSMS(
         formattedPhone,
         template,
-        }
         variables
       );
     }
@@ -46,13 +45,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         to: formattedPhone,
         message,
         provider,
-      }
+      });
     } else {
       return NextResponse.json(
         { error: "Either message or template with variables is required" },
         { status: 400 }
       );
-    }
     }
 
     if (!result.success) {
@@ -67,6 +65,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       message_id: result.message_id,
       provider: result.provider,
       status: result.status,
+    });
   } catch (error: any) {
     console.error("Error sending SMS:", error);
     return NextResponse.json(
@@ -74,6 +73,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
+});
 
 // GET /api/sms/send - Get SMS provider status
 export async function GET() {
@@ -85,11 +85,11 @@ export async function GET() {
       providers: status,
       balances,
       configured: Object.values(status).some(v => v === true),
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to get SMS status", details: error.message },
       { status: 500 }
     );
   }
-  });
-});
+}

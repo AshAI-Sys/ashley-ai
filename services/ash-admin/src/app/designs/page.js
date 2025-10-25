@@ -1,0 +1,342 @@
+"use client";
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = DesignsPage;
+const react_1 = __importStar(require("react"));
+const react_query_1 = require("@tanstack/react-query");
+const dashboard_layout_1 = __importDefault(require("@/components/dashboard-layout"));
+const card_1 = require("@/components/ui/card");
+const button_1 = require("@/components/ui/button");
+const input_1 = require("@/components/ui/input");
+const badge_1 = require("@/components/ui/badge");
+const skeleton_1 = require("@/components/ui/skeleton");
+const alert_1 = require("@/components/ui/alert");
+const lucide_react_1 = require("lucide-react");
+const link_1 = __importDefault(require("next/link"));
+function DesignsPage() {
+    const [search, setSearch] = (0, react_1.useState)("");
+    const [statusFilter, setStatusFilter] = (0, react_1.useState)("all");
+    const [methodFilter, setMethodFilter] = (0, react_1.useState)("all");
+    // React Query: Designs
+    const { data: designs = [], isLoading, error, refetch, isFetching, } = (0, react_query_1.useQuery)({
+        queryKey: ["designs", search, statusFilter, methodFilter],
+        queryFn: async () => {
+            const params = new URLSearchParams();
+            if (search)
+                params.append("search", search);
+            if (statusFilter !== "all")
+                params.append("status", statusFilter);
+            if (methodFilter !== "all")
+                params.append("method", methodFilter);
+            const response = await fetch(`/api/designs?${params}`);
+            if (!response.ok)
+                throw new Error("Failed to fetch designs");
+            const data = await response.json();
+            return data.success ? data.data?.designs || [] : [];
+        },
+        staleTime: 30000,
+        refetchInterval: 60000,
+    });
+    // Master refresh function
+    const handleRefreshAll = () => {
+        refetch();
+    };
+    const getStatusColor = (status) => {
+        if (!status)
+            return "bg-gray-100 text-gray-800";
+        switch (status.toUpperCase()) {
+            case "DRAFT":
+                return "bg-gray-100 text-gray-800";
+            case "PENDING_APPROVAL":
+                return "bg-yellow-100 text-yellow-800";
+            case "APPROVED":
+                return "bg-green-100 text-green-800";
+            case "REJECTED":
+                return "bg-red-100 text-red-800";
+            case "LOCKED":
+                return "bg-blue-100 text-blue-800";
+            default:
+                return "bg-gray-100 text-gray-800";
+        }
+    };
+    const getMethodColor = (method) => {
+        if (!method)
+            return "bg-gray-100 text-gray-800";
+        switch (method.toUpperCase()) {
+            case "SILKSCREEN":
+                return "bg-purple-100 text-purple-800";
+            case "SUBLIMATION":
+                return "bg-cyan-100 text-cyan-800";
+            case "DTF":
+                return "bg-orange-100 text-orange-800";
+            case "EMBROIDERY":
+                return "bg-pink-100 text-pink-800";
+            default:
+                return "bg-gray-100 text-gray-800";
+        }
+    };
+    const handleSendApproval = async (designId, version) => {
+        // TODO: Implement send approval modal
+        console.log("Send for approval:", designId, version);
+    };
+    const handleLockDesign = async (designId, version) => {
+        if (!confirm("Are you sure you want to lock this design version? This cannot be undone.")) {
+            return;
+        }
+        try {
+            const response = await fetch(`/api/designs/${designId}/versions/${version}/lock`, {
+                method: "POST",
+            });
+            if (response.ok) {
+                refetch();
+            }
+        }
+        catch (error) {
+            console.error("Failed to lock design:", error);
+        }
+    };
+    return (<dashboard_layout_1.default>
+      <div className="container mx-auto py-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Design Assets</h1>
+            <p className="text-muted-foreground">
+              Manage design files, versions, and client approvals
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button_1.Button variant="outline" onClick={handleRefreshAll} disabled={isFetching}>
+              <lucide_react_1.RefreshCw className={`mr-2 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}/>
+              Refresh
+            </button_1.Button>
+            <link_1.default href="/designs/new">
+              <button_1.Button className="bg-blue-600 hover:bg-blue-700">
+                <lucide_react_1.Upload className="mr-2 h-4 w-4"/>
+                Upload Design
+              </button_1.Button>
+            </link_1.default>
+          </div>
+        </div>
+
+        {/* Error Alert */}
+        {error && (<alert_1.Alert variant="destructive" className="mb-6">
+            <lucide_react_1.AlertCircle className="h-4 w-4"/>
+            <alert_1.AlertDescription>
+              Failed to load designs.{" "}
+              <button onClick={handleRefreshAll} className="ml-1 underline">
+                Retry
+              </button>
+            </alert_1.AlertDescription>
+          </alert_1.Alert>)}
+
+        {/* Filters */}
+        <card_1.Card className="mb-6">
+          <card_1.CardContent className="py-4">
+            <div className="flex items-center gap-4">
+              <div className="max-w-sm flex-1">
+                <div className="relative">
+                  <lucide_react_1.Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground"/>
+                  <input_1.Input placeholder="Search designs..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9"/>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <lucide_react_1.Filter className="h-4 w-4 text-muted-foreground"/>
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="rounded-md border border-gray-200 px-3 py-2 text-sm">
+                  <option value="all">All Status</option>
+                  <option value="DRAFT">Draft</option>
+                  <option value="PENDING_APPROVAL">Pending Approval</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="REJECTED">Rejected</option>
+                  <option value="LOCKED">Locked</option>
+                </select>
+
+                <select value={methodFilter} onChange={e => setMethodFilter(e.target.value)} className="rounded-md border border-gray-200 px-3 py-2 text-sm">
+                  <option value="all">All Methods</option>
+                  <option value="SILKSCREEN">Silkscreen</option>
+                  <option value="SUBLIMATION">Sublimation</option>
+                  <option value="DTF">DTF</option>
+                  <option value="EMBROIDERY">Embroidery</option>
+                </select>
+              </div>
+            </div>
+          </card_1.CardContent>
+        </card_1.Card>
+
+        {/* Design Assets List */}
+        <div className="grid gap-4">
+          {isLoading ? (<>
+              {[...Array(3)].map((_, i) => (<card_1.Card key={i} className="transition-shadow hover:shadow-md">
+                  <card_1.CardContent className="py-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="mb-2 flex items-center gap-3">
+                          <skeleton_1.Skeleton className="h-6 w-48"/>
+                          <skeleton_1.Skeleton className="h-5 w-24"/>
+                          <skeleton_1.Skeleton className="h-5 w-20"/>
+                        </div>
+                        <div className="mb-3 grid grid-cols-2 gap-4 md:grid-cols-4">
+                          <skeleton_1.Skeleton className="h-10 w-full"/>
+                          <skeleton_1.Skeleton className="h-10 w-full"/>
+                          <skeleton_1.Skeleton className="h-10 w-full"/>
+                          <skeleton_1.Skeleton className="h-10 w-full"/>
+                        </div>
+                        <div className="flex gap-4">
+                          <skeleton_1.Skeleton className="h-4 w-20"/>
+                          <skeleton_1.Skeleton className="h-4 w-20"/>
+                          <skeleton_1.Skeleton className="h-4 w-20"/>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <skeleton_1.Skeleton className="h-8 w-16"/>
+                        <skeleton_1.Skeleton className="h-8 w-16"/>
+                        <skeleton_1.Skeleton className="h-8 w-16"/>
+                      </div>
+                    </div>
+                  </card_1.CardContent>
+                </card_1.Card>))}
+            </>) : (<>
+              {(designs || []).map(design => (<card_1.Card key={design.id} className="transition-shadow hover:shadow-md">
+                  <card_1.CardContent className="py-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="mb-2 flex items-center gap-3">
+                          <h3 className="text-lg font-semibold">
+                            {design.name}
+                          </h3>
+                          <badge_1.Badge className={getStatusColor(design.status)}>
+                            {design.status.replace("_", " ")}
+                          </badge_1.Badge>
+                          <badge_1.Badge className={getMethodColor(design.method)}>
+                            {design.method}
+                          </badge_1.Badge>
+                          {design.is_best_seller && (<badge_1.Badge variant="secondary">⭐ Best Seller</badge_1.Badge>)}
+                        </div>
+
+                        <div className="mb-3 grid grid-cols-2 gap-4 text-sm text-muted-foreground md:grid-cols-4">
+                          <div>
+                            <span className="font-medium">Order:</span>
+                            <br />
+                            {design?.order?.order_number || "No Order"}
+                          </div>
+                          <div>
+                            <span className="font-medium">Brand:</span>
+                            <br />
+                            {design?.brand?.name
+                    ? `${design.brand.name} (${design?.brand?.code || "N/A"})`
+                    : "No Brand"}
+                          </div>
+                          <div>
+                            <span className="font-medium">Version:</span>
+                            <br />v{design?.current_version || 1}
+                          </div>
+                          <div>
+                            <span className="font-medium">
+                              Latest Approval:
+                            </span>
+                            <br />
+                            {design?.approvals?.length > 0 ? (<>
+                                <badge_1.Badge className={getStatusColor(design.approvals[0]?.status)} variant="outline">
+                                  {design.approvals[0]?.status || "Unknown"}
+                                </badge_1.Badge>
+                                <br />
+                                <span className="text-xs">
+                                  by{" "}
+                                  {design.approvals[0]?.client?.name ||
+                        "Unknown"}
+                                </span>
+                              </>) : ("No approvals yet")}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-4 text-xs text-muted-foreground">
+                          <span>{design._count.versions} versions</span>
+                          <span>{design._count.approvals} approvals</span>
+                          <span>{design._count.checks} checks</span>
+                          <span>
+                            Updated{" "}
+                            {new Date(design.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <link_1.default href={`/designs/${design.id}`}>
+                          <button_1.Button variant="outline" size="sm">
+                            <lucide_react_1.Eye className="mr-1 h-4 w-4"/>
+                            View
+                          </button_1.Button>
+                        </link_1.default>
+
+                        {design.status === "DRAFT" && (<button_1.Button variant="outline" size="sm" onClick={() => handleSendApproval(design.id, design.current_version)}>
+                            <lucide_react_1.Send className="mr-1 h-4 w-4"/>
+                            Send Approval
+                          </button_1.Button>)}
+
+                        {design.status === "APPROVED" && (<button_1.Button variant="outline" size="sm" onClick={() => handleLockDesign(design.id, design.current_version)}>
+                            <lucide_react_1.Lock className="mr-1 h-4 w-4"/>
+                            Lock
+                          </button_1.Button>)}
+
+                        <link_1.default href={`/designs/${design.id}/edit`}>
+                          <button_1.Button variant="outline" size="sm" disabled={design.status === "LOCKED"}>
+                            <lucide_react_1.Edit className="mr-1 h-4 w-4"/>
+                            Edit
+                          </button_1.Button>
+                        </link_1.default>
+                      </div>
+                    </div>
+                  </card_1.CardContent>
+                </card_1.Card>))}
+
+              {designs.length === 0 && (<card_1.Card>
+                  <card_1.CardContent className="py-12 text-center">
+                    <p className="mb-4 text-muted-foreground">
+                      No design assets found
+                    </p>
+                    <link_1.default href="/designs/new">
+                      <button_1.Button>Upload your first design</button_1.Button>
+                    </link_1.default>
+                  </card_1.CardContent>
+                </card_1.Card>)}
+            </>)}
+        </div>
+      </div>
+    </dashboard_layout_1.default>);
+}

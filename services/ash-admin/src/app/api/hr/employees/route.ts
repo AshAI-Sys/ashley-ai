@@ -27,7 +27,6 @@ export const GET = requireAuth(
     const where: any = { workspace_id: user.workspaceId };
     if (status && status !== "all") {
       if (status === "ACTIVE") where.is_active = true;
-      }
       if (status === "INACTIVE") where.is_active = false;
     }
     if (position && position !== "all") where.position = position;

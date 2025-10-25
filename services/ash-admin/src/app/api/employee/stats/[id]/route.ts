@@ -179,6 +179,8 @@ export const GET = withErrorHandling(
           (passedInspections / recentInspections.length) * 100
         );
       }
+    }
+
     const stats = {
       total_pieces: totalPieces,
       today_pieces: todayPieces,
@@ -189,5 +191,4 @@ export const GET = withErrorHandling(
     };
 
     return createSuccessResponse(stats);
-  }
-);
+  });

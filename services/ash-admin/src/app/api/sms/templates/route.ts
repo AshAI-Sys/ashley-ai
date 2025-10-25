@@ -15,12 +15,14 @@ export async function GET() {
       success: true,
       templates,
       count: templates.length,
+    });
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to get templates", details: error.message },
       { status: 500 }
     );
   }
+}
 
 // POST /api/sms/templates - Preview template with variables
 export const POST = requireAuth(async (request: NextRequest, user) => {
@@ -53,8 +55,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           new RegExp(`\\{${key}\\}`, "g"),
           variables[key]
         );
-      }
-      return NextResponse.json({
+      });
+    }
+
+    return NextResponse.json({
       success: true,
       template: {
         id: template_id,
@@ -63,11 +67,13 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         preview,
         variables: template.variables,
       },
-});
-} catch (error: any) {
+    });
+  } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to preview template", details: error.message },
       { status: 500 }
     );
   }
-  });
+});
+
+

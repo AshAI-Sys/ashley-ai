@@ -119,7 +119,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     ]);
     if (validationError) {
       throw validationError;
-  }
+    }
 
   // Validate tax mode enum
     const taxModeError = validateEnum(
@@ -129,7 +129,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     );
     if (taxModeError) {
       throw taxModeError;
-  }
+    }
 
   // Validate discount percentage
     if (discount < 0 || discount > 100) {
@@ -193,11 +193,11 @@ export const POST = requireAnyPermission(["finance:create"])(
 
     // Verify order exists if provided
     if (order_id) {
-      
       const order = await prisma.order.findUnique({ where: { id: order_id }});
       if (!order) {
         throw new NotFoundError("Order");
       }
+    }
 
     // Generate invoice number
     const year = new Date().getFullYear();
@@ -221,6 +221,7 @@ export const POST = requireAnyPermission(["finance:create"])(
         ...line,
         line_total: lineTotal,
       };
+    });
 
     const discountAmount = (subtotal * discount) / 100;
     const netAmount = subtotal - discountAmount;
@@ -268,17 +269,5 @@ export const POST = requireAnyPermission(["finance:create"])(
     });
 
     return createSuccessResponse(invoice, 201);
-  } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json(
-        { success: false, error: error.message, field: error.field },
-        { status: 400 }
-      );
-    }
-    console.error("Error creating invoice:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create invoice" },
-      { status: 500 }
-    );
-  }
-});
+  })
+);

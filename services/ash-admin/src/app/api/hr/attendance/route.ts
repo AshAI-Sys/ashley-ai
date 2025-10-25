@@ -32,6 +32,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         gte: new Date(today.setHours(0, 0, 0, 0)),
         lt: new Date(today.setHours(23, 59, 59, 999)),
       };
+    }
 
     const attendanceLogs = await prisma.attendanceLog.findMany({
       where,
@@ -67,17 +68,17 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       success: true,
       data: processedLogs,
-      });
-    } catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching attendance logs:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch attendance logs" },
       { status: 500 }
     );
-    }
-    }
-  
-  export const POST = requireAuth(async (request: NextRequest, user) => {
+  }
+});
+
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const data = await request.json();
     const {
@@ -93,16 +94,14 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Validate employee exists
     const employee = await prisma.employee.findUnique({
       where: { id: employee_id },
-      select: { id: true, first_name: true, last_name: true, is_active: true });,
-      });
+      select: { id: true, first_name: true, last_name: true, is_active: true },
+    });
 
     if (!employee) {
-      
       return NextResponse.json(
         { success: false, error: "Employee not found" },
         { status: 404 }
       );
-    }
     }
 
     if (!employee.is_active) {
@@ -127,12 +126,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           date: dateOnly,
         },
       },
-      });
+    });
 
     let attendanceLog;
     if (existingAttendance) {
       // Update existing record based on type
-      }
       const updateData: any = {};
       if (type === "IN" && !existingAttendance.time_in) {
         updateData.time_in = timestamp ? new Date(timestamp) : new Date();
@@ -143,7 +141,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         !existingAttendance.time_out
       ) {
         updateData.time_out = timestamp ? new Date(timestamp) : new Date();
-    });
+      }
 
       if (Object.keys(updateData).length > 0) {
         attendanceLog = await prisma.attendanceLog.update({
