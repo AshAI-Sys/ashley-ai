@@ -72,12 +72,12 @@ export const GET = requireAuth(
       if (todayAttendance) {
         lastCheckin = todayAttendance.time_in;
         // If there's time_in but no time_out, employee is present
-        }
         if (todayAttendance.time_in && !todayAttendance.time_out) {
           attendanceStatus = "PRESENT";
         } else if (todayAttendance.time_out) {
           attendanceStatus = "ABSENT"; // Clocked out
         }
+      }
       return {
         id: employee.id,
         name: `${employee.first_name} ${employee.last_name}`,
