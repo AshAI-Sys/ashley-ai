@@ -149,7 +149,7 @@ export default function FinishingPackingPage() {
   });
 
   // Combined loading and error states
-  const _isLoading =
+  const __isLoading =
     activeTab === "finishing" ? finishingRunsLoading : cartonsLoading;
   const isFetching =
     statsFetching ||

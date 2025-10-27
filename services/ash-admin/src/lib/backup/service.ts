@@ -11,7 +11,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { createReadStream, createWriteStream } from "fs";
-import { pipeline } from "stream/promises";
+import { _pipeline } from "stream/promises";
 
 const execAsync = promisify(exec);
 
@@ -157,7 +157,7 @@ export class BackupService {
 
       if (conn.isSQLite && conn.sqlitePath) {
         // SQLite backup - just copy the file
-        const _sourceStats = await fs.stat(conn.sqlitePath);
+        const __sourceStats = await fs.stat(conn.sqlitePath);
 
         if (compress) {
           // Compress SQLite file

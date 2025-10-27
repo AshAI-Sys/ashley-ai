@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Slider } from "@/components/ui/slider";
+import { _Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import {
   Plus,

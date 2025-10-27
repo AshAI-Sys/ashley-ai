@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * Mobile Dashboard Stats API
  * Returns personalized stats for the current production worker
  */
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (_request: NextRequest, user) => {
   try {
     // Get employee from authenticated user's workspace;
     const employee = await prisma.employee.findFirst({
@@ -85,7 +85,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     // Calculate total pieces produced today
     const sewingPieces = sewingStats._sum.qty_good || 0;
-    const printPieces = printStats || 0;
+    const _printPieces = printStats || 0;
     const totalPieces = sewingPieces;
 
     // Calculate average efficiency

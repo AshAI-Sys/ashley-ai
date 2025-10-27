@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -9,7 +9,7 @@ import {
 } from "@/lib/error-handling";
 
 export const GET = withErrorHandling(
-  async (request: NextRequest, { params }: { params: { id: string } }) => {
+  async (_request: NextRequest, { params }: { params: { id: string } }) => {
     const employeeId = params.id;
 
     // Get employee

@@ -215,7 +215,7 @@ export default function EditClientPage() {
       const brandPromises: Promise<any>[] = [];
 
       // Determine which brands to create, update, or delete
-      const _existingBrandIds = existingBrands.map(b => b.id);
+      const __existingBrandIds = existingBrands.map(b => b.id);
       const currentBrandIds = formData.brands.filter(b => b.id).map(b => b.id);
 
       // Delete brands that were removed

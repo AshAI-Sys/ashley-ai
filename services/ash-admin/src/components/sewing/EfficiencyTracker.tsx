@@ -142,7 +142,7 @@ export default function EfficiencyTracker({
     return "bg-red-100 text-red-800 border-red-200";
   };
 
-  const _getProgressColor = (current: number, target: number) => {
+  const __getProgressColor = (current: number, target: number) => {
     const percentage = (current / target) * 100;
     if (percentage >= 110) return "bg-green-500";
     if (percentage >= 100) return "bg-blue-500";

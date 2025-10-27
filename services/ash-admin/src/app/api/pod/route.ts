@@ -83,7 +83,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // GET /api/pod?delivery_id=xxx - Get POD records for a delivery
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const delivery_id = searchParams.get("delivery_id");
@@ -137,7 +137,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 });
 
 // PUT /api/pod/:id - Update POD record
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

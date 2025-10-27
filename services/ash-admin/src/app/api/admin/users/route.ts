@@ -4,7 +4,7 @@ import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { prisma } from "@/lib/db";
 import * as bcrypt from "bcryptjs";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 
 // Validation schemas
 const CreateUserSchema = z.object({
@@ -34,7 +34,7 @@ const CreateUserSchema = z.object({
   requires_2fa: z.boolean().default(false),
 });
 
-const _UpdateUserSchema = z.object({
+const __UpdateUserSchema = z.object({
   email: z.string().email().optional(),
   username: z.string().min(3).optional(),
   first_name: z.string().min(1).optional(),

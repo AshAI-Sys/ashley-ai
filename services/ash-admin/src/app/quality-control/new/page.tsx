@@ -163,7 +163,7 @@ export default function NewInspectionPage() {
     setSamples(newSamples);
   };
 
-  const _addDefectToSample = (sampleIndex: number, defect: any) => {
+  const __addDefectToSample = (sampleIndex: number, defect: any) => {
     const updatedSamples = [...samples];
     updatedSamples[sampleIndex].defects.push(defect);
     updatedSamples[sampleIndex].pass_fail = false;
@@ -420,7 +420,7 @@ export default function NewInspectionPage() {
               <CardContent>
                 {samples.length > 0 ? (
                   <div className="space-y-4">
-                    {samples.map((sample, index) => (
+                    {samples.map((sample, _index) => (
                       <div
                         key={sample.sample_no}
                         className="rounded-lg border p-4"

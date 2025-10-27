@@ -74,7 +74,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // DELETE /api/auth/2fa/setup - Disable 2FA
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+export const DELETE = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const user_id = searchParams.get("user_id");

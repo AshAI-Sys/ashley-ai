@@ -83,7 +83,7 @@ export default function AIInsightsDashboard() {
     return "text-red-600";
   };
 
-  const getTrendIcon = (trend: string, change: number) => {
+  const getTrendIcon = (trend: string, _change: number) => {
     if (trend === "up")
       return <TrendingUp className="h-4 w-4 text-green-500" />;
     if (trend === "down")

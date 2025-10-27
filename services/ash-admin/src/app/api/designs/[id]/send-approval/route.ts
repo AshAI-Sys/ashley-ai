@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { tokenService } from "@/lib/tokenService";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 // import { emailService } from '@/lib/emailService'
 // import { notificationService } from '@/lib/notificationService'
 

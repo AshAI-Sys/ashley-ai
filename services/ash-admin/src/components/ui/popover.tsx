@@ -116,7 +116,7 @@ interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentProps>(
-  ({ className, align = "start", sideOffset = 8, children, ...props }, ref) => {
+  ({ className, align = "start", sideOffset = 8, children, ...props }, _ref) => {
     const context = React.useContext(PopoverContext);
     const [position, setPosition] = React.useState<{
       top: number;

@@ -163,7 +163,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             config.sizeCode,
             bundleNum
           );
-          const _bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
+          const __bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
 
           const bundle = await tx.bundle.create({
             data: {
@@ -242,7 +242,7 @@ function generateQRCode(
   return `ASH-${orderId}-${layId}-${sizeCode}-${String(bundleNumber).padStart(3, "0")}-${timestamp}`;
 }
 
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

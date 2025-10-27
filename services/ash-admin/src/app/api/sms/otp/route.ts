@@ -74,7 +74,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // PUT /api/sms/otp - Verify OTP code
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { phone, code } = body;

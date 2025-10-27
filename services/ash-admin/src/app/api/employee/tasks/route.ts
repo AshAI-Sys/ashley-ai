@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -10,7 +10,7 @@ import {
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const department = searchParams.get("department");
-  const _position = searchParams.get("position");
+  const __position = searchParams.get("position");
 
   if (!department) {
     

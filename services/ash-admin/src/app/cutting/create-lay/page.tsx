@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { _Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Plus,
@@ -248,7 +248,7 @@ export default function CreateLayPage() {
       });
 
       if (response.ok) {
-        const _result = await response.json();
+        const __result = await response.json();
         router.push("/cutting");
       } else {
         const error = await response.json();

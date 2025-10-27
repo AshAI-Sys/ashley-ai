@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, Eye, Move, Maximize, RotateCw } from "lucide-react";
+import { Plus, Minus, Eye, _Move, Maximize, RotateCw } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export interface Placement {

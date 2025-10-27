@@ -48,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 })
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (_request: NextRequest, _user) => {
   try {
     // Supplier model not implemented yet
     // Return success but don't create anything;

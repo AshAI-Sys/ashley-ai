@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { _Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   QrCode,
@@ -64,7 +64,7 @@ export default function CreateBundlesPage({
 }: {
   params: { layId: string };
 }) {
-  const _router = useRouter();
+  const __router = useRouter();
   const [loading, setLoading] = useState(false);
   const [lay, setLay] = useState<CutLay | null>(null);
   const [bundleConfig, setBundleConfig] = useState<BundleCreate[]>([]);
@@ -416,7 +416,7 @@ export default function CreateBundlesPage({
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {bundleConfig.map((config, index) => (
+                {bundleConfig.map((config, _index) => (
                   <div key={config.size_code}>
                     <div className="mb-3 flex items-center gap-3">
                       <Badge className="px-3 py-1 text-lg">

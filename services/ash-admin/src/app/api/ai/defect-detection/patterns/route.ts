@@ -9,8 +9,8 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "30");
-    const _operator_id = searchParams.get("operator_id");
-    const _station = searchParams.get("station");
+    const __operator_id = searchParams.get("operator_id");
+    const __station = searchParams.get("station");
 
     // Build where clause
     const whereClause: any = {

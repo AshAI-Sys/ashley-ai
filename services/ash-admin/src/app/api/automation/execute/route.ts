@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { requireAuth } from "@/lib/auth-middleware";
-import { NextRequest, NextResponse } from "next/server";
+import { _requireAuth } from "@/lib/auth-middleware";
+import { NextRequest, _NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse,
@@ -49,7 +49,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
   try {
     // Parse rule configuration;
-    const triggerConfig = JSON.parse(rule.trigger_config);
+    const _triggerConfig = JSON.parse(rule.trigger_config);
     const conditions = rule.conditions ? JSON.parse(rule.conditions) : [];
     const actions = JSON.parse(rule.actions);
 
@@ -335,7 +335,7 @@ async function sendEmail(config: any, triggerData: any) {
   return { email_sent: true, recipient: config.to };
 }
 
-async function createTask(config: any, triggerData: any, workspaceId: string) {
+async function createTask(config: any, _triggerData: any, _workspaceId: string) {
   // This could create a CAPA task or work order depending on config
   console.log("Task would be created:", config);
   return { task_created: true };

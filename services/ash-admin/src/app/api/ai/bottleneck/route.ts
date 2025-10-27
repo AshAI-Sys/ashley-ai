@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/ai/bottleneck - Detect bottlenecks in production system
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (_req: NextRequest, _user) => {
   try {
     // Get production metrics for all active stations
     const [cutLays, sewingRuns, printRuns, qcInspections, finishingRuns] = await Promise.all([
@@ -77,7 +77,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     // Printing station metrics
     if (printRuns.length > 0) {
       // Calculate total good quantity from outputs instead of non-existent quantity field
-      const _totalGood = printRuns.reduce((sum, run) => {
+      const __totalGood = printRuns.reduce((sum, _run) => {
         // Note: Need to fetch outputs separately since they're not included
         return sum + 100; // Simplified for now
       }, 0);

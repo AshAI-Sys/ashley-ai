@@ -211,7 +211,7 @@ export default function PrintRunDetailsPage() {
     }
   };
 
-  const _addMaterial = () => {
+  const __addMaterial = () => {
     if (newMaterial.item_name && newMaterial.uom && newMaterial.qty) {
       setMaterialData([
         ...materialData,

@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 // Force dynamic route (don't pre-render during build)
 export const dynamic = "force-dynamic";
 
-export const GET = requireAuth(async (request: NextRequest, authUser) => {
+export const GET = requireAuth(async (_request: NextRequest, authUser) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: authUser.id },

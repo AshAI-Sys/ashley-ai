@@ -473,7 +473,7 @@ export function withErrorHandling<T extends any[], R>(
 
 // Express-style middleware for error handling (if needed for custom middleware)
 export function errorMiddleware() {
-  return (error: unknown, req: any, res: any, next: any) => {
+  return (error: unknown, _req: any, _res: any, _next: any) => {
     const response = handleApiError(error);
     return response;
   };

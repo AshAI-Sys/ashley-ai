@@ -66,8 +66,8 @@ export default function EmployeeDashboard() {
     }
   };
 
-  const generateRoleBasedTasks = (role: string, position: string): TaskData => {
-    const _baseTasks = {
+  const generateRoleBasedTasks = (_role: string, position: string): TaskData => {
+    const __baseTasks = {
       assigned_tasks: 0,
       completed_tasks: 0,
       pending_tasks: 0,
@@ -139,7 +139,7 @@ export default function EmployeeDashboard() {
     }
   };
 
-  const getRoleActions = (role: string, position: string) => {
+  const getRoleActions = (_role: string, position: string) => {
     const actions = [];
 
     // Common actions for all employees

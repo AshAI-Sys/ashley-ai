@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // Employee accounts reference - for admin use only
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
     // Employee accounts with their login credentials and permissions;
     const employeeDirectory = [

@@ -251,7 +251,7 @@ export default function NewInvoicePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {items.map((item, index) => (
+                {items.map((item, _index) => (
                   <div key={item.id} className="flex items-start gap-2">
                     <div className="grid flex-1 grid-cols-1 gap-2 md:grid-cols-4">
                       <div className="md:col-span-2">

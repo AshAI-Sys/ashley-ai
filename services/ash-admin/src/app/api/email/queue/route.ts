@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 /**
  * GET /api/email/queue - Get queue statistics
  */
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
     const stats = await emailQueue.getStats();
 

@@ -25,7 +25,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       endOfDay.setHours(23, 59, 59, 999);
 
       // Get production data for this day
-      const [cutLays, sewingRuns, printRuns, qcChecks] = await Promise.all([
+      const [cutLays, _sewingRuns, _printRuns, qcChecks] = await Promise.all([
         prisma.cutLay.findMany({
           where: {
             created_at: { gte: startOfDay, lte: endOfDay },

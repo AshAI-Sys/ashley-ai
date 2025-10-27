@@ -59,7 +59,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { run_id, materials } = body;
@@ -158,7 +158,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 });
 
 // Get material types for filtering
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   try {
     const materialTypes = await prisma.materialInventory.findMany({
       select: {

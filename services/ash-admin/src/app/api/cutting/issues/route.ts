@@ -202,7 +202,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -281,7 +281,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+export const DELETE = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

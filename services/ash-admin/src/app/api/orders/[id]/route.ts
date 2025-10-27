@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
 import { apiSuccess, apiNotFound, apiServerError } from "@/lib/api-response";
@@ -65,7 +65,7 @@ export const PUT = requireAuth(async (
   context: { params: { id: string } }
 ) => {
   try {
-    const _workspaceId = user.workspaceId;
+    const __workspaceId = user.workspaceId;
     const body = await request.json();
 
     const order = await prisma.order.update({
@@ -108,7 +108,7 @@ export const DELETE = requireAuth(async (
   context: { params: { id: string } }
 ) => {
   try {
-    const _workspaceId = user.workspaceId;
+    const __workspaceId = user.workspaceId;
     await prisma.order.delete({
       where: { id: context.params.id },
     });

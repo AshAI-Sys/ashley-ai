@@ -5,7 +5,7 @@ import { backupScheduler } from "@/lib/backup/scheduler";
 import { requireRole } from "@/lib/auth-middleware";
 
 // GET /api/backups - List all backups (ADMIN ONLY)
-export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
+export const GET = requireRole("admin")(async (_request: NextRequest, _user) => {
   try {
     const backups = await backupService.listBackups();
     const totalSize = await backupService.getTotalBackupSize();
@@ -30,7 +30,7 @@ export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
 });
 
 // POST /api/backups - Create new backup (ADMIN ONLY)
-export const POST = requireRole("admin")(async (request: NextRequest, user) => {
+export const POST = requireRole("admin")(async (request: NextRequest, _user) => {
   try {
     const body = await request.json().catch(() => ({}));
     const {
@@ -60,7 +60,7 @@ export const POST = requireRole("admin")(async (request: NextRequest, user) => {
 });
 
 // DELETE /api/backups?id={backupId} - Delete backup (ADMIN ONLY)
-export const DELETE = requireRole("admin")(async (request: NextRequest, user) => {
+export const DELETE = requireRole("admin")(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const backupId = searchParams.get("id");

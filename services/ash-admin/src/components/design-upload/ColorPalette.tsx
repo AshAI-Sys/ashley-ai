@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Palette, Pipette, Copy, Check } from "lucide-react";
+import { Plus, X, Palette, _Pipette, Copy, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 interface Color {
@@ -113,7 +113,7 @@ export default function ColorPalette({
       : null;
   };
 
-  const _getContrastColor = (hex: string) => {
+  const __getContrastColor = (hex: string) => {
     const rgb = hexToRgb(hex);
     if (!rgb) return "#000000";
 

@@ -19,9 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Plus, Minus, Upload, Save, AlertCircle } from "lucide-react";
+import { _Badge } from "@/components/ui/badge";
+import { _Separator } from "@/components/ui/separator";
+import { Plus, Minus, Upload, Save, _AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 

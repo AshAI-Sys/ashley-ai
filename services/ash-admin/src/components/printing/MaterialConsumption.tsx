@@ -553,7 +553,7 @@ export default function MaterialConsumption({
         <CardContent>
           {consumedMaterials.length > 0 ? (
             <div className="space-y-3">
-              {consumedMaterials.map((material, index) => (
+              {consumedMaterials.map((material, _index) => (
                 <div
                   key={material.material_id}
                   className="flex items-center justify-between rounded-lg border p-4"

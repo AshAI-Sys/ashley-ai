@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 
 const PrintLocationSchema = z.object({
   location: z.string().min(1, "Location is required"),
@@ -103,7 +103,7 @@ export async function POST(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -164,7 +164,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

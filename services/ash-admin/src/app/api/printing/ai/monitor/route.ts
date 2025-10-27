@@ -7,7 +7,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const run_id = searchParams.get("run_id");
-    const _method = searchParams.get("method");
+    const __method = searchParams.get("method");
 
     if (!run_id) {
       
@@ -150,7 +150,7 @@ function calculateMaterialUtilization(printRun: any) {
 
 function analyzeQualityTrend(printRun: any) {
   const outputs = printRun.outputs || [];
-  const _rejects = printRun.rejects || [];
+  const __rejects = printRun.rejects || [];
 
   if (outputs.length === 0) {
 
@@ -224,7 +224,7 @@ function analyzeCostTracking(printRun: any) {
       (1000 * 60 * 60)
     : 0;
 
-  const materialCost = materials.reduce((sum: number, mat: any) => {
+  const materialCost = materials.reduce((sum: number, _mat: any) => {
     const cost = 0; // Would calculate from inventory if available
     return sum + cost;
   }, 0);
@@ -396,7 +396,7 @@ function generateRealTimeRecommendations(printRun: any, insights: any) {
   return recommendations;
 }
 
-function calculatePerformanceScore(printRun: any, insights: any) {
+function calculatePerformanceScore(_printRun: any, insights: any) {
   const weights: Record<string, number> = {
     efficiency: 0.3,
     quality: 0.3,
@@ -485,7 +485,7 @@ function getPerformanceGrade(score: number) {
   return "D";
 }
 
-async function processMonitoringData(runId: string, data: any) {
+async function processMonitoringData(_runId: string, data: any) {
   // Process sensor data, operator input, and quality checkpoints
   // This is a simplified implementation for demo purposes
 
@@ -498,7 +498,7 @@ async function processMonitoringData(runId: string, data: any) {
   // Process sensor data
   if (data.sensor_data) {
     
-    const { temperature, humidity, pressure } = data.sensor_data;
+    const { temperature, humidity, _pressure } = data.sensor_data;
 
     if (temperature && (temperature < 20 || temperature > 35)) {
       analysis.alerts.push({
@@ -520,7 +520,7 @@ async function processMonitoringData(runId: string, data: any) {
   // Process operator input
   if (data.operator_input) {
     
-    const { issues, adjustments } = data.operator_input;
+    const { issues, _adjustments } = data.operator_input;
 
     if (issues && issues.length > 0) {
       analysis.recommendations.push({
@@ -535,7 +535,7 @@ async function processMonitoringData(runId: string, data: any) {
   // Process quality checkpoint
   if (data.quality_checkpoint) {
     
-    const { pass_rate, defects } = data.quality_checkpoint;
+    const { pass_rate, _defects } = data.quality_checkpoint;
 
     if (pass_rate < 0.85) {
       analysis.alerts.push({

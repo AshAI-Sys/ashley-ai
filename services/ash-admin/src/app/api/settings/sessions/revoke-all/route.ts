@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 // Stub API for revoking all other sessions
 // TODO: Implement real session revocation
 
-export const POST = requireAuth(async (request: NextRequest, _authUser) => {
+export const POST = requireAuth(async (_request: NextRequest, _authUser) => {
   try {
     // TODO: Revoke all sessions except current from Redis or database;
     return NextResponse.json({ success: true });

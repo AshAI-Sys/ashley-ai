@@ -133,7 +133,7 @@ export default function QRScannerPage() {
     }
   };
 
-  const detectQRCode = (imageData: ImageData): string | null => {
+  const detectQRCode = (_imageData: ImageData): string | null => {
     // Simplified QR detection - in production, use a library like jsQR
     // This is a placeholder that extracts data from a simple pattern
     // For now, return null to indicate no code detected

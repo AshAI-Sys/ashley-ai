@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
 import * as bcrypt from "bcryptjs";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 
 export async function GET() {
   return NextResponse.json({

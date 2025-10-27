@@ -351,7 +351,7 @@ export default function AdminDashboard() {
                     fill="#8884d8"
                     dataKey="count"
                   >
-                    {stats.employeesByDepartment.map((entry, index) => (
+                    {stats.employeesByDepartment.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={Object.values(STATUS_COLORS)[index % Object.values(STATUS_COLORS).length]} />
                     ))}
                   </Pie>

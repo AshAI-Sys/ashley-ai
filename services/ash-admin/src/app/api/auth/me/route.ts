@@ -9,7 +9,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  * GET /api/auth/me
  * Get current authenticated user information
  */
-export const GET = requireAuth(async (request: NextRequest, authUser) => {
+export const GET = requireAuth(async (_request: NextRequest, authUser) => {
   try {
     // User is already authenticated via requireAuth wrapper
 

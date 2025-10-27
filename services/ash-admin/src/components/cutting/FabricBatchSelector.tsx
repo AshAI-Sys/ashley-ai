@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+import { _Separator } from "@/components/ui/separator";
 import {
   Package,
   Search,
@@ -196,7 +196,7 @@ export default function FabricBatchSelector({
     }
 
     if (isSelected) {
-      const _estimatedPieces = calculateEstimatedPieces(
+      const __estimatedPieces = calculateEstimatedPieces(
         batch,
         batch.qty_on_hand
       );

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
-import { birService } from "@/lib/government/bir";
+import { _birService } from "@/lib/government/bir";
 import { sssService } from "@/lib/government/sss";
 import { philHealthService } from "@/lib/government/philhealth";
 import { pagIBIGService } from "@/lib/government/pagibig";
@@ -159,7 +159,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // GET /api/government/reports - Get contribution calculations for a single employee
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");

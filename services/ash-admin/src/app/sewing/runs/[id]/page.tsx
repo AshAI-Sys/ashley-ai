@@ -94,7 +94,7 @@ interface TimeEntry {
 
 export default function SewingRunDetailsPage() {
   const params = useParams();
-  const _router = useRouter();
+  const __router = useRouter();
   const runId = params.id as string;
 
   const [sewingRun, setSewingRun] = useState<SewingRun | null>(null);

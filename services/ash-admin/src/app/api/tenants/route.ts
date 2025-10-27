@@ -68,7 +68,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // GET /api/tenants?workspace_id=xxx - Get tenant information
-export const GET = requireAuth(async (req: NextRequest, user) => {
+export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");
@@ -108,7 +108,7 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
 });
 
 // PUT /api/tenants - Update tenant configuration
-export const PUT = requireAuth(async (req: NextRequest, user) => {
+export const PUT = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { workspace_id, ...updates } = await req.json();
 
@@ -145,7 +145,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
 });
 
 // DELETE /api/tenants?workspace_id=xxx&confirmation=slug - Delete tenant
-export const DELETE = requireAuth(async (req: NextRequest, user) => {
+export const DELETE = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const workspace_id = searchParams.get("workspace_id");

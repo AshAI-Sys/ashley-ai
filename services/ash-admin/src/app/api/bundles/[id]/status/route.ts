@@ -13,9 +13,9 @@ export const PUT = requireAuth(async (
 ) => {
   try {
     const workspaceId = user.workspaceId;
-    const userId = user.id;
+    const _userId = user.id;
     const body = await req.json();
-    const { status, notes, location } = body;
+    const { status, _notes, _location } = body;
 
     if (!status) {
       

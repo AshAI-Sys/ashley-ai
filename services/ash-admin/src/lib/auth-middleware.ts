@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, apiRateLimit } from "./rate-limit";
-import { verifyToken, JWTPayload } from "./jwt";
+import { verifyToken, _JWTPayload } from "./jwt";
 import {
   Permission,
   Role,

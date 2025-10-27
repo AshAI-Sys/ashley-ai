@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 
 export async function POST(
   request: NextRequest,
@@ -113,7 +113,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

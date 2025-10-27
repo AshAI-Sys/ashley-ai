@@ -1,9 +1,9 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { _prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
     // Bills feature not yet implemented - return empty array
     return NextResponse.json({
@@ -19,7 +19,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (_request: NextRequest, _user) => {
   try {
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },
@@ -35,7 +35,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (_request: NextRequest, _user) => {
   try {
     return NextResponse.json(
       { success: false, error: "Bills feature not yet implemented" },

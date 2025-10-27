@@ -216,7 +216,7 @@ export class DefectDetectionAI {
     }
 
     // Add simulated locations for detected defects
-    defects.forEach((defect, idx) => {
+    defects.forEach((defect, _idx) => {
       defect.location = {
         x: Math.floor(Math.random() * 800),
         y: Math.floor(Math.random() * 1000),
@@ -300,7 +300,7 @@ export class DefectDetectionAI {
   }
 
   // Generate recommendation for defect
-  private generateRecommendation(defectType: string, severity: string): string {
+  private generateRecommendation(defectType: string, _severity: string): string {
     const recommendations: Record<string, string> = {
       STAIN: "Re-wash or replace fabric. Inspect washing process.",
       HOLE: "REJECT - Replace garment. Check cutting blades and handling procedures.",

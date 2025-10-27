@@ -137,7 +137,7 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  return requireAuth(async (request: NextRequest, user) => {
+  return requireAuth(async (_request: NextRequest, user) => {
     try {
       const { id } = params;
 

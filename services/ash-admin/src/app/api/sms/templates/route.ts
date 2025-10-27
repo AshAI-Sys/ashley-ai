@@ -25,7 +25,7 @@ export async function GET() {
 }
 
 // POST /api/sms/templates - Preview template with variables
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { template_id, variables } = body;

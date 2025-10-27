@@ -57,7 +57,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // POST /api/automation/notifications - Create notification
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const {
@@ -147,7 +147,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 });
 
 // PUT /api/automation/notifications - Update notification status
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { id, status, error_message, sent_at, delivered_at } = body;

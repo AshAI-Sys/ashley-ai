@@ -10,7 +10,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const date_from = searchParams.get("date_from");
     const date_to = searchParams.get("date_to");
     const status = searchParams.get("status");
-    const _type = searchParams.get("type");
+    const __type = searchParams.get("type");
 
     const where: any = { workspace_id: "default" };
     if (employee_id) where.employee_id = employee_id;
@@ -78,7 +78,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
     const {
@@ -229,7 +229,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
     const { id, approved, approver_notes } = data;

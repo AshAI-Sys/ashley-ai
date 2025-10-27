@@ -145,7 +145,7 @@ export default function AuditLogsPage() {
     }
   };
 
-  const _getCategoryIcon = (category: string) => {
+  const __getCategoryIcon = (category: string) => {
     switch (category) {
       case "authentication":
         return <Lock className="h-5 w-5" />;

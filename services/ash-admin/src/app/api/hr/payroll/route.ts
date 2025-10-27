@@ -80,7 +80,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
     const {
@@ -282,10 +282,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
-    const { id, status, approval_notes } = data;
+    const { id, status, _approval_notes } = data;
 
     const payrollPeriod = await prisma.payrollPeriod.update({
       where: { id },

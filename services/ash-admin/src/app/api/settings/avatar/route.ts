@@ -66,7 +66,7 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
   }
 });
 
-export const DELETE = requireAuth(async (request: NextRequest, authUser) => {
+export const DELETE = requireAuth(async (_request: NextRequest, authUser) => {
   try {
     await prisma.user.update({
       where: { id: authUser.id },

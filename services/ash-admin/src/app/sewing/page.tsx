@@ -215,7 +215,7 @@ export default function SewingPage() {
     refetchStats();
   };
 
-  const _isLoading =
+  const __isLoading =
     runsLoading || operationsLoading || operatorsLoading || statsLoading;
   const isFetching =
     runsFetching || operationsFetching || operatorsFetching || statsFetching;

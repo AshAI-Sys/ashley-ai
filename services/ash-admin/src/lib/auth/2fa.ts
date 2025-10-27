@@ -182,7 +182,7 @@ export const clientSide2FA = {
    * Verify TOTP code (client-side)
    * Note: In production, always verify on server-side
    */
-  verifyTOTP: async (secret: string, token: string): Promise<boolean> => {
+  verifyTOTP: async (_secret: string, token: string): Promise<boolean> => {
     // This is a placeholder for client-side verification
     // In production, always verify on the server
     const response = await fetch("/api/auth/verify-2fa", {

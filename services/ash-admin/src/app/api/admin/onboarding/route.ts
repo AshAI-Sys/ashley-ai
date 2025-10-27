@@ -2,12 +2,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
-import { prisma } from "@/lib/db";
+import { _prisma } from "@/lib/db";
 import * as bcrypt from "bcryptjs";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _requireAuth } from "@/lib/auth-middleware";
 
 // Onboarding step validation schema
-const _OnboardingStepSchema = z.object({
+const __OnboardingStepSchema = z.object({
   step: z.enum([
     "personal_info",
     "role_assignment",

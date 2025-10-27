@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, _NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse,
@@ -104,7 +104,7 @@ export const GET = requireAuth(
 );
 
 export const POST = requireAnyPermission(["hr:create"])(
-  withErrorHandling(async (request: NextRequest, user: any) => {
+  withErrorHandling(async (request: NextRequest, _user: any) => {
     const data = await request.json();
     const {
       first_name,
@@ -227,7 +227,7 @@ export const POST = requireAnyPermission(["hr:create"])(
 );
 
 export const PUT = requireAuth(
-  withErrorHandling(async (request: NextRequest, user: any) => {
+  withErrorHandling(async (request: NextRequest, _user: any) => {
     const data = await request.json();
     const { id, ...updateData } = data;
 

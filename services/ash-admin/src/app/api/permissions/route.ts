@@ -11,7 +11,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const action = searchParams.get("action"); // 'list' | 'user' | 'roles'
 
     if (action === "roles") {
-      const roles = permissionManager.getAvailableRoles();
+      const _roles = permissionManager.getAvailableRoles();
       }
       return NextResponse.json({
         success: true,
@@ -44,7 +44,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // POST /api/permissions/check - Check if user has permission
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const { user_id, resource, action } = await req.json();
 

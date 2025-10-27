@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllMetrics } from "@/lib/analytics/metrics";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (_request: NextRequest, user) => {
   try {
     const workspace_id = user.workspaceId;
 

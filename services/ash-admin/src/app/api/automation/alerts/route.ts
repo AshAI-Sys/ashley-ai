@@ -68,7 +68,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // POST /api/automation/alerts - Create alert
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const {
@@ -136,7 +136,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 });
 
 // PUT /api/automation/alerts - Update alert (acknowledge/resolve)
-export const PUT = requireAuth(async (request: NextRequest, user) => {
+export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const { id, action, user_id = "user_1", resolution_notes } = body;
@@ -221,7 +221,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
 });
 
 // DELETE /api/automation/alerts - Delete alert
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+export const DELETE = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

@@ -228,7 +228,7 @@ export class InventoryManager {
     if (!material) return;
 
     let alertType: StockAlert["alert_type"] | null = null;
-    let __severity: StockAlert["severity"] = "INFO"; // TODO: Use severity in alert creation
+    let ___severity: StockAlert["severity"] = "INFO"; // TODO: Use severity in alert creation
     let message = "";
 
     const reorderPoint = material.reorder_point || 0;

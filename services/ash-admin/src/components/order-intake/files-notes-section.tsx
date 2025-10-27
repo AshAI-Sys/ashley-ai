@@ -151,7 +151,7 @@ export function FilesNotesSection({
     return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   };
 
-  const _getFileIcon = (type: string, category: string) => {
+  const __getFileIcon = (type: string, category: string) => {
     const categoryData = FILE_CATEGORIES.find(c => c.value === category);
     if (categoryData) return categoryData.icon;
 

@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardLayout from "@/components/dashboard-layout";
 import { SkeletonTable } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ErrorAlert } from "@/components/ui/error-alert";
+import { _ErrorAlert } from "@/components/ui/error-alert";
 import {
   Clock,
   ClipboardList,

@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { _Badge } from "@/components/ui/badge";
+import { _Progress } from "@/components/ui/progress";
 import {
   AlertCircle,
   CheckCircle,

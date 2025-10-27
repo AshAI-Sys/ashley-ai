@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ApprovalStatus } from "./ApprovalStatus";
+import { _ApprovalStatus } from "./ApprovalStatus";
 import {
   Send,
   Clock,
@@ -121,7 +121,7 @@ export function ApprovalTimeline({
               .map((event, index) => {
                 const config = getEventConfig(event.type);
                 const Icon = config.icon;
-                const _isLast = index === events.length - 1;
+                const __isLast = index === events.length - 1;
 
                 return (
                   <div

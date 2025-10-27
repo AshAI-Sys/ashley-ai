@@ -117,7 +117,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // DELETE /api/upload - Delete file from Cloudinary
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
+export const DELETE = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const publicId = searchParams.get("public_id");

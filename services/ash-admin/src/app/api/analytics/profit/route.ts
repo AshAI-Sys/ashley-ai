@@ -114,7 +114,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // POST /api/analytics/profit - Create profit analysis
-export const POST = requireAuth(async (req: NextRequest, user) => {
+export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -215,7 +215,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 });
 
 // PUT /api/analytics/profit - Auto-generate profit analysis for an order
-export const PUT = requireAuth(async (req: NextRequest, user) => {
+export const PUT = requireAuth(async (req: NextRequest, _user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";

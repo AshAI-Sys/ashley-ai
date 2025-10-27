@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import { Progress } from "@/components/ui/progress";
+import { _Separator } from "@/components/ui/separator";
+import { _Progress } from "@/components/ui/progress";
 import {
   MapPin,
   Sparkles,
@@ -482,7 +482,7 @@ export function ProductionRouteSection({
       await new Promise(resolve => setTimeout(resolve, 4000));
 
       const availableRoutes = getAvailableRoutes();
-      const _currentRoute = getCurrentRoute();
+      const __currentRoute = getCurrentRoute();
 
       const optimization: AshleyOptimization = {
         recommendedRoute:

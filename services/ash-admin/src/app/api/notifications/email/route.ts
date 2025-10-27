@@ -155,7 +155,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // GET /api/notifications/email/test - Test email configuration
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const test_email = searchParams.get("test_email");

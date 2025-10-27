@@ -34,7 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
 

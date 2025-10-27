@@ -73,7 +73,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
 
@@ -120,7 +120,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   }
 });
 // AQL Sampling calculation based on ANSI/ASQ Z1.4
-function calculateAQLSampling(lotSize: number, aql: number, level: string) {
+function calculateAQLSampling(lotSize: number, _aql: number, _level: string) {
   // Simplified AQL table - in production this should be a complete implementation
   const aqlTable: Record<
     string,

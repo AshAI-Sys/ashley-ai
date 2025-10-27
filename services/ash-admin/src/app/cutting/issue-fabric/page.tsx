@@ -218,7 +218,7 @@ export default function IssueFabricPage() {
       });
 
       if (response.ok) {
-        const _result = await response.json();
+        const __result = await response.json();
         router.push("/cutting");
       } else {
         const error = await response.json();

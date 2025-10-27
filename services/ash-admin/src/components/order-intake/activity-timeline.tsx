@@ -148,7 +148,7 @@ export function ActivityTimeline({
 
           {/* Timeline Items */}
           <div className="space-y-6">
-            {activities.map((activity, index) => {
+            {activities.map((activity, _index) => {
               const config = getEventConfig(activity.event_type);
               const Icon = config.icon;
 

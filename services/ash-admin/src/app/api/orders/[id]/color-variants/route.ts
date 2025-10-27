@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { getWorkspaceIdFromRequest } from "@/lib/workspace";
-import { requireAuth } from "@/lib/auth-middleware";
+import { _getWorkspaceIdFromRequest } from "@/lib/workspace";
+import { _requireAuth } from "@/lib/auth-middleware";
 
 const ColorVariantSchema = z.object({
   line_item_id: z.string().min(1, "Line item ID is required"),
@@ -51,7 +51,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
@@ -101,7 +101,7 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

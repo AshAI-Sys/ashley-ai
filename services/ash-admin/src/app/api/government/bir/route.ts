@@ -131,7 +131,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 });
 
 // GET /api/government/bir - Calculate VAT or withholding tax
-export const GET = requireAuth(async (request: NextRequest, user) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const operation = searchParams.get("operation"); // 'vat' or 'withholding'

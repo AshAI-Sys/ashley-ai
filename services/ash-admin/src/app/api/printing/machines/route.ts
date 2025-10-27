@@ -173,7 +173,7 @@ async function calculateMachineUtilization(machineId: string): Promise<number> {
   }
 }
 
-async function checkMaintenanceDue(machineId: string): Promise<boolean> {
+async function checkMaintenanceDue(_machineId: string): Promise<boolean> {
   try {
     // Check if there are any pending maintenance work orders
     const pendingMaintenance = await prisma.workOrder.findFirst({

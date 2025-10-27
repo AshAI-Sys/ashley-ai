@@ -22,7 +22,7 @@ export function generateNonce(): string {
 /**
  * Create CSP header with nonce
  */
-export function createCSPHeader(nonce: string): string {
+export function createCSPHeader(_nonce: string): string {
   // Relaxed CSP for development - allows inline styles and eval for Next.js dev mode
   const isDevelopment = process.env.NODE_ENV === "development";
 
