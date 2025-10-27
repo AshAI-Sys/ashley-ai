@@ -40,7 +40,7 @@ export function FileUpload({
     const maxSize = maxSizeMB * 1024 * 1024; // Convert to bytes
 
     for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+      const file = files[i]!;
 
       // Check file size
       if (file.size > maxSize) {

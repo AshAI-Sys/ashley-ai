@@ -187,7 +187,7 @@ export function AshleyAIDashboard() {
       </div>
 
       {/* High Priority Alerts */}
-      {insights?.summary.high_priority_alerts.length > 0 && (
+      {(insights?.summary.high_priority_alerts?.length || 0) > 0 && (
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription>
@@ -532,7 +532,7 @@ export function AshleyAIDashboard() {
                 </p>
               </div>
 
-              {insights?.insights.workforce.data.fatigue_alerts.length > 0 && (
+              {(insights?.insights.workforce.data.fatigue_alerts?.length || 0) > 0 && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Fatigue Alerts</h4>
                   <div className="space-y-2">
@@ -609,8 +609,8 @@ export function AshleyAIDashboard() {
                 </p>
               </div>
 
-              {insights?.insights.maintenance.data.immediate_attention.length >
-                0 && (
+              {(insights?.insights.maintenance.data.immediate_attention?.length ||
+                0) > 0 && (
                 <Alert className="border-red-200 bg-red-50">
                   <AlertTriangle className="h-4 w-4 text-red-600" />
                   <AlertDescription>
@@ -655,8 +655,8 @@ export function AshleyAIDashboard() {
                   </div>
                 </div>
 
-                {insights?.insights.maintenance.data.maintenance_due.length >
-                  0 && (
+                {(insights?.insights.maintenance.data.maintenance_due?.length ||
+                  0) > 0 && (
                   <div className="space-y-2">
                     <h4 className="font-medium">Scheduled Maintenance</h4>
                     <div className="space-y-2">
