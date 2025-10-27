@@ -245,21 +245,21 @@ export class PredictiveMaintenanceAI {
     }
 
     // Specific recommendations based on risk factors
-    if (risks.temperature > 60) {
+    if ((risks.temperature ?? 0) > 60) {
       recommendations.push("Check cooling system and ventilation");
     }
 
-    if (risks.vibration > 60) {
+    if ((risks.vibration ?? 0) > 60) {
       recommendations.push("Inspect bearings and alignment");
       recommendations.push("Check for loose components");
     }
 
-    if (risks.noise > 60) {
+    if ((risks.noise ?? 0) > 60) {
       recommendations.push("Inspect for worn gears or bearings");
       recommendations.push("Lubricate moving parts");
     }
 
-    if (risks.runtime > 70) {
+    if ((risks.runtime ?? 0) > 70) {
       recommendations.push("Replace worn components proactively");
       recommendations.push("Update maintenance schedule");
     }

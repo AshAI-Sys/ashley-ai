@@ -270,28 +270,31 @@ export class BottleneckDetectionAI {
     const causes: BottleneckDetection["root_causes"] = [];
 
     // Throughput issues
-    if (scores.throughputLoss > 50) {
+    const throughputLoss = scores.throughputLoss ?? 0;
+    if (throughputLoss > 50) {
       causes.push({
         cause: "LOW_THROUGHPUT",
-        confidence: Math.min(scores.throughputLoss, 100),
+        confidence: Math.min(throughputLoss, 100),
         description: `Station throughput is ${(((metrics.expected_throughput - metrics.current_throughput) / metrics.expected_throughput) * 100).toFixed(0)}% below expected`,
       });
     }
 
     // Queue buildup
-    if (scores.queuePressure > 50) {
+    const queuePressure = scores.queuePressure ?? 0;
+    if (queuePressure > 50) {
       causes.push({
         cause: "QUEUE_BUILDUP",
-        confidence: Math.min(scores.queuePressure, 100),
+        confidence: Math.min(queuePressure, 100),
         description: `Queue has ${metrics.queue_length} pending items, causing delays`,
       });
     }
 
     // Long wait times
-    if (scores.waitTimeImpact > 50) {
+    const waitTimeImpact = scores.waitTimeImpact ?? 0;
+    if (waitTimeImpact > 50) {
       causes.push({
         cause: "EXCESSIVE_WAIT_TIME",
-        confidence: Math.min(scores.waitTimeImpact, 100),
+        confidence: Math.min(waitTimeImpact, 100),
         description: `Average wait time is ${metrics.avg_wait_time_minutes} minutes`,
       });
     }
@@ -322,10 +325,11 @@ export class BottleneckDetectionAI {
     }
 
     // Quality issues
-    if (scores.qualityImpact > 50) {
+    const qualityImpact = scores.qualityImpact ?? 0;
+    if (qualityImpact > 50) {
       causes.push({
         cause: "HIGH_DEFECT_RATE",
-        confidence: Math.min(scores.qualityImpact, 100),
+        confidence: Math.min(qualityImpact, 100),
         description: `Defect rate is ${metrics.defect_rate.toFixed(1)}%, causing rework delays`,
       });
     }
