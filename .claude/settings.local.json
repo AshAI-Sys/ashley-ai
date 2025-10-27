@@ -191,7 +191,8 @@
       "Bash(wc:*)",
       "Bash(do echo -n \"$dir: \")",
       "Bash(do echo \"Testing $endpoint...\")",
-      "Bash(time curl:*)"
+      "Bash(time curl:*)",
+      "Bash(git diff:*)"
     ],
     "deny": [],
     "ask": []

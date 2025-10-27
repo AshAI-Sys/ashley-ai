@@ -79,8 +79,8 @@ const EVENT_TYPE_CONFIG: Record<
   },
 };
 
-function getEventConfig(eventType: string) {
-  return EVENT_TYPE_CONFIG[eventType] || EVENT_TYPE_CONFIG.DEFAULT;
+function getEventConfig(eventType: string): { icon: any; color: string; bgColor: string } {
+  return (EVENT_TYPE_CONFIG[eventType] ?? EVENT_TYPE_CONFIG.DEFAULT)!;
 }
 
 function formatTimestamp(timestamp: string): string {
