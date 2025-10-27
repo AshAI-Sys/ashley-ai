@@ -165,7 +165,7 @@ export function QuantitiesSizeSection({
 
   const getSizePercentage = (size: string): number => {
     if (calculatedTotal === 0) return 0;
-    return Math.round((sizeCurve[size] / calculatedTotal) * 100);
+    return Math.round(((sizeCurve[size] ?? 0) / calculatedTotal) * 100);
   };
 
   const isValidQuantityBreakdown =
@@ -348,7 +348,7 @@ export function QuantitiesSizeSection({
               Size Distribution Visualization
             </Label>
             <div className="space-y-2">
-              {DEFAULT_SIZES.filter(size => sizeCurve[size] > 0).map(size => {
+              {DEFAULT_SIZES.filter(size => (sizeCurve[size] ?? 0) > 0).map(size => {
                 const percentage = getSizePercentage(size);
                 return (
                   <div key={size} className="flex items-center gap-3">
@@ -360,13 +360,13 @@ export function QuantitiesSizeSection({
                       >
                         {percentage >= 10 && (
                           <span className="text-xs font-medium text-white">
-                            {sizeCurve[size]}
+                            {sizeCurve[size] ?? 0}
                           </span>
                         )}
                       </div>
-                      {percentage < 10 && sizeCurve[size] > 0 && (
+                      {percentage < 10 && (sizeCurve[size] ?? 0) > 0 && (
                         <span className="absolute right-2 top-1/2 -translate-y-1/2 transform text-xs font-medium text-white">
-                          {sizeCurve[size]}
+                          {sizeCurve[size] ?? 0}
                         </span>
                       )}
                     </div>
