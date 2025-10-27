@@ -66,7 +66,7 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
 
       // Start decoding
       reader.decodeFromVideoDevice(
-        selectedDevice.deviceId,
+        selectedDevice!.deviceId,
         videoRef.current!,
         (result, error) => {
           if (result) {
@@ -125,7 +125,7 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
     if (!cameraStream) return;
 
     try {
-      const track = cameraStream.getVideoTracks()[0];
+      const track = cameraStream.getVideoTracks()[0]!;
       const capabilities = track.getCapabilities() as any;
 
       if (capabilities.torch) {
