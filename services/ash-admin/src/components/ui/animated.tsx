@@ -87,7 +87,7 @@ export function Animated({
     // Use Intersection Observer for scroll-triggered animations
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           if (!once || !hasAnimated) {
             setTimeout(() => {
               setIsVisible(true);
