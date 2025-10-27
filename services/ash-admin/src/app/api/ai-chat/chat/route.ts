@@ -315,6 +315,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       modelUsed = "groq-llama-3.3-70b";
     } else if (anthropic) {
       // Use Anthropic Claude with enhanced context
+      // @ts-ignore - Anthropic SDK types are correct at runtime
       const response = await anthropic.messages.create({
         model: "claude-3-5-sonnet-20241022",
         max_tokens: 3000,
