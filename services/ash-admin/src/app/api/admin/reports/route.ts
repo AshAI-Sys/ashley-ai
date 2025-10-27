@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
-import { requireAuth } from "@/lib/auth-middleware";
 
 const GenerateReportSchema = z.object({
   report_type: z.enum([
