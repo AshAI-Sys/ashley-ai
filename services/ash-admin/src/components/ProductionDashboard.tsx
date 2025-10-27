@@ -203,10 +203,10 @@ export function ProductionDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {dashboardData?.quality.pass_rate.total > 0
+              {(dashboardData?.quality.pass_rate.total ?? 0) > 0
                 ? Math.round(
-                    (dashboardData.quality.pass_rate.passed /
-                      dashboardData.quality.pass_rate.total) *
+                    ((dashboardData?.quality.pass_rate.passed ?? 0) /
+                      (dashboardData?.quality.pass_rate.total ?? 1)) *
                       100
                   )
                 : 100}
@@ -258,13 +258,13 @@ export function ProductionDashboard() {
       </div>
 
       {/* Urgent Alerts */}
-      {dashboardData?.alerts.upcoming_deadlines.length > 0 && (
+      {(dashboardData?.alerts.upcoming_deadlines?.length ?? 0) > 0 && (
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription>
             <strong>Upcoming Deadlines:</strong>{" "}
-            {dashboardData.alerts.upcoming_deadlines
-              .slice(0, 3)
+            {dashboardData?.alerts.upcoming_deadlines
+              ?.slice(0, 3)
               .map((alert, index) => (
                 <span key={alert.order_number}>
                   {index > 0 && ", "}
@@ -345,7 +345,7 @@ export function ProductionDashboard() {
                   floorStatus?.employees.reduce(
                     (acc, emp) => {
                       if (!acc[emp.department]) acc[emp.department] = [];
-                      acc[emp.department].push(emp);
+                      acc[emp.department]!.push(emp);
                       return acc;
                     },
                     {} as Record<string, typeof floorStatus.employees>
@@ -436,8 +436,8 @@ export function ProductionDashboard() {
                         if (!acc[metric.stage])
                           acc[metric.stage] = { passed: 0, total: 0 };
                         if (metric.status === "approved")
-                          acc[metric.stage].passed += metric._count.id;
-                        acc[metric.stage].total += metric._count.id;
+                          acc[metric.stage]!.passed += metric._count.id;
+                        acc[metric.stage]!.total += metric._count.id;
                         return acc;
                       },
                       {} as Record<string, { passed: number; total: number }>
