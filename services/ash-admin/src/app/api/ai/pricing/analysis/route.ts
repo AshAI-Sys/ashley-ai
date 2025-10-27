@@ -51,7 +51,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       // Get quoted price from invoice
       const quotedPrice =
         order.invoices.length > 0
-          ? parseFloat(order.invoices[0].total_amount.toString())
+          ? parseFloat(order.invoices[0]!.total_amount.toString())
           : parseFloat(order.total_amount.toString());
 
       // Determine if accepted (has invoice or status is not CANCELLED)
@@ -155,7 +155,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       const quotedPrice =
         order.invoices.length > 0
-          ? parseFloat(order.invoices[0].total_amount.toString())
+          ? parseFloat(order.invoices[0]!.total_amount.toString())
           : parseFloat(order.total_amount.toString());
 
       const margin =

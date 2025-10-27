@@ -176,7 +176,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         model_version: "v1.0.0",
       };
 
-      entityGroups[entityId].push({
+      entityGroups[entityId]!.push({
         entity_id: entityId,
         entity_name: entityName,
         result,

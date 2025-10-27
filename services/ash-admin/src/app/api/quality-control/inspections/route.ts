@@ -155,8 +155,8 @@ function calculateAQLSampling(lotSize: number, aql: number, level: string) {
 
   const result = aqlTable[key];
   return {
-    sample_size: result.sampleSize,
-    acceptance: result.acceptance,
-    rejection: result.rejection,
+    sample_size: result?.sampleSize || 0,
+    acceptance: result?.acceptance || 0,
+    rejection: result?.rejection || 0,
   };
 }
