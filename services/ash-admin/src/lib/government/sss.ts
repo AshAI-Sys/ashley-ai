@@ -301,7 +301,7 @@ export class SSSService {
         b =>
           monthlySalary >= b.salary_range.min &&
           monthlySalary <= b.salary_range.max
-      ) || this.contributionTable[this.contributionTable.length - 1];
+      ) || this.contributionTable[this.contributionTable.length - 1]!;
 
     return {
       monthly_salary_credit: bracket.monthly_salary_credit,

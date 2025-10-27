@@ -29,7 +29,7 @@ function base32Encode(buffer: Buffer): string {
   let output = "";
 
   for (let i = 0; i < buffer.length; i++) {
-    value = (value << 8) | buffer[i];
+    value = (value << 8) | buffer[i]!;
     bits += 8;
 
     while (bits >= 5) {
@@ -56,7 +56,7 @@ function base32Decode(input: string): Buffer {
   const output: number[] = [];
 
   for (let i = 0; i < cleanInput.length; i++) {
-    const idx = alphabet.indexOf(cleanInput[i]);
+    const idx = alphabet.indexOf(cleanInput[i]!);
     if (idx === -1) throw new Error("Invalid base32 character");
 
     value = (value << 5) | idx;
@@ -86,12 +86,12 @@ function generateTOTP(secret: string, time?: number): string {
   hmac.update(counterBuffer);
   const digest = hmac.digest();
 
-  const offset = digest[digest.length - 1] & 0x0f;
+  const offset = digest[digest.length - 1]! & 0x0f;
   const binary =
-    ((digest[offset] & 0x7f) << 24) |
-    ((digest[offset + 1] & 0xff) << 16) |
-    ((digest[offset + 2] & 0xff) << 8) |
-    (digest[offset + 3] & 0xff);
+    ((digest[offset]! & 0x7f) << 24) |
+    ((digest[offset + 1]! & 0xff) << 16) |
+    ((digest[offset + 2]! & 0xff) << 8) |
+    (digest[offset + 3]! & 0xff);
 
   const otp = binary % Math.pow(10, TOTP_DIGITS);
   return otp.toString().padStart(TOTP_DIGITS, "0");
