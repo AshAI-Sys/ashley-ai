@@ -232,7 +232,7 @@ export function CommercialsSection({
       const suggestions = [];
 
       // Volume discount opportunities
-      const nextBreak = PRICING_MATRIX[printingMethod][garmentType]?.find(
+      const nextBreak = PRICING_MATRIX[printingMethod]?.[garmentType]?.find(
         break_ => break_.minQuantity > totalQuantity
       );
 
