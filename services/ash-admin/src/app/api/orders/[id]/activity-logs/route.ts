@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const ActivityLogSchema = z.object({
   event_type: z.string().min(1, "Event type is required"),

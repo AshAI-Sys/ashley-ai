@@ -2,18 +2,18 @@
 
 import { useState } from"react";
 import { useRouter } from"next/navigation";
-import { _useQuery } from"@tanstack/react-query";
+import { useQuery } from"@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from"@/components/ui/card";
-import { _Badge } from"@/components/ui/badge";
-import { _Button } from"@/components/ui/button";
+import { Badge } from"@/components/ui/badge";
+import { Button } from"@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from"@/components/ui/tabs";
-import { _Skeleton } from"@/components/ui/skeleton";
-import { _DataTableSkeleton } from"@/components/ui/loading-skeletons";
-import { _EmptyState } from"@/components/ui/empty-state";
-import { _ErrorAlert } from"@/components/ui/error-alert";
+import { Skeleton } from"@/components/ui/skeleton";
+import { DataTableSkeleton } from"@/components/ui/loading-skeletons";
+import { EmptyState } from"@/components/ui/empty-state";
+import { ErrorAlert } from"@/components/ui/error-alert";
 import _DashboardLayout from"@/components/dashboard-layout";
-import { _exportInvoices } from"@/lib/export";
+import { exportInvoices } from"@/lib/export";
 import { DollarSign, Receipt, FileText, CreditCard, AlertCircle, TrendingUp, TrendingDown, Calendar, Users, Building2, Plus, Eye, Download, Filter, RefreshCw,
 } from"lucide-react"; interface FinanceMetrics { total_revenue: number; outstanding_invoices: number; overdue_invoices: number; total_cogs: number; gross_margin: number; pending_bills: number; cash_flow: number; ytd_revenue: number; revenue_growth?: number;
 } interface Invoice { id: string; invoice_no: string; client: { name: string } | null; brand: { name: string } | null; total: number; balance: number; status: string; date_issued: string; due_date: string; days_overdue?: number | null;

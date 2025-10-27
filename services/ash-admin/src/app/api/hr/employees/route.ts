@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse,

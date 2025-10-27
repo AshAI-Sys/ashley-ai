@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse,
@@ -13,7 +13,7 @@ import {
   ValidationError,
 } from "../../../../lib/error-handling";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);

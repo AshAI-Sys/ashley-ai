@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
 import { apiSuccess, apiNotFound, apiServerError } from "@/lib/api-response";

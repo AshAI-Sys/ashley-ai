@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, _useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import _dynamic from "next/dynamic";

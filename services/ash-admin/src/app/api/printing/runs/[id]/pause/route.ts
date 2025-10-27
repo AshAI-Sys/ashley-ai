@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export async function POST(
   request: NextRequest,

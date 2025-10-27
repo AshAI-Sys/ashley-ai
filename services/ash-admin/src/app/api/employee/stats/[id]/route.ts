@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { NextRequest, _NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 import {
   createSuccessResponse,
   withErrorHandling,

@@ -6,7 +6,7 @@ import {
   withErrorHandling,
 } from "../../../lib/error-handling";
 import { prisma as _db } from "../../../lib/db";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Simple health check endpoint to test error handling system
 export const GET = withErrorHandling(async (request: NextRequest) => {

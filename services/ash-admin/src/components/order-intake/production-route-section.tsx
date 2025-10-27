@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { _Separator } from "@/components/ui/separator";
-import { _Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 import {
   MapPin,
   Sparkles,

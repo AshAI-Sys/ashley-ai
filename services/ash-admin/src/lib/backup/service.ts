@@ -11,7 +11,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { createReadStream, createWriteStream } from "fs";
-import { _pipeline } from "stream/promises";
+import { pipeline } from "stream/promises";
 
 const execAsync = promisify(exec);
 

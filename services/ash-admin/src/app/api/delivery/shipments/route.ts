@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // TODO: Fix Prisma client model name issue for Shipment
 // Temporarily disabled all shipment operations

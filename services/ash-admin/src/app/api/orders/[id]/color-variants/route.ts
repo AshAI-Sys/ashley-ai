@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { _getWorkspaceIdFromRequest } from "@/lib/workspace";
-import { _requireAuth } from "@/lib/auth-middleware";
+import { getWorkspaceIdFromRequest } from "@/lib/workspace";
+import { requireAuth } from "@/lib/auth-middleware";
 
 const ColorVariantSchema = z.object({
   line_item_id: z.string().min(1, "Line item ID is required"),
