@@ -9,16 +9,9 @@ import { requireAuth } from "@/lib/auth-middleware";
  * GET /api/auth/me
  * Get current authenticated user information
  */
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, authUser) => {
   try {
-    // Use auth guard to verify authentication;
-    const userOrResponse = await requireAuth(request);
-    if (userOrResponse instanceof Response) {
-      
-      return userOrResponse;
-    }
-
-    const authUser = userOrResponse;
+    // User is already authenticated via requireAuth wrapper
 
     // Fetch full user details from database
     const user = await prisma.user.findUnique({

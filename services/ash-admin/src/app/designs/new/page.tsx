@@ -382,8 +382,9 @@ export default function NewDesignPage() {
       if (result.status === "PASS") {
         toast.success("Design validation passed!");
       } else if (result.status === "WARN") {
-        toast.warning(
-          `Design validation passed with warnings: ${result.issues?.length || 0} issues found`
+        toast(
+          `Design validation passed with warnings: ${result.issues?.length || 0} issues found`,
+          { icon: '⚠️' }
         );
       } else {
         toast.error(

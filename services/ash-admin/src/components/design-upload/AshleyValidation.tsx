@@ -132,8 +132,9 @@ export default function AshleyValidation({
         if (result.status === "PASS") {
           toast.success("Design validation passed! ✨");
         } else if (result.status === "WARN") {
-          toast.warning(
-            `Validation passed with ${result.issues?.length || 0} warnings`
+          toast(
+            `Validation passed with ${result.issues?.length || 0} warnings`,
+            { icon: '⚠️' }
           );
         } else {
           toast.error(

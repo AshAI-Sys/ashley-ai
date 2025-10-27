@@ -8,27 +8,21 @@ import { requireAuth } from "@/lib/auth-middleware";
  * POST /api/auth/logout
  * Logout current user and clear session
  */
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Get user from auth (optional - still logout even if not authenticated);
-    const userOrResponse = await requireAuth(request);
-    let userId: string | undefined;
-    let workspaceId: string | undefined;
+    // User is already authenticated via requireAuth wrapper
+    const userId = user.id;
+    const workspaceId = user.workspace_id;
 
-    if (!(userOrResponse instanceof Response)) {
-      userId = userOrResponse.id;
-      workspaceId = userOrResponse.workspace_id;
+    // Log logout event
+    await logAuthEvent("LOGOUT", workspaceId, userId, request, {
+      email: user.email,
+    });
 
-      // Log logout event
-      await logAuthEvent("LOGOUT", workspaceId, userId, request, {
-        email: userOrResponse.email,
-      });
-
-      authLogger.info("User logged out", {
-        userId: userId,
-        email: userOrResponse.email,
-      });
-    }
+    authLogger.info("User logged out", {
+      userId: userId,
+      email: user.email,
+    });
 
     // Clear cookies
     const response = NextResponse.json({
