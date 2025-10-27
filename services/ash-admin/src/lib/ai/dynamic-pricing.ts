@@ -291,31 +291,34 @@ export class DynamicPricingAI {
     const analysis: PricingRecommendation["pricing_factors"] = [];
 
     // Complexity
-    if (multipliers.complexityMultiplier > 1.0) {
+    const complexityMultiplier = multipliers.complexityMultiplier ?? 1.0;
+    if (complexityMultiplier > 1.0) {
       analysis.push({
         factor: "Product Complexity",
         impact: "INCREASE",
-        weight: (multipliers.complexityMultiplier - 1.0) * 100,
+        weight: (complexityMultiplier - 1.0) * 100,
         value: factors.complexity,
       });
     }
 
     // Quantity
-    if (multipliers.quantityAdjustment !== 1.0) {
+    const quantityAdjustment = multipliers.quantityAdjustment ?? 1.0;
+    if (quantityAdjustment !== 1.0) {
       analysis.push({
         factor: "Order Quantity",
-        impact: multipliers.quantityAdjustment < 1.0 ? "DECREASE" : "INCREASE",
-        weight: Math.abs(1.0 - multipliers.quantityAdjustment) * 100,
+        impact: quantityAdjustment < 1.0 ? "DECREASE" : "INCREASE",
+        weight: Math.abs(1.0 - quantityAdjustment) * 100,
         value: `${factors.quantity} units`,
       });
     }
 
     // Client relationship
-    if (multipliers.clientFactor !== 1.0) {
+    const clientFactor = multipliers.clientFactor ?? 1.0;
+    if (clientFactor !== 1.0) {
       analysis.push({
         factor: "Client Relationship",
-        impact: multipliers.clientFactor < 1.0 ? "DECREASE" : "INCREASE",
-        weight: Math.abs(1.0 - multipliers.clientFactor) * 100,
+        impact: clientFactor < 1.0 ? "DECREASE" : "INCREASE",
+        weight: Math.abs(1.0 - clientFactor) * 100,
         value: factors.client_history
           ? `${factors.client_history.total_orders} previous orders`
           : "New client",
@@ -323,31 +326,34 @@ export class DynamicPricingAI {
     }
 
     // Market demand
-    if (multipliers.demandFactor !== 1.0) {
+    const demandFactor = multipliers.demandFactor ?? 1.0;
+    if (demandFactor !== 1.0) {
       analysis.push({
         factor: "Market Demand",
-        impact: multipliers.demandFactor > 1.0 ? "INCREASE" : "DECREASE",
-        weight: Math.abs(1.0 - multipliers.demandFactor) * 100,
+        impact: demandFactor > 1.0 ? "INCREASE" : "DECREASE",
+        weight: Math.abs(1.0 - demandFactor) * 100,
         value: `${market.demand_level} demand, ${market.capacity_utilization}% capacity`,
       });
     }
 
     // Urgency
-    if (multipliers.urgencyFactor !== 1.0) {
+    const urgencyFactor = multipliers.urgencyFactor ?? 1.0;
+    if (urgencyFactor !== 1.0) {
       analysis.push({
         factor: "Timeline Urgency",
-        impact: multipliers.urgencyFactor > 1.0 ? "INCREASE" : "DECREASE",
-        weight: Math.abs(1.0 - multipliers.urgencyFactor) * 100,
+        impact: urgencyFactor > 1.0 ? "INCREASE" : "DECREASE",
+        weight: Math.abs(1.0 - urgencyFactor) * 100,
         value: `${factors.deadline_days} days deadline`,
       });
     }
 
     // Seasonal
-    if (multipliers.seasonalFactor !== 1.0) {
+    const seasonalFactor = multipliers.seasonalFactor ?? 1.0;
+    if (seasonalFactor !== 1.0) {
       analysis.push({
         factor: "Seasonal Adjustment",
-        impact: multipliers.seasonalFactor > 1.0 ? "INCREASE" : "DECREASE",
-        weight: Math.abs(1.0 - multipliers.seasonalFactor) * 100,
+        impact: seasonalFactor > 1.0 ? "INCREASE" : "DECREASE",
+        weight: Math.abs(1.0 - seasonalFactor) * 100,
         value: factors.season || "NORMAL",
       });
     }
@@ -566,8 +572,8 @@ export class DynamicPricingAI {
     );
     acceptedMargins.sort((a, b) => a - b);
     const optimalMarginRange = {
-      min: acceptedMargins[Math.floor(acceptedMargins.length * 0.25)],
-      max: acceptedMargins[Math.floor(acceptedMargins.length * 0.75)],
+      min: acceptedMargins[Math.floor(acceptedMargins.length * 0.25)] ?? 25,
+      max: acceptedMargins[Math.floor(acceptedMargins.length * 0.75)] ?? 35,
     };
 
     // Generate insights

@@ -303,6 +303,7 @@ export async function bulkImportOrders(
     for (let i = 0; i < orders.length; i++) {
       try {
         const orderData = orders[i];
+        if (!orderData) continue;
 
         // Find or create client
         let client = await prisma.client.findFirst({
