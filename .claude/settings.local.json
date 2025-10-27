@@ -188,7 +188,10 @@
       "Bash(1)",
       "Bash(then echo \"Fixing $file\")",
       "Bash(do echo \"Fixing $file\")",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(do echo -n \"$dir: \")",
+      "Bash(do echo \"Testing $endpoint...\")",
+      "Bash(time curl:*)"
     ],
     "deny": [],
     "ask": []

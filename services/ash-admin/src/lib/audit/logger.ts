@@ -75,17 +75,15 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
   try {
     await prisma.auditLog.create({
       data: {
+        workspace_id: entry.workspaceId || 'default',
         user_id: entry.userId,
         action: entry.action,
-        resource_type: entry.resource,
+        resource: entry.resource,
         resource_id: entry.resourceId,
-        details: entry.details ? JSON.stringify(entry.details) : undefined,
         ip_address: entry.ipAddress,
         user_agent: entry.userAgent,
-        severity: entry.severity || "INFO",
-        created_at: entry.timestamp || new Date(),
-        before_value: entry.before ? JSON.stringify(entry.before) : undefined,
-        after_value: entry.after ? JSON.stringify(entry.after) : undefined,
+        old_values: entry.before ? JSON.stringify(entry.before) : undefined,
+        new_values: entry.after ? JSON.stringify(entry.after) : undefined,
       },
     });
   } catch (error) {
@@ -111,11 +109,7 @@ export async function queryAuditLogs(filter: AuditLogFilter) {
   }
 
   if (filter.resource) {
-    where.resource_type = filter.resource;
-  }
-
-  if (filter.severity) {
-    where.severity = filter.severity;
+    where.resource = filter.resource;
   }
 
   if (filter.startDate || filter.endDate) {
@@ -146,9 +140,8 @@ export async function queryAuditLogs(filter: AuditLogFilter) {
 
   return logs.map(log => ({
     ...log,
-    details: log.details ? JSON.parse(log.details) : null,
-    before_value: log.before_value ? JSON.parse(log.before_value) : null,
-    after_value: log.after_value ? JSON.parse(log.after_value) : null,
+    before_value: log.old_values ? JSON.parse(log.old_values) : null,
+    after_value: log.new_values ? JSON.parse(log.new_values) : null,
   }));
 }
 
@@ -165,8 +158,7 @@ export async function getAuditLogCount(
     where.action = Array.isArray(filter.action)
       ? { in: filter.action }
       : filter.action;
-  if (filter.resource) where.resource_type = filter.resource;
-  if (filter.severity) where.severity = filter.severity;
+  if (filter.resource) where.resource = filter.resource;
 
   if (filter.startDate || filter.endDate) {
     where.created_at = {};
@@ -238,10 +230,6 @@ export function withAudit(action: AuditAction, resource?: string) {
           resource,
           ipAddress,
           userAgent,
-          severity: "ERROR",
-          details: {
-            error: error instanceof Error ? error.message : "Unknown error",
-          },
         });
         throw error;
       }
@@ -265,7 +253,6 @@ export const audit = {
     logAudit({
       userId,
       action: success ? "LOGIN" : "LOGIN_FAILED",
-      severity: success ? "INFO" : "WARNING",
       ipAddress,
       userAgent,
     }),
@@ -277,7 +264,6 @@ export const audit = {
     logAudit({
       userId,
       action: "LOGOUT",
-      severity: "INFO",
       ipAddress,
       userAgent,
     }),
@@ -298,7 +284,6 @@ export const audit = {
       action: "CREATE",
       resource,
       resourceId,
-      severity: "INFO",
       after: data,
       ipAddress,
       userAgent,
@@ -321,7 +306,6 @@ export const audit = {
       action: "UPDATE",
       resource,
       resourceId,
-      severity: "INFO",
       before,
       after,
       ipAddress,
@@ -344,7 +328,6 @@ export const audit = {
       action: "DELETE",
       resource,
       resourceId,
-      severity: "WARNING",
       before: data,
       ipAddress,
       userAgent,
@@ -364,8 +347,6 @@ export const audit = {
       userId,
       action: "ACCESS_DENIED",
       resource,
-      severity: "WARNING",
-      details: { attempted_action: action },
       ipAddress,
       userAgent,
     }),
@@ -383,8 +364,6 @@ export const audit = {
     logAudit({
       userId,
       action: "SECURITY_ALERT",
-      severity: "CRITICAL",
-      details: { message, ...details },
       ipAddress,
       userAgent,
     }),
@@ -404,8 +383,6 @@ export const audit = {
       userId,
       action: "EXPORT",
       resource,
-      severity: "INFO",
-      details: { format, record_count: recordCount },
       ipAddress,
       userAgent,
     }),
@@ -424,21 +401,16 @@ export async function getAuditStatistics(days: number = 30) {
     },
     select: {
       action: true,
-      severity: true,
       created_at: true,
     },
   });
 
   const actionCounts: Record<string, number> = {};
-  const severityCounts: Record<string, number> = {};
   const dailyCounts: Record<string, number> = {};
 
   logs.forEach(log => {
     // Count by action
     actionCounts[log.action] = (actionCounts[log.action] || 0) + 1;
-
-    // Count by severity
-    severityCounts[log.severity] = (severityCounts[log.severity] || 0) + 1;
 
     // Count by day
     const day = log.created_at.toISOString().split("T")[0];
@@ -448,7 +420,6 @@ export async function getAuditStatistics(days: number = 30) {
   return {
     total: logs.length,
     actionCounts,
-    severityCounts,
     dailyCounts,
   };
 }
@@ -464,7 +435,6 @@ export async function cleanupOldAuditLogs(daysToKeep: number = 90) {
   const result = await prisma.auditLog.deleteMany({
     where: {
       created_at: { lt: cutoffDate },
-      severity: { not: "CRITICAL" }, // Keep critical logs forever
     },
   });
 

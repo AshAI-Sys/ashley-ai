@@ -12,7 +12,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     // User is already authenticated via requireAuth wrapper
     const userId = user.id;
-    const workspaceId = user.workspace_id;
+    const workspaceId = user.workspaceId;
 
     // Log logout event
     await logAuthEvent("LOGOUT", workspaceId, userId, request, {
