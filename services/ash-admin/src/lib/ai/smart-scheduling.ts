@@ -335,7 +335,7 @@ export class SmartSchedulingAI {
 
         // Check gap before first conflict
         if (
-          sortedConflicts[0].start.getTime() - dayStart.getTime() >=
+          sortedConflicts[0]!.start.getTime() - dayStart.getTime() >=
           durationHours * 60 * 60 * 1000
         ) {
           const slotEnd = new Date(dayStart);
@@ -345,8 +345,8 @@ export class SmartSchedulingAI {
 
         // Check gaps between conflicts
         for (let i = 0; i < sortedConflicts.length - 1; i++) {
-          const gapStart = sortedConflicts[i].end;
-          const gapEnd = sortedConflicts[i + 1].start;
+          const gapStart = sortedConflicts[i]!.end;
+          const gapEnd = sortedConflicts[i + 1]!.start;
           const gapHours =
             (gapEnd.getTime() - gapStart.getTime()) / (1000 * 60 * 60);
 
@@ -600,7 +600,7 @@ export class SmartSchedulingAI {
         if (scenario.job_id && scenario.new_deadline) {
           const jobIdx = modifiedJobs.findIndex(j => j.id === scenario.job_id);
           if (jobIdx >= 0) {
-            modifiedJobs[jobIdx].deadline = scenario.new_deadline;
+            modifiedJobs[jobIdx]!.deadline = scenario.new_deadline;
             scenarioName = `Extend Deadline: ${scenario.job_id}`;
             impact = "Analyzes scheduling flexibility from deadline extension";
           }
