@@ -147,7 +147,9 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       if (entity_type === "operator") {
         entityId = qc.inspector_id || "UNKNOWN";
-        entityName = qc.inspector?.name || "Unknown Operator";
+        entityName = qc.inspector
+          ? `${qc.inspector.first_name} ${qc.inspector.last_name}`
+          : "Unknown Operator";
       } else {
         entityId = qc.stage || "UNKNOWN";
         entityName = qc.stage || "Unknown Station";
