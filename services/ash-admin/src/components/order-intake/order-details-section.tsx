@@ -133,7 +133,7 @@ export function OrderDetailsSection({
 
   const handleEditFabricType = (index: number) => {
     setEditingFabricIndex(index);
-    setNewFabricName(fabricTypes[index].label);
+    setNewFabricName(fabricTypes[index]!.label);
     setShowFabricDialog(true);
   };
 
@@ -141,7 +141,7 @@ export function OrderDetailsSection({
     const updated = fabricTypes.filter((_, i) => i !== index);
     setFabricTypes(updated);
     // If the deleted fabric was selected, clear the selection
-    if (fabricTypes[index].value === fabricType) {
+    if (fabricTypes[index]!.value === fabricType) {
       onFabricTypeChange("");
     }
   };
@@ -174,8 +174,8 @@ export function OrderDetailsSection({
 
   const handleEditSizeType = (index: number) => {
     setEditingSizeIndex(index);
-    setNewSizeLabel(sizeDistributionTypes[index].label);
-    setNewSizeDescription(sizeDistributionTypes[index].description);
+    setNewSizeLabel(sizeDistributionTypes[index]!.label);
+    setNewSizeDescription(sizeDistributionTypes[index]!.description);
     setShowSizeDialog(true);
   };
 
@@ -183,7 +183,7 @@ export function OrderDetailsSection({
     const updated = sizeDistributionTypes.filter((_, i) => i !== index);
     setSizeDistributionTypes(updated);
     // If the deleted size was selected, clear the selection
-    if (sizeDistributionTypes[index].value === sizeDistributionType) {
+    if (sizeDistributionTypes[index]!.value === sizeDistributionType) {
       onSizeDistributionTypeChange("");
     }
   };
