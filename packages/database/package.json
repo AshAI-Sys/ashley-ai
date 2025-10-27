@@ -41,8 +41,6 @@
   "devDependencies": {
     "@ash-ai/typescript-config": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
-    "prisma-docs-generator": "^0.8.0",
-    "prisma-erd-generator": "^2.1.0",
     "tsx": "^4.7.0",
     "typescript": "^5.4.0"
   }
