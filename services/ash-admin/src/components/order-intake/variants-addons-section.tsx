@@ -388,7 +388,7 @@ export function VariantsAddonsSection({
       if (!grouped[addOn.type]) {
         grouped[addOn.type] = [];
       }
-      grouped[addOn.type].push(addOn);
+      grouped[addOn.type]!.push(addOn);
     });
     return grouped;
   };

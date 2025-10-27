@@ -171,7 +171,7 @@ export default function DTFWorkflow({
 
   const updateInkUsage = (index: number, amount: number) => {
     const updatedInk = [...data.printing.ink_usage_ml];
-    updatedInk[index].amount = amount;
+    updatedInk[index]!.amount = amount;
     updateData("printing", { ink_usage_ml: updatedInk });
   };
 

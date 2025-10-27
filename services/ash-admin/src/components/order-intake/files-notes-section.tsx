@@ -329,7 +329,7 @@ export function FilesNotesSection({
       if (!grouped[file.category]) {
         grouped[file.category] = [];
       }
-      grouped[file.category].push(file);
+      grouped[file.category]!.push(file);
     });
     return grouped;
   };

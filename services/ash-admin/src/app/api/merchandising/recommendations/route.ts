@@ -308,9 +308,9 @@ async function generateCrossSellRecommendations(
       productsInOrder.forEach((otherProduct: string, otherIndex: number) => {
         if (
           index !== otherIndex &&
-          !productCombinations[product].includes(otherProduct)
+          !productCombinations[product]!.includes(otherProduct)
         ) {
-          productCombinations[product].push(otherProduct);
+          productCombinations[product]!.push(otherProduct);
         }
       });
     });

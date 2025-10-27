@@ -139,8 +139,8 @@ export default function CreateBundlesPage({
 
     if (field === "pieces_per_bundle") {
       const piecesPerBundle = parseInt(value) || 1;
-      newConfig[index].bundles_count = Math.ceil(
-        newConfig[index].total_pieces / piecesPerBundle
+      newConfig[index]!.bundles_count = Math.ceil(
+        newConfig[index]!.total_pieces / piecesPerBundle
       );
     }
 
