@@ -181,7 +181,7 @@ export class SlackService {
       };
 
       // Add @channel mention for urgent messages
-      if (payload.urgent) {
+      if (payload.urgent && slackMessage.attachments[0]) {
         slackMessage.attachments[0].text = `<!channel> ${slackMessage.attachments[0].text}`;
       }
 

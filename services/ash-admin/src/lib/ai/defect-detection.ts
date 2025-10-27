@@ -363,14 +363,14 @@ export class DefectDetectionAI {
         if (!defectCounts[defect.type]) {
           defectCounts[defect.type] = { count: 0, totalSeverity: 0 };
         }
-        defectCounts[defect.type].count++;
+        defectCounts[defect.type]!.count++;
         const severityScore =
           defect.severity === "CRITICAL"
             ? 3
             : defect.severity === "MAJOR"
               ? 2
               : 1;
-        defectCounts[defect.type].totalSeverity += severityScore;
+        defectCounts[defect.type]!.totalSeverity += severityScore;
       });
     });
 
@@ -395,7 +395,7 @@ export class DefectDetectionAI {
     let patternType = "RANDOM";
     if (defectRate > 50) {
       patternType = "SYSTEMIC";
-    } else if (commonDefects.length > 0 && commonDefects[0].frequency > 30) {
+    } else if (commonDefects.length > 0 && commonDefects[0]!.frequency > 30) {
       patternType = "RECURRING";
     } else if (defectRate < 10) {
       patternType = "SPORADIC";

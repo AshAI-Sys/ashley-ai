@@ -216,7 +216,7 @@ function getFileExtension(filename: string): string | null {
   if (parts.length < 2) {
     return null;
   }
-  return parts[parts.length - 1].toLowerCase();
+  return parts[parts.length - 1]!.toLowerCase();
 }
 
 /**
@@ -283,7 +283,7 @@ function generateRandomString(length: number): string {
   crypto.getRandomValues(bytes);
 
   for (let i = 0; i < length; i++) {
-    result += chars[bytes[i] % chars.length];
+    result += chars[bytes[i]! % chars.length];
   }
 
   return result;
