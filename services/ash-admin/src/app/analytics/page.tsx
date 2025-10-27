@@ -14,17 +14,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardLayout from "@/components/dashboard-layout";
 import {
   BarChart3,
-  PieChart,
   TrendingUp,
-  TrendingDown,
   Activity,
-  Users,
-  Package,
   Clock,
-  DollarSign,
   AlertTriangle,
   CheckCircle,
-  Zap,
   Target,
   RefreshCw,
   Calendar,
