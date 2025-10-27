@@ -63,7 +63,7 @@ export async function createSession(
     now.getTime() + expiresInDays * 24 * 60 * 60 * 1000
   );
 
-  const session = await prisma.session.create({
+  const session = await prisma.userSession.create({
     data: {
       id: sessionId,
       user_id: userId,
@@ -96,7 +96,7 @@ export async function createSession(
 export async function getSession(token: string): Promise<SessionData | null> {
   const hashedToken = hashToken(token);
 
-  const session = await prisma.session.findFirst({
+  const session = await prisma.userSession.findFirst({
     where: {
       token: hashedToken,
       is_active: true,
@@ -109,7 +109,7 @@ export async function getSession(token: string): Promise<SessionData | null> {
   }
 
   // Update last activity
-  await prisma.session.update({
+  await prisma.userSession.update({
     where: { id: session.id },
     data: { last_activity_at: new Date() },
   });
@@ -134,7 +134,7 @@ export async function getUserSessions(
   userId: string,
   currentSessionToken?: string
 ): Promise<SessionInfo[]> {
-  const sessions = await prisma.session.findMany({
+  const sessions = await prisma.userSession.findMany({
     where: {
       user_id: userId,
       is_active: true,
@@ -166,7 +166,7 @@ export async function revokeSession(
   userId: string
 ): Promise<boolean> {
   try {
-    await prisma.session.updateMany({
+    await prisma.userSession.updateMany({
       where: {
         id: sessionId,
         user_id: userId,
@@ -198,7 +198,7 @@ export async function revokeAllSessions(
     where.id = { not: exceptSessionId };
   }
 
-  const result = await prisma.session.updateMany({
+  const result = await prisma.userSession.updateMany({
     where,
     data: {
       is_active: false,
@@ -219,7 +219,7 @@ export async function forceLogoutUser(userId: string): Promise<number> {
  * Clean up expired sessions
  */
 export async function cleanupExpiredSessions(): Promise<number> {
-  const result = await prisma.session.deleteMany({
+  const result = await prisma.userSession.deleteMany({
     where: {
       OR: [
         { expires_at: { lt: new Date() } },
@@ -242,7 +242,7 @@ export async function extendSession(
   daysToAdd: number = 7
 ): Promise<boolean> {
   try {
-    const session = await prisma.session.findUnique({
+    const session = await prisma.userSession.findUnique({
       where: { id: sessionId },
     });
 
@@ -252,7 +252,7 @@ export async function extendSession(
       session.expires_at.getTime() + daysToAdd * 24 * 60 * 60 * 1000
     );
 
-    await prisma.session.update({
+    await prisma.userSession.update({
       where: { id: sessionId },
       data: { expires_at: newExpiresAt },
     });
@@ -268,7 +268,7 @@ export async function extendSession(
  * Get session count for user
  */
 export async function getActiveSessionCount(userId: string): Promise<number> {
-  return await prisma.session.count({
+  return await prisma.userSession.count({
     where: {
       user_id: userId,
       is_active: true,
@@ -292,7 +292,7 @@ export async function hasMaxSessions(
  * Get oldest session to revoke when limit reached
  */
 export async function revokeOldestSession(userId: string): Promise<void> {
-  const oldestSession = await prisma.session.findFirst({
+  const oldestSession = await prisma.userSession.findFirst({
     where: {
       user_id: userId,
       is_active: true,
@@ -368,7 +368,7 @@ export async function trackSessionActivity(
   activity: string
 ): Promise<void> {
   try {
-    await prisma.session.update({
+    await prisma.userSession.update({
       where: { id: sessionId },
       data: {
         last_activity_at: new Date(),
@@ -387,18 +387,18 @@ export async function getSessionStatistics() {
 
   const [totalActive, totalExpired, activeLast24h, activeLast7d] =
     await Promise.all([
-      prisma.session.count({
+      prisma.userSession.count({
         where: {
           is_active: true,
           expires_at: { gt: now },
         },
       }),
-      prisma.session.count({
+      prisma.userSession.count({
         where: {
           OR: [{ is_active: false }, { expires_at: { lt: now } }],
         },
       }),
-      prisma.session.count({
+      prisma.userSession.count({
         where: {
           is_active: true,
           last_activity_at: {
@@ -406,7 +406,7 @@ export async function getSessionStatistics() {
           },
         },
       }),
-      prisma.session.count({
+      prisma.userSession.count({
         where: {
           is_active: true,
           last_activity_at: {

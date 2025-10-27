@@ -58,23 +58,24 @@ export const PUT = requireAuth(async (
       });
 
     // Create status history log
-    try {
-      await prisma.bundleStatusHistory.create({
-        data: {
-          workspace_id: workspaceId,
-          bundle_id: context.params.id,
-          old_status: bundle.status,
-          new_status: status,
-          changed_by: userId,
-          notes,
-          location,
-          changed_at: new Date(),
-        },
-    });
-    } catch (err) {
-      // Ignore if BundleStatusHistory table doesn't exist
-      console.log("Bundle status history logging skipped");
-    }
+    // TODO: BundleStatusHistory model doesn't exist in schema
+    // Uncomment when model is added to schema:
+    // try {
+    //   await prisma.bundleStatusHistory.create({
+    //     data: {
+    //       workspace_id: workspaceId,
+    //       bundle_id: context.params.id,
+    //       old_status: bundle.status,
+    //       new_status: status,
+    //       changed_by: userId,
+    //       notes,
+    //       location,
+    //       changed_at: new Date(),
+    //     },
+    //   });
+    // } catch (err) {
+    //   console.log("Bundle status history logging skipped");
+    // }
 
     return NextResponse.json({
       success: true,

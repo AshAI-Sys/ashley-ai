@@ -82,15 +82,8 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       }),
 
       // Production runs
-      prisma.cuttingRun.findMany({
-        where: { created_at: { gte: startDate } },
-        select: {
-          id: true,
-          bundles_cut: true,
-          efficiency_score: true,
-          created_at: true,
-        },
-      }),
+      // TODO: CuttingRun model doesn't exist in schema - returns empty for now
+      Promise.resolve([]),
 
       prisma.printRun.findMany({
         where: { created_at: { gte: startDate } },
