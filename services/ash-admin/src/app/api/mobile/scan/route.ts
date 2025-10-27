@@ -9,7 +9,7 @@ import { requireAuth } from "@/lib/auth-middleware";
  */
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
-    const { code, _format } = await request.json();
+    const { code, __format } = await request.json();
 
     if (!code) {
       

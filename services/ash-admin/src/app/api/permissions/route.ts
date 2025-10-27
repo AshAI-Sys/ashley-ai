@@ -11,7 +11,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const action = searchParams.get("action"); // 'list' | 'user' | 'roles'
 
     if (action === "roles") {
-      const _roles = permissionManager.getAvailableRoles();
+      const __roles = permissionManager.getAvailableRoles();
       }
       return NextResponse.json({
         success: true,

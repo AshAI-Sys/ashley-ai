@@ -144,7 +144,7 @@ export function ProductionDashboard() {
     return colors[status.toLowerCase()] || "bg-gray-500";
   };
 
-  const __getPriorityColor = (priority: string): string => {
+  const ___getPriorityColor = (priority: string): string => {
     if (!priority) return "text-gray-600 bg-gray-50";
     const colors: Record<string, string> = {
       high: "text-red-600 bg-red-50",

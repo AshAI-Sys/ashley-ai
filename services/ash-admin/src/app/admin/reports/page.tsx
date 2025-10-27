@@ -507,7 +507,7 @@ export default function ReportsPage() {
 }
 
 // Report Data Modal Component
-function ReportDataModal({ _reportType, data, onClose }: any) {
+function ReportDataModal({ __reportType, data, onClose }: any) {
   const downloadReport = (format: string) => {
     if (format === "json") {
       const blob = new Blob([JSON.stringify(data, null, 2)], {

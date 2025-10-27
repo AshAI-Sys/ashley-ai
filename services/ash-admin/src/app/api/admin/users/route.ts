@@ -34,7 +34,7 @@ const CreateUserSchema = z.object({
   requires_2fa: z.boolean().default(false),
 });
 
-const __UpdateUserSchema = z.object({
+const ___UpdateUserSchema = z.object({
   email: z.string().email().optional(),
   username: z.string().min(3).optional(),
   first_name: z.string().min(1).optional(),

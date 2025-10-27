@@ -65,7 +65,7 @@ export const PUT = requireAuth(async (
   context: { params: { id: string } }
 ) => {
   try {
-    const __workspaceId = user.workspaceId;
+    const ___workspaceId = user.workspaceId;
     const body = await request.json();
 
     const order = await prisma.order.update({
@@ -108,7 +108,7 @@ export const DELETE = requireAuth(async (
   context: { params: { id: string } }
 ) => {
   try {
-    const __workspaceId = user.workspaceId;
+    const ___workspaceId = user.workspaceId;
     await prisma.order.delete({
       where: { id: context.params.id },
     });

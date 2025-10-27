@@ -157,7 +157,7 @@ export class BackupService {
 
       if (conn.isSQLite && conn.sqlitePath) {
         // SQLite backup - just copy the file
-        const __sourceStats = await fs.stat(conn.sqlitePath);
+        const ___sourceStats = await fs.stat(conn.sqlitePath);
 
         if (compress) {
           // Compress SQLite file

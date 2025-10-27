@@ -231,7 +231,7 @@ export class WebhookService {
     secret: string
   ): Promise<string> {
     const encoder = new TextEncoder();
-    const __data = encoder.encode(JSON.stringify(payload));
+    const ___data = encoder.encode(JSON.stringify(payload));
     const key = encoder.encode(secret);
 
     // Simple signature - in production use crypto.subtle for HMAC-SHA256

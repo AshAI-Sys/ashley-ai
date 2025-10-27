@@ -113,7 +113,7 @@ export default function ColorPalette({
       : null;
   };
 
-  const __getContrastColor = (hex: string) => {
+  const ___getContrastColor = (hex: string) => {
     const rgb = hexToRgb(hex);
     if (!rgb) return "#000000";
 

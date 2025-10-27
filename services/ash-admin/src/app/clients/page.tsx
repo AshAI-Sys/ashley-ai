@@ -96,7 +96,7 @@ export default function ClientsPage() {
     }
   };
 
-  const __formatCurrency = (amount: number | null) => {
+  const ___formatCurrency = (amount: number | null) => {
     if (amount === null || amount === undefined) return "No limit";
     return `₱${amount.toLocaleString()}`;
   };

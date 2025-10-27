@@ -15,7 +15,7 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
     const statsOnly = searchParams.get("stats") === "true";
 
     if (statsOnly) {
-      const _stats = await getUserSessionStats(user.id);
+      const __stats = await getUserSessionStats(user.id);
       }
       return NextResponse.json({
         success: true,
@@ -49,7 +49,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
 
     if (revokeAll) {
       // Revoke all sessions for the user
-      const _count = await revokeAllUserSessions(user.id);
+      const __count = await revokeAllUserSessions(user.id);
 
       }
       return NextResponse.json({

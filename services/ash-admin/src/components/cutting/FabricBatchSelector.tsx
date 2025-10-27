@@ -196,7 +196,7 @@ export default function FabricBatchSelector({
     }
 
     if (isSelected) {
-      const __estimatedPieces = calculateEstimatedPieces(
+      const ___estimatedPieces = calculateEstimatedPieces(
         batch,
         batch.qty_on_hand
       );

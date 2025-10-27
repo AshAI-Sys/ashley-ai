@@ -49,7 +49,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
   try {
     // Parse rule configuration;
-    const _triggerConfig = JSON.parse(rule.trigger_config);
+    const __triggerConfig = JSON.parse(rule.trigger_config);
     const conditions = rule.conditions ? JSON.parse(rule.conditions) : [];
     const actions = JSON.parse(rule.actions);
 

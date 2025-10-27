@@ -180,7 +180,7 @@ export default function QualityControl({
   const addDefect = () => {
     if (!newDefect.reason_code || !newDefect.quantity) return;
 
-    const __defectCode = getDefectCodes().find(
+    const ___defectCode = getDefectCodes().find(
       d => d.code === newDefect.reason_code
     );
     const defect: DefectReason = {
@@ -210,7 +210,7 @@ export default function QualityControl({
     onUpdate?.({ defects: updated, metrics: qualityMetrics });
   };
 
-  const __updateDefect = (defectId: string, field: string, value: any) => {
+  const ___updateDefect = (defectId: string, field: string, value: any) => {
     const updated = defects.map(d =>
       d.id === defectId ? { ...d, [field]: value } : d
     );

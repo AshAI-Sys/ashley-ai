@@ -3,7 +3,7 @@
 import { useState, _useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import _dynamic from "next/dynamic";
 
 export default function RegisterPage() {
   // Force light mode immediately (synchronous, no useEffect delay)

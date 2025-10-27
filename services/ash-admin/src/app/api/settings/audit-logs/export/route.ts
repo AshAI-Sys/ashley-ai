@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
-    const __body = await request.json();
+    const ___body = await request.json();
 
     // Mock CSV data
     const csv = `ID,User,Action,Category,Status,IP Address,Timestamp

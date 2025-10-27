@@ -160,7 +160,7 @@ export default function DeliveryPage() {
     refetchShipments();
   };
 
-  const __isLoading = statsLoading || shipmentsLoading;
+  const ___isLoading = statsLoading || shipmentsLoading;
   const isFetching = statsFetching || shipmentsFetching;
 
   const getStatusBadge = (status: string) => {

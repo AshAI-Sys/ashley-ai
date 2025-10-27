@@ -244,7 +244,7 @@ async function generateReport(
 }
 
 // Generate report data based on type
-async function generateReportData(params: any, user: any) {
+async function generateReportData(params: any, _user: any) {
   const { report_type, department, date_from, date_to } = params;
 
   switch (report_type) {
