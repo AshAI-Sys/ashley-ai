@@ -225,13 +225,14 @@ export default function MaterialConsumption({
     if (existingIndex >= 0) {
       // Update existing consumption
       const updated = [...consumedMaterials];
+      const existing = updated[existingIndex]!;
       updated[existingIndex] = {
-        ...updated[existingIndex],
-        quantity: updated[existingIndex].quantity + quantity,
+        ...existing,
+        quantity: existing.quantity + quantity,
         cost:
-          (updated[existingIndex].quantity + quantity) *
+          (existing.quantity + quantity) *
           (selectedMaterial.cost_per_unit || 0),
-        notes: newConsumption.notes || updated[existingIndex].notes,
+        notes: newConsumption.notes || existing.notes,
       };
       setConsumedMaterials(updated);
     } else {
