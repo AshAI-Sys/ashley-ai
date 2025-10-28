@@ -16,7 +16,6 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         ? {
             supplier: {
               contains: search,
-              mode: "insensitive" as any,
             },
           }
         : undefined,

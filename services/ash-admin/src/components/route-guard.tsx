@@ -25,7 +25,7 @@ export default function RouteGuard({ children }: RouteGuardProps) {
         role: user.role as any,
         position: user.position || "",
         department: user.department || "Administration",
-        permissions: user.permissions || {},
+        permissions: user.permissions || undefined,
       };
 
       // Check if user has access to current route

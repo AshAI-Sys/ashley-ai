@@ -144,7 +144,7 @@ export class ThreePLService {
     }
 
     // Return cheapest available option
-    return availableQuotes[0];
+    return availableQuotes[0] ?? null;
   }
 
   /**

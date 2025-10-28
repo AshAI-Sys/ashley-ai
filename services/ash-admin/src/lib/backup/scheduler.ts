@@ -99,7 +99,7 @@ export class BackupScheduler {
       console.log(`✅ Scheduled backup completed: ${name}`);
     } catch (error) {
       logError(error as Error, {
-        category: "database",
+        category: "database" as any,
         operation: "scheduled-backup",
       });
       console.error("❌ Scheduled backup failed:", error);
