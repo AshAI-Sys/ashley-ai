@@ -118,7 +118,7 @@ export async function refreshAccessToken(
     const userData = {
       userId: refreshTokenData.userId,
       email: "", // Fetch from DB
-      role: "", // Fetch from DB
+      role: "" as import("./auth-guards").UserRole, // Fetch from DB
       workspaceId: "", // Fetch from DB
     };
 

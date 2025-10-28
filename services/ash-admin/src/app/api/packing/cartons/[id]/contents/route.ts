@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -33,7 +33,7 @@ export async function POST(
 
     // Check capacity constraints
     const currentUnits = carton.contents.reduce(
-      (sum, content) => sum + content.qty,
+      (sum: any, content: any) => sum + content.qty,
       0
     );
     const maxCapacity = data.max_capacity || 50; // Default max units per carton
@@ -113,7 +113,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { _params }: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

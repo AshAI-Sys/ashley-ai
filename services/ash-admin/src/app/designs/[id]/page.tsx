@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  _CardDescription,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,10 +21,10 @@ import {
   Eye,
   Download,
   Upload,
-  _MessageCircle,
+  MessageCircle,
   CheckCircle,
   AlertCircle,
-  _Clock,
+  Clock,
   Image,
   FileText,
   Palette,
@@ -332,7 +332,7 @@ export default function DesignDetailsPage() {
           <div>
             <h1 className="text-3xl font-bold">{design.name}</h1>
             <p className="text-muted-foreground">
-              {design.order.order_number} • {design.brand.name} • Version{" "}
+              {design.order.order_number} â€¢ {design.brand.name} â€¢ Version{" "}
               {design.current_version}
             </p>
           </div>
@@ -346,7 +346,7 @@ export default function DesignDetailsPage() {
             {design.method}
           </Badge>
           {design.is_best_seller && (
-            <Badge variant="secondary">⭐ Best Seller</Badge>
+            <Badge variant="secondary">â­ Best Seller</Badge>
           )}
         </div>
       </div>
@@ -514,7 +514,7 @@ export default function DesignDetailsPage() {
                               "Unknown Area"}
                           </h4>
                           <span className="text-sm text-muted-foreground">
-                            {placement.width_cm} × {placement.height_cm} cm
+                            {placement.width_cm} Ã— {placement.height_cm} cm
                           </span>
                         </div>
                         <div className="text-sm text-muted-foreground">
@@ -730,7 +730,7 @@ export default function DesignDetailsPage() {
                                 {check.result}
                               </Badge>
                               <span>Version {check.version}</span>
-                              <span className="text-muted-foreground">•</span>
+                              <span className="text-muted-foreground">â€¢</span>
                               <span className="text-sm text-muted-foreground">
                                 {check.method}
                               </span>

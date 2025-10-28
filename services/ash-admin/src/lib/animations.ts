@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Animation Library for Ashley AI
  * Provides smooth, performant animations for UI components
  */
@@ -200,7 +200,7 @@ export function parallelAnimate(
     element: HTMLElement;
     config: AnimationConfig;
   }>
-): Promise<void[]> {
+): Promise<Animation[]> {
   const animationPromises = animations.map(({ element, config }) => {
     const animation = animate(element, config);
     return animation.finished;
@@ -307,3 +307,4 @@ export function createScrollAnimationObserver(
     }
   );
 }
+

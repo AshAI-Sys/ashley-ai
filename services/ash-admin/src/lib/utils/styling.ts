@@ -115,7 +115,7 @@ export function getChartColorPalette(count: number): string[] {
   const palette: string[] = [];
 
   for (let i = 0; i < count; i++) {
-    palette.push(colors[i % colors.length]);
+    palette.push(colors[i % colors.length] || "#000000");
   }
 
   return palette;

@@ -1,4 +1,4 @@
-// Predictive Maintenance AI
+﻿// Predictive Maintenance AI
 // Uses machine learning to predict equipment failures before they happen
 
 interface MaintenanceData {
@@ -156,7 +156,7 @@ export class PredictiveMaintenanceAI {
 
   // Calculate temperature risk
   private calculateTemperatureRisk(temperature: number): number {
-    // Normal operating temp: 40-70°C, Critical: >80°C
+    // Normal operating temp: 40-70Â°C, Critical: >80Â°C
     if (temperature < 70) return 0;
     if (temperature >= 100) return 100;
     return ((temperature - 70) / 30) * 100;
@@ -232,7 +232,7 @@ export class PredictiveMaintenanceAI {
 
     if (probability >= 75) {
       recommendations.push(
-        "⚠️ URGENT: Schedule immediate maintenance inspection"
+        "âš ï¸ URGENT: Schedule immediate maintenance inspection"
       );
       recommendations.push(
         "Consider temporary shutdown to prevent catastrophic failure"

@@ -1,4 +1,4 @@
-// AI-Powered Quality Defect Detection
+﻿// AI-Powered Quality Defect Detection
 // Uses computer vision and pattern recognition to detect quality defects
 
 interface DefectImage {
@@ -533,3 +533,4 @@ export class DefectDetectionAI {
 
 // Export singleton
 export const defectDetectionAI = new DefectDetectionAI();
+

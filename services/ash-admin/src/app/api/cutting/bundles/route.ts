@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
@@ -143,7 +143,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const createdBundles: any[] = [];
 
     // Create bundles in a transaction
-    await prisma.$transaction(async tx => {
+    await prisma.$transaction(async (tx: any) => {
       for (const config of validatedData.bundleConfigs) {
         const bundlesCount = Math.ceil(
           config.totalPieces / config.piecesPerBundle
@@ -163,7 +163,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             config.sizeCode,
             bundleNum
           );
-          const ____bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
+          // Unused: const ____bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
 
           const bundle = await tx.bundle.create({
             data: {

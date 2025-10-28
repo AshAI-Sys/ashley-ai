@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -29,13 +29,13 @@ export async function POST(
 
     // Calculate total defects by severity
     const criticalDefects = inspection.defects.filter(
-      d => d.severity === "CRITICAL"
+      (d: any) => d.severity === "CRITICAL"
     ).length;
     const majorDefects = inspection.defects.filter(
-      d => d.severity === "MAJOR"
+      (d: any) => d.severity === "MAJOR"
     ).length;
     const minorDefects = inspection.defects.filter(
-      d => d.severity === "MINOR"
+      (d: any) => d.severity === "MINOR"
     ).length;
 
     // Auto-determine pass/fail based on AQL

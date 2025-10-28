@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import {
   ArrowLeft,
   Package,
   Scissors, Calendar,
-  _Hash,
+  Hash,
 } from "lucide-react";
 
 export default function ScanBundlePage() {

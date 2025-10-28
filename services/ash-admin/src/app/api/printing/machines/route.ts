@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -42,7 +42,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     // Transform data for frontend
     const transformedMachines = await Promise.all(
-      machines.map(async machine => {
+      machines.map(async (machine: any) => {
         const spec = machine.spec ? JSON.parse(machine.spec) : {};
         const currentRun = machine.print_runs[0] || null;
 

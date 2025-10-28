@@ -1,5 +1,5 @@
-/* eslint-disable */
-import { NextRequest, NextResponse } from "next/server";
+﻿/* eslint-disable */
+import { NextRequest} from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse, handleApiError,
@@ -62,7 +62,7 @@ export const GET = requireAuth(
       });
 
     // Process attendance status for today
-    const processedEmployees = employees.map(employee => {
+    const processedEmployees = employees.map((employee: any) => {
       const todayAttendance = employee.attendance[0];
       let attendanceStatus = "ABSENT";
       let lastCheckin = null;

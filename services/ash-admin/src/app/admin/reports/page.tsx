@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/dashboard-layout";
@@ -464,7 +464,7 @@ export default function ReportsPage() {
                                 Generated: {formatDate(report.generated_at)}
                               </p>
                               <p>
-                                Size: {report.file_size} • Format:{" "}
+                                Size: {report.file_size} â€¢ Format:{" "}
                                 {report.format.toUpperCase()}
                               </p>
                             </div>
@@ -561,7 +561,7 @@ function ReportDataModal({ __reportType, data, onClose }: any) {
               onClick={onClose}
               className="text-gray-500 hover:text-gray-600 dark:text-gray-500"
             >
-              ✕
+              âœ•
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
@@ -51,7 +51,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { _params }: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
@@ -101,7 +101,7 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { _params }: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

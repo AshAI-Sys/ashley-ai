@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -28,7 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     });
 
     // Process runs to calculate task completion
-    const processedRuns = runs.map(run => {
+    const processedRuns = runs.map((run: any) => {
       const totalTasks = 5; // Default finishing tasks
       const completedTasks =
         run.status === "COMPLETED"

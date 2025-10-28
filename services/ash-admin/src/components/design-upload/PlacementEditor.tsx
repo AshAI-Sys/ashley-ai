@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Minus, Eye, Move, Maximize, RotateCw } from "lucide-react";
+import { Plus, Minus, Eye, Maximize, RotateCw } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export interface Placement {
@@ -260,7 +260,7 @@ export default function PlacementEditor({
                       {getAreaLabel(placement.area)}
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-600">
-                      {placement.width_cm}×{placement.height_cm}
+                      {placement.width_cm}Ã—{placement.height_cm}
                     </div>
 
                     {/* Resize handles */}
@@ -342,7 +342,7 @@ export default function PlacementEditor({
                       </div>
                       <div className="flex items-center gap-1">
                         <span className="text-xs text-muted-foreground">
-                          {placement.width_cm}×{placement.height_cm}cm
+                          {placement.width_cm}Ã—{placement.height_cm}cm
                         </span>
                         {placements.length > 1 && (
                           <Button

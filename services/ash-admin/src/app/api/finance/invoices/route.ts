@@ -1,5 +1,5 @@
-/* eslint-disable */
-import { NextRequest, NextResponse } from "next/server";
+﻿/* eslint-disable */
+import { NextRequest} from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse,
@@ -53,7 +53,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       });
 
   // Calculate days overdue and other metrics
-  const processedInvoices = (invoices || []).map(invoice => {
+  const processedInvoices = (invoices || []).map((invoice: any) => {
     const today = new Date();
     const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
     const daysOverdue =
@@ -65,7 +65,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
 
     // Calculate balance from payments
     const totalPaid = invoice.payments.reduce(
-      (sum, payment) => sum + payment.amount,
+      (sum: any, payment: any) => sum + payment.amount,
       0
     );
     const balance = invoice.total_amount - totalPaid;
@@ -86,7 +86,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
       date_issued: invoice.issue_date,
       due_date: invoice.due_date,
       days_overdue: daysOverdue,
-      payment_history: invoice.payments.map(payment => ({
+      payment_history: invoice.payments.map((payment: any) => ({
         amount: Number(payment.amount),
         source: payment.payment_method || "UNKNOWN",
         date: payment.created_at,

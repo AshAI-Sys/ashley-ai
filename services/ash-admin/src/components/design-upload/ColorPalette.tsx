@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Palette, Pipette, Copy, Check } from "lucide-react";
+import { Plus, X, Palette, Copy, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 interface Color {

@@ -1,6 +1,5 @@
-// ASH AI Database Client
-// Import from shared database package for consistency
+﻿// ASH AI Database Client
+// Re-export prisma client from local db module
 
-export { db, prisma, healthCheck, disconnect } from "@ash-ai/database";
-export type { DatabaseTransaction } from "@ash-ai/database";
+export { db, prisma } from "@/lib/db";
 export * from "@prisma/client";

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -51,7 +51,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     return NextResponse.json({
       success: true,
-      reports: reports.map(r => ({
+      reports: reports.map((r: any) => ({
         ...r,
         query_config: JSON.parse(r.query_config),
         visualization: r.visualization ? JSON.parse(r.visualization) : null,

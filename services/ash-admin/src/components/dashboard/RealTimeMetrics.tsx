@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Package, TrendingUp, Users, Zap } from "lucide-react";
@@ -36,6 +36,7 @@ function MetricCard({
       }, 300);
       return () => clearTimeout(timeout);
     }
+    return undefined;
   }, [value, displayValue]);
 
   return (
@@ -226,3 +227,4 @@ export default function RealTimeMetrics() {
     </div>
   );
 }
+

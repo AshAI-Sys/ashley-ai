@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Password Complexity Validator
  *
  * Enforces strong password requirements based on NIST guidelines
@@ -16,7 +16,7 @@ const MIN_LENGTH = 8;
 const MIN_UPPERCASE = 1;
 const MIN_LOWERCASE = 1;
 const MIN_NUMBERS = 1;
-const _____MIN_SPECIAL = 0; // Special character not required (not currently enforced)
+// Unused: const _____MIN_SPECIAL = 0; // Special character not required (not currently enforced)
 
 // Common passwords list (top 100 most common passwords)
 const COMMON_PASSWORDS = [
@@ -224,10 +224,10 @@ export function getPasswordFeedback(
   const feedback: string[] = [];
 
   if (result.valid) {
-    feedback.push(`✓ Password strength: ${result.strength.toUpperCase()}`);
-    feedback.push(`✓ Security score: ${result.score}/100`);
+    feedback.push(`âœ“ Password strength: ${result.strength.toUpperCase()}`);
+    feedback.push(`âœ“ Security score: ${result.score}/100`);
   } else {
-    feedback.push("✗ Password does not meet requirements:");
+    feedback.push("âœ— Password does not meet requirements:");
     feedback.push(...result.errors.map(error => `  - ${error}`));
   }
 

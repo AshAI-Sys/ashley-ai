@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -156,7 +156,7 @@ export default function QualityControlPage() {
         .includes(searchTerm.toLowerCase())
   );
 
-  const getStatusBadge = (status: string, result?: string | null) => {
+  const getStatusBadge = (status: string, result?: string | null): JSX.Element => {
     switch (status) {
       case "PASSED":
         return (
@@ -606,3 +606,4 @@ export default function QualityControlPage() {
     </DashboardLayout>
   );
 }
+

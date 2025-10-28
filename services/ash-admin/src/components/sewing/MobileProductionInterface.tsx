@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -67,12 +67,12 @@ export default function MobileProductionInterface({
   const [currentRun, setCurrentRun] = useState<MobileSewingRun | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastAction, setLastAction] = useState<string | null>(null);
-  const [showQRScanner, setShowQRScanner] = useState(false);
+  const [_showQRScanner, setShowQRScanner] = useState(false);
   const [completedCount, setCompletedCount] = useState("");
   const [rejectCount, setRejectCount] = useState("");
 
   // Touch-optimized state management
-  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(
+  const [_touchStart, _setTouchStart] = useState<{ x: number; y: number } | null>(
     null
   );
 
@@ -168,7 +168,7 @@ export default function MobileProductionInterface({
     }
 
     // Update efficiency based on progress
-    const ____progressPercentage =
+    // Unused: const ____progressPercentage =
       (updatedRun.completed / updatedRun.bundle_qty) * 100;
     const timeElapsed =
       (Date.now() - new Date(updatedRun.time_started).getTime()) / (1000 * 60);
@@ -289,7 +289,7 @@ export default function MobileProductionInterface({
                   {currentRun.operation_name}
                 </CardTitle>
                 <CardDescription>
-                  Bundle Size {currentRun.bundle_size} • {currentRun.bundle_qty}{" "}
+                  Bundle Size {currentRun.bundle_size} â€¢ {currentRun.bundle_qty}{" "}
                   pieces
                 </CardDescription>
               </div>
@@ -358,7 +358,7 @@ export default function MobileProductionInterface({
               <div className="rounded-lg bg-green-50 p-3 text-center">
                 <DollarSign className="mx-auto mb-1 h-6 w-6 text-green-600" />
                 <div className="text-xl font-bold text-green-600">
-                  ₱{currentRun.earnings.toFixed(2)}
+                  â‚±{currentRun.earnings.toFixed(2)}
                 </div>
                 <div className="text-xs text-green-700">Earned</div>
               </div>

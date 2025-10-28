@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ import {
   AlertTriangle,
   Lock,
   Unlock, Eye,
-  _EyeOff,
+  EyeOff,
   QrCode,
   RefreshCw,
 } from "lucide-react";
@@ -250,14 +250,14 @@ export default function SecuritySettingsPage() {
                   </h3>
                   <ul className="space-y-1 text-sm text-blue-800">
                     <li>
-                      • Protects your account even if your password is
+                      â€¢ Protects your account even if your password is
                       compromised
                     </li>
-                    <li>• Required for admin users and sensitive operations</li>
+                    <li>â€¢ Required for admin users and sensitive operations</li>
                     <li>
-                      • Uses your phone's authenticator app for verification
+                      â€¢ Uses your phone's authenticator app for verification
                     </li>
-                    <li>• Includes backup codes for account recovery</li>
+                    <li>â€¢ Includes backup codes for account recovery</li>
                   </ul>
                 </div>
 
@@ -488,7 +488,7 @@ function TwoFactorSetupModal({
             onClick={onCancel}
             className="text-gray-500 hover:text-gray-600"
           >
-            ✕
+            âœ•
           </button>
         </div>
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+// Unused import removed: Separator
 import {
   ArrowLeft,
   Plus,
@@ -139,7 +139,7 @@ export default function CreateLayPage() {
     const expectedPieces =
       width && length && plies
         ? Math.floor((width * length * plies) / 2500)
-        : 0; // 2500 cm² per piece estimate
+        : 0; // 2500 cmÂ² per piece estimate
 
     const efficiency =
       grossUsed > 0

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -88,9 +88,9 @@ async function getBusinessContext(
 
     if (orders.length > 0) {
       contextParts.push(`\n## Recent Orders (Last 10):`);
-      orders.forEach((order, idx) => {
+      orders.forEach((order: any, idx: number) => {
         contextParts.push(
-          `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - ₱${order.total_amount?.toLocaleString() || "0"}`
+          `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - â‚±${order.total_amount?.toLocaleString() || "0"}`
         );
       });
     }
@@ -109,7 +109,7 @@ async function getBusinessContext(
 
     if (clients.length > 0) {
       contextParts.push(`\n## Active Clients (Top 5):`);
-      clients.forEach((client, idx) => {
+      clients.forEach((client: any, idx: number) => {
         contextParts.push(
           `${idx + 1}. ${client.name} - ${client._count.brands} brands, ${client._count.orders} orders - Contact: ${client.email || "N/A"}`
         );
@@ -125,7 +125,7 @@ async function getBusinessContext(
 
     if (orderStats.length > 0) {
       contextParts.push(`\n## Production Overview:`);
-      orderStats.forEach(stat => {
+      orderStats.forEach((stat: any) => {
         contextParts.push(`- ${stat.status}: ${stat._count} orders`);
       });
     }
@@ -144,7 +144,7 @@ async function getBusinessContext(
 
       if (employees.length > 0) {
         contextParts.push(`\n## Recent Employees:`);
-        employees.forEach((emp, idx) => {
+        employees.forEach((emp: any, idx: number) => {
           contextParts.push(
             `${idx + 1}. ${emp.first_name} ${emp.last_name} - ${emp.position || "N/A"} - ${emp.salary_type} (${emp.is_active ? "Active" : "Inactive"})`
           );

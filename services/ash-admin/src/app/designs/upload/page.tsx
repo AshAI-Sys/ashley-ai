@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -19,9 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Plus, Minus, Upload, Save, AlertCircle } from "lucide-react";
+// Unused import removed: Badge
+// Unused import removed: Separator
+import { Plus, Minus, Upload, Save} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
@@ -52,7 +52,7 @@ interface Placement {
 export default function DesignUploadPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [_loading, setLoading] = useState(false);
+  const [_loading, _setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Form state

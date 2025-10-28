@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import {
   CheckCircle, Clock,
   Users,
   Package, TrendingUp,
-  _TrendingDown, Zap,
+  TrendingDown, Zap,
 } from "lucide-react";
 
 interface DashboardData {
@@ -304,10 +304,10 @@ export function ProductionDashboard() {
                         </Badge>
                       </div>
                       <div className="text-sm text-gray-600">
-                        {bundle.order_number} • {bundle.client}
+                        {bundle.order_number} â€¢ {bundle.client}
                       </div>
                       <div className="text-sm text-blue-600">
-                        {bundle.current_stage} • {bundle.department}
+                        {bundle.current_stage} â€¢ {bundle.department}
                       </div>
                     </div>
                     <div className="text-right">

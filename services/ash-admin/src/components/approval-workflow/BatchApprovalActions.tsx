@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -307,7 +307,7 @@ export function BatchApprovalActions({
                       <p className="truncate text-sm font-medium">
                         {approval.design_name}
                       </p>
-                      <Badge variant="outline" size="sm">
+                      <Badge variant="outline" >
                         v{approval.version}
                       </Badge>
                       {isOverdue && (
@@ -318,7 +318,7 @@ export function BatchApprovalActions({
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {approval.client_name} •
+                      {approval.client_name} â€¢
                       {approval.expires_at && (
                         <>
                           {" "}
@@ -465,3 +465,4 @@ export function BatchApprovalActions({
     </Card>
   );
 }
+

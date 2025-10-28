@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -312,10 +312,10 @@ export default function EfficiencyTracker({
               {getTrendIcon(efficiencyData.trend)}
               <span>
                 {efficiencyData.trend === "up"
-                  ? "↑"
+                  ? "â†‘"
                   : efficiencyData.trend === "down"
-                    ? "↓"
-                    : "→"}
+                    ? "â†“"
+                    : "â†’"}
                 {efficiencyData.trend_percentage}% vs last hour
               </span>
             </div>
@@ -419,13 +419,13 @@ export default function EfficiencyTracker({
                 <div className="flex justify-between">
                   <span>Current Earnings:</span>
                   <span className="font-medium">
-                    ₱{efficiencyData.earned_pay.toFixed(2)}
+                    â‚±{efficiencyData.earned_pay.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Projected Earnings:</span>
                   <span className="font-medium">
-                    ₱{efficiencyData.projected_pay.toFixed(2)}
+                    â‚±{efficiencyData.projected_pay.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -479,7 +479,7 @@ export default function EfficiencyTracker({
             <div className="text-center text-xs text-muted-foreground">
               Last updated: {lastUpdated.toLocaleTimeString()}
               {realTime && (
-                <span className="ml-2">• Auto-updating every 30s</span>
+                <span className="ml-2">â€¢ Auto-updating every 30s</span>
               )}
             </div>
           )}

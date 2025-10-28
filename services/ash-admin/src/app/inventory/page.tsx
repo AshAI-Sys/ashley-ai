@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import {
   QrCode,
   Plus,
   Search, Download,
-  _Upload,
+  Upload,
 } from "lucide-react";
 
 export default function InventoryPage() {
@@ -52,7 +52,7 @@ export default function InventoryPage() {
         <div className="rounded-lg bg-white p-4 shadow">
           <p className="mb-1 text-sm text-gray-600">Stock Value</p>
           <p className="text-2xl font-bold text-green-600">
-            ₱{(summary.total_value / 1000000).toFixed(1)}M
+            â‚±{(summary.total_value / 1000000).toFixed(1)}M
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function InventoryPage() {
         <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
           <p className="mb-1 text-sm text-purple-700">Monthly Waste</p>
           <p className="text-2xl font-bold text-purple-800">
-            ₱{(summary.monthly_waste_cost / 1000).toFixed(0)}K
+            â‚±{(summary.monthly_waste_cost / 1000).toFixed(0)}K
           </p>
         </div>
       </div>
@@ -229,7 +229,7 @@ function MaterialsTab() {
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {materials.map(mat => {
-              const ____stockPercent = (mat.stock / (mat.reorder * 3)) * 100;
+              // Unused: const ____stockPercent = (mat.stock / (mat.reorder * 3)) * 100;
               const isLow = mat.stock <= mat.reorder;
 
               return (
@@ -261,11 +261,11 @@ function MaterialsTab() {
                     {mat.reorder} {mat.unit}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                    ₱{mat.cost.toFixed(2)}
+                    â‚±{mat.cost.toFixed(2)}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm">
                     <button
-                      onClick={() => toast.info(`Stock adjustment feature for ${mat.name} coming soon`)}
+                      onClick={() => toast(`Stock adjustment feature for ${mat.name} coming soon`)}
                       className="mr-3 text-blue-600 hover:text-blue-800"
                     >
                       Adjust
@@ -335,7 +335,7 @@ function SuppliersTab() {
             <div className="mb-4 flex items-start justify-between">
               <h3 className="font-semibold text-gray-900">{supplier.name}</h3>
               <div className="flex items-center gap-1">
-                <span className="text-yellow-500">★</span>
+                <span className="text-yellow-500">â˜…</span>
                 <span className="text-sm font-medium">{supplier.rating}</span>
               </div>
             </div>
@@ -354,7 +354,7 @@ function SuppliersTab() {
 
             <div className="mt-4 flex gap-2 border-t border-gray-200 pt-4">
               <button
-                onClick={() => toast.info(`Supplier details page for ${supplier.name} coming soon`)}
+                onClick={() => toast(`Supplier details page for ${supplier.name} coming soon`)}
                 className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
               >
                 View Details
@@ -484,7 +484,7 @@ function PurchaseOrdersTab() {
                   {order.delivery}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                  ₱{order.amount.toLocaleString()}
+                  â‚±{order.amount.toLocaleString()}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <span
@@ -602,7 +602,7 @@ function AlertsTab() {
                         : "text-yellow-700"
                     }`}
                   >
-                    {stockAlert.message} • Current: {stockAlert.current} /
+                    {stockAlert.message} â€¢ Current: {stockAlert.current} /
                     Threshold: {stockAlert.threshold}
                   </p>
                 </div>
@@ -610,7 +610,7 @@ function AlertsTab() {
               <div className="flex gap-2">
                 <button
                   onClick={() =>
-                    toast.info(`Material details page for ${stockAlert.material} coming soon`)
+                    toast(`Material details page for ${stockAlert.material} coming soon`)
                   }
                   className="rounded border border-gray-300 bg-white px-4 py-2 text-sm hover:bg-gray-50"
                 >

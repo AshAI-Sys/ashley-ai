@@ -1,0 +1,68 @@
+
+> @ash/admin@1.0.0 type-check C:\Users\Khell\Desktop\Ashley AI\services\ash-admin
+> tsc --noEmit
+
+src/app/api/admin/onboarding/route.ts(16,7): error TS1005: ';' expected.
+src/app/api/admin/onboarding/route.ts(89,1): error TS1109: Expression expected.
+src/app/api/admin/onboarding/route.ts(89,2): error TS1128: Declaration or statement expected.
+src/app/api/admin/users/route.ts(39,11): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(40,13): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(41,12): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(42,7): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(58,11): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(59,13): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(60,15): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(61,12): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(62,15): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(63,11): error TS1005: ';' expected.
+src/app/api/admin/users/route.ts(64,1): error TS1109: Expression expected.
+src/app/api/admin/users/route.ts(64,2): error TS1128: Declaration or statement expected.
+src/app/api/ai/bottleneck/route.ts(83,8): error TS1128: Declaration or statement expected.
+src/app/api/ai/bottleneck/route.ts(83,11): error TS1005: ';' expected.
+src/app/api/ai/bottleneck/route.ts(99,5): error TS1128: Declaration or statement expected.
+src/app/api/ai/bottleneck/route.ts(199,3): error TS1128: Declaration or statement expected.
+src/app/api/ai/bottleneck/route.ts(199,5): error TS1005: 'try' expected.
+src/app/api/ai/bottleneck/route.ts(206,1): error TS1128: Declaration or statement expected.
+src/app/api/ai/bottleneck/route.ts(206,2): error TS1128: Declaration or statement expected.
+src/app/api/ai/defect-detection/route.ts(34,19): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(35,23): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(36,16): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(37,27): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(38,14): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(39,19): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(40,22): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(41,21): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(42,20): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(43,26): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(44,17): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(45,17): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(46,25): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(47,22): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(48,22): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(49,16): error TS1005: ';' expected.
+src/app/api/ai/defect-detection/route.ts(50,9): error TS1109: Expression expected.
+src/app/api/ai/defect-detection/route.ts(50,10): error TS1128: Declaration or statement expected.
+src/app/api/ai/defect-detection/route.ts(51,8): error TS1472: 'catch' or 'finally' expected.
+src/app/api/ai/defect-detection/route.ts(68,3): error TS1128: Declaration or statement expected.
+src/app/api/ai/defect-detection/route.ts(68,5): error TS1005: 'try' expected.
+src/app/api/ai/defect-detection/route.ts(75,1): error TS1128: Declaration or statement expected.
+src/app/api/ai/defect-detection/route.ts(75,2): error TS1128: Declaration or statement expected.
+src/app/api/cutting/lays/route.ts(165,7): error TS1109: Expression expected.
+src/app/api/cutting/lays/route.ts(173,6): error TS1472: 'catch' or 'finally' expected.
+src/app/api/cutting/lays/route.ts(184,3): error TS1128: Declaration or statement expected.
+src/app/api/cutting/lays/route.ts(184,5): error TS1005: 'try' expected.
+src/app/api/cutting/lays/route.ts(199,1): error TS1128: Declaration or statement expected.
+src/app/api/cutting/lays/route.ts(199,2): error TS1128: Declaration or statement expected.
+src/app/employee/dashboard/page.tsx(72,22): error TS1005: ';' expected.
+src/app/employee/dashboard/page.tsx(73,20): error TS1005: ';' expected.
+src/app/employee/dashboard/page.tsx(74,19): error TS1005: ';' expected.
+src/app/employee/dashboard/page.tsx(75,5): error TS1109: Expression expected.
+src/app/employee/dashboard/page.tsx(406,1): error TS1128: Declaration or statement expected.
+src/app/layout.tsx(21,1): error TS1128: Declaration or statement expected.
+src/hooks/useKeyboardShortcuts.ts(80,9): error TS1128: Declaration or statement expected.
+src/hooks/useKeyboardShortcuts.ts(91,3): error TS1128: Declaration or statement expected.
+src/hooks/useKeyboardShortcuts.ts(91,4): error TS1128: Declaration or statement expected.
+src/hooks/useKeyboardShortcuts.ts(91,8): error TS1005: ';' expected.
+src/hooks/useKeyboardShortcuts.ts(99,1): error TS1128: Declaration or statement expected.
+src/lib/session-timeout.ts(115,5): error TS1128: Declaration or statement expected.
+ ELIFECYCLE  Command failed with exit code 2.

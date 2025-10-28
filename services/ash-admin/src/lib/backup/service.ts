@@ -1,4 +1,4 @@
-import { exec } from "child_process";
+﻿import { exec } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
@@ -11,7 +11,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { createReadStream, createWriteStream } from "fs";
-import { pipeline } from "stream/promises";
+// Unused import removed: pipeline
 
 const execAsync = promisify(exec);
 
@@ -153,11 +153,11 @@ export class BackupService {
     const backupPath = path.join(this.backupDir, filename);
 
     try {
-      console.log(`📦 Creating backup: ${filename}`);
+      console.log(`ðŸ“¦ Creating backup: ${filename}`);
 
       if (conn.isSQLite && conn.sqlitePath) {
         // SQLite backup - just copy the file
-        const ____sourceStats = await fs.stat(conn.sqlitePath);
+        // Unused: const ____sourceStats = await fs.stat(conn.sqlitePath);
 
         if (compress) {
           // Compress SQLite file
@@ -211,7 +211,7 @@ export class BackupService {
       };
 
       console.log(
-        `✅ Backup created: ${filename} (${this.formatSize(stats.size)})`
+        `âœ… Backup created: ${filename} (${this.formatSize(stats.size)})`
       );
 
       // Rotate old backups
@@ -287,7 +287,7 @@ export class BackupService {
     const conn = this.parseConnectionUrl();
 
     try {
-      console.log(`🔄 Restoring backup: ${backup.filename}`);
+      console.log(`ðŸ”„ Restoring backup: ${backup.filename}`);
 
       if (conn.isSQLite && conn.sqlitePath) {
         // SQLite restore - copy file back
@@ -321,7 +321,7 @@ export class BackupService {
         await execAsync(command);
       }
 
-      console.log(`✅ Backup restored: ${backup.filename}`);
+      console.log(`âœ… Backup restored: ${backup.filename}`);
     } catch (error) {
       logError(error as Error, {
         category: ErrorCategory.Database,
@@ -344,7 +344,7 @@ export class BackupService {
       for (const backup of toDelete) {
         try {
           await fs.unlink(backup.path);
-          console.log(`🗑️  Deleted old backup: ${backup.filename}`);
+          console.log(`ðŸ—‘ï¸  Deleted old backup: ${backup.filename}`);
         } catch (error) {
           console.error(`Failed to delete backup: ${backup.filename}`, error);
         }
@@ -365,7 +365,7 @@ export class BackupService {
 
     try {
       await fs.unlink(backup.path);
-      console.log(`🗑️  Deleted backup: ${backup.filename}`);
+      console.log(`ðŸ—‘ï¸  Deleted backup: ${backup.filename}`);
     } catch (error) {
       logError(error as Error, {
         category: ErrorCategory.Database,

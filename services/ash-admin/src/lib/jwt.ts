@@ -41,9 +41,9 @@ export function generateAccessToken(
 ): string {
   try {
     const token = jwt.sign({ ...payload, type: "access" }, SECRET, {
-      expiresIn: JWT_ACCESS_EXPIRES_IN as string,
+      expiresIn: JWT_ACCESS_EXPIRES_IN,
       algorithm: "HS256",
-    });
+    } as jwt.SignOptions);
     authLogger.debug("Access token generated", { userId: payload.userId });
     return token;
   } catch (error) {
@@ -60,9 +60,9 @@ export function generateRefreshToken(
 ): string {
   try {
     const token = jwt.sign({ ...payload, type: "refresh" }, SECRET, {
-      expiresIn: JWT_REFRESH_EXPIRES_IN as string,
+      expiresIn: JWT_REFRESH_EXPIRES_IN,
       algorithm: "HS256",
-    });
+    } as jwt.SignOptions);
     authLogger.debug("Refresh token generated", { userId: payload.userId });
     return token;
   } catch (error) {

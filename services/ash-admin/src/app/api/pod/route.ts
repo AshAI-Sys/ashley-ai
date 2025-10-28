@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -118,7 +118,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     // Parse photo_urls JSON
-    const formattedRecords = podRecords.map(record => ({
+    const formattedRecords = podRecords.map((record: any) => ({
       ...record,
       photo_urls: record.photo_urls ? JSON.parse(record.photo_urls) : [],
     }));

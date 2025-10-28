@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/nextjs";
+﻿import * as Sentry from "@sentry/nextjs";
 
 /**
  * Error Logging Utilities for Ashley AI
@@ -278,10 +278,15 @@ export function trackMetric(
  * Start performance transaction
  */
 export function startPerformanceTrace(name: string, operation: string) {
-  return Sentry.startTransaction({
+  // Sentry.startTransaction not available in this version
+  // Return a stub transaction object
+  return {
     name,
     op: operation,
-  });
+    finish: () => {},
+    setTag: () => {},
+    setData: () => {},
+  };
 }
 
 /**

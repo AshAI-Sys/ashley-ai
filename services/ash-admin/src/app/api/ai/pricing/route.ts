@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
@@ -56,15 +56,15 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
     // Calculate client history metrics
     const totalOrders = client.orders.length;
-    const totalRevenue = client.orders.reduce((sum, order) => {
+    const totalRevenue = client.orders.reduce((sum: any, order: any) => {
       const orderRevenue = order.invoices.reduce(
-        (isum, inv) => isum + parseFloat(inv.total_amount.toString()),
+        (isum: any, inv: any) => isum + parseFloat(inv.total_amount.toString()),
         0
       );
       return sum + orderRevenue;
     }, 0);
 
-    const totalCost = client.orders.reduce((sum, order) => {
+    const totalCost = client.orders.reduce((sum: any, order: any) => {
       return sum + parseFloat(order.total_amount.toString()) * 0.7; // Estimate 70% cost ratio
     }, 0);
 
@@ -72,10 +72,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 30;
 
     // Calculate payment reliability
-    const totalInvoices = client.orders.flatMap(o => o.invoices).length;
+    const totalInvoices = client.orders.flatMap((o: any) => o.invoices).length;
     const paidInvoices = client.orders
-      .flatMap(o => o.invoices)
-      .filter(inv => inv.status === "PAID").length;
+      .flatMap((o: any) => o.invoices)
+      .filter((inv: any) => inv.status === "PAID").length;
     const paymentReliability =
       totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 100;
 
@@ -200,25 +200,25 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     }
 
     const totalOrders = client.orders.length;
-    const totalRevenue = client.orders.reduce((sum, order) => {
+    const totalRevenue = client.orders.reduce((sum: any, order: any) => {
       const orderRevenue = order.invoices.reduce(
-        (isum, inv) => isum + parseFloat(inv.total_amount.toString()),
+        (isum: any, inv: any) => isum + parseFloat(inv.total_amount.toString()),
         0
       );
       return sum + orderRevenue;
     }, 0);
 
-    const totalCost = client.orders.reduce((sum, order) => {
+    const totalCost = client.orders.reduce((sum: any, order: any) => {
       return sum + parseFloat(order.total_amount.toString()) * 0.7;
     }, 0);
 
     const averageMargin =
       totalRevenue > 0 ? ((totalRevenue - totalCost) / totalRevenue) * 100 : 30;
 
-    const totalInvoices = client.orders.flatMap(o => o.invoices).length;
+    const totalInvoices = client.orders.flatMap((o: any) => o.invoices).length;
     const paidInvoices = client.orders
-      .flatMap(o => o.invoices)
-      .filter(inv => inv.status === "PAID").length;
+      .flatMap((o: any) => o.invoices)
+      .filter((inv: any) => inv.status === "PAID").length;
     const paymentReliability =
       totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 100;
 

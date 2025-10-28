@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { defectDetectionAI } from "@/lib/ai/defect-detection";
 import { prisma } from "@/lib/db";
@@ -9,8 +9,8 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "30");
-    const ____operator_id = searchParams.get("operator_id");
-    const ____station = searchParams.get("station");
+    // Unused: const ____operator_id = searchParams.get("operator_id");
+    // Unused: const ____station = searchParams.get("station");
 
     // Build where clause
     const whereClause: any = {
@@ -50,7 +50,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     }
 
     // Transform QC checks into inspection format
-    const inspections = qcChecks.map(qc => {
+    const inspections = qcChecks.map((qc: any) => {
       // Parse defects from notes or create simulated defects
       const defects: any[] = [];
 
@@ -141,7 +141,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     // Group by entity (operator or station)
     const entityGroups: Record<string, any[]> = {};
 
-    qcChecks.forEach(qc => {
+    qcChecks.forEach((qc: any) => {
       let entityId: string;
       let entityName: string;
 

@@ -1,12 +1,12 @@
-import nodemailer from "nodemailer";
+﻿// import nodemailer from "nodemailer"; // Package not installed
 
 // Create reusable transporter using Gmail SMTP
-let transporter: nodemailer.Transporter | null = null;
+let transporter: any | null = null;
 
-function getTransporter(): nodemailer.Transporter | null {
+function getTransporter(): any | null {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
     console.warn(
-      "⚠️ Gmail credentials not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env"
+      "âš ï¸ Gmail credentials not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env"
     );
     return null;
   }
@@ -18,13 +18,16 @@ function getTransporter(): nodemailer.Transporter | null {
     process.env.GMAIL_APP_PASSWORD.length < 16
   ) {
     console.warn(
-      "⚠️ Gmail credentials are placeholder values. Email sending disabled."
+      "âš ï¸ Gmail credentials are placeholder values. Email sending disabled."
     );
     return null;
   }
 
   if (!transporter) {
-    transporter = nodemailer.createTransporter({
+    // nodemailer package not installed
+    console.warn("⚠️ nodemailer not installed. Email sending disabled.");
+    return null;
+    /* transporter = nodemailer.createTransporter({
       service: "gmail",
       auth: {
         user: process.env.GMAIL_USER,
@@ -35,7 +38,7 @@ function getTransporter(): nodemailer.Transporter | null {
       greetingTimeout: 2000, // 2 seconds (reduced from 3)
       socketTimeout: 2000, // 2 seconds - socket timeout
       pool: false, // Disable connection pooling for faster failures
-    });
+    }); */
   }
 
   return transporter;
@@ -66,15 +69,15 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     // If Gmail is not configured, log to console (development mode)
     if (!transport) {
       console.warn(
-        "⚠️ Gmail not configured. Email will be logged to console only."
+        "âš ï¸ Gmail not configured. Email will be logged to console only."
       );
-      console.log("📧 Email would be sent:", {
+      console.log("ðŸ“§ Email would be sent:", {
         to: options.to,
         subject: options.subject,
         from: options.from || process.env.GMAIL_USER,
       });
       console.log(
-        "📧 Verification link:",
+        "ðŸ“§ Verification link:",
         options.html.match(/https?:\/\/[^\s"<]+/)?.[0]
       );
       return { success: true, messageId: "dev-mode-" + Date.now() };
@@ -89,10 +92,10 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     };
 
     const info = await transport.sendMail(mailOptions);
-    console.log("✅ Email sent successfully:", info.messageId);
+    console.log("âœ… Email sent successfully:", info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {
-    console.error("❌ Error sending email:", error);
+    console.error("âŒ Error sending email:", error);
     return { success: false, error: error.message };
   }
 }
@@ -126,7 +129,7 @@ export async function sendWelcomeEmail(
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">🏭 Ashley AI</div>
+      <div class="logo">ðŸ­ Ashley AI</div>
       <h1 style="margin: 0; font-size: 24px;">Welcome to Ashley AI!</h1>
       <p style="margin: 10px 0 0; font-size: 16px; opacity: 0.9;">Manufacturing ERP System</p>
     </div>
@@ -135,7 +138,7 @@ export async function sendWelcomeEmail(
       <p>Welcome to Ashley AI! Your account has been created successfully.</p>
       <p><strong>Please verify your email address</strong> by clicking the button below:</p>
       <div style="text-align: center;">
-        <a href="${data.verification_link}" class="button">✅ Verify Email Address</a>
+        <a href="${data.verification_link}" class="button">âœ… Verify Email Address</a>
       </div>
       <p style="font-size: 14px; color: #6b7280;">Or copy and paste this link into your browser:</p>
       <div class="link-box">${data.verification_link}</div>
@@ -143,7 +146,7 @@ export async function sendWelcomeEmail(
       <p style="font-size: 14px; color: #6b7280;">If you didn't create this account, you can safely ignore this email.</p>
     </div>
     <div class="footer">
-      <p>© 2025 Ashley AI - Manufacturing ERP System</p>
+      <p>Â© 2025 Ashley AI - Manufacturing ERP System</p>
       <p>Apparel Smart Hub - Artificial Intelligence</p>
     </div>
   </div>
@@ -165,12 +168,12 @@ If you didn't create this account, you can safely ignore this email.
 
 ---
 Ashley AI - Manufacturing ERP System
-© 2025 Ashley AI
+Â© 2025 Ashley AI
 `;
 
   return sendEmail({
     to,
-    subject: "Welcome to Ashley AI - Verify Your Email ✅",
+    subject: "Welcome to Ashley AI - Verify Your Email âœ…",
     html,
     text,
   });
@@ -204,21 +207,21 @@ export async function sendEmailVerification(
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">📧 Ashley AI</div>
+      <div class="logo">ðŸ“§ Ashley AI</div>
       <h1 style="margin: 0; font-size: 24px;">Verify Your Email</h1>
     </div>
     <div class="content">
       <p style="font-size: 16px;">Hi <strong>${data.user_name}</strong>,</p>
       <p>Please verify your email address to activate your Ashley AI account:</p>
       <div style="text-align: center;">
-        <a href="${data.verification_link}" class="button">✅ Verify Email Address</a>
+        <a href="${data.verification_link}" class="button">âœ… Verify Email Address</a>
       </div>
       <p style="font-size: 14px; color: #6b7280;">Or copy and paste this link into your browser:</p>
       <div class="link-box">${data.verification_link}</div>
       <p style="font-size: 14px; color: #dc2626;"><strong>Important:</strong> This verification link will expire in 24 hours.</p>
     </div>
     <div class="footer">
-      <p>© 2025 Ashley AI - Manufacturing ERP System</p>
+      <p>Â© 2025 Ashley AI - Manufacturing ERP System</p>
     </div>
   </div>
 </body>
@@ -237,12 +240,12 @@ This verification link will expire in 24 hours.
 
 ---
 Ashley AI - Manufacturing ERP System
-© 2025 Ashley AI
+Â© 2025 Ashley AI
 `;
 
   return sendEmail({
     to,
-    subject: "Verify Your Email - Ashley AI 📧",
+    subject: "Verify Your Email - Ashley AI ðŸ“§",
     html,
     text,
   });
@@ -264,10 +267,10 @@ export async function testEmailConfig(): Promise<EmailResult> {
 
   try {
     await transport.verify();
-    console.log("✅ Gmail SMTP configuration is valid");
+    console.log("âœ… Gmail SMTP configuration is valid");
     return { success: true, messageId: "config-test-success" };
   } catch (error: any) {
-    console.error("❌ Gmail SMTP configuration error:", error);
+    console.error("âŒ Gmail SMTP configuration error:", error);
     return { success: false, error: error.message };
   }
 }

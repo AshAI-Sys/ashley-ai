@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -48,9 +48,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     // Calculate summary for each payroll period
-    const processedRuns = payrollPeriods.map(period => {
+    const processedRuns = payrollPeriods.map((period: any) => {
       const totalAmount = period.earnings.reduce(
-        (sum, earning) => sum + (earning.net_pay || 0),
+        (sum: any, earning: any) => sum + (earning.net_pay || 0),
         0
       );
       const employeeCount = period._count.earnings;
@@ -94,7 +94,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const periodEnd = new Date(period_end);
 
     // Start transaction
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Create payroll period;
       const payrollPeriod = await tx.payrollPeriod.create({
         data: {
@@ -134,7 +134,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         let totalHours = 0;
         let overtimeHours = 0;
 
-        attendanceLogs.forEach(log => {
+        attendanceLogs.forEach((log: any) => {
           if (log.time_in && log.time_out) {
             const hours =
               (log.time_out.getTime() - log.time_in.getTime()) /

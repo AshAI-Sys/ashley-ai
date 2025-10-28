@@ -1,6 +1,6 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+// Unused import removed: prisma
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (_request: NextRequest, _user) => {

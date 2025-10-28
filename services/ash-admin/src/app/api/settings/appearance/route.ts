@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 
@@ -31,7 +31,7 @@ export const GET = requireAuth(async (_request: NextRequest, _authUser) => {
 
 export const PUT = requireAuth(async (request: NextRequest, _authUser) => {
   try {
-    const ____body = await request.json();
+    // Unused: const ____body = await request.json();
     // TODO: Save to database
     return NextResponse.json({ success: true });
   } catch (error) {

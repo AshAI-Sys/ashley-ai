@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ApprovalStatus } from "./ApprovalStatus";
+// Unused import removed: ApprovalStatus
 import {
   Send,
   Clock,
@@ -121,7 +121,7 @@ export function ApprovalTimeline({
               .map((event, index) => {
                 const config = getEventConfig(event.type);
                 const Icon = config.icon;
-                const ____isLast = index === events.length - 1;
+                // Unused: const ____isLast = index === events.length - 1;
 
                 return (
                   <div

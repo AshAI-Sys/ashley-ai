@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -7,7 +7,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const run_id = searchParams.get("run_id");
-    const ____method = searchParams.get("method");
+    // Unused: const ____method = searchParams.get("method");
 
     if (!run_id) {
       
@@ -150,7 +150,7 @@ function calculateMaterialUtilization(printRun: any) {
 
 function analyzeQualityTrend(printRun: any) {
   const outputs = printRun.outputs || [];
-  const ____rejects = printRun.rejects || [];
+  // Unused: const ____rejects = printRun.rejects || [];
 
   if (outputs.length === 0) {
 
@@ -504,7 +504,7 @@ async function processMonitoringData(_runId: string, data: any) {
       analysis.alerts.push({
         type: "ENVIRONMENTAL",
         severity: "MEDIUM",
-        message: `Temperature out of optimal range: ${temperature}°C`,
+        message: `Temperature out of optimal range: ${temperature}Â°C`,
       });
     }
 

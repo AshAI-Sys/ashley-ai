@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -174,7 +174,7 @@ async function calculateHRStats(
   const positionMap = new Map<string, number>();
   const salaryTypeMap = new Map<string, number>();
 
-  allEmployees.forEach(emp => {
+  allEmployees.forEach((emp: any) => {
     // Count departments
     if (emp.department) {
       departmentMap.set(
@@ -231,12 +231,12 @@ async function calculateHRStats(
 
   // Filter out null hire_dates
   const employeesWithTenure = allEmployeesForTenure.filter(
-    emp => emp.hire_date !== null
+    (emp: any) => emp.hire_date !== null
   );
 
   let averageTenureMonths = 0;
   if (employeesWithTenure.length > 0) {
-    const totalMonths = employeesWithTenure.reduce((sum, emp) => {
+    const totalMonths = employeesWithTenure.reduce((sum: any, emp: any) => {
       const months =
         (today.getTime() - emp.hire_date!.getTime()) /
         (1000 * 60 * 60 * 24 * 30.44);
@@ -269,7 +269,7 @@ async function calculateHRStats(
     _avg: {
       pieces_per_hour:
         sewingRuns.length > 0
-          ? sewingRuns.reduce((sum, run) => {
+          ? sewingRuns.reduce((sum: any, run: any) => {
               if (run.started_at && run.ended_at) {
                 const hours =
                   (run.ended_at.getTime() - run.started_at.getTime()) /
@@ -283,7 +283,7 @@ async function calculateHRStats(
           : 0,
       efficiency_percentage:
         sewingRuns.length > 0
-          ? sewingRuns.reduce((sum, run) => {
+          ? sewingRuns.reduce((sum: any, run: any) => {
               const total = (run.qty_good || 0) + (run.qty_reject || 0);
               const efficiency =
                 total > 0 ? ((run.qty_good || 0) / total) * 100 : 0;

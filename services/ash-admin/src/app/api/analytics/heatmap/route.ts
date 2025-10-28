@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -37,19 +37,19 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     // Calculate aggregated statistics
     const stats = {
       avgEfficiency:
-        heatmapData.reduce((sum, d) => sum + d.efficiency, 0) /
+        heatmapData.reduce((sum: any, d: any) => sum + d.efficiency, 0) /
           heatmapData.length || 0,
       avgDefectRate:
-        heatmapData.reduce((sum, d) => sum + d.defect_rate, 0) /
+        heatmapData.reduce((sum: any, d: any) => sum + d.defect_rate, 0) /
           heatmapData.length || 0,
-      totalDowntime: heatmapData.reduce((sum, d) => sum + d.downtime_mins, 0),
-      totalOutput: heatmapData.reduce((sum, d) => sum + d.output_units, 0),
-      totalTarget: heatmapData.reduce((sum, d) => sum + d.target_units, 0),
+      totalDowntime: heatmapData.reduce((sum: any, d: any) => sum + d.downtime_mins, 0),
+      totalOutput: heatmapData.reduce((sum: any, d: any) => sum + d.output_units, 0),
+      totalTarget: heatmapData.reduce((sum: any, d: any) => sum + d.target_units, 0),
     };
 
     // Group by hour for heatmap visualization
     const hourlyData: any = {};
-    heatmapData.forEach(item => {
+    heatmapData.forEach((item: any) => {
       const key = `${item.station_type}-${item.hour}`;
       if (!hourlyData[key]) {
         hourlyData[key] = {

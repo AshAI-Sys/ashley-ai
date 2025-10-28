@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -26,7 +26,7 @@ import {
   Bar,
   PieChart,
   Pie, LineChart,
-  _Line,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
     )
   }
 
-  const formatCurrency = (amount: number) => `₱${amount.toLocaleString()}`
+  const formatCurrency = (amount: number) => `â‚±${amount.toLocaleString()}`
 
   return (
     <div className="space-y-6">
@@ -318,7 +318,7 @@ export default function AdminDashboard() {
                   />
                   <Legend />
                   <Bar dataKey="count" fill="hsl(var(--primary))" name="Orders" />
-                  <Bar dataKey="amount" fill="hsl(var(--accent))" name="Revenue (₱)" />
+                  <Bar dataKey="amount" fill="hsl(var(--accent))" name="Revenue (â‚±)" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

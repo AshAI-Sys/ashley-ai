@@ -1,12 +1,12 @@
-import { prisma } from "./src/lib/db";
+﻿import { prisma } from "./src/lib/db";
 
 async function checkDatabase() {
   try {
-    console.log("🔍 Checking Database for Duplicates\n");
+    console.log("ðŸ” Checking Database for Duplicates\n");
     console.log("=".repeat(60));
 
     // Check for workspace "reefer"
-    console.log('\n1️⃣ Checking workspace "reefer"...');
+    console.log('\n1ï¸âƒ£ Checking workspace "reefer"...');
     const workspace = await prisma.workspace.findUnique({
       where: { slug: "reefer" },
       include: {
@@ -22,7 +22,7 @@ async function checkDatabase() {
     });
 
     if (workspace) {
-      console.log('   ⚠️  FOUND - Workspace "reefer" EXISTS');
+      console.log('   âš ï¸  FOUND - Workspace "reefer" EXISTS');
       console.log("   ID:", workspace.id);
       console.log("   Name:", workspace.name);
       console.log("   Slug:", workspace.slug);
@@ -36,11 +36,11 @@ async function checkDatabase() {
         });
       }
     } else {
-      console.log('   ✅ Workspace "reefer" is AVAILABLE');
+      console.log('   âœ… Workspace "reefer" is AVAILABLE');
     }
 
     // Check for email
-    console.log('\n2️⃣ Checking email "kelvinmorfe17@gmail.com"...');
+    console.log('\n2ï¸âƒ£ Checking email "kelvinmorfe17@gmail.com"...');
     const user = await prisma.user.findFirst({
       where: { email: "kelvinmorfe17@gmail.com" },
       include: {
@@ -54,7 +54,7 @@ async function checkDatabase() {
     });
 
     if (user) {
-      console.log('   ⚠️  FOUND - Email "kelvinmorfe17@gmail.com" EXISTS');
+      console.log('   âš ï¸  FOUND - Email "kelvinmorfe17@gmail.com" EXISTS');
       console.log("   ID:", user.id);
       console.log("   Name:", user.first_name, user.last_name);
       console.log("   Email:", user.email);
@@ -67,11 +67,11 @@ async function checkDatabase() {
         `(${user.workspace?.slug})`
       );
     } else {
-      console.log('   ✅ Email "kelvinmorfe17@gmail.com" is AVAILABLE');
+      console.log('   âœ… Email "kelvinmorfe17@gmail.com" is AVAILABLE');
     }
 
     // List all workspaces
-    console.log("\n3️⃣ All Workspaces in Database:");
+    console.log("\n3ï¸âƒ£ All Workspaces in Database:");
     const allWorkspaces = await prisma.workspace.findMany({
       select: {
         id: true,
@@ -87,10 +87,10 @@ async function checkDatabase() {
     });
 
     if (allWorkspaces.length === 0) {
-      console.log("   📭 No workspaces found");
+      console.log("   ðŸ“­ No workspaces found");
     } else {
       console.log(`   Found ${allWorkspaces.length} workspace(s):`);
-      allWorkspaces.forEach((ws, idx) => {
+      allWorkspaces.forEach((ws: any, idx: number) => {
         console.log(`   ${idx + 1}. ${ws.name} (slug: ${ws.slug})`);
         console.log(
           `      Active: ${ws.is_active} | Users: ${ws._count.users}`
@@ -99,7 +99,7 @@ async function checkDatabase() {
     }
 
     // List all users
-    console.log("\n4️⃣ All Users in Database:");
+    console.log("\n4ï¸âƒ£ All Users in Database:");
     const allUsers = await prisma.user.findMany({
       select: {
         id: true,
@@ -122,10 +122,10 @@ async function checkDatabase() {
     });
 
     if (allUsers.length === 0) {
-      console.log("   📭 No users found");
+      console.log("   ðŸ“­ No users found");
     } else {
       console.log(`   Found ${allUsers.length} user(s):`);
-      allUsers.forEach((u, idx) => {
+      allUsers.forEach((u: any, idx: number) => {
         console.log(`   ${idx + 1}. ${u.email}`);
         console.log(`      Name: ${u.first_name} ${u.last_name}`);
         console.log(
@@ -138,13 +138,13 @@ async function checkDatabase() {
     }
 
     console.log("\n" + "=".repeat(60));
-    console.log("\n📊 SUMMARY:");
+    console.log("\nðŸ“Š SUMMARY:");
     console.log(`   Workspaces: ${allWorkspaces.length}`);
     console.log(`   Users: ${allUsers.length}`);
 
     if (workspace || user) {
-      console.log("\n⚠️  CONFLICT DETECTED!");
-      console.log("\n💡 SOLUTIONS:");
+      console.log("\nâš ï¸  CONFLICT DETECTED!");
+      console.log("\nðŸ’¡ SOLUTIONS:");
       if (workspace && user) {
         console.log(
           "   1. Delete both workspace and user (see delete script below)"
@@ -166,15 +166,15 @@ async function checkDatabase() {
         console.log("   3. Login with existing credentials instead");
       }
 
-      console.log("\n📝 DELETE SCRIPT:");
+      console.log("\nðŸ“ DELETE SCRIPT:");
       console.log("   Run this command to delete and start fresh:");
       console.log(
         '   cd "C:\\Users\\Khell\\Desktop\\Ashley AI\\services\\ash-admin"'
       );
       console.log("   pnpm exec ts-node delete-duplicates.ts");
     } else {
-      console.log("\n✅ NO CONFLICTS - Registration should work!");
-      console.log("\n🤔 If registration still fails, check:");
+      console.log("\nâœ… NO CONFLICTS - Registration should work!");
+      console.log("\nðŸ¤” If registration still fails, check:");
       console.log(
         "   1. Password meets requirements (8+ chars, uppercase, lowercase, number)"
       );
@@ -184,7 +184,7 @@ async function checkDatabase() {
 
     console.log("\n");
   } catch (error: any) {
-    console.error("\n❌ Database Error:", error.message);
+    console.error("\nâŒ Database Error:", error.message);
     console.error("\nFull error:", error);
   } finally {
     await prisma.$disconnect();
@@ -192,3 +192,4 @@ async function checkDatabase() {
 }
 
 checkDatabase();
+

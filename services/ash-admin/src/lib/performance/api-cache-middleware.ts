@@ -4,7 +4,14 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { cache } from "@/lib/redis";
+// import { cache } from "@/lib/redis";  // Module not implemented yet
+
+// Stub cache object until cache manager is implemented
+const cache = {
+  get: async (_key: string) => null,
+  set: async (_key: string, _value: any, _ttl?: number) => {},
+  deletePattern: async (_pattern: string) => {},
+};
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds

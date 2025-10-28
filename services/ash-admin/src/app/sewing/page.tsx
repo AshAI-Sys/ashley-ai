@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -492,7 +492,7 @@ export default function SewingPage() {
                       <div className="flex-1">
                         <p className="font-medium">Bundle #B-001 completed</p>
                         <p className="text-sm text-muted-foreground">
-                          20 pieces • 95% efficiency
+                          20 pieces â€¢ 95% efficiency
                         </p>
                       </div>
                       <span className="text-sm text-muted-foreground">
@@ -520,7 +520,7 @@ export default function SewingPage() {
                       <div className="flex-1">
                         <p className="font-medium">Low efficiency detected</p>
                         <p className="text-sm text-muted-foreground">
-                          Bundle #B-005 • 72% efficiency
+                          Bundle #B-005 â€¢ 72% efficiency
                         </p>
                       </div>
                       <span className="text-sm text-muted-foreground">
@@ -545,7 +545,7 @@ export default function SewingPage() {
                       <div>
                         <p className="font-medium">Maria Santos</p>
                         <p className="text-sm text-muted-foreground">
-                          EMP001 • Join shoulders
+                          EMP001 â€¢ Join shoulders
                         </p>
                       </div>
                       <Badge className="bg-green-100 text-green-800">98%</Badge>
@@ -555,7 +555,7 @@ export default function SewingPage() {
                       <div>
                         <p className="font-medium">Ana Cruz</p>
                         <p className="text-sm text-muted-foreground">
-                          EMP003 • Set sleeves
+                          EMP003 â€¢ Set sleeves
                         </p>
                       </div>
                       <Badge className="bg-blue-100 text-blue-800">96%</Badge>
@@ -565,7 +565,7 @@ export default function SewingPage() {
                       <div>
                         <p className="font-medium">Juan Dela Cruz</p>
                         <p className="text-sm text-muted-foreground">
-                          EMP004 • Side seams
+                          EMP004 â€¢ Side seams
                         </p>
                       </div>
                       <Badge className="bg-purple-100 text-purple-800">
@@ -743,14 +743,14 @@ export default function SewingPage() {
                           <div>
                             <span className="font-medium">Bundle:</span>
                             <br />
-                            {run.bundle?.size_code || "N/A"} •{" "}
+                            {run.bundle?.size_code || "N/A"} â€¢{" "}
                             {run.bundle?.qty || 0} pcs
                           </div>
                           <div>
                             <span className="font-medium">Pay:</span>
                             <br />
                             {run.piece_rate_pay
-                              ? `₱${run.piece_rate_pay.toFixed(2)}`
+                              ? `â‚±${run.piece_rate_pay.toFixed(2)}`
                               : "Pending"}
                           </div>
                           <div>
@@ -845,7 +845,7 @@ export default function SewingPage() {
                           {operator.first_name} {operator.last_name}
                         </CardTitle>
                         <CardDescription>
-                          {operator.employee_number} • {operator.position}
+                          {operator.employee_number} â€¢ {operator.position}
                         </CardDescription>
                       </div>
                       <Badge
@@ -1014,7 +1014,7 @@ export default function SewingPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>Total Earnings</span>
-                      <span className="font-medium">₱1,450.00</span>
+                      <span className="font-medium">â‚±1,450.00</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Reject Rate</span>
@@ -1040,7 +1040,7 @@ export default function SewingPage() {
                           <div>
                             <p className="font-medium">{operation.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {operation.standard_minutes}min • ₱
+                              {operation.standard_minutes}min â€¢ â‚±
                               {operation.piece_rate?.toFixed(2)}
                             </p>
                           </div>

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
@@ -30,7 +30,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const orderId = searchParams.get("orderId") || "";
-    const ____status = searchParams.get("status") || "";
+    // Unused: const ____status = searchParams.get("status") || "";
     const startDate = searchParams.get("startDate") || "";
     const endDate = searchParams.get("endDate") || "";
 
@@ -124,7 +124,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Create cut lay with outputs in a transaction
-    const cutLay = await prisma.$transaction(async tx => {
+    const cutLay = await prisma.$transaction(async (tx: any) => {
       const newCutLay = await tx.cutLay.create({
         data: {
           workspace_id: "default",
@@ -155,7 +155,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
       // Create cut outputs
-      const ____cutOutputs = await tx.cutOutput.createMany({
+      const _cutOutputs = await tx.cutOutput.createMany({
         data: validatedData.outputs.map(output => ({
           workspace_id: "default",
           cut_lay_id: newCutLay.id,

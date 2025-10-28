@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -85,7 +85,7 @@ export const GET = requireAuth(async (_request: NextRequest, user) => {
 
     // Calculate total pieces produced today
     const sewingPieces = sewingStats._sum.qty_good || 0;
-    const ___printPieces = printStats || 0;
+    // Unused: const ___printPieces = printStats || 0;
     const totalPieces = sewingPieces;
 
     // Calculate average efficiency

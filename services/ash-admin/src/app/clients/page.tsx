@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
 export const dynamic = 'force-dynamic';
@@ -97,7 +97,7 @@ export default function ClientsPage() {
 
   const ____formatCurrency = (amount: number | null) => {
     if (amount === null || amount === undefined) return "No limit";
-    return `₱${amount.toLocaleString()}`;
+    return `â‚±${amount.toLocaleString()}`;
   };
 
   return (
@@ -166,7 +166,7 @@ export default function ClientsPage() {
             {totalCount > 0 && (
               <div className="mt-2 text-sm text-muted-foreground">
                 Showing {clients.length} of {totalCount} clients
-                {search && ` • Searching for "${search}"`}
+                {search && ` â€¢ Searching for "${search}"`}
               </div>
             )}
           </CardContent>

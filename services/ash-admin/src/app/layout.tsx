@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import dynamic from "next/dynamic";
 
 // Load ChatWidget only on client side to prevent hydration issues
-const ____ChatWidget = dynamic(
+const _ChatWidget = dynamic(
   () =>
     import("@/components/ai-chat/ChatWidget").then(mod => ({
       default: mod.ChatWidget,

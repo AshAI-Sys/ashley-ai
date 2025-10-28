@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
@@ -64,7 +64,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       ],
     };
 
-    const [sewingRuns, total] = await Promise.all([
+    const [sewingRuns, _total] = await Promise.all([
       prisma.sewingRun.findMany({
         where,
         skip,
@@ -104,7 +104,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     ]);
 
     // Transform data to match frontend expectations
-    const transformedRuns = sewingRuns.map(run => ({
+    const transformedRuns = sewingRuns.map((run: any) => ({
       id: run.id,
       operation_name: run.operation_name,
       status: run.status,

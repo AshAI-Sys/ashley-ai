@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Icon Utilities - Centralized icon mapping for consistent UI
  * Maps status, actions, and entity types to Lucide React icons
  */

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -27,8 +27,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     // Format as supplier list
     const suppliers = expenses
-      .filter(e => e.supplier)
-      .map(e => ({
+      .filter((e: any) => e.supplier)
+      .map((e: any) => ({
         name: e.supplier,
         expense_count: 1, // Simplified for now
       }));

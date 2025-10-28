@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useCallback, useRef } from "react";
 
@@ -76,7 +76,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
         : !event.ctrlKey && !event.metaKey;
       const altMatches = alt ? event.altKey : !event.altKey;
       const shiftMatches = shift ? event.shiftKey : !event.shiftKey;
-      const ____metaMatches = meta
+      const _metaMatches = meta
         ? event.metaKey
         : !event.metaKey && !event.ctrlKey;
 
@@ -156,7 +156,7 @@ export function formatShortcut(keys: string): string[] {
         return "Shift";
       case "meta":
       case "cmd":
-        return "⌘";
+        return "âŒ˜";
       default:
         return key.toUpperCase();
     }

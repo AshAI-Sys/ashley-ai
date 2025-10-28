@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -680,7 +680,7 @@ export function AshleyAIDashboard() {
                                 {maintenance.urgency}
                               </Badge>
                               <div className="text-sm text-gray-600">
-                                Est. ₱
+                                Est. â‚±
                                 {maintenance.estimated_cost.toLocaleString()}
                               </div>
                             </div>

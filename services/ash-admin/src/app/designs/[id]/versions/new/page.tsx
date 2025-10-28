@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
   Upload,
-  _Save,
+  Save,
   FileImage,
   File,
   X,
@@ -528,7 +528,7 @@ export default function NewVersionPage() {
           <div>
             <h1 className="text-3xl font-bold">Create New Version</h1>
             <p className="text-muted-foreground">
-              {design.name} • Version {design.current_version + 1}
+              {design.name} â€¢ Version {design.current_version + 1}
             </p>
           </div>
         </div>
@@ -646,7 +646,7 @@ export default function NewVersionPage() {
                       <ul className="space-y-1 text-sm">
                         {validationResult.issues.map(
                           (issue: any, index: number) => (
-                            <li key={index}>• {issue.message}</li>
+                            <li key={index}>â€¢ {issue.message}</li>
                           )
                         )}
                       </ul>
@@ -717,11 +717,11 @@ export default function NewVersionPage() {
               </Button>
 
               <div className="pt-2 text-xs text-muted-foreground">
-                <p>• This will create version {design.current_version + 1}</p>
+                <p>â€¢ This will create version {design.current_version + 1}</p>
                 <p>
-                  • Placements and colors will be copied from current version
+                  â€¢ Placements and colors will be copied from current version
                 </p>
-                <p>• You can edit these after creation</p>
+                <p>â€¢ You can edit these after creation</p>
               </div>
             </CardContent>
           </Card>
@@ -732,11 +732,11 @@ export default function NewVersionPage() {
               <CardTitle>Version Control Guidelines</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <p>• Each version is immutable once created</p>
-              <p>• Previous versions remain accessible</p>
-              <p>• Placements and colors are inherited</p>
-              <p>• Ashley AI will validate the new version</p>
-              <p>• Client approvals are per-version</p>
+              <p>â€¢ Each version is immutable once created</p>
+              <p>â€¢ Previous versions remain accessible</p>
+              <p>â€¢ Placements and colors are inherited</p>
+              <p>â€¢ Ashley AI will validate the new version</p>
+              <p>â€¢ Client approvals are per-version</p>
             </CardContent>
           </Card>
         </div>

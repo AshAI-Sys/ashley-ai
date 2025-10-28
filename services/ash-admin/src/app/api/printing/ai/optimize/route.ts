@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -348,7 +348,7 @@ function generateRecommendations(
       recommendations.push({
         type: "TEMPERATURE",
         priority: "HIGH",
-        message: `Optimal film temperature: ${methodOpt.film_temperature}°F`,
+        message: `Optimal film temperature: ${methodOpt.film_temperature}Â°F`,
         impact: "quality_improvement",
       });
       break;

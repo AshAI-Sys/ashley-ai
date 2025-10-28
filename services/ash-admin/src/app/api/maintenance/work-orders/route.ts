@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -59,7 +59,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: [{ priority: "desc" }, { created_at: "desc" }],
       });
 
-    const processedWorkOrders = workOrders.map(workOrder => {
+    const processedWorkOrders = workOrders.map((workOrder: any) => {
       return {
         id: workOrder.id,
         title: workOrder.title,

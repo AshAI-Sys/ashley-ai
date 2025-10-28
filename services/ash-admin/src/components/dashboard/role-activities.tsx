@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { User } from "../../lib/permissions";
 
@@ -14,14 +14,14 @@ function AdminActivities() {
         <p className="mb-1 text-sm font-medium text-gray-900">
           System backup completed successfully
         </p>
-        <p className="text-xs text-gray-600">1 hour ago • All data backed up</p>
+        <p className="text-xs text-gray-600">1 hour ago â€¢ All data backed up</p>
       </div>
 
       <div className="rounded-md border-l-4 border-green-500 bg-gray-50 p-3">
         <p className="mb-1 text-sm font-medium text-gray-900">
           New employee onboarded: Maria Santos
         </p>
-        <p className="text-xs text-gray-600">2 hours ago • Sewing Department</p>
+        <p className="text-xs text-gray-600">2 hours ago â€¢ Sewing Department</p>
       </div>
 
       <div className="rounded-md border-l-4 border-amber-500 bg-gray-50 p-3">
@@ -29,7 +29,7 @@ function AdminActivities() {
           Maintenance scheduled for Line 3
         </p>
         <p className="text-xs text-gray-600">
-          3 hours ago • Planned downtime this weekend
+          3 hours ago â€¢ Planned downtime this weekend
         </p>
       </div>
 
@@ -37,7 +37,7 @@ function AdminActivities() {
         <p className="mb-1 text-sm font-medium text-gray-900">
           Monthly financial report generated
         </p>
-        <p className="text-xs text-gray-600">4 hours ago • Revenue up 12%</p>
+        <p className="text-xs text-gray-600">4 hours ago â€¢ Revenue up 12%</p>
       </div>
     </div>
   );
@@ -52,7 +52,7 @@ function ManagerActivities({ user }: { user: User }) {
           {
             title: `New cutting order assigned to Line 2`,
             time: "1 hour ago",
-            detail: "500 units • Order #ASH-2025-001",
+            detail: "500 units â€¢ Order #ASH-2025-001",
             color: "blue",
           },
           {
@@ -73,7 +73,7 @@ function ManagerActivities({ user }: { user: User }) {
           {
             title: `Print run completed for Order #ASH-789`,
             time: "30 min ago",
-            detail: "300 units • Silkscreen method",
+            detail: "300 units â€¢ Silkscreen method",
             color: "green",
           },
           {
@@ -126,7 +126,7 @@ function ManagerActivities({ user }: { user: User }) {
             {activity.title}
           </p>
           <p className="text-xs text-gray-600">
-            {activity.time} • {activity.detail}
+            {activity.time} â€¢ {activity.detail}
           </p>
         </div>
       ))}
@@ -215,7 +215,7 @@ function SupervisorActivities({ user }: { user: User }) {
         >
           <p className="mb-1 text-sm font-medium text-gray-900">{task.title}</p>
           <p className="text-xs text-gray-600">
-            {task.time} • {task.detail}
+            {task.time} â€¢ {task.detail}
           </p>
         </div>
       ))}
@@ -224,7 +224,7 @@ function SupervisorActivities({ user }: { user: User }) {
 }
 
 // Operator Recent Activities
-function OperatorActivities({ _user }: { user: User }) {
+function OperatorActivities({ user }: { user: User }) {
   return (
     <div className="space-y-3">
       <div className="rounded-md border-l-4 border-green-500 bg-gray-50 p-3">
@@ -232,7 +232,7 @@ function OperatorActivities({ _user }: { user: User }) {
           Task completed: Bundle #B-789
         </p>
         <p className="text-xs text-gray-600">
-          10 min ago • 25 pieces processed
+          10 min ago â€¢ 25 pieces processed
         </p>
       </div>
 
@@ -241,7 +241,7 @@ function OperatorActivities({ _user }: { user: User }) {
           New task assigned: Bundle #B-790
         </p>
         <p className="text-xs text-gray-600">
-          30 min ago • 30 pieces to process
+          30 min ago â€¢ 30 pieces to process
         </p>
       </div>
 
@@ -250,7 +250,7 @@ function OperatorActivities({ _user }: { user: User }) {
           Break time reminder
         </p>
         <p className="text-xs text-gray-600">
-          45 min ago • 15 minute break scheduled
+          45 min ago â€¢ 15 minute break scheduled
         </p>
       </div>
 
@@ -259,7 +259,7 @@ function OperatorActivities({ _user }: { user: User }) {
           Quality check passed
         </p>
         <p className="text-xs text-gray-600">
-          1 hour ago • Bundle #B-788 approved
+          1 hour ago â€¢ Bundle #B-788 approved
         </p>
       </div>
     </div>
@@ -267,14 +267,14 @@ function OperatorActivities({ _user }: { user: User }) {
 }
 
 // Employee Recent Activities
-function EmployeeActivities({ _user }: { user: User }) {
+function EmployeeActivities({ user }: { user: User }) {
   return (
     <div className="space-y-3">
       <div className="rounded-md border-l-4 border-blue-500 bg-gray-50 p-3">
         <p className="mb-1 text-sm font-medium text-gray-900">
           Time clock: Clocked in
         </p>
-        <p className="text-xs text-gray-600">8:00 AM • Regular shift started</p>
+        <p className="text-xs text-gray-600">8:00 AM â€¢ Regular shift started</p>
       </div>
 
       <div className="rounded-md border-l-4 border-green-500 bg-gray-50 p-3">
@@ -282,7 +282,7 @@ function EmployeeActivities({ _user }: { user: User }) {
           Company announcement
         </p>
         <p className="text-xs text-gray-600">
-          2 hours ago • Team meeting tomorrow at 2 PM
+          2 hours ago â€¢ Team meeting tomorrow at 2 PM
         </p>
       </div>
 
@@ -291,7 +291,7 @@ function EmployeeActivities({ _user }: { user: User }) {
           Payroll processed
         </p>
         <p className="text-xs text-gray-600">
-          Yesterday • Check direct deposit
+          Yesterday â€¢ Check direct deposit
         </p>
       </div>
 
@@ -300,7 +300,7 @@ function EmployeeActivities({ _user }: { user: User }) {
           Training module completed
         </p>
         <p className="text-xs text-gray-600">
-          2 days ago • Safety procedures updated
+          2 days ago â€¢ Safety procedures updated
         </p>
       </div>
     </div>

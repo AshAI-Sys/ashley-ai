@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -48,10 +48,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: [{ name: "asc" }],
       });
 
-    const processedAssets = assets.map(asset => {
+    const processedAssets = assets.map((asset: any) => {
       const activeWorkOrders = asset.work_orders;
       const overdueSchedules = asset.maintenance_schedules.filter(
-        schedule => new Date(schedule.next_due_date) < new Date()
+        (schedule: any) => new Date(schedule.next_due_date) < new Date()
       );
 
       return {
@@ -71,7 +71,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         overdue_maintenance: overdueSchedules.length,
         next_maintenance:
           asset.maintenance_schedules[0]?.next_due_date?.toISOString() || null,
-        recent_work_orders: activeWorkOrders.map(wo => ({
+        recent_work_orders: activeWorkOrders.map((wo: any) => ({
           id: wo.id,
           title: wo.title,
           type: wo.type,

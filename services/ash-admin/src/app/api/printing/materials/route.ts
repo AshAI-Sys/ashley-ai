@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -31,7 +31,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     });
 
     // Transform data for frontend
-    const transformedMaterials = materials.map(material => ({
+    const transformedMaterials = materials.map((material: any) => ({
       id: material.id,
       name: material.material_name,
       type: material.material_type,
@@ -72,7 +72,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Process material consumption in transaction
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx: any) => {
       const consumptionRecords = [];
 
       for (const material of materials) {
@@ -167,7 +167,7 @@ export async function OPTIONS(_request: NextRequest) {
       distinct: ["material_type"],
       });
 
-    const types = materialTypes.map(m => m.material_type);
+    const types = materialTypes.map((m: any) => m.material_type);
 
     return NextResponse.json({
       success: true,

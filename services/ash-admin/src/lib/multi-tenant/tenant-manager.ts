@@ -430,9 +430,10 @@ export class TenantManager {
     ];
 
     for (const defect of defaultDefectCodes) {
-      await prisma.defectCode.create({
+      await prisma.qCDefectCode.create({
         data: {
           ...defect,
+          name: defect.description, // Use description as name
           workspace_id,
         },
       });

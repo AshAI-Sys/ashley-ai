@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -218,7 +218,7 @@ export default function IssueFabricPage() {
       });
 
       if (response.ok) {
-        const ____result = await response.json();
+        // Unused: const ____result = await response.json();
         router.push("/cutting");
       } else {
         const error = await response.json();

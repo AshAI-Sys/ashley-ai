@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest } from "next/server";
 import { paymentService } from "@/lib/paymentService";
 import {
@@ -112,3 +112,4 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     );
   }
 });
+

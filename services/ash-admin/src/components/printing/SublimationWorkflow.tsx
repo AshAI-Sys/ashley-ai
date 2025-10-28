@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+// Unused import removed: Badge
+// Unused import removed: Progress
 import {
   AlertCircle,
   CheckCircle,
@@ -204,7 +204,7 @@ export default function SublimationWorkflow({ runId,
             </div>
             <div className="rounded-lg bg-purple-50 p-3 text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {data.ashley_recommendations.optimal_temperature}°C
+                {data.ashley_recommendations.optimal_temperature}Â°C
               </div>
               <p className="text-sm text-muted-foreground">Optimal Temp</p>
             </div>
@@ -248,7 +248,7 @@ export default function SublimationWorkflow({ runId,
       </div>
 
       {/* Step Content */}
-      {activeStep === "setup" && (
+      {activeStep === "digital_setup" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -394,7 +394,7 @@ export default function SublimationWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "print" && (
+      {activeStep === "printing" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -406,7 +406,7 @@ export default function SublimationWorkflow({ runId,
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Paper Consumed (m²)</Label>
+                <Label>Paper Consumed (mÂ²)</Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -507,10 +507,10 @@ export default function SublimationWorkflow({ runId,
             <div className="rounded-lg bg-blue-50 p-4">
               <h4 className="mb-2 font-medium">Print Quality Checklist:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ No banding or streaking</li>
-                <li>✓ Colors are vibrant and accurate</li>
-                <li>✓ No smudging or bleeding</li>
-                <li>✓ Clean registration marks</li>
+                <li>âœ“ No banding or streaking</li>
+                <li>âœ“ Colors are vibrant and accurate</li>
+                <li>âœ“ No smudging or bleeding</li>
+                <li>âœ“ Clean registration marks</li>
               </ul>
             </div>
 
@@ -532,7 +532,7 @@ export default function SublimationWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "press" && (
+      {activeStep === "heat_press" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -546,7 +546,7 @@ export default function SublimationWorkflow({ runId,
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Temperature (°C)</Label>
+                <Label>Temperature (Â°C)</Label>
                 <Input
                   type="number"
                   min="180"
@@ -561,7 +561,7 @@ export default function SublimationWorkflow({ runId,
                 />
                 <p className="text-xs text-muted-foreground">
                   Recommended: {data.ashley_recommendations.optimal_temperature}
-                  °C
+                  Â°C
                 </p>
               </div>
               <div className="space-y-2">
@@ -657,10 +657,10 @@ export default function SublimationWorkflow({ runId,
                 Heat Press Guidelines
               </h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Polyester: 200°C, 45 seconds, Medium pressure</li>
-                <li>• Poly-blends: 190°C, 50 seconds, Medium pressure</li>
-                <li>• Always use protective paper</li>
-                <li>• Remove transfer paper while hot</li>
+                <li>â€¢ Polyester: 200Â°C, 45 seconds, Medium pressure</li>
+                <li>â€¢ Poly-blends: 190Â°C, 50 seconds, Medium pressure</li>
+                <li>â€¢ Always use protective paper</li>
+                <li>â€¢ Remove transfer paper while hot</li>
               </ul>
             </div>
 
@@ -676,7 +676,7 @@ export default function SublimationWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "quality" && (
+      {activeStep === "quality_control" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -770,11 +770,11 @@ export default function SublimationWorkflow({ runId,
             <div className="rounded-lg bg-green-50 p-4">
               <h4 className="mb-2 font-medium">Quality Standards:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ Colors match approved sample within tolerance</li>
-                <li>✓ No ghosting or double images</li>
-                <li>✓ Smooth, soft hand feel</li>
-                <li>✓ Proper adhesion to fabric</li>
-                <li>✓ No cracking or peeling after wash test</li>
+                <li>âœ“ Colors match approved sample within tolerance</li>
+                <li>âœ“ No ghosting or double images</li>
+                <li>âœ“ Smooth, soft hand feel</li>
+                <li>âœ“ Proper adhesion to fabric</li>
+                <li>âœ“ No cracking or peeling after wash test</li>
               </ul>
             </div>
 

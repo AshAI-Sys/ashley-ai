@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Session Timeout & Inactivity Detection
  *
  * Automatically logs out users after period of inactivity
@@ -110,7 +110,7 @@ export async function checkSessionTimeout(
     // Calculate timeout
     const now = new Date();
     const lastActivity = new Date(session.lastActivity);
-    const _____inactiveDuration = Math.floor(
+    const _inactiveDuration = Math.floor(
       (now.getTime() - lastActivity.getTime()) / 1000
     );
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -8,9 +8,9 @@ import {
   Minus,
   ArrowLeft,
   Save, AlertTriangle,
-  _CheckCircle,
+  CheckCircle,
   Box, Scale,
-  _Maximize,
+  Maximize,
   Zap, Calculator,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -375,7 +375,7 @@ export default function CartonBuilderPage() {
                         <div>
                           <div className="text-sm font-medium">{unit.sku}</div>
                           <div className="text-xs text-gray-500">
-                            {unit.size_code} • {unit.color}
+                            {unit.size_code} â€¢ {unit.color}
                           </div>
                           <div className="text-xs text-gray-500">
                             {unit.order_number}
@@ -547,7 +547,7 @@ export default function CartonBuilderPage() {
                               {content.unit.sku}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {content.unit.size_code} • {content.unit.color}
+                              {content.unit.size_code} â€¢ {content.unit.color}
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -649,7 +649,7 @@ export default function CartonBuilderPage() {
                               Shipping Cost
                             </div>
                             <div className="text-lg font-bold text-blue-900">
-                              ₱
+                              â‚±
                               {optimization.cost_analysis.shipping_cost.toFixed(
                                 2
                               )}
@@ -660,7 +660,7 @@ export default function CartonBuilderPage() {
                               Material Cost
                             </div>
                             <div className="text-lg font-bold text-green-900">
-                              ₱
+                              â‚±
                               {optimization.cost_analysis.material_cost.toFixed(
                                 2
                               )}
@@ -671,7 +671,7 @@ export default function CartonBuilderPage() {
                               Total Cost
                             </div>
                             <div className="text-lg font-bold text-purple-900">
-                              ₱
+                              â‚±
                               {optimization.cost_analysis.total_cost.toFixed(2)}
                             </div>
                           </div>

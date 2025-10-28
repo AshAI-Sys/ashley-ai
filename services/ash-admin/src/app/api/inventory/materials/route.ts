@@ -1,7 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@ash-ai/database";
-
-const prisma = new PrismaClient();
+﻿import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/db";
 
 // Force dynamic route (don't pre-render during build)
 export const dynamic = "force-dynamic";

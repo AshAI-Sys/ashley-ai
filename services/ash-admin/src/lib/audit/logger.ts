@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enhanced Audit Logging System
  * Tracks all user actions with detailed context
  */
@@ -75,7 +75,7 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
   try {
     await prisma.auditLog.create({
       data: {
-        workspace_id: entry.workspaceId || 'default',
+        workspace_id: entry.workspace_id || 'default',
         user_id: entry.userId,
         action: entry.action,
         resource: entry.resource ?? "",
@@ -431,3 +431,4 @@ export async function cleanupOldAuditLogs(daysToKeep: number = 90) {
 
   return result.count;
 }
+

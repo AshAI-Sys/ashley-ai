@@ -1,4 +1,4 @@
-// Dynamic Pricing AI
+﻿// Dynamic Pricing AI
 // Uses machine learning to recommend optimal pricing based on multiple factors
 
 interface PricingFactors {
@@ -373,63 +373,63 @@ export class DynamicPricingAI {
     // Margin recommendations
     if (margin < 20) {
       recommendations.push(
-        "⚠️ Low margin detected - Consider negotiating higher price or reducing costs"
+        "âš ï¸ Low margin detected - Consider negotiating higher price or reducing costs"
       );
     } else if (margin > 50) {
       recommendations.push(
-        "💰 High margin opportunity - Price is competitive, client likely to accept"
+        "ðŸ’° High margin opportunity - Price is competitive, client likely to accept"
       );
     }
 
     // Market conditions
     if (market.capacity_utilization > 85) {
       recommendations.push(
-        "🔥 High capacity utilization - Premium pricing justified"
+        "ðŸ”¥ High capacity utilization - Premium pricing justified"
       );
     } else if (market.capacity_utilization < 60) {
       recommendations.push(
-        "📉 Low capacity - Consider competitive pricing to win order"
+        "ðŸ“‰ Low capacity - Consider competitive pricing to win order"
       );
     }
 
     // Client relationship
     if (factors.client_history) {
       if (factors.client_history.total_orders > 20) {
-        recommendations.push("🤝 Long-term client - Loyalty discount applied");
+        recommendations.push("ðŸ¤ Long-term client - Loyalty discount applied");
       }
       if (factors.client_history.payment_reliability < 80) {
         recommendations.push(
-          "⚠️ Payment risk detected - Risk premium added or consider advance payment"
+          "âš ï¸ Payment risk detected - Risk premium added or consider advance payment"
         );
       }
     } else {
       recommendations.push(
-        "🆕 New client - Standard pricing with deposit required"
+        "ðŸ†• New client - Standard pricing with deposit required"
       );
     }
 
     // Urgency
     if (factors.deadline_days <= 7) {
       recommendations.push(
-        "⏰ Rush order - Premium pricing applied for tight deadline"
+        "â° Rush order - Premium pricing applied for tight deadline"
       );
     }
 
     // Quantity
     if (factors.quantity >= 5000) {
       recommendations.push(
-        "📦 Bulk order - Volume discount applied to remain competitive"
+        "ðŸ“¦ Bulk order - Volume discount applied to remain competitive"
       );
     } else if (factors.quantity < 100) {
       recommendations.push(
-        "🔧 Small order - Minimum order fee applied to cover setup costs"
+        "ðŸ”§ Small order - Minimum order fee applied to cover setup costs"
       );
     }
 
     // Material trends
     if (market.material_price_trend === "RISING") {
       recommendations.push(
-        "📈 Rising material costs - Price includes cost escalation buffer"
+        "ðŸ“ˆ Rising material costs - Price includes cost escalation buffer"
       );
     }
 
@@ -440,14 +440,14 @@ export class DynamicPricingAI {
         100;
       if (diff > 15) {
         recommendations.push(
-          `💡 Price is ${Math.abs(diff).toFixed(0)}% above market - Justify with quality/service`
+          `ðŸ’¡ Price is ${Math.abs(diff).toFixed(0)}% above market - Justify with quality/service`
         );
       } else if (diff < -15) {
         recommendations.push(
-          `💡 Price is ${Math.abs(diff).toFixed(0)}% below market - Opportunity to increase margin`
+          `ðŸ’¡ Price is ${Math.abs(diff).toFixed(0)}% below market - Opportunity to increase margin`
         );
       } else {
-        recommendations.push("✅ Price is competitive with market average");
+        recommendations.push("âœ… Price is competitive with market average");
       }
     }
 
@@ -580,29 +580,29 @@ export class DynamicPricingAI {
     const insights: string[] = [];
 
     if (acceptanceRate > 80) {
-      insights.push("✅ High acceptance rate - Pricing is competitive");
+      insights.push("âœ… High acceptance rate - Pricing is competitive");
     } else if (acceptanceRate < 60) {
       insights.push(
-        "⚠️ Low acceptance rate - Consider more competitive pricing"
+        "âš ï¸ Low acceptance rate - Consider more competitive pricing"
       );
     }
 
     if (averageMargin < 25) {
       insights.push(
-        "📊 Average margin is low - Opportunity to increase profitability"
+        "ðŸ“Š Average margin is low - Opportunity to increase profitability"
       );
     } else if (averageMargin > 40) {
-      insights.push("💰 Strong margins - Pricing strategy is effective");
+      insights.push("ðŸ’° Strong margins - Pricing strategy is effective");
     }
 
     if (priceElasticity > 20) {
       insights.push(
-        "📉 High price sensitivity - Small price changes significantly impact acceptance"
+        "ðŸ“‰ High price sensitivity - Small price changes significantly impact acceptance"
       );
     }
 
     insights.push(
-      `🎯 Optimal margin range: ${optimalMarginRange.min.toFixed(1)}% - ${optimalMarginRange.max.toFixed(1)}%`
+      `ðŸŽ¯ Optimal margin range: ${optimalMarginRange.min.toFixed(1)}% - ${optimalMarginRange.max.toFixed(1)}%`
     );
 
     return {

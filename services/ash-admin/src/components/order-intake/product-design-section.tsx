@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// Unused import removed: Input
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -54,14 +54,14 @@ interface ProductDesignSectionProps {
 }
 
 const GARMENT_TYPES = [
-  { value: "t-shirt", label: "T-Shirt", icon: "👕" },
-  { value: "polo", label: "Polo Shirt", icon: "👔" },
-  { value: "hoodie", label: "Hoodie", icon: "🧥" },
-  { value: "jersey", label: "Jersey", icon: "🏃" },
-  { value: "uniform", label: "Uniform", icon: "👮" },
-  { value: "cap", label: "Cap/Hat", icon: "🧢" },
-  { value: "bag", label: "Bag", icon: "🎒" },
-  { value: "custom", label: "Custom", icon: "✨" },
+  { value: "t-shirt", label: "T-Shirt", icon: "ðŸ‘•" },
+  { value: "polo", label: "Polo Shirt", icon: "ðŸ‘”" },
+  { value: "hoodie", label: "Hoodie", icon: "ðŸ§¥" },
+  { value: "jersey", label: "Jersey", icon: "ðŸƒ" },
+  { value: "uniform", label: "Uniform", icon: "ðŸ‘®" },
+  { value: "cap", label: "Cap/Hat", icon: "ðŸ§¢" },
+  { value: "bag", label: "Bag", icon: "ðŸŽ’" },
+  { value: "custom", label: "Custom", icon: "âœ¨" },
 ];
 
 const PRINTING_METHODS = [
@@ -497,7 +497,7 @@ export function ProductDesignSection({
                                           className="flex items-start gap-1 text-blue-600"
                                         >
                                           <span className="mt-1 text-blue-400">
-                                            •
+                                            â€¢
                                           </span>
                                           {suggestion}
                                         </li>

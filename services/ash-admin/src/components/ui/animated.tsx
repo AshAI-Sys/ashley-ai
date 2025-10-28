@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useRef, useState } from "react";
 
@@ -119,6 +119,7 @@ export function Animated({
 
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [isVisible, duration, delay, onAnimationComplete]);
 
   const animationClass =
@@ -250,3 +251,4 @@ export function SlideTransition({
     </Animated>
   );
 }
+

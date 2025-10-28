@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -174,7 +174,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       totalAssets > 0 ? Math.round((activeAssets / totalAssets) * 100) : 0;
 
     // Process work order distributions
-    const workOrderTypeDistribution = workOrdersByType.map(item => ({
+    const workOrderTypeDistribution = workOrdersByType.map((item: any) => ({
       type: item.type,
       count: item._count.type,
       percentage:
@@ -183,7 +183,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
           : 0,
     }));
 
-    const workOrderPriorityDistribution = workOrdersByPriority.map(item => ({
+    const workOrderPriorityDistribution = workOrdersByPriority.map((item: any) => ({
       priority: item.priority,
       count: item._count.priority,
       percentage:
@@ -192,7 +192,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
           : 0,
     }));
 
-    const assetTypeDistribution = assetsByType.map(item => ({
+    const assetTypeDistribution = assetsByType.map((item: any) => ({
       type: item.type,
       count: item._count.type,
       percentage:
@@ -222,7 +222,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
           work_orders_by_priority: workOrderPriorityDistribution,
           assets_by_type: assetTypeDistribution,
         },
-        upcoming_maintenance: upcomingMaintenance.map(schedule => ({
+        upcoming_maintenance: upcomingMaintenance.map((schedule: any) => ({
           id: schedule.id,
           schedule_name: schedule.schedule_name,
           asset_name: schedule.asset.name,
@@ -235,7 +235,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
               (1000 * 3600 * 24)
           ),
         })),
-        recent_activity: recentWorkOrders.map(wo => ({
+        recent_activity: recentWorkOrders.map((wo: any) => ({
           id: wo.id,
           title: wo.title,
           asset_name: wo.asset.name,
@@ -251,7 +251,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
         alerts: {
           overdue_count: overdueSchedules,
           high_priority_open:
-            workOrdersByPriority.find(p => p.priority === "CRITICAL")?._count
+            workOrdersByPriority.find((p: any) => p.priority === "CRITICAL")?._count
               .priority || 0,
           unassigned_count: pendingWorkOrders,
           inactive_assets: totalAssets - activeAssets,

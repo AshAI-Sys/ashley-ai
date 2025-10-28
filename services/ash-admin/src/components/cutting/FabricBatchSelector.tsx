@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+// Unused import removed: Separator
 import {
   Package,
   Search,
@@ -21,7 +21,7 @@ import {
   Plus,
   Minus,
   Calculator, AlertTriangle,
-  _CheckCircle,
+  CheckCircle,
   Zap,
 } from "lucide-react";
 
@@ -246,13 +246,13 @@ export default function FabricBatchSelector({
 
     if (batch.uom === "KG") {
       // Convert kg to approximate pieces (for medium garment)
-      const areaPerPiece = 2500; // cm²
-      const fabricArea = (quantity * 1000) / gsm; // cm² from kg
+      const areaPerPiece = 2500; // cmÂ²
+      const fabricArea = (quantity * 1000) / gsm; // cmÂ² from kg
       return Math.floor(fabricArea / areaPerPiece);
     } else {
       // Convert meters to approximate pieces
-      const fabricArea = quantity * 100 * width; // cm²
-      const areaPerPiece = 2500; // cm²
+      const fabricArea = quantity * 100 * width; // cmÂ²
+      const areaPerPiece = 2500; // cmÂ²
       return Math.floor(fabricArea / areaPerPiece);
     }
   };

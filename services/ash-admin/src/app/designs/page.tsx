@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ import DashboardLayout from "@/components/dashboard-layout";
 import {
   Card,
   CardContent, CardDescription,
-  _CardHeader, CardTitle,
+  CardHeader, CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -315,7 +315,7 @@ export default function DesignsPage() {
                             {design.method}
                           </Badge>
                           {design.is_best_seller && (
-                            <Badge variant="secondary">⭐ Best Seller</Badge>
+                            <Badge variant="secondary">â­ Best Seller</Badge>
                           )}
                         </div>
 

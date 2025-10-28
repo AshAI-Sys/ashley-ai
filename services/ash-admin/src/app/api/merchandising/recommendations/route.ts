@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
@@ -258,7 +258,7 @@ async function generateReorderRecommendations(
 
       if (daysSinceLastOrder >= avgOrderInterval * 0.8) {
         // 80% of typical interval
-        const [productType, color] = productKey.split("-");
+        const [productType, _color] = productKey.split("-");
         const confidence = Math.min(0.95, 0.6 + data.count * 0.1);
         const avgQuantity = Math.round(data.avgQuantity / data.count);
 
@@ -421,7 +421,7 @@ async function generateTrendingRecommendations(
 
   const productPopularity: { [key: string]: number } = {};
 
-  recentOrders.forEach(order => {
+  recentOrders.forEach((order: any) => {
     order.line_items.forEach((item: any) => {
       const productType = item.product_type || "unknown";
       productPopularity[productType] =

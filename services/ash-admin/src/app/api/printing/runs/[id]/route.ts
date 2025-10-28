@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -74,10 +74,10 @@ export const GET = requireAuth(async (
     const transformedRun = {
       ...run,
       target_qty:
-        run.outputs.reduce((sum, o) => sum + o.qty_good + o.qty_reject, 0) ||
+        run.outputs.reduce((sum: any, o: any) => sum + o.qty_good + o.qty_reject, 0) ||
         100,
-      completed_qty: run.outputs.reduce((sum, o) => sum + o.qty_good, 0),
-      rejected_qty: run.rejects.reduce((sum, r) => sum + r.qty, 0),
+      completed_qty: run.outputs.reduce((sum: any, o: any) => sum + o.qty_good, 0),
+      rejected_qty: run.rejects.reduce((sum: any, r: any) => sum + r.qty, 0),
       runtime_minutes:
         run.started_at && run.ended_at
           ? Math.round(

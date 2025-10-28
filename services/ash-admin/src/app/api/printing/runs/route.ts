@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -53,7 +53,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     ]);
 
     // Transform data for frontend
-    const transformedRuns = runs.map(run => ({
+    const transformedRuns = runs.map((run: any) => ({
       id: run.id,
       method: run.method,
       status: run.status,
@@ -85,10 +85,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         : null,
       // Calculate totals
       target_qty:
-        run.outputs.reduce((sum, o) => sum + o.qty_good + o.qty_reject, 0) ||
+        run.outputs.reduce((sum: any, o: any) => sum + o.qty_good + o.qty_reject, 0) ||
         100,
-      completed_qty: run.outputs.reduce((sum, o) => sum + o.qty_good, 0),
-      rejected_qty: run.rejects.reduce((sum, r) => sum + r.qty, 0),
+      completed_qty: run.outputs.reduce((sum: any, o: any) => sum + o.qty_good, 0),
+      rejected_qty: run.rejects.reduce((sum: any, r: any) => sum + r.qty, 0),
       materials_used: run.materials.length,
       // Method-specific data
       method_data: getMethodSpecificData(run),

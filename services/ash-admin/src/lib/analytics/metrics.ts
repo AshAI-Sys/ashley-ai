@@ -1,4 +1,4 @@
-import { db } from "@/lib/database";
+﻿import { db } from "@/lib/database";
 import { redisClient } from "@/lib/redis";
 
 const prisma = db;
@@ -135,18 +135,18 @@ export async function getProductionMetrics(
 
   // Calculate production statistics
   const totalPieces = allOrders.reduce(
-    (sum, order) => sum + (order.total_amount || 0),
+    (sum: any, order: any) => sum + (order.total_amount || 0),
     0
   );
   const piecesToday = allOrders
-    .filter(o => o.updated_at >= today)
-    .reduce((sum, order) => sum + (order.total_amount || 0), 0);
+    .filter((o: any) => o.updated_at >= today)
+    .reduce((sum: any, order: any) => sum + (order.total_amount || 0), 0);
 
   // Calculate average production time
-  const completedOrders = allOrders.filter(o => o.status === "completed");
+  const completedOrders = allOrders.filter((o: any) => o.status === "completed");
   const avgProductionTime =
     completedOrders.length > 0
-      ? completedOrders.reduce((sum, order) => {
+      ? completedOrders.reduce((sum: any, order: any) => {
           const hours =
             (order.updated_at.getTime() - order.created_at.getTime()) /
             (1000 * 60 * 60);
@@ -155,7 +155,7 @@ export async function getProductionMetrics(
       : 0;
 
   // Calculate on-time delivery rate
-  const onTimeDeliveries = completedOrders.filter(o =>
+  const onTimeDeliveries = completedOrders.filter((o: any) =>
     o.delivery_date ? o.updated_at <= o.delivery_date : true
   ).length;
   const onTimeRate =
@@ -227,33 +227,33 @@ export async function getFinancialMetrics(
   ]);
 
   // Calculate totals
-  const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
+  const totalRevenue = payments.reduce((sum: any, p: any) => sum + p.amount, 0);
   const revenueThisMonth = payments
-    .filter(p => p.created_at >= thisMonth)
-    .reduce((sum, p) => sum + p.amount, 0);
+    .filter((p: any) => p.created_at >= thisMonth)
+    .reduce((sum: any, p: any) => sum + p.amount, 0);
   const revenueThisYear = payments
-    .filter(p => p.created_at >= thisYear)
-    .reduce((sum, p) => sum + p.amount, 0);
+    .filter((p: any) => p.created_at >= thisYear)
+    .reduce((sum: any, p: any) => sum + p.amount, 0);
   const revenueLastYear = payments
-    .filter(p => p.created_at >= lastYear && p.created_at <= lastYearEnd)
-    .reduce((sum, p) => sum + p.amount, 0);
+    .filter((p: any) => p.created_at >= lastYear && p.created_at <= lastYearEnd)
+    .reduce((sum: any, p: any) => sum + p.amount, 0);
 
   // Invoice statistics
-  const paidInvoices = invoices.filter(i => i.status === "paid");
+  const paidInvoices = invoices.filter((i: any) => i.status === "paid");
   const outstandingInvoices = invoices.filter(
-    i => i.status === "sent" || i.status === "overdue"
+    (i: any) => i.status === "sent" || i.status === "overdue"
   );
 
-  const paidAmount = paidInvoices.reduce((sum, i) => sum + i.total_amount, 0);
+  const paidAmount = paidInvoices.reduce((sum: any, i: any) => sum + i.total_amount, 0);
   const outstandingAmount = outstandingInvoices.reduce(
-    (sum, i) => sum + i.total_amount,
+    (sum: any, i: any) => sum + i.total_amount,
     0
   );
 
   // Calculate averages
   const avgOrderValue =
     invoices.length > 0
-      ? invoices.reduce((sum, i) => sum + i.total_amount, 0) / invoices.length
+      ? invoices.reduce((sum: any, i: any) => sum + i.total_amount, 0) / invoices.length
       : 0;
 
   // Revenue growth rate (year-over-year)
@@ -320,10 +320,10 @@ export async function getQualityMetrics(
 
   const totalInspections = inspections.length;
   const passedInspections = inspections.filter(
-    i => i.result === "PASSED"
+    (i: any) => i.result === "PASSED"
   ).length;
   const failedInspections = inspections.filter(
-    i => i.result === "FAILED"
+    (i: any) => i.result === "FAILED"
   ).length;
 
   const passRate =
@@ -331,7 +331,7 @@ export async function getQualityMetrics(
 
   // Calculate defect rate from critical + major + minor defects
   const totalDefects = inspections.reduce(
-    (sum, i) =>
+    (sum: any, i: any) =>
       sum +
       (i.critical_found || 0) +
       (i.major_found || 0) +
@@ -342,9 +342,9 @@ export async function getQualityMetrics(
 
   // CAPA statistics
   const capaOpen = capa.filter(
-    c => c.status === "open" || c.status === "in_progress"
+    (c: any) => c.status === "open" || c.status === "in_progress"
   ).length;
-  const capaClosed = capa.filter(c => c.status === "closed").length;
+  const capaClosed = capa.filter((c: any) => c.status === "closed").length;
 
   const metrics: QualityMetrics = {
     total_inspections: totalInspections,
@@ -409,7 +409,7 @@ export async function getEmployeeMetrics(
   ]);
 
   const totalEmployees = employees.length;
-  const activeEmployees = employees.filter(e => e.is_active === true).length;
+  const activeEmployees = employees.filter((e: any) => e.is_active === true).length;
 
   // Calculate attendance rate
   const workingDays = Math.floor(
@@ -422,7 +422,7 @@ export async function getEmployeeMetrics(
 
   // Department breakdown
   const departmentBreakdown: Record<string, number> = {};
-  employees.forEach(emp => {
+  employees.forEach((emp: any) => {
     const dept = emp.department || "Unknown";
     departmentBreakdown[dept] = (departmentBreakdown[dept] || 0) + 1;
   });

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -29,7 +29,7 @@ import {
   Shirt,
   Camera,
   Plus,
-  _Save,
+  Save,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -698,7 +698,7 @@ export default function PrintRunDetailsPage() {
 function MethodSpecificPanel({
   method,
   runId,
-  _data,
+  data,
   onUpdate,
   readOnly,
 }: {

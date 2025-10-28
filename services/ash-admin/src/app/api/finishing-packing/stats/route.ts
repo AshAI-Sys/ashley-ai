@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -145,13 +145,13 @@ async function getPackingEfficiency() {
 
     // Filter out null fill_percent values and calculate average
     const validCartons = cartons.filter(
-      c => c.fill_percent !== null && c.fill_percent !== undefined
+      (c: any) => c.fill_percent !== null && c.fill_percent !== undefined
     );
     if (validCartons.length === 0) return 0;
 
     const avgFillPercentage =
       validCartons.reduce(
-        (sum, carton) => sum + (carton.fill_percent || 0),
+        (sum: any, carton: any) => sum + (carton.fill_percent || 0),
         0
       ) / validCartons.length;
 

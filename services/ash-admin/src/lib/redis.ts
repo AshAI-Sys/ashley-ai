@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+﻿import Redis from "ioredis";
 
 let redis: Redis | null = null;
 let isRedisAvailable = false;
@@ -15,7 +15,7 @@ export function getRedisClient(): Redis | null {
   try {
     const redisUrl = process.env.REDIS_URL;
     if (!redisUrl) {
-      console.warn("⚠️ REDIS_URL not configured. Using in-memory fallback.");
+      console.warn("âš ï¸ REDIS_URL not configured. Using in-memory fallback.");
       return null;
     }
 
@@ -24,7 +24,7 @@ export function getRedisClient(): Redis | null {
       retryStrategy: times => {
         if (times > 3) {
           console.error(
-            "❌ Redis connection failed after 3 retries. Using in-memory fallback."
+            "âŒ Redis connection failed after 3 retries. Using in-memory fallback."
           );
           isRedisAvailable = false;
           return null;
@@ -38,18 +38,18 @@ export function getRedisClient(): Redis | null {
     });
 
     redis.on("connect", () => {
-      console.log("✅ Redis connected successfully");
+      console.log("âœ… Redis connected successfully");
       isRedisAvailable = true;
     });
 
     redis.on("error", err => {
-      console.error("❌ Redis error:", err.message);
+      console.error("âŒ Redis error:", err.message);
       isRedisAvailable = false;
     });
 
     return redis;
   } catch (error) {
-    console.error("❌ Failed to initialize Redis:", error);
+    console.error("âŒ Failed to initialize Redis:", error);
     return null;
   }
 }
@@ -301,3 +301,7 @@ export async function getRedisInfo(): Promise<string | null> {
 }
 
 export default redisClient;
+
+
+// Re-export cache for middleware
+// export { cache } from '@/lib/cache/manager';  // Module not implemented yet

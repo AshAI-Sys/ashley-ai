@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -61,7 +61,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       runsWithEfficiency.length > 0
         ? Math.round(
             runsWithEfficiency.reduce(
-              (sum, run) => sum + (run.efficiency_pct || 0),
+              (sum: any, run: any) => sum + (run.efficiency_pct || 0),
               0
             ) / runsWithEfficiency.length
           )
@@ -88,7 +88,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       });
 
     const totalPiecesToday = completedRuns.reduce(
-      (sum, run) => sum + (run.qty_good || 0),
+      (sum: any, run: any) => sum + (run.qty_good || 0),
       0
     );
 

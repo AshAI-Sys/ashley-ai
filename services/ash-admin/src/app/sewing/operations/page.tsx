@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+// Unused import removed: Textarea
 import {
   Select,
   SelectContent,
@@ -37,7 +37,7 @@ import {
   DollarSign,
   GitBranch,
   Search, ArrowRight,
-  _CheckCircle, AlertCircle,
+  CheckCircle, AlertCircle,
   Shirt,
 } from "lucide-react";
 
@@ -509,7 +509,7 @@ export default function SewingOperationsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₱
+              â‚±
               {operations.filter(op => op.piece_rate).length > 0
                 ? (
                     operations
@@ -609,7 +609,7 @@ export default function SewingOperationsPage() {
                           <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4" />
                             <span>
-                              ₱{operation.piece_rate?.toFixed(2) || "N/A"} per
+                              â‚±{operation.piece_rate?.toFixed(2) || "N/A"} per
                               piece
                             </span>
                           </div>
@@ -734,7 +734,7 @@ export default function SewingOperationsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="piece_rate">Piece Rate (₱)</Label>
+                <Label htmlFor="piece_rate">Piece Rate (â‚±)</Label>
                 <Input
                   id="piece_rate"
                   type="number"
@@ -858,7 +858,7 @@ export default function SewingOperationsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit_piece_rate">Piece Rate (₱)</Label>
+                <Label htmlFor="edit_piece_rate">Piece Rate (â‚±)</Label>
                 <Input
                   id="edit_piece_rate"
                   type="number"
@@ -917,3 +917,4 @@ export default function SewingOperationsPage() {
     </div>
   );
 }
+

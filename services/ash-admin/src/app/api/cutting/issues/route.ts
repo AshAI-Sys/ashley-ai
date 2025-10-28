@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
@@ -132,7 +132,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Create fabric issue and update batch quantity in a transaction
-    const fabricIssue = await prisma.$transaction(async tx => {
+    const fabricIssue = await prisma.$transaction(async (tx: any) => {
       // Create the fabric issue;
       const newFabricIssue = await tx.cutIssue.create({
         data: {
@@ -311,7 +311,7 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Delete fabric issue and restore batch quantity in a transaction
-    await prisma.$transaction(async tx => {
+    await prisma.$transaction(async (tx: any) => {
       // Delete the fabric issue
       await tx.cutIssue.delete({
         where: { id },

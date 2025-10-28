@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -57,7 +57,7 @@ export async function GET(
     });
 
     // Parse attachments JSON
-    const commentsWithParsedData = comments.map(comment => ({
+    const commentsWithParsedData = comments.map((comment: any) => ({
       ...comment,
       attachments: comment.attachments ? JSON.parse(comment.attachments) : [],
       mentioned_users: comment.mentioned_users
@@ -66,7 +66,7 @@ export async function GET(
       annotation_area: comment.annotation_area
         ? JSON.parse(comment.annotation_area)
         : null,
-      replies: comment.replies.map(reply => ({
+      replies: comment.replies.map((reply: any) => ({
         ...reply,
         attachments: reply.attachments ? JSON.parse(reply.attachments) : [],
         mentioned_users: reply.mentioned_users

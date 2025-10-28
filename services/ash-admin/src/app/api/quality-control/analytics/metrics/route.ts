@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -43,15 +43,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Calculate metrics
     const totalInspections = inspections.length;
     const passedInspections = inspections.filter(
-      i => i.result === "ACCEPT"
+      (i: any) => i.result === "ACCEPT"
     ).length;
     const failedInspections = inspections.filter(
-      i => i.result === "REJECT"
+      (i: any) => i.result === "REJECT"
     ).length;
 
-    const totalSamples = inspections.reduce((sum, i) => sum + i.sample_size, 0);
+    const totalSamples = inspections.reduce((sum: any, i: any) => sum + i.sample_size, 0);
     const totalDefects = inspections.reduce(
-      (sum, i) => sum + i.critical_found + i.major_found + i.minor_found,
+      (sum: any, i: any) => sum + i.critical_found + i.major_found + i.minor_found,
       0
     );
 
@@ -94,11 +94,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     const prevTotalSamples = prevInspections.reduce(
-      (sum, i) => sum + i.sample_size,
+      (sum: any, i: any) => sum + i.sample_size,
       0
     );
     const prevTotalDefects = prevInspections.reduce(
-      (sum, i) => sum + i.critical_found + i.major_found + i.minor_found,
+      (sum: any, i: any) => sum + i.critical_found + i.major_found + i.minor_found,
       0
     );
     const prevDefectRate =

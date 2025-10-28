@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -10,7 +10,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const date_from = searchParams.get("date_from");
     const date_to = searchParams.get("date_to");
     const status = searchParams.get("status");
-    const ____type = searchParams.get("type");
+    // Unused: const ____type = searchParams.get("type");
 
     const where: any = { workspace_id: "default" };
     if (employee_id) where.employee_id = employee_id;
@@ -49,7 +49,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: { created_at: "desc" },
       });
 
-    const processedLogs = attendanceLogs.map(log => ({
+    const processedLogs = attendanceLogs.map((log: any) => ({
       id: log.id,
       employee: {
         name: `${log.employee.first_name} ${log.employee.last_name}`,

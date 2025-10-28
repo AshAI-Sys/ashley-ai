@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+// Unused import removed: Badge
+// Unused import removed: Progress
 import {
   AlertCircle,
   CheckCircle,
@@ -214,7 +214,7 @@ export default function SilkscreenWorkflow({ runId,
             </div>
             <div className="rounded-lg bg-purple-50 p-3 text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {data.ashley_recommendations.optimal_temperature}°C
+                {data.ashley_recommendations.optimal_temperature}Â°C
               </div>
               <p className="text-sm text-muted-foreground">Optimal Temp</p>
             </div>
@@ -256,7 +256,7 @@ export default function SilkscreenWorkflow({ runId,
       </div>
 
       {/* Step Content */}
-      {activeStep === "prep" && (
+      {activeStep === "screen_prep" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -375,7 +375,7 @@ export default function SilkscreenWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "setup" && (
+      {activeStep === "ink_setup" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -521,7 +521,7 @@ export default function SilkscreenWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "print" && (
+      {activeStep === "printing" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -601,10 +601,10 @@ export default function SilkscreenWorkflow({ runId,
             <div className="rounded-lg bg-blue-50 p-4">
               <h4 className="mb-2 font-medium">Quality Checkpoints:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ Registration alignment within 1mm</li>
-                <li>✓ Ink coverage is consistent</li>
-                <li>✓ No bleeding or contamination</li>
-                <li>✓ Color matches approved sample</li>
+                <li>âœ“ Registration alignment within 1mm</li>
+                <li>âœ“ Ink coverage is consistent</li>
+                <li>âœ“ No bleeding or contamination</li>
+                <li>âœ“ Color matches approved sample</li>
               </ul>
             </div>
 
@@ -626,7 +626,7 @@ export default function SilkscreenWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "cure" && (
+      {activeStep === "curing" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -640,7 +640,7 @@ export default function SilkscreenWorkflow({ runId,
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Dryer Temperature (°C)</Label>
+                <Label>Dryer Temperature (Â°C)</Label>
                 <Input
                   type="number"
                   min="120"
@@ -655,7 +655,7 @@ export default function SilkscreenWorkflow({ runId,
                 />
                 <p className="text-xs text-muted-foreground">
                   Recommended: {data.ashley_recommendations.optimal_temperature}
-                  °C
+                  Â°C
                 </p>
               </div>
               <div className="space-y-2">
@@ -715,10 +715,10 @@ export default function SilkscreenWorkflow({ runId,
                 Curing Guidelines
               </h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Plastisol: 160°C for 45+ seconds</li>
-                <li>• Water-based: 140°C for 60+ seconds</li>
-                <li>• Always perform wash test on sample</li>
-                <li>• Monitor for proper adhesion and no cracking</li>
+                <li>â€¢ Plastisol: 160Â°C for 45+ seconds</li>
+                <li>â€¢ Water-based: 140Â°C for 60+ seconds</li>
+                <li>â€¢ Always perform wash test on sample</li>
+                <li>â€¢ Monitor for proper adhesion and no cracking</li>
               </ul>
             </div>
 

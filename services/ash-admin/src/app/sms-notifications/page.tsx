@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import {
@@ -189,7 +189,7 @@ export default function SMSNotificationsPage() {
                       ? "Configured"
                       : "Not configured"}
                     {status.balances?.semaphore &&
-                      ` • ₱${status.balances.semaphore.toFixed(2)}`}
+                      ` â€¢ â‚±${status.balances.semaphore.toFixed(2)}`}
                   </p>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function SMSNotificationsPage() {
                   <p className="text-sm text-muted-foreground">
                     {status.providers.movider ? "Configured" : "Not configured"}
                     {status.balances?.movider &&
-                      ` • ₱${status.balances.movider.toFixed(2)}`}
+                      ` â€¢ â‚±${status.balances.movider.toFixed(2)}`}
                   </p>
                 </div>
               </div>
@@ -210,7 +210,7 @@ export default function SMSNotificationsPage() {
             <div className="mt-4 rounded-lg bg-blue-50 p-3">
               <p className="text-sm text-blue-800">
                 <strong>Active Provider:</strong>{" "}
-                {status.providers.default || "None"} • Automatic fallback
+                {status.providers.default || "None"} â€¢ Automatic fallback
                 enabled
               </p>
             </div>
@@ -288,7 +288,7 @@ export default function SMSNotificationsPage() {
                       </p>
                       {sendResult.success && (
                         <p className="mt-1 text-sm text-green-600">
-                          Provider: {sendResult.provider} • Message ID:{" "}
+                          Provider: {sendResult.provider} â€¢ Message ID:{" "}
                           {sendResult.message_id}
                         </p>
                       )}

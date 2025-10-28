@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -82,16 +82,16 @@ async function updateInspectionDefectCounts(inspectionId: string) {
       });
 
   const criticalFound = defects
-    .filter(d => d.severity === "CRITICAL")
-    .reduce((sum, d) => sum + d.quantity, 0);
+    .filter((d: any) => d.severity === "CRITICAL")
+    .reduce((sum: any, d: any) => sum + d.quantity, 0);
 
   const majorFound = defects
-    .filter(d => d.severity === "MAJOR")
-    .reduce((sum, d) => sum + d.quantity, 0);
+    .filter((d: any) => d.severity === "MAJOR")
+    .reduce((sum: any, d: any) => sum + d.quantity, 0);
 
   const minorFound = defects
-    .filter(d => d.severity === "MINOR")
-    .reduce((sum, d) => sum + d.quantity, 0);
+    .filter((d: any) => d.severity === "MINOR")
+    .reduce((sum: any, d: any) => sum + d.quantity, 0);
 
   // Determine result based on AQL
   const inspection = await prisma.qCInspection.findUnique({

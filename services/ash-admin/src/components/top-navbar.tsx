@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
 import { useRouter } from "next/navigation";
-import { Bell, Settings, LogOut, ChevronDown, Menu, X } from "lucide-react";
+import { Bell, Settings, LogOut, ChevronDown, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
@@ -66,7 +66,7 @@ export default function TopNavbar() {
     {
       id: 3,
       title: "Payment Received",
-      message: "Payment of ₱50,000 received",
+      message: "Payment of â‚±50,000 received",
       time: "2h ago",
       unread: false,
     },

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -19,8 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+// Unused import removed: Badge
+// Unused import removed: Progress
 import { AlertCircle,
   CheckCircle,
   Package2,
@@ -239,7 +239,7 @@ export default function DTFWorkflow({ runId,
             </div>
             <div className="rounded-lg bg-purple-50 p-3 text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {data.ashley_recommendations.optimal_cure_temp}°C
+                {data.ashley_recommendations.optimal_cure_temp}Â°C
               </div>
               <p className="text-sm text-muted-foreground">Optimal Cure</p>
             </div>
@@ -281,7 +281,7 @@ export default function DTFWorkflow({ runId,
       </div>
 
       {/* Step Content */}
-      {activeStep === "setup" && (
+      {activeStep === "film_setup" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -318,10 +318,10 @@ export default function DTFWorkflow({ runId,
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PET_Film_75mic">
-                      PET Film 75μm
+                      PET Film 75Î¼m
                     </SelectItem>
                     <SelectItem value="PET_Film_100mic">
-                      PET Film 100μm
+                      PET Film 100Î¼m
                     </SelectItem>
                     <SelectItem value="Cold_Peel_Film">
                       Cold Peel Film
@@ -427,7 +427,7 @@ export default function DTFWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "print" && (
+      {activeStep === "printing" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -441,7 +441,7 @@ export default function DTFWorkflow({ runId,
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Film Consumed (m²)</Label>
+                <Label>Film Consumed (mÂ²)</Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -542,10 +542,10 @@ export default function DTFWorkflow({ runId,
             <div className="rounded-lg bg-blue-50 p-4">
               <h4 className="mb-2 font-medium">DTF Print Checklist:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ White underbase complete and opaque</li>
-                <li>✓ CMYK colors printed in correct order</li>
-                <li>✓ No ink bleeding or smudging</li>
-                <li>✓ Clean, sharp edges</li>
+                <li>âœ“ White underbase complete and opaque</li>
+                <li>âœ“ CMYK colors printed in correct order</li>
+                <li>âœ“ No ink bleeding or smudging</li>
+                <li>âœ“ Clean, sharp edges</li>
               </ul>
             </div>
 
@@ -561,7 +561,7 @@ export default function DTFWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "powder" && (
+      {activeStep === "powder_application" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -671,11 +671,11 @@ export default function DTFWorkflow({ runId,
             <div className="rounded-lg bg-orange-50 p-4">
               <h4 className="mb-2 font-medium">Powder Application Tips:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Apply powder while ink is still tacky</li>
-                <li>• Ensure even coverage across all print areas</li>
-                <li>• Remove excess powder for recycling</li>
+                <li>â€¢ Apply powder while ink is still tacky</li>
+                <li>â€¢ Ensure even coverage across all print areas</li>
+                <li>â€¢ Remove excess powder for recycling</li>
                 <li>
-                  • Check for powder-free areas that may cause adhesion issues
+                  â€¢ Check for powder-free areas that may cause adhesion issues
                 </li>
               </ul>
             </div>
@@ -689,7 +689,7 @@ export default function DTFWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "cure" && (
+      {activeStep === "curing" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -703,7 +703,7 @@ export default function DTFWorkflow({ runId,
           <CardContent className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Temperature (°C)</Label>
+                <Label>Temperature (Â°C)</Label>
                 <Input
                   type="number"
                   min="140"
@@ -717,7 +717,7 @@ export default function DTFWorkflow({ runId,
                   readOnly={readOnly}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Recommended: {data.ashley_recommendations.optimal_cure_temp}°C
+                  Recommended: {data.ashley_recommendations.optimal_cure_temp}Â°C
                 </p>
               </div>
               <div className="space-y-2">
@@ -794,10 +794,10 @@ export default function DTFWorkflow({ runId,
             <div className="rounded-lg bg-purple-50 p-4">
               <h4 className="mb-2 font-medium">Curing Guidelines:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• TPU powder: 160-170°C for 60 seconds</li>
-                <li>• Low-temp powder: 140-150°C for 45 seconds</li>
-                <li>• Film should remain flexible after curing</li>
-                <li>• Powder should be fully melted and adhesive</li>
+                <li>â€¢ TPU powder: 160-170Â°C for 60 seconds</li>
+                <li>â€¢ Low-temp powder: 140-150Â°C for 45 seconds</li>
+                <li>â€¢ Film should remain flexible after curing</li>
+                <li>â€¢ Powder should be fully melted and adhesive</li>
               </ul>
             </div>
 
@@ -825,7 +825,7 @@ export default function DTFWorkflow({ runId,
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Press Temperature (°C)</Label>
+                <Label>Press Temperature (Â°C)</Label>
                 <Input
                   type="number"
                   min="140"
@@ -912,10 +912,10 @@ export default function DTFWorkflow({ runId,
             <div className="rounded-lg bg-green-50 p-4">
               <h4 className="mb-2 font-medium">Transfer Guidelines:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>• Cotton: 160°C, 15 seconds, Medium pressure</li>
-                <li>• Polyester: 150°C, 12 seconds, Light pressure</li>
-                <li>• Cold peel recommended for most DTF transfers</li>
-                <li>• Apply even pressure across entire design</li>
+                <li>â€¢ Cotton: 160Â°C, 15 seconds, Medium pressure</li>
+                <li>â€¢ Polyester: 150Â°C, 12 seconds, Light pressure</li>
+                <li>â€¢ Cold peel recommended for most DTF transfers</li>
+                <li>â€¢ Apply even pressure across entire design</li>
               </ul>
             </div>
 
@@ -931,7 +931,7 @@ export default function DTFWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "quality" && (
+      {activeStep === "quality_control" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -1021,11 +1021,11 @@ export default function DTFWorkflow({ runId,
             <div className="rounded-lg bg-blue-50 p-4">
               <h4 className="mb-2 font-medium">DTF Quality Standards:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ Strong adhesion to fabric</li>
-                <li>✓ Good stretch and recovery</li>
-                <li>✓ Vibrant, accurate colors</li>
-                <li>✓ No cracking or peeling</li>
-                <li>✓ Soft hand feel</li>
+                <li>âœ“ Strong adhesion to fabric</li>
+                <li>âœ“ Good stretch and recovery</li>
+                <li>âœ“ Vibrant, accurate colors</li>
+                <li>âœ“ No cracking or peeling</li>
+                <li>âœ“ Soft hand feel</li>
               </ul>
             </div>
 

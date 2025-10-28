@@ -1,4 +1,4 @@
-// Smart Scheduling Optimization AI
+﻿// Smart Scheduling Optimization AI
 // Uses constraint satisfaction and optimization algorithms to create optimal production schedules
 
 interface ProductionJob {
@@ -498,25 +498,25 @@ export class SmartSchedulingAI {
     // Unscheduled jobs
     if (unscheduled.length > 0) {
       recommendations.push(
-        `⚠️ ${unscheduled.length} job(s) could not be scheduled - consider adding resources or extending deadlines`
+        `âš ï¸ ${unscheduled.length} job(s) could not be scheduled - consider adding resources or extending deadlines`
       );
     }
 
     // Resource utilization
     if (metrics.avg_resource_utilization < 60) {
       recommendations.push(
-        `📊 Low resource utilization (${metrics.avg_resource_utilization.toFixed(0)}%) - consider reducing capacity or taking more orders`
+        `ðŸ“Š Low resource utilization (${metrics.avg_resource_utilization.toFixed(0)}%) - consider reducing capacity or taking more orders`
       );
     } else if (metrics.avg_resource_utilization > 90) {
       recommendations.push(
-        `🔥 High resource utilization (${metrics.avg_resource_utilization.toFixed(0)}%) - risk of delays, consider adding resources`
+        `ðŸ”¥ High resource utilization (${metrics.avg_resource_utilization.toFixed(0)}%) - risk of delays, consider adding resources`
       );
     }
 
     // On-time performance
     if (metrics.on_time_completion_rate < 90) {
       recommendations.push(
-        `⏰ On-time rate is ${metrics.on_time_completion_rate.toFixed(0)}% - review deadlines or resource allocation`
+        `â° On-time rate is ${metrics.on_time_completion_rate.toFixed(0)}% - review deadlines or resource allocation`
       );
     }
 
@@ -526,20 +526,20 @@ export class SmartSchedulingAI {
     ).length;
     if (highSeverityConflicts > 0) {
       recommendations.push(
-        `⚠️ ${highSeverityConflicts} high-severity scheduling conflict(s) detected - immediate attention required`
+        `âš ï¸ ${highSeverityConflicts} high-severity scheduling conflict(s) detected - immediate attention required`
       );
     }
 
     // Wasted capacity
     if (metrics.wasted_capacity_hours > 200) {
       recommendations.push(
-        `💡 ${metrics.wasted_capacity_hours.toFixed(0)} hours of unused capacity - opportunity for additional orders`
+        `ðŸ’¡ ${metrics.wasted_capacity_hours.toFixed(0)} hours of unused capacity - opportunity for additional orders`
       );
     }
 
     if (recommendations.length === 0) {
       recommendations.push(
-        "✅ Schedule is well-optimized with no major issues"
+        "âœ… Schedule is well-optimized with no major issues"
       );
     }
 

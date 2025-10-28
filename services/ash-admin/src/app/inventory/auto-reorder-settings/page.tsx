@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -281,7 +281,7 @@ export default function AutoReorderSettingsPage() {
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => toast.info("Edit feature coming soon")}
+                              onClick={() => toast("Edit feature coming soon")}
                               className="text-blue-600 hover:text-blue-800"
                             >
                               <Edit2 className="h-4 w-4" />

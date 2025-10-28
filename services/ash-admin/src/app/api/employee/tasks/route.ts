@@ -1,7 +1,7 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-middleware";
+// Unused import removed: requireAuth
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -10,7 +10,7 @@ import {
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const department = searchParams.get("department");
-  const ____position = searchParams.get("position");
+  // Unused: const ____position = searchParams.get("position");
 
   if (!department) {
     
@@ -49,12 +49,12 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20,
       });
 
-      tasks = cutLays.map(lay => ({
+      tasks = cutLays.map((lay: any) => ({
         id: lay.id,
         type: "CUTTING",
         title: `Cut Lay - ${lay.order.client.name}`,
         description: `${lay.bundles.length} bundles for Order ${lay.order.order_number}`,
-        status: lay.bundles.every(b => b.status === "DONE")
+        status: lay.bundles.every((b: any) => b.status === "DONE")
           ? "COMPLETED"
           : "IN_PROGRESS",
         priority: lay.bundles.length > 50 ? "HIGH" : "MEDIUM",
@@ -85,7 +85,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20,
       });
 
-      tasks = printRuns.map(run => ({
+      tasks = printRuns.map((run: any) => ({
         id: run.id,
         type: "PRINTING",
         title: `${run.method} - ${run.order.client.name}`,
@@ -119,7 +119,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20,
       });
 
-      tasks = sewingRuns.map(run => ({
+      tasks = sewingRuns.map((run: any) => ({
         id: run.id,
         type: "SEWING",
         title: `Sewing - ${run.order.client.name}`,
@@ -153,7 +153,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20,
       });
 
-      tasks = qcInspections.map(check => ({
+      tasks = qcInspections.map((check: any) => ({
         id: check.id,
         type: "QC",
         title: `QC Inspection - ${check.order.client.name}`,
@@ -187,7 +187,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20,
       });
 
-      tasks = finishingRuns.map(run => ({
+      tasks = finishingRuns.map((run: any) => ({
         id: run.id,
         type: "FINISHING",
         title: `Finishing - ${run.order.client.name}`,
@@ -221,7 +221,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
         take: 20,
       });
 
-      tasks = shipments.map(shipment => ({
+      tasks = shipments.map((shipment: any) => ({
         id: shipment.id,
         type: "WAREHOUSE",
         title: `Shipment - ${shipment.order.client.name}`,

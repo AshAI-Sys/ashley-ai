@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
@@ -186,10 +186,10 @@ async function generateDemandForecast(params: any) {
 
   // Calculate base demand from historical data
   const totalHistoricalQuantity = historicalOrders.reduce(
-    (sum, order) =>
+    (sum: any, order: any) =>
       sum +
       order.line_items.reduce(
-        (itemSum, item) => itemSum + (item.quantity || 0),
+        (itemSum: any, item: any) => itemSum + (item.quantity || 0),
         0
       ),
     0

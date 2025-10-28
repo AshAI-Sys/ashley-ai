@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
 export const dynamic = 'force-dynamic';
@@ -646,7 +646,7 @@ export default function DeliveryPage() {
                             </div>
                             {shipment.cod_amount && (
                               <div className="text-sm font-medium text-green-600">
-                                COD: ₱{shipment.cod_amount.toLocaleString()}
+                                COD: â‚±{shipment.cod_amount.toLocaleString()}
                               </div>
                             )}
                           </td>

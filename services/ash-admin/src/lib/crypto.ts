@@ -49,7 +49,7 @@ export function decrypt(encryptedData: string): string {
     // Split the encrypted data
     const parts = encryptedData.split(":");
 
-    if (parts.length !== 3) {
+    if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
       throw new Error("Invalid encrypted data format");
     }
 
@@ -62,7 +62,7 @@ export function decrypt(encryptedData: string): string {
     decipher.setAuthTag(authTag);
 
     // Decrypt the text
-    let decrypted = decipher.update(encrypted, "hex", "utf8");
+    let decrypted: string = decipher.update(encrypted, "hex", "utf8");
     decrypted += decipher.final("utf8");
 
     return decrypted;

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import {
@@ -311,13 +311,13 @@ export default function PieceRateCalculator({
           {/* Current Earnings Display */}
           <div className="text-center">
             <div className="mb-2 text-3xl font-bold text-green-600">
-              ₱{calculatedValues.totalEarnings.toFixed(2)}
+              â‚±{calculatedValues.totalEarnings.toFixed(2)}
             </div>
             <p className="text-muted-foreground">
               Current earnings for {pieceRateData.operation_name}
             </p>
             <p className="text-sm text-muted-foreground">
-              Hourly rate: ₱{calculatedValues.hourlyRate.toFixed(2)}/hour
+              Hourly rate: â‚±{calculatedValues.hourlyRate.toFixed(2)}/hour
             </p>
           </div>
 
@@ -394,7 +394,7 @@ export default function PieceRateCalculator({
                 <div className="flex justify-between text-sm">
                   <span>Base rate per piece:</span>
                   <span className="font-medium">
-                    ₱{pieceRateData.base_rate.toFixed(2)}
+                    â‚±{pieceRateData.base_rate.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -404,14 +404,14 @@ export default function PieceRateCalculator({
                 <div className="flex justify-between text-sm">
                   <span>Base earnings:</span>
                   <span className="font-medium">
-                    ₱{calculatedValues.baseEarnings.toFixed(2)}
+                    â‚±{calculatedValues.baseEarnings.toFixed(2)}
                   </span>
                 </div>
                 {calculatedValues.efficiencyBonus > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
                     <span>Efficiency bonus (10%):</span>
                     <span className="font-medium">
-                      +₱{calculatedValues.efficiencyBonus.toFixed(2)}
+                      +â‚±{calculatedValues.efficiencyBonus.toFixed(2)}
                     </span>
                   </div>
                 )}
@@ -419,7 +419,7 @@ export default function PieceRateCalculator({
                   <div className="flex justify-between text-sm text-red-600">
                     <span>Quality penalty:</span>
                     <span className="font-medium">
-                      -₱{calculatedValues.qualityPenalty.toFixed(2)}
+                      -â‚±{calculatedValues.qualityPenalty.toFixed(2)}
                     </span>
                   </div>
                 )}
@@ -476,7 +476,7 @@ export default function PieceRateCalculator({
                   Quality Deduction
                 </Label>
                 <div className="mt-1 flex items-center gap-2">
-                  <span className="text-sm text-red-700">₱</span>
+                  <span className="text-sm text-red-700">â‚±</span>
                   {isEditing ? (
                     <Input
                       type="number"
@@ -507,7 +507,7 @@ export default function PieceRateCalculator({
               <div className="flex items-center justify-between">
                 <span className="font-medium">Total Earnings:</span>
                 <span className="text-xl font-bold text-green-600">
-                  ₱{calculatedValues.totalEarnings.toFixed(2)}
+                  â‚±{calculatedValues.totalEarnings.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -597,14 +597,14 @@ export default function PieceRateCalculator({
               <div className="flex justify-between">
                 <span>Base Earnings:</span>
                 <span className="font-medium">
-                  ₱{payrollBreakdown.base_earnings.toFixed(2)}
+                  â‚±{payrollBreakdown.base_earnings.toFixed(2)}
                 </span>
               </div>
               {payrollBreakdown.efficiency_bonus > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Efficiency Bonus:</span>
                   <span className="font-medium">
-                    ₱{payrollBreakdown.efficiency_bonus.toFixed(2)}
+                    â‚±{payrollBreakdown.efficiency_bonus.toFixed(2)}
                   </span>
                 </div>
               )}
@@ -612,7 +612,7 @@ export default function PieceRateCalculator({
                 <div className="flex justify-between text-red-600">
                   <span>Quality Penalty:</span>
                   <span className="font-medium">
-                    -₱{payrollBreakdown.quality_penalty.toFixed(2)}
+                    -â‚±{payrollBreakdown.quality_penalty.toFixed(2)}
                   </span>
                 </div>
               )}
@@ -620,26 +620,26 @@ export default function PieceRateCalculator({
                 <div className="flex justify-between text-blue-600">
                   <span>Overtime Bonus:</span>
                   <span className="font-medium">
-                    ₱{payrollBreakdown.overtime_bonus.toFixed(2)}
+                    â‚±{payrollBreakdown.overtime_bonus.toFixed(2)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between border-t pt-2">
                 <span className="font-medium">Gross Earnings:</span>
                 <span className="font-medium">
-                  ₱{payrollBreakdown.total_gross.toFixed(2)}
+                  â‚±{payrollBreakdown.total_gross.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-red-600">
                 <span>Deductions (10%):</span>
                 <span className="font-medium">
-                  -₱{payrollBreakdown.deductions.toFixed(2)}
+                  -â‚±{payrollBreakdown.deductions.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between border-t pt-2 text-lg font-bold">
                 <span>Net Pay:</span>
                 <span className="text-green-600">
-                  ₱{payrollBreakdown.net_pay.toFixed(2)}
+                  â‚±{payrollBreakdown.net_pay.toFixed(2)}
                 </span>
               </div>
             </div>

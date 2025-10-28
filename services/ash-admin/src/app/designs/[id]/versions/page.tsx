@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  _CardDescription,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -14,14 +14,14 @@ import {
   ArrowLeft,
   Plus,
   Eye,
-  _Download,
+  Download,
   Zap,
-  _CheckCircle,
-  _AlertCircle,
-  _Clock,
+  CheckCircle,
+  AlertCircle,
+  Clock,
   Image,
   FileText,
-  _Lock,
+  Lock,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -230,7 +230,7 @@ export default function VersionManagementPage() {
           <div>
             <h1 className="text-3xl font-bold">Version Management</h1>
             <p className="text-muted-foreground">
-              {design.name} • {design.order.order_number} • {design.brand.name}
+              {design.name} â€¢ {design.order.order_number} â€¢ {design.brand.name}
             </p>
           </div>
         </div>
@@ -363,7 +363,7 @@ export default function VersionManagementPage() {
                             className="text-xs"
                           >
                             {placement.area?.replace("_", " ") || "Unknown"}:{" "}
-                            {placement.width_cm}×{placement.height_cm}cm
+                            {placement.width_cm}Ã—{placement.height_cm}cm
                           </Badge>
                         ))}
                       </div>

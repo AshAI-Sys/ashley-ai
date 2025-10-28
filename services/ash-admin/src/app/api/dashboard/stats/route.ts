@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { startOfDay, endOfDay, subDays, format } from "date-fns";
@@ -123,7 +123,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       cuttingRuns.length > 0
         ? Math.round(
             cuttingRuns.reduce(
-              (sum, run) => sum + (run.efficiency_score || 0),
+              (sum: any, run: any) => sum + (run.efficiency_score || 0),
               0
             ) / cuttingRuns.length
           )
@@ -136,7 +136,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
       sewingRuns.length > 0
         ? Math.round(
             sewingRuns.reduce(
-              (sum, run) => sum + (run.efficiency_pct || 0),
+              (sum: any, run: any) => sum + (run.efficiency_pct || 0),
               0
             ) / sewingRuns.length
           )
@@ -180,29 +180,29 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
           const dayEnd = endOfDay(date);
 
           const cuttingCount = cuttingRuns
-            .filter(r => {
+            .filter((r: any) => {
               const runDate = new Date(r.created_at);
               return runDate >= dayStart && runDate <= dayEnd;
             })
-            .reduce((sum, r) => sum + (r.bundles_cut || 0), 0);
+            .reduce((sum: any, r: any) => sum + (r.bundles_cut || 0), 0);
 
           const printingCount = printRuns
-            .filter(r => {
+            .filter((r: any) => {
               const runDate = new Date(r.created_at);
               return runDate >= dayStart && runDate <= dayEnd;
             })
-            .reduce((sum, r) => sum + r.outputs.reduce((s, o) => s + o.qty_good, 0), 0);
+            .reduce((sum: any, r: any) => sum + r.outputs.reduce((s: any, o: any) => s + o.qty_good, 0), 0);
 
           const sewingCount = sewingRuns
-            .filter(r => {
+            .filter((r: any) => {
               const runDate = new Date(r.created_at);
               return runDate >= dayStart && runDate <= dayEnd;
             })
-            .reduce((sum, r) => sum + (r.qty_good || 0), 0);
+            .reduce((sum: any, r: any) => sum + (r.qty_good || 0), 0);
 
           // FinishingRun doesn't have quantity field - use count of runs for now
           const finishingCount = finishingRuns
-            .filter(r => {
+            .filter((r: any) => {
               const runDate = new Date(r.created_at);
               return runDate >= dayStart && runDate <= dayEnd;
             }).length;
@@ -266,7 +266,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
             finishing: finishingRuns.length,
           },
           recentOrders,
-          ordersByStatus: ordersByStatus.map(item => ({
+          ordersByStatus: ordersByStatus.map((item: any) => ({
             status: item.status,
             count: item._count.status,
           })),

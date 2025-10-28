@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -340,7 +340,7 @@ export default function MaterialConsumption({
             </div>
             <div className="rounded-lg bg-green-50 p-3 text-center">
               <div className="text-2xl font-bold text-green-600">
-                ₱{getTotalCost().toFixed(2)}
+                â‚±{getTotalCost().toFixed(2)}
               </div>
               <p className="text-sm text-muted-foreground">Total Cost</p>
             </div>
@@ -502,7 +502,7 @@ export default function MaterialConsumption({
                             <div className="flex items-center justify-between">
                               <span>Estimated Cost:</span>
                               <span className="font-bold text-green-600">
-                                ₱
+                                â‚±
                                 {(
                                   parseFloat(newConsumption.quantity || "0") *
                                   (materials.find(
@@ -570,7 +570,7 @@ export default function MaterialConsumption({
                       )}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {material.quantity} {material.unit} • ₱
+                      {material.quantity} {material.unit} â€¢ â‚±
                       {material.cost.toFixed(2)}
                       {material.notes && (
                         <span className="ml-2 italic">({material.notes})</span>
@@ -627,33 +627,33 @@ export default function MaterialConsumption({
 function MethodMaterialGuidelines({ method }: { method: string }) {
   const guidelines = {
     SILKSCREEN: [
-      "• Track ink consumption per color and design complexity",
-      "• Monitor screen preparation materials (emulsion, chemicals)",
-      "• Record cleaning solvents and maintenance supplies",
-      "• Typical ink usage: 10-20g per print depending on coverage",
+      "â€¢ Track ink consumption per color and design complexity",
+      "â€¢ Monitor screen preparation materials (emulsion, chemicals)",
+      "â€¢ Record cleaning solvents and maintenance supplies",
+      "â€¢ Typical ink usage: 10-20g per print depending on coverage",
     ],
     SUBLIMATION: [
-      "• Monitor sublimation paper consumption (usually 1.1-1.2x print area)",
-      "• Track ink usage across all colors (CMYK)",
-      "• Record transfer tape or protective paper usage",
-      "• Consider paper waste for test prints and trimming",
+      "â€¢ Monitor sublimation paper consumption (usually 1.1-1.2x print area)",
+      "â€¢ Track ink usage across all colors (CMYK)",
+      "â€¢ Record transfer tape or protective paper usage",
+      "â€¢ Consider paper waste for test prints and trimming",
     ],
     DTF: [
-      "• Track DTF film consumption (typically 1.1x design area)",
-      "• Monitor hot melt powder usage (varies by design coverage)",
-      "• Record both CMYK and white ink consumption",
-      "• Account for powder recycling and reuse",
+      "â€¢ Track DTF film consumption (typically 1.1x design area)",
+      "â€¢ Monitor hot melt powder usage (varies by design coverage)",
+      "â€¢ Record both CMYK and white ink consumption",
+      "â€¢ Account for powder recycling and reuse",
     ],
     EMBROIDERY: [
-      "• Track thread consumption by color and design complexity",
-      "• Monitor stabilizer usage (varies by fabric and design)",
-      "• Record bobbin thread consumption",
-      "• Account for thread waste from changes and breaks",
+      "â€¢ Track thread consumption by color and design complexity",
+      "â€¢ Monitor stabilizer usage (varies by fabric and design)",
+      "â€¢ Record bobbin thread consumption",
+      "â€¢ Account for thread waste from changes and breaks",
     ],
   };
 
   const methodGuidelines = guidelines[method as keyof typeof guidelines] || [
-    "• No specific guidelines available",
+    "â€¢ No specific guidelines available",
   ];
 
   return (

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -67,7 +67,7 @@ export default function EmployeeDashboard() {
   };
 
   const generateRoleBasedTasks = (_role: string, position: string): TaskData => {
-    const ____baseTasks = {
+    const _baseTasks = {
       assigned_tasks: 0,
       completed_tasks: 0,
       pending_tasks: 0,
@@ -252,7 +252,7 @@ export default function EmployeeDashboard() {
                   Welcome, {employee.first_name}!
                 </h1>
                 <p className="text-gray-600">
-                  {employee.position} • {employee.department} • #
+                  {employee.position} â€¢ {employee.department} â€¢ #
                   {employee.employee_number}
                 </p>
               </div>

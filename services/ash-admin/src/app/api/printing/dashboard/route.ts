@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -96,12 +96,12 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
     });
 
     const totalProduced = completedToday.reduce(
-      (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
+      (sum: any, run: any) => sum + run.outputs.reduce((s: any, o: any) => s + o.qty_good, 0),
       0
     );
 
     const totalRejects = completedToday.reduce(
-      (sum, run) => sum + run.rejects.reduce((s, r) => s + r.qty, 0),
+      (sum: any, run: any) => sum + run.rejects.reduce((s: any, r: any) => s + r.qty, 0),
       0
     );
 
@@ -116,7 +116,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       quality_rate: parseFloat(qualityRate),
       total_produced: totalProduced,
       method_breakdown: methodBreakdown,
-      recent_rejects: recentRejects.map(reject => ({
+      recent_rejects: recentRejects.map((reject: any) => ({
         id: reject.id,
         reason: reject.reason_code,
         qty_rejected: reject.qty,
@@ -127,7 +127,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
           },
         },
       })),
-      machine_utilization: machineUtilization.map(machine => ({
+      machine_utilization: machineUtilization.map((machine: any) => ({
         id: machine.id,
         name: machine.name,
         workcenter: machine.workcenter,

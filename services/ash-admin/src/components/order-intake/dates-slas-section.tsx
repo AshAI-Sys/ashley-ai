@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// Unused import removed: Input
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -376,7 +376,7 @@ export function DatesSLAsSection({
                   working days
                   {getQuantityMultiplier() > 1 && (
                     <span className="ml-1 text-blue-600">
-                      (base: {slaInfo.standardDays} days ×{" "}
+                      (base: {slaInfo.standardDays} days Ã—{" "}
                       {getQuantityMultiplier().toFixed(1)} qty factor)
                     </span>
                   )}
@@ -486,7 +486,7 @@ export function DatesSLAsSection({
                     <ul className="space-y-1">
                       {timelineValidation.suggestions.map((suggestion, i) => (
                         <li key={i} className="flex items-start gap-1 text-sm">
-                          <span className="mt-1 text-blue-500">•</span>
+                          <span className="mt-1 text-blue-500">â€¢</span>
                           {suggestion}
                         </li>
                       ))}

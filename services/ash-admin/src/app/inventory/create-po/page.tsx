@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -194,7 +194,9 @@ function CreatePOForm() {
         body: JSON.stringify({
           po_number: formData.po_number,
           supplier_id: formData.supplier_id,
-          order_date: new Date(formData.order_date).toISOString(),
+          order_date: formData.order_date
+            ? new Date(formData.order_date).toISOString()
+            : new Date().toISOString(),
           expected_delivery: formData.expected_delivery
             ? new Date(formData.expected_delivery).toISOString()
             : undefined,
@@ -523,7 +525,7 @@ function CreatePOForm() {
                       </td>
                       <td className="px-3 py-3">
                         <span className="font-medium text-gray-900">
-                          ₱{item.total.toFixed(2)}
+                          â‚±{item.total.toFixed(2)}
                         </span>
                       </td>
                       <td className="px-3 py-3">
@@ -549,19 +551,19 @@ function CreatePOForm() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>
                     <span className="font-medium text-gray-900">
-                      ₱{calculateSubtotal().toFixed(2)}
+                      â‚±{calculateSubtotal().toFixed(2)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Tax:</span>
                     <span className="font-medium text-gray-900">
-                      ₱{calculateTax().toFixed(2)}
+                      â‚±{calculateTax().toFixed(2)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Shipping:</span>
                     <span className="font-medium text-gray-900">
-                      ₱{parseFloat(formData.shipping_cost || "0").toFixed(2)}
+                      â‚±{parseFloat(formData.shipping_cost || "0").toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t border-gray-300 pt-2">
@@ -570,7 +572,7 @@ function CreatePOForm() {
                         Total Amount:
                       </span>
                       <span className="text-2xl font-bold text-blue-600">
-                        ₱{calculateTotal().toFixed(2)}
+                        â‚±{calculateTotal().toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -635,3 +637,4 @@ export default function CreatePOPage() {
     </Suspense>
   );
 }
+

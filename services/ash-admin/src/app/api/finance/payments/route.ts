@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -85,7 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Start transaction
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Generate payment number
       const paymentCount = await tx.payment.count({
         where: { workspace_id: invoice.workspace_id },

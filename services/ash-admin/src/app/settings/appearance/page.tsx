@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ type ColorScheme = "blue" | "green" | "purple" | "orange" | "red";
 export default function AppearanceSettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [theme] = useState<Theme>("light");
+  const [_theme] = useState<Theme>("light");
   const [colorScheme, setColorScheme] = useState<ColorScheme>("blue");
   const [compactMode, setCompactMode] = useState(false);
   const [showAvatars, setShowAvatars] = useState(true);
@@ -266,3 +266,4 @@ export default function AppearanceSettingsPage() {
     </div>
   );
 }
+

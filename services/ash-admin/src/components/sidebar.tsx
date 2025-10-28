@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../lib/auth-context";
-import { getAccessibleNavigation, hasAccess, User } from "../lib/permissions";
+import { getAccessibleNavigation, User } from "../lib/permissions";
 import HydrationSafeIcon from "./hydration-safe-icon";
 import {
   Building2,
@@ -25,7 +25,7 @@ import {
   Bot,
   BarChart3,
   Home, ChevronLeft,
-  _ChevronRight,
+  ChevronRight,
   Landmark,
   MessageSquare,
   Brain,
@@ -363,7 +363,7 @@ export default function Sidebar() {
               </p>
               <p className="text-sm text-white">{user.position}</p>
               <p className="mt-1.5 text-xs text-white/90">
-                {user.department} • {user.role}
+                {user.department} â€¢ {user.role}
               </p>
             </div>
           )}

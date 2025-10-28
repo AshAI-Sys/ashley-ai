@@ -1,9 +1,9 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import * as bcrypt from "bcryptjs";
-import { requireAuth } from "@/lib/auth-middleware";
+// Unused import removed: requireAuth
 import { prisma } from "@/lib/db";
 
 // Validation schemas
@@ -34,7 +34,7 @@ const CreateUserSchema = z.object({
   requires_2fa: z.boolean().default(false),
 });
 
-const ____UpdateUserSchema = z.object({
+const _UpdateUserSchema = z.object({
   email: z.string().email().optional(),
   username: z.string().min(3).optional(),
   first_name: z.string().min(1).optional(),

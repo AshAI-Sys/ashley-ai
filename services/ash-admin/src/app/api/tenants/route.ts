@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -51,7 +51,6 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
     return NextResponse.json(
       {
-        success: true,
         ...result,
         message: "Tenant created successfully",
       },
@@ -93,7 +92,6 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const stats = await tenantManager.getTenantStats(workspace_id);
 
     return NextResponse.json({
-      success: true,
       config,
       limits,
       stats,
@@ -132,7 +130,6 @@ export const PUT = requireAuth(async (req: NextRequest, _user) => {
       );
     }
     return NextResponse.json({
-      success: true,
       message: "Tenant configuration updated",
     });
   } catch (error: any) {
@@ -172,7 +169,6 @@ export const DELETE = requireAuth(async (req: NextRequest, _user) => {
     }
 
     return NextResponse.json({
-      success: true,
       message: "Tenant deleted successfully",
     });
   } catch (error: any) {

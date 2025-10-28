@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -40,7 +40,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     // Add usage statistics
     const templatesWithStats = await Promise.all(
-      templates.map(async template => {
+      templates.map(async (template: any) => {
         const stats = await prisma.notification.groupBy({
           by: ["status"],
           where: { template_id: template.id },
@@ -48,7 +48,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         });
 
         const usage = stats.reduce(
-          (acc, stat) => {
+          (acc: any, stat: any) => {
             acc[stat.status.toLowerCase()] = stat._count.id;
             return acc;
           },

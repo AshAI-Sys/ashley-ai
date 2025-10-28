@@ -1,4 +1,4 @@
-// Complete Inventory Management System
+﻿// Complete Inventory Management System
 // Covers F1-F5: Material tracking, suppliers, alerts, costing, and RFID
 
 export interface Material {
@@ -228,18 +228,18 @@ export class InventoryManager {
     if (!material) return;
 
     let alertType: StockAlert["alert_type"] | null = null;
-    let _____severity: StockAlert["severity"] = "INFO"; // TODO: Use severity in alert creation
+    let _severity: StockAlert["severity"] = "INFO"; // TODO: Use severity in alert creation
     let message = "";
 
     const reorderPoint = material.reorder_point || 0;
 
     if (current_level === 0) {
       alertType = "OUT_OF_STOCK";
-      ____severity = "CRITICAL";
+      _severity = "CRITICAL";
       message = `${material.material_name} is out of stock!`;
     } else if (current_level <= reorderPoint) {
       alertType = "LOW_STOCK";
-      ____severity = "WARNING";
+      _severity = "WARNING";
       message = `${material.material_name} is below reorder point (${current_level}/${reorderPoint})`;
     }
 

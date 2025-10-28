@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -534,7 +534,7 @@ export function FilesNotesSection({
                                               className="flex items-start gap-1 text-green-600"
                                             >
                                               <span className="mt-1 text-green-400">
-                                                •
+                                                â€¢
                                               </span>
                                               {suggestion}
                                             </li>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardLayout from "@/components/dashboard-layout";
 import { SkeletonTable } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ErrorAlert } from "@/components/ui/error-alert";
+// Unused import removed: ErrorAlert
 import {
   Clock,
   ClipboardList,
@@ -76,7 +76,9 @@ export default function EmployeeDashboardPage() {
     const token = localStorage.getItem("access_token");
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
+        const tokenParts = token.split(".");
+        if (tokenParts.length < 2 || !tokenParts[1]) return;
+        const payload = JSON.parse(atob(tokenParts[1]));
         if (payload.type === "employee") {
           setEmployee({
             id: payload.id,

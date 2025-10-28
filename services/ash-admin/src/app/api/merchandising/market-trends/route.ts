@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
@@ -63,24 +63,24 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const trendStats = {
       total: trends.length,
       by_category: trends.reduce(
-        (acc, trend) => {
+        (acc: any, trend: any) => {
           acc[trend.trend_category] = (acc[trend.trend_category] || 0) + 1;
           return acc;
         },
         {} as { [key: string]: number }
       ),
       by_type: trends.reduce(
-        (acc, trend) => {
+        (acc: any, trend: any) => {
           acc[trend.trend_type] = (acc[trend.trend_type] || 0) + 1;
           return acc;
         },
         {} as { [key: string]: number }
       ),
       avg_impact:
-        trends.reduce((sum, trend) => sum + trend.impact_score, 0) /
+        trends.reduce((sum: any, trend: any) => sum + trend.impact_score, 0) /
         trends.length,
       avg_confidence:
-        trends.reduce((sum, trend) => sum + trend.confidence_score, 0) /
+        trends.reduce((sum: any, trend: any) => sum + trend.confidence_score, 0) /
         trends.length,
     };
 

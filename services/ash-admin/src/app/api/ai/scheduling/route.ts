@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { prisma } from "@/lib/db";
@@ -8,7 +8,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { start_date, include_stages } = await req.json();
-    const ____workspace_id = user.workspaceId;
+    // Unused: const ____workspace_id = user.workspaceId;
 
     const startDate = start_date ? new Date(start_date) : new Date();
     const stages = include_stages || [
@@ -35,7 +35,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
 
     // Transform orders into production jobs
     const jobs = orders
-      .map(order => {
+      .map((order: any) => {
         // Determine current stage
         let currentStage: "CUTTING" | "PRINTING" | "SEWING" | "FINISHING" =
           "CUTTING";
@@ -83,7 +83,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
             | "COMPLETED",
         };
       })
-      .filter(job => stages.includes(job.current_stage));
+      .filter((job: any) => stages.includes(job.current_stage));
 
     // Get available resources (operators and machines)
     const employees = await prisma.employee.findMany({
@@ -99,7 +99,7 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       capacity_hours_per_day: number;
       current_utilization: number;
       efficiency_rating: number;
-    }> = employees.map(emp => ({
+    }> = employees.map((emp: any) => ({
       id: emp.id,
       name: `${emp.first_name} ${emp.last_name}`,
       type: "OPERATOR" as const,
@@ -204,7 +204,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     });
 
     // Format schedule preview
-    const schedulePreview = orders.map(order => {
+    const schedulePreview = orders.map((order: any) => {
       const deadline =
         order.delivery_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const daysUntilDeadline =
@@ -227,7 +227,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         urgency,
         status: order.status,
         assigned_operators: order.sewing_runs
-          .map(run => `${run.operator?.first_name} ${run.operator?.last_name}`)
+          .map((run: any) => `${run.operator?.first_name} ${run.operator?.last_name}`)
           .filter(Boolean),
       };
     });

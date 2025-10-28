@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 
@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth-middleware";
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
-    const ____body = await request.json();
+    // Unused: const ____body = await request.json();
 
     // Mock CSV data
     const csv = `ID,User,Action,Category,Status,IP Address,Timestamp

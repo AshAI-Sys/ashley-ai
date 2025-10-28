@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -248,7 +248,7 @@ export default function HRPayrollPage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return `₱${amount.toLocaleString()}`;
+    return `â‚±${amount.toLocaleString()}`;
   };
 
   const handleAddEmployee = async () => {
@@ -619,7 +619,7 @@ export default function HRPayrollPage() {
                                 Hired: {formatDate(employee.hire_date)}
                               </span>
                               {employee.piece_rate && (
-                                <span>Piece Rate: ₱{employee.piece_rate}</span>
+                                <span>Piece Rate: â‚±{employee.piece_rate}</span>
                               )}
                             </div>
                           </div>
@@ -1019,7 +1019,7 @@ export default function HRPayrollPage() {
                           password: e.target.value,
                         })
                       }
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     />
                   </div>
                 </div>
@@ -1112,7 +1112,7 @@ export default function HRPayrollPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="mb-1 block text-sm font-medium">
-                      Base Salary (₱)
+                      Base Salary (â‚±)
                     </label>
                     <Input
                       type="number"
@@ -1128,7 +1128,7 @@ export default function HRPayrollPage() {
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">
-                      Piece Rate (₱)
+                      Piece Rate (â‚±)
                     </label>
                     <Input
                       type="number"

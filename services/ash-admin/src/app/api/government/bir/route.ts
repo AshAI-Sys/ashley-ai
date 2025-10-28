@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { birService } from "@/lib/government/bir";
@@ -38,7 +38,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
         });
 
-        const salesEntries = invoices.map(inv => {
+        const salesEntries = invoices.map((inv: any) => {
           const vat = birService.calculateVAT(inv.total_amount);
           return {
             date: inv.issue_date.toISOString().split("T")[0]!,
@@ -68,7 +68,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           },
       });
 
-        const purchaseEntries = expenses.map(exp => {
+        const purchaseEntries = expenses.map((exp: any) => {
           const vat = birService.calculateVAT(exp.amount);
           return {
             date: exp.expense_date.toISOString().split("T")[0]!,

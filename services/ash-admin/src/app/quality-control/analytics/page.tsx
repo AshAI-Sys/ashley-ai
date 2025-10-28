@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import {
@@ -8,7 +8,7 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle, Calendar,
-  _Filter,
+  Filter,
   Download,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -390,7 +390,7 @@ export default function QCAnalyticsPage() {
               unit="%"
               icon={AlertTriangle}
               trend={metrics.trend}
-              trendValue="↓ 0.3% from last period"
+              trendValue="â†“ 0.3% from last period"
             />
             <MetricCard
               title="First Pass Yield"
@@ -398,21 +398,21 @@ export default function QCAnalyticsPage() {
               unit="%"
               icon={CheckCircle}
               trend="up"
-              trendValue="↑ 1.2% from last period"
+              trendValue="â†‘ 1.2% from last period"
             />
             <MetricCard
               title="Cost of Quality"
-              value={`₱${(metrics.cost_of_quality / 1000).toFixed(0)}K`}
+              value={`â‚±${(metrics.cost_of_quality / 1000).toFixed(0)}K`}
               icon={TrendingDown}
               trend="down"
-              trendValue="↓ ₱8K from last period"
+              trendValue="â†“ â‚±8K from last period"
             />
             <MetricCard
               title="Customer Complaints"
               value={metrics.customer_complaints}
               icon={XCircle}
               trend="down"
-              trendValue="↓ 2 from last period"
+              trendValue="â†“ 2 from last period"
             />
           </div>
         )}
@@ -518,8 +518,8 @@ export default function QCAnalyticsPage() {
                       Preventive Actions:
                     </span>
                     <ul className="mt-1 space-y-1 text-xs text-blue-600">
-                      <li>• Implement viscosity testing protocol</li>
-                      <li>• Install temperature monitoring system</li>
+                      <li>â€¢ Implement viscosity testing protocol</li>
+                      <li>â€¢ Install temperature monitoring system</li>
                     </ul>
                   </div>
                 </div>
@@ -542,8 +542,8 @@ export default function QCAnalyticsPage() {
                       Preventive Actions:
                     </span>
                     <ul className="mt-1 space-y-1 text-xs text-orange-600">
-                      <li>• Schedule operator refresher training</li>
-                      <li>• Calibrate tension settings weekly</li>
+                      <li>â€¢ Schedule operator refresher training</li>
+                      <li>â€¢ Calibrate tension settings weekly</li>
                     </ul>
                   </div>
                 </div>
@@ -602,7 +602,7 @@ export default function QCAnalyticsPage() {
               <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
                 <div>
                   <span className="font-medium text-green-600">
-                    ✓ Positive Trend:
+                    âœ“ Positive Trend:
                   </span>
                   <p className="mt-1 text-gray-600">
                     Defect rate has decreased 15% over the past 2 weeks
@@ -610,7 +610,7 @@ export default function QCAnalyticsPage() {
                   </p>
                 </div>
                 <div>
-                  <span className="font-medium text-blue-600">→ Forecast:</span>
+                  <span className="font-medium text-blue-600">â†’ Forecast:</span>
                   <p className="mt-1 text-gray-600">
                     Expected to achieve 2.3% defect rate by month-end if current
                     trend continues. Quality target of &lt;2.5% within reach.

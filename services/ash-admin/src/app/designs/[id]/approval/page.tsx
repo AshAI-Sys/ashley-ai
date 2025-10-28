@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -30,13 +30,13 @@ import {
   MessageCircle,
   CheckCircle,
   Clock,
-  _Image,
+  Image,
   FileText,
-  _Palette,
+  Palette,
   Share,
   Users,
-  _Mail,
-  _Calendar,
+  Mail,
+  Calendar,
   AlertCircle,
   RefreshCw,
   ExternalLink,
@@ -396,7 +396,7 @@ export default function DesignApprovalPage() {
           <div>
             <h1 className="text-3xl font-bold">Client Approval Management</h1>
             <p className="text-muted-foreground">
-              {design.name} • {design.order.order_number} • {design.brand.name}
+              {design.name} â€¢ {design.order.order_number} â€¢ {design.brand.name}
             </p>
           </div>
         </div>
@@ -576,7 +576,7 @@ export default function DesignApprovalPage() {
                         ).toLocaleDateString()}
                         {activeApproval.expires_at && (
                           <>
-                            {" • "}
+                            {" â€¢ "}
                             Expires:{" "}
                             {new Date(
                               activeApproval.expires_at

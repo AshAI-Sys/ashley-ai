@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,14 +20,14 @@ import {
   Settings,
   Wrench,
   AlertTriangle, CheckCircle,
-  _Clock, Calendar,
+  Clock, Calendar,
   DollarSign, TrendingUp,
   Plus,
   Filter,
   Eye,
   Edit, Trash2,
-  _Users, Activity,
-  _BarChart3,
+  Users, Activity,
+  BarChart3,
   RefreshCw,
 } from "lucide-react";
 
@@ -307,7 +307,7 @@ export default function MaintenancePage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return `₱${amount.toLocaleString()}`;
+    return `â‚±${amount.toLocaleString()}`;
   };
 
   const ____formatDateTime = (dateString: string) => {
@@ -579,7 +579,7 @@ export default function MaintenancePage() {
                           <div className="flex-1">
                             <div className="font-medium">{activity.title}</div>
                             <div className="text-sm text-muted-foreground">
-                              {activity.asset_name} • {activity.assignee}
+                              {activity.asset_name} â€¢ {activity.assignee}
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">

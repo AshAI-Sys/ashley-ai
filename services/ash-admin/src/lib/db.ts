@@ -1,5 +1,19 @@
-import { db } from "@/lib/database";
+import { PrismaClient } from "@prisma/client";
 // import { performanceExtension, queryLoggingExtension, autoPaginationExtension } from './performance/prisma-extensions'
+
+// Create single prisma instance (singleton pattern)
+const prismaClientSingleton = () => {
+  return new PrismaClient();
+};
+
+declare global {
+  // eslint-disable-next-line no-var
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
+}
+
+export const db = globalThis.prismaGlobal ?? prismaClientSingleton();
+
+if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = db;
 
 // Export Prisma client directly (extensions temporarily disabled for stability)
 export const prisma = db;

@@ -1,4 +1,4 @@
-// Real-Time Bottleneck Detection AI
+﻿// Real-Time Bottleneck Detection AI
 // Monitors production flow and identifies bottlenecks causing delays
 
 interface ProductionMetrics {
@@ -479,19 +479,19 @@ export class BottleneckDetectionAI {
 
     if (primaryBottleneck) {
       recommendations.push(
-        `🎯 PRIMARY BOTTLENECK: ${primaryBottleneck.station_metrics.station_name} (${primaryBottleneck.severity} severity) - Focus optimization efforts here`
+        `ðŸŽ¯ PRIMARY BOTTLENECK: ${primaryBottleneck.station_metrics.station_name} (${primaryBottleneck.severity} severity) - Focus optimization efforts here`
       );
     }
 
     if (bottlenecks.length > 3) {
       recommendations.push(
-        `⚠️ Multiple bottlenecks detected (${bottlenecks.length}) - systematic workflow redesign recommended`
+        `âš ï¸ Multiple bottlenecks detected (${bottlenecks.length}) - systematic workflow redesign recommended`
       );
     }
 
     if (efficiencyLoss > 30) {
       recommendations.push(
-        `📉 System efficiency is ${(100 - efficiencyLoss).toFixed(0)}% - significant productivity loss`
+        `ðŸ“‰ System efficiency is ${(100 - efficiencyLoss).toFixed(0)}% - significant productivity loss`
       );
     }
 
@@ -501,7 +501,7 @@ export class BottleneckDetectionAI {
       )
     ) {
       recommendations.push(
-        `👥 Operator staffing issues detected across multiple stations - review shift schedules`
+        `ðŸ‘¥ Operator staffing issues detected across multiple stations - review shift schedules`
       );
     }
 
@@ -511,13 +511,13 @@ export class BottleneckDetectionAI {
       )
     ) {
       recommendations.push(
-        `🔍 Quality issues contributing to delays - implement enhanced QC processes`
+        `ðŸ” Quality issues contributing to delays - implement enhanced QC processes`
       );
     }
 
     if (recommendations.length === 0) {
       recommendations.push(
-        "✅ Production system running smoothly - no bottlenecks detected"
+        "âœ… Production system running smoothly - no bottlenecks detected"
       );
     }
 
@@ -534,7 +534,7 @@ export class BottleneckDetectionAI {
 
     // Simplified delay prediction
     const throughputRatio = systemThroughput / optimalThroughput;
-    const ____delayFactor = 1 - throughputRatio;
+    // Unused: const ____delayFactor = 1 - throughputRatio;
 
     return bottlenecks.slice(0, 5).map((b, idx) => ({
       order_id: `ORDER_${idx + 1}`,
@@ -596,10 +596,10 @@ export class BottleneckDetectionAI {
     const recommendations: string[] = [];
     if (trend === "WORSENING") {
       recommendations.push(
-        "🚨 Urgent: Schedule production review meeting to address declining efficiency"
+        "ðŸš¨ Urgent: Schedule production review meeting to address declining efficiency"
       );
       recommendations.push(
-        "📊 Analyze root causes of recent performance decline"
+        "ðŸ“Š Analyze root causes of recent performance decline"
       );
     }
 

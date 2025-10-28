@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
@@ -19,8 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+// Unused import removed: Badge
+// Unused import removed: Separator
 import { Progress } from "@/components/ui/progress";
 import {
   Plus,
@@ -384,7 +384,7 @@ export default function NewDesignPage() {
       } else if (result.status === "WARN") {
         toast(
           `Design validation passed with warnings: ${result.issues?.length || 0} issues found`,
-          { icon: '⚠️' }
+          { icon: 'âš ï¸' }
         );
       } else {
         toast.error(
@@ -758,7 +758,7 @@ export default function NewDesignPage() {
                       <ul className="space-y-1 text-sm">
                         {validationResult.issues.map(
                           (issue: any, index: number) => (
-                            <li key={index}>• {issue.message}</li>
+                            <li key={index}>â€¢ {issue.message}</li>
                           )
                         )}
                       </ul>
@@ -1017,8 +1017,8 @@ export default function NewDesignPage() {
               </Button>
 
               <div className="pt-2 text-xs text-muted-foreground">
-                <p>• Draft: Save for later editing</p>
-                <p>• Create: Ready for approval workflow</p>
+                <p>â€¢ Draft: Save for later editing</p>
+                <p>â€¢ Create: Ready for approval workflow</p>
               </div>
             </CardContent>
           </Card>

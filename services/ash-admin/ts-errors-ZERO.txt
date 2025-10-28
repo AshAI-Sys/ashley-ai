@@ -1,0 +1,167 @@
+
+> @ash/admin@1.0.0 type-check C:\Users\Khell\Desktop\Ashley AI\services\ash-admin
+> tsc --noEmit
+
+check-db.ts(32,33): error TS7006: Parameter 'u' implicitly has an 'any' type.
+src/app/api/payments/create-checkout/route.ts(109,7): error TS2345: Argument of type 'Error' is not assignable to parameter of type 'AppError'.
+  Type 'Error' is missing the following properties from type 'AppError': code, statusCode, isOperational, trace_id
+src/app/api/tenants/route.ts(54,9): error TS2783: 'success' is specified more than once, so this usage will be overwritten.
+src/app/clients/[id]/brands/page.tsx(539,45): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string | null'.
+  Type 'undefined' is not assignable to type 'string | null'.
+src/app/employee/page.tsx(81,41): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(data: string): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+  Overload 2 of 2, '(data: string): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/app/inventory/create-po/page.tsx(197,32): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/app/inventory/scan-barcode/page.tsx(6,29): error TS2307: Cannot find module 'html5-qrcode' or its corresponding type declarations.
+src/app/printing/machines/page.tsx(822,36): error TS2304: Cannot find name 'router'.
+src/app/printing/runs/[id]/page.tsx(246,5): error TS2322: Type '{ reason_code?: string | undefined; qty?: number | undefined; photo_url?: string; cost_attribution?: string | undefined; }' is not assignable to type '{ reason_code: string; qty: number; photo_url?: string | undefined; cost_attribution: string; }'.
+  Types of property 'reason_code' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/app/printing/runs/[id]/page.tsx(584,13): error TS2322: Type 'Dispatch<SetStateAction<MaterialConsumption[]>>' is not assignable to type '(materials: MaterialConsumption[]) => void'.
+  Types of parameters 'value' and 'materials' are incompatible.
+    Type 'MaterialConsumption[]' is not assignable to type 'SetStateAction<MaterialConsumption[]>'.
+      Type 'MaterialConsumption[]' is not assignable to type 'MaterialConsumption[]'. Two different types with this name exist, but they are unrelated.
+        Type 'MaterialConsumption' is missing the following properties from type 'MaterialConsumption': item_id, item_name, uom, qty
+src/app/quality-control/page.tsx(159,9): error TS7023: 'getStatusBadge' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/app/settings/appearance/page.tsx(16,29): error TS2749: '_theme' refers to a value, but is being used as a type here. Did you mean 'typeof _theme'?
+src/app/sewing/operations/page.tsx(349,23): error TS2345: Argument of type '(prev: SewingOperation[]) => (SewingOperation | { updated_at: string; standard_minutes: number; piece_rate: number | null; product_type: string; name: string; depends_on: string[]; id: string; created_at: string; })[]' is not assignable to parameter of type 'SetStateAction<SewingOperation[]>'.
+  Type '(prev: SewingOperation[]) => (SewingOperation | { updated_at: string; standard_minutes: number; piece_rate: number | null; product_type: string; name: string; depends_on: string[]; id: string; created_at: string; })[]' is not assignable to type '(prevState: SewingOperation[]) => SewingOperation[]'.
+    Type '(SewingOperation | { updated_at: string; standard_minutes: number; piece_rate: number | null; product_type: string; name: string; depends_on: string[]; id: string; created_at: string; })[]' is not assignable to type 'SewingOperation[]'.
+      Type 'SewingOperation | { updated_at: string; standard_minutes: number; piece_rate: number | null; product_type: string; name: string; depends_on: string[]; id: string; created_at: string; }' is not assignable to type 'SewingOperation'.
+        Type '{ updated_at: string; standard_minutes: number; piece_rate: number | null; product_type: string; name: string; depends_on: string[]; id: string; created_at: string; }' is not assignable to type 'SewingOperation'.
+          Types of property 'piece_rate' are incompatible.
+            Type 'number | null' is not assignable to type 'number | undefined'.
+              Type 'null' is not assignable to type 'number | undefined'.
+src/app/verify-email/page.tsx(6,474): error TS2786: 'VerifyEmailContent' cannot be used as a JSX component.
+  Its type '() => void' is not a valid JSX element type.
+    Type '() => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/approval-workflow/BatchApprovalActions.tsx(310,48): error TS2322: Type '{ children: (string | number)[]; variant: "outline"; size: string; }' is not assignable to type 'IntrinsicAttributes & BadgeProps'.
+  Property 'size' does not exist on type 'IntrinsicAttributes & BadgeProps'.
+src/components/dashboard/CustomizableDashboard.tsx(2,50): error TS2307: Cannot find module 'react-grid-layout' or its corresponding type declarations.
+src/components/dashboard/CustomizableDashboard.tsx(11,215): error TS2786: 'ProductionTrendChart' cannot be used as a JSX component.
+  Its type '({ data, onExport, showTarget, timeRange, onTimeRangeChange, }: ProductionTrendChartProps) => void' is not a valid JSX element type.
+    Type '({ data, onExport, showTarget, timeRange, onTimeRangeChange, }: ProductionTrendChartProps) => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/dashboard/CustomizableDashboard.tsx(11,324): error TS2786: 'EfficiencyGaugeChart' cannot be used as a JSX component.
+  Its type '({ data, title, description, }: EfficiencyGaugeChartProps) => void' is not a valid JSX element type.
+    Type '({ data, title, description, }: EfficiencyGaugeChartProps) => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/dashboard/RealTimeMetrics.tsx(30,13): error TS7030: Not all code paths return a value.
+src/components/OptimizedImage.tsx(7,33): error TS2355: A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value.
+src/components/OptimizedImage.tsx(10,59): error TS2786: 'OptimizedImage' cannot be used as a JSX component.
+  Its type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not a valid JSX element type.
+    Type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/OptimizedImage.tsx(14,16): error TS2786: 'OptimizedImage' cannot be used as a JSX component.
+  Its type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not a valid JSX element type.
+    Type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/OptimizedImage.tsx(18,16): error TS2786: 'OptimizedImage' cannot be used as a JSX component.
+  Its type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not a valid JSX element type.
+    Type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/OptimizedImage.tsx(22,16): error TS2786: 'OptimizedImage' cannot be used as a JSX component.
+  Its type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not a valid JSX element type.
+    Type '({ src, alt, width, height, className, fill, priority, quality, sizes, objectFit, placeholder, blurDataURL, onLoad, onError, }: OptimizedImageProps) => void' is not assignable to type '(props: any, deprecatedLegacyContext?: any) => ReactNode'.
+      Type 'void' is not assignable to type 'ReactNode'.
+src/components/order-intake/quantities-size-section.tsx(153,23): error TS2345: Argument of type 'SizeTemplate | undefined' is not assignable to parameter of type 'SizeTemplate'.
+  Type 'undefined' is not assignable to type 'SizeTemplate'.
+src/components/route-guard.tsx(28,9): error TS2322: Type 'string[] | undefined' is not assignable to type 'Permission[] | undefined'.
+  Type 'string[]' is not assignable to type 'Permission[]'.
+    Type 'string' is not assignable to type 'Permission'.
+src/components/ui/animated.tsx(114,13): error TS7030: Not all code paths return a value.
+src/components/ui/popover.tsx(63,26): error TS2345: Argument of type 'HTMLElement' is not assignable to parameter of type 'HTMLButtonElement'.
+  Type 'HTMLElement' is missing the following properties from type 'HTMLButtonElement': disabled, form, formAction, formEnctype, and 15 more.
+src/lib/ai/defect-detection.ts(243,11): error TS2488: Type '[string, { keywords: string[]; severity: string; typical_locations: string[]; } | { keywords: string[]; severity: string; typical_locations: string[]; } | { keywords: string[]; severity: string; typical_locations: string[]; } | ... 11 more ... | { ...; }] | undefined' must have a '[Symbol.iterator]()' method that returns an iterator.
+src/lib/animations.ts(208,3): error TS2322: Type 'Promise<Animation[]>' is not assignable to type 'Promise<void[]>'.
+  Type 'Animation[]' is not assignable to type 'void[]'.
+    Type 'Animation' is not assignable to type 'void'.
+src/lib/audit/logger.ts(78,29): error TS2339: Property 'workspaceId' does not exist on type 'AuditLogEntry'.
+src/lib/auth-utils.ts(164,26): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(arrayBuffer: WithImplicitCoercion<ArrayBufferLike>, byteOffset?: number | undefined, length?: number | undefined): Buffer<ArrayBufferLike>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'WithImplicitCoercion<ArrayBufferLike>'.
+      Type 'undefined' is not assignable to type 'WithImplicitCoercion<ArrayBufferLike>'.
+  Overload 2 of 4, '(string: WithImplicitCoercion<string>, encoding?: BufferEncoding | undefined): Buffer<ArrayBuffer>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'WithImplicitCoercion<string>'.
+      Type 'undefined' is not assignable to type 'WithImplicitCoercion<string>'.
+src/lib/auth-utils.ts(167,35): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(data: ArrayBufferView<ArrayBufferLike>, inputEncoding: undefined, outputEncoding: Encoding): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'ArrayBufferView<ArrayBufferLike>'.
+      Type 'undefined' is not assignable to type 'ArrayBufferView<ArrayBufferLike>'.
+  Overload 2 of 4, '(data: string, inputEncoding: Encoding | undefined, outputEncoding: Encoding): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/lib/auth-utils.ts(168,3): error TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike> & string'.
+  Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
+src/lib/crypto.ts(56,28): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(arrayBuffer: WithImplicitCoercion<ArrayBufferLike>, byteOffset?: number | undefined, length?: number | undefined): Buffer<ArrayBufferLike>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'WithImplicitCoercion<ArrayBufferLike>'.
+      Type 'undefined' is not assignable to type 'WithImplicitCoercion<ArrayBufferLike>'.
+  Overload 2 of 4, '(string: WithImplicitCoercion<string>, encoding?: BufferEncoding | undefined): Buffer<ArrayBuffer>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'WithImplicitCoercion<string>'.
+      Type 'undefined' is not assignable to type 'WithImplicitCoercion<string>'.
+src/lib/crypto.ts(57,33): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(arrayBuffer: WithImplicitCoercion<ArrayBufferLike>, byteOffset?: number | undefined, length?: number | undefined): Buffer<ArrayBufferLike>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'WithImplicitCoercion<ArrayBufferLike>'.
+      Type 'undefined' is not assignable to type 'WithImplicitCoercion<ArrayBufferLike>'.
+  Overload 2 of 4, '(string: WithImplicitCoercion<string>, encoding?: BufferEncoding | undefined): Buffer<ArrayBuffer>', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'WithImplicitCoercion<string>'.
+      Type 'undefined' is not assignable to type 'WithImplicitCoercion<string>'.
+src/lib/crypto.ts(65,37): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(data: ArrayBufferView<ArrayBufferLike>, inputEncoding: undefined, outputEncoding: Encoding): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'ArrayBufferView<ArrayBufferLike>'.
+      Type 'undefined' is not assignable to type 'ArrayBufferView<ArrayBufferLike>'.
+  Overload 2 of 4, '(data: string, inputEncoding: Encoding | undefined, outputEncoding: Encoding): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/lib/crypto.ts(66,5): error TS2322: Type 'string' is not assignable to type 'Buffer<ArrayBufferLike> & string'.
+  Type 'string' is not assignable to type 'Buffer<ArrayBufferLike>'.
+src/lib/database.ts(4,10): error TS2459: Module '"@/lib/db"' declares 'db' locally, but it is not exported.
+src/lib/db.ts(1,10): error TS2303: Circular definition of import alias 'db'.
+src/lib/email/index.ts(48,45): error TS2345: Argument of type '{ from: string; to: string[]; subject: string; html: string | undefined; text: string | undefined; replyTo: string | undefined; cc: string | string[] | undefined; bcc: string | string[] | undefined; }' is not assignable to parameter of type 'CreateEmailOptions'.
+  Type '{ from: string; to: string[]; subject: string; html: string | undefined; text: string | undefined; replyTo: string | undefined; cc: string | string[] | undefined; bcc: string | string[] | undefined; }' is not assignable to type 'Required<Pick<EmailRenderOptions$1, "html">> & Partial<Pick<EmailRenderOptions$1, "text" | "react">> & CreateEmailBaseOptions'.
+    Type '{ from: string; to: string[]; subject: string; html: string | undefined; text: string | undefined; replyTo: string | undefined; cc: string | string[] | undefined; bcc: string | string[] | undefined; }' is not assignable to type 'Required<Pick<EmailRenderOptions$1, "html">>'.
+      Types of property 'html' are incompatible.
+        Type 'string | undefined' is not assignable to type 'string'.
+          Type 'undefined' is not assignable to type 'string'.
+src/lib/email/queue.ts(2,21): error TS2459: Module '"@/lib/email"' declares 'EmailOptions' locally, but it is not exported.
+src/lib/email/queue.ts(2,35): error TS2459: Module '"@/lib/email"' declares 'EmailResult' locally, but it is not exported.
+src/lib/error-handling.ts(155,53): error TS2339: Property 'trace_id' does not exist on type '"Unknown error"'.
+src/lib/gmail-email.ts(4,18): error TS2503: Cannot find namespace 'nodemailer'.
+src/lib/gmail-email.ts(6,28): error TS2503: Cannot find namespace 'nodemailer'.
+src/lib/gmail-email.ts(27,19): error TS2552: Cannot find name 'nodemailer'. Did you mean 'NodeFilter'?
+src/lib/inventory/inventory-manager.ts(238,7): error TS2304: Cannot find name '_severity'.
+src/lib/inventory/inventory-manager.ts(242,7): error TS2304: Cannot find name '_severity'.
+src/lib/jwt.ts(43,23): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/lib/jwt.ts(62,23): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/lib/redis.ts(307,23): error TS2307: Cannot find module '@/lib/cache/manager' or its corresponding type declarations.
+src/lib/token-rotation.ts(126,50): error TS2345: Argument of type '{ userId: string; email: string; role: string; workspaceId: string; }' is not assignable to parameter of type '{ userId: string; email: string; role: UserRole; workspaceId: string; }'.
+  Types of property 'role' are incompatible.
+    Type 'string' is not assignable to type 'UserRole'.
+src/lib/utils/styling.ts(118,18): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+ ELIFECYCLE  Command failed with exit code 2.

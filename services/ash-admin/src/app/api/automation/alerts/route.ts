@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -272,7 +272,7 @@ async function getAlertSummary(workspaceId: string) {
     },
   };
 
-  summary.forEach(group => {
+  summary.forEach((group: any) => {
     result.total += group._count.id;
     if (!group.is_resolved) {
       result.unresolved += group._count.id;

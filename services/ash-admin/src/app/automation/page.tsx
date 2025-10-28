@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
 export const dynamic = 'force-dynamic';

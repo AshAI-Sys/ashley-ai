@@ -1,6 +1,6 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-middleware";
+// Unused import removed: requireAuth
 
 /**
  * OpenAPI 3.0 Specification for Ashley AI Manufacturing ERP

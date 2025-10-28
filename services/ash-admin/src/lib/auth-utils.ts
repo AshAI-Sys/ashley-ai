@@ -161,6 +161,9 @@ export function decryptSensitiveData(encrypted: string): string {
   const key = crypto.scryptSync(JWT_SECRET, "salt", 32);
 
   const [ivHex, encryptedData] = encrypted.split(":");
+  if (!ivHex || !encryptedData) {
+    throw new Error("Invalid encrypted data format");
+  }
   const iv = Buffer.from(ivHex, "hex");
 
   const decipher = crypto.createDecipheriv(algorithm, key, iv);

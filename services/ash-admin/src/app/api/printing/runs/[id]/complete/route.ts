@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -48,7 +48,7 @@ export async function POST(
     }
 
     // Start transaction to complete run
-    await prisma.$transaction(async tx => {
+    await prisma.$transaction(async (tx: any) => {
       // Complete the run
       await tx.printRun.update({
         where: { id: runId },

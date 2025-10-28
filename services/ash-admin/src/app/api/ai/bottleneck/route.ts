@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
 import { prisma } from "@/lib/db";
@@ -47,12 +47,12 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
     // Cutting station metrics
     if (cutLays.length > 0) {
       const totalBundles = cutLays.reduce(
-        (sum, lay) => sum + lay.bundles.length,
+        (sum: any, lay: any) => sum + lay.bundles.length,
         0
       );
       // Calculate efficiency based on material usage (less offcuts/defects = higher efficiency)
       const avgEfficiency =
-        cutLays.reduce((sum, lay) => {
+        cutLays.reduce((sum: any, lay: any) => {
           const wastePercentage =
             (((lay.offcuts || 0) + (lay.defects || 0)) / lay.gross_used) * 100;
           const efficiency = Math.max(0, 100 - wastePercentage);
@@ -77,7 +77,8 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
     // Printing station metrics
     if (printRuns.length > 0) {
       // Calculate total good quantity from outputs instead of non-existent quantity field
-      const ____totalGood = printRuns.reduce((sum, _run) => {
+      // Unused variable - intentionally not used
+      const _totalGood = printRuns.reduce((sum: any, _run: any) => {
         // Note: Need to fetch outputs separately since they're not included
         return sum + 100; // Simplified for now
       }, 0);
@@ -100,11 +101,11 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
     // Sewing station metrics
     if (sewingRuns.length > 0) {
       const totalPieces = sewingRuns.reduce(
-        (sum, run) => sum + (run.qty_good || 0),
+        (sum: any, run: any) => sum + (run.qty_good || 0),
         0
       );
       const totalReject = sewingRuns.reduce(
-        (sum, run) => sum + (run.qty_reject || 0),
+        (sum: any, run: any) => sum + (run.qty_reject || 0),
         0
       );
       const totalTarget = totalPieces + totalReject; // Calculate target from actual production
@@ -118,7 +119,7 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
         current_throughput: totalPieces / sewingRuns.length,
         expected_throughput: totalTarget / sewingRuns.length,
         queue_length:
-          sewingRuns.filter(r => r.status === "PENDING").length * 20,
+          sewingRuns.filter((r: any) => r.status === "PENDING").length * 20,
         avg_wait_time_minutes: 45,
         utilization_rate: Math.min(efficiency, 100),
         operator_count: 15,
@@ -130,7 +131,7 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
     // QC station metrics
     if (qcInspections.length > 0) {
       const failedInspections = qcInspections.filter(
-        qc => qc.result === "REJECT"
+        (qc: any) => qc.result === "REJECT"
       ).length;
       const defectRate = (failedInspections / qcInspections.length) * 100;
 
@@ -140,7 +141,7 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
         station_type: "QC",
         current_throughput: 25,
         expected_throughput: 35,
-        queue_length: qcInspections.filter(qc => qc.status === "PENDING")
+        queue_length: qcInspections.filter((qc: any) => qc.status === "PENDING")
           .length,
         avg_wait_time_minutes: 30,
         utilization_rate: 70,
@@ -159,7 +160,7 @@ export const GET = requireAuth(async (_req: NextRequest, _user) => {
         current_throughput: 40,
         expected_throughput: 45,
         queue_length:
-          finishingRuns.filter(r => r.status === "PENDING").length * 15,
+          finishingRuns.filter((r: any) => r.status === "PENDING").length * 15,
         avg_wait_time_minutes: 20,
         utilization_rate: 85,
         operator_count: 6,

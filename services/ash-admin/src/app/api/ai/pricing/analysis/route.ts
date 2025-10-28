@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
@@ -36,11 +36,11 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     });
 
     // Transform orders into pricing analysis format
-    const pricingData = orders.map(order => {
+    const pricingData = orders.map((order: any) => {
       // Calculate actual cost from production runs
       const cuttingCost = 0; // Cut lays don't have labor_cost field
       const sewingCost = order.sewing_runs.reduce(
-        (sum, run) => sum + (run.piece_rate_pay || 0),
+        (sum: any, run: any) => sum + (run.piece_rate_pay || 0),
         0
       );
       const printCost = 0; // Print runs don't have labor_cost field in current schema
@@ -60,7 +60,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
       // Get total quantity from line items
       const totalQuantity = order.line_items.reduce(
-        (sum, item) => sum + item.quantity,
+        (sum: any, item: any) => sum + item.quantity,
         0
       );
 
@@ -80,7 +80,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     // Filter out invalid data
     const validData = pricingData.filter(
-      d => d.quoted_price > 0 && d.actual_cost > 0
+      (d: any) => d.quoted_price > 0 && d.actual_cost > 0
     );
 
     if (validData.length === 0) {
@@ -142,10 +142,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     });
 
     // Calculate average costs and prices
-    const stats = orders.map(order => {
+    const stats = orders.map((order: any) => {
       const cuttingCost = 0; // Cut lays don't have labor_cost field
       const sewingCost = order.sewing_runs.reduce(
-        (sum, run) => sum + (run.piece_rate_pay || 0),
+        (sum: any, run: any) => sum + (run.piece_rate_pay || 0),
         0
       );
       const printCost = 0; // Print runs don't have labor_cost field
@@ -164,7 +164,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
       // Get total quantity from line items
       const totalQuantity = order.line_items.reduce(
-        (sum, item) => sum + item.quantity,
+        (sum: any, item: any) => sum + item.quantity,
         0
       );
 
@@ -177,7 +177,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       };
     });
 
-    const validStats = stats.filter(s => s.cost > 0 && s.price > 0);
+    const validStats = stats.filter((s: any) => s.cost > 0 && s.price > 0);
 
     if (validStats.length < 5) {
       
@@ -193,12 +193,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 
     // Calculate averages
     const avgCost =
-      validStats.reduce((sum, s) => sum + s.cost, 0) / validStats.length;
+      validStats.reduce((sum: any, s: any) => sum + s.cost, 0) / validStats.length;
     const avgPrice =
-      validStats.reduce((sum, s) => sum + s.price, 0) / validStats.length;
+      validStats.reduce((sum: any, s: any) => sum + s.price, 0) / validStats.length;
     const currentMargin = ((avgPrice - avgCost) / avgPrice) * 100;
     const acceptanceRate =
-      (validStats.filter(s => s.accepted).length / validStats.length) * 100;
+      (validStats.filter((s: any) => s.accepted).length / validStats.length) * 100;
 
     // Generate recommendations
     const recommendations: any = {
@@ -224,10 +224,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       const priceIncrease = ((suggestedPrice - avgPrice) / avgPrice) * 100;
 
       recommendations.insights.push(
-        `💰 Opportunity to increase prices by ${priceIncrease.toFixed(1)}% to reach ${targetMarginValue}% margin`
+        `ðŸ’° Opportunity to increase prices by ${priceIncrease.toFixed(1)}% to reach ${targetMarginValue}% margin`
       );
       recommendations.insights.push(
-        `✅ High acceptance rate (${acceptanceRate.toFixed(0)}%) suggests room for price optimization`
+        `âœ… High acceptance rate (${acceptanceRate.toFixed(0)}%) suggests room for price optimization`
       );
       recommendations.suggested_price = Math.round(suggestedPrice * 100) / 100;
     } else if (
@@ -239,10 +239,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       const priceDecrease = ((avgPrice - suggestedPrice) / avgPrice) * 100;
 
       recommendations.insights.push(
-        `📉 Consider reducing prices by ${priceDecrease.toFixed(1)}% to improve acceptance rate`
+        `ðŸ“‰ Consider reducing prices by ${priceDecrease.toFixed(1)}% to improve acceptance rate`
       );
       recommendations.insights.push(
-        `⚠️ Low acceptance rate (${acceptanceRate.toFixed(0)}%) indicates pricing may be too high`
+        `âš ï¸ Low acceptance rate (${acceptanceRate.toFixed(0)}%) indicates pricing may be too high`
       );
       recommendations.suggested_price = Math.round(suggestedPrice * 100) / 100;
     } else if (
@@ -251,22 +251,22 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     ) {
       // Optimal pricing
       recommendations.insights.push(
-        "✅ Current pricing is optimal - meeting both margin and acceptance targets"
+        "âœ… Current pricing is optimal - meeting both margin and acceptance targets"
       );
       recommendations.insights.push(
-        `💰 Margin: ${currentMargin.toFixed(1)}% (target: ${targetMarginValue}%)`
+        `ðŸ’° Margin: ${currentMargin.toFixed(1)}% (target: ${targetMarginValue}%)`
       );
       recommendations.insights.push(
-        `📊 Acceptance: ${acceptanceRate.toFixed(0)}% (target: ${minAcceptanceValue}%)`
+        `ðŸ“Š Acceptance: ${acceptanceRate.toFixed(0)}% (target: ${minAcceptanceValue}%)`
       );
       recommendations.suggested_price = Math.round(avgPrice * 100) / 100;
     } else {
       // Below both targets
       recommendations.insights.push(
-        "⚠️ Pricing challenges detected - low margin and low acceptance"
+        "âš ï¸ Pricing challenges detected - low margin and low acceptance"
       );
       recommendations.insights.push(
-        "💡 Focus on cost reduction or value differentiation"
+        "ðŸ’¡ Focus on cost reduction or value differentiation"
       );
       recommendations.suggested_price = Math.round(avgPrice * 100) / 100;
     }

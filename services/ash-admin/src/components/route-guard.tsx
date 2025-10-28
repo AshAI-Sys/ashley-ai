@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useAuth } from "../lib/auth-context";
-import { hasAccess, User } from "../lib/permissions";
+import { hasAccess, User, Permission } from "../lib/permissions";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -25,7 +25,7 @@ export default function RouteGuard({ children }: RouteGuardProps) {
         role: user.role as any,
         position: user.position || "",
         department: user.department || "Administration",
-        permissions: user.permissions || undefined,
+        permissions: user.permissions as Permission[] || undefined,
       };
 
       // Check if user has access to current route
@@ -73,3 +73,4 @@ export default function RouteGuard({ children }: RouteGuardProps) {
 
   return <>{children}</>;
 }
+

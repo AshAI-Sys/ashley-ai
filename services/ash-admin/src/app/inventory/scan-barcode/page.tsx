@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Camera, X, CheckCircle, AlertCircle } from "lucide-react";
-import { Html5Qrcode } from "html5-qrcode";
+// import { Html5Qrcode } from "html5-qrcode";  // Package not installed
 
 export default function ScanBarcodePage() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function ScanBarcodePage() {
   const [lastScanned, setLastScanned] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerRef = useRef<any | null>(null); // Html5Qrcode package not installed
   const [cameraPermission, setCameraPermission] = useState<
     "granted" | "denied" | "prompt"
   >("prompt");
@@ -23,7 +23,7 @@ export default function ScanBarcodePage() {
       if (scannerRef.current && isScanning) {
         scannerRef.current
           .stop()
-          .catch(err => console.error("Error stopping scanner:", err));
+          .catch((err: any) => console.error("Error stopping scanner:", err));
       }
     };
   }, [isScanning]);
@@ -46,9 +46,15 @@ export default function ScanBarcodePage() {
         return;
       }
 
-      const html5QrCode = new Html5Qrcode("qr-reader");
-      scannerRef.current = html5QrCode;
+      // Html5Qrcode package not installed - placeholder for future implementation
+      // const html5QrCode = new Html5Qrcode("qr-reader");
+      // scannerRef.current = html5QrCode;
+      setError("QR scanner library not installed. Please install html5-qrcode package.");
+      setIsScanning(false);
+      return;
 
+      /*
+      // Html5Qrcode implementation (commented out - package not installed)
       const config = {
         fps: 10,
         qrbox: { width: 250, height: 250 },
@@ -58,7 +64,7 @@ export default function ScanBarcodePage() {
       await html5QrCode.start(
         { facingMode: "environment" }, // Use back camera
         config,
-        (decodedText, _decodedResult) => {
+        (decodedText: any, _decodedResult: any) => {
           // Handle successful scan
           console.log("Scanned:", decodedText);
           setLastScanned(decodedText);
@@ -70,10 +76,11 @@ export default function ScanBarcodePage() {
             stopScanner();
           }, 1500);
         },
-        (_errorMessage) => {
+        (_errorMessage: any) => {
           // Handle scan errors silently (this fires continuously while scanning)
         }
       );
+      */
 
       setIsScanning(true);
       setCameraPermission("granted");

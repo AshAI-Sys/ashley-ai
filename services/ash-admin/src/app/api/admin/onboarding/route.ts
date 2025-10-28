@@ -1,10 +1,10 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 
 // Onboarding step validation schema
-const __OnboardingStepSchema = z.object({
+const _OnboardingStepSchema = z.object({
   step: z.enum([
     "personal_info",
     "role_assignment",

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -46,25 +46,25 @@ export const GET = withErrorHandling(
       });
 
       totalPieces = sewingRuns.reduce(
-        (sum, run) => sum + (run.qty_good || 0),
+        (sum: any, run: any) => sum + (run.qty_good || 0),
         0
       );
 
       const todayRuns = sewingRuns.filter(
-        run => run.created_at >= today && run.created_at < tomorrow
+        (run: any) => run.created_at >= today && run.created_at < tomorrow
       );
       todayPieces = todayRuns.reduce(
-        (sum, run) => sum + (run.qty_good || 0),
+        (sum: any, run: any) => sum + (run.qty_good || 0),
         0
       );
 
       const weekRuns = sewingRuns.filter(
-        run => run.created_at >= weekStart && run.created_at < weekEnd
+        (run: any) => run.created_at >= weekStart && run.created_at < weekEnd
       );
-      weekPieces = weekRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0);
+      weekPieces = weekRuns.reduce((sum: any, run: any) => sum + (run.qty_good || 0), 0);
 
       tasksCompleted = sewingRuns.filter(
-        run => run.status === "COMPLETED"
+        (run: any) => run.status === "COMPLETED"
       ).length;
     } else if (employee.department === "Quality Control") {
       // Count QC inspections
@@ -75,17 +75,17 @@ export const GET = withErrorHandling(
       totalPieces = qcInspections.length;
 
       const todayInspections = qcInspections.filter(
-        check => check.created_at >= today && check.created_at < tomorrow
+        (check: any) => check.created_at >= today && check.created_at < tomorrow
       );
       todayPieces = todayInspections.length;
 
       const weekInspections = qcInspections.filter(
-        check => check.created_at >= weekStart && check.created_at < weekEnd
+        (check: any) => check.created_at >= weekStart && check.created_at < weekEnd
       );
       weekPieces = weekInspections.length;
 
       tasksCompleted = qcInspections.filter(
-        check => check.status === "CLOSED"
+        (check: any) => check.status === "CLOSED"
       ).length;
     } else if (employee.department === "Cutting") {
       // Count cut lays (no cutter tracking in schema)
@@ -99,20 +99,20 @@ export const GET = withErrorHandling(
         },
       });
 
-      totalPieces = cutLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
+      totalPieces = cutLays.reduce((sum: any, lay: any) => sum + lay.bundles.length, 0);
 
       const todayLays = cutLays.filter(
-        lay => lay.created_at >= today && lay.created_at < tomorrow
+        (lay: any) => lay.created_at >= today && lay.created_at < tomorrow
       );
-      todayPieces = todayLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
+      todayPieces = todayLays.reduce((sum: any, lay: any) => sum + lay.bundles.length, 0);
 
       const weekLays = cutLays.filter(
-        lay => lay.created_at >= weekStart && lay.created_at < weekEnd
+        (lay: any) => lay.created_at >= weekStart && lay.created_at < weekEnd
       );
-      weekPieces = weekLays.reduce((sum, lay) => sum + lay.bundles.length, 0);
+      weekPieces = weekLays.reduce((sum: any, lay: any) => sum + lay.bundles.length, 0);
 
-      tasksCompleted = cutLays.filter(lay =>
-        lay.bundles.every(b => b.status === "DONE")
+      tasksCompleted = cutLays.filter((lay: any) =>
+        lay.bundles.every((b: any) => b.status === "DONE")
       ).length;
     } else if (employee.department === "Printing") {
       // Count print runs (no printer tracking in schema, use created_by)
@@ -126,27 +126,27 @@ export const GET = withErrorHandling(
       });
 
       totalPieces = printRuns.reduce(
-        (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
+        (sum: any, run: any) => sum + run.outputs.reduce((s: any, o: any) => s + o.qty_good, 0),
         0
       );
 
       const todayRuns = printRuns.filter(
-        run => run.created_at >= today && run.created_at < tomorrow
+        (run: any) => run.created_at >= today && run.created_at < tomorrow
       );
       todayPieces = todayRuns.reduce(
-        (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
+        (sum: any, run: any) => sum + run.outputs.reduce((s: any, o: any) => s + o.qty_good, 0),
         0
       );
 
       const weekRuns = printRuns.filter(
-        run => run.created_at >= weekStart && run.created_at < weekEnd
+        (run: any) => run.created_at >= weekStart && run.created_at < weekEnd
       );
       weekPieces = weekRuns.reduce(
-        (sum, run) => sum + run.outputs.reduce((s, o) => s + o.qty_good, 0),
+        (sum: any, run: any) => sum + run.outputs.reduce((s: any, o: any) => s + o.qty_good, 0),
         0
       );
 
-      tasksCompleted = printRuns.filter(run => run.status === "DONE").length;
+      tasksCompleted = printRuns.filter((run: any) => run.status === "DONE").length;
     }
 
     // Calculate efficiency rate (simplified - can be enhanced based on targets)
@@ -173,7 +173,7 @@ export const GET = withErrorHandling(
       if (recentInspections.length > 0) {
         
         const passedInspections = recentInspections.filter(
-          check => check.result === "PASSED"
+          (check: any) => check.result === "PASSED"
         ).length;
         qualityScore = Math.round(
           (passedInspections / recentInspections.length) * 100

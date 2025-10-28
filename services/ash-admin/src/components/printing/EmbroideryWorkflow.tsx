@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+// Unused import removed: Badge
 import { Progress } from "@/components/ui/progress";
 import { AlertCircle,
   CheckCircle,
@@ -331,7 +331,7 @@ export default function EmbroideryWorkflow({ runId,
       </div>
 
       {/* Step Content */}
-      {activeStep === "design" && (
+      {activeStep === "design_setup" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -566,7 +566,7 @@ export default function EmbroideryWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "setup" && (
+      {activeStep === "machine_setup" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -744,14 +744,14 @@ export default function EmbroideryWorkflow({ runId,
               <h4 className="mb-2 font-medium">Setup Guidelines:</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>
-                  • Use cut-away stabilizer for knits and stretchy fabrics
+                  â€¢ Use cut-away stabilizer for knits and stretchy fabrics
                 </li>
                 <li>
-                  • Adjust thread tension based on thread weight and fabric
+                  â€¢ Adjust thread tension based on thread weight and fabric
                 </li>
-                <li>• Start with slower speeds for complex designs</li>
+                <li>â€¢ Start with slower speeds for complex designs</li>
                 <li>
-                  • Ensure proper hoop tension - firm but not distorting fabric
+                  â€¢ Ensure proper hoop tension - firm but not distorting fabric
                 </li>
               </ul>
             </div>
@@ -977,7 +977,7 @@ export default function EmbroideryWorkflow({ runId,
         </Card>
       )}
 
-      {activeStep === "quality" && (
+      {activeStep === "quality_control" && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -1099,11 +1099,11 @@ export default function EmbroideryWorkflow({ runId,
                 Embroidery Quality Standards:
               </h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ Consistent stitch density and coverage</li>
-                <li>✓ Proper thread tension without puckering</li>
-                <li>✓ Accurate design placement and registration</li>
-                <li>✓ Clean thread cuts and no loose ends</li>
-                <li>✓ Colors match approved sample</li>
+                <li>âœ“ Consistent stitch density and coverage</li>
+                <li>âœ“ Proper thread tension without puckering</li>
+                <li>âœ“ Accurate design placement and registration</li>
+                <li>âœ“ Clean thread cuts and no loose ends</li>
+                <li>âœ“ Colors match approved sample</li>
               </ul>
             </div>
 

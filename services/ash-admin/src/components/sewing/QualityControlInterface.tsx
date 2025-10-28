@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef } from "react";
 import {
@@ -27,8 +27,8 @@ import {
   XCircle,
   AlertTriangle,
   CheckCircle, Package,
-  _User, Clock,
-  _Image,
+  User, Clock,
+  Image,
   Save,
   RefreshCw,
 } from "lucide-react";
@@ -143,17 +143,17 @@ export default function QualityControlInterface({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "stitching":
-        return "🧵";
+        return "ðŸ§µ";
       case "material":
-        return "🧶";
+        return "ðŸ§¶";
       case "alignment":
-        return "📏";
+        return "ðŸ“";
       case "measurement":
-        return "📐";
+        return "ðŸ“";
       case "other":
-        return "⚠️";
+        return "âš ï¸";
       default:
-        return "❓";
+        return "â“";
     }
   };
 
@@ -370,7 +370,7 @@ export default function QualityControlInterface({
                       <div>
                         <div className="font-medium">{defect.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          {defect.category} • {defect.severity}
+                          {defect.category} â€¢ {defect.severity}
                         </div>
                       </div>
                     </div>
@@ -412,10 +412,10 @@ export default function QualityControlInterface({
                   <div className="text-sm">
                     <div className="font-medium text-red-800">
                       {selectedDefect.severity === "critical"
-                        ? "🚨 Critical"
+                        ? "ðŸš¨ Critical"
                         : selectedDefect.severity === "major"
-                          ? "⚠️ Major"
-                          : "⚡ Minor"}{" "}
+                          ? "âš ï¸ Major"
+                          : "âš¡ Minor"}{" "}
                       Impact
                     </div>
                     <div className="text-red-700">
@@ -501,7 +501,7 @@ export default function QualityControlInterface({
                       onClick={() => removePhoto(index)}
                       className="absolute right-1 top-1 h-6 w-6 p-0"
                     >
-                      ×
+                      Ã—
                     </Button>
                   </div>
                 ))}
@@ -597,34 +597,34 @@ export default function QualityControlInterface({
           <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
             <div className="rounded-lg bg-yellow-50 p-3">
               <div className="mb-2 font-medium text-yellow-800">
-                ⚡ Minor Defects
+                âš¡ Minor Defects
               </div>
               <ul className="space-y-1 text-yellow-700">
-                <li>• Loose threads</li>
-                <li>• Minor color variations</li>
-                <li>• Small measurement deviations</li>
+                <li>â€¢ Loose threads</li>
+                <li>â€¢ Minor color variations</li>
+                <li>â€¢ Small measurement deviations</li>
               </ul>
             </div>
 
             <div className="rounded-lg bg-orange-50 p-3">
               <div className="mb-2 font-medium text-orange-800">
-                ⚠️ Major Defects
+                âš ï¸ Major Defects
               </div>
               <ul className="space-y-1 text-orange-700">
-                <li>• Uneven stitching</li>
-                <li>• Misaligned seams</li>
-                <li>• Fabric defects</li>
+                <li>â€¢ Uneven stitching</li>
+                <li>â€¢ Misaligned seams</li>
+                <li>â€¢ Fabric defects</li>
               </ul>
             </div>
 
             <div className="rounded-lg bg-red-50 p-3">
               <div className="mb-2 font-medium text-red-800">
-                🚨 Critical Defects
+                ðŸš¨ Critical Defects
               </div>
               <ul className="space-y-1 text-red-700">
-                <li>• Broken stitches</li>
-                <li>• Holes or tears</li>
-                <li>• Missing components</li>
+                <li>â€¢ Broken stitches</li>
+                <li>â€¢ Holes or tears</li>
+                <li>â€¢ Missing components</li>
               </ul>
             </div>
           </div>

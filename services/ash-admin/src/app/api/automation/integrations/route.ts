@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -46,7 +46,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       });
 
     // Mask sensitive configuration data
-    const sanitizedIntegrations = integrations.map(integration => ({
+    const sanitizedIntegrations = integrations.map((integration: any) => ({
       ...integration,
       config: maskSensitiveConfig(JSON.parse(integration.config)),
     }));

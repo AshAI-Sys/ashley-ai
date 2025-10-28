@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -38,9 +38,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     });
 
     // Process cartons to calculate metrics
-    const processedCartons = cartons.map(carton => {
+    const processedCartons = cartons.map((carton: any) => {
       const unitsCount = carton.contents.reduce(
-        (sum, content) => sum + content.qty,
+        (sum: any, content: any) => sum + content.qty,
         0
       );
 
@@ -136,7 +136,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
         // Calculate actual weight and fill percentage
         const unitWeight = 0.15; // kg per unit (average)
         const totalUnits = cartonWithContents.contents.reduce(
-          (sum, c) => sum + c.qty,
+          (sum: any, c: any) => sum + c.qty,
           0
         );
         const actualWeight =
@@ -147,7 +147,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           (cartonWithContents.length_cm || 40) *
           (cartonWithContents.width_cm || 30) *
           (cartonWithContents.height_cm || 25);
-        const unitVolume = 300; // cm³ per unit (estimated)
+        const unitVolume = 300; // cmÂ³ per unit (estimated)
         const usedVolume = totalUnits * unitVolume;
         const fillPercentage = Math.min(100, (usedVolume / cartonVolume) * 100);
 

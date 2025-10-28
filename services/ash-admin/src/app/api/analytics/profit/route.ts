@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -53,22 +53,22 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     // Calculate aggregate statistics
     const stats = {
-      totalRevenue: analyses.reduce((sum, a) => sum + a.total_revenue, 0),
-      totalCost: analyses.reduce((sum, a) => sum + a.total_cost, 0),
-      totalGrossProfit: analyses.reduce((sum, a) => sum + a.gross_profit, 0),
-      totalNetProfit: analyses.reduce((sum, a) => sum + a.net_profit, 0),
+      totalRevenue: analyses.reduce((sum: any, a: any) => sum + a.total_revenue, 0),
+      totalCost: analyses.reduce((sum: any, a: any) => sum + a.total_cost, 0),
+      totalGrossProfit: analyses.reduce((sum: any, a: any) => sum + a.gross_profit, 0),
+      totalNetProfit: analyses.reduce((sum: any, a: any) => sum + a.net_profit, 0),
       avgGrossMargin:
-        analyses.reduce((sum, a) => sum + a.gross_margin, 0) /
+        analyses.reduce((sum: any, a: any) => sum + a.gross_margin, 0) /
           analyses.length || 0,
       avgNetMargin:
-        analyses.reduce((sum, a) => sum + a.net_margin, 0) / analyses.length ||
+        analyses.reduce((sum: any, a: any) => sum + a.net_margin, 0) / analyses.length ||
         0,
       totalOrders: analyses.length,
     };
 
     // Group by client for comparison
     const byClient: any = {};
-    analyses.forEach(a => {
+    analyses.forEach((a: any) => {
       if (!byClient[a.client_id]) {
         byClient[a.client_id] = {
           client_id: a.client_id,

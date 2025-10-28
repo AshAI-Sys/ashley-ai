@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -112,7 +112,7 @@ async function performDefectTrendAnalysis(inspection: any) {
   const defectTrends: Record<string, any[]> = {};
   const timeSeriesData: any[] = [];
 
-  historicalData.forEach(insp => {
+  historicalData.forEach((insp: any) => {
     const date = insp.inspection_date.toISOString().split("T")[0];
     let totalDefects = 0;
 
@@ -375,15 +375,15 @@ async function performProcessControlAnalysis(inspection: any) {
 
   if (historicalInspections.length >= 10) {
     const defectRates = historicalInspections.map(
-      insp =>
+      (insp: any) =>
         (insp.critical_found + insp.major_found + insp.minor_found) /
         insp.sample_size
     );
 
     const avgDefectRate =
-      defectRates.reduce((sum, rate) => sum + rate, 0) / defectRates.length;
+      defectRates.reduce((sum: any, rate: any) => sum + rate, 0) / defectRates.length;
     const avgSampleSize =
-      historicalInspections.reduce((sum, insp) => sum + insp.sample_size, 0) /
+      historicalInspections.reduce((sum: any, insp: any) => sum + insp.sample_size, 0) /
       historicalInspections.length;
 
     // Calculate control limits for p-chart

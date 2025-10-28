@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -150,7 +150,7 @@ export function QuantitiesSizeSection({
 
     // Apply standard adult template by default
     const standardTemplate = SIZE_TEMPLATES[0];
-    applySizeTemplate(standardTemplate);
+    applySizeTemplate(standardTemplate || {} as SizeTemplate);
   };
 
   const resetSizeCurve = () => {
@@ -212,7 +212,7 @@ export function QuantitiesSizeSection({
             {SIZE_TEMPLATES.map(template => (
               <button
                 key={template.name}
-                onClick={() => applySizeTemplate(template)}
+                onClick={() => applySizeTemplate(template || {} as SizeTemplate)}
                 disabled={totalQuantity === 0}
                 className={`rounded-lg border p-3 text-left transition-colors ${
                   activeTemplate === template.name
@@ -225,7 +225,7 @@ export function QuantitiesSizeSection({
                   {template.description}
                 </div>
                 <div className="mt-2 text-xs text-blue-600">
-                  M: {template.percentages.M}% • L: {template.percentages.L}% •
+                  M: {template.percentages.M}% â€¢ L: {template.percentages.L}% â€¢
                   XL: {template.percentages.XL}%
                 </div>
               </button>
@@ -382,3 +382,4 @@ export function QuantitiesSizeSection({
     </Card>
   );
 }
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Bulk Operations Utility
  * Provides batch processing capabilities for orders, invoices, and other entities
  */

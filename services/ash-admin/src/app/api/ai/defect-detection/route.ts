@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { defectDetectionAI } from "@/lib/ai/defect-detection";
 import { prisma } from "@/lib/db";
@@ -27,8 +27,8 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     // Optionally save results to database if bundle_id provided
     if (bundle_id && result.defects_found > 0) {
       // Create QC check record
-      }
-      const ____qcCheck = await prisma.qCInspection.create({
+      // Unused variable - intentionally not used
+      const _qcCheck = await prisma.qCInspection.create({
         data: {
           workspace_id: "default",
           order_id: "unknown", // TODO: Get from bundle if available
@@ -49,6 +49,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           notes: `AI detected ${result.defects_found} defect(s). Quality score: ${result.quality_score}%. Confidence: ${result.confidence}%`,
         },
       });
+    }
 
       // Create defect records - Note: QCDefectType requires inspection_point_id, skip for now
       // In production, you would need to:
@@ -87,7 +88,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         { status: 400 }
       );
     }
-    const ___bundleIds = bundleIdsParam.split(",");
+    // Unused: const ___bundleIds = bundleIdsParam.split(",");
 
     // Get QC checks with photos for these bundles
     const qcChecks = await prisma.qCInspection.findMany({

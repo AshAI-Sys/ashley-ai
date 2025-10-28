@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
@@ -12,7 +12,7 @@ import {
   Plus,
   Building2,
   Edit,
-  _Image,
+  Image,
   ToggleLeft,
   ToggleRight,
   Save,
@@ -258,7 +258,7 @@ export default function ClientBrandsPage() {
     }
   };
 
-  const formatSettings = (settings: string | null) => {
+  const formatSettings = (settings: string | null | undefined) => {
     if (!settings) return null;
     try {
       const parsed = JSON.parse(settings);

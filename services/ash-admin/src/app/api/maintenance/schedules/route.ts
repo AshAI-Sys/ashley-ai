@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -69,7 +69,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       orderBy: [{ next_due_date: "asc" }, { priority: "desc" }],
       });
 
-    const processedSchedules = schedules.map(schedule => {
+    const processedSchedules = schedules.map((schedule: any) => {
       const nextDueDate = new Date(schedule.next_due_date);
       const today = new Date();
       const daysUntilDue = Math.ceil(
@@ -79,7 +79,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       const isDueSoon = !isOverdue && daysUntilDue <= 7;
 
       const completedWorkOrders = schedule.work_orders.filter(
-        wo => wo.status === "completed"
+        (wo: any) => wo.status === "completed"
       );
       const lastMaintenance = completedWorkOrders[0]?.completed_at;
 
@@ -108,7 +108,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         safety_notes: schedule.safety_notes,
         asset: schedule.asset,
         work_orders_count: schedule._count.work_orders,
-        recent_work_orders: schedule.work_orders.map(wo => ({
+        recent_work_orders: schedule.work_orders.map((wo: any) => ({
           id: wo.id,
           title: wo.title,
           status: wo.status,

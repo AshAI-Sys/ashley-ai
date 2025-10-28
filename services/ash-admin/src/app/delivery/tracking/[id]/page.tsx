@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ import {
   CheckCircle,
   AlertCircle,
   Navigation,
-  _Camera,
+  Camera,
   MessageSquare,
   RefreshCw,
 } from "lucide-react";
@@ -372,7 +372,7 @@ export default function ShipmentTrackingPage({
                   {shipment.cod_amount && (
                     <div className="rounded-lg bg-green-50 p-3">
                       <div className="text-sm font-medium text-green-800">
-                        COD Amount: ₱{shipment.cod_amount.toLocaleString()}
+                        COD Amount: â‚±{shipment.cod_amount.toLocaleString()}
                       </div>
                     </div>
                   )}

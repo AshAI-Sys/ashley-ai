@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
 import { prisma } from "@/lib/db";
@@ -101,7 +101,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         active_operators: 3 + Math.floor(Math.random() * 2),
         defect_rate:
           qcChecks.length > 0
-            ? (qcChecks.filter(q => q.status === "FAILED").length /
+            ? (qcChecks.filter((q: any) => q.status === "FAILED").length /
                 qcChecks.length) *
               100
             : 5,

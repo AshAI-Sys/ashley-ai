@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import * as bcrypt from "bcryptjs";
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
     const password_hash = await bcrypt.hash(password, 10);
 
     // Create workspace and admin user in a transaction
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Create workspace;
       const workspace = await tx.workspace.create({
         data: {
@@ -170,7 +170,7 @@ export async function POST(request: NextRequest) {
       role: user.role,
     });
 
-    console.log("✅ New admin account created:", {
+    console.log("âœ… New admin account created:", {
       workspaceId: workspace.id,
       workspaceName: workspace.name,
       userId: user.id,

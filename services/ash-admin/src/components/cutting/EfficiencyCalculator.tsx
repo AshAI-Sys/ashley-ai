@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +22,7 @@ interface EfficiencyData {
   defects: number;
   totalPiecesCut: number;
   uom: string;
-  patternAreaPerPiece?: number; // cm² per piece
+  patternAreaPerPiece?: number; // cmÂ² per piece
   gsm?: number; // fabric GSM for weight calculations
 }
 
@@ -87,8 +87,8 @@ export default function EfficiencyCalculator({
     } = data;
 
     // 1. Marker Efficiency (fabric utilization)
-    const totalMarkerArea = (markerWidth || 160) * markerLength * 100; // cm²
-    const estimatedPatternArea = patternAreaPerPiece || 2500; // cm² default for medium garment
+    const totalMarkerArea = (markerWidth || 160) * markerLength * 100; // cmÂ²
+    const estimatedPatternArea = patternAreaPerPiece || 2500; // cmÂ² default for medium garment
     const totalPatternArea = totalPiecesCut * estimatedPatternArea;
     const markerEfficiency = Math.min(
       100,
@@ -102,7 +102,7 @@ export default function EfficiencyCalculator({
     const materialYield = (netUsed / grossUsed) * 100;
 
     // 3. Expected vs Actual Pieces
-    const fabricDensity = gsm || 200; // g/m²
+    const fabricDensity = gsm || 200; // g/mÂ²
     const expectedPiecesFromFabric =
       data.uom === "KG"
         ? Math.floor(

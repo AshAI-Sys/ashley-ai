@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -106,15 +106,15 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       });
 
     // Get client names for top clients
-    const clientIds = topClients.map(client => client.client_id);
+    const clientIds = topClients.map((client: any) => client.client_id);
     const clients = await prisma.client.findMany({
       where: { id: { in: clientIds } },
       take: 10, // Limit to 10 clients (should match clientIds length from topClients)
       select: { id: true, name: true },
       });
 
-    const topClientsWithNames = topClients.map(client => {
-      const clientInfo = clients.find(c => c.id === client.client_id);
+    const topClientsWithNames = topClients.map((client: any) => {
+      const clientInfo = clients.find((c: any) => c.id === client.client_id);
       return {
         client_name: clientInfo?.name || "Unknown",
         revenue: client._sum.total_amount || 0,

@@ -1,7 +1,7 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/database";
-import { birService } from "@/lib/government/bir";
+// Unused import removed: birService
 import { sssService } from "@/lib/government/sss";
 import { philHealthService } from "@/lib/government/philhealth";
 import { pagIBIGService } from "@/lib/government/pagibig";
@@ -54,7 +54,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     let report: any = null;
 
     // Parse contact_info JSON to extract government IDs
-    const employeesWithGovIds = employees.map(emp => {
+    const employeesWithGovIds = employees.map((emp: any) => {
       let contactInfo: any = {};
       try {
         contactInfo = emp.contact_info ? JSON.parse(emp.contact_info) : {};
@@ -76,8 +76,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     switch (agency.toUpperCase()) {
       case "SSS":
         const sssEmployees = employeesWithGovIds
-          .filter(emp => emp.sss_number)
-          .map(emp => ({
+          .filter((emp: any) => emp.sss_number)
+          .map((emp: any) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             sss_number: emp.sss_number!,
@@ -97,8 +97,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "PHILHEALTH":
         const philhealthEmployees = employeesWithGovIds
-          .filter(emp => emp.philhealth_number)
-          .map(emp => ({
+          .filter((emp: any) => emp.philhealth_number)
+          .map((emp: any) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             philhealth_number: emp.philhealth_number!,
@@ -118,8 +118,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
       case "PAGIBIG":
         const pagibigEmployees = employeesWithGovIds
-          .filter(emp => emp.pagibig_number)
-          .map(emp => ({
+          .filter((emp: any) => emp.pagibig_number)
+          .map((emp: any) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
             pagibig_number: emp.pagibig_number!,

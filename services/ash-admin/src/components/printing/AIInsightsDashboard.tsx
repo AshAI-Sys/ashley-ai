@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -291,7 +291,7 @@ export default function AIInsightsDashboard() {
                   <div className="font-medium">{method}</div>
                   <div className="text-xs text-muted-foreground">
                     {data.runs_count} active runs
-                    {data.top_issue && ` • Top issue: ${data.top_issue}`}
+                    {data.top_issue && ` â€¢ Top issue: ${data.top_issue}`}
                   </div>
                 </div>
                 <div className="text-right">

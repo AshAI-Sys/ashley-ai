@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { registerServiceWorker, addConnectionListeners } from "@/lib/pwa";
@@ -20,14 +20,14 @@ export default function PWARegister() {
       () => {
         setIsOnline(true);
         toast.success("Connection restored", {
-          icon: "🌐",
+          icon: "ðŸŒ",
           duration: 3000,
         });
       },
       () => {
         setIsOnline(false);
         toast.error("You are offline", {
-          icon: "📡",
+          icon: "ðŸ“¡",
           duration: 5000,
         });
       }
@@ -58,7 +58,7 @@ export default function PWARegister() {
         ),
         {
           duration: Infinity,
-          icon: "🔄",
+          icon: "ðŸ”„",
         }
       );
     };

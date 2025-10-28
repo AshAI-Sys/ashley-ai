@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -19,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+// Unused import removed: Textarea
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -83,6 +84,7 @@ const statusColors = {
 };
 
 export default function MachinesPage() {
+  const router = useRouter();
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({
@@ -172,7 +174,7 @@ export default function MachinesPage() {
             is_active: true,
             specifications: {
               platen_size: '15" x 15"',
-              max_temp: "230°C",
+              max_temp: "230Â°C",
               max_pressure: "60 PSI",
             },
             status: "AVAILABLE",
@@ -378,7 +380,7 @@ export default function MachinesPage() {
                     }
                   />
                   <Input
-                    placeholder="Max Temperature (°C)"
+                    placeholder="Max Temperature (Â°C)"
                     value={newMachine.specifications.max_temp}
                     onChange={e =>
                       setNewMachine({
@@ -833,3 +835,4 @@ export default function MachinesPage() {
     </div>
   );
 }
+

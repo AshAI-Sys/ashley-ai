@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
 export const dynamic = 'force-dynamic';
@@ -658,7 +658,7 @@ function PackingCartonsTable({
                   Carton / Order
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                  Dimensions (L×W×H)
+                  Dimensions (LÃ—WÃ—H)
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Weight & Fill
@@ -696,8 +696,8 @@ function PackingCartonsTable({
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <div className="text-sm text-gray-900">
-                        {carton.dimensions?.length || 0}×
-                        {carton.dimensions?.width || 0}×
+                        {carton.dimensions?.length || 0}Ã—
+                        {carton.dimensions?.width || 0}Ã—
                         {carton.dimensions?.height || 0} cm
                       </div>
                     </td>

@@ -1,4 +1,4 @@
-/* eslint-disable */
+﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
@@ -106,7 +106,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Calculate average delivery time (using updated_at as delivery timestamp)
     let avgDeliveryTime = 0;
     if (averageDeliveryTimes.length > 0) {
-      const totalDeliveryTime = averageDeliveryTimes.reduce((sum, shipment) => {
+      const totalDeliveryTime = averageDeliveryTimes.reduce((sum: any, shipment: any) => {
         if (shipment.updated_at && shipment.created_at) {
           const deliveryTime =
             shipment.updated_at.getTime() - shipment.created_at.getTime();
@@ -118,7 +118,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     }
 
     // Get on-time performance (deliveries within ETA, using updated_at as delivery time)
-    const onTimeDeliveries = averageDeliveryTimes.filter(shipment => {
+    const onTimeDeliveries = averageDeliveryTimes.filter((shipment: any) => {
       if (shipment.updated_at && shipment.eta) {
         
         return shipment.updated_at <= shipment.eta;
@@ -175,7 +175,7 @@ async function getGeographicDistribution() {
 
     const cityCount: Record<string, number> = {};
 
-    shipments.forEach(shipment => {
+    shipments.forEach((shipment: any) => {
       if (shipment.consignee_address) {
         const address = shipment.consignee_address;
 
@@ -226,7 +226,7 @@ async function getMethodPerformance() {
 
       let averageTime = 0;
       if (avgTime.length > 0) {
-        const totalTime = avgTime.reduce((sum, shipment) => {
+        const totalTime = avgTime.reduce((sum: any, shipment: any) => {
           if (shipment.updated_at) {
             return (
               sum +

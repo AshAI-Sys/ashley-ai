@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -220,7 +220,7 @@ export default function RegisterPage() {
             {verificationUrl && (
               <div className="mb-6 rounded-lg border-2 border-green-300 bg-green-50 p-4">
                 <p className="mb-3 text-sm font-bold text-green-900">
-                  ✅ Quick Verification Link
+                  âœ… Quick Verification Link
                 </p>
                 <p className="mb-3 text-xs font-semibold text-gray-700">
                   Click the button below to verify your email instantly:

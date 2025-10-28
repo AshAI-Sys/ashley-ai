@@ -33,13 +33,21 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+    // Check if user has password hash
+    if (!user.password_hash) {
+      return NextResponse.json(
+        { error: "User has no password set" },
+        { status: 400 }
+      );
+    }
+
     // Verify current password
     const isPasswordValid = await bcrypt.compare(
       current_password,
       user.password_hash
     );
     if (!isPasswordValid) {
-      
+
       return NextResponse.json(
         { error: "Current password is incorrect" },
         { status: 401 }
