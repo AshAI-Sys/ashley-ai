@@ -120,7 +120,7 @@ export const DELETE = requireAuth(async (
 
     return apiSuccess({ id: orderId }, "Order deleted successfully");
   } catch (error) {
-    logError("Failed to delete order", error, { orderId: orderId });
+    logError("Failed to delete order", error, { orderId: context!.params.id });
     return apiServerError(error);
   }
 });

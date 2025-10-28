@@ -187,14 +187,14 @@ function calculateQuantityEfficiency(quantity: number, method: string) {
 
   const range = optimalRanges[method] || optimalRanges.SUBLIMATION;
 
-  if (quantity >= range.min && quantity <= range.optimal) {
-    
-    return 0.95 + (quantity / range.optimal) * 0.05;
-  } else if (quantity <= range.max) {
-    
+  if (quantity >= range!.min && quantity <= range!.optimal) {
+
+    return 0.95 + (quantity / range!.optimal) * 0.05;
+  } else if (quantity <= range!.max) {
+
     return (
       0.85 +
-      (1 - (quantity - range.optimal) / (range.max - range.optimal)) * 0.1
+      (1 - (quantity - range!.optimal) / (range!.max - range!.optimal)) * 0.1
     );
   } else {
     return 0.75;
