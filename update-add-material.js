@@ -1,4 +1,7 @@
-"use client";
+const fs = require('fs');
+const path = require('path');
+
+const content = `"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -289,11 +292,11 @@ export default function AddMaterialPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`flex items-center gap-2 rounded-lg px-6 py-2 text-white ${
+              className={\`flex items-center gap-2 rounded-lg px-6 py-2 text-white \${
                 isLoading
                   ? "cursor-not-allowed bg-gray-400"
                   : "bg-blue-600 hover:bg-blue-700"
-              }`}
+              }\`}
             >
               <Save className="h-4 w-4" />
               {isLoading ? "Saving..." : "Save Material"}
@@ -304,3 +307,8 @@ export default function AddMaterialPage() {
     </div>
   );
 }
+`;
+
+const filePath = path.join(__dirname, 'services', 'ash-admin', 'src', 'app', 'inventory', 'add-material', 'page.tsx');
+fs.writeFileSync(filePath, content);
+console.log('File updated successfully');
