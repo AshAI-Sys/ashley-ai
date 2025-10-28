@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           queries: {
             // Cache Configuration
             staleTime: 5 * 60 * 1000, // 5 minutes - data considered fresh
-            cacheTime: 10 * 60 * 1000, // 10 minutes - keep in cache when inactive
+            gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache when inactive (formerly cacheTime)
 
             // Refetch Strategy
             refetchOnWindowFocus: false, // Don't refetch on window focus
@@ -38,10 +38,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
             // Performance Optimizations
             structuralSharing: true, // Share memory between query data
-            keepPreviousData: true, // Keep previous data while loading new data (smooth UX)
 
             // Error Handling
-            useErrorBoundary: false, // Handle errors at component level
+            throwOnError: false, // Handle errors at component level (formerly useErrorBoundary)
           },
           mutations: {
             // Retry Configuration for mutations
@@ -52,7 +51,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             networkMode: "online",
 
             // Error Handling
-            useErrorBoundary: false,
+            throwOnError: false, // Handle errors at component level (formerly useErrorBoundary)
           },
         },
       })
