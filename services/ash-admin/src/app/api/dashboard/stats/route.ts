@@ -83,7 +83,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
 
       // Production runs
       // TODO: CuttingRun model doesn't exist in schema - returns empty for now
-      Promise.resolve([]),
+      Promise.resolve([] as Array<{ id: string; created_at: Date; efficiency_score?: number; bundles_cut?: number }>),
 
       prisma.printRun.findMany({
         where: { created_at: { gte: startDate } },

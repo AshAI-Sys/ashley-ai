@@ -13,26 +13,15 @@ export const GET = requireAuth(async (_request: NextRequest, authUser) => {
     const workspace = await prisma.workspace.findUnique({
       where: { id: authUser.workspaceId },
       select: {
+        id: true,
         name: true,
         slug: true,
-        description: true,
-        industry: true,
-        company_size: true,
-        website: true,
-        email: true,
-        phone: true,
-        address: true,
-        city: true,
-        state: true,
-        country: true,
-        postal_code: true,
-        timezone: true,
-        currency: true,
-        date_format: true,
-        tax_id: true,
-        logo_url: true,
+        settings: true,
+        is_active: true,
+        created_at: true,
+        updated_at: true,
       },
-      });
+    });
 
     if (!workspace) {
       
@@ -63,21 +52,9 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
     // Only update fields that are provided
     const allowedFields = [
       "name",
-      "description",
-      "industry",
-      "company_size",
-      "website",
-      "email",
-      "phone",
-      "address",
-      "city",
-      "state",
-      "country",
-      "postal_code",
-      "timezone",
-      "currency",
-      "date_format",
-      "tax_id",
+      "slug",
+      "settings",
+      "is_active",
     ];
 
     allowedFields.forEach(field => {

@@ -45,16 +45,22 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
     const base64 = buffer.toString("base64");
     const logo_url = `data:${file.type};base64,${base64}`;
 
-    // Update workspace logo
+    // Update workspace logo (stored in settings JSON field)
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: authUser.workspaceId },
+      select: { settings: true },
+    });
+
+    const currentSettings = workspace?.settings ? JSON.parse(workspace.settings) : {};
+    const updatedSettings = { ...currentSettings, logo_url };
+
     await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: {
-        logo_url,
+        settings: JSON.stringify(updatedSettings),
         updated_at: new Date(),
       },
-        
-      
-        });
+    });
 
     return NextResponse.json({ success: true, logo_url });
   } catch (error) {
@@ -68,15 +74,22 @@ export const POST = requireAuth(async (request: NextRequest, authUser) => {
 
 export const DELETE = requireAuth(async (_request: NextRequest, authUser) => {
   try {
+    // Remove logo from settings JSON field
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: authUser.workspaceId },
+      select: { settings: true },
+    });
+
+    const currentSettings = workspace?.settings ? JSON.parse(workspace.settings) : {};
+    delete currentSettings.logo_url;
+
     await prisma.workspace.update({
       where: { id: authUser.workspaceId },
       data: {
-        logo_url: null,
+        settings: JSON.stringify(currentSettings),
         updated_at: new Date(),
       },
-        
-      
-        });
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -85,5 +98,5 @@ export const DELETE = requireAuth(async (_request: NextRequest, authUser) => {
       { error: "Failed to remove logo" },
       { status: 500 }
     );
-    }
+  }
 });
