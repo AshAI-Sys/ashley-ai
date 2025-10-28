@@ -204,7 +204,7 @@ async function performRootCausePrediction(inspection: any) {
   for (const [category, pattern] of Object.entries(defectPatterns)) {
     let likelyRootCause = "Unknown";
     let confidence = 0;
-    let preventiveActions = [];
+    let preventiveActions: string[] = [];
 
     switch (category) {
       case "PRINTING":

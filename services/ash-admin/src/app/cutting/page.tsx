@@ -279,7 +279,7 @@ export default function CuttingPage() {
                         {cutLays.length > 0
                           ? (
                               (cutLays.reduce(
-                                (sum, lay) => sum + lay.netUsed / lay.grossUsed,
+                                (sum: number, lay: any) => sum + lay.netUsed / lay.grossUsed,
                                 0
                               ) /
                                 cutLays.length) *
@@ -302,7 +302,7 @@ export default function CuttingPage() {
                         Created Bundles
                       </p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {bundles.filter(b => b.status === "CREATED").length}
+                        {bundles.filter(b: any) => b.status === "CREATED").length}
                       </p>
                     </div>
                   </div>
@@ -410,7 +410,7 @@ export default function CuttingPage() {
                         {cutLays.map((lay: any) => {
                           const totalPieces =
                             lay?.outputs?.reduce(
-                              (sum, output) => sum + output.qty,
+                              (sum: number, output: any) => sum + output.qty,
                               0
                             ) || 0;
                           const efficiency =
