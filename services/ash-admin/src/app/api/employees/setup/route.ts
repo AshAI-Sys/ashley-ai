@@ -48,7 +48,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       workspace = await prisma.workspace.create({
         data: {
           name: "Ashley AI Manufacturing",
-          description: "Main manufacturing workspace",
+          slug: "ashley-ai-manufacturing",
+          settings: JSON.stringify({ description: "Main manufacturing workspace" }),
         },
       });
     }
