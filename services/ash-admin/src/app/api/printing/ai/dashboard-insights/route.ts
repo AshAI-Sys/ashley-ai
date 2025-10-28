@@ -188,7 +188,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
       if (!methodIssues[run.print_method]) {
         methodIssues[run.print_method] = 0;
       }
-      methodIssues[run.print_method]++;
+      methodIssues[run.print_method]!++;
     }
 
     // Material waste issues
@@ -361,10 +361,10 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
     }
 
     const score = calculateRunPerformanceScore(run);
-    methodStats[run.print_method].scores.push(score);
+    methodStats[run.print_method]!.scores.push(score);
 
     if (run.status === "IN_PROGRESS" || run.status === "PAUSED") {
-      methodStats[run.print_method].activeCount++;
+      methodStats[run.print_method]!.activeCount++;
     }
 
     // Track common issues from outputs
@@ -372,10 +372,10 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
       const output = run.outputs[0];
       if ((output.qty_reject || 0) > 0) {
         const issueType = "quality_reject";
-        if (!methodStats[run.print_method].issues[issueType]) {
-          methodStats[run.print_method].issues[issueType] = 0;
+        if (!methodStats[run.print_method]!.issues[issueType]) {
+          methodStats[run.print_method]!.issues[issueType] = 0;
         }
-        methodStats[run.print_method].issues[issueType]++;
+        methodStats[run.print_method]!.issues[issueType]!++;
       }
     }
   });

@@ -181,7 +181,7 @@ export default function CreateLayPage() {
     value: string | number
   ) => {
     const newOutputs = [...outputs];
-    newOutputs[index] = { ...newOutputs[index], [field]: value };
+    newOutputs[index] = { ...newOutputs[index], [field]: value } as SizeOutput;
     setOutputs(newOutputs);
   };
 

@@ -19,7 +19,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
               mode: "insensitive" as any,
             },
           }
-        : {},
+        : undefined,
       select: {
         supplier: true,
       },
