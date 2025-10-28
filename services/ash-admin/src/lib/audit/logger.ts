@@ -78,8 +78,8 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
         workspace_id: entry.workspaceId || 'default',
         user_id: entry.userId,
         action: entry.action,
-        resource: entry.resource,
-        resource_id: entry.resourceId,
+        resource: entry.resource ?? "",
+        resource_id: entry.resourceId ?? "",
         ip_address: entry.ipAddress,
         user_agent: entry.userAgent,
         old_values: entry.before ? JSON.stringify(entry.before) : undefined,
@@ -127,15 +127,6 @@ export async function queryAuditLogs(filter: AuditLogFilter) {
     orderBy: { created_at: "desc" },
     take: filter.limit || 100,
     skip: filter.offset || 0,
-    include: {
-      user: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-        },
-      },
-    },
   });
 
   return logs.map(log => ({
