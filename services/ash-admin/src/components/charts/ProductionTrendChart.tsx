@@ -1,7 +1,7 @@
 "use client"; import { Card, CardContent, CardHeader, CardTitle, CardDescription,
 } from"@/components/ui/card";
 import { Button } from"@/components/ui/button";
-import { LineChart, Line, _AreaChart, Area, _XAxis, _YAxis, _CartesianGrid, _Tooltip, _Legend, _ResponsiveContainer, TooltipProps,
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, TooltipProps,
 } from"recharts";
 import { Download, TrendingUp, Calendar } from"lucide-react";
 import { format, subDays } from"date-fns";
