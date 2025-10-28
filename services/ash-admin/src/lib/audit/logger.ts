@@ -404,7 +404,7 @@ export async function getAuditStatistics(days: number = 30) {
     actionCounts[log.action] = (actionCounts[log.action] || 0) + 1;
 
     // Count by day
-    const day = log.created_at.toISOString().split("T")[0];
+    const day = log.created_at.toISOString().split("T")[0]!;
     dailyCounts[day] = (dailyCounts[day] || 0) + 1;
   });
 

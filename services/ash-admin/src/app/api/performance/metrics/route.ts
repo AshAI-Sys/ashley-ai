@@ -27,7 +27,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       lines.forEach(line => {
         if (line.includes(":")) {
           const [key, value] = line.split(":");
-          stats[key] = value;
+          if (key) stats[key] = value;
         }
       });
 
