@@ -78,22 +78,10 @@ export default function TopNavbar() {
     <nav className="sticky top-0 z-40 border-b border-slate-700 bg-slate-800 shadow-sm backdrop-blur-md transition-all">
       <div className="flex items-center justify-between px-6 py-3.5">
         {/* Left Section - Logo/Brand */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 p-1.5">
-            <img
-              src="/ash-ai-logo.png"
-              alt="Ashley AI Logo"
-              className="h-full w-full object-contain brightness-0 invert"
-            />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold leading-tight text-white">
-              Ashley AI
-            </h1>
-            <p className="text-xs leading-tight text-white/90">
-              Apparel Smart Hub
-            </p>
-          </div>
+        <div className="flex items-center gap-4">
+          <h1 className="hidden text-lg font-bold text-white md:block">
+            Ashley AI
+          </h1>
         </div>
 
         {/* Right Section - Theme Toggle, Notifications & Profile */}
