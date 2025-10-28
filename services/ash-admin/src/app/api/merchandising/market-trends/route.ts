@@ -201,7 +201,12 @@ function getSeasonalTrends(season: string, workspaceId: string) {
   const trends: any[] = [];
   const now = new Date();
 
-  const seasonalData = {
+  const seasonalData: Record<string, {
+    products: string[];
+    colors: string[];
+    materials: string[];
+    impact: number;
+  }> = {
     SPRING: {
       products: ["T_SHIRT", "POLO", "LIGHT_JACKET"],
       colors: ["Sage Green", "Coral Pink", "Sky Blue", "Lemon Yellow"],

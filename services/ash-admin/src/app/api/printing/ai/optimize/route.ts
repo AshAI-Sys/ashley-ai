@@ -178,7 +178,7 @@ function generateOptimization(method: string, params: any) {
 }
 
 function calculateQuantityEfficiency(quantity: number, method: string) {
-  const optimalRanges = {
+  const optimalRanges: Record<string, { min: number; optimal: number; max: number }> = {
     SILKSCREEN: { min: 50, optimal: 250, max: 1000 },
     SUBLIMATION: { min: 1, optimal: 25, max: 100 },
     DTF: { min: 1, optimal: 50, max: 200 },
@@ -386,7 +386,7 @@ function calculateEstimatedTime(
   quantity: number,
   factors: any
 ) {
-  const baseTimes = {
+  const baseTimes: Record<string, number> = {
     SILKSCREEN: 0.8, // minutes per piece
     SUBLIMATION: 2.5,
     DTF: 1.5,
@@ -406,7 +406,7 @@ function calculateCostPrediction(
   materials: any[],
   factors: any
 ) {
-  const baseCosts = {
+  const baseCosts: Record<string, number> = {
     SILKSCREEN: 2.5,
     SUBLIMATION: 3.75,
     DTF: 4.25,

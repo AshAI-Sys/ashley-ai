@@ -169,7 +169,7 @@ async function generateDemandForecast(params: any) {
   const isSeasonalProduct = params.productCategory === "APPAREL";
 
   // Calculate seasonal factors
-  const seasonalMultipliers = {
+  const seasonalMultipliers: Record<number, number> = {
     0: 0.8, // January - post holiday dip
     1: 0.9, // February
     2: 1.0, // March - spring

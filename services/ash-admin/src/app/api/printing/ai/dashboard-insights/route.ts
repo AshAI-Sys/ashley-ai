@@ -175,7 +175,7 @@ function generateGlobalRecommendations(activeRuns: any[]) {
   const recommendations = [];
 
   // Analyze patterns across runs
-  const methodIssues = {};
+  const methodIssues: Record<string, number> = {};
   const materialWaste = [];
   const qualityIssues = [];
 
@@ -344,7 +344,11 @@ function getTrend(current: number, previous: number): "up" | "down" | "stable" {
 }
 
 function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
-  const methodStats = {};
+  const methodStats: Record<string, {
+    scores: number[];
+    activeCount: number;
+    issues: Record<string, number>;
+  }> = {};
   const allRuns = [...activeRuns, ...recentRuns];
 
   allRuns.forEach(run => {
@@ -377,7 +381,11 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
   });
 
   // Calculate average scores and identify top issues
-  const result = {};
+  const result: Record<string, {
+    score: number;
+    runs_count: number;
+    top_issue?: string;
+  }> = {};
   Object.entries(methodStats).forEach(([method, stats]: [string, any]) => {
     const avgScore =
       stats.scores.reduce((sum, score) => sum + score, 0) / stats.scores.length;

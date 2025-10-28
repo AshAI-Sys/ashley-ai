@@ -109,7 +109,7 @@ async function performDefectTrendAnalysis(inspection: any) {
     orderBy: { inspection_date: "asc" },
       });
 
-  const defectTrends = {};
+  const defectTrends: Record<string, any[]> = {};
   const timeSeriesData: any[] = [];
 
   historicalData.forEach(insp => {

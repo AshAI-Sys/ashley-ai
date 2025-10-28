@@ -361,7 +361,7 @@ async function generateSeasonalRecommendations(
   const currentMonth = new Date().getMonth();
 
   // Define seasonal products
-  const seasonalProducts = {
+  const seasonalProducts: Record<number, string[]> = {
     0: ["HOODIE", "JACKET"], // January - Winter
     1: ["HOODIE", "JACKET"], // February - Winter
     2: ["T_SHIRT", "POLO"], // March - Spring
