@@ -100,8 +100,8 @@ export default function DTFWorkflow({
   readOnly = false,
 }: DTFWorkflowProps) {
   const [activeStep, setActiveStep] = useState<
-    "setup" | "print" | "powder" | "cure" | "transfer" | "quality"
-  >("setup");
+    "film_setup" | "printing" | "powder_application" | "curing" | "transfer" | "quality_control"
+  >("film_setup");
   const [data, setData] = useState<DTFData>({
     film_setup: {
       design_file: "dtf_design_v1.pdf",
@@ -199,12 +199,12 @@ export default function DTFWorkflow({
   };
 
   const steps = [
-    { key: "setup", title: "Film Setup", icon: Package2 },
-    { key: "print", title: "Printing", icon: Printer },
-    { key: "powder", title: "Powder", icon: Zap },
-    { key: "cure", title: "Curing", icon: Thermometer },
+    { key: "film_setup", title: "Film Setup", icon: Package2 },
+    { key: "printing", title: "Printing", icon: Printer },
+    { key: "powder_application", title: "Powder", icon: Zap },
+    { key: "curing", title: "Curing", icon: Thermometer },
     { key: "transfer", title: "Transfer", icon: Timer },
-    { key: "quality", title: "Quality", icon: Eye },
+    { key: "quality_control", title: "Quality", icon: Eye },
   ] as const;
 
   return (

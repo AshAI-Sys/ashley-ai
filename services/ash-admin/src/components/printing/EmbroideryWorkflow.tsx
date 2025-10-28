@@ -102,8 +102,8 @@ export default function EmbroideryWorkflow({
   readOnly = false,
 }: EmbroideryWorkflowProps) {
   const [activeStep, setActiveStep] = useState<
-    "design" | "setup" | "production" | "quality"
-  >("design");
+    "design_setup" | "machine_setup" | "production" | "quality_control"
+  >("design_setup");
   const [data, setData] = useState<EmbroideryData>({
     design_setup: {
       design_file: "logo_design_v1.dst",

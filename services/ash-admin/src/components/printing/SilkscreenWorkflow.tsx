@@ -85,8 +85,8 @@ export default function SilkscreenWorkflow({
   readOnly = false,
 }: SilkscreenWorkflowProps) {
   const [activeStep, setActiveStep] = useState<
-    "prep" | "setup" | "print" | "cure"
-  >("prep");
+    "screen_prep" | "ink_setup" | "printing" | "curing"
+  >("screen_prep");
   const [data, setData] = useState<SilkscreenData>({
     screen_prep: {
       screen_id: `SCR-${Date.now()}`,

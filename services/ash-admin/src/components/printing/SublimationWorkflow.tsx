@@ -86,8 +86,8 @@ export default function SublimationWorkflow({
   readOnly = false,
 }: SublimationWorkflowProps) {
   const [activeStep, setActiveStep] = useState<
-    "setup" | "print" | "press" | "quality"
-  >("setup");
+    "digital_setup" | "printing" | "heat_press" | "quality_control"
+  >("digital_setup");
   const [data, setData] = useState<SublimationData>({
     digital_setup: {
       design_file: "design_v1.pdf",
@@ -165,10 +165,10 @@ export default function SublimationWorkflow({
   };
 
   const steps = [
-    { key: "setup", title: "Digital Setup", icon: Printer },
-    { key: "print", title: "Printing", icon: Zap },
-    { key: "press", title: "Heat Press", icon: Thermometer },
-    { key: "quality", title: "Quality Control", icon: Eye },
+    { key: "digital_setup", title: "Digital Setup", icon: Printer },
+    { key: "printing", title: "Printing", icon: Zap },
+    { key: "heat_press", title: "Heat Press", icon: Thermometer },
+    { key: "quality_control", title: "Quality Control", icon: Eye },
   ] as const;
 
   return (
