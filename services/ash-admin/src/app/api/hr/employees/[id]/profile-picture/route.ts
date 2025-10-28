@@ -129,7 +129,7 @@ export async function POST(
         { status: 500 }
       );
     }
-  })(request, user);
+  })(request);
 }
 
 // DELETE - Remove employee profile picture
@@ -197,5 +197,5 @@ export async function DELETE(
         { status: 500 }
       );
     }
-  })(request, user);
+  })(request);
 }
