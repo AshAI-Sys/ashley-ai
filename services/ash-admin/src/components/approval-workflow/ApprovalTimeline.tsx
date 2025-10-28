@@ -121,7 +121,7 @@ export function ApprovalTimeline({
               .map((event, index) => {
                 const config = getEventConfig(event.type);
                 const Icon = config.icon;
-                const ___isLast = index === events.length - 1;
+                const ____isLast = index === events.length - 1;
 
                 return (
                   <div

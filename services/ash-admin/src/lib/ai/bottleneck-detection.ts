@@ -534,7 +534,7 @@ export class BottleneckDetectionAI {
 
     // Simplified delay prediction
     const throughputRatio = systemThroughput / optimalThroughput;
-    const ___delayFactor = 1 - throughputRatio;
+    const ____delayFactor = 1 - throughputRatio;
 
     return bottlenecks.slice(0, 5).map((b, idx) => ({
       order_id: `ORDER_${idx + 1}`,

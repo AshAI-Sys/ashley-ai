@@ -28,7 +28,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     if (bundle_id && result.defects_found > 0) {
       // Create QC check record
       }
-      const ___qcCheck = await prisma.qCInspection.create({
+      const ____qcCheck = await prisma.qCInspection.create({
         data: {
           workspace_id: "default",
           order_id: "unknown", // TODO: Get from bundle if available
@@ -87,7 +87,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         { status: 400 }
       );
     }
-    const __bundleIds = bundleIdsParam.split(",");
+    const ___bundleIds = bundleIdsParam.split(",");
 
     // Get QC checks with photos for these bundles
     const qcChecks = await prisma.qCInspection.findMany({

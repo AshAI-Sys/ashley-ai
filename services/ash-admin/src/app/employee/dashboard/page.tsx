@@ -67,7 +67,7 @@ export default function EmployeeDashboard() {
   };
 
   const generateRoleBasedTasks = (_role: string, position: string): TaskData => {
-    const ___baseTasks = {
+    const ____baseTasks = {
       assigned_tasks: 0,
       completed_tasks: 0,
       pending_tasks: 0,

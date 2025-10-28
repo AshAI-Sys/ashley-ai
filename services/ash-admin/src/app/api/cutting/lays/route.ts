@@ -30,7 +30,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const orderId = searchParams.get("orderId") || "";
-    const ___status = searchParams.get("status") || "";
+    const ____status = searchParams.get("status") || "";
     const startDate = searchParams.get("startDate") || "";
     const endDate = searchParams.get("endDate") || "";
 
@@ -155,7 +155,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       });
 
       // Create cut outputs
-      const ___cutOutputs = await tx.cutOutput.createMany({
+      const ____cutOutputs = await tx.cutOutput.createMany({
         data: validatedData.outputs.map(output => ({
           workspace_id: "default",
           cut_lay_id: newCutLay.id,

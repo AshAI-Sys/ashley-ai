@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import dynamic from "next/dynamic";
 
 // Load ChatWidget only on client side to prevent hydration issues
-const ___ChatWidget = dynamic(
+const ____ChatWidget = dynamic(
   () =>
     import("@/components/ai-chat/ChatWidget").then(mod => ({
       default: mod.ChatWidget,

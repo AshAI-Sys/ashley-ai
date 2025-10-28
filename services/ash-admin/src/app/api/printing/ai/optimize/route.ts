@@ -204,7 +204,7 @@ function calculateQuantityEfficiency(quantity: number, method: string) {
 function calculateMaterialOptimization(materials: any[], _method: string) {
   if (!materials || materials.length === 0) return 0.8;
 
-  const ___methodFactors = {
+  const ____methodFactors = {
     SILKSCREEN: { ink: 0.4, screens: 0.3, squeegees: 0.2, substrate: 0.1 },
     SUBLIMATION: { ink: 0.4, paper: 0.3, substrate: 0.3 },
     DTF: { ink: 0.3, film: 0.3, powder: 0.2, substrate: 0.2 },

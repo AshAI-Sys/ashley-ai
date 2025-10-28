@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { _X, Keyboard, Search } from "lucide-react";
+import { X, Keyboard, Search } from "lucide-react";
 import {
   useKeyboardShortcut,
   globalShortcuts,

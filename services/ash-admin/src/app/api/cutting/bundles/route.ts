@@ -163,7 +163,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
             config.sizeCode,
             bundleNum
           );
-          const ___bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
+          const ____bundleNumber = `${config.sizeCode}-${String(bundleNum).padStart(3, "0")}`;
 
           const bundle = await tx.bundle.create({
             data: {

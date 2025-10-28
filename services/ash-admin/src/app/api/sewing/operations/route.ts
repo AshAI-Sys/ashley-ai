@@ -8,7 +8,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const { searchParams } = new URL(request.url);
     const productType = searchParams.get("product_type");
 
-    const ___where = productType ? { product_type: productType } : {};
+    const ____where = productType ? { product_type: productType } : {};
 
     // Return mock data for now since we don't have SewingOperation table yet
     const operations = [

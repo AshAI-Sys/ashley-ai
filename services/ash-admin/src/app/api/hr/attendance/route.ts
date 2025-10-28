@@ -10,7 +10,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const date_from = searchParams.get("date_from");
     const date_to = searchParams.get("date_to");
     const status = searchParams.get("status");
-    const ___type = searchParams.get("type");
+    const ____type = searchParams.get("type");
 
     const where: any = { workspace_id: "default" };
     if (employee_id) where.employee_id = employee_id;

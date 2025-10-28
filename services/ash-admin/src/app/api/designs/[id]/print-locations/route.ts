@@ -103,7 +103,7 @@ export async function POST(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);
@@ -164,7 +164,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { _params }: { params: { id: string } }
 ) {
   try {
     const { searchParams } = new URL(request.url);

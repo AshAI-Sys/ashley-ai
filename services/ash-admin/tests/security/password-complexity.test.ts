@@ -243,7 +243,7 @@ describe("Password Edge Cases", () => {
 
   it("should trim whitespace from passwords", async () => {
     const passwordWithSpaces = "  StrongP@ssw0rd123  ";
-    const ____trimmedPassword = "StrongP@ssw0rd123";
+    const _____trimmedPassword = "StrongP@ssw0rd123";
 
     // Register with spaces
     const registerResponse = await fetch(`${API_BASE}/api/auth/register`, {

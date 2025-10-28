@@ -31,7 +31,7 @@ export const GET = requireAuth(async (_request: NextRequest, _authUser) => {
 
 export const PUT = requireAuth(async (request: NextRequest, _authUser) => {
   try {
-    const ___body = await request.json();
+    const ____body = await request.json();
     // TODO: Save to database
     return NextResponse.json({ success: true });
   } catch (error) {

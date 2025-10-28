@@ -85,7 +85,7 @@ export const GET = requireAuth(async (_request: NextRequest, user) => {
 
     // Calculate total pieces produced today
     const sewingPieces = sewingStats._sum.qty_good || 0;
-    const __printPieces = printStats || 0;
+    const ___printPieces = printStats || 0;
     const totalPieces = sewingPieces;
 
     // Calculate average efficiency

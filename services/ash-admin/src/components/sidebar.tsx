@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../lib/auth-context";
-import { getAccessibleNavigation, hasAccess, User } from "../lib/permissions";
+import { getAccessibleNavigation, _hasAccess, User } from "../lib/permissions";
 import HydrationSafeIcon from "./hydration-safe-icon";
 import {
   Building2,
