@@ -135,7 +135,7 @@ export default function CreateBundlesPage({
     value: any
   ) => {
     const newConfig = [...bundleConfig];
-    newConfig[index] = { ...newConfig[index], [field]: value };
+    newConfig[index] = { ...newConfig[index]!, [field]: value };
 
     if (field === "pieces_per_bundle") {
       const piecesPerBundle = parseInt(value) || 1;
@@ -176,7 +176,7 @@ export default function CreateBundlesPage({
       };
     });
 
-    setBundleConfig(previews);
+    setBundleConfig(previews as any);
     setStep("preview");
   };
 

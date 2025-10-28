@@ -153,7 +153,7 @@ export default function SilkscreenWorkflow({
 
   const updateColor = (index: number, field: string, value: any) => {
     const updatedColors = [...data.ink_setup.colors];
-    updatedColors[index] = { ...updatedColors[index], [field]: value };
+    updatedColors[index] = { ...updatedColors[index]!, [field]: value };
     updateData("ink_setup", { colors: updatedColors });
   };
 
@@ -177,10 +177,10 @@ export default function SilkscreenWorkflow({
   };
 
   const steps = [
-    { key: "prep", title: "Screen Prep", icon: Palette },
-    { key: "setup", title: "Ink Setup", icon: Droplet },
-    { key: "print", title: "Printing", icon: Eye },
-    { key: "cure", title: "Curing", icon: Thermometer },
+    { key: "screen_prep", title: "Screen Prep", icon: Palette },
+    { key: "ink_setup", title: "Ink Setup", icon: Droplet },
+    { key: "printing", title: "Printing", icon: Eye },
+    { key: "curing", title: "Curing", icon: Thermometer },
   ] as const;
 
   return (
