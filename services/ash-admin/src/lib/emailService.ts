@@ -55,7 +55,7 @@ export const emailService = {
         to: Array.isArray(data.to) ? data.to : [data.to],
         subject: data.subject,
         html: data.html,
-        reply_to: data.replyTo,
+        replyTo: data.replyTo,
         cc: data.cc,
         bcc: data.bcc,
       });

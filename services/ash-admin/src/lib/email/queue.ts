@@ -276,7 +276,7 @@ export class EmailQueue {
           html: job.data.html,
           text: job.data.text,
           from: job.data.from,
-          reply_to: job.data.reply_to,
+          replyTo: job.data.reply_to,
         });
 
       default:

@@ -532,7 +532,7 @@ export default function MaintenancePage() {
                     <div className="space-y-2">
                       {(stats?.upcoming_maintenance || [])
                         .slice(0, 5)
-                        .map(maintenance => (
+                        .map((maintenance: any) => (
                           <div
                             key={maintenance.id}
                             className="flex items-center justify-between rounded border p-2"
@@ -576,7 +576,7 @@ export default function MaintenancePage() {
                     <p className="text-muted-foreground">No recent activity</p>
                   ) : (
                     <div className="space-y-2">
-                      {(stats?.recent_activity || []).map(activity => (
+                      {(stats?.recent_(activity: any) || []).map(activity => (
                         <div
                           key={activity.id}
                           className="flex items-center justify-between rounded border p-2"
@@ -644,7 +644,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {(assets || []).slice(0, 10).map(asset => (
+                    {((asset: any)s || []).slice(0, 10).map(asset => (
                       <tr key={asset.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -747,7 +747,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {(workOrders || []).slice(0, 10).map(wo => (
+                    {((wo: any)rkOrders || []).slice(0, 10).map(wo => (
                       <tr key={wo.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -850,7 +850,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {(schedules || []).slice(0, 10).map(schedule => (
+                    {((schedule: any)s || []).slice(0, 10).map(schedule => (
                       <tr key={schedule.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div className="font-medium">

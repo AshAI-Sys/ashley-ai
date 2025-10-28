@@ -189,8 +189,8 @@ export default function FinishingPackingPage() {
     }
   };
 
-  const filteredFinishingRuns = finishingRuns.filter(
-    run =>
+  const filteredFinishingRuns = finishingRuns.filter((run: any) $
+    (run: any) =>
       (searchTerm === "" ||
         run.order?.order_number
           ?.toLowerCase()
@@ -201,8 +201,8 @@ export default function FinishingPackingPage() {
       (filterStatus === "all" || run.status === filterStatus)
   );
 
-  const filteredCartons = cartons.filter(
-    carton =>
+  const filteredCartons = cartons.filter((carton: any) $
+    (carton: any) =>
       (searchTerm === "" ||
         carton.order?.order_number
           ?.toLowerCase()
