@@ -214,7 +214,7 @@
     border-right: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* Force all text elements in sidebar to be pure white */
+  /* Force all text elements in sidebar to be pure white - MAXIMUM SPECIFICITY */
   .modern-sidebar h1,
   .modern-sidebar h2,
   .modern-sidebar h3,
@@ -222,6 +222,21 @@
   .modern-sidebar span,
   .modern-sidebar a,
   .modern-sidebar div {
+    color: #FFFFFF !important;
+  }
+
+  /* Extra specific targeting for logo area */
+  .modern-sidebar .border-b h1,
+  .modern-sidebar .border-b p {
+    color: #FFFFFF !important;
+  }
+
+  /* Nuclear option - target all text in sidebar */
+  .modern-sidebar * {
+    color: inherit !important;
+  }
+
+  .modern-sidebar {
     color: #FFFFFF !important;
   }
 

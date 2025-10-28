@@ -319,10 +319,10 @@ export default function Sidebar() {
                 />
               </div>
               <div>
-                <h1 className="text-xl font-bold leading-tight text-white">
+                <h1 className="text-xl font-bold leading-tight text-white" style={{ color: '#FFFFFF' }}>
                   Ashley AI
                 </h1>
-                <p className="text-sm leading-tight text-white">
+                <p className="text-sm leading-tight text-white" style={{ color: '#FFFFFF' }}>
                   Apparel Smart Hub
                 </p>
               </div>
