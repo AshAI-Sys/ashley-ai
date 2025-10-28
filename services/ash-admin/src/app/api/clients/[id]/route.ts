@@ -9,13 +9,13 @@ const prisma = db;
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
     const workspaceId = user.workspaceId;
     const client = await prisma.client.findFirst({
       where: {
-        id: context.params.id,
+        id: context!.params.id,
         workspace_id: workspaceId,
       },
       include: {
@@ -75,7 +75,7 @@ export const GET = requireAuth(async (
 export const PUT = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
     const body = await request.json();
@@ -87,7 +87,7 @@ export const PUT = requireAuth(async (
         : body.address;
 
     const client = await prisma.client.update({
-      where: { id: context.params.id },
+      where: { id: context!.params.id },
       data: {
         name: body.name,
         contact_person: body.contact_person,
@@ -129,11 +129,11 @@ export const PUT = requireAuth(async (
 export const DELETE = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
     await prisma.client.delete({
-      where: { id: context.params.id },
+      where: { id: context!.params.id },
     
 
     });

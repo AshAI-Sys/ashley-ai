@@ -19,10 +19,10 @@ const ___UpdateBrandSchema = CreateBrandSchema.partial();
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
-    const clientId = context.params.id;
+    const clientId = context!.params.id;
 
     // Check if client exists
     const client = await prisma.client.findUnique({
@@ -84,10 +84,10 @@ export const GET = requireAuth(async (
 export const POST = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
-    const clientId = context.params.id;
+    const clientId = context!.params.id;
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
 
