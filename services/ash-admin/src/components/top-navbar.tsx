@@ -93,7 +93,7 @@ export default function TopNavbar() {
           <div className="relative" ref={notificationsRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="relative rounded-lg p-2.5 text-muted-foreground transition-colors hover:bg-accent/10 hover:text-foreground"
+              className="relative rounded-lg p-2.5 text-white transition-colors hover:bg-white/10 hover:text-white"
             >
               {/* Show static placeholder during SSR to prevent hydration mismatch */}
               {!mounted ? (
@@ -169,10 +169,10 @@ export default function TopNavbar() {
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="hidden text-left md:block">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-sm font-semibold text-white">
                   {user?.name || "User"}
                 </p>
-                <p className="text-xs text-muted-foreground">{user?.role || "Admin"}</p>
+                <p className="text-xs text-white/80">{user?.role || "Admin"}</p>
               </div>
               {/* Show static placeholder during SSR to prevent hydration mismatch */}
               {!mounted ? (
@@ -180,7 +180,7 @@ export default function TopNavbar() {
               ) : (
                 <HydrationSafeIcon
                   Icon={ChevronDown}
-                  className={`h-4 w-4 text-muted-foreground transition-transform ${
+                  className={`h-4 w-4 text-white transition-transform ${
                     showProfileMenu ? "rotate-180" : ""
                   }`}
                 />
