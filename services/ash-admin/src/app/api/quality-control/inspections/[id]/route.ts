@@ -6,11 +6,11 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
     const inspection = await prisma.qCInspection.findUnique({
-      where: { id: context.params.id },
+      where: { id: context!.params.id },
       include: {
         order: { select: { order_number: true } },
         bundle: { select: { qr_code: true, size_code: true, qty: true } },
@@ -56,13 +56,13 @@ export const GET = requireAuth(async (
 export const PUT = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
     const data = await request.json();
 
     const inspection = await prisma.qCInspection.update({
-      where: { id: context.params.id },
+      where: { id: context!.params.id },
       data: {
         ...data,
         updated_at: new Date(),

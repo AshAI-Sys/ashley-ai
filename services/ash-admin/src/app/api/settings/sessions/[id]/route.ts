@@ -8,10 +8,10 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const DELETE = requireAuth(async (
   request: NextRequest,
   authUser,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
-    const ___sessionId = context.params.id;
+    const ___sessionId = context!.params.id;
     // TODO: Revoke session from Redis or database
     return NextResponse.json({ success: true });
   } catch (error) {

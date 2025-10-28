@@ -6,10 +6,10 @@ import { requireAuth } from "@/lib/auth-middleware";
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
-    const runId = context.params.id;
+    const runId = context!.params.id;
 
     const run = await prisma.printRun.findUnique({
       where: { id: runId },
@@ -105,10 +105,10 @@ export const GET = requireAuth(async (
 export const PATCH = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
-    const runId = context.params.id;
+    const runId = context!.params.id;
     const body = await request.json();
     const { status, notes, material_consumption, quality_data } = body;
 
