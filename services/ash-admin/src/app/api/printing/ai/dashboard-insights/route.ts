@@ -194,11 +194,11 @@ function generateGlobalRecommendations(activeRuns: any[]) {
     // Material waste issues
     if (run.materials) {
       const totalPlanned = run.materials.reduce(
-        (sum, mat) => sum + (mat.qty || 0),
+        (sum: number, mat: any) => sum + (mat.qty || 0),
         0
       );
       const totalUsed = run.materials.reduce(
-        (sum, mat) => sum + (mat.actual_qty || mat.qty || 0),
+        (sum: number, mat: any) => sum + (mat.actual_qty || mat.qty || 0),
         0
       );
       if (totalUsed > totalPlanned * 1.1) {
@@ -388,7 +388,7 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
   }> = {};
   Object.entries(methodStats).forEach(([method, stats]: [string, any]) => {
     const avgScore =
-      stats.scores.reduce((sum, score) => sum + score, 0) / stats.scores.length;
+      stats.scores.reduce((sum: number, score: number) => sum + score, 0) / stats.scores.length;
     const topIssue = Object.entries(stats.issues).sort(
       ([, a], [, b]) => (b as number) - (a as number)
     )[0];
