@@ -15,12 +15,12 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
     const statsOnly = searchParams.get("stats") === "true";
 
     if (statsOnly) {
-      const __stats = await getUserSessionStats(user.id);
-      }
+      const stats = await getUserSessionStats(user.id);
       return NextResponse.json({
         success: true,
         data: stats,
       });
+    }
 
     const sessions = await getUserActiveSessions(user.id);
 
@@ -30,8 +30,8 @@ export const GET = requireAuth(async (request: NextRequest, user: any) => {
         sessions,
         total: sessions.length,
       },
-});
-} catch (error) {
+    });
+  } catch (error) {
     console.error("Error fetching sessions:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch sessions" },
@@ -49,14 +49,13 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
 
     if (revokeAll) {
       // Revoke all sessions for the user
-      const __count = await revokeAllUserSessions(user.id);
-
-      }
+      const count = await revokeAllUserSessions(user.id);
       return NextResponse.json({
         success: true,
         message: `Revoked ${count} active sessions`,
         data: { revokedCount: count },
       });
+    }
 
     if (!sessionHash) {
       
@@ -67,13 +66,13 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
     }
 
     // Revoke specific session
-    await revokeSession(sessionHash!);
+    await revokeSession(sessionHash);
 
     return NextResponse.json({
       success: true,
       message: "Session revoked successfully",
-      });
-    } catch (error) {
+    });
+  } catch (error) {
     console.error("Error revoking session:", error);
     return NextResponse.json(
       { success: false, error: "Failed to revoke session" },
