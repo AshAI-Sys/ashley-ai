@@ -279,9 +279,9 @@ async function generateReportData(params: any, _user: any) {
 
 // User Activity Report
 async function generateUserActivityReport(
-  department?: string,
-  dateFrom?: string,
-  dateTo?: string
+  _department?: string,
+  _dateFrom?: string,
+  _dateTo?: string
 ) {
   return {
     report_id: `rpt-${Date.now()}`,
@@ -474,8 +474,8 @@ async function generateRoleDistributionReport(department?: string) {
 
 // Security Events Report
 async function generateSecurityEventsReport(
-  dateFrom?: string,
-  dateTo?: string
+  _dateFrom?: string,
+  _dateTo?: string
 ) {
   return {
     report_id: `rpt-${Date.now()}`,
@@ -528,9 +528,9 @@ async function generateSecurityEventsReport(
 
 // Onboarding Progress Report
 async function generateOnboardingProgressReport(
-  department?: string,
-  dateFrom?: string,
-  dateTo?: string
+  _department?: string,
+  _dateFrom?: string,
+  _dateTo?: string
 ) {
   return {
     report_id: `rpt-${Date.now()}`,
@@ -589,7 +589,7 @@ async function generateOnboardingProgressReport(
 }
 
 // System Usage Report
-async function generateSystemUsageReport(dateFrom?: string, dateTo?: string) {
+async function generateSystemUsageReport(dateFrom?: string, _dateTo?: string) {
   return {
     report_id: `rpt-${Date.now()}`,
     report_type: "system_usage",
@@ -625,9 +625,9 @@ async function generateSystemUsageReport(dateFrom?: string, dateTo?: string) {
 
 // Performance Metrics Report
 async function generatePerformanceMetricsReport(
-  department?: string,
-  dateFrom?: string,
-  dateTo?: string
+  _department?: string,
+  _dateFrom?: string,
+  _dateTo?: string
 ) {
   return {
     report_id: `rpt-${Date.now()}`,
@@ -670,9 +670,9 @@ async function generatePerformanceMetricsReport(
 
 // Compliance Audit Report
 async function generateComplianceAuditReport(
-  department?: string,
-  dateFrom?: string,
-  dateTo?: string
+  _department?: string,
+  _dateFrom?: string,
+  _dateTo?: string
 ) {
   return {
     report_id: `rpt-${Date.now()}`,
