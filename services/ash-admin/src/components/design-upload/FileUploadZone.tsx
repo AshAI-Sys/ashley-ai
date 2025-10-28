@@ -8,9 +8,8 @@ import {
   File,
   X,
   CheckCircle,
-  Clock,
-  AlertCircle,
-  Upload,
+  Clock, AlertCircle,
+  _Upload,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 

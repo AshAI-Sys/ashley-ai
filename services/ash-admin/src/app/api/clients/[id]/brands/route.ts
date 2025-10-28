@@ -17,8 +17,8 @@ const CreateBrandSchema = z.object({
 const ____UpdateBrandSchema = CreateBrandSchema.partial();
 
 export const GET = requireAuth(async (
-  request: NextRequest,
-  user,
+  _request: NextRequest,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -83,7 +83,7 @@ export const GET = requireAuth(async (
 
 export const POST = requireAuth(async (
   request: NextRequest,
-  user,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {

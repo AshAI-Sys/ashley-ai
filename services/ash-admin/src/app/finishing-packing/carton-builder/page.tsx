@@ -7,14 +7,11 @@ import {
   Plus,
   Minus,
   ArrowLeft,
-  Save,
-  AlertTriangle,
-  CheckCircle,
-  Box,
-  Scale,
-  Maximize,
-  Zap,
-  Calculator,
+  Save, AlertTriangle,
+  _CheckCircle,
+  Box, Scale,
+  _Maximize,
+  Zap, Calculator,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

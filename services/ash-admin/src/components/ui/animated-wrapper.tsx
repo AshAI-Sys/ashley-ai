@@ -5,8 +5,7 @@ import {
   AnimationType,
   AnimationDuration,
   AnimationEasing,
-  animate,
-  isInViewport,
+  animate, isInViewport,
 } from "@/lib/animations";
 
 interface AnimatedWrapperProps {

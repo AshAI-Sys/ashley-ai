@@ -164,7 +164,7 @@ export default function CreateLayPage() {
     if (order && order.line_items[0]?.size_breakdown) {
       try {
         const sizeBreakdown = JSON.parse(order.line_items[0].size_breakdown);
-        const newOutputs = Object.entries(sizeBreakdown).map(([size, qty]) => ({
+        const newOutputs = Object.entries(sizeBreakdown).map(([size, _qty]) => ({
           size_code: size,
           qty: 0, // Start with 0, user will fill in actual cut quantities
         }));
@@ -248,7 +248,7 @@ export default function CreateLayPage() {
       });
 
       if (response.ok) {
-        const ____result = await response.json();
+        const _result = await response.json();
         router.push("/cutting");
       } else {
         const error = await response.json();

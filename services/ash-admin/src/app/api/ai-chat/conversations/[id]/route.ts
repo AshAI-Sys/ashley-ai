@@ -7,8 +7,8 @@ const prisma = db;
 
 // GET /api/ai-chat/conversations/:id - Get a specific conversation with messages
 export const GET = requireAuth(async (
-  request: NextRequest,
-  user,
+  _request: NextRequest,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -85,7 +85,7 @@ export const PATCH = requireAuth(async (
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
 export const DELETE = requireAuth(async (
-  request: NextRequest,
+  _request: NextRequest,
   _user,
   context?: { params: { id: string } }
 ) => {

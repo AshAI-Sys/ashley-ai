@@ -32,8 +32,7 @@ import {
   TrendingUp,
   Calendar,
   Target,
-  Award,
-  DollarSign,
+  Award, DollarSign,
 } from "lucide-react";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
@@ -97,7 +96,7 @@ export default function EmployeeDashboardPage() {
   }, []);
 
   // Fetch employee production stats
-  const { data: statsData, isLoading: statsLoading } = useQuery({
+  const { data: statsData, isLoading: _statsLoading } = useQuery({
     queryKey: ["employee-stats", employee?.id],
     queryFn: async () => {
       if (!employee?.id) return null;

@@ -38,8 +38,7 @@ import {
   CheckCircle,
   Clock,
   Plus,
-  Edit,
-  Trash2,
+  Edit, Trash2,
   Wrench,
   Zap,
   Package2,
@@ -91,7 +90,7 @@ export default function MachinesPage() {
     status: "",
   });
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
+  const [_editingMachine, setEditingMachine] = useState<Machine | null>(null);
 
   const [newMachine, setNewMachine] = useState({
     name: "",

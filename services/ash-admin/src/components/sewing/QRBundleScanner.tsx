@@ -16,8 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   QrCode,
   Camera,
-  Search,
-  Package,
+  Search, Package,
   CheckCircle,
   AlertCircle,
   RefreshCw,

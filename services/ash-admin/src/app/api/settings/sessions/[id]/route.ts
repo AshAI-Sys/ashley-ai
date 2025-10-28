@@ -6,8 +6,8 @@ import { requireAuth } from "@/lib/auth-middleware";
 // TODO: Implement real session revocation
 
 export const DELETE = requireAuth(async (
-  request: NextRequest,
-  authUser,
+  _request: NextRequest,
+  _authUser,
   context?: { params: { id: string } }
 ) => {
   try {

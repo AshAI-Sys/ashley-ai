@@ -1,9 +1,7 @@
 import {
   BIRSalesBookEntry,
-  BIRPurchaseBookEntry,
-  BIRWithholdingTax,
-  BIR2307Form,
-  ExportOptions,
+  BIRPurchaseBookEntry, BIRWithholdingTax,
+  BIR2307Form, ExportOptions,
 } from "./types";
 
 /**
@@ -49,7 +47,7 @@ export class BIRService {
    */
   async generateSalesBook(
     entries: BIRSalesBookEntry[],
-    period: { from: string; to: string }
+    _period: { from: string; to: string }
   ): Promise<{
     entries: BIRSalesBookEntry[];
     summary: {
@@ -85,7 +83,7 @@ export class BIRService {
    */
   async generatePurchaseBook(
     entries: BIRPurchaseBookEntry[],
-    period: { from: string; to: string }
+    _period: { from: string; to: string }
   ): Promise<{
     entries: BIRPurchaseBookEntry[];
     summary: {

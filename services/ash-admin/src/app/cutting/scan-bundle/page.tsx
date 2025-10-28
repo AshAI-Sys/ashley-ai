@@ -11,9 +11,8 @@ import {
   QrCode,
   ArrowLeft,
   Package,
-  Scissors,
-  Calendar,
-  Hash,
+  Scissors, Calendar,
+  _Hash,
 } from "lucide-react";
 
 export default function ScanBundlePage() {

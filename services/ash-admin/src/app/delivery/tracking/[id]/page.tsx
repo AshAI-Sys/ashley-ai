@@ -13,7 +13,7 @@ import {
   CheckCircle,
   AlertCircle,
   Navigation,
-  Camera,
+  _Camera,
   MessageSquare,
   RefreshCw,
 } from "lucide-react";

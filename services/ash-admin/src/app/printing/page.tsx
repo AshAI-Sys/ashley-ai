@@ -31,8 +31,7 @@ import {
   Printer,
   Zap,
   Shirt,
-  Palette,
-  Brain,
+  Palette, Brain,
   RefreshCw,
   AlertCircle,
 } from "lucide-react";

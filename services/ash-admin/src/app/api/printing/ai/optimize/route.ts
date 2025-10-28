@@ -118,8 +118,7 @@ function generateOptimization(method: string, params: any) {
     materials,
     machine,
     historicalRuns,
-    quality_requirements,
-    rush_order,
+    quality_requirements, rush_order,
   } = params;
 
   // Base optimization factors
@@ -403,7 +402,7 @@ function calculateEstimatedTime(
 function calculateCostPrediction(
   method: string,
   quantity: number,
-  materials: any[],
+  _materials: any[],
   factors: any
 ) {
   const baseCosts: Record<string, number> = {

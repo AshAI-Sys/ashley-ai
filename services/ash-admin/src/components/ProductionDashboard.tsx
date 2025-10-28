@@ -13,13 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Activity,
   AlertTriangle,
-  CheckCircle,
-  Clock,
+  CheckCircle, Clock,
   Users,
-  Package,
-  TrendingUp,
-  TrendingDown,
-  Zap,
+  Package, TrendingUp,
+  _TrendingDown, Zap,
 } from "lucide-react";
 
 interface DashboardData {

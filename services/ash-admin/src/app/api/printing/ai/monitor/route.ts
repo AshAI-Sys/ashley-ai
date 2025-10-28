@@ -498,7 +498,7 @@ async function processMonitoringData(_runId: string, data: any) {
   // Process sensor data
   if (data.sensor_data) {
     
-    const { temperature, humidity, ___pressure } = data.sensor_data;
+    const { temperature, humidity, __pressure } = data.sensor_data;
 
     if (temperature && (temperature < 20 || temperature > 35)) {
       analysis.alerts.push({
@@ -520,7 +520,7 @@ async function processMonitoringData(_runId: string, data: any) {
   // Process operator input
   if (data.operator_input) {
     
-    const { issues, ___adjustments } = data.operator_input;
+    const { issues, __adjustments } = data.operator_input;
 
     if (issues && issues.length > 0) {
       analysis.recommendations.push({
@@ -535,7 +535,7 @@ async function processMonitoringData(_runId: string, data: any) {
   // Process quality checkpoint
   if (data.quality_checkpoint) {
     
-    const { pass_rate, ___defects } = data.quality_checkpoint;
+    const { pass_rate, __defects } = data.quality_checkpoint;
 
     if (pass_rate < 0.85) {
       analysis.alerts.push({

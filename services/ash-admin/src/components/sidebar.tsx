@@ -24,9 +24,8 @@ import {
   Zap,
   Bot,
   BarChart3,
-  Home,
-  ChevronLeft,
-  ChevronRight,
+  Home, ChevronLeft,
+  _ChevronRight,
   Landmark,
   MessageSquare,
   Brain,
@@ -67,7 +66,7 @@ const iconMap = {
 };
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [_collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { user } = useAuth();

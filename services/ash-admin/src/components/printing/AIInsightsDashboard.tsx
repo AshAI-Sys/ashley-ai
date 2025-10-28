@@ -10,10 +10,8 @@ import {
   TrendingUp,
   TrendingDown,
   AlertTriangle,
-  CheckCircle,
-  Clock,
-  Target,
-  Zap,
+  CheckCircle, Clock,
+  Target, Zap,
   BarChart3,
   Activity,
 } from "lucide-react";

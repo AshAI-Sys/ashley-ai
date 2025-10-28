@@ -52,7 +52,7 @@ interface Placement {
 export default function DesignUploadPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Form state

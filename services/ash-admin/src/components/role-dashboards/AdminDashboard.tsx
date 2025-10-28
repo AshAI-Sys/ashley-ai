@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Animated, StaggeredAnimation } from '@/components/ui/animated'
 import {
-  TrendingUp,
-  TrendingDown,
+  TrendingUp, TrendingDown,
   Users,
   Package,
   DollarSign,
@@ -26,9 +25,8 @@ import {
   BarChart,
   Bar,
   PieChart,
-  Pie,
-  LineChart,
-  Line,
+  Pie, LineChart,
+  _Line,
   XAxis,
   YAxis,
   CartesianGrid,

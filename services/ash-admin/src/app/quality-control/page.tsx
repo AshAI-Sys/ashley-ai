@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/dashboard-layout";
-import {
-  Users,
+import { Users,
   ClipboardCheck,
   AlertTriangle,
   AlertCircle,
@@ -13,8 +12,7 @@ import {
   Clock,
   TrendingUp,
   BarChart3,
-  Search,
-  Filter,
+  Search, Filter,
   Plus,
   Eye,
   FileText,

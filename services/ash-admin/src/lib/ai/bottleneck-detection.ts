@@ -375,7 +375,7 @@ export class BottleneckDetectionAI {
 
   // Generate recommendations for a station
   private generateRecommendations(
-    metrics: ProductionMetrics,
+    _metrics: ProductionMetrics,
     rootCauses: BottleneckDetection["root_causes"],
     severity: string
   ): BottleneckDetection["recommendations"] {

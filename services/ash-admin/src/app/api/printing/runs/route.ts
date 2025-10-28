@@ -122,8 +122,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       machine_id,
       method,
       target_qty,
-      priority = "NORMAL",
-      notes,
+      priority = "NORMAL", notes,
     } = body;
 
     // Validate required fields

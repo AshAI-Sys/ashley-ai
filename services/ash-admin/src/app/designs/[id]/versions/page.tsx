@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
+  _CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -14,14 +14,14 @@ import {
   ArrowLeft,
   Plus,
   Eye,
-  Download,
+  _Download,
   Zap,
-  CheckCircle,
-  AlertCircle,
-  Clock,
+  _CheckCircle,
+  _AlertCircle,
+  _Clock,
   Image,
   FileText,
-  Lock,
+  _Lock,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

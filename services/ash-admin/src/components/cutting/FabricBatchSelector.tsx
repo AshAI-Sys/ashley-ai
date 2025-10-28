@@ -20,9 +20,8 @@ import {
   Filter,
   Plus,
   Minus,
-  Calculator,
-  AlertTriangle,
-  CheckCircle,
+  Calculator, AlertTriangle,
+  _CheckCircle,
   Zap,
 } from "lucide-react";
 

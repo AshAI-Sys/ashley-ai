@@ -369,7 +369,7 @@ export class SmartSchedulingAI {
   private scoreAssignment(
     job: ProductionJob,
     resource: Resource,
-    startTime: Date,
+    _startTime: Date,
     endTime: Date
   ): number {
     let score = 0;
@@ -399,7 +399,7 @@ export class SmartSchedulingAI {
   // Calculate schedule metrics
   private calculateMetrics(
     schedule: ScheduledTask[],
-    allJobs: ProductionJob[],
+    _allJobs: ProductionJob[],
     resources: Resource[],
     startDate: Date
   ): ScheduleOptimizationResult["metrics"] {
@@ -488,7 +488,7 @@ export class SmartSchedulingAI {
 
   // Generate recommendations
   private generateRecommendations(
-    schedule: ScheduledTask[],
+    _schedule: ScheduledTask[],
     unscheduled: ProductionJob[],
     metrics: ScheduleOptimizationResult["metrics"],
     conflicts: ScheduleOptimizationResult["conflicts"]

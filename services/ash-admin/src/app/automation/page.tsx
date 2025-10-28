@@ -5,19 +5,14 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Play,
-  Pause,
+import { Play, Pause,
   AlertTriangle,
-  Bell,
-  Settings,
+  Bell, Settings,
   Activity,
   Zap,
   Clock,
-  CheckCircle,
-  XCircle,
-  TrendingUp,
-  Users,
+  CheckCircle, XCircle,
+  TrendingUp, Users,
   Link,
   RefreshCw,
 } from "lucide-react";
@@ -72,8 +67,7 @@ export default function AutomationPage() {
   // React Query: Stats
   const {
     data: stats,
-    isLoading: loading,
-    error,
+    isLoading: loading, error,
     refetch,
     isFetching,
   } = useQuery({

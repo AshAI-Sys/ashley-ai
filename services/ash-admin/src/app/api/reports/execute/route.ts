@@ -174,7 +174,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 // Query executors for different data sources
 async function executeOrdersQuery(
   workspaceId: string,
-  config: any,
+  _config: any,
   filters: any[],
   sortOrder: any
 ) {
@@ -213,8 +213,8 @@ async function executeOrdersQuery(
 
 async function executeProductionQuery(
   workspaceId: string,
-  config: any,
-  filters: any[],
+  _config: any,
+  _filters: any[],
   sortOrder: any
 ) {
   const where: any = { workspace_id: workspaceId };
@@ -239,8 +239,8 @@ async function executeProductionQuery(
 
 async function executeFinanceQuery(
   workspaceId: string,
-  config: any,
-  filters: any[],
+  _config: any,
+  _filters: any[],
   sortOrder: any
 ) {
   const where: any = { workspace_id: workspaceId };
@@ -264,8 +264,8 @@ async function executeFinanceQuery(
 
 async function executeHRQuery(
   workspaceId: string,
-  config: any,
-  filters: any[],
+  _config: any,
+  _filters: any[],
   sortOrder: any
 ) {
   const where: any = { workspace_id: workspaceId };
@@ -293,8 +293,8 @@ async function executeHRQuery(
 
 async function executeInventoryQuery(
   workspaceId: string,
-  config: any,
-  filters: any[],
+  _config: any,
+  _filters: any[],
   sortOrder: any
 ) {
   const where: any = { workspace_id: workspaceId };
@@ -312,8 +312,8 @@ async function executeInventoryQuery(
 
 async function executeQualityQuery(
   workspaceId: string,
-  config: any,
-  filters: any[],
+  _config: any,
+  _filters: any[],
   sortOrder: any
 ) {
   const where: any = { workspace_id: workspaceId };

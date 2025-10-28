@@ -330,7 +330,7 @@ export const audit = {
   accessDenied: (
     userId: string,
     resource: string,
-    action: string,
+    _action: string,
     ipAddress: string,
     userAgent: string
   ) =>
@@ -347,8 +347,8 @@ export const audit = {
    */
   securityAlert: (
     userId: string,
-    message: string,
-    details: any,
+    _message: string,
+    _details: any,
     ipAddress: string,
     userAgent: string
   ) =>
@@ -365,8 +365,8 @@ export const audit = {
   export: (
     userId: string,
     resource: string,
-    format: string,
-    recordCount: number,
+    _format: string,
+    _recordCount: number,
     ipAddress: string,
     userAgent: string
   ) =>

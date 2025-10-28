@@ -37,7 +37,7 @@ const UpdateUserSchema = z.object({
 
 // GET - Get specific user (Admin only)
 export const GET = requireAnyPermission(["admin:read"])(async (
-  request: NextRequest,
+  _request: NextRequest,
   user: any,
   context: { params: { id: string } }
 ) => {
@@ -228,7 +228,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
 
 // DELETE - Delete user (Admin only)
 export const DELETE = requireAnyPermission(["admin:delete"])(async (
-  request: NextRequest,
+  _request: NextRequest,
   user: any,
   context: { params: { id: string } }
 ) => {

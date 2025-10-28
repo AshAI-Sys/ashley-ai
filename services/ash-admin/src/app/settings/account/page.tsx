@@ -6,8 +6,7 @@ import {
   Save,
   User,
   Mail,
-  Upload,
-  Camera,
+  Upload, Camera,
   Trash2,
   ArrowLeft,
 } from "lucide-react";

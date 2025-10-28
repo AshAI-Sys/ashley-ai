@@ -451,7 +451,7 @@ async function performComprehensiveAnalysis(inspection: any) {
 
 function generateDefectTrendRecommendations(
   trendDirection: string,
-  defectTrends: any
+  _defectTrends: any
 ) {
   const recommendations = [];
 
@@ -469,7 +469,7 @@ function generateDefectTrendRecommendations(
 
 function generateRiskMitigationRecommendations(
   riskLevel: string,
-  riskFactors: any[]
+  _riskFactors: any[]
 ) {
   const recommendations = [];
 
@@ -486,8 +486,8 @@ function generateRiskMitigationRecommendations(
 
 function generateSPCRecommendations(
   controlStatus: string,
-  currentRate: number,
-  controlLimits: any
+  _currentRate: number,
+  _controlLimits: any
 ) {
   const recommendations = [];
 
@@ -502,7 +502,7 @@ function generateSPCRecommendations(
 
 function generateOverallRecommendation(
   trend: any,
-  rootCause: any,
+  _rootCause: any,
   risk: any,
   spc: any
 ) {

@@ -4,8 +4,8 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 export const GET = requireAuth(async (
-  request: NextRequest,
-  user,
+  _request: NextRequest,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -104,7 +104,7 @@ export const GET = requireAuth(async (
 
 export const PATCH = requireAuth(async (
   request: NextRequest,
-  user,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {

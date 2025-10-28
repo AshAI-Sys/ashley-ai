@@ -25,8 +25,7 @@ import {
   AlertCircle,
   CheckCircle,
   Palette,
-  Thermometer,
-  Timer,
+  Thermometer, Timer,
   Droplet,
   Eye,
   Camera,
@@ -79,8 +78,7 @@ interface SilkscreenData {
   };
 }
 
-export default function SilkscreenWorkflow({
-  runId,
+export default function SilkscreenWorkflow({ runId,
   onUpdate,
   readOnly = false,
 }: SilkscreenWorkflowProps) {

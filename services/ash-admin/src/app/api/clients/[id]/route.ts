@@ -7,7 +7,7 @@ const prisma = db;
 
 // GET /api/clients/[id] - Get single client
 export const GET = requireAuth(async (
-  request: NextRequest,
+  _request: NextRequest,
   user,
   context?: { params: { id: string } }
 ) => {
@@ -74,7 +74,7 @@ export const GET = requireAuth(async (
 // PUT /api/clients/[id] - Update client
 export const PUT = requireAuth(async (
   request: NextRequest,
-  user,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -127,8 +127,8 @@ export const PUT = requireAuth(async (
 
 // DELETE /api/clients/[id] - Delete client
 export const DELETE = requireAuth(async (
-  request: NextRequest,
-  user,
+  _request: NextRequest,
+  _user,
   context?: { params: { id: string } }
 ) => {
   try {

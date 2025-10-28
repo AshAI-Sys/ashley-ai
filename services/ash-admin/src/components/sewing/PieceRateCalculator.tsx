@@ -14,10 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   DollarSign,
-  Calculator,
-  Clock,
-  TrendingUp,
-  Target,
+  Calculator, Clock,
+  TrendingUp, Target,
   Award,
   AlertTriangle,
   CheckCircle,
@@ -64,8 +62,7 @@ interface PieceRateCalculatorProps {
 }
 
 export default function PieceRateCalculator({
-  runId,
-  operatorId,
+  runId, operatorId,
   operationName = "",
   standardMinutes = 0,
   baseRate = 0,

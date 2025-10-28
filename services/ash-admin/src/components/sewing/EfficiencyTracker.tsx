@@ -13,8 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   TrendingUp,
   TrendingDown,
-  Clock,
-  Target,
+  Clock, Target,
   Zap,
   BarChart3,
   Activity,

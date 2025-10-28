@@ -18,18 +18,15 @@ import {
   MessageCircle,
   Reply,
   Paperclip,
-  Send,
-  MoreHorizontal,
+  Send, MoreHorizontal,
   CheckCircle,
   AlertCircle,
   Clock,
   User,
   Calendar,
   FileText,
-  Image as ImageIcon,
-  Edit,
-  Trash,
-  Pin,
+  Image as ImageIcon, Edit,
+  Trash, Pin,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -83,8 +80,8 @@ export function ThreadedComments({
   const [priority, setPriority] = useState("NORMAL");
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
-  const [editingComment, setEditingComment] = useState<string | null>(null);
-  const [editText, setEditText] = useState("");
+  const [_editingComment, setEditingComment] = useState<string | null>(null);
+  const [_editText, setEditText] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
 
   useEffect(() => {

@@ -29,8 +29,7 @@ import {
   BarChart3,
   QrCode,
   Eye,
-  Edit,
-  Trash2,
+  Edit, Trash2,
   RefreshCw,
 } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";

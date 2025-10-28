@@ -37,8 +37,7 @@ import {
   Plus,
   Trash2,
   Eye,
-  Target,
-  FileText,
+  Target, FileText,
   TrendingUp,
 } from "lucide-react";
 
@@ -122,8 +121,7 @@ const attributionOptions = [
   { value: "CLIENT", label: "Client/Design" },
 ];
 
-export default function QualityControl({
-  runId,
+export default function QualityControl({ runId,
   method,
   onUpdate,
   readOnly = false,

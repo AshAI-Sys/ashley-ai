@@ -24,8 +24,7 @@ import {
   MessageSquare,
   Send,
   CheckCircle,
-  AlertCircle,
-  DollarSign,
+  AlertCircle, DollarSign,
   Shield,
 } from "lucide-react";
 
@@ -33,8 +32,8 @@ export default function SMSNotificationsPage() {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<any>(null);
   const [templates, setTemplates] = useState<any[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
-  const [previewMessage, setPreviewMessage] = useState("");
+  const [_selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [_previewMessage, setPreviewMessage] = useState("");
   const [sendResult, setSendResult] = useState<any>(null);
   const [otpResult, setOtpResult] = useState<any>(null);
 

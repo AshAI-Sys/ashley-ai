@@ -6,10 +6,8 @@ import {
   ArrowLeft,
   CheckCircle,
   XCircle,
-  AlertTriangle,
-  Camera,
-  Save,
-  Send,
+  AlertTriangle, Camera,
+  Save, Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

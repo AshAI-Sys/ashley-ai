@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
@@ -306,7 +305,7 @@ async function createAlert(config: any, triggerData: any, workspaceId: string) {
 async function updateOrderStatus(
   config: any,
   triggerData: any,
-  workspaceId: string
+  _workspaceId: string
 ) {
   const orderId = config.order_id || triggerData.order_id;
   const newStatus = config.status;

@@ -435,8 +435,7 @@ const PRODUCTION_ROUTES: ProductionRoute[] = [
 
 export function ProductionRouteSection({
   printingMethod,
-  totalQuantity,
-  deliveryDate,
+  totalQuantity, deliveryDate,
   selectedRoute,
   onRouteChange,
   onRouteOptimized,

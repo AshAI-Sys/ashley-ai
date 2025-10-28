@@ -96,7 +96,7 @@ export default function RealTimeMetrics() {
     efficiency: 0,
   });
 
-  const { _data, connectionStatus } = useDashboardWebSocket(update => {
+  const { data, connectionStatus } = useDashboardWebSocket(update => {
     setMetrics(prev => ({
       ...prev,
       ...update,

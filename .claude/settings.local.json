@@ -192,7 +192,8 @@
       "Bash(do echo -n \"$dir: \")",
       "Bash(do echo \"Testing $endpoint...\")",
       "Bash(time curl:*)",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(DATABASE_URL=\"file:./prisma/dev.db\" npx tsx:*)"
     ],
     "deny": [],
     "ask": []

@@ -12,7 +12,7 @@ import {
   Plus,
   Building2,
   Edit,
-  Image,
+  _Image,
   ToggleLeft,
   ToggleRight,
   Save,

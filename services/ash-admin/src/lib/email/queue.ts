@@ -1,5 +1,5 @@
 import { redisClient } from "@/lib/redis";
-import { sendEmail, _EmailOptions, EmailResult } from "@/lib/email";
+import { sendEmail, EmailOptions, EmailResult } from "@/lib/email";
 
 /**
  * Email job interface

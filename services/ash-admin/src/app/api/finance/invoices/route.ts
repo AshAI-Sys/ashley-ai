@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
   createSuccessResponse,
-  handleApiError,
   validateRequiredFields,
   validateEnum,
   validateNumber,
@@ -101,8 +100,7 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
 export const POST = requireAnyPermission(["finance:create"])(
   withErrorHandling(async (request: NextRequest, _user: any) => {
     const data = await request.json();
-    const {
-      brand_id,
+    const { brand_id,
       client_id,
       order_id,
       lines,

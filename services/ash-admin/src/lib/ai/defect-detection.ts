@@ -186,7 +186,7 @@ export class DefectDetectionAI {
 
   // Analyze image for defects (simulated CV analysis)
   private async analyzeImage(
-    image: DefectImage,
+    _image: DefectImage,
     garmentType?: string
   ): Promise<DefectDetectionResult["detected_defects"]> {
     const defects: DefectDetectionResult["detected_defects"] = [];

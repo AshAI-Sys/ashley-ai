@@ -33,8 +33,7 @@ import {
   Plus,
   Search,
   Trash2,
-  Save,
-  CheckCircle,
+  Save, CheckCircle,
 } from "lucide-react";
 
 interface Material {

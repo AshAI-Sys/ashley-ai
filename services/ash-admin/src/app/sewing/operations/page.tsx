@@ -26,8 +26,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Settings,
@@ -37,10 +36,8 @@ import {
   Clock,
   DollarSign,
   GitBranch,
-  Search,
-  ArrowRight,
-  CheckCircle,
-  AlertCircle,
+  Search, ArrowRight,
+  _CheckCircle, AlertCircle,
   Shirt,
 } from "lucide-react";
 

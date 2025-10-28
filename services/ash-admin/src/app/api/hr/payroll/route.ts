@@ -85,8 +85,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const data = await request.json();
     const {
       period_start,
-      period_end,
-      cutoff_type, // "1-15" or "16-EOM"
+      period_end, cutoff_type, // "1-15" or "16-EOM"
       include_overtime = true,
       include_leaves = true,
     } = data;
@@ -292,7 +291,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
-    const { id, status, ___approval_notes } = data;
+    const { id, status, __approval_notes } = data;
 
     const payrollPeriod = await prisma.payrollPeriod.update({
       where: { id },

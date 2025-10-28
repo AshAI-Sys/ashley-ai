@@ -355,7 +355,7 @@ async function generateCrossSellRecommendations(
 async function generateSeasonalRecommendations(
   workspaceId: string,
   clientId: string,
-  clientOrders: any[]
+  _clientOrders: any[]
 ) {
   const recommendations = [];
   const currentMonth = new Date().getMonth();

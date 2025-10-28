@@ -89,7 +89,7 @@ export async function bulkUpdateOrderStatus(
  */
 export async function bulkDeleteOrders(
   orderIds: string[],
-  userId: string
+  _userId: string
 ): Promise<BulkOperationResult> {
   const errors: Array<{ index: number; error: string }> = [];
   let processed = 0;
@@ -412,7 +412,7 @@ export async function bulkImportOrders(
 export async function bulkAssignToProduction(
   orderIds: string[],
   runType: "cutting" | "printing" | "sewing",
-  workspaceId: string
+  _workspaceId: string
 ): Promise<BulkOperationResult> {
   const errors: Array<{ index: number; error: string }> = [];
   let processed = 0;

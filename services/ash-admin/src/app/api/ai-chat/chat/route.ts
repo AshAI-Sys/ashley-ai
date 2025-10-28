@@ -169,8 +169,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const {
       conversation_id,
       message,
-      workspace_id,
-      user_id,
+      workspace_id, user_id,
       use_stream = true,
     } = body;
 

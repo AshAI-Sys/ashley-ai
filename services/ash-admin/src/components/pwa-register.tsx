@@ -5,8 +5,8 @@ import { registerServiceWorker, addConnectionListeners } from "@/lib/pwa";
 import { toast } from "react-hot-toast";
 
 export default function PWARegister() {
-  const [isOnline, setIsOnline] = useState(true);
-  const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [_isOnline, setIsOnline] = useState(true);
+  const [_updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     // Register service worker

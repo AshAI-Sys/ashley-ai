@@ -14,8 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
-  Calculator,
-  TrendingUp,
+  Calculator, TrendingUp,
   AlertCircle,
   CheckCircle,
   RotateCcw,

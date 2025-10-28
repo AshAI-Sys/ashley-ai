@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Calculator,
-  TrendingUp,
-  TrendingDown,
+  TrendingUp, TrendingDown,
   AlertTriangle,
   CheckCircle,
   Target,
@@ -78,8 +77,7 @@ export default function EfficiencyCalculator({
   const performCalculations = (): CalculationResults => {
     const {
       markerWidth,
-      markerLength,
-      plies,
+      markerLength, plies,
       grossUsed,
       offcuts,
       defects,

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
+  _CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,10 +21,10 @@ import {
   Eye,
   Download,
   Upload,
-  MessageCircle,
+  _MessageCircle,
   CheckCircle,
   AlertCircle,
-  Clock,
+  _Clock,
   Image,
   FileText,
   Palette,

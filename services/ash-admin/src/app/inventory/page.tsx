@@ -9,9 +9,8 @@ import {
   DollarSign,
   QrCode,
   Plus,
-  Search,
-  Download,
-  Upload,
+  Search, Download,
+  _Upload,
 } from "lucide-react";
 
 export default function InventoryPage() {

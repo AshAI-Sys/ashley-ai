@@ -51,7 +51,7 @@ export default function EmployeeDashboard() {
   }, [router]);
 
   const loadEmployeeTasks = async (
-    employeeId: string,
+    _employeeId: string,
     role: string,
     position: string
   ) => {

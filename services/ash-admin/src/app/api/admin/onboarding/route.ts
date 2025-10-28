@@ -100,7 +100,7 @@ const CreateOnboardingSchema = z.object({
 // GET - List onboarding processes
 export const GET = requireAnyPermission(["admin:read", "hr:read"])(async (
   request: NextRequest,
-  user: any
+  _user: any
 ) => {
   try {
     const { searchParams } = new URL(request.url);

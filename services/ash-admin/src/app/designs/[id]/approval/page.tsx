@@ -30,13 +30,13 @@ import {
   MessageCircle,
   CheckCircle,
   Clock,
-  Image,
+  _Image,
   FileText,
-  Palette,
+  _Palette,
   Share,
   Users,
-  Mail,
-  Calendar,
+  _Mail,
+  _Calendar,
   AlertCircle,
   RefreshCw,
   ExternalLink,
@@ -187,7 +187,7 @@ export default function DesignApprovalPage() {
   const [emailSubject, setEmailSubject] = useState("");
   const [expiryDays, setExpiryDays] = useState("7");
   const [selectedVersion, setSelectedVersion] = useState<number>(0);
-  const [approvalHistory, setApprovalHistory] = useState<any[]>([]);
+  const [_approvalHistory, setApprovalHistory] = useState<any[]>([]);
 
   useEffect(() => {
     if (params.id) {

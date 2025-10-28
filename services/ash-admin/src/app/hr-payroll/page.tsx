@@ -1192,7 +1192,7 @@ export default function HRPayrollPage() {
                 employeeId={selectedEmployee.id}
                 employeeName={`${selectedEmployee.first_name} ${selectedEmployee.last_name}`}
                 size="lg"
-                onUploadSuccess={url => {
+                onUploadSuccess={(_url) => {
                   // Refetch employees to show updated picture
                   refetchEmployees();
                 }}

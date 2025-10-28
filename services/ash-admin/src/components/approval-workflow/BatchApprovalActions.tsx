@@ -14,13 +14,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Send,
+import { Send,
   Mail,
   Clock,
   Users,
-  CheckSquare,
-  Square,
+  CheckSquare, Square,
   AlertCircle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";

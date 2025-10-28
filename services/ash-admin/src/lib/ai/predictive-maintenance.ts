@@ -208,7 +208,7 @@ export class PredictiveMaintenanceAI {
   // Estimate failure date
   private estimateFailureDate(
     probability: number,
-    currentHours: number
+    _currentHours: number
   ): Date | null {
     if (probability < 25) return null;
 

@@ -25,8 +25,7 @@ import {
   AlertCircle,
   CheckCircle,
   Zap,
-  Printer,
-  Timer,
+  Printer, Timer,
   Thermometer,
   Camera,
   Eye,
@@ -80,8 +79,7 @@ interface SublimationData {
   };
 }
 
-export default function SublimationWorkflow({
-  runId,
+export default function SublimationWorkflow({ runId,
   onUpdate,
   readOnly = false,
 }: SublimationWorkflowProps) {

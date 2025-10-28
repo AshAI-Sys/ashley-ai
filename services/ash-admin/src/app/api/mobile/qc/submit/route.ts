@@ -17,13 +17,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       bundle_id,
       order_id,
       sample_size,
-      inspected,
-      passed,
+      inspected, passed,
       failed,
-      defects,
-      photos,
-      notes,
-      inspector_name,
+      defects, photos,
+      notes, inspector_name,
     } = body;
 
     if (!bundle_id || !order_id) {

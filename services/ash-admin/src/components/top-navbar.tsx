@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
 import { useRouter } from "next/navigation";
-import { Bell, Settings, LogOut, ChevronDown, Menu, _X } from "lucide-react";
+import { Bell, Settings, LogOut, ChevronDown, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
 

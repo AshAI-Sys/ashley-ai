@@ -13,9 +13,8 @@ import {
   CheckCircle,
   AlertTriangle,
   Lock,
-  Unlock,
-  Eye,
-  EyeOff,
+  Unlock, Eye,
+  _EyeOff,
   QrCode,
   RefreshCw,
 } from "lucide-react";

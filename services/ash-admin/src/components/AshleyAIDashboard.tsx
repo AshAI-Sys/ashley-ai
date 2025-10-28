@@ -16,8 +16,7 @@ import {
   AlertTriangle,
   TrendingUp,
   TrendingDown,
-  Target,
-  Clock,
+  Target, Clock,
   Shield,
   Wrench,
   Users,
@@ -90,7 +89,7 @@ interface PredictionResult {
 
 export function AshleyAIDashboard() {
   const [insights, setInsights] = useState<AIInsights | null>(null);
-  const [predictions, setPredictions] = useState<PredictionResult[]>([]);
+  const [_predictions, setPredictions] = useState<PredictionResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);

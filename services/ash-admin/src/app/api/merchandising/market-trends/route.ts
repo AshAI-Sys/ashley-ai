@@ -4,8 +4,7 @@ import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
 import {
   validateRequired,
-  validateNumber,
-  validateEnum,
+  validateNumber, validateEnum,
   createValidationErrorResponse,
   validateAndSanitizeMarketTrendData,
 } from "@/lib/validation";

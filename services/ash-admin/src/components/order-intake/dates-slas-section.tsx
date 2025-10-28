@@ -30,8 +30,7 @@ import {
 import {
   format,
   addDays,
-  isWeekend,
-  differenceInDays,
+  isWeekend, differenceInDays,
   parseISO,
 } from "date-fns";
 import { toast } from "react-hot-toast";

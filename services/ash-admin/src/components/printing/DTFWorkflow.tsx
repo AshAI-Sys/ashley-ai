@@ -21,14 +21,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  AlertCircle,
+import { AlertCircle,
   CheckCircle,
   Package2,
   Printer,
   Timer,
-  Thermometer,
-  Camera,
+  Thermometer, Camera,
   Eye,
   Zap,
 } from "lucide-react";
@@ -94,8 +92,7 @@ interface DTFData {
   };
 }
 
-export default function DTFWorkflow({
-  runId,
+export default function DTFWorkflow({ runId,
   onUpdate,
   readOnly = false,
 }: DTFWorkflowProps) {

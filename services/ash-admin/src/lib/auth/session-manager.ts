@@ -365,7 +365,7 @@ function parseUserAgent(userAgent: string): {
  */
 export async function trackSessionActivity(
   sessionId: string,
-  activity: string
+  _activity: string
 ): Promise<void> {
   try {
     await prisma.userSession.update({

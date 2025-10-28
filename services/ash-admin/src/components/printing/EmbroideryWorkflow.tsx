@@ -21,14 +21,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  AlertCircle,
+import { AlertCircle,
   CheckCircle,
   Shirt,
-  Settings,
-  Timer,
-  Palette,
-  Camera,
+  Settings, Timer,
+  Palette, Camera,
   Eye,
   Plus,
   Trash2,
@@ -96,8 +93,7 @@ interface EmbroideryData {
   };
 }
 
-export default function EmbroideryWorkflow({
-  runId,
+export default function EmbroideryWorkflow({ runId,
   onUpdate,
   readOnly = false,
 }: EmbroideryWorkflowProps) {

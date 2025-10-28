@@ -340,7 +340,7 @@ async function generateUserActivityReport(
 }
 
 // Department Summary Report
-async function generateDepartmentSummaryReport(department?: string) {
+async function generateDepartmentSummaryReport(_department?: string) {
   return {
     report_id: `rpt-${Date.now()}`,
     report_type: "department_summary",
@@ -399,7 +399,7 @@ async function generateDepartmentSummaryReport(department?: string) {
 }
 
 // Role Distribution Report
-async function generateRoleDistributionReport(department?: string) {
+async function generateRoleDistributionReport(_department?: string) {
   return {
     report_id: `rpt-${Date.now()}`,
     report_type: "role_distribution",

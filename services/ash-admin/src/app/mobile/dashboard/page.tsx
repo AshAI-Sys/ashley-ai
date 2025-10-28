@@ -4,12 +4,10 @@ import { useState, useEffect } from "react";
 import {
   QrCode,
   CheckCircle,
-  Clock,
-  TrendingUp,
+  Clock, TrendingUp,
   Package,
   AlertCircle,
-  User,
-  LogOut,
+  User, LogOut,
   Menu,
 } from "lucide-react";
 import { useRouter } from "next/navigation";

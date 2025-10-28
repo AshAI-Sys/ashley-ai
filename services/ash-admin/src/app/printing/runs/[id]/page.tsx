@@ -29,7 +29,7 @@ import {
   Shirt,
   Camera,
   Plus,
-  Save,
+  _Save,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -698,7 +698,7 @@ export default function PrintRunDetailsPage() {
 function MethodSpecificPanel({
   method,
   runId,
-  data,
+  _data,
   onUpdate,
   readOnly,
 }: {
