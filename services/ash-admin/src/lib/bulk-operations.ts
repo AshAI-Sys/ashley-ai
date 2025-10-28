@@ -40,8 +40,10 @@ export async function bulkUpdateOrderStatus(
         await prisma.orderActivityLog
           .create({
             data: {
-              order_id: orderIds[i],
+              workspace_id: workspaceId,
+              order_id: orderIds[i]!,
               event_type: "STATUS_CHANGED",
+              title: "Status Changed",
               description: `Status changed to ${status} (bulk operation)`,
               performed_by: userId,
               metadata: JSON.stringify({ bulkOperation: true }),
@@ -173,10 +175,10 @@ export async function bulkCreateInvoices(
             workspace_id: workspaceId,
             client_id: order.client_id,
             order_id: order.id,
-            brand_id: order.brand_id,
             invoice_number: `INV-${Date.now()}-${i}`,
             issue_date: new Date(),
             due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            subtotal: order.total_amount || 0,
             total_amount: order.total_amount || 0,
             status: "draft",
             currency: "PHP",
@@ -315,7 +317,6 @@ export async function bulkImportOrders(
             data: {
               workspace_id: workspaceId,
               name: orderData.client_name,
-              code: orderData.client_name.substring(0, 3).toUpperCase(),
               email: `${orderData.client_name.toLowerCase().replace(/\s+/g, "")}@example.com`,
               is_active: true,
             },
@@ -355,7 +356,6 @@ export async function bulkImportOrders(
             client_id: client.id,
             brand_id,
             order_number: orderData.order_number,
-            qty: orderData.quantity,
             total_amount: orderData.total_amount || 0,
             delivery_date: orderData.delivery_date
               ? new Date(orderData.delivery_date)
