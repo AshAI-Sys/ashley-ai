@@ -388,7 +388,7 @@ export default function SublimationWorkflow({
             </div>
 
             {!readOnly && (
-              <Button className="w-full" onClick={() => setActiveStep("print")}>
+              <Button className="w-full" onClick={() => setActiveStep("printing")}>
                 Start Printing
               </Button>
             )}
@@ -524,7 +524,7 @@ export default function SublimationWorkflow({
                 </Button>
                 <Button
                   className="flex-1"
-                  onClick={() => setActiveStep("press")}
+                  onClick={() => setActiveStep("heat_press")}
                 >
                   Ready for Heat Press
                 </Button>
@@ -669,7 +669,7 @@ export default function SublimationWorkflow({
             {!readOnly && (
               <Button
                 className="w-full"
-                onClick={() => setActiveStep("quality")}
+                onClick={() => setActiveStep("quality_control")}
               >
                 Transfer Complete
               </Button>

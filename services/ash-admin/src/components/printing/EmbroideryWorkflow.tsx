@@ -562,7 +562,7 @@ export default function EmbroideryWorkflow({
             </div>
 
             {!readOnly && (
-              <Button className="w-full" onClick={() => setActiveStep("setup")}>
+              <Button className="w-full" onClick={() => setActiveStep("machine_setup")}>
                 Setup Machine
               </Button>
             )}
@@ -972,7 +972,7 @@ export default function EmbroideryWorkflow({
             {!readOnly && (
               <Button
                 className="w-full"
-                onClick={() => setActiveStep("quality")}
+                onClick={() => setActiveStep("quality_control")}
               >
                 Production Complete
               </Button>

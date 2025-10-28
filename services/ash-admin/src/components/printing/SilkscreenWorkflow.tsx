@@ -369,7 +369,7 @@ export default function SilkscreenWorkflow({
             </div>
 
             {!readOnly && (
-              <Button className="w-full" onClick={() => setActiveStep("setup")}>
+              <Button className="w-full" onClick={() => setActiveStep("machine_setup")}>
                 Complete Screen Prep
               </Button>
             )}
@@ -515,7 +515,7 @@ export default function SilkscreenWorkflow({
             </div>
 
             {!readOnly && (
-              <Button className="w-full" onClick={() => setActiveStep("print")}>
+              <Button className="w-full" onClick={() => setActiveStep("printing")}>
                 Complete Ink Setup
               </Button>
             )}

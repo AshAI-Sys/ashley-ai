@@ -925,7 +925,7 @@ export default function DTFWorkflow({
             {!readOnly && (
               <Button
                 className="w-full"
-                onClick={() => setActiveStep("quality")}
+                onClick={() => setActiveStep("quality_control")}
               >
                 Transfer Complete
               </Button>
