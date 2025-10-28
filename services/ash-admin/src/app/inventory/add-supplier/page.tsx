@@ -3,24 +3,59 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function AddSupplierPage() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    supplier_code: "",
     name: "",
     contact_person: "",
     email: "",
     phone: "",
     address: "",
+    city: "",
+    country: "Philippines",
     payment_terms: "",
-    lead_time_days: "",
+    currency: "PHP",
+    tax_id: "",
+    rating: "",
+    is_active: true,
     notes: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    window.alert("Supplier added successfully!");
-    router.push("/inventory");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/inventory/suppliers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-workspace-id": "default-workspace",
+        },
+        body: JSON.stringify({
+          ...formData,
+          rating: formData.rating ? parseFloat(formData.rating) : undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to add supplier");
+      }
+
+      toast.success("Supplier added successfully!");
+      router.push("/inventory");
+    } catch (error: any) {
+      console.error("Error adding supplier:", error);
+      toast.error(error.message || "Failed to add supplier");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,8 +82,25 @@ export default function AddSupplierPage() {
           className="rounded-lg bg-white p-6 shadow"
         >
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Supplier Code */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Supplier Code <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.supplier_code}
+                onChange={e =>
+                  setFormData({ ...formData, supplier_code: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., SUP001"
+              />
+            </div>
+
             {/* Supplier Name */}
-            <div className="md:col-span-2">
+            <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
                 Supplier Name <span className="text-red-500">*</span>
               </label>
@@ -115,6 +167,38 @@ export default function AddSupplierPage() {
               />
             </div>
 
+            {/* City */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                City
+              </label>
+              <input
+                type="text"
+                value={formData.city}
+                onChange={e =>
+                  setFormData({ ...formData, city: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., Manila"
+              />
+            </div>
+
+            {/* Country */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Country
+              </label>
+              <input
+                type="text"
+                value={formData.country}
+                onChange={e =>
+                  setFormData({ ...formData, country: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., Philippines"
+              />
+            </div>
+
             {/* Payment Terms */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -136,19 +220,57 @@ export default function AddSupplierPage() {
               </select>
             </div>
 
-            {/* Lead Time */}
+            {/* Currency */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
-                Lead Time (Days)
+                Currency
+              </label>
+              <select
+                value={formData.currency}
+                onChange={e =>
+                  setFormData({ ...formData, currency: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="PHP">PHP (Philippine Peso)</option>
+                <option value="USD">USD (US Dollar)</option>
+                <option value="EUR">EUR (Euro)</option>
+                <option value="CNY">CNY (Chinese Yuan)</option>
+              </select>
+            </div>
+
+            {/* Tax ID */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Tax ID / TIN
+              </label>
+              <input
+                type="text"
+                value={formData.tax_id}
+                onChange={e =>
+                  setFormData({ ...formData, tax_id: e.target.value })
+                }
+                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., 123-456-789"
+              />
+            </div>
+
+            {/* Rating */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Supplier Rating (1-5)
               </label>
               <input
                 type="number"
-                value={formData.lead_time_days}
+                min="1"
+                max="5"
+                step="0.1"
+                value={formData.rating}
                 onChange={e =>
-                  setFormData({ ...formData, lead_time_days: e.target.value })
+                  setFormData({ ...formData, rating: e.target.value })
                 }
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g., 7"
+                placeholder="e.g., 4.5"
               />
             </div>
 
@@ -166,6 +288,23 @@ export default function AddSupplierPage() {
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Complete address..."
               />
+            </div>
+
+            {/* Active Status */}
+            <div className="md:col-span-2">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={formData.is_active}
+                  onChange={e =>
+                    setFormData({ ...formData, is_active: e.target.checked })
+                  }
+                  className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  Active Supplier (Can be used for purchase orders)
+                </span>
+              </label>
             </div>
 
             {/* Notes */}
@@ -191,15 +330,17 @@ export default function AddSupplierPage() {
               type="button"
               onClick={() => router.push("/inventory")}
               className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
+              disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+              disabled={loading}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="h-4 w-4" />
-              Save Supplier
+              {loading ? "Saving..." : "Save Supplier"}
             </button>
           </div>
         </form>

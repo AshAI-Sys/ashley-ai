@@ -1,79 +1,159 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, ToggleLeft, ToggleRight } from "lucide-react";
+import { ArrowLeft, ToggleLeft, ToggleRight, Plus, Edit2, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 
-interface AutoReorderRule {
+interface AutoReorderSetting {
   id: string;
-  material: string;
-  sku: string;
+  workspace_id: string;
+  material_inventory_id: string;
+  enabled: boolean;
   reorder_point: number;
   reorder_quantity: number;
-  preferred_supplier: string;
-  auto_enabled: boolean;
+  preferred_supplier_id: string | null;
+  lead_time_days: number | null;
+  safety_stock_days: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface MaterialInventory {
+  id: string;
+  material_name: string;
+  material_type: string;
+  quantity_on_hand: number;
+  unit: string;
+}
+
+interface Supplier {
+  id: string;
+  supplier_code: string;
+  name: string;
 }
 
 export default function AutoReorderSettingsPage() {
   const router = useRouter();
-  const [rules, setRules] = useState<AutoReorderRule[]>([
-    {
-      id: "1",
-      material: "Cotton Fabric - White",
-      sku: "FAB-001",
-      reorder_point: 200,
-      reorder_quantity: 500,
-      preferred_supplier: "Fabric Suppliers Inc.",
-      auto_enabled: true,
-    },
-    {
-      id: "2",
-      material: "Polyester Thread - Black",
-      sku: "THR-001",
-      reorder_point: 500,
-      reorder_quantity: 1000,
-      preferred_supplier: "Thread & Trim Co.",
-      auto_enabled: true,
-    },
-    {
-      id: "3",
-      material: "Denim Fabric - Blue",
-      sku: "FAB-002",
-      reorder_point: 200,
-      reorder_quantity: 300,
-      preferred_supplier: "Fabric Suppliers Inc.",
-      auto_enabled: false,
-    },
-    {
-      id: "4",
-      material: "Metal Buttons - Silver",
-      sku: "TRM-001",
-      reorder_point: 2000,
-      reorder_quantity: 5000,
-      preferred_supplier: "Global Textiles",
-      auto_enabled: true,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<AutoReorderSetting[]>([]);
+  const [materials, setMaterials] = useState<MaterialInventory[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [globalSettings, setGlobalSettings] = useState({
-    auto_approve_pos: false,
-    notify_on_creation: true,
-    max_daily_pos: 10,
-    min_order_value: 5000,
-  });
+  // Fetch data on mount
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const toggleRule = (id: string) => {
-    setRules(
-      rules.map(rule =>
-        rule.id === id ? { ...rule, auto_enabled: !rule.auto_enabled } : rule
-      )
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const [settingsRes, materialsRes, suppliersRes] = await Promise.all([
+        fetch("/api/inventory/auto-reorder", {
+          headers: { "x-workspace-id": "default-workspace" },
+        }),
+        fetch("/api/inventory/materials?limit=100", {
+          headers: { "x-workspace-id": "default-workspace" },
+        }),
+        fetch("/api/inventory/suppliers?status=active&limit=100", {
+          headers: { "x-workspace-id": "default-workspace" },
+        }),
+      ]);
+
+      const [settingsData, materialsData, suppliersData] = await Promise.all([
+        settingsRes.json(),
+        materialsRes.json(),
+        suppliersRes.json(),
+      ]);
+
+      if (settingsData.success) setSettings(settingsData.settings || []);
+      if (materialsData.success) setMaterials(materialsData.materials || []);
+      if (suppliersData.success) setSuppliers(suppliersData.suppliers || []);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast.error("Failed to load auto-reorder settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleSetting = async (id: string, currentEnabled: boolean) => {
+    try {
+      const response = await fetch(`/api/inventory/auto-reorder/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-workspace-id": "default-workspace",
+        },
+        body: JSON.stringify({ enabled: !currentEnabled }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to update setting");
+      }
+
+      // Update local state
+      setSettings(
+        settings.map(s => (s.id === id ? { ...s, enabled: !currentEnabled } : s))
+      );
+      toast.success(`Auto-reorder ${!currentEnabled ? "enabled" : "disabled"}`);
+    } catch (error: any) {
+      console.error("Error updating setting:", error);
+      toast.error(error.message || "Failed to update setting");
+    }
+  };
+
+  const deleteSetting = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this auto-reorder setting?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/inventory/auto-reorder/${id}`, {
+        method: "DELETE",
+        headers: {
+          "x-workspace-id": "default-workspace",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Failed to delete setting");
+      }
+
+      setSettings(settings.filter(s => s.id !== id));
+      toast.success("Auto-reorder setting deleted");
+    } catch (error: any) {
+      console.error("Error deleting setting:", error);
+      toast.error(error.message || "Failed to delete setting");
+    }
+  };
+
+  const getMaterialName = (materialId: string) => {
+    const material = materials.find(m => m.id === materialId);
+    return material ? `${material.material_name} (${material.material_type})` : "Unknown";
+  };
+
+  const getSupplierName = (supplierId: string | null) => {
+    if (!supplierId) return "No preferred supplier";
+    const supplier = suppliers.find(s => s.id === supplierId);
+    return supplier ? `${supplier.supplier_code} - ${supplier.name}` : "Unknown";
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="mx-auto max-w-6xl">
+          <p className="text-gray-600">Loading auto-reorder settings...</p>
+        </div>
+      </div>
     );
-  };
-
-  const handleSave = () => {
-    window.alert("Auto-reorder settings saved successfully!");
-    router.push("/inventory");
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -87,230 +167,182 @@ export default function AutoReorderSettingsPage() {
             <ArrowLeft className="h-5 w-5" />
             Back to Inventory
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Auto-Reorder Settings
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Configure automatic purchase order creation rules
-          </p>
-        </div>
-
-        {/* Global Settings */}
-        <div className="mb-6 rounded-lg bg-white p-6 shadow">
-          <h2 className="mb-4 text-xl font-semibold text-gray-900">
-            Global Settings
-          </h2>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Auto Approve POs */}
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
-              <div>
-                <h3 className="font-medium text-gray-900">Auto-Approve POs</h3>
-                <p className="text-sm text-gray-600">
-                  Automatically approve generated POs
-                </p>
-              </div>
-              <button
-                onClick={() =>
-                  setGlobalSettings({
-                    ...globalSettings,
-                    auto_approve_pos: !globalSettings.auto_approve_pos,
-                  })
-                }
-                className="text-blue-600"
-              >
-                {globalSettings.auto_approve_pos ? (
-                  <ToggleRight className="h-10 w-10" />
-                ) : (
-                  <ToggleLeft className="h-10 w-10 text-gray-500" />
-                )}
-              </button>
-            </div>
-
-            {/* Notify on Creation */}
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
-              <div>
-                <h3 className="font-medium text-gray-900">
-                  Email Notifications
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Send alerts when POs are created
-                </p>
-              </div>
-              <button
-                onClick={() =>
-                  setGlobalSettings({
-                    ...globalSettings,
-                    notify_on_creation: !globalSettings.notify_on_creation,
-                  })
-                }
-                className="text-blue-600"
-              >
-                {globalSettings.notify_on_creation ? (
-                  <ToggleRight className="h-10 w-10" />
-                ) : (
-                  <ToggleLeft className="h-10 w-10 text-gray-500" />
-                )}
-              </button>
-            </div>
-
-            {/* Max Daily POs */}
+          <div className="flex items-center justify-between">
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Max Daily POs
-              </label>
-              <input
-                type="number"
-                value={globalSettings.max_daily_pos}
-                onChange={e =>
-                  setGlobalSettings({
-                    ...globalSettings,
-                    max_daily_pos: parseInt(e.target.value),
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Maximum POs to auto-create per day
+              <h1 className="text-3xl font-bold text-gray-900">
+                Auto-Reorder Settings
+              </h1>
+              <p className="mt-2 text-gray-600">
+                Configure automatic purchase order creation rules
               </p>
             </div>
-
-            {/* Min Order Value */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Minimum Order Value (₱)
-              </label>
-              <input
-                type="number"
-                value={globalSettings.min_order_value}
-                onChange={e =>
-                  setGlobalSettings({
-                    ...globalSettings,
-                    min_order_value: parseInt(e.target.value),
-                  })
-                }
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Only create POs above this value
-              </p>
-            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4" />
+              Create New Rule
+            </button>
           </div>
         </div>
 
         {/* Material Rules */}
         <div className="rounded-lg bg-white p-6 shadow">
           <h2 className="mb-4 text-xl font-semibold text-gray-900">
-            Material Auto-Reorder Rules
+            Material Auto-Reorder Rules ({settings.length})
           </h2>
 
-          <div className="overflow-hidden rounded-lg border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                    Material
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                    SKU
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                    Reorder Point
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                    Reorder Qty
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                    Supplier
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {rules.map(rule => (
-                  <tr key={rule.id} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                      {rule.material}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
-                      {rule.sku}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
-                      {rule.reorder_point}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
-                      {rule.reorder_quantity}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
-                      {rule.preferred_supplier}
-                    </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <button
-                        onClick={() => toggleRule(rule.id)}
-                        className="flex items-center gap-2"
-                      >
-                        {rule.auto_enabled ? (
-                          <>
-                            <ToggleRight className="h-8 w-8 text-green-600" />
-                            <span className="text-sm font-medium text-green-600">
-                              Enabled
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <ToggleLeft className="h-8 w-8 text-gray-500" />
-                            <span className="text-sm font-medium text-gray-500">
-                              Disabled
-                            </span>
-                          </>
-                        )}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {settings.length === 0 ? (
+            <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
+              <p className="mb-2 text-lg font-medium text-gray-900">
+                No auto-reorder rules configured
+              </p>
+              <p className="mb-4 text-sm text-gray-600">
+                Create your first rule to automatically generate purchase orders when
+                inventory runs low
+              </p>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 mx-auto"
+              >
+                <Plus className="h-4 w-4" />
+                Create First Rule
+              </button>
+            </div>
+          ) : (
+            <>
+              <div>
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Material
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Reorder Point
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Reorder Qty
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Lead Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Supplier
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {settings.map(setting => (
+                      <tr key={setting.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                          {getMaterialName(setting.material_inventory_id)}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                          {setting.reorder_point}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                          {setting.reorder_quantity}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                          {setting.lead_time_days ? `${setting.lead_time_days} days` : "N/A"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {getSupplierName(setting.preferred_supplier_id)}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <button
+                            onClick={() => toggleSetting(setting.id, setting.enabled)}
+                            className="flex items-center gap-2"
+                          >
+                            {setting.enabled ? (
+                              <>
+                                <ToggleRight className="h-8 w-8 text-green-600" />
+                                <span className="text-sm font-medium text-green-600">
+                                  Enabled
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <ToggleLeft className="h-8 w-8 text-gray-500" />
+                                <span className="text-sm font-medium text-gray-500">
+                                  Disabled
+                                </span>
+                              </>
+                            )}
+                          </button>
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => toast.info("Edit feature coming soon")}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => deleteSetting(setting.id)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          {/* Summary */}
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="rounded-lg bg-blue-50 p-4">
-              <p className="mb-1 text-sm text-blue-700">Total Rules</p>
-              <p className="text-2xl font-bold text-blue-900">{rules.length}</p>
-            </div>
-            <div className="rounded-lg bg-green-50 p-4">
-              <p className="mb-1 text-sm text-green-700">Active Rules</p>
-              <p className="text-2xl font-bold text-green-900">
-                {rules.filter(r => r.auto_enabled).length}
-              </p>
-            </div>
-            <div className="rounded-lg bg-gray-50 p-4">
-              <p className="mb-1 text-sm text-gray-700">Inactive Rules</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {rules.filter(r => !r.auto_enabled).length}
-              </p>
-            </div>
-          </div>
+              {/* Summary */}
+              <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="rounded-lg bg-blue-50 p-4">
+                  <p className="mb-1 text-sm text-blue-700">Total Rules</p>
+                  <p className="text-2xl font-bold text-blue-900">{settings.length}</p>
+                </div>
+                <div className="rounded-lg bg-green-50 p-4">
+                  <p className="mb-1 text-sm text-green-700">Active Rules</p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {settings.filter(s => s.enabled).length}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <p className="mb-1 text-sm text-gray-700">Inactive Rules</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {settings.filter(s => !s.enabled).length}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-8 flex justify-end gap-4">
-          <button
-            onClick={() => router.push("/inventory")}
-            className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
-          >
-            <Save className="h-4 w-4" />
-            Save Settings
-          </button>
-        </div>
+        {/* Create Modal Placeholder */}
+        {showCreateModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-2xl rounded-lg bg-white p-6 shadow-xl">
+              <h3 className="mb-4 text-xl font-semibold text-gray-900">
+                Create New Auto-Reorder Rule
+              </h3>
+              <p className="text-gray-600">
+                Feature coming soon. For now, rules can be created via the inventory
+                management page when viewing material details.
+              </p>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="mt-4 rounded-lg bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
