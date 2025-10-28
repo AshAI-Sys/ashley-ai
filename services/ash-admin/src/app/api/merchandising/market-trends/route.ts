@@ -235,6 +235,10 @@ function getSeasonalTrends(season: string, workspaceId: string) {
 
   const currentSeasonData = seasonalData[season];
 
+  if (!currentSeasonData) {
+    return trends;
+  }
+
   trends.push({
     workspace_id: workspaceId,
     trend_name: `${season} 2024 Apparel Demand`,

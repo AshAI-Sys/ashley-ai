@@ -197,7 +197,7 @@ async function generateDemandForecast(params: any) {
 
   const monthlyAverage = totalHistoricalQuantity / 12;
   const seasonalFactor = isSeasonalProduct
-    ? seasonalMultipliers[currentMonth]
+    ? (seasonalMultipliers[currentMonth] ?? 1.0)
     : 1.0;
 
   // Apply trend (simplified - in production, use regression analysis)

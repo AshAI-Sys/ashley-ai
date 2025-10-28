@@ -98,7 +98,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           html: data.html,
           text: data.text,
           from: data.from,
-          reply_to: data.reply_to,
+          replyTo: data.reply_to,
         });
         break;
 

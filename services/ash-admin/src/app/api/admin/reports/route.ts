@@ -290,9 +290,9 @@ async function generateUserActivityReport(
     generated_at: new Date().toISOString(),
     period: {
       from:
-        dateFrom ||
+        _dateFrom ||
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      to: dateTo || new Date().toISOString(),
+      to: _dateTo || new Date().toISOString(),
     },
     summary: {
       total_users: 245,
@@ -484,9 +484,9 @@ async function generateSecurityEventsReport(
     generated_at: new Date().toISOString(),
     period: {
       from:
-        dateFrom ||
+        _dateFrom ||
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      to: dateTo || new Date().toISOString(),
+      to: _dateTo || new Date().toISOString(),
     },
     summary: {
       total_events: 47,
@@ -597,9 +597,9 @@ async function generateSystemUsageReport(dateFrom?: string, _dateTo?: string) {
     generated_at: new Date().toISOString(),
     period: {
       from:
-        dateFrom ||
+        _dateFrom ||
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      to: dateTo || new Date().toISOString(),
+      to: _dateTo || new Date().toISOString(),
     },
     feature_usage: [
       { feature: "Orders Management", usage_count: 1247, unique_users: 67 },
