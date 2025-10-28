@@ -302,7 +302,7 @@ export default function CuttingPage() {
                         Created Bundles
                       </p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {bundles.filter(b: any) => b.status === "CREATED").length}
+                        {bundles.filter((b: any) => b.status === "CREATED").length}
                       </p>
                     </div>
                   </div>
