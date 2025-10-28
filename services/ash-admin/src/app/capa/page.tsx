@@ -389,8 +389,7 @@ export default function CAPAPage() {
           <div className="border-b border-gray-200 px-6 py-4">
             <h3 className="text-lg font-medium text-gray-900">CAPA Tasks</h3>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+          <div><table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
