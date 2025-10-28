@@ -14,9 +14,6 @@ importers:
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
-      jose:
-        specifier: ^6.1.0
-        version: 6.1.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -29,9 +26,6 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
-      uuid:
-        specifier: ^13.0.0
-        version: 13.0.0
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.2
@@ -651,6 +645,9 @@ importers:
       ioredis:
         specifier: ^5.3.0
         version: 5.8.1
+      jose:
+        specifier: ^6.1.0
+        version: 6.1.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -708,6 +705,9 @@ importers:
       twilio:
         specifier: ^5.10.1
         version: 5.10.3
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
       zod:
         specifier: ^3.21.0
         version: 3.25.76
