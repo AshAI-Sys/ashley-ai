@@ -146,9 +146,23 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const workcenter =
       workcenters[method as keyof typeof workcenters] || "PRINTING";
 
+    // Get order to retrieve workspace_id
+    const order = await prisma.order.findUnique({
+      where: { id: order_id },
+      select: { workspace_id: true },
+    });
+
+    if (!order) {
+      return NextResponse.json(
+        { success: false, error: "Order not found" },
+        { status: 404 }
+      );
+    }
+
     // Create print run
     const printRun = await prisma.printRun.create({
       data: {
+        workspace_id: order.workspace_id,
         order_id,
         routing_step_id: routing_step_id || null,
         machine_id: machine_id || null,

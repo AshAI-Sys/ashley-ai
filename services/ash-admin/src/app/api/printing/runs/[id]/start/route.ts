@@ -200,6 +200,7 @@ async function initializeMethodSpecificData(
 async function createAshleyAnalysis(runId: string, run: any) {
   try {
     const analysisData = {
+      workspace_id: run.workspace_id || "default-workspace",
       entity: "PRINT_RUN",
       entity_id: runId,
       stage: "PRINTING",
