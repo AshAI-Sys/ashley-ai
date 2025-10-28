@@ -347,7 +347,8 @@ async function logEvent(config: any, triggerData: any, workspaceId: string) {
       workspace_id: workspaceId,
       action: config.action || "AUTOMATION_EVENT",
       resource: config.resource || "AUTOMATION",
-      details: JSON.stringify({
+      resource_id: "automation-execution",
+      new_values: JSON.stringify({
         message: interpolateTemplate(config.message || "", triggerData),
         trigger_data: triggerData,
         timestamp: new Date(),

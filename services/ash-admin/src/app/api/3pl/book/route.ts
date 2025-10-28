@@ -42,7 +42,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         data: {
           method: provider,
           carrier_ref: booking.booking_id,
-          tracking_number: booking.tracking_number,
           status: "BOOKED",
         },
       });
