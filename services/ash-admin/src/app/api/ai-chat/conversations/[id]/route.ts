@@ -9,9 +9,10 @@ const prisma = db;
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  { params }: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
+    const params = context!.params;
     const conversation = await prisma.aIChatConversation.findUnique({
       where: {
         id: params.id,
@@ -54,9 +55,10 @@ export const GET = requireAuth(async (
 export const PATCH = requireAuth(async (
   request: NextRequest,
   _user,
-  { params }: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
+    const params = context!.params;
     const body = await request.json();
     const { title, is_archived, is_pinned } = body;
 
@@ -85,9 +87,10 @@ export const PATCH = requireAuth(async (
 export const DELETE = requireAuth(async (
   request: NextRequest,
   _user,
-  { params }: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
+    const params = context!.params;
     await prisma.aIChatConversation.delete({
       where: {
         id: params.id,

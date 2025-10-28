@@ -9,7 +9,7 @@ const prisma = db;
 export const PUT = requireAuth(async (
   req: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
     const workspaceId = user.workspaceId;
@@ -28,7 +28,7 @@ export const PUT = requireAuth(async (
     // Verify bundle exists
     const bundle = await prisma.bundle.findFirst({
       where: {
-        id: context.params.id,
+        id: context!.params.id,
         workspace_id: workspaceId,
       },
       });
@@ -43,7 +43,7 @@ export const PUT = requireAuth(async (
 
     // Update bundle status
     const updatedBundle = await prisma.bundle.update({
-      where: { id: context.params.id },
+      where: { id: context!.params.id },
       data: {
         status,
         updated_at: new Date(),
