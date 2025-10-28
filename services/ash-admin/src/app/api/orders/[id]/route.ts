@@ -11,13 +11,14 @@ const prisma = db;
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
+    const orderId = context!.params.id;
     const workspaceId = user.workspaceId;
     const order = await prisma.order.findFirst({
       where: {
-        id: context.params.id,
+        id: orderId,
         workspace_id: workspaceId,
       },
       include: {
@@ -54,7 +55,7 @@ export const GET = requireAuth(async (
 
     return apiSuccess(order);
   } catch (error) {
-    logError("Failed to fetch order", error, { orderId: context.params.id   });    return apiServerError(error);
+    logError("Failed to fetch order", error, { orderId   });    return apiServerError(error);
   }
 });
 
@@ -62,14 +63,15 @@ export const GET = requireAuth(async (
 export const PUT = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
+    const orderId = context!.params.id;
     const ___workspaceId = user.workspaceId;
     const body = await request.json();
 
     const order = await prisma.order.update({
-      where: { id: context.params.id },
+      where: { id: orderId },
       data: {
         order_number: body.order_number,
         client_id: body.client_id,
@@ -94,10 +96,10 @@ export const PUT = requireAuth(async (
         },
       },
       });
-    
+
       return apiSuccess(order, "Order updated successfully");
   } catch (error) {
-    logError("Failed to update order", error, { orderId: context.params.id   });    return apiServerError(error);
+    logError("Failed to update order", error, { orderId   });    return apiServerError(error);
   }
 });
 
@@ -105,17 +107,18 @@ export const PUT = requireAuth(async (
 export const DELETE = requireAuth(async (
   request: NextRequest,
   user,
-  context: { params: { id: string } }
+  context?: { params: { id: string } }
 ) => {
   try {
+    const orderId = context!.params.id;
     const ___workspaceId = user.workspaceId;
     await prisma.order.delete({
-      where: { id: context.params.id },
+      where: { id: orderId },
     });
 
-    return apiSuccess({ id: context.params.id }, "Order deleted successfully");
+    return apiSuccess({ id: orderId }, "Order deleted successfully");
   } catch (error) {
-    logError("Failed to delete order", error, { orderId: context.params.id });
+    logError("Failed to delete order", error, { orderId });
     return apiServerError(error);
   }
 });
