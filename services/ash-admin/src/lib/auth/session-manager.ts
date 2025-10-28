@@ -81,8 +81,8 @@ export async function createSession(
     id: session.id,
     userId: session.user_id,
     token: sessionToken, // Return unhashed token to client
-    ipAddress: session.ip_address,
-    userAgent: session.user_agent,
+    ipAddress: session.ip_address ?? "",
+    userAgent: session.user_agent ?? "",
     createdAt: session.created_at,
     expiresAt: session.expires_at,
     lastActivityAt: session.last_activity_at,
@@ -118,8 +118,8 @@ export async function getSession(token: string): Promise<SessionData | null> {
     id: session.id,
     userId: session.user_id,
     token, // Return original token
-    ipAddress: session.ip_address,
-    userAgent: session.user_agent,
+    ipAddress: session.ip_address ?? "",
+    userAgent: session.user_agent ?? "",
     createdAt: session.created_at,
     expiresAt: session.expires_at,
     lastActivityAt: session.last_activity_at,
@@ -149,9 +149,9 @@ export async function getUserSessions(
 
   return sessions.map(session => ({
     id: session.id,
-    ipAddress: session.ip_address,
-    userAgent: session.user_agent,
-    ...parseUserAgent(session.user_agent),
+    ipAddress: session.ip_address ?? "",
+    userAgent: session.user_agent ?? "",
+    ...parseUserAgent(session.user_agent ?? ""),
     createdAt: session.created_at,
     lastActivityAt: session.last_activity_at,
     isCurrentSession: session.token === currentHashedToken,

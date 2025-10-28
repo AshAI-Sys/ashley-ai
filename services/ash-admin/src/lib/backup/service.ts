@@ -101,7 +101,7 @@ export class BackupService {
       return {
         host: url.hostname,
         port: url.port || "5432",
-        database: url.pathname.slice(1).split("?")[0],
+        database: url.pathname.slice(1).split("?")[0]!,
         username: url.username,
         password: url.password,
         isSQLite: false,
@@ -167,11 +167,11 @@ export class BackupService {
               : `gzip -c "${conn.sqlitePath}" > "${backupPath}"`;
           await execAsync(command).catch(async () => {
             // Fallback: just copy without compression on Windows
-            await fs.copyFile(conn.sqlitePath, backupPath.replace(".gz", ""));
+            await fs.copyFile(conn.sqlitePath!, backupPath.replace(".gz", ""));
           });
         } else {
           // Just copy the SQLite file
-          await fs.copyFile(conn.sqlitePath, backupPath);
+          await fs.copyFile(conn.sqlitePath!, backupPath);
         }
       } else {
         // PostgreSQL backup
@@ -299,11 +299,11 @@ export class BackupService {
               : `gunzip -c "${backup.path}" > "${conn.sqlitePath}"`;
           await execAsync(command).catch(async () => {
             // Fallback: just copy if decompression fails
-            await fs.copyFile(backup.path, conn.sqlitePath);
+            await fs.copyFile(backup.path, conn.sqlitePath!);
           });
         } else {
           // Just copy the file back
-          await fs.copyFile(backup.path, conn.sqlitePath);
+          await fs.copyFile(backup.path, conn.sqlitePath!);
         }
       } else {
         // PostgreSQL restore

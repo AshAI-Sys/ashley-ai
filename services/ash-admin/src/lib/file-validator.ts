@@ -49,8 +49,9 @@ export interface FileValidationResult {
 
 /**
  * Magic bytes signatures for common file types
+ * undefined in signature means any byte is acceptable at that position
  */
-const FILE_SIGNATURES: Record<string, number[][]> = {
+const FILE_SIGNATURES: Record<string, (number | undefined)[][]> = {
   "image/jpeg": [
     [0xff, 0xd8, 0xff, 0xe0], // JFIF
     [0xff, 0xd8, 0xff, 0xe1], // Exif
