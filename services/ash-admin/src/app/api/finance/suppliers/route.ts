@@ -16,13 +16,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         ? {
             supplier: {
               contains: search,
-              mode: "insensitive",
+              mode: "insensitive" as any,
             },
           }
         : {},
       select: {
         supplier: true,
-        _count: true,
       },
       distinct: ["supplier"],
       });

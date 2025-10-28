@@ -725,7 +725,7 @@ function EditUserModal({ user, onClose, onSubmit, roles, departments }: any) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Only include password if it's provided
-    const submitData = { ...formData };
+    const submitData: any = { ...formData };
     if (!submitData.password) {
       delete submitData.password;
     }

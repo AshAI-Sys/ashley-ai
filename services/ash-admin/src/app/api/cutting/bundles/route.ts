@@ -168,6 +168,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           const bundle = await tx.bundle.create({
             data: {
               workspace_id: order.workspace_id,
+              order_id: validatedData.orderId,
               lay_id: validatedData.cutLayId,
               size_code: config.sizeCode,
               qty: currentBundlePieces,
