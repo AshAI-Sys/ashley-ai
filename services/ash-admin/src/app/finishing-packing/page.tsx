@@ -189,8 +189,7 @@ export default function FinishingPackingPage() {
     }
   };
 
-  const filteredFinishingRuns = finishingRuns.filter((run: any) $
-    (run: any) =>
+  const filteredFinishingRuns = finishingRuns.filter((run: any) =>
       (searchTerm === "" ||
         run.order?.order_number
           ?.toLowerCase()
@@ -201,8 +200,7 @@ export default function FinishingPackingPage() {
       (filterStatus === "all" || run.status === filterStatus)
   );
 
-  const filteredCartons = cartons.filter((carton: any) $
-    (carton: any) =>
+  const filteredCartons = cartons.filter((carton: any) =>
       (searchTerm === "" ||
         carton.order?.order_number
           ?.toLowerCase()

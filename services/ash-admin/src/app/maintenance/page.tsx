@@ -576,7 +576,7 @@ export default function MaintenancePage() {
                     <p className="text-muted-foreground">No recent activity</p>
                   ) : (
                     <div className="space-y-2">
-                      {(stats?.recent_(activity: any) || []).map(activity => (
+                      {(stats?.recent_activity || []).map((activity: any) => (
                         <div
                           key={activity.id}
                           className="flex items-center justify-between rounded border p-2"
@@ -644,7 +644,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {((asset: any)s || []).slice(0, 10).map(asset => (
+                    {(assets || []).slice(0, 10).map((asset: any) => (
                       <tr key={asset.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -747,7 +747,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {((wo: any)rkOrders || []).slice(0, 10).map(wo => (
+                    {(workOrders || []).slice(0, 10).map((wo: any) => (
                       <tr key={wo.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -850,7 +850,7 @@ export default function MaintenancePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {((schedule: any)s || []).slice(0, 10).map(schedule => (
+                    {(schedules || []).slice(0, 10).map((schedule: any) => (
                       <tr key={schedule.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div className="font-medium">
