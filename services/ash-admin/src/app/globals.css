@@ -20,7 +20,7 @@
     --accent: 199 89% 61%; /* #38BDF8 */
     --accent-foreground: 222 47% 11%; /* Dark text */
     --muted: 214 32% 95%;
-    --muted-foreground: 215 16% 35%; /* Darker muted text for better contrast */
+    --muted-foreground: 215 16% 25%; /* IMPROVED: Much darker muted text for better readability (was 35%) */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;
@@ -44,7 +44,7 @@
     --accent: 199 95% 74%; /* #7DD3FC - Lighter sky blue */
     --accent-foreground: 222 47% 11%;
     --muted: 215 25% 20%;
-    --muted-foreground: 215 16% 65%;
+    --muted-foreground: 215 16% 75%; /* IMPROVED: Lighter muted text for better readability in dark mode (was 65%) */
     --destructive: 0 84% 65%;
     --destructive-foreground: 0 0% 100%;
     --border: 215 25% 25%; /* #334155 */

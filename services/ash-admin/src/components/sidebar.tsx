@@ -322,7 +322,7 @@ export default function Sidebar() {
                 <h1 className="text-xl font-bold leading-tight text-white">
                   Ashley AI
                 </h1>
-                <p className="text-sm leading-tight text-white/90">
+                <p className="text-sm leading-tight text-white">
                   Apparel Smart Hub
                 </p>
               </div>
@@ -361,15 +361,15 @@ export default function Sidebar() {
               <p className="mb-1 text-base font-semibold text-white">
                 {user.name}
               </p>
-              <p className="text-sm text-white/90">{user.position}</p>
-              <p className="mt-1.5 text-xs text-white/70">
+              <p className="text-sm text-white">{user.position}</p>
+              <p className="mt-1.5 text-xs text-white/90">
                 {user.department} • {user.role}
               </p>
             </div>
           )}
           <div className="text-sm">
             <p className="text-sm font-semibold text-white">Ashley AI v1.0</p>
-            <p className="text-sm text-white/70">Manufacturing ERP</p>
+            <p className="text-sm text-white/90">Manufacturing ERP</p>
           </div>
         </div>
       </div>
