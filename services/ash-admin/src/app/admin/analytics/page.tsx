@@ -740,14 +740,20 @@ export default function AnalyticsPage() {
             <h3 className="mb-4 text-lg font-semibold">
               Create {activeTab === "reports" ? "Report" : "Dashboard"}
             </h3>
-            <p className="mb-6 text-gray-600">
-              Report builder interface coming soon...
+            <p className="mb-4 text-gray-600">
+              Custom report builder is in development. For now, you can generate reports through:
             </p>
+            <ul className="mb-6 space-y-2 text-sm text-gray-700">
+              <li>• Finance dashboard for financial reports</li>
+              <li>• HR & Payroll for employee reports</li>
+              <li>• Quality Control analytics for QC insights</li>
+              <li>• Production dashboard for manufacturing metrics</li>
+            </ul>
             <button
               onClick={() => setShowCreateModal(false)}
-              className="w-full rounded-lg bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+              className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
-              Close
+              Got it
             </button>
           </div>
         </div>

@@ -382,8 +382,7 @@ export default function GovernmentReportsPage() {
                   </li>
                   <li>• Calculations use 2025 contribution rates and tables</li>
                   <li>
-                    • Reports are generated in JSON format (CSV/Excel export
-                    coming soon)
+                    • Reports are generated in JSON format - Copy data to Excel for filing
                   </li>
                   <li>
                     • Ensure employee government numbers are updated before

@@ -499,11 +499,21 @@ export default function EmployeeDashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <EmptyState
-                  icon={Clock}
-                  title="Coming Soon"
-                  description="Attendance tracking will be available here."
-                />
+                <div className="text-center py-8">
+                  <Clock className="mx-auto mb-4 h-12 w-12 text-blue-500" />
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Attendance Tracking Available
+                  </h3>
+                  <p className="mb-4 text-sm text-gray-600">
+                    View your complete attendance history in the HR & Payroll section
+                  </p>
+                  <button
+                    onClick={() => window.location.href = "/hr-payroll"}
+                    className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+                  >
+                    View Attendance Records
+                  </button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -518,11 +528,21 @@ export default function EmployeeDashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <EmptyState
-                  icon={TrendingUp}
-                  title="Coming Soon"
-                  description="Detailed performance analytics will be available here."
-                />
+                <div className="text-center py-8">
+                  <TrendingUp className="mx-auto mb-4 h-12 w-12 text-green-500" />
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    Performance Analytics Available
+                  </h3>
+                  <p className="mb-4 text-sm text-gray-600">
+                    View your productivity metrics, efficiency scores, and performance reports
+                  </p>
+                  <button
+                    onClick={() => window.location.href = "/hr-payroll"}
+                    className="rounded-lg bg-green-600 px-6 py-2 text-white hover:bg-green-700"
+                  >
+                    View Performance Metrics
+                  </button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

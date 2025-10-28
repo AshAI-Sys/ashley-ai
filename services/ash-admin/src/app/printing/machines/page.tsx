@@ -814,10 +814,16 @@ export default function MachinesPage() {
               </CardHeader>
               <CardContent>
                 <div className="py-8 text-center">
-                  <Clock className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    Maintenance scheduling coming soon
+                  <Clock className="mx-auto mb-4 h-12 w-12 text-blue-500" />
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    View and manage maintenance schedules for all printing machines
                   </p>
+                  <button
+                    onClick={() => router.push("/maintenance")}
+                    className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+                  >
+                    Go to Maintenance Management
+                  </button>
                 </div>
               </CardContent>
             </Card>
