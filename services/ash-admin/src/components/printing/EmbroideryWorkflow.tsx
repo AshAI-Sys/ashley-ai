@@ -189,7 +189,7 @@ export default function EmbroideryWorkflow({
 
   const updateThreadColor = (index: number, field: string, value: any) => {
     const updatedColors = [...data.design_setup.thread_colors];
-    updatedColors[index] = { ...updatedColors[index], [field]: value };
+    updatedColors[index] = { ...updatedColors[index]!, [field]: value };
     updateData("design_setup", { thread_colors: updatedColors });
   };
 
@@ -218,7 +218,7 @@ export default function EmbroideryWorkflow({
 
   const updateMachineStop = (index: number, field: string, value: any) => {
     const updatedStops = [...data.production.machine_stops];
-    updatedStops[index] = { ...updatedStops[index], [field]: value };
+    updatedStops[index] = { ...updatedStops[index]!, [field]: value };
     updateData("production", { machine_stops: updatedStops });
   };
 
@@ -243,10 +243,10 @@ export default function EmbroideryWorkflow({
   };
 
   const steps = [
-    { key: "design", title: "Design Setup", icon: Palette },
-    { key: "setup", title: "Machine Setup", icon: Settings },
+    { key: "design_setup", title: "Design Setup", icon: Palette },
+    { key: "machine_setup", title: "Machine Setup", icon: Settings },
     { key: "production", title: "Production", icon: Shirt },
-    { key: "quality", title: "Quality Control", icon: Eye },
+    { key: "quality_control", title: "Quality Control", icon: Eye },
   ] as const;
 
   const calculateEfficiency = () => {
