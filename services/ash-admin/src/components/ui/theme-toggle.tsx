@@ -47,10 +47,14 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="sm"
-          className="relative w-9 px-0 hover:bg-accent/10 transition-colors"
+          className="relative w-9 px-0 transition-colors bg-white/10"
           aria-label="Toggle theme"
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '0.5rem'
+          }}
         >
-          <div className="h-[1.2rem] w-[1.2rem]" />
+          <Sun className="h-[1.2rem] w-[1.2rem] text-white" style={{ color: '#FFFFFF' }} />
         </Button>
       </div>
     );
@@ -62,26 +66,32 @@ export function ThemeToggle() {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-9 px-0 hover:bg-accent/10 transition-colors"
+        className="relative w-9 px-0 transition-colors bg-white/10 hover:bg-white/20"
         aria-label="Toggle theme"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '0.5rem'
+        }}
       >
         {/* Sun icon for light mode */}
         <HydrationSafeIcon
           Icon={Sun}
-          className={`h-[1.2rem] w-[1.2rem] transition-all duration-300 ${
+          className={`h-[1.2rem] w-[1.2rem] transition-all duration-300 text-white ${
             effectiveTheme === "dark"
               ? "rotate-90 scale-0"
               : "rotate-0 scale-100"
           }`}
+          style={{ color: '#FFFFFF' }}
         />
         {/* Moon icon for dark mode */}
         <HydrationSafeIcon
           Icon={Moon}
-          className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300 ${
+          className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300 text-white ${
             effectiveTheme === "dark"
               ? "rotate-0 scale-100"
               : "-rotate-90 scale-0"
           }`}
+          style={{ color: '#FFFFFF' }}
         />
       </Button>
 
