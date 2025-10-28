@@ -299,7 +299,7 @@ export default function DesignsPage() {
             </>
           ) : (
             <>
-              {(designs || []).map(design => (
+              {(designs || []).map((design: any) => (
                 <Card
                   key={design.id}
                   className="transition-shadow hover:shadow-md"

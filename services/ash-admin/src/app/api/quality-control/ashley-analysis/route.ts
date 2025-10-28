@@ -116,7 +116,7 @@ async function performDefectTrendAnalysis(inspection: any) {
     const date = insp.inspection_date.toISOString().split("T")[0];
     let totalDefects = 0;
 
-    insp.defects.forEach(defect => {
+    insp.defects.forEach((defect: any) => {
       const defectType = defect.defect_code.category;
       if (!defectTrends[defectType]) {
         defectTrends[defectType] = [];
@@ -176,7 +176,7 @@ async function performRootCausePrediction(inspection: any) {
     locations: Record<string, number>;
   }> = {};
 
-  inspection.defects.forEach(defect => {
+  inspection.defects.forEach((defect: any) => {
     const category = defect.defect_code.category;
     if (!defectPatterns[category]) {
       defectPatterns[category] = {

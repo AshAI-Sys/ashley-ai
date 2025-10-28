@@ -188,7 +188,7 @@ export default function ClientsPage() {
           <SkeletonTable />
         ) : (
           <div className="grid gap-4">
-            {clients.map(client => (
+            {clients.map((client: any) => (
               <Card
                 key={client.id}
                 className="transition-shadow hover:shadow-md"

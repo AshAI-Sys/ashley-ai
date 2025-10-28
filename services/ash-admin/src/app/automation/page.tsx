@@ -360,7 +360,7 @@ export default function AutomationPage() {
 
               <div className="max-h-64 space-y-2 overflow-y-auto">
                 {stats.recent_activity && stats.recent_activity.length > 0 ? (
-                  stats.recent_activity.map((activity, index) => (
+                  stats.recent_activity.map((activity: any, index: number) => (
                     <ActivityItem key={index} activity={activity} />
                   ))
                 ) : (

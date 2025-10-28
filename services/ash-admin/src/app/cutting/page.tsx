@@ -407,7 +407,7 @@ export default function CuttingPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {cutLays.map(lay => {
+                        {cutLays.map((lay: any) => {
                           const totalPieces =
                             lay?.outputs?.reduce(
                               (sum, output) => sum + output.qty,
@@ -543,7 +543,7 @@ export default function CuttingPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {bundles.map(bundle => (
+                        {bundles.map((bundle: any) => (
                           <tr key={bundle.id} className="hover:bg-gray-50">
                             <td className="whitespace-nowrap px-6 py-4">
                               <div>

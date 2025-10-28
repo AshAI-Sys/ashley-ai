@@ -224,7 +224,7 @@ export default function OrdersPage() {
           <DataTableSkeleton rows={10} />
         ) : (
           <div className="grid gap-4">
-            {orders.map(order => (
+            {orders.map((order: any) => (
               <Card
                 key={order.id}
                 className="transition-shadow hover:shadow-md"
