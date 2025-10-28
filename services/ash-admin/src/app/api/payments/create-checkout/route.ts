@@ -107,9 +107,8 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     console.error("Error creating checkout session:", error);
     return createErrorResponse(
       error instanceof Error
-        ? error.message
-        : "Failed to create checkout session",
-      500
+        ? error
+        : new Error("Failed to create checkout session")
     );
   }
 });

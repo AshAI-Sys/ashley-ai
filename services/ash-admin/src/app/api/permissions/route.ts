@@ -11,12 +11,12 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const action = searchParams.get("action"); // 'list' | 'user' | 'roles'
 
     if (action === "roles") {
-      const __roles = permissionManager.getAvailableRoles();
-      }
+      const roles = permissionManager.getAvailableRoles();
       return NextResponse.json({
         success: true,
         roles,
       });
+    }
 
     if (action === "user" && user_id) {
       const userPermissions =

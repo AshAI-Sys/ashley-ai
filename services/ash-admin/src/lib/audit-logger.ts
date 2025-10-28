@@ -5,9 +5,7 @@ const prisma = db;
 
 // Check if running in Edge runtime (middleware, edge routes)
 const isEdgeRuntime = () => {
-  return (
-    typeof EdgeRuntime !== "undefined" || process.env.NEXT_RUNTIME === "edge"
-  );
+  return process.env.NEXT_RUNTIME === "edge";
 };
 
 export interface AuditLogEntry {

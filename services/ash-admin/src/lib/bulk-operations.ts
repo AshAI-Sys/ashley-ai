@@ -19,7 +19,8 @@ export interface BulkOperationResult<T = any> {
 export async function bulkUpdateOrderStatus(
   orderIds: string[],
   status: string,
-  userId: string
+  userId: string,
+  workspaceId: string
 ): Promise<BulkOperationResult> {
   const errors: Array<{ index: number; error: string }> = [];
   let processed = 0;
