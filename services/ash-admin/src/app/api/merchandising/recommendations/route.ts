@@ -269,7 +269,7 @@ async function generateReorderRecommendations(
               client_id: clientId,
               recommendation_type: "REORDER",
               source_product_type: productType,
-              recommended_product_type: productType,
+              recommended_product_type: productType || "UNKNOWN",
               recommended_category: "APPAREL",
               confidence_score: confidence,
               expected_quantity: avgQuantity,

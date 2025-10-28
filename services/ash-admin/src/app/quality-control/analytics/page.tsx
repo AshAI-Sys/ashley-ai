@@ -121,7 +121,7 @@ export default function QCAnalyticsPage() {
       const isOutlier = value > controlLimits.ucl || value < controlLimits.lcl;
 
       mockSPCData.push({
-        date: date.toISOString().split("T")[0],
+        date: date.toISOString().split("T")[0]!,
         value,
         is_outlier: isOutlier,
         control_limits: controlLimits,
