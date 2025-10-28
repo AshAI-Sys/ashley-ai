@@ -224,7 +224,7 @@ function SupervisorActivities({ user }: { user: User }) {
 }
 
 // Operator Recent Activities
-function OperatorActivities({ __user }: { user: User }) {
+function OperatorActivities({ user }: { user: User }) {
   return (
     <div className="space-y-3">
       <div className="rounded-md border-l-4 border-green-500 bg-gray-50 p-3">
@@ -267,7 +267,7 @@ function OperatorActivities({ __user }: { user: User }) {
 }
 
 // Employee Recent Activities
-function EmployeeActivities({ __user }: { user: User }) {
+function EmployeeActivities({ user }: { user: User }) {
   return (
     <div className="space-y-3">
       <div className="rounded-md border-l-4 border-blue-500 bg-gray-50 p-3">
