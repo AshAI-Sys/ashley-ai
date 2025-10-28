@@ -192,7 +192,7 @@ export function AshleyAIDashboard() {
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription>
             <strong>Critical Alerts:</strong>{" "}
-            {insights.summary.high_priority_alerts.join(", ")}
+            {insights?.summary.high_priority_alerts?.join(", ") || ""}
           </AlertDescription>
         </Alert>
       )}
@@ -536,7 +536,7 @@ export function AshleyAIDashboard() {
                 <div className="space-y-2">
                   <h4 className="font-medium">Fatigue Alerts</h4>
                   <div className="space-y-2">
-                    {insights.insights.workforce.data.fatigue_alerts.map(
+                    {insights?.insights.workforce.data.fatigue_alerts?.map(
                       (alert, index) => (
                         <div
                           key={index}
@@ -615,9 +615,9 @@ export function AshleyAIDashboard() {
                   <AlertTriangle className="h-4 w-4 text-red-600" />
                   <AlertDescription>
                     <strong>Immediate Attention Required:</strong>{" "}
-                    {insights.insights.maintenance.data.immediate_attention.join(
+                    {insights?.insights.maintenance.data.immediate_attention?.join(
                       ", "
-                    )}
+                    ) || ""}
                   </AlertDescription>
                 </Alert>
               )}
@@ -660,7 +660,7 @@ export function AshleyAIDashboard() {
                   <div className="space-y-2">
                     <h4 className="font-medium">Scheduled Maintenance</h4>
                     <div className="space-y-2">
-                      {insights.insights.maintenance.data.maintenance_due.map(
+                      {insights?.insights.maintenance.data.maintenance_due?.map(
                         (maintenance, index) => (
                           <div
                             key={index}
