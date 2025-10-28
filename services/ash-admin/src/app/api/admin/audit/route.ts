@@ -221,10 +221,10 @@ export const GET = requireAnyPermission(["admin:read"])(async (
         matches =
           matches &&
           (log.description.toLowerCase().includes(search.toLowerCase()) ||
-            log.target_user_email
+            (log.target_user_email
               ?.toLowerCase()
-              .includes(search.toLowerCase()) ||
-            log.performer?.email?.toLowerCase().includes(search.toLowerCase()));
+              .includes(search.toLowerCase()) ?? false) ||
+            (log.performer?.email?.toLowerCase().includes(search.toLowerCase()) ?? false));
       }
 
       if (date_from) {

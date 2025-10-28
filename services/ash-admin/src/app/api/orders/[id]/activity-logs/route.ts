@@ -57,7 +57,7 @@ export async function POST(
 
     const activityLog = await prisma.orderActivityLog.create({
       data: {
-        workspace_id: workspaceId,
+        workspace_id: workspaceId ?? undefined,
         order_id: orderId,
         event_type: validatedData.event_type,
         title: validatedData.title,

@@ -67,7 +67,7 @@ export const DELETE = requireAuth(async (request: NextRequest, user: any) => {
     }
 
     // Revoke specific session
-    await revokeSession(sessionHash);
+    await revokeSession(sessionHash!);
 
     return NextResponse.json({
       success: true,

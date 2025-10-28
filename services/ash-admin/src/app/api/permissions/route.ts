@@ -20,7 +20,7 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 
     if (action === "user" && user_id) {
       const userPermissions =
-        await permissionManager.getUserPermissions(user_id);
+        await permissionManager.getUserPermissions(user_id!);
       return NextResponse.json({
         success: true,
         user_permissions: userPermissions,
