@@ -235,11 +235,11 @@ export class InventoryManager {
 
     if (current_level === 0) {
       alertType = "OUT_OF_STOCK";
-      _severity = "CRITICAL";
+      ____severity = "CRITICAL";
       message = `${material.material_name} is out of stock!`;
     } else if (current_level <= reorderPoint) {
       alertType = "LOW_STOCK";
-      _severity = "WARNING";
+      ____severity = "WARNING";
       message = `${material.material_name} is below reorder point (${current_level}/${reorderPoint})`;
     }
 

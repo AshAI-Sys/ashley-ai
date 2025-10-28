@@ -609,7 +609,7 @@ export class DynamicPricingAI {
       average_margin: averageMargin,
       acceptance_rate: acceptanceRate,
       price_elasticity: priceElasticity,
-      optimal_margin_range,
+      optimal_margin_range: optimalMarginRange,
       insights,
     };
   }
