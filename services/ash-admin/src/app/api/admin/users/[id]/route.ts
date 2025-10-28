@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAnyPermission } from "../../../../../lib/auth-middleware";
 import * as bcrypt from "bcryptjs";
 import { requireAuth } from "@/lib/auth-middleware";
+import { prisma } from "@/lib/db";
 
 const UpdateUserSchema = z.object({
   email: z.string().email().optional(),
