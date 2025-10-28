@@ -158,6 +158,8 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
         const dimWeight = cartonVolume / 5000; // Divisor varies by carrier
         updateData.dim_weight_kg = dimWeight;
       }
+    }
+
     const carton = await prisma.carton.update({
       where: { id },
       data: {
