@@ -201,7 +201,7 @@ export async function batchGet<T>(
     values.forEach((value, index) => {
       if (value) {
         try {
-          result.set(keys[index], JSON.parse(value));
+          result.set(keys[index]!, JSON.parse(value));
         } catch (e) {
           console.error("Failed to parse cached value:", e);
         }
@@ -270,7 +270,7 @@ export async function getCacheStats(prefix = "cache"): Promise<{
     const info = await redis.info("memory");
 
     const memoryMatch = info.match(/used_memory:(\d+)/);
-    const memoryUsage = memoryMatch ? parseInt(memoryMatch[1]) : 0;
+    const memoryUsage = memoryMatch ? parseInt(memoryMatch[1]!) : 0;
 
     return {
       totalKeys: keys.length,
