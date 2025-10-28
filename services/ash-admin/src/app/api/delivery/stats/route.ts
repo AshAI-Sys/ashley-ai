@@ -26,7 +26,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // Ready for pickup
       prisma.shipment.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           status: "READY_FOR_PICKUP",
         },
       }),
@@ -34,7 +34,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // In transit (including out for delivery)
       prisma.shipment.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           OR: [{ status: "IN_TRANSIT" }, { status: "OUT_FOR_DELIVERY" }],
         },
       }),
@@ -42,7 +42,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // Delivered today (using updated_at as proxy for delivery timestamp)
       prisma.shipment.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           status: "DELIVERED",
           updated_at: {
             gte: today,
@@ -54,7 +54,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // Failed deliveries (not resolved)
       prisma.shipment.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           status: "FAILED",
         },
       }),
@@ -62,7 +62,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // Total shipments this week (for on-time rate calculation)
       prisma.shipment.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           created_at: {
             gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
           },
@@ -72,7 +72,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // Delivered this week (using updated_at as proxy)
       prisma.shipment.count({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           status: "DELIVERED",
           updated_at: {
             gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
@@ -84,7 +84,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       // Average delivery times (last 50 delivered shipments, using updated_at as delivery time)
       prisma.shipment.findMany({
         where: {
-          workspace_id: workspaceId,
+          workspace_id: workspaceId ?? undefined,
           status: "DELIVERED",
         },
         select: {
