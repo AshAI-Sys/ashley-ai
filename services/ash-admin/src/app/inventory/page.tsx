@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   Package,
   TruckIcon,
@@ -264,13 +265,13 @@ function MaterialsTab() {
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm">
                     <button
-                      onClick={() => alert(`Adjust stock for ${mat.name}`)}
+                      onClick={() => toast.info(`Stock adjustment feature for ${mat.name} coming soon`)}
                       className="mr-3 text-blue-600 hover:text-blue-800"
                     >
                       Adjust
                     </button>
                     <button
-                      onClick={() => alert(`Create reorder PO for ${mat.name}`)}
+                      onClick={() => router.push(`/inventory/create-po?material=${encodeURIComponent(mat.name)}`)}
                       className="text-green-600 hover:text-green-800"
                     >
                       Reorder
@@ -353,7 +354,7 @@ function SuppliersTab() {
 
             <div className="mt-4 flex gap-2 border-t border-gray-200 pt-4">
               <button
-                onClick={() => alert(`View details for ${supplier.name}`)}
+                onClick={() => toast.info(`Supplier details page for ${supplier.name} coming soon`)}
                 className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
               >
                 View Details
@@ -413,7 +414,7 @@ function PurchaseOrdersTab() {
           : order
       )
     );
-    alert(`Purchase Order ${poNumber} approved successfully!`);
+    toast.success(`Purchase Order ${poNumber} approved successfully!`);
   };
 
   const handleMarkReceived = (poNumber: string) => {
@@ -424,7 +425,7 @@ function PurchaseOrdersTab() {
           : order
       )
     );
-    alert(`Purchase Order ${poNumber} marked as received!`);
+    toast.success(`Purchase Order ${poNumber} marked as received!`);
   };
 
   return (
@@ -609,18 +610,17 @@ function AlertsTab() {
               <div className="flex gap-2">
                 <button
                   onClick={() =>
-                    window.alert(`View details for ${stockAlert.material}`)
+                    toast.info(`Material details page for ${stockAlert.material} coming soon`)
                   }
                   className="rounded border border-gray-300 bg-white px-4 py-2 text-sm hover:bg-gray-50"
                 >
                   View Material
                 </button>
                 <button
-                  onClick={() =>
-                    window.alert(
-                      `Creating auto-reorder PO for ${stockAlert.material}`
-                    )
-                  }
+                  onClick={() => {
+                    toast.success(`Creating auto-reorder PO for ${stockAlert.material}`);
+                    router.push(`/inventory/create-po?material=${encodeURIComponent(stockAlert.material)}`);
+                  }}
                   className={`rounded px-4 py-2 text-sm text-white ${
                     stockAlert.severity === "CRITICAL"
                       ? "bg-red-600 hover:bg-red-700"
