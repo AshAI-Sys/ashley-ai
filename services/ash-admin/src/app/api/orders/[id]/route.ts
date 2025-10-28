@@ -55,7 +55,8 @@ export const GET = requireAuth(async (
 
     return apiSuccess(order);
   } catch (error) {
-    logError("Failed to fetch order", error, { orderId   });    return apiServerError(error);
+    logError("Failed to fetch order", error, { orderId: context!.params.id });
+    return apiServerError(error);
   }
 });
 
@@ -99,7 +100,8 @@ export const PUT = requireAuth(async (
 
       return apiSuccess(order, "Order updated successfully");
   } catch (error) {
-    logError("Failed to update order", error, { orderId   });    return apiServerError(error);
+    logError("Failed to update order", error, { orderId: context!.params.id });
+    return apiServerError(error);
   }
 });
 
@@ -118,7 +120,7 @@ export const DELETE = requireAuth(async (
 
     return apiSuccess({ id: orderId }, "Order deleted successfully");
   } catch (error) {
-    logError("Failed to delete order", error, { orderId });
+    logError("Failed to delete order", error, { orderId: orderId });
     return apiServerError(error);
   }
 });

@@ -589,7 +589,7 @@ async function generateOnboardingProgressReport(
 }
 
 // System Usage Report
-async function generateSystemUsageReport(dateFrom?: string, _dateTo?: string) {
+async function generateSystemUsageReport(_dateFrom?: string, _dateTo?: string) {
   return {
     report_id: `rpt-${Date.now()}`,
     report_type: "system_usage",

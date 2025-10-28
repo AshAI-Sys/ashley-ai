@@ -155,7 +155,6 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
         updateData.fill_percent = fillPercentage;
 
         // Calculate dimensional weight for shipping
-        }
         const dimWeight = cartonVolume / 5000; // Divisor varies by carrier
         updateData.dim_weight_kg = dimWeight;
       }
