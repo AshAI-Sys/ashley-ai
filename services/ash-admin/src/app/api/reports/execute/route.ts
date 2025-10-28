@@ -227,7 +227,6 @@ async function executeProductionQuery(
           client: true,
         },
       },
-      line_item: true,
     },
     orderBy: sortOrder
       ? { [sortOrder.column]: sortOrder.direction }
@@ -251,7 +250,7 @@ async function executeFinanceQuery(
     include: {
       client: true,
       order: true,
-      line_items: true,
+      invoice_items: true,
       payments: true,
     },
     orderBy: sortOrder
