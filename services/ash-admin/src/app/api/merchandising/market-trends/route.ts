@@ -150,7 +150,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 });
 
 async function generateMarketTrends(workspaceId: string) {
-  const trends = [];
+  const trends: any[] = [];
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth();
   const currentSeason = getCurrentSeason(currentMonth);
@@ -198,7 +198,7 @@ function getCurrentSeason(month: number): string {
 }
 
 function getSeasonalTrends(season: string, workspaceId: string) {
-  const trends = [];
+  const trends: any[] = [];
   const now = new Date();
 
   const seasonalData = {
@@ -269,7 +269,7 @@ function getSeasonalTrends(season: string, workspaceId: string) {
 }
 
 function getColorTrends(workspaceId: string) {
-  const trends = [];
+  const trends: any[] = [];
   const currentYear = new Date().getFullYear();
 
   // Current color trends based on fashion industry patterns
@@ -338,7 +338,7 @@ function getColorTrends(workspaceId: string) {
 }
 
 function getStyleTrends(workspaceId: string) {
-  const trends = [];
+  const trends: any[] = [];
 
   const styleTrendData = [
     {

@@ -140,7 +140,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         { status: 404 }
       );
     }
-    const createdBundles = [];
+    const createdBundles: any[] = [];
 
     // Create bundles in a transaction
     await prisma.$transaction(async tx => {

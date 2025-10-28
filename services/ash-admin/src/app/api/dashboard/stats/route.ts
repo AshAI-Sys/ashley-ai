@@ -169,7 +169,7 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
     });
 
     // Prepare chart data
-    let productionTrendData = [];
+    let productionTrendData: any[] = [];
     if (includeCharts) {
       productionTrendData = Array.from(
         { length: Math.min(days, 30) },

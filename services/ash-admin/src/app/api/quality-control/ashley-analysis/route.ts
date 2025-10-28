@@ -110,7 +110,7 @@ async function performDefectTrendAnalysis(inspection: any) {
       });
 
   const defectTrends = {};
-  const timeSeriesData = [];
+  const timeSeriesData: any[] = [];
 
   historicalData.forEach(insp => {
     const date = insp.inspection_date.toISOString().split("T")[0];
