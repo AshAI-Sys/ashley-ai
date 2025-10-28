@@ -67,12 +67,12 @@ export async function createSession(
     data: {
       id: sessionId,
       user_id: userId,
-      token: hashToken(sessionToken),
+      token_hash: hashToken(sessionToken),
       ip_address: ipAddress,
       user_agent: userAgent,
       created_at: now,
       expires_at: expiresAt,
-      last_activity_at: now,
+      last_activity: now,
       is_active: true,
     },
   });
@@ -85,7 +85,7 @@ export async function createSession(
     userAgent: session.user_agent ?? "",
     createdAt: session.created_at,
     expiresAt: session.expires_at,
-    lastActivityAt: session.last_activity_at,
+    lastActivityAt: session.last_activity,
     isActive: session.is_active,
   };
 }
@@ -98,7 +98,7 @@ export async function getSession(token: string): Promise<SessionData | null> {
 
   const session = await prisma.userSession.findFirst({
     where: {
-      token: hashedToken,
+      token_hash: hashedToken,
       is_active: true,
       expires_at: { gt: new Date() },
     },
@@ -111,7 +111,7 @@ export async function getSession(token: string): Promise<SessionData | null> {
   // Update last activity
   await prisma.userSession.update({
     where: { id: session.id },
-    data: { last_activity_at: new Date() },
+    data: { last_activity: new Date() },
   });
 
   return {
@@ -122,7 +122,7 @@ export async function getSession(token: string): Promise<SessionData | null> {
     userAgent: session.user_agent ?? "",
     createdAt: session.created_at,
     expiresAt: session.expires_at,
-    lastActivityAt: session.last_activity_at,
+    lastActivityAt: session.last_activity,
     isActive: session.is_active,
   };
 }
@@ -140,7 +140,7 @@ export async function getUserSessions(
       is_active: true,
       expires_at: { gt: new Date() },
     },
-    orderBy: { last_activity_at: "desc" },
+    orderBy: { last_activity: "desc" },
   });
 
   const currentHashedToken = currentSessionToken
@@ -153,8 +153,8 @@ export async function getUserSessions(
     userAgent: session.user_agent ?? "",
     ...parseUserAgent(session.user_agent ?? ""),
     createdAt: session.created_at,
-    lastActivityAt: session.last_activity_at,
-    isCurrentSession: session.token === currentHashedToken,
+    lastActivityAt: session.last_activity,
+    isCurrentSession: session.token_hash === currentHashedToken,
   }));
 }
 
@@ -297,7 +297,7 @@ export async function revokeOldestSession(userId: string): Promise<void> {
       user_id: userId,
       is_active: true,
     },
-    orderBy: { last_activity_at: "asc" },
+    orderBy: { last_activity: "asc" },
   });
 
   if (oldestSession) {
@@ -371,7 +371,7 @@ export async function trackSessionActivity(
     await prisma.userSession.update({
       where: { id: sessionId },
       data: {
-        last_activity_at: new Date(),
+        last_activity: new Date(),
       },
     });
   } catch (error) {
@@ -401,7 +401,7 @@ export async function getSessionStatistics() {
       prisma.userSession.count({
         where: {
           is_active: true,
-          last_activity_at: {
+          last_activity: {
             gt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
           },
         },
@@ -409,7 +409,7 @@ export async function getSessionStatistics() {
       prisma.userSession.count({
         where: {
           is_active: true,
-          last_activity_at: {
+          last_activity: {
             gt: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
           },
         },
