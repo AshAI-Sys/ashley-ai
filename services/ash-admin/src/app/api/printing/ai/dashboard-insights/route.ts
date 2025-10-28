@@ -404,7 +404,7 @@ function calculateMethodPerformance(activeRuns: any[], recentRuns: any[]) {
 }
 
 function getMethodCost(method: string) {
-  const costs = {
+  const costs: Record<string, number> = {
     SILKSCREEN: 2.5,
     SUBLIMATION: 3.75,
     DTF: 4.25,

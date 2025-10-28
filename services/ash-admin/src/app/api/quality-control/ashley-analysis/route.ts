@@ -170,7 +170,11 @@ async function performDefectTrendAnalysis(inspection: any) {
 }
 
 async function performRootCausePrediction(inspection: any) {
-  const defectPatterns = {};
+  const defectPatterns: Record<string, {
+    count: number;
+    severity_distribution: Record<string, number>;
+    locations: Record<string, number>;
+  }> = {};
 
   inspection.defects.forEach(defect => {
     const category = defect.defect_code.category;
