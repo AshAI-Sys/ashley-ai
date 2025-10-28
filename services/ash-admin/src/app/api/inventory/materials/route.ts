@@ -58,17 +58,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if SKU already exists
+    // Check if material already exists by name
     const existing = await prisma.materialInventory.findFirst({
       where: {
         workspace_id,
-        sku,
+        material_name: name,
       },
     });
 
     if (existing) {
       return NextResponse.json(
-        { success: false, error: `Material with SKU "${sku}" already exists` },
+        { success: false, error: `Material "${name}" already exists` },
         { status: 409 }
       );
     }
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     const material = await prisma.materialInventory.create({
       data: {
         workspace_id,
-        sku,
+        // sku field not in schema
         material_type: category,
         material_name: name,
         supplier: supplier || null,
@@ -89,7 +89,6 @@ export async function POST(request: NextRequest) {
         reserved_stock: 0,
         available_stock: stock,
         reorder_point: parseFloat(reorder_point),
-        unit_cost: parseFloat(unit_cost),
         location: description || null,
       },
     });

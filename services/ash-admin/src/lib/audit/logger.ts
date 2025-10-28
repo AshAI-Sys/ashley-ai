@@ -44,6 +44,7 @@ export type AuditAction =
 export type AuditSeverity = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
 
 export interface AuditLogEntry {
+  workspace_id?: string;
   userId?: string;
   action: AuditAction;
   resource?: string;

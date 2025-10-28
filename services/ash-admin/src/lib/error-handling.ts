@@ -152,7 +152,7 @@ export function createErrorResponse(
   };
 
   // Log error for debugging (exclude sensitive details in production)
-  logError(error, response.error ?? "Unknown error".trace_id);
+  logError(error, error.trace_id || "unknown");
 
   return NextResponse.json(response, { status: error.statusCode });
 }

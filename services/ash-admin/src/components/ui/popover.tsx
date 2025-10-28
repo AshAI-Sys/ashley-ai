@@ -60,7 +60,7 @@ const PopoverTrigger = React.forwardRef<
         }
         if (forwardedRef) {
           if (typeof forwardedRef === "function") {
-            forwardedRef(node);
+            forwardedRef(node as HTMLButtonElement);
           } else {
             (forwardedRef as React.MutableRefObject<any>).current = node;
           }

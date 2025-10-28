@@ -1,5 +1,24 @@
 import { redisClient } from "@/lib/redis";
-import { sendEmail, EmailOptions, EmailResult } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
+
+// Define types locally to avoid export conflicts
+type EmailOptions = {
+  to: string | string[];
+  subject: string;
+  html?: string;
+  text?: string;
+  from?: string;
+  replyTo?: string;
+  reply_to?: string;
+  cc?: string | string[];
+  bcc?: string | string[];
+};
+
+type EmailResult = {
+  success: boolean;
+  id?: string;
+  error?: string;
+};
 
 /**
  * Email job interface

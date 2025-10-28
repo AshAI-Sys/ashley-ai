@@ -243,7 +243,13 @@ export default function PrintRunDetailsPage() {
 
   const updateRejectReason = (index: number, field: string, value: any) => {
     const updatedReasons = [...qualityData.reject_reasons];
-    updatedReasons[index] = { ...updatedReasons[index], [field]: value };
+    updatedReasons[index] = {
+      reason_code: updatedReasons[index]?.reason_code || '',
+      qty: updatedReasons[index]?.qty || 0,
+      cost_attribution: updatedReasons[index]?.cost_attribution || 'MATERIAL',
+      ...updatedReasons[index],
+      [field]: value
+    };
     setQualityData({ ...qualityData, reject_reasons: updatedReasons });
   };
 
@@ -581,7 +587,7 @@ export default function PrintRunDetailsPage() {
           <MaterialConsumption
             runId={runId}
             method={run.method}
-            onUpdate={setMaterialData}
+            onUpdate={(materials: any[]) => setMaterialData(materials)}
             readOnly={run.status === "DONE"}
           />
         </TabsContent>

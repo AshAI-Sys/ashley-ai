@@ -349,11 +349,11 @@ export default function SewingOperationsPage() {
         setOperations(prev =>
           prev.map(op =>
             op.id === selectedOperation.id
-              ? {
+              ? ({
                   ...op,
                   ...operationData,
                   updated_at: new Date().toISOString(),
-                }
+                } as SewingOperation)
               : op
           )
         );

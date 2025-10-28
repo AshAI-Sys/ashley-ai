@@ -241,7 +241,7 @@ export class DefectDetectionAI {
     if (matchingDefects.length === 0) return null;
 
     const [defectType, pattern] =
-      matchingDefects[Math.floor(Math.random() * matchingDefects.length)];
+      matchingDefects[Math.floor(Math.random() * matchingDefects.length)]!;
 
     // Generate confidence (higher for more severe defects)
     const baseConfidence =

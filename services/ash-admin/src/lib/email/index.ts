@@ -3,7 +3,7 @@ import { Resend } from "resend";
 // Initialize Resend client
 const resend = new Resend(process.env.RESEND_API_KEY || "");
 
-export interface EmailOptions {
+export type EmailOptions = {
   to: string | string[];
   subject: string;
   html?: string;
@@ -18,18 +18,18 @@ export interface EmailOptions {
     content: string | Buffer;
     content_type?: string;
   }>;
-}
+};
 
 export interface EmailTemplate {
   template: string;
   variables: Record<string, any>;
 }
 
-export interface EmailResult {
+export type EmailResult = {
   success: boolean;
   id?: string;
   error?: string;
-}
+};
 
 /**
  * Send email using Resend
@@ -49,7 +49,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
       from,
       to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,
-      html: options.html,
+      html: options.html || options.text || "",
       text: options.text,
       replyTo: options.replyTo || options.reply_to,
       cc: options.cc,

@@ -6,6 +6,8 @@ import {
   createErrorResponse,
   ValidationError,
   NotFoundError,
+  AppError,
+  ErrorCode,
 } from "@/lib/error-handling";
 import { db } from "@/lib/database";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -106,9 +108,13 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     } catch (error) {
     console.error("Error creating checkout session:", error);
     return createErrorResponse(
-      error instanceof Error
+      error instanceof AppError
         ? error
-        : new Error("Failed to create checkout session")
+        : new AppError(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            error instanceof Error ? error.message : "Failed to create checkout session",
+            500
+          )
     );
   }
 });
