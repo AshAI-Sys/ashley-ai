@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../../lib/auth-middleware";
-import { prisma } from "@/lib/db";
 import * as bcrypt from "bcryptjs";
 import { requireAuth } from "@/lib/auth-middleware";
 

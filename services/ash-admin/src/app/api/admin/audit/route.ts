@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
-import { prisma } from "@/lib/db";
 
 // Audit log validation schema
 const CreateAuditLogSchema = z.object({
@@ -370,7 +369,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
 });
 
 // Helper function to create audit log (internal use only)
-async function createAuditLog(
+async function _createAuditLog(
   performer_user_id: string,
   action: string,
   description: string,
