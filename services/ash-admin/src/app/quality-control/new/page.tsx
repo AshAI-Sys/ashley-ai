@@ -144,7 +144,7 @@ export default function NewInspectionPage() {
     }
 
     setInspectionResult({
-      sampleSize,
+      sample_size: sampleSize,
       acceptance,
       rejection,
       result: "PENDING_REVIEW",

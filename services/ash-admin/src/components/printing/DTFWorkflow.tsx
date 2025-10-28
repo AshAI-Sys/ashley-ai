@@ -422,7 +422,7 @@ export default function DTFWorkflow({
             </div>
 
             {!readOnly && (
-              <Button className="w-full" onClick={() => setActiveStep("print")}>
+              <Button className="w-full" onClick={() => setActiveStep("printing")}>
                 Start Film Printing
               </Button>
             )}
@@ -555,7 +555,7 @@ export default function DTFWorkflow({
             {!readOnly && (
               <Button
                 className="w-full"
-                onClick={() => setActiveStep("powder")}
+                onClick={() => setActiveStep("powder_application")}
               >
                 Ready for Powder Application
               </Button>
@@ -684,7 +684,7 @@ export default function DTFWorkflow({
             </div>
 
             {!readOnly && (
-              <Button className="w-full" onClick={() => setActiveStep("cure")}>
+              <Button className="w-full" onClick={() => setActiveStep("curing")}>
                 Ready for Curing
               </Button>
             )}
