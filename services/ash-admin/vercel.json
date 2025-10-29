@@ -1,7 +1,10 @@
 {
-  "buildCommand": "cd ../.. && HUSKY=0 pnpm install --no-frozen-lockfile && cd packages/database && npx prisma generate && cd ../.. && pnpm --filter @ash/admin build",
-  "installCommand": "cd ../.. && HUSKY=0 pnpm install --no-frozen-lockfile",
   "framework": "nextjs",
+  "buildCommand": "cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "outputDirectory": ".next",
-  "regions": ["sin1"]
+  "regions": ["sin1"],
+  "env": {
+    "HUSKY": "0"
+  }
 }
