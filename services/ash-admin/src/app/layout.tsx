@@ -33,6 +33,10 @@ const PWARegister = dynamic(() => import("@/components/pwa-register"), {
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Force all pages to be dynamic (no static pre-rendering)
+// This is required because Ashley AI is a fully authenticated app with API calls
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Ashley AI - Manufacturing ERP",
   description:
