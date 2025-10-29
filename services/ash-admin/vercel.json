@@ -1,7 +1,10 @@
 {
   "framework": "nextjs",
-  "buildCommand": "export HUSKY=0 && cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm build",
-  "installCommand": "export HUSKY=0 && pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd $VERCEL_PROJECT_ROOT/packages/database && npx prisma generate && cd $VERCEL_PROJECT_ROOT/services/ash-admin && next build",
+  "installCommand": "cd $VERCEL_PROJECT_ROOT && pnpm install --no-frozen-lockfile",
   "outputDirectory": ".next",
-  "regions": ["sin1"]
+  "regions": ["sin1"],
+  "env": {
+    "HUSKY": "0"
+  }
 }
