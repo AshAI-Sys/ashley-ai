@@ -1,7 +1,7 @@
 {
   "framework": "nextjs",
-  "buildCommand": "HUSKY=0 cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm build",
-  "installCommand": "HUSKY=0 pnpm install --no-frozen-lockfile",
+  "buildCommand": "export HUSKY=0 && cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm build",
+  "installCommand": "export HUSKY=0 && pnpm install --no-frozen-lockfile",
   "outputDirectory": ".next",
   "regions": ["sin1"]
 }
