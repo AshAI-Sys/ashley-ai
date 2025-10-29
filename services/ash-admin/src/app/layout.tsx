@@ -7,10 +7,10 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { GlobalKeyboardShortcutsProvider } from "@/components/keyboard-shortcuts-dialog";
 import { FetchInterceptorInit } from "@/components/fetch-interceptor-init";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 
 // Load ChatWidget only on client side to prevent hydration issues
-const _ChatWidget = dynamic(
+const _ChatWidget = dynamicImport(
   () =>
     import("@/components/ai-chat/ChatWidget").then(mod => ({
       default: mod.ChatWidget,
@@ -21,13 +21,13 @@ const _ChatWidget = dynamic(
 );
 
 // Load PWA components only on client side
-const PWAInstallPrompt = dynamic(
+const PWAInstallPrompt = dynamicImport(
   () => import("@/components/pwa-install-prompt"),
   {
     ssr: false,
   }
 );
-const PWARegister = dynamic(() => import("@/components/pwa-register"), {
+const PWARegister = dynamicImport(() => import("@/components/pwa-register"), {
   ssr: false,
 });
 
