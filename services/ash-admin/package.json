@@ -4,8 +4,8 @@
   "description": "ASH AI Admin Interface - Backoffice Management UI",
   "private": true,
   "scripts": {
-    "build": "npx prisma generate && next build",
-    "vercel-build": "npx prisma generate && next build",
+    "build": "next build",
+    "vercel-build": "next build",
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "dev:generate": "npx prisma generate && next dev -H 0.0.0.0 -p 3001",
     "start": "next start -p ${PORT:-3001}",
