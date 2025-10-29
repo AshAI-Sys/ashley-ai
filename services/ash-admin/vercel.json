@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && HUSKY=0 pnpm install --no-frozen-lockfile && pnpm --filter @ash/database prisma generate && pnpm --filter @ash/admin build",
+  "buildCommand": "cd ../.. && HUSKY=0 pnpm install --no-frozen-lockfile && cd packages/database && npx prisma generate && cd ../.. && pnpm --filter @ash/admin build",
   "installCommand": "cd ../.. && HUSKY=0 pnpm install --no-frozen-lockfile",
   "framework": "nextjs",
   "outputDirectory": ".next",
