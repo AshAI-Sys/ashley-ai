@@ -1,10 +1,7 @@
 {
   "framework": "nextjs",
   "buildCommand": "cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && next build",
-  "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
+  "installCommand": "env HUSKY=0 sh -c 'cd ../.. && pnpm install --no-frozen-lockfile'",
   "outputDirectory": ".next",
-  "regions": ["sin1"],
-  "env": {
-    "HUSKY": "0"
-  }
+  "regions": ["sin1"]
 }
