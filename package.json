@@ -57,7 +57,7 @@
     "setup:fast": "pnpm install --frozen-lockfile && pnpm db:generate",
     "reset": "pnpm clean && pnpm setup",
     "start:fast": "concurrently \"pnpm --filter apps/admin dev\" \"pnpm --filter apps/portal dev\"",
-    "prepare": "husky"
+    "prepare": "node -e \"process.exit(process.env.HUSKY === '0' ? 0 : 1)\" || husky"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
