@@ -1,7 +1,7 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd $VERCEL_PROJECT_ROOT/packages/database && npx prisma generate && cd $VERCEL_PROJECT_ROOT/services/ash-admin && next build",
-  "installCommand": "cd $VERCEL_PROJECT_ROOT && pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && next build",
+  "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
   "outputDirectory": ".next",
   "regions": ["sin1"],
   "env": {
