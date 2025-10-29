@@ -79,7 +79,7 @@ export default function TopNavbar() {
       <div className="flex items-center justify-between px-6 py-3.5">
         {/* Left Section - Logo/Brand */}
         <div className="flex items-center gap-4">
-          <h1 className="hidden text-lg font-bold text-white md:block">
+          <h1 className="hidden text-lg font-bold text-white md:block !text-white dark:!text-white">
             Ashley AI
           </h1>
         </div>

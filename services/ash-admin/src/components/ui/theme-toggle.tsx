@@ -54,7 +54,7 @@ export function ThemeToggle() {
             borderRadius: '0.5rem'
           }}
         >
-          <Sun className="h-[1.2rem] w-[1.2rem] text-white" style={{ color: '#FFFFFF' }} />
+          <div className="h-[1.2rem] w-[1.2rem]" style={{ width: '1.2rem', height: '1.2rem' }} />
         </Button>
       </div>
     );

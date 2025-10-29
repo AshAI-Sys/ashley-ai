@@ -785,3 +785,153 @@ a:focus-visible {
   scrollbar-width: thin !important;
   scrollbar-color: #CBD5E1 #F1F5F9 !important;
 }
+
+/* ============================================
+   COMPACT UI - SMALLER/TIGHTER SPACING
+   ============================================ */
+
+@layer base {
+  /* Reduce base font size */
+  html {
+    font-size: 14px !important; /* Default is 16px */
+  }
+
+  /* Smaller headings */
+  h1 { font-size: 1.5rem !important; font-weight: 700; } /* Was 2rem */
+  h2 { font-size: 1.25rem !important; font-weight: 600; } /* Was 1.5rem */
+  h3 { font-size: 1.1rem !important; font-weight: 600; } /* Was 1.25rem */
+  h4 { font-size: 1rem !important; font-weight: 600; } /* Was 1.125rem */
+  h5 { font-size: 0.9rem !important; font-weight: 600; }
+  h6 { font-size: 0.85rem !important; font-weight: 600; }
+
+  /* Compact body text */
+  body {
+    line-height: 1.4 !important; /* Was 1.5 */
+  }
+
+  /* Smaller paragraphs */
+  p {
+    font-size: 0.875rem !important; /* 14px with base 16px */
+    line-height: 1.4 !important;
+  }
+}
+
+@layer utilities {
+  /* Compact cards */
+  .modern-card {
+    @apply p-3 !important; /* Was p-6 */
+    border-radius: 0.75rem !important; /* Was 1.5rem */
+  }
+
+  .stats-card {
+    @apply p-3 !important; /* Was p-6 */
+    border-radius: 0.75rem !important; /* Was rounded-2xl */
+  }
+
+  /* Compact buttons */
+  .modern-button {
+    @apply px-3 py-1.5 text-sm !important; /* Was px-4 py-2 */
+  }
+
+  /* Compact nav items */
+  .nav-item {
+    @apply px-2.5 py-2 text-sm !important; /* Was px-3 py-3 */
+  }
+
+  /* Reduce grid gaps */
+  .responsive-grid,
+  .responsive-2-col,
+  .responsive-3-col {
+    gap: 0.75rem !important; /* Was 1.5rem (gap-6) */
+  }
+
+  /* Compact padding */
+  .responsive-padding {
+    @apply p-3 !important; /* Was p-4 */
+  }
+
+  @media (min-width: 640px) {
+    .responsive-padding {
+      @apply p-4 !important; /* Was p-6 */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-padding {
+      @apply p-5 !important; /* Was p-8 */
+    }
+  }
+}
+
+/* Compact inputs and form elements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  @apply px-2.5 py-1.5 text-sm !important; /* Was px-3 py-2 */
+  min-height: 36px !important; /* Was 44px on mobile */
+}
+
+/* Compact labels */
+label {
+  @apply text-sm !important;
+  font-weight: 500 !important;
+}
+
+/* Compact tables */
+th {
+  @apply px-3 py-2 text-sm !important; /* Was px-4 py-3 */
+}
+
+td {
+  @apply px-3 py-2 text-sm !important; /* Was px-4 py-3 */
+}
+
+/* Compact badges */
+.badge {
+  @apply px-2 py-0.5 text-xs !important; /* Was px-2.5 */
+}
+
+/* Reduce container padding */
+.responsive-container {
+  @apply px-3 !important; /* Was px-4 */
+}
+
+@media (min-width: 640px) {
+  .responsive-container {
+    @apply px-4 !important; /* Was px-6 */
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-container {
+    @apply px-6 !important; /* Was px-8 */
+  }
+}
+
+/* Compact mobile adjustments */
+@media (max-width: 768px) {
+  html {
+    font-size: 13px !important; /* Even smaller on mobile */
+  }
+
+  .modern-card {
+    border-radius: 0.5rem !important; /* Was 0.75rem */
+    padding: 0.75rem !important; /* Was 1rem */
+  }
+
+  .stats-card {
+    @apply p-2.5 !important; /* Was p-4 */
+  }
+
+  h1 { font-size: 1.25rem !important; } /* Was 1.5rem */
+  h2 { font-size: 1.1rem !important; } /* Was 1.25rem */
+  h3 { font-size: 1rem !important; } /* Was 1.125rem */
+  h4 { font-size: 0.95rem !important; }
+}

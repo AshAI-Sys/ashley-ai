@@ -2,12 +2,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
-import { requireAuth } from "@/lib/auth-middleware";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+// Email verification is PUBLIC - no auth required
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
@@ -101,4 +101,4 @@ console.log("✅ Email verified for user:", user.email);
       { status: 500 }
     );
   }
-});
+}
