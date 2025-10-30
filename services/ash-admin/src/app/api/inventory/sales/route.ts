@@ -165,7 +165,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
 
 // GET all sales
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -207,4 +207,4 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-}
+});
