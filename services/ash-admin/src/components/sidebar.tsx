@@ -304,7 +304,7 @@ export default function Sidebar() {
 
       {/* Sidebar - Modern Design */}
       <div
-        className={`modern-sidebar text-white transition-all duration-300 w-64 /* Mobile styles */ fixed z-40 flex min-h-screen flex-col lg:relative lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
+        className={`modern-sidebar text-white transition-all duration-300 w-64 /* Mobile styles */ fixed inset-y-0 z-40 flex max-h-screen flex-col overflow-hidden lg:relative lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
       >
         {/* Header - Improved spacing */}
         <div className="border-b border-white/10 p-5">
