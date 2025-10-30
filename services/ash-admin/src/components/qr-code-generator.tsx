@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Download, Printer } from "lucide-react";
+import QRCode from "qrcode";
 
 interface QRCodeGeneratorProps {
   productId: string;
@@ -22,12 +23,14 @@ export default function QRCodeGenerator({
 }: QRCodeGeneratorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     generateQRCode();
   }, [productId, variantId]);
 
   const generateQRCode = async () => {
+    setGenerating(true);
     try {
       // Construct the QR code URL
       const baseUrl = "https://inventory.yourdomain.com";
@@ -37,28 +40,21 @@ export default function QRCodeGenerator({
 
       setQrCodeUrl(url);
 
-      // Generate QR code using HTML5 Canvas
-      // This is a simple implementation - for production, use a library like 'qrcode' or 'react-qr-code'
+      // Generate QR code using qrcode library
       if (canvasRef.current) {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          // Clear canvas
-          ctx.fillStyle = "white";
-          ctx.fillRect(0, 0, size, size);
-
-          // Draw placeholder text (in production, use a proper QR code library)
-          ctx.fillStyle = "#000";
-          ctx.font = "12px Arial";
-          ctx.textAlign = "center";
-          ctx.fillText("QR CODE", size / 2, size / 2 - 10);
-          ctx.fillText("PLACEHOLDER", size / 2, size / 2 + 10);
-          ctx.font = "10px Arial";
-          ctx.fillText(sku, size / 2, size / 2 + 30);
-        }
+        await QRCode.toCanvas(canvasRef.current, url, {
+          width: size,
+          margin: 2,
+          color: {
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
+        });
       }
     } catch (error) {
       console.error("Error generating QR code:", error);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -154,28 +150,29 @@ export default function QRCodeGenerator({
       <div className="flex gap-2">
         <button
           onClick={handleDownload}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+          disabled={generating}
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:bg-gray-400"
         >
           <Download className="h-4 w-4" />
-          Download
+          {generating ? "Generating..." : "Download"}
         </button>
         <button
           onClick={handlePrint}
-          className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50"
+          disabled={generating}
+          className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:bg-gray-100"
         >
           <Printer className="h-4 w-4" />
           Print Label
         </button>
       </div>
 
-      {/* Installation Note */}
-      <div className="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-xs text-yellow-800">
-        <p className="font-semibold">Development Note:</p>
-        <p>
-          This is a placeholder. Install 'qrcode' or 'react-qr-code' package for production QR generation.
-        </p>
-        <p className="mt-1">Run: pnpm add qrcode @types/qrcode</p>
-      </div>
+      {/* Success Message */}
+      {!generating && (
+        <div className="mt-2 rounded-lg border border-green-200 bg-green-50 p-3 text-xs text-green-800">
+          <p className="font-semibold">✓ QR Code Generated Successfully</p>
+          <p>Scan this code with your mobile device to access product details</p>
+        </div>
+      )}
     </div>
   );
 }

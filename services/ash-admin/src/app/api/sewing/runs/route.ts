@@ -47,11 +47,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         search
           ? {
               OR: [
-                { operation_name: { contains: search, mode: "insensitive" } },
-                { instructions: { contains: search, mode: "insensitive" } },
+                { operation_name: { contains: search, mode: "insensitive" as const } },
+                { instructions: { contains: search, mode: "insensitive" as const } },
                 {
                   order: {
-                    order_number: { contains: search, mode: "insensitive" },
+                    order_number: { contains: search, mode: "insensitive" as const },
                   },
                 },
               ],

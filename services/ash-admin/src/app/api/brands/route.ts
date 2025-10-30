@@ -31,9 +31,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         search
           ? {
               OR: [
-                { name: { contains: search, mode: "insensitive" } },
-                { description: { contains: search, mode: "insensitive" } },
-                { client: { name: { contains: search, mode: "insensitive" } } },
+                { name: { contains: search, mode: "insensitive" as const } },
+                { description: { contains: search, mode: "insensitive" as const } },
+                { client: { name: { contains: search, mode: "insensitive" as const } } },
               ],
             }
           : {},
