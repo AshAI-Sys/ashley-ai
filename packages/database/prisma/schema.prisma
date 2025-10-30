@@ -97,6 +97,11 @@ model Workspace {
   work_stations            WorkStation[]
   worker_allocations       WorkerAllocation[]       @relation("WorkspaceWorkerAllocations")
   worker_assignments       WorkerAssignment[]       @relation("WorkspaceWorkerAssignments")
+  inventory_products       InventoryProduct[]
+  store_locations          StoreLocation[]
+  stock_ledger             StockLedger[]
+  retail_sales             RetailSale[]
+  warehouse_deliveries     WarehouseDelivery[]
 
   @@index([is_active])
   @@index([created_at])
@@ -158,6 +163,9 @@ model User {
   shared_reports                 ReportShare[]           @relation("ReportSharer")
   workspace                      Workspace               @relation(fields: [workspace_id], references: [id])
   created_work_orders            WorkOrder[]
+  stock_ledger_entries           StockLedger[]           @relation("StockLedgerUser")
+  retail_sales_as_cashier        RetailSale[]            @relation("RetailSaleCashier")
+  warehouse_deliveries_received  WarehouseDelivery[]     @relation("DeliveryReceiver")
 
   @@unique([workspace_id, email])
   @@index([workspace_id])
@@ -3738,4 +3746,199 @@ model AutoReorderSetting {
   @@index([workspace_id])
   @@index([workspace_id, enabled])
   @@map("auto_reorder_settings")
+}
+
+// ============================================
+// QR-BASED INVENTORY SYSTEM (Added 2025-10-30)
+// For Store/Cashier/Warehouse retail inventory
+// ============================================
+
+// Retail Products (different from manufacturing materials)
+model InventoryProduct {
+  id           String           @id @default(cuid())
+  workspace_id String
+  name         String
+  description  String?
+  photo_url    String?
+  base_sku     String
+  category     String?
+  is_active    Boolean          @default(true)
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+  workspace    Workspace        @relation(fields: [workspace_id], references: [id])
+  variants     ProductVariant[]
+
+  @@unique([workspace_id, base_sku])
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([base_sku])
+  @@index([category])
+  @@map("inventory_products")
+}
+
+// Product Variants (size, color, etc.)
+model ProductVariant {
+  id           String           @id @default(cuid())
+  product_id   String
+  variant_name String // e.g., "Red-Large", "Blue-Small"
+  sku          String           @unique
+  barcode      String?          @unique
+  qr_code      String?          @unique
+  price        Float
+  cost         Float?
+  size         String?
+  color        String?
+  is_active    Boolean          @default(true)
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+  product      InventoryProduct @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  stock_ledger StockLedger[]
+  sale_items   RetailSaleItem[]
+
+  @@index([product_id])
+  @@index([sku])
+  @@index([barcode])
+  @@index([qr_code])
+  @@map("product_variants")
+}
+
+// Store and Warehouse Locations
+model StoreLocation {
+  id                   String              @id @default(cuid())
+  workspace_id         String
+  location_code        String // STORE_MAIN, WH_MAIN, etc.
+  location_name        String
+  location_type        String // STORE, WAREHOUSE
+  address              String?
+  is_active            Boolean             @default(true)
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  workspace            Workspace           @relation(fields: [workspace_id], references: [id])
+  stock_ledger         StockLedger[]
+  warehouse_deliveries WarehouseDelivery[]
+
+  @@unique([workspace_id, location_code])
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([location_type])
+  @@map("store_locations")
+}
+
+// Stock Movement Ledger (tracks all in/out movements)
+model StockLedger {
+  id               String         @id @default(cuid())
+  workspace_id     String
+  variant_id       String
+  location_id      String
+  transaction_type String // IN, OUT, TRANSFER, ADJUSTMENT, SALE
+  quantity_change  Float // positive for IN, negative for OUT
+  quantity_before  Float
+  quantity_after   Float
+  reference_type   String? // SALE, DELIVERY, TRANSFER, ADJUSTMENT
+  reference_id     String?
+  notes            String?
+  performed_by     String?
+  created_at       DateTime       @default(now())
+  workspace        Workspace      @relation(fields: [workspace_id], references: [id])
+  variant          ProductVariant @relation(fields: [variant_id], references: [id])
+  location         StoreLocation  @relation(fields: [location_id], references: [id])
+  user             User?          @relation("StockLedgerUser", fields: [performed_by], references: [id])
+
+  @@index([workspace_id])
+  @@index([workspace_id, variant_id])
+  @@index([workspace_id, location_id])
+  @@index([workspace_id, created_at])
+  @@index([variant_id, location_id])
+  @@index([transaction_type])
+  @@index([reference_type, reference_id])
+  @@map("stock_ledger")
+}
+
+// Retail Sales (POS transactions)
+model RetailSale {
+  id              String           @id @default(cuid())
+  workspace_id    String
+  sale_number     String
+  sale_date       DateTime         @default(now())
+  subtotal        Float
+  tax_amount      Float            @default(0)
+  discount_amount Float            @default(0)
+  total_amount    Float
+  payment_method  String // CASH, CARD, GCASH, etc.
+  payment_status  String           @default("PAID") // PAID, PENDING, CANCELLED
+  cashier_id      String?
+  notes           String?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+  workspace       Workspace        @relation(fields: [workspace_id], references: [id])
+  cashier         User?            @relation("RetailSaleCashier", fields: [cashier_id], references: [id])
+  items           RetailSaleItem[]
+
+  @@unique([workspace_id, sale_number])
+  @@index([workspace_id])
+  @@index([workspace_id, sale_date])
+  @@index([workspace_id, payment_status])
+  @@index([sale_date])
+  @@index([cashier_id])
+  @@map("retail_sales")
+}
+
+// Retail Sale Items
+model RetailSaleItem {
+  id          String         @id @default(cuid())
+  sale_id     String
+  variant_id  String
+  quantity    Float
+  unit_price  Float
+  discount    Float          @default(0)
+  total_price Float
+  created_at  DateTime       @default(now())
+  sale        RetailSale     @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+  variant     ProductVariant @relation(fields: [variant_id], references: [id])
+
+  @@index([sale_id])
+  @@index([variant_id])
+  @@map("retail_sale_items")
+}
+
+// Warehouse Deliveries (incoming stock)
+model WarehouseDelivery {
+  id                    String                  @id @default(cuid())
+  workspace_id          String
+  delivery_number       String
+  delivery_date         DateTime                @default(now())
+  supplier_name         String?
+  receiving_location_id String
+  status                String                  @default("PENDING") // PENDING, RECEIVED, CANCELLED
+  notes                 String?
+  received_by           String?
+  received_at           DateTime?
+  created_at            DateTime                @default(now())
+  updated_at            DateTime                @updatedAt
+  workspace             Workspace               @relation(fields: [workspace_id], references: [id])
+  receiving_location    StoreLocation           @relation(fields: [receiving_location_id], references: [id])
+  receiver              User?                   @relation("DeliveryReceiver", fields: [received_by], references: [id])
+  items                 WarehouseDeliveryItem[]
+
+  @@unique([workspace_id, delivery_number])
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, delivery_date])
+  @@index([receiving_location_id])
+  @@map("warehouse_deliveries")
+}
+
+// Warehouse Delivery Items
+model WarehouseDeliveryItem {
+  id          String            @id @default(cuid())
+  delivery_id String
+  variant_id  String
+  quantity    Float
+  notes       String?
+  created_at  DateTime          @default(now())
+  delivery    WarehouseDelivery @relation(fields: [delivery_id], references: [id], onDelete: Cascade)
+
+  @@index([delivery_id])
+  @@index([variant_id])
+  @@map("warehouse_delivery_items")
 }
