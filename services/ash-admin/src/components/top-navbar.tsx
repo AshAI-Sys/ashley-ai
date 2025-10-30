@@ -3,18 +3,21 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../lib/auth-context";
 import { useRouter } from "next/navigation";
-import { Bell, Settings, LogOut, ChevronDown, X } from "lucide-react";
+import { Bell, Settings, LogOut, ChevronDown, X, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 export default function TopNavbar() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
   const { user, logout } = useAuth();
   const router = useRouter();
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   // Prevent hydration mismatch - only render icons after mount
   useEffect(() => {
@@ -35,6 +38,12 @@ export default function TopNavbar() {
         !notificationsRef.current.contains(event.target as Node)
       ) {
         setShowNotifications(false);
+      }
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setShowSearch(false);
       }
     }
 
@@ -76,7 +85,7 @@ export default function TopNavbar() {
 
   return (
     <nav className="sticky top-0 z-40 border-b border-slate-700 bg-slate-800 shadow-sm backdrop-blur-md transition-all">
-      <div className="flex items-center justify-between px-6 py-3.5">
+      <div className="flex items-center justify-between gap-4 px-4 py-3.5 lg:px-6">
         {/* Left Section - Logo/Brand */}
         <div className="flex items-center gap-4">
           <h1 className="hidden text-lg font-bold text-white md:block !text-white dark:!text-white">
@@ -84,8 +93,37 @@ export default function TopNavbar() {
           </h1>
         </div>
 
-        {/* Right Section - Theme Toggle, Notifications & Profile */}
-        <div className="ml-6 flex items-center gap-3">
+        {/* Center Section - Search (Desktop & Tablet) */}
+        <div className="hidden flex-1 max-w-md mx-4 sm:block" ref={searchRef}>
+          <div className="relative">
+            <HydrationSafeIcon
+              Icon={Search}
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+            />
+            <input
+              type="text"
+              placeholder="Search orders, clients, products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm text-white placeholder-white/60 transition-all focus:border-white/30 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
+            />
+          </div>
+        </div>
+
+        {/* Right Section - Search (Mobile), Theme Toggle, Notifications & Profile */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Mobile Search Button */}
+          <button
+            onClick={() => setShowSearch(!showSearch)}
+            className="rounded-lg p-2.5 text-white transition-colors hover:bg-white/10 sm:hidden"
+          >
+            {!mounted ? (
+              <div className="h-5 w-5" />
+            ) : (
+              <HydrationSafeIcon Icon={showSearch ? X : Search} className="h-5 w-5" />
+            )}
+          </button>
+
           {/* Theme Toggle */}
           <ThemeToggle />
 
@@ -224,6 +262,26 @@ export default function TopNavbar() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Dropdown */}
+      {showSearch && (
+        <div className="border-t border-slate-700 bg-slate-800 px-4 py-3 sm:hidden">
+          <div className="relative">
+            <HydrationSafeIcon
+              Icon={Search}
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+            />
+            <input
+              type="text"
+              placeholder="Search orders, clients, products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+              className="w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/60 transition-all focus:border-white/30 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
+            />
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
