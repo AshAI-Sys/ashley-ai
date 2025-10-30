@@ -218,6 +218,12 @@ export default function Sidebar() {
       department: "Inventory",
     },
     {
+      name: "Retail Store",
+      href: "/inventory/retail",
+      icon: "Store",
+      department: "Inventory",
+    },
+    {
       name: "Performance",
       href: "/performance",
       icon: "Activity",
