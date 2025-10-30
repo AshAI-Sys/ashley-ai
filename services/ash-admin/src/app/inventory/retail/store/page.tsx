@@ -73,9 +73,11 @@ export default function StoreInterfacePage() {
     if (manualInput.includes("/i/")) {
       try {
         const url = new URL(manualInput);
-        const productId = url.pathname.split("/i/")[1];
+        const productId = url.pathname.split("/i/")[1] || "";
         const variantId = url.searchParams.get("v");
-        handleScan(productId, variantId || undefined);
+        if (productId) {
+          handleScan(productId, variantId ?? undefined);
+        }
       } catch (error) {
         // If not a URL, treat as product ID
         handleScan(manualInput);

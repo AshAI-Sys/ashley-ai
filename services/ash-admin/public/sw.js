@@ -1,7 +1,7 @@
 // Ashley AI - Service Worker for PWA
-// Version 1.0.0
+// Version 1.1.0 - Fixed preload warnings and Next.js static asset caching
 
-const CACHE_VERSION = "ashley-ai-v1";
+const CACHE_VERSION = "ashley-ai-v1.1";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const API_CACHE = `${CACHE_VERSION}-api`;
@@ -99,14 +99,24 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Skip Next.js dev chunks and HMR requests
+  // Skip Next.js HMR and dev chunks in development
   if (
-    url.pathname.includes("/_next/") ||
     url.pathname.includes("/__webpack") ||
-    url.searchParams.has("_next_data") ||
     url.pathname.endsWith(".hot-update.json")
   ) {
-    // Let Next.js handle its own files
+    // Let Next.js handle its own dev files
+    return;
+  }
+
+  // In production, cache Next.js static assets for better performance
+  if (url.pathname.includes("/_next/static/")) {
+    event.respondWith(cacheFirstStrategy(request, STATIC_CACHE));
+    return;
+  }
+
+  // Handle Next.js data requests (JSON page data)
+  if (url.searchParams.has("_next_data")) {
+    event.respondWith(networkFirstStrategy(request, DYNAMIC_CACHE));
     return;
   }
 

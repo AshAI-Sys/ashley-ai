@@ -55,7 +55,7 @@ export default function CashierPage() {
 
       if (scanInput.includes("/i/")) {
         const url = new URL(scanInput);
-        productId = url.pathname.split("/i/")[1];
+        productId = url.pathname.split("/i/")[1] || "";
         variantId = url.searchParams.get("v") || "";
       }
 

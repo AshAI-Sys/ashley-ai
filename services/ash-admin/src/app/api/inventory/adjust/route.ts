@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const { workspace_id: workspaceId, id: user_id } = user;
+    const { workspaceId, id: user_id } = user;
     const body = await request.json();
     const {
       variant_id,

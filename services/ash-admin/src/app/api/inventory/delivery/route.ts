@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const { workspace_id: workspaceId, id: user_id } = user;
+    const { workspaceId, id: user_id } = user;
     const body = await request.json();
     const {
       receiving_location_code = 'WH_MAIN',
@@ -42,7 +42,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     }
 
     // Generate delivery number
-    const deliveryCount = await prisma.warehouseDelivery.count({ where: { workspaceId } });
+    const deliveryCount = await prisma.warehouseDelivery.count({ where: { workspace_id: workspaceId } });
     const delivery_number = `DEL-${String(deliveryCount + 1).padStart(6, '0')}`;
 
     // Create delivery with transaction
@@ -124,7 +124,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { workspaceId } = user;
     const deliveries = await prisma.warehouseDelivery.findMany({
-      where: { workspaceId },
+      where: { workspace_id: workspaceId },
       include: {
         items: true,
         receiving_location: true,

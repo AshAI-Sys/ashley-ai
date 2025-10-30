@@ -11,14 +11,21 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    // Authenticate user
     const { workspaceId } = user;
-    const productId = params.id;
+    const productId = context?.params.id;
+
+    if (!productId) {
+      return NextResponse.json(
+        { success: false, error: 'Product ID is required' },
+        { status: 400 }
+      );
+    }
 
     // Check if it's a variant_id from QR code (?v=variant_id)
     const url = new URL(request.url);
@@ -30,11 +37,6 @@ export async function GET(
         where: { id: variantId },
         include: {
           product: true,
-          stock_ledger: {
-            where: { workspaceId },
-            orderBy: { created_at: 'desc' },
-            take: 1,
-          },
         },
       });
 
@@ -46,7 +48,7 @@ export async function GET(
       }
 
       // Calculate current stock across all locations
-      const stockByLocation = await prisma.stock_ledger.groupBy({
+      const stockByLocation = await prisma.stockLedger.groupBy({
         by: ['location_id'],
         where: {
           workspace_id: workspaceId,
@@ -60,18 +62,18 @@ export async function GET(
       const locations = await prisma.storeLocation.findMany({
         where: {
           workspace_id: workspaceId,
-          id: { in: stockByLocation.map((s) => s.location_id) },
+          id: { in: stockByLocation.map((s: { location_id: string }) => s.location_id) },
         },
       });
 
-      const stock = stockByLocation.map((s) => ({
+      const stock = stockByLocation.map((s: { location_id: string; _sum: { quantity_change: number | null } }) => ({
         location_id: s.location_id,
         location_name: locations.find((l) => l.id === s.location_id)?.location_name || 'Unknown',
         location_code: locations.find((l) => l.id === s.location_id)?.location_code || 'Unknown',
         quantity: s._sum.quantity_change || 0,
       }));
 
-      const totalStock = stock.reduce((sum, s) => sum + s.quantity, 0);
+      const totalStock = stock.reduce((sum: number, s: { quantity: number }) => sum + s.quantity, 0);
 
       return NextResponse.json({
         success: true,
@@ -104,13 +106,6 @@ export async function GET(
         include: {
           variants: {
             where: { is_active: true },
-            include: {
-              stock_ledger: {
-                where: { workspaceId },
-                orderBy: { created_at: 'desc' },
-                take: 1,
-              },
-            },
           },
         },
       });
@@ -135,4 +130,4 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});

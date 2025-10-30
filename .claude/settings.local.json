@@ -193,7 +193,8 @@
       "Bash(do echo \"Testing $endpoint...\")",
       "Bash(time curl:*)",
       "Bash(git diff:*)",
-      "Bash(DATABASE_URL=\"file:./prisma/dev.db\" npx tsx:*)"
+      "Bash(DATABASE_URL=\"file:./prisma/dev.db\" npx tsx:*)",
+      "Bash(if exist .vercel rd /s /q .vercel)"
     ],
     "deny": [],
     "ask": []
