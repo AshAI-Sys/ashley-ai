@@ -32,9 +32,9 @@ export const GET = requireAuth(
 
     if (search) {
       where.OR = [
-        { first_name: { contains: search, mode: "insensitive" } },
-        { last_name: { contains: search, mode: "insensitive" } },
-        { employee_number: { contains: search, mode: "insensitive" } },
+        { first_name: { contains: search, mode: "insensitive" as const } },
+        { last_name: { contains: search, mode: "insensitive" as const } },
+        { employee_number: { contains: search, mode: "insensitive" as const } },
       ];
     }
 

@@ -70,7 +70,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     };
 
     if (search) {
-      where.OR = [{ order_number: { contains: search, mode: "insensitive" } }];
+      where.OR = [{ order_number: { contains: search, mode: "insensitive" as const } }];
     }
 
     if (status) {

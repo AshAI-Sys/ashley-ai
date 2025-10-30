@@ -84,10 +84,10 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     // Apply filters
     if (search) {
       where.OR = [
-        { email: { contains: search, mode: "insensitive" } },
-        { first_name: { contains: search, mode: "insensitive" } },
-        { last_name: { contains: search, mode: "insensitive" } },
-        { username: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" as const } },
+        { first_name: { contains: search, mode: "insensitive" as const } },
+        { last_name: { contains: search, mode: "insensitive" as const } },
+        { username: { contains: search, mode: "insensitive" as const } },
       ];
     }
 

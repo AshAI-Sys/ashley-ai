@@ -18,9 +18,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { asset_number: { contains: search, mode: "insensitive" } },
-        { location: { contains: search, mode: "insensitive" } },
+        { name: { contains: search, mode: "insensitive" as const } },
+        { asset_number: { contains: search, mode: "insensitive" as const } },
+        { location: { contains: search, mode: "insensitive" as const } },
       ];
     }
 

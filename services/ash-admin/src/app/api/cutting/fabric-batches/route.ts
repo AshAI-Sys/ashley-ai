@@ -36,8 +36,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         search
           ? {
               OR: [
-                { lot_no: { contains: search, mode: "insensitive" } },
-                { brand: { name: { contains: search, mode: "insensitive" } } },
+                { lot_no: { contains: search, mode: "insensitive" as const } },
+                { brand: { name: { contains: search, mode: "insensitive" as const } } },
               ],
             }
           : {},

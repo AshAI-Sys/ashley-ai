@@ -20,8 +20,8 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     // Search by name if provided
     if (search) {
       where.OR = [
-        { material_name: { contains: search, mode: "insensitive" } },
-        { supplier: { contains: search, mode: "insensitive" } },
+        { material_name: { contains: search, mode: "insensitive" as const } },
+        { supplier: { contains: search, mode: "insensitive" as const } },
       ];
     }
 
