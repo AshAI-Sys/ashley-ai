@@ -10,17 +10,12 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
 
     const locations = await prisma.storeLocation.findMany({
-      where: { workspace_id },
+      where: { workspace_id: workspaceId },
       orderBy: { location_code: 'asc' },
     });
 
@@ -28,16 +23,11 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to fetch locations' }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const body = await request.json();
     const { location_code, location_name, location_type, address } = body;
 
@@ -49,28 +39,23 @@ export async function POST(request: NextRequest) {
     }
 
     const location = await prisma.storeLocation.create({
-      data: { workspace_id, location_code, location_name, location_type, address },
+      data: { workspace_id: workspaceId, location_code, location_name, location_type, address },
     });
 
     return NextResponse.json({ success: true, data: location });
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to create location' }, { status: 500 });
   }
-}
+});
 
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const body = await request.json();
     const { id, ...data } = body;
 
     const location = await prisma.storeLocation.update({
-      where: { id, workspace_id },
+      where: { id, workspace_id: workspaceId },
       data,
     });
 
@@ -78,16 +63,11 @@ export async function PUT(request: NextRequest) {
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to update location' }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -95,10 +75,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
     }
 
-    await prisma.storeLocation.delete({ where: { id, workspace_id } });
+    await prisma.storeLocation.delete({ where: { id, workspace_id: workspaceId } });
 
     return NextResponse.json({ success: true, message: 'Location deleted successfully' });
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to delete location' }, { status: 500 });
   }
-}
+});

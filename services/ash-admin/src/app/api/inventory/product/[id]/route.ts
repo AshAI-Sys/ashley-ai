@@ -17,15 +17,7 @@ export async function GET(
 ) {
   try {
     // Authenticate user
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const productId = params.id;
 
     // Check if it's a variant_id from QR code (?v=variant_id)
@@ -39,7 +31,7 @@ export async function GET(
         include: {
           product: true,
           stock_ledger: {
-            where: { workspace_id },
+            where: { workspaceId },
             orderBy: { created_at: 'desc' },
             take: 1,
           },
@@ -57,7 +49,7 @@ export async function GET(
       const stockByLocation = await prisma.stock_ledger.groupBy({
         by: ['location_id'],
         where: {
-          workspace_id,
+          workspace_id: workspaceId,
           variant_id: variantId,
         },
         _sum: {
@@ -67,7 +59,7 @@ export async function GET(
 
       const locations = await prisma.storeLocation.findMany({
         where: {
-          workspace_id,
+          workspace_id: workspaceId,
           id: { in: stockByLocation.map((s) => s.location_id) },
         },
       });
@@ -107,14 +99,14 @@ export async function GET(
       const product = await prisma.inventoryProduct.findFirst({
         where: {
           id: productId,
-          workspace_id,
+          workspace_id: workspaceId,
         },
         include: {
           variants: {
             where: { is_active: true },
             include: {
               stock_ledger: {
-                where: { workspace_id },
+                where: { workspaceId },
                 orderBy: { created_at: 'desc' },
                 take: 1,
               },

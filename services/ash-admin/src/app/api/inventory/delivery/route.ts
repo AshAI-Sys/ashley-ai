@@ -11,17 +11,9 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id, id: user_id } = authResult.user;
+    const { workspace_id: workspaceId, id: user_id } = user;
     const body = await request.json();
     const {
       receiving_location_code = 'WH_MAIN',
@@ -39,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Get receiving location
     const location = await prisma.storeLocation.findFirst({
-      where: { workspace_id, location_code: receiving_location_code },
+      where: { workspace_id: workspaceId, location_code: receiving_location_code },
     });
 
     if (!location) {
@@ -50,14 +42,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate delivery number
-    const deliveryCount = await prisma.warehouseDelivery.count({ where: { workspace_id } });
+    const deliveryCount = await prisma.warehouseDelivery.count({ where: { workspaceId } });
     const delivery_number = `DEL-${String(deliveryCount + 1).padStart(6, '0')}`;
 
     // Create delivery with transaction
     const delivery = await prisma.$transaction(async (tx) => {
       const newDelivery = await tx.warehouseDelivery.create({
         data: {
-          workspace_id,
+          workspace_id: workspaceId,
           delivery_number,
           supplier_name,
           receiving_location_id: location.id,
@@ -83,7 +75,7 @@ export async function POST(request: NextRequest) {
         const currentStock = await tx.stockLedger.groupBy({
           by: ['variant_id'],
           where: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: location.id,
           },
@@ -95,7 +87,7 @@ export async function POST(request: NextRequest) {
 
         await tx.stockLedger.create({
           data: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: location.id,
             transaction_type: 'IN',
@@ -128,16 +120,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const deliveries = await prisma.warehouseDelivery.findMany({
-      where: { workspace_id },
+      where: { workspaceId },
       include: {
         items: true,
         receiving_location: true,

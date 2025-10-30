@@ -11,17 +11,9 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id, id: user_id } = authResult.user;
+    const { workspace_id: workspaceId, id: user_id } = user;
     const body = await request.json();
     const {
       variant_id,
@@ -56,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // Get location
     const location = await prisma.storeLocation.findFirst({
-      where: { workspace_id, location_code },
+      where: { workspace_id: workspaceId, location_code },
     });
 
     if (!location) {
@@ -83,7 +75,7 @@ export async function POST(request: NextRequest) {
     const currentStock = await prisma.stockLedger.groupBy({
       by: ['variant_id'],
       where: {
-        workspace_id,
+        workspace_id: workspaceId,
         variant_id,
         location_id: location.id,
       },
@@ -108,7 +100,7 @@ export async function POST(request: NextRequest) {
     // Create adjustment record
     const adjustment = await prisma.stockLedger.create({
       data: {
-        workspace_id,
+        workspace_id: workspaceId,
         variant_id,
         location_id: location.id,
         transaction_type: 'ADJUSTMENT',

@@ -11,17 +11,9 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const { searchParams } = new URL(request.url);
     const location_code = searchParams.get('location');
     const product_id = searchParams.get('product_id');
@@ -41,7 +33,7 @@ export async function GET(request: NextRequest) {
     const stockByVariantLocation = await prisma.stockLedger.groupBy({
       by: ['variant_id', 'location_id'],
       where: {
-        workspace_id,
+        workspace_id: workspaceId,
         ...locationFilter,
         ...variantFilter,
       },

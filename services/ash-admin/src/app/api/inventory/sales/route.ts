@@ -11,18 +11,10 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    // Authenticate user
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id, id: user_id } = authResult.user;
+    // Get user workspace and ID
+    const { workspaceId, id: user_id } = user;
 
     // Parse request body
     const body = await request.json();
@@ -52,7 +44,7 @@ export async function POST(request: NextRequest) {
     // Get STORE_MAIN location
     const storeLocation = await prisma.storeLocation.findFirst({
       where: {
-        workspace_id,
+        workspace_id: workspaceId,
         location_code: 'STORE_MAIN',
       },
     });
@@ -73,7 +65,7 @@ export async function POST(request: NextRequest) {
     const total_amount = subtotal + tax_amount - discount_amount;
 
     // Generate sale number
-    const saleCount = await prisma.retailSale.count({ where: { workspace_id } });
+    const saleCount = await prisma.retailSale.count({ where: { workspace_id: workspaceId } });
     const sale_number = `SALE-${String(saleCount + 1).padStart(6, '0')}`;
 
     // Create sale with transaction
@@ -81,7 +73,7 @@ export async function POST(request: NextRequest) {
       // Create sale
       const newSale = await tx.retailSale.create({
         data: {
-          workspace_id,
+          workspace_id: workspaceId,
           sale_number,
           subtotal,
           tax_amount,
@@ -120,7 +112,7 @@ export async function POST(request: NextRequest) {
         const currentStock = await tx.stockLedger.groupBy({
           by: ['variant_id'],
           where: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: storeLocation.id,
           },
@@ -142,7 +134,7 @@ export async function POST(request: NextRequest) {
         // Create stock ledger entry
         await tx.stockLedger.create({
           data: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: storeLocation.id,
             transaction_type: 'SALE',
@@ -176,20 +168,12 @@ export async function POST(request: NextRequest) {
 }
 
 // GET all sales
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
 
     const sales = await prisma.retailSale.findMany({
-      where: { workspace_id },
+      where: { workspace_id: workspaceId },
       include: {
         items: {
           include: {

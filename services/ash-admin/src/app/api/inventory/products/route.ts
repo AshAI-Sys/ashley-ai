@@ -11,21 +11,16 @@ const prisma = new PrismaClient();
 export const dynamic = 'force-dynamic';
 
 // GET all products
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const is_active = searchParams.get('is_active');
 
     const products = await prisma.inventoryProduct.findMany({
       where: {
-        workspace_id,
+        workspace_id: workspaceId,
         ...(category && { category }),
         ...(is_active !== null && { is_active: is_active === 'true' }),
       },
@@ -45,17 +40,12 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST create new product
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const body = await request.json();
     const { name, description, photo_url, base_sku, category } = body;
 
@@ -68,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     const product = await prisma.inventoryProduct.create({
       data: {
-        workspace_id,
+        workspace_id: workspaceId,
         name,
         description,
         photo_url,
@@ -89,17 +79,12 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT update product
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const body = await request.json();
     const { id, name, description, photo_url, category, is_active } = body;
 
@@ -108,7 +93,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const product = await prisma.inventoryProduct.update({
-      where: { id, workspace_id },
+      where: { id, workspace_id: workspaceId },
       data: {
         ...(name && { name }),
         ...(description !== undefined && { description }),
@@ -130,17 +115,12 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // DELETE product
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { workspace_id } = authResult.user;
+    const { workspaceId } = user;
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -149,7 +129,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     await prisma.inventoryProduct.delete({
-      where: { id, workspace_id },
+      where: { id, workspace_id: workspaceId },
     });
 
     return NextResponse.json({
@@ -163,4 +143,4 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

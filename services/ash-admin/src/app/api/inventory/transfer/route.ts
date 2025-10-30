@@ -11,17 +11,9 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { workspace_id, id: user_id } = authResult.user;
+    const { workspace_id: workspaceId, id: user_id } = user;
     const body = await request.json();
     const {
       from_location_code,
@@ -55,10 +47,10 @@ export async function POST(request: NextRequest) {
     // Get locations
     const [fromLocation, toLocation] = await Promise.all([
       prisma.storeLocation.findFirst({
-        where: { workspace_id, location_code: from_location_code },
+        where: { workspace_id: workspaceId, location_code: from_location_code },
       }),
       prisma.storeLocation.findFirst({
-        where: { workspace_id, location_code: to_location_code },
+        where: { workspace_id: workspaceId, location_code: to_location_code },
       }),
     ]);
 
@@ -79,7 +71,7 @@ export async function POST(request: NextRequest) {
         const sourceStock = await tx.stockLedger.groupBy({
           by: ['variant_id'],
           where: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: fromLocation.id,
           },
@@ -100,7 +92,7 @@ export async function POST(request: NextRequest) {
         const destStock = await tx.stockLedger.groupBy({
           by: ['variant_id'],
           where: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: toLocation.id,
           },
@@ -113,7 +105,7 @@ export async function POST(request: NextRequest) {
         // Deduct from source
         await tx.stockLedger.create({
           data: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: fromLocation.id,
             transaction_type: 'OUT',
@@ -130,7 +122,7 @@ export async function POST(request: NextRequest) {
         // Add to destination
         await tx.stockLedger.create({
           data: {
-            workspace_id,
+            workspace_id: workspaceId,
             variant_id: item.variant_id,
             location_id: toLocation.id,
             transaction_type: 'IN',

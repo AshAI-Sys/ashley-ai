@@ -10,13 +10,8 @@ const prisma = new PrismaClient();
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const product_id = searchParams.get('product_id');
 
@@ -30,15 +25,10 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to fetch variants' }, { status: 500 });
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
     const { product_id, variant_name, sku, barcode, price, cost, size, color } = body;
 
@@ -50,15 +40,10 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to create variant' }, { status: 500 });
   }
-}
+});
 
-export async function PUT(request: NextRequest) {
+export const PUT = requireAuth(async (request: NextRequest) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
     const { id, ...data } = body;
 
@@ -71,15 +56,10 @@ export async function PUT(request: NextRequest) {
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to update variant' }, { status: 500 });
   }
-}
+});
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = requireAuth(async (request: NextRequest) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -93,4 +73,4 @@ export async function DELETE(request: NextRequest) {
   } catch (error: unknown) {
     return NextResponse.json({ success: false, error: 'Failed to delete variant' }, { status: 500 });
   }
-}
+});
