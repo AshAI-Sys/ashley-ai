@@ -5,7 +5,7 @@ services:
     plan: free
     region: singapore
     rootDirectory: services/ash-admin
-    buildCommand: pnpm install --filter @ash/admin && cd ../../packages/database && npx prisma generate && cd ../../services/ash-admin && pnpm run build
+    buildCommand: pnpm install --filter @ash/admin && cd ../../packages/database && npx prisma generate && npx prisma migrate deploy && cd ../../services/ash-admin && pnpm run build
     startCommand: pnpm start
     envVars:
       - key: NODE_ENV
@@ -24,6 +24,8 @@ services:
         value: https://ashley-ai-admin.onrender.com
       - key: DEMO_MODE
         value: false
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://ashley-ai-admin.onrender.com
 
 databases:
   - name: ashley-ai-db
