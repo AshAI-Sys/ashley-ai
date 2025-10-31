@@ -147,6 +147,9 @@ export async function POST(request: NextRequest) {
       });
 
       // Create admin user with verification token
+      // In development mode, auto-verify emails to skip email sending
+      const isDevelopment = process.env.NODE_ENV === "development";
+
       const user = await tx.user.create({
         data: {
           email: email.toLowerCase(),
@@ -159,10 +162,10 @@ export async function POST(request: NextRequest) {
           workspace_id: workspace.id,
           is_active: true,
           permissions: JSON.stringify(["*"]), // Full permissions
-          email_verified: false, // Require email verification
-          email_verification_token: verificationToken,
-          email_verification_expires: verificationExpires,
-          email_verification_sent_at: new Date(),
+          email_verified: isDevelopment ? true : false, // Auto-verify in development
+          email_verification_token: isDevelopment ? null : verificationToken,
+          email_verification_expires: isDevelopment ? null : verificationExpires,
+          email_verification_sent_at: isDevelopment ? null : new Date(),
         },
       });
 
@@ -171,12 +174,16 @@ export async function POST(request: NextRequest) {
 
     const { workspace, user } = result;
 
-    // Send verification email - MUST succeed before showing success page
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${process.env.PORT || 3001}`;
-    const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
+    // Send verification email only in production (skip in development)
+    const isDevelopment = process.env.NODE_ENV === "development";
 
-    // Send email and check result
-    const emailResult = await sendEmail({
+    if (!isDevelopment) {
+      // Send verification email - MUST succeed before showing success page
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${process.env.PORT || 3001}`;
+      const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
+
+      // Send email and check result
+      const emailResult = await sendEmail({
         to: user.email,
         subject: "Verify Your Email - Ashley AI",
         html: `
@@ -251,32 +258,35 @@ This is an automated email. Please do not reply.
         `
       });
 
-    // Check if email was sent successfully
-    if (!emailResult.success) {
-      console.error("❌ Failed to send verification email:", emailResult.error);
+      // Check if email was sent successfully
+      if (!emailResult.success) {
+        console.error("❌ Failed to send verification email:", emailResult.error);
 
-      // Email sending failed - delete the user and workspace to allow retry
-      try {
-        await prisma.user.delete({ where: { id: user.id } });
-        await prisma.workspace.delete({ where: { id: workspace.id } });
-        console.log("🗑️ Cleaned up user and workspace after email failure");
-      } catch (cleanupError) {
-        console.error("Failed to cleanup after email error:", cleanupError);
+        // Email sending failed - delete the user and workspace to allow retry
+        try {
+          await prisma.user.delete({ where: { id: user.id } });
+          await prisma.workspace.delete({ where: { id: workspace.id } });
+          console.log("🗑️ Cleaned up user and workspace after email failure");
+        } catch (cleanupError) {
+          console.error("Failed to cleanup after email error:", cleanupError);
+        }
+
+        // Return error to user
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Failed to send verification email",
+            message: emailResult.error || "Could not send verification email. Please try again later.",
+            details: process.env.NODE_ENV === "development" ? emailResult.error : undefined,
+          },
+          { status: 500 }
+        );
       }
 
-      // Return error to user
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Failed to send verification email",
-          message: emailResult.error || "Could not send verification email. Please try again later.",
-          details: process.env.NODE_ENV === "development" ? emailResult.error : undefined,
-        },
-        { status: 500 }
-      );
+      console.log("✅ Verification email sent successfully to:", user.email, "ID:", emailResult.id);
+    } else {
+      console.log("✅ Development mode - Email verification skipped. Account auto-verified.");
     }
-
-    console.log("✅ Verification email sent successfully to:", user.email, "ID:", emailResult.id);
 
     // Log successful registration
     await logAuthEvent("REGISTER", workspace.id, user.id, request, {
@@ -289,13 +299,16 @@ This is an automated email. Please do not reply.
       workspaceName: workspace.name,
       userId: user.id,
       email: user.email,
+      emailVerified: isDevelopment ? true : false,
     });
 
     return NextResponse.json(
       {
         success: true,
-        message: "Account created successfully! Please check your email to verify your account.",
-        requiresVerification: true,
+        message: isDevelopment
+          ? "Account created successfully! You can now log in."
+          : "Account created successfully! Please check your email to verify your account.",
+        requiresVerification: !isDevelopment,
         workspace: {
           id: workspace.id,
           name: workspace.name,
