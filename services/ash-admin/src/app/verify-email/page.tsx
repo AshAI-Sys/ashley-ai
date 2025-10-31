@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export default function VerifyEmailPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -50,7 +48,7 @@ export default function VerifyEmailPage() {
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
         {status === "loading" && (
           <div className="text-center">
-            <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600 mb-4" />
+            <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600 mb-4" suppressHydrationWarning />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Verifying Your Email
             </h2>
@@ -60,7 +58,7 @@ export default function VerifyEmailPage() {
 
         {status === "success" && (
           <div className="text-center">
-            <CheckCircle2 className="mx-auto h-16 w-16 text-green-600 mb-4" />
+            <CheckCircle2 className="mx-auto h-16 w-16 text-green-600 mb-4" suppressHydrationWarning />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Email Verified Successfully!
             </h2>
@@ -73,7 +71,7 @@ export default function VerifyEmailPage() {
 
         {status === "error" && (
           <div className="text-center">
-            <XCircle className="mx-auto h-16 w-16 text-red-600 mb-4" />
+            <XCircle className="mx-auto h-16 w-16 text-red-600 mb-4" suppressHydrationWarning />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Verification Failed
             </h2>
