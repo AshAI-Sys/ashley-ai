@@ -1,30 +1,14 @@
 {
-  "version": 2,
-  "buildCommand": "pnpm install && pnpm build",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd packages/database && pnpm prisma generate && cd ../../services/ash-admin && pnpm build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "outputDirectory": "services/ash-admin/.next",
   "framework": "nextjs",
-  "builds": [
-    {
-      "src": "services/ash-admin/package.json",
-      "use": "@vercel/next"
+  "regions": ["sin1"],
+  "build": {
+    "env": {
+      "HUSKY": "0",
+      "SKIP_ENV_VALIDATION": "1"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/services/ash-admin/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/services/ash-admin/$1"
-    }
-  ],
-  "env": {
-    "DATABASE_URL": "@database-url",
-    "JWT_SECRET": "@jwt-secret",
-    "JWT_REFRESH_SECRET": "@jwt-refresh-secret",
-    "RESEND_API_KEY": "@resend-api-key",
-    "NEXT_PUBLIC_APP_URL": "@app-url",
-    "NODE_ENV": "production"
   }
 }

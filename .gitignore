@@ -143,3 +143,5 @@ secrets/
 nul
 # Build outputs
 build-output*.txt
+.prisma
+node_modules/.prisma
