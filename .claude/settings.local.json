@@ -194,7 +194,8 @@
       "Bash(time curl:*)",
       "Bash(git diff:*)",
       "Bash(DATABASE_URL=\"file:./prisma/dev.db\" npx tsx:*)",
-      "Bash(if exist .vercel rd /s /q .vercel)"
+      "Bash(if exist .vercel rd /s /q .vercel)",
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\packages\\database\\cleanup.ts\")"
     ],
     "deny": [],
     "ask": []
