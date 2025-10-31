@@ -43,7 +43,7 @@
     "resend": "^6.1.1",
     "stripe": "^18.5.0",
     "tailwind-merge": "^1.14.0",
-    "zod": "^3.21.0"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.0",
