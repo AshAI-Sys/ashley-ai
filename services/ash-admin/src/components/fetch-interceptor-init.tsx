@@ -27,7 +27,13 @@ export function FetchInterceptorInit() {
             : input.url;
       const isApiRequest = url.startsWith("/api/") || url.includes("/api/");
 
-      if (isApiRequest) {
+      // Exclude auth endpoints that don't need authentication
+      const isAuthEndpoint =
+        url.includes("/api/auth/login") ||
+        url.includes("/api/auth/register") ||
+        url.includes("/api/auth/verify");
+
+      if (isApiRequest && !isAuthEndpoint) {
         // Get token from localStorage
         const token = localStorage.getItem("ash_token");
 
