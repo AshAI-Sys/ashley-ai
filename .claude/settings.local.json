@@ -195,7 +195,9 @@
       "Bash(git diff:*)",
       "Bash(DATABASE_URL=\"file:./prisma/dev.db\" npx tsx:*)",
       "Bash(if exist .vercel rd /s /q .vercel)",
-      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\packages\\database\\cleanup.ts\")"
+      "Bash(del \"C:\\Users\\Khell\\Desktop\\Ashley AI\\packages\\database\\cleanup.ts\")",
+      "Bash(source .env)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" npx prisma migrate deploy:*)"
     ],
     "deny": [],
     "ask": []
