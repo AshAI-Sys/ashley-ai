@@ -7,14 +7,14 @@ import { Warehouse, Package, ArrowRightLeft, Edit, FileText, Plus, Minus, CheckC
 type Tab = 'delivery' | 'transfer' | 'adjust' | 'report';
 
 interface DeliveryItem {
-  variant_id: string;
-  quantity: number;
+  variant_id?: string;
+  quantity?: number;
   notes?: string;
 }
 
 interface TransferItem {
-  variant_id: string;
-  quantity: number;
+  variant_id?: string;
+  quantity?: number;
 }
 
 export default function WarehousePage() {

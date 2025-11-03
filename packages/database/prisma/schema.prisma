@@ -3818,6 +3818,7 @@ model StoreLocation {
   workspace            Workspace           @relation(fields: [workspace_id], references: [id])
   stock_ledger         StockLedger[]
   warehouse_deliveries WarehouseDelivery[]
+  retail_sales         RetailSale[]        @relation("RetailSaleLocation")
 
   @@unique([workspace_id, location_code])
   @@index([workspace_id])
@@ -3860,6 +3861,7 @@ model StockLedger {
 model RetailSale {
   id              String           @id @default(cuid())
   workspace_id    String
+  location_id     String?          // Store location where sale occurred
   sale_number     String
   sale_date       DateTime         @default(now())
   subtotal        Float
@@ -3869,10 +3871,13 @@ model RetailSale {
   payment_method  String // CASH, CARD, GCASH, etc.
   payment_status  String           @default("PAID") // PAID, PENDING, CANCELLED
   cashier_id      String?
+  amount_paid     Float?           // Amount paid by customer
+  change_given    Float?           // Change given to customer
   notes           String?
   created_at      DateTime         @default(now())
   updated_at      DateTime         @updatedAt
   workspace       Workspace        @relation(fields: [workspace_id], references: [id])
+  location        StoreLocation?   @relation("RetailSaleLocation", fields: [location_id], references: [id])
   cashier         User?            @relation("RetailSaleCashier", fields: [cashier_id], references: [id])
   items           RetailSaleItem[]
 
@@ -3882,6 +3887,7 @@ model RetailSale {
   @@index([workspace_id, payment_status])
   @@index([sale_date])
   @@index([cashier_id])
+  @@index([location_id])
   @@map("retail_sales")
 }
 

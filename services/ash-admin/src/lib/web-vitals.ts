@@ -1,17 +1,17 @@
-import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB, Metric } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB, Metric } from 'web-vitals';
 
 /**
  * Web Vitals Performance Monitoring
  * Tracks Core Web Vitals and sends to analytics
+ * Note: FID (First Input Delay) has been deprecated in favor of INP (Interaction to Next Paint)
  */
 
 // Performance thresholds (Google recommended)
 const THRESHOLDS = {
   LCP: { good: 2500, needsImprovement: 4000 }, // Largest Contentful Paint
-  FID: { good: 100, needsImprovement: 300 },   // First Input Delay
   CLS: { good: 0.1, needsImprovement: 0.25 },  // Cumulative Layout Shift
   FCP: { good: 1800, needsImprovement: 3000 }, // First Contentful Paint
-  INP: { good: 200, needsImprovement: 500 },   // Interaction to Next Paint
+  INP: { good: 200, needsImprovement: 500 },   // Interaction to Next Paint (replaces FID)
   TTFB: { good: 800, needsImprovement: 1800 }, // Time to First Byte
 };
 
@@ -70,12 +70,11 @@ export function initWebVitals() {
   try {
     // Core Web Vitals
     onLCP(sendToAnalytics);  // Largest Contentful Paint
-    onFID(sendToAnalytics);  // First Input Delay (deprecated, use INP)
     onCLS(sendToAnalytics);  // Cumulative Layout Shift
 
     // Additional metrics
     onFCP(sendToAnalytics);  // First Contentful Paint
-    onINP(sendToAnalytics);  // Interaction to Next Paint (replaces FID)
+    onINP(sendToAnalytics);  // Interaction to Next Paint (replaces deprecated FID)
     onTTFB(sendToAnalytics); // Time to First Byte
 
     console.log('[Web Vitals] Performance monitoring initialized');

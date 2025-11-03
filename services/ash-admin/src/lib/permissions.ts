@@ -290,6 +290,8 @@ export function getRoleInfo(role: UserRole) {
     finance_staff: { description: "Finance operations" },
     hr_staff: { description: "HR operations" },
     maintenance_tech: { description: "Maintenance" },
+    store_clerk: { description: "Store inventory operations" },
+    cashier: { description: "Point of sale operations" },
   };
 
   return roleDescriptions[role] || { description: "Unknown role" };

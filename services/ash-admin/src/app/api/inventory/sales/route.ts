@@ -34,11 +34,12 @@ export const POST = requirePermission('inventory:sell')(
       const workspace_id = user.workspaceId;
       const cashier_id = user.id;
 
-      // Calculate total
-      const total_amount = items.reduce(
+      // Calculate subtotal and total
+      const subtotal = items.reduce(
         (sum: number, item: any) => sum + item.quantity * item.price,
         0
       );
+      const total_amount = subtotal; // Could add tax/discount here
 
       // Validate payment amount for cash transactions
       if (payment_method === 'CASH' && amount_paid && amount_paid < total_amount) {
@@ -48,12 +49,17 @@ export const POST = requirePermission('inventory:sell')(
         );
       }
 
+      // Generate unique sale number
+      const sale_number = `SAL-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
       // Create sale transaction
       const sale = await db.retailSale.create({
         data: {
           workspace_id,
           location_id,
           cashier_id,
+          sale_number,
+          subtotal,
           total_amount,
           payment_method,
           amount_paid: amount_paid || total_amount,

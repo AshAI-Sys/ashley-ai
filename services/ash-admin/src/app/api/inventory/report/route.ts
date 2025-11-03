@@ -65,9 +65,10 @@ export const GET = requirePermission('inventory:report')(
       const report = stockData.map(stock => {
         const variant = variants.find(v => v.id === stock.variant_id);
         const location = locations.find(l => l.id === stock.location_id);
-        const quantity = stock._sum.quantity_change || 0;
+        const quantity = stock._sum?.quantity_change || 0;
         const value = quantity * (variant?.price || 0);
-        const is_low_stock = quantity <= (variant?.reorder_point || 10);
+        const reorder_point = 10; // Default reorder point
+        const is_low_stock = quantity <= reorder_point;
 
         return {
           product_id: variant?.product.id,
@@ -84,7 +85,7 @@ export const GET = requirePermission('inventory:report')(
           quantity,
           unit_price: variant?.price || 0,
           total_value: value,
-          reorder_point: variant?.reorder_point || 10,
+          reorder_point,
           is_low_stock,
           is_out_of_stock: quantity <= 0
         };

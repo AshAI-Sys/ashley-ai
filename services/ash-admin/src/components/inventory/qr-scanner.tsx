@@ -35,7 +35,7 @@ export function QRScanner({ onScan, onError }: QRScannerProps) {
         
         const selectedDevice = backCamera || videoInputDevices[0];
 
-        if (videoRef.current) {
+        if (videoRef.current && selectedDevice) {
           reader.decodeFromVideoDevice(
             selectedDevice.deviceId,
             videoRef.current,

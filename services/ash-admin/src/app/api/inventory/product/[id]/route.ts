@@ -47,7 +47,7 @@ export const GET = requirePermission('inventory:read')(
       );
     }
 
-    const variant = product.variants[0];
+    const variant = product.variants[0]!; // Safe because we checked length above
 
     // Get current stock by location (filtered by workspace)
     const stockByLocation = await db.stockLedger.groupBy({

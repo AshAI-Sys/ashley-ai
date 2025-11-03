@@ -120,7 +120,7 @@ export default function MobileManagePage() {
       revoked: { color: 'bg-red-100 text-red-800', icon: XCircle, text: 'Revoked' },
     };
 
-    const badge = badges[status] || badges.active;
+    const badge = badges[status] || badges.active!; // Safe: badges.active always exists
     const Icon = badge.icon;
 
     return (

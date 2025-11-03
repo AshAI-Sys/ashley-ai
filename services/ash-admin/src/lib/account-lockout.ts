@@ -136,7 +136,7 @@ export async function clearFailedAttempts(email: string): Promise<void> {
   const lockKey = `locked:${normalizedEmail}`;
 
   try {
-    await Promise.all([redis.del(attemptKey), redis.del(lockKey)]);
+    await Promise.all([getRedis().del(attemptKey), getRedis().del(lockKey)]);
 
     // Log successful login after previous failures
     const attempts = parseInt((await getRedis().get(attemptKey)) || "0", 10);
@@ -176,7 +176,7 @@ export async function unlockAccount(
   const lockKey = `locked:${normalizedEmail}`;
 
   try {
-    await Promise.all([redis.del(attemptKey), redis.del(lockKey)]);
+    await Promise.all([getRedis().del(attemptKey), getRedis().del(lockKey)]);
 
     // Log manual unlock
     await logLockoutEvent(normalizedEmail, "UNLOCKED", 0, adminId);
@@ -257,9 +257,9 @@ export async function getLockoutStats(): Promise<{
 }> {
   try {
     const [lockedAccounts, attemptKeys, eventCount] = await Promise.all([
-      redis.keys("locked:*"),
-      redis.keys("failed_login:*"),
-      redis.llen("lockout_events"),
+      getRedis().keys("locked:*"),
+      getRedis().keys("failed_login:*"),
+      getRedis().llen("lockout_events"),
     ]);
 
     // Calculate total attempts across all accounts
