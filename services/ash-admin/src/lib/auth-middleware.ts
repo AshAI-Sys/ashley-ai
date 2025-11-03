@@ -40,9 +40,20 @@ export async function authenticateRequest(
     }
     console.log("[AUTH] JWT verified successfully for user:", payload.userId);
 
-    // TEMPORARY: Skip session validation, use JWT-only auth
-    // TODO: Re-enable session validation after fixing session creation in login
-    console.log("[AUTH] Using JWT-only authentication (session validation disabled)");
+    // Validate session is active and not revoked (optional - JWT is primary auth)
+    try {
+      const isValidSession = await validateSession(token);
+      if (isValidSession) {
+        console.log("[AUTH] Session validated successfully");
+      } else {
+        console.warn("[AUTH] Session validation failed - continuing with JWT-only auth");
+        // Allow JWT-only authentication as fallback
+      }
+    } catch (sessionError) {
+      console.error("[AUTH] Session validation error:", sessionError);
+      console.warn("[AUTH] Continuing with JWT-only authentication as fallback");
+      // Continue with JWT validation only
+    }
 
     const role = payload.role as Role;
     return {

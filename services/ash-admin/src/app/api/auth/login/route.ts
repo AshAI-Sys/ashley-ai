@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateTokenPair } from "../../../../lib/jwt";
 import { prisma } from "../../../../lib/db";
+import { createSession } from "../../../../lib/session-manager";
 import * as bcrypt from "bcryptjs";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
@@ -79,6 +80,15 @@ export async function POST(request: NextRequest) {
       where: { id: user.id },
       data: { last_login_at: new Date() },
     });
+
+    // Create session in database (with error handling to not block login)
+    try {
+      await createSession(user.id, tokenPair.accessToken, request);
+      console.log("Session created successfully for user:", user.email);
+    } catch (sessionError) {
+      console.error("Failed to create session (non-blocking):", sessionError);
+      // Continue with login even if session creation fails
+    }
 
     console.log("User logged in successfully:", user.email);
 
