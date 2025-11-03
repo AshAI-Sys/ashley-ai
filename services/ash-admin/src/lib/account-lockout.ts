@@ -6,7 +6,10 @@
 
 import { getRedisClient } from "./redis/client";
 
-const redis = getRedisClient();
+// Lazy initialization - only create Redis client when needed
+function getRedis() {
+  return getRedisClient();
+}
 
 // Configuration
 const MAX_FAILED_ATTEMPTS = 5;
@@ -31,9 +34,9 @@ export async function recordFailedLogin(email: string): Promise<LockoutStatus> {
 
   try {
     // Check if already locked
-    const locked = await redis.get(lockKey);
+    const locked = await getRedis().get(lockKey);
     if (locked) {
-      const ttl = await redis.ttl(lockKey);
+      const ttl = await getRedis().ttl(lockKey);
       return {
         isLocked: true,
         failedAttempts: MAX_FAILED_ATTEMPTS,
@@ -44,16 +47,16 @@ export async function recordFailedLogin(email: string): Promise<LockoutStatus> {
     }
 
     // Increment failed attempts
-    const attempts = await redis.incr(attemptKey);
+    const attempts = await getRedis().incr(attemptKey);
 
     // Set expiry on first attempt
     if (attempts === 1) {
-      await redis.expire(attemptKey, ATTEMPT_WINDOW);
+      await getRedis().expire(attemptKey, ATTEMPT_WINDOW);
     }
 
     // Lock account if max attempts reached
     if (attempts >= MAX_FAILED_ATTEMPTS) {
-      await redis.setex(lockKey, LOCKOUT_DURATION, "1");
+      await getRedis().setex(lockKey, LOCKOUT_DURATION, "1");
 
       // Log the lockout event
       await logLockoutEvent(normalizedEmail, "LOCKED", attempts);
@@ -92,10 +95,10 @@ export async function isAccountLocked(email: string): Promise<LockoutStatus> {
   const attemptKey = `failed_login:${normalizedEmail}`;
 
   try {
-    const locked = await redis.get(lockKey);
+    const locked = await getRedis().get(lockKey);
 
     if (locked) {
-      const ttl = await redis.ttl(lockKey);
+      const ttl = await getRedis().ttl(lockKey);
       return {
         isLocked: true,
         failedAttempts: MAX_FAILED_ATTEMPTS,
@@ -106,7 +109,7 @@ export async function isAccountLocked(email: string): Promise<LockoutStatus> {
     }
 
     // Check current failed attempts
-    const attempts = parseInt((await redis.get(attemptKey)) || "0", 10);
+    const attempts = parseInt((await getRedis().get(attemptKey)) || "0", 10);
 
     return {
       isLocked: false,
@@ -136,7 +139,7 @@ export async function clearFailedAttempts(email: string): Promise<void> {
     await Promise.all([redis.del(attemptKey), redis.del(lockKey)]);
 
     // Log successful login after previous failures
-    const attempts = parseInt((await redis.get(attemptKey)) || "0", 10);
+    const attempts = parseInt((await getRedis().get(attemptKey)) || "0", 10);
     if (attempts > 0) {
       await logLockoutEvent(normalizedEmail, "CLEARED", attempts);
     }
@@ -153,7 +156,7 @@ export async function getFailedAttempts(email: string): Promise<number> {
   const attemptKey = `failed_login:${normalizedEmail}`;
 
   try {
-    const attempts = await redis.get(attemptKey);
+    const attempts = await getRedis().get(attemptKey);
     return parseInt(attempts || "0", 10);
   } catch (error) {
     console.error("Error getting failed attempts:", error);
@@ -188,7 +191,7 @@ export async function unlockAccount(
  */
 export async function getLockedAccounts(): Promise<string[]> {
   try {
-    const keys = await redis.keys("locked:*");
+    const keys = await getRedis().keys("locked:*");
     return keys.map(key => key.replace("locked:", ""));
   } catch (error) {
     console.error("Error getting locked accounts:", error);
@@ -215,8 +218,8 @@ async function logLockoutEvent(
     };
 
     // Store in Redis for recent events
-    await redis.lpush("lockout_events", JSON.stringify(event));
-    await redis.ltrim("lockout_events", 0, 999); // Keep last 1000 events
+    await getRedis().lpush("lockout_events", JSON.stringify(event));
+    await getRedis().ltrim("lockout_events", 0, 999); // Keep last 1000 events
 
     // Log to console for monitoring
     console.warn(
@@ -236,7 +239,7 @@ export async function getRecentLockoutEvents(
   limit: number = 50
 ): Promise<any[]> {
   try {
-    const events = await redis.lrange("lockout_events", 0, limit - 1);
+    const events = await getRedis().lrange("lockout_events", 0, limit - 1);
     return events.map(event => JSON.parse(event));
   } catch (error) {
     console.error("Error getting lockout events:", error);
@@ -262,7 +265,7 @@ export async function getLockoutStats(): Promise<{
     // Calculate total attempts across all accounts
     let totalAttempts = 0;
     for (const key of attemptKeys) {
-      const attempts = await redis.get(key);
+      const attempts = await getRedis().get(key);
       totalAttempts += parseInt(attempts || "0", 10);
     }
 

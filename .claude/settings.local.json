@@ -212,7 +212,12 @@
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" npx tsx:*)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" pnpx tsx:*)",
       "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" pnpm prisma generate:*)",
-      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" npx prisma db seed:*)"
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" npx prisma db seed:*)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" npx prisma studio:*)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" node test-password.js:*)",
+      "Bash(DATABASE_URL=\"postgresql://neondb_owner:npg_oVNf76Kpqasx@ep-falling-fire-a1ru8mim-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require\" node -e:*)",
+      "Bash(.vercel-deployment-trigger)",
+      "Bash(pnpx prisma:*)"
     ],
     "deny": [],
     "ask": []
