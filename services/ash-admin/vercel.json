@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd ../.. && npx prisma generate --schema=packages/database/prisma/schema.prisma && cd services/ash-admin && npm run build",
+  "installCommand": "cd ../.. && npm install && cd services/ash-admin",
+  "framework": "nextjs"
+}
