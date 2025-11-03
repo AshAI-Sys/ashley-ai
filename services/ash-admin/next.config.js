@@ -19,6 +19,19 @@ const nextConfig = {
   env: {
     ASH_API_URL: process.env.ASH_API_URL || "http://localhost:4000",
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(self), microphone=(self), geolocation=(self)',
+          },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       // Handle all API routes locally
