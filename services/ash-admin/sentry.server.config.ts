@@ -5,7 +5,9 @@ import * as Sentry from "@sentry/nextjs";
  * Captures errors that occur on the server (API routes, SSR)
  */
 
-Sentry.init({
+// Only initialize if DSN is configured
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
   // Sentry DSN (Data Source Name)
   dsn: process.env.SENTRY_DSN,
 
@@ -48,7 +50,10 @@ Sentry.init({
       app: "ashley-ai-admin",
     },
   },
-});
+  });
+} else {
+  console.log('⚠️ SENTRY_DSN not configured - Sentry server monitoring disabled');
+}
 
 // Database error logging
 export function logDatabaseError(error: Error, query?: string) {

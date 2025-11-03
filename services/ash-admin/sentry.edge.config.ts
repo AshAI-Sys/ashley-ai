@@ -5,7 +5,9 @@ import * as Sentry from "@sentry/nextjs";
  * Captures errors in Edge middleware and Edge API routes
  */
 
-Sentry.init({
+// Only initialize if DSN is configured
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
   // Sentry DSN (Data Source Name)
   dsn: process.env.SENTRY_DSN,
 
@@ -39,4 +41,7 @@ Sentry.init({
       app: "ashley-ai-admin",
     },
   },
-});
+  });
+} else {
+  console.log('⚠️ SENTRY_DSN not configured - Sentry edge monitoring disabled');
+}
