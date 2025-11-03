@@ -3,14 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateTokenPair } from "../../../../lib/jwt";
 import { prisma } from "../../../../lib/db";
 import * as bcrypt from "bcryptjs";
-import { logAuthEvent } from "../../../../lib/audit-logger";
-import { createSession } from "../../../../lib/session-manager";
-import {
-  isAccountLocked,
-  recordFailedLogin,
-  clearFailedAttempts,
-} from "../../../../lib/account-lockout";
-import { authLogger } from "../../../../lib/logger";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
@@ -31,31 +23,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if account is locked
-    const lockStatus = await isAccountLocked(email);
-    if (lockStatus.isLocked) {
-      
-      const minutesRemaining = lockStatus.canRetryAt
-        ? Math.ceil((lockStatus.canRetryAt.getTime() - Date.now()) / 60000)
-        : 30;
-
-      await logAuthEvent("LOGIN_BLOCKED_LOCKED", "system", undefined, request, {
-        email,
-        reason: "Account locked",
-        lockoutExpiresAt: lockStatus.lockoutExpiresAt,
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutesRemaining} minutes.`,
-          code: "ACCOUNT_LOCKED",
-          lockoutExpiresAt: lockStatus.lockoutExpiresAt,
-        },
-        { status: 423 }
-      ); // 423 Locked
-    }
-
     // Find user in database
     const user = await prisma.user.findFirst({
       where: {
@@ -68,11 +35,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
-      // Log failed login attempt
-      await logAuthEvent("LOGIN_FAILED", "system", undefined, request, {
-        email,
-        reason: "User not found"});
-
       return NextResponse.json(
         {
           success: false,
@@ -84,11 +46,6 @@ export async function POST(request: NextRequest) {
 
     // Verify password using bcrypt
     if (!user.password_hash) {
-      // Log failed login attempt
-      await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
-        email,
-        reason: "No password hash"});
-
       return NextResponse.json(
         {
           success: false,
@@ -97,43 +54,17 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
     if (!isValidPassword) {
-      // Record failed login attempt
-      const failedLoginStatus = await recordFailedLogin(email);
-
-      // Log failed login attempt
-      await logAuthEvent("LOGIN_FAILED", user.workspace_id, user.id, request, {
-        email,
-        reason: "Invalid password",
-        failedAttempts: failedLoginStatus.failedAttempts,
-        remainingAttempts: failedLoginStatus.remainingAttempts,
-      });
-
-      // Inform user of remaining attempts
-      let errorMessage = "Invalid email or password";
-      if (
-        failedLoginStatus.remainingAttempts <= 2 &&
-        failedLoginStatus.remainingAttempts > 0
-      ) {
-        errorMessage += `. Warning: ${failedLoginStatus.remainingAttempts} ${failedLoginStatus.remainingAttempts === 1 ? "attempt" : "attempts"} remaining before account lockout.`;
-      }
-
       return NextResponse.json(
         {
           success: false,
-          error: errorMessage,
-          remainingAttempts: failedLoginStatus.remainingAttempts,
+          error: "Invalid email or password",
         },
         { status: 401 }
       );
     }
-
-    // Email verification disabled - allow login directly
-    // Email verification check removed to allow direct login after registration
-
-    // Clear failed attempts on successful login
-    await clearFailedAttempts(email);
 
     // Generate JWT token pair (access + refresh tokens)
     const tokenPair = generateTokenPair({
@@ -149,20 +80,7 @@ export async function POST(request: NextRequest) {
       data: { last_login_at: new Date() },
     });
 
-    // Create session for the user with access token
-    await createSession(user.id, tokenPair.accessToken, request);
-
-    // Log successful login
-    await logAuthEvent("LOGIN", user.workspace_id, user.id, request, {
-      email: user.email,
-      role: user.role,
-    });
-
-    authLogger.info("User logged in successfully", {
-      userId: user.id,
-      email: user.email,
-      workspaceId: user.workspace_id,
-    });
+    console.log("User logged in successfully:", user.email);
 
     // Set HTTP-only cookie with access token
     const response = NextResponse.json({
@@ -197,11 +115,11 @@ export async function POST(request: NextRequest) {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
       path: "/",
-      });
-    
-      return response;
+    });
+
+    return response;
   } catch (error: any) {
-    authLogger.error("Login error", error);
+    console.error("Login error:", error);
     return NextResponse.json(
       {
         success: false,
