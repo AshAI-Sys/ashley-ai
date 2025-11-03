@@ -271,7 +271,7 @@ export default function QRGeneratorPage() {
                 placeholder="Search by product name, SKU, or variant..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-600 text-gray-900"
               />
             </div>
 
@@ -281,7 +281,7 @@ export default function QRGeneratorPage() {
                 placeholder="Category (optional)"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="px-4 py-2 flex-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 flex-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-600 text-gray-900"
               />
               <button
                 onClick={toggleSelectAll}
