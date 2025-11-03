@@ -31,6 +31,14 @@ const PWARegister = dynamicImport(() => import("@/components/pwa-register"), {
   ssr: false,
 });
 
+// Load Web Vitals Reporter only on client side
+const WebVitalsReporter = dynamicImport(
+  () => import("@/components/web-vitals-reporter"),
+  {
+    ssr: false,
+  }
+);
+
 const inter = Inter({ subsets: ["latin"] });
 
 // Force all pages to be dynamic (no static pre-rendering)
@@ -132,6 +140,9 @@ export default function RootLayout({
                 {/* PWA Components */}
                 <PWARegister />
                 <PWAInstallPrompt />
+
+                {/* Performance Monitoring */}
+                <WebVitalsReporter />
 
                 {/* Enhanced Toast Provider */}
                 <ToastProvider />
