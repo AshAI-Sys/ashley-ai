@@ -52,38 +52,6 @@ export default function ScanBarcodePage() {
       setError("QR scanner library not installed. Please install html5-qrcode package.");
       setIsScanning(false);
       return;
-
-      /*
-      // Html5Qrcode implementation (commented out - package not installed)
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-      };
-
-      await html5QrCode.start(
-        { facingMode: "environment" }, // Use back camera
-        config,
-        (decodedText: any, _decodedResult: any) => {
-          // Handle successful scan
-          console.log("Scanned:", decodedText);
-          setLastScanned(decodedText);
-          setScannedCode(decodedText);
-          setSuccess(`Successfully scanned: ${decodedText}`);
-
-          // Auto-stop after successful scan
-          setTimeout(() => {
-            stopScanner();
-          }, 1500);
-        },
-        (_errorMessage: any) => {
-          // Handle scan errors silently (this fires continuously while scanning)
-        }
-      );
-      */
-
-      setIsScanning(true);
-      setCameraPermission("granted");
     } catch (err) {
       console.error("Error starting scanner:", err);
       if (err instanceof Error) {
