@@ -4,6 +4,9 @@ import { db } from "@/lib/database";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 
+// Force Node.js runtime (Prisma doesn't support Edge)
+export const runtime = "nodejs";
+
 const prisma = db;
 
 const CreateClientSchema = z.object({

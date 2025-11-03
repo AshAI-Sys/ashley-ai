@@ -14,6 +14,9 @@ import {
 } from "../../../../lib/auth-middleware";
 import * as bcrypt from "bcryptjs";
 
+// Force Node.js runtime (Prisma doesn't support Edge)
+export const runtime = "nodejs";
+
 export const GET = requireAuth(
   withErrorHandling(async (request: NextRequest, user: any) => {
     const { searchParams } = new URL(request.url);

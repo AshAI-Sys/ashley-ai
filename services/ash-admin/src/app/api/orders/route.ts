@@ -8,6 +8,9 @@ import {
   CACHE_DURATION,
   InvalidateCache,
 } from "@/lib/performance/query-cache";
+
+// Force Node.js runtime (Prisma doesn't support Edge)
+export const runtime = "nodejs";
 import { requireAuth } from "@/lib/auth-middleware";
 
 const OrderLineItemSchema = z.object({
