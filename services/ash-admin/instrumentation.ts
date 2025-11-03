@@ -5,6 +5,12 @@
  */
 
 export async function register() {
+  // Only initialize Sentry if DSN is configured
+  if (!process.env.SENTRY_DSN) {
+    console.log('⚠️ SENTRY_DSN not configured - Sentry monitoring disabled');
+    return;
+  }
+
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     // Import server config for Node.js runtime
     await import('./sentry.server.config');

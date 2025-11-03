@@ -188,6 +188,7 @@ const sentryWebpackPluginOptions = {
 };
 
 // Make sure adding Sentry options is the last code to run before exporting
-module.exports = process.env.NODE_ENV === 'production'
+// Only apply Sentry config if DSN is configured
+module.exports = (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN)
   ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
   : nextConfig;
