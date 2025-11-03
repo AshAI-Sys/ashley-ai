@@ -12,6 +12,9 @@ import {
 } from "../../../../lib/account-lockout";
 import { authLogger } from "../../../../lib/logger";
 
+// Force Node.js runtime (Prisma doesn't support Edge)
+export const runtime = "nodejs";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
