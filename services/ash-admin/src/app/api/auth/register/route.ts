@@ -81,20 +81,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if workspace slug already exists
-    const existingWorkspace = await prisma.workspace.findUnique({
-      where: { slug: workspaceSlug },
+    // Check if workspace slug already exists and auto-generate unique one if needed
+    let finalSlug = workspaceSlug;
+    let existingWorkspace = await prisma.workspace.findUnique({
+      where: { slug: finalSlug },
     });
 
+    // If slug exists, append random suffix to make it unique
     if (existingWorkspace) {
-      
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Workspace slug already taken. Please choose another.",
-        },
-        { status: 409 }
-      );
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      while (existingWorkspace && attempts < maxAttempts) {
+        const randomSuffix = Math.floor(Math.random() * 10000);
+        finalSlug = `${workspaceSlug}-${randomSuffix}`;
+
+        existingWorkspace = await prisma.workspace.findUnique({
+          where: { slug: finalSlug },
+        });
+
+        attempts++;
+      }
+
+      // If still can't find unique slug after 10 attempts, give up
+      if (existingWorkspace) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Unable to generate unique workspace slug. Please try a different name.",
+          },
+          { status: 409 }
+        );
+      }
+
+      console.log(`✅ Auto-generated unique slug: ${finalSlug} (original: ${workspaceSlug})`);
     }
 
     // Check if user email already exists
@@ -129,11 +149,11 @@ export async function POST(request: NextRequest) {
 
     // Create workspace and admin user in a transaction
     const result = await prisma.$transaction(async (tx: any) => {
-      // Create workspace;
+      // Create workspace with unique slug
       const workspace = await tx.workspace.create({
         data: {
           name: workspaceName,
-          slug: workspaceSlug,
+          slug: finalSlug, // Use the unique slug (may have random suffix)
           is_active: true,
           settings: JSON.stringify({
             timezone: "Asia/Manila",
