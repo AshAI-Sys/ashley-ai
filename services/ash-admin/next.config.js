@@ -1,7 +1,13 @@
 const path = require("path");
+const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable instrumentation for Sentry server-side monitoring
+  experimental: {
+    instrumentationHook: true,
+    scrollRestoration: true,
+  },
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,
@@ -59,11 +65,6 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  },
-  // Production optimizations
-  experimental: {
-    // optimizeCss: true, // Disabled - requires 'critters' package
-    scrollRestoration: true,
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
@@ -161,4 +162,32 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Sentry webpack plugin options
+const sentryWebpackPluginOptions = {
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options
+
+  // Suppresses source map uploading logs during build
+  silent: true,
+
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+
+  // Upload source maps to Sentry during production builds
+  // This is disabled by default to avoid accidentally uploading during development
+  widenClientFileUpload: true,
+
+  // Automatically tree-shake Sentry logger statements to reduce bundle size
+  disableLogger: true,
+
+  // Hides source maps from generated client bundles
+  hideSourceMaps: true,
+
+  // Enables automatic instrumentation of Vercel Cron Monitors
+  automaticVercelMonitors: true,
+};
+
+// Make sure adding Sentry options is the last code to run before exporting
+module.exports = process.env.NODE_ENV === 'production'
+  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+  : nextConfig;

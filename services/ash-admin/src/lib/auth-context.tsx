@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { setUserContext, clearUserContext } from "../../sentry.client.config";
 
 interface User {
   id: string;
@@ -56,6 +57,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const userData = JSON.parse(storedUser);
             console.log("✅ AuthContext - Parsed user:", userData);
             setUser(userData);
+
+            // Set Sentry user context for returning users
+            setUserContext({
+              id: userData.id,
+              email: userData.email,
+              name: userData.name || userData.email,
+              role: userData.role,
+            });
           } catch (error) {
             console.error("❌ Error parsing stored user data:", error);
             // Clear invalid user data only - keep token for now
@@ -94,6 +103,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(access_token);
       localStorage.setItem("ash_token", access_token);
       localStorage.setItem("ash_user", JSON.stringify(userData));
+
+      // Set Sentry user context for error tracking
+      setUserContext({
+        id: userData.id,
+        email: userData.email,
+        name: userData.name || userData.email,
+        role: userData.role,
+      });
     } catch (error) {
       throw new Error("Invalid credentials");
     }
@@ -106,6 +123,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem("ash_token");
       localStorage.removeItem("ash_user");
     }
+
+    // Clear Sentry user context on logout
+    clearUserContext();
   };
 
   return (
