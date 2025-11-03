@@ -1,116 +1,133 @@
-/**
- * GET /api/inventory/report
- * Get stock report by location, product, variant
- */
-
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { requireAuth } from '@/lib/auth-middleware';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
+import { requirePermission } from '@/lib/auth-middleware';
 
 export const dynamic = 'force-dynamic';
 
-export const GET = requireAuth(async (request: NextRequest, user) => {
-  try {
-    const { workspaceId } = user;
-    const { searchParams } = new URL(request.url);
-    const location_code = searchParams.get('location');
-    const product_id = searchParams.get('product_id');
-    const low_stock_only = searchParams.get('low_stock') === 'true';
-    const threshold = parseInt(searchParams.get('threshold') || '10', 10);
+/**
+ * GET /api/inventory/report
+ * Get inventory report with stock levels by location
+ * Requires: inventory:report permission
+ */
+export const GET = requirePermission('inventory:report')(
+  async (request: NextRequest, user) => {
+    try {
+      const { searchParams } = new URL(request.url);
+      const location_id = searchParams.get('location_id');
 
-    // Build filters
-    const locationFilter = location_code
-      ? { location: { location_code } }
-      : {};
+      // Use authenticated user's workspace
+      const workspace_id = user.workspaceId;
 
-    const variantFilter = product_id
-      ? { variant: { product_id } }
-      : {};
-
-    // Get all stock ledger entries grouped by variant and location
-    const stockByVariantLocation = await prisma.stockLedger.groupBy({
-      by: ['variant_id', 'location_id'],
-      where: {
-        workspace_id: workspaceId,
-        ...locationFilter,
-        ...variantFilter,
-      },
-      _sum: {
-        quantity_change: true,
-      },
-    });
-
-    // Get variant and location details
-    const variantIds = [...new Set(stockByVariantLocation.map((s) => s.variant_id))];
-    const locationIds = [...new Set(stockByVariantLocation.map((s) => s.location_id))];
-
-    const [variants, locations] = await Promise.all([
-      prisma.productVariant.findMany({
-        where: { id: { in: variantIds } },
-        include: { product: true },
-      }),
-      prisma.storeLocation.findMany({
-        where: { id: { in: locationIds } },
-      }),
-    ]);
-
-    // Build report
-    const report = stockByVariantLocation.map((stock) => {
-      const variant = variants.find((v) => v.id === stock.variant_id);
-      const location = locations.find((l) => l.id === stock.location_id);
-      const quantity = stock._sum.quantity_change || 0;
-
-      return {
-        variant_id: stock.variant_id,
-        location_id: stock.location_id,
-        product_id: variant?.product.id,
-        product_name: variant?.product.name,
-        variant_name: variant?.variant_name,
-        sku: variant?.sku,
-        price: variant?.price,
-        photo_url: variant?.product.photo_url,
-        location_name: location?.location_name,
-        location_code: location?.location_code,
-        location_type: location?.location_type,
-        quantity,
-        is_low_stock: quantity <= threshold,
-        is_out_of_stock: quantity <= 0,
+      // Get stock aggregation by variant and location
+      const stockQuery: any = {
+        where: { workspace_id },
+        by: ['variant_id', 'location_id'],
+        _sum: { quantity_change: true }
       };
-    });
 
-    // Filter low stock if requested
-    const filteredReport = low_stock_only
-      ? report.filter((item) => item.is_low_stock)
-      : report;
+      if (location_id) {
+        stockQuery.where.location_id = location_id;
+      }
 
-    // Sort by quantity (low stock first)
-    filteredReport.sort((a, b) => a.quantity - b.quantity);
+      const stockData = await db.stockLedger.groupBy(stockQuery);
 
-    // Calculate summary
-    const summary = {
-      total_products: [...new Set(filteredReport.map((r) => r.product_id))].length,
-      total_variants: filteredReport.length,
-      total_quantity: filteredReport.reduce((sum, r) => sum + r.quantity, 0),
-      low_stock_count: filteredReport.filter((r) => r.is_low_stock).length,
-      out_of_stock_count: filteredReport.filter((r) => r.is_out_of_stock).length,
-      locations: [...new Set(filteredReport.map((r) => r.location_code))],
-    };
+      // Get variant details (filtered by workspace)
+      const variantIds = [...new Set(stockData.map(s => s.variant_id))];
+      const variants = await db.productVariant.findMany({
+        where: { 
+          id: { in: variantIds },
+          product: { workspace_id } // Filter variants by workspace
+        },
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              photo_url: true,
+              category: true,
+              base_sku: true
+            }
+          }
+        }
+      });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        summary,
-        items: filteredReport,
-      },
-    });
-  } catch (error: unknown) {
-    console.error('Error generating inventory report:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error occurred';
-    return NextResponse.json(
-      { success: false, error: 'Failed to generate report', details: message },
-      { status: 500 }
-    );
+      // Get location details (filtered by workspace)
+      const locationIds = [...new Set(stockData.map(s => s.location_id))];
+      const locations = await db.storeLocation.findMany({
+        where: { 
+          id: { in: locationIds },
+          workspace_id // Filter locations by workspace
+        }
+      });
+
+      // Build the report
+      const report = stockData.map(stock => {
+        const variant = variants.find(v => v.id === stock.variant_id);
+        const location = locations.find(l => l.id === stock.location_id);
+        const quantity = stock._sum.quantity_change || 0;
+        const value = quantity * (variant?.price || 0);
+        const is_low_stock = quantity <= (variant?.reorder_point || 10);
+
+        return {
+          product_id: variant?.product.id,
+          product_name: variant?.product.name,
+          product_category: variant?.product.category,
+          variant_id: variant?.id,
+          variant_name: variant?.variant_name,
+          sku: variant?.sku,
+          size: variant?.size,
+          color: variant?.color,
+          location_id: location?.id,
+          location_code: location?.location_code,
+          location_name: location?.location_name,
+          quantity,
+          unit_price: variant?.price || 0,
+          total_value: value,
+          reorder_point: variant?.reorder_point || 10,
+          is_low_stock,
+          is_out_of_stock: quantity <= 0
+        };
+      });
+
+      // Calculate summary statistics
+      const total_items = report.length;
+      const total_quantity = report.reduce((sum, item) => sum + item.quantity, 0);
+      const total_value = report.reduce((sum, item) => sum + item.total_value, 0);
+      const low_stock_count = report.filter(item => item.is_low_stock).length;
+      const out_of_stock_count = report.filter(item => item.is_out_of_stock).length;
+
+      // Group by location for summary
+      const by_location = locationIds.map(locId => {
+        const loc = locations.find(l => l.id === locId);
+        const items = report.filter(r => r.location_id === locId);
+        return {
+          location_id: locId,
+          location_code: loc?.location_code,
+          location_name: loc?.location_name,
+          total_items: items.length,
+          total_quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+          total_value: items.reduce((sum, item) => sum + item.total_value, 0),
+          low_stock_items: items.filter(item => item.is_low_stock).length,
+          out_of_stock_items: items.filter(item => item.is_out_of_stock).length
+        };
+      });
+
+      return NextResponse.json({
+        success: true,
+        summary: {
+          total_items,
+          total_quantity,
+          total_value,
+          low_stock_count,
+          out_of_stock_count,
+          by_location
+        },
+        items: report
+      });
+    } catch (error: any) {
+      console.error('[INVENTORY] Report generation error:', error);
+      return NextResponse.json({ error: error.message || 'Failed to generate report' }, { status: 500 });
+    }
   }
-});
+);

@@ -1,132 +1,116 @@
-/**
- * GET /api/inventory/product/:id
- * Fetch product details and stock info for QR scanner
- */
-
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { requireAuth } from '@/lib/auth-middleware';
+import { db } from '@/lib/db';
+import { requirePermission } from '@/lib/auth-middleware';
 
-const prisma = new PrismaClient();
-
+// Force dynamic route (don't pre-render during build)
 export const dynamic = 'force-dynamic';
 
-export const GET = requireAuth(async (
-  request: NextRequest,
-  user,
-  context?: { params: { id: string } }
-) => {
+/**
+ * GET /api/inventory/product/:id?v=:variantId
+ * Scan QR code and get product + stock info
+ * Requires: inventory:read permission
+ */
+export const GET = requirePermission('inventory:read')(
+  async (request: NextRequest, user, { params }: { params: { id: string } }) => {
   try {
-    const { workspaceId } = user;
-    const productId = context?.params.id;
+    const productId = params.id;
+    const { searchParams } = new URL(request.url);
+    const variantId = searchParams.get('v');
 
-    if (!productId) {
+    if (!variantId) {
       return NextResponse.json(
-        { success: false, error: 'Product ID is required' },
+        { error: 'Variant ID (v) is required' },
         { status: 400 }
       );
     }
 
-    // Check if it's a variant_id from QR code (?v=variant_id)
-    const url = new URL(request.url);
-    const variantId = url.searchParams.get('v');
+    // Use authenticated user's workspace
+    const workspace_id = user.workspaceId;
 
-    if (variantId) {
-      // Fetch specific variant with stock info
-      const variant = await prisma.productVariant.findUnique({
-        where: { id: variantId },
-        include: {
-          product: true,
+    // Get product with variant (filtered by workspace)
+    const product = await db.inventoryProduct.findFirst({
+      where: {
+        id: productId,
+        workspace_id, // Only products in user's workspace
+      },
+      include: {
+        variants: {
+          where: { id: variantId },
         },
-      });
+      },
+    });
 
-      if (!variant) {
-        return NextResponse.json(
-          { success: false, error: 'Product variant not found' },
-          { status: 404 }
-        );
-      }
-
-      // Calculate current stock across all locations
-      const stockByLocation = await prisma.stockLedger.groupBy({
-        by: ['location_id'],
-        where: {
-          workspace_id: workspaceId,
-          variant_id: variantId,
-        },
-        _sum: {
-          quantity_change: true,
-        },
-      });
-
-      const locations = await prisma.storeLocation.findMany({
-        where: {
-          workspace_id: workspaceId,
-          id: { in: stockByLocation.map((s: { location_id: string }) => s.location_id) },
-        },
-      });
-
-      const stock = stockByLocation.map((s: { location_id: string; _sum: { quantity_change: number | null } }) => ({
-        location_id: s.location_id,
-        location_name: locations.find((l) => l.id === s.location_id)?.location_name || 'Unknown',
-        location_code: locations.find((l) => l.id === s.location_id)?.location_code || 'Unknown',
-        quantity: s._sum.quantity_change || 0,
-      }));
-
-      const totalStock = stock.reduce((sum: number, s: { quantity: number }) => sum + s.quantity, 0);
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          id: variant.id,
-          product_id: variant.product.id,
-          product_name: variant.product.name,
-          variant_name: variant.variant_name,
-          sku: variant.sku,
-          barcode: variant.barcode,
-          price: variant.price,
-          cost: variant.cost,
-          photo_url: variant.product.photo_url,
-          description: variant.product.description,
-          category: variant.product.category,
-          size: variant.size,
-          color: variant.color,
-          stock,
-          total_stock: totalStock,
-          is_out_of_stock: totalStock <= 0,
-        },
-      });
-    } else {
-      // Fetch product with all variants
-      const product = await prisma.inventoryProduct.findFirst({
-        where: {
-          id: productId,
-          workspace_id: workspaceId,
-        },
-        include: {
-          variants: {
-            where: { is_active: true },
-          },
-        },
-      });
-
-      if (!product) {
-        return NextResponse.json(
-          { success: false, error: 'Product not found' },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        data: product,
-      });
+    if (!product || product.variants.length === 0) {
+      return NextResponse.json(
+        { error: 'Product or variant not found' },
+        { status: 404 }
+      );
     }
-  } catch (error: unknown) {
-    console.error('Error fetching product:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+
+    const variant = product.variants[0];
+
+    // Get current stock by location (filtered by workspace)
+    const stockByLocation = await db.stockLedger.groupBy({
+      by: ['location_id'],
+      where: {
+        workspace_id,
+        variant_id: variantId,
+      },
+      _sum: {
+        quantity_change: true,
+      },
+    });
+
+    // Get location names (filtered by workspace)
+    const locations = await db.storeLocation.findMany({
+      where: {
+        workspace_id,
+        id: {
+          in: stockByLocation.map(s => s.location_id),
+        },
+      },
+    });
+
+    const stockInfo = stockByLocation.map(stock => {
+      const location = locations.find(l => l.id === stock.location_id);
+      return {
+        location_code: location?.location_code || '',
+        location_name: location?.location_name || '',
+        quantity: stock._sum.quantity_change || 0,
+      };
+    });
+
+    const totalQuantity = stockInfo.reduce((sum, s) => sum + s.quantity, 0);
+
+    return NextResponse.json({
+      product: {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        photo_url: product.photo_url,
+        base_sku: product.base_sku,
+        category: product.category,
+      },
+      variant: {
+        id: variant.id,
+        variant_name: variant.variant_name,
+        sku: variant.sku,
+        barcode: variant.barcode,
+        qr_code: variant.qr_code,
+        price: variant.price,
+        size: variant.size,
+        color: variant.color,
+      },
+      stock: {
+        total_quantity: totalQuantity,
+        by_location: stockInfo,
+        is_out_of_stock: totalQuantity <= 0,
+      },
+    });
+  } catch (error: any) {
+    console.error('[INVENTORY] Product scan error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch product', details: message },
+      { error: error.message || 'Failed to fetch product' },
       { status: 500 }
     );
   }

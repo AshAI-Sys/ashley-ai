@@ -1,8 +1,8 @@
 # Ashley AI - Development Guide
 
-**Last Updated**: 2025-10-19
-**Current Status**: 15 of 15 Manufacturing Stages Implemented - REAL-WORLD PRODUCTION READY
-**Latest Update**: Demo to Production Migration - Real authentication, security hardening, and production deployment ready
+**Last Updated**: 2025-10-31
+**Current Status**: 15 Manufacturing Stages + Mobile App - PRODUCTION READY WITH MOBILE SUPPORT
+**Latest Update**: Mobile Inventory Management App - React Native/Expo app with full authentication and inventory features
 
 ## Quick Start Commands
 
@@ -14,6 +14,9 @@ pnpm --filter @ash/admin dev
 
 # Start Client Portal (localhost:3003)
 pnpm --filter @ash/portal dev
+
+# Start Mobile App (Expo)
+cd services/ash-mobile && pnpm start
 
 # Generate Database
 cd packages/database && npx prisma generate
@@ -30,9 +33,11 @@ fix-changes.bat
 
 - **Admin Interface**: http://localhost:3001
 - **Client Portal**: http://localhost:3003
+- **Mobile App**: Expo Dev Server (scan QR code with Expo Go)
 - **Finance Operations**: http://localhost:3001/finance
 - **HR & Payroll**: http://localhost:3001/hr-payroll
 - **Automation & Reminders**: http://localhost:3001/automation
+- **Inventory Management**: http://localhost:3001/inventory/*
 
 ### 🔐 **PRODUCTION AUTHENTICATION** (NEW - Oct 19, 2025)
 
@@ -70,8 +75,9 @@ fix-changes.bat
 ```
 Ashley AI/
 ├── services/
-│   ├── ash-admin/     # Main admin interface
-│   └── ash-portal/    # Client portal
+│   ├── ash-admin/     # Main admin interface (Next.js 14)
+│   ├── ash-portal/    # Client portal (Next.js 14)
+│   └── ash-mobile/    # Mobile app (React Native/Expo) ⭐ NEW
 ├── packages/
 │   └── database/      # Prisma database schema
 └── apps/              # Additional apps (if any)
@@ -243,6 +249,24 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - **Enhanced Order Intake**: ColorVariant, GarmentAddon, OrderFile, OrderActivityLog, PrintLocation
 
 ## Recent Updates Log
+
+### 2025-10-31 - MOBILE INVENTORY MANAGEMENT APP - REACT NATIVE/EXPO 📱✅
+
+- ✅ **Complete Mobile App**: Full React Native/Expo app for iOS and Android (3,500+ lines of code)
+- ✅ **JWT Authentication**: Secure login with Expo SecureStore token storage
+- ✅ **5 Complete Screens**: Login, Home Dashboard, Store Scanner, Cashier POS, Warehouse Management
+- ✅ **QR Code Scanner**: Real-time product lookup with expo-barcode-scanner
+- ✅ **Point of Sale**: Full cashier functionality with cart, payments, and change calculation
+- ✅ **Warehouse Operations**: 3-tab interface (Delivery/Transfer/Adjust inventory)
+- ✅ **API Integration**: All screens connected to authenticated backend APIs
+- ✅ **Navigation**: React Navigation with auth-protected routes
+- ✅ **Professional UI/UX**: Ashley AI branding with responsive design
+- 📦 **Files Created**: 21 files (screens, navigation, context, utils, config)
+- 📦 **Dependencies**: 13 packages (React Navigation, Expo Camera, SecureStore, Axios)
+- 🎨 **Screens**: LoginScreen, HomeScreen, StoreScannerScreen, CashierPOSScreen, WarehouseScreen
+- 🔌 **API Endpoints**: 6 authenticated endpoints (login, product scan, sales, delivery, transfer, adjust)
+- 📖 **Documentation**: Complete README with setup, usage, and deployment instructions
+- 🎯 **Result**: Production-ready mobile app for inventory management on iOS/Android
 
 ### 2025-10-19 - DEMO TO PRODUCTION MIGRATION - REAL-WORLD READY 🚀🔐
 

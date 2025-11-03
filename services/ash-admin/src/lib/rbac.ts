@@ -71,6 +71,14 @@ export type Permission =
   | "automation:update"
   | "analytics:read"
   | "reports:generate"
+  // Inventory Management
+  | "inventory:read"
+  | "inventory:scan"
+  | "inventory:sell"
+  | "inventory:receive"
+  | "inventory:transfer"
+  | "inventory:adjust"
+  | "inventory:report"
   // System Administration
   | "admin:read"
   | "admin:create"
@@ -89,7 +97,9 @@ export type Role =
   | "warehouse_staff" // Delivery & warehouse
   | "finance_staff" // Finance operations
   | "hr_staff" // HR operations
-  | "maintenance_tech"; // Maintenance
+  | "maintenance_tech" // Maintenance
+  | "store_clerk" // Store scanner operations
+  | "cashier"; // POS sales operations
 
 // Role-based permissions mapping
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
@@ -151,6 +161,13 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "automation:update",
     "analytics:read",
     "reports:generate",
+    "inventory:read",
+    "inventory:scan",
+    "inventory:sell",
+    "inventory:receive",
+    "inventory:transfer",
+    "inventory:adjust",
+    "inventory:report",
     "admin:read",
     "admin:create",
     "admin:update",
@@ -241,6 +258,11 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "delivery:create",
     "delivery:update",
     "delivery:dispatch",
+    "inventory:read",
+    "inventory:receive",
+    "inventory:transfer",
+    "inventory:adjust",
+    "inventory:report",
   ],
 
   // Finance Staff
@@ -267,6 +289,19 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "maintenance:create",
     "maintenance:update",
   ],
+
+  // Store Clerk
+  store_clerk: [
+    "inventory:read",
+    "inventory:scan",
+  ],
+
+  // Cashier
+  cashier: [
+    "inventory:read",
+    "inventory:scan",
+    "inventory:sell",
+  ],
 };
 
 // Navigation permissions - what sections users can see
@@ -286,6 +321,11 @@ export const NAVIGATION_PERMISSIONS: Record<string, Permission[]> = {
   maintenance: ["maintenance:read"],
   automation: ["automation:read"],
   merchandising: ["analytics:read"],
+  inventory: ["inventory:read"],
+  "inventory-store": ["inventory:scan"],
+  "inventory-cashier": ["inventory:sell"],
+  "inventory-warehouse": ["inventory:receive", "inventory:transfer", "inventory:adjust"],
+  "inventory-admin": ["inventory:report"],
 };
 
 // Helper functions
@@ -333,6 +373,8 @@ export const ROLE_HIERARCHY: Record<Role, Role[]> = {
     "finance_staff",
     "hr_staff",
     "maintenance_tech",
+    "store_clerk",
+    "cashier",
   ],
   manager: [
     "designer",
@@ -352,6 +394,8 @@ export const ROLE_HIERARCHY: Record<Role, Role[]> = {
   finance_staff: [],
   hr_staff: [],
   maintenance_tech: [],
+  store_clerk: [],
+  cashier: [],
 };
 
 // Get all permissions for a role including inherited ones
@@ -385,6 +429,8 @@ export function getRoleBasedPermissions(roleName: string): Permission[] {
     finance_staff: "finance_staff",
     hr_staff: "hr_staff",
     maintenance_tech: "maintenance_tech",
+    store_clerk: "store_clerk",
+    cashier: "cashier",
   };
 
   const mappedRole = roleMap[roleName] || "cutting_operator";

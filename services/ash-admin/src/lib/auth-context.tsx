@@ -7,6 +7,7 @@ interface User {
   email: string;
   name: string;
   role: string;
+  workspaceId: string; // Added for inventory system
   position?: string;
   department?: string;
   permissions?: string[];

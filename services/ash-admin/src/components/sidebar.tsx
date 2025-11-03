@@ -34,6 +34,8 @@ import {
   Activity,
   Menu,
   X,
+  QrCode,
+  Smartphone,
 } from "lucide-react";
 
 const iconMap = {
@@ -63,6 +65,8 @@ const iconMap = {
   Activity,
   Menu,
   X,
+  QrCode,
+  Smartphone,
 };
 
 export default function Sidebar() {
@@ -218,10 +222,40 @@ export default function Sidebar() {
       department: "Inventory",
     },
     {
-      name: "Retail Store",
-      href: "/inventory/retail",
-      icon: "Store",
+      name: "Store Scanner",
+      href: "/inventory/store",
+      icon: "PackageSearch",
       department: "Inventory",
+    },
+    {
+      name: "Cashier POS",
+      href: "/inventory/cashier",
+      icon: "DollarSign",
+      department: "Inventory",
+    },
+    {
+      name: "Warehouse",
+      href: "/inventory/warehouse",
+      icon: "Package",
+      department: "Inventory",
+    },
+    {
+      name: "Inventory Admin",
+      href: "/inventory/admin",
+      icon: "BarChart3",
+      department: "Inventory",
+    },
+    {
+      name: "QR Code Generator",
+      href: "/inventory/qr-generator",
+      icon: "QrCode",
+      department: "Inventory",
+    },
+    {
+      name: "Mobile Management",
+      href: "/mobile/manage",
+      icon: "Smartphone",
+      department: "Administration",
     },
     {
       name: "Performance",
@@ -310,7 +344,7 @@ export default function Sidebar() {
 
       {/* Sidebar - Modern Design */}
       <div
-        className={`modern-sidebar text-white transition-all duration-300 w-64 /* Mobile styles */ fixed inset-y-0 z-40 flex max-h-screen flex-col overflow-hidden lg:relative lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
+        className={`modern-sidebar text-white transition-all duration-300 w-64 /* Mobile styles */ fixed inset-y-0 z-40 flex h-screen flex-col lg:relative lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
       >
         {/* Header - Improved spacing */}
         <div className="border-b border-white/10 p-5">

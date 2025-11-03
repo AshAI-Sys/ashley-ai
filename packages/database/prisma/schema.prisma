@@ -102,6 +102,7 @@ model Workspace {
   stock_ledger             StockLedger[]
   retail_sales             RetailSale[]
   warehouse_deliveries     WarehouseDelivery[]
+  mobile_sessions          MobileSession[]
 
   @@index([is_active])
   @@index([created_at])
@@ -166,6 +167,7 @@ model User {
   stock_ledger_entries           StockLedger[]           @relation("StockLedgerUser")
   retail_sales_as_cashier        RetailSale[]            @relation("RetailSaleCashier")
   warehouse_deliveries_received  WarehouseDelivery[]     @relation("DeliveryReceiver")
+  mobile_sessions                MobileSession[]         @relation("MobileSessions")
 
   @@unique([workspace_id, email])
   @@index([workspace_id])
@@ -3941,4 +3943,35 @@ model WarehouseDeliveryItem {
   @@index([delivery_id])
   @@index([variant_id])
   @@map("warehouse_delivery_items")
+}
+
+// Mobile App Sessions
+model MobileSession {
+  id                 String    @id @default(cuid())
+  workspace_id       String
+  user_id            String
+  session_token      String    @unique
+  device_platform    String    // 'ios' | 'android'
+  device_model       String?
+  device_os_version  String?
+  app_version        String
+  fcm_token          String?   // Firebase Cloud Messaging token for push notifications
+  ip_address         String?
+  location           String?   // Optional location info
+  status             String    @default("active") // 'active' | 'expired' | 'revoked'
+  started_at         DateTime  @default(now())
+  last_activity_at   DateTime  @default(now())
+  expires_at         DateTime
+  ended_at           DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  workspace          Workspace @relation(fields: [workspace_id], references: [id])
+  user               User      @relation("MobileSessions", fields: [user_id], references: [id])
+
+  @@index([workspace_id])
+  @@index([user_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, user_id, status])
+  @@index([expires_at])
+  @@map("mobile_sessions")
 }
