@@ -7,6 +7,7 @@ import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { GlobalKeyboardShortcutsProvider } from "@/components/keyboard-shortcuts-dialog";
 import { FetchInterceptorInit } from "@/components/fetch-interceptor-init";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { LanguageProvider } from "@/lib/language-context";
 import dynamicImport from "next/dynamic";
 
 // Load ChatWidget only on client side to prevent hydration issues
@@ -128,26 +129,28 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <ErrorBoundary>
           <ThemeProvider>
-            <Providers>
-              {/* Initialize fetch interceptor to add auth headers */}
-              <FetchInterceptorInit />
+            <LanguageProvider>
+              <Providers>
+                {/* Initialize fetch interceptor to add auth headers */}
+                <FetchInterceptorInit />
 
-              <GlobalKeyboardShortcutsProvider>
-                {children}
-                {/* ChatWidget temporarily disabled for faster page load */}
-                {/* <ChatWidget /> */}
+                <GlobalKeyboardShortcutsProvider>
+                  {children}
+                  {/* ChatWidget temporarily disabled for faster page load */}
+                  {/* <ChatWidget /> */}
 
-                {/* PWA Components */}
-                <PWARegister />
-                <PWAInstallPrompt />
+                  {/* PWA Components */}
+                  <PWARegister />
+                  <PWAInstallPrompt />
 
-                {/* Performance Monitoring */}
-                <WebVitalsReporter />
+                  {/* Performance Monitoring */}
+                  <WebVitalsReporter />
 
-                {/* Enhanced Toast Provider */}
-                <ToastProvider />
-              </GlobalKeyboardShortcutsProvider>
-            </Providers>
+                  {/* Enhanced Toast Provider */}
+                  <ToastProvider />
+                </GlobalKeyboardShortcutsProvider>
+              </Providers>
+            </LanguageProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </body>
