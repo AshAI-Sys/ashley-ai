@@ -1,0 +1,10 @@
+{
+  "extends": "@ash-ai/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["bcryptjs", "jsonwebtoken"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".turbo"]
+}

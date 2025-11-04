@@ -252,6 +252,12 @@ export default function Sidebar() {
       department: "Inventory",
     },
     {
+      name: "Print Labels",
+      href: "/inventory/print-labels",
+      icon: "Printer",
+      department: "Inventory",
+    },
+    {
       name: "Mobile Management",
       href: "/mobile/manage",
       icon: "Smartphone",
