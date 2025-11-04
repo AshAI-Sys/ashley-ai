@@ -608,7 +608,7 @@ export default function QualityControlInterface({
 
             <div className="rounded-lg bg-orange-50 p-3">
               <div className="mb-2 font-medium text-orange-800">
-                âš ï¸ Major Defects
+                ⚠️ Major Defects
               </div>
               <ul className="space-y-1 text-orange-700">
                 <li>â€¢ Uneven stitching</li>

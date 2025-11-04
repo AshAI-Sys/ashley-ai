@@ -498,7 +498,7 @@ export class SmartSchedulingAI {
     // Unscheduled jobs
     if (unscheduled.length > 0) {
       recommendations.push(
-        `âš ï¸ ${unscheduled.length} job(s) could not be scheduled - consider adding resources or extending deadlines`
+        `⚠️ ${unscheduled.length} job(s) could not be scheduled - consider adding resources or extending deadlines`
       );
     }
 
@@ -526,7 +526,7 @@ export class SmartSchedulingAI {
     ).length;
     if (highSeverityConflicts > 0) {
       recommendations.push(
-        `âš ï¸ ${highSeverityConflicts} high-severity scheduling conflict(s) detected - immediate attention required`
+        `⚠️ ${highSeverityConflicts} high-severity scheduling conflict(s) detected - immediate attention required`
       );
     }
 

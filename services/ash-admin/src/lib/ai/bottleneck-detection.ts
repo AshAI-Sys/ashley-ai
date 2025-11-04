@@ -485,7 +485,7 @@ export class BottleneckDetectionAI {
 
     if (bottlenecks.length > 3) {
       recommendations.push(
-        `âš ï¸ Multiple bottlenecks detected (${bottlenecks.length}) - systematic workflow redesign recommended`
+        `⚠️ Multiple bottlenecks detected (${bottlenecks.length}) - systematic workflow redesign recommended`
       );
     }
 
