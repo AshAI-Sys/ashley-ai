@@ -169,8 +169,8 @@ export default function Sidebar() {
       department: "Finance",
     },
     {
-      name: "SMS Notifications",
-      href: "/sms-notifications",
+      name: "WhatsApp & SMS",
+      href: "/notifications",
       icon: "MessageSquare",
       department: "Management",
     },
@@ -207,6 +207,12 @@ export default function Sidebar() {
     {
       name: "Advanced Analytics",
       href: "/admin/analytics",
+      icon: "BarChart3",
+      department: "Management",
+    },
+    {
+      name: "Reports & Analytics",
+      href: "/reports",
       icon: "BarChart3",
       department: "Management",
     },
