@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Printer, Download, QrCode, Plus, Trash2, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Printer, Download, QrCode, Plus, Trash2, Settings, ArrowLeft } from "lucide-react";
 import QRCode from "qrcode";
 
 interface LabelItem {
@@ -17,6 +18,7 @@ type LabelSize = "small" | "medium" | "large";
 type LabelTemplate = "basic" | "detailed" | "minimal";
 
 export default function BatchQRPrinter() {
+  const router = useRouter();
   const [items, setItems] = useState<LabelItem[]>([]);
   const [labelSize, setLabelSize] = useState<LabelSize>("medium");
   const [labelTemplate, setLabelTemplate] = useState<LabelTemplate>("detailed");
@@ -234,6 +236,15 @@ export default function BatchQRPrinter() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+      >
+        <ArrowLeft className="h-5 w-5" />
+        Back
+      </button>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

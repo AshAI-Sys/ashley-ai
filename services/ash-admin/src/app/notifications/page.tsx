@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare, Send, Phone, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { MessageSquare, Send, Phone, CheckCircle, AlertCircle, Clock, ArrowLeft } from "lucide-react";
 
 type NotificationType = "sms" | "whatsapp";
 type MessageType = "order_update" | "payment_reminder" | "delivery_alert" | "custom";
@@ -16,6 +17,7 @@ interface NotificationHistory {
 }
 
 export default function NotificationsPage() {
+  const router = useRouter();
   const [selectedType, setSelectedType] = useState<NotificationType>("sms");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [message, setMessage] = useState("");
@@ -95,6 +97,13 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
       <div className="mb-6">
+        <button
+          onClick={() => router.back()}
+          className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          Back
+        </button>
         <h1 className="text-3xl font-bold text-gray-900">WhatsApp & SMS Notifications</h1>
         <p className="text-gray-600">Send notifications to clients and customers</p>
       </div>

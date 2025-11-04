@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   BarChart3,
   TrendingUp,
@@ -11,12 +12,14 @@ import {
   Download,
   Calendar,
   Filter,
+  ArrowLeft,
 } from "lucide-react";
 
 type ReportType = "sales" | "production" | "inventory" | "financial" | "hr";
 type TimeRange = "today" | "week" | "month" | "quarter" | "year";
 
 export default function ReportsPage() {
+  const router = useRouter();
   const [selectedReport, setSelectedReport] = useState<ReportType>("sales");
   const [timeRange, setTimeRange] = useState<TimeRange>("month");
   const [loading, setLoading] = useState(false);
@@ -76,6 +79,13 @@ export default function ReportsPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
       <div className="mb-6">
+        <button
+          onClick={() => router.back()}
+          className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          Back
+        </button>
         <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
         <p className="text-gray-600">Comprehensive business intelligence and insights</p>
       </div>
