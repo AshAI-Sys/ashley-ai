@@ -37,7 +37,6 @@ import {
   QrCode,
   Smartphone,
 } from "lucide-react";
-import LanguageSwitcher from "./language-switcher";
 
 const iconMap = {
   Home,
@@ -360,7 +359,7 @@ export default function Sidebar() {
         className={`modern-sidebar text-white transition-all duration-300 w-64 /* Mobile styles */ fixed inset-y-0 z-40 flex h-screen flex-col lg:sticky lg:top-0 lg:z-auto ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} `}
       >
         {/* Header - Improved spacing */}
-        <div className="border-b border-white/10 p-5 space-y-3">
+        <div className="border-b border-white/10 p-5">
           <div className="flex items-center justify-between">
             {/* Show full logo and text - always expanded */}
             <div className="flex items-center gap-3">
@@ -381,8 +380,6 @@ export default function Sidebar() {
               </div>
             </div>
           </div>
-          {/* Language Switcher */}
-          <LanguageSwitcher />
         </div>
 
         {/* Navigation - Professional spacing and hover effects */}
