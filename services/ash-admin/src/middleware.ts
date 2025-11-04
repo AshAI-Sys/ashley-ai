@@ -251,10 +251,11 @@ export async function middleware(request: NextRequest) {
   const isAuthEndpoint =
     pathname.includes("/auth/login") || pathname.includes("/auth/register");
   const isWebhook = pathname.includes("/webhooks/");
+  const isAnalytics = pathname.startsWith("/api/analytics/");
 
   // Skip CSRF for development or specific endpoints
   const skipCSRF =
-    process.env.NODE_ENV === "development" || isAuthEndpoint || isWebhook;
+    process.env.NODE_ENV === "development" || isAuthEndpoint || isWebhook || isAnalytics;
 
   if (isStateChanging && isAPI && !skipCSRF) {
     if (!(await verifyCSRFToken(request))) {
