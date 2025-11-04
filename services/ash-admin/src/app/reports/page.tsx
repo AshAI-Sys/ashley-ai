@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   BarChart3,
@@ -23,40 +23,36 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState<ReportType>("sales");
   const [timeRange, setTimeRange] = useState<TimeRange>("month");
   const [loading, setLoading] = useState(false);
+  const [kpiData, setKpiData] = useState<any>(null);
+  const [breakdown, setBreakdown] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data - in production, fetch from API
-  const kpiData = {
-    sales: {
-      totalRevenue: "₱1,245,000",
-      growth: "+12.5%",
-      orders: "234",
-      avgOrderValue: "₱5,320",
-    },
-    production: {
-      unitsProduced: "12,450",
-      efficiency: "94.2%",
-      defectRate: "1.8%",
-      onTimeDelivery: "96.5%",
-    },
-    inventory: {
-      totalValue: "₱850,000",
-      turnoverRate: "8.2x",
-      stockouts: "3",
-      excessStock: "₱45,000",
-    },
-    financial: {
-      grossProfit: "₱425,000",
-      margin: "34.2%",
-      expenses: "₱180,000",
-      netProfit: "₱245,000",
-    },
-    hr: {
-      totalEmployees: "85",
-      attendance: "96.8%",
-      productivity: "92.5%",
-      payrollCost: "₱380,000",
-    },
-  };
+  // Fetch analytics data from API
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/analytics?type=${selectedReport}&range=${timeRange}`);
+        const result = await response.json();
+
+        if (response.ok) {
+          setKpiData(result.data);
+          setBreakdown(result.data.breakdown || []);
+        } else {
+          setError(result.error || "Failed to fetch analytics");
+        }
+      } catch (error: any) {
+        setError(error.message || "Network error");
+        console.error("[Reports] Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [selectedReport, timeRange]);
 
   const reportTypes = [
     { id: "sales", name: "Sales Report", icon: DollarSign, color: "bg-green-500" },
@@ -146,53 +142,73 @@ export default function ReportsPage() {
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+          <p className="font-medium">Error loading analytics</p>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="mb-6 flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
+            <p className="mt-4 text-gray-600">Loading analytics...</p>
+          </div>
+        </div>
+      )}
+
       {/* KPI Cards */}
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {selectedReport === "sales" && (
-          <>
-            <KPICard title="Total Revenue" value={kpiData.sales.totalRevenue} change={kpiData.sales.growth} />
-            <KPICard title="Total Orders" value={kpiData.sales.orders} />
-            <KPICard title="Avg Order Value" value={kpiData.sales.avgOrderValue} />
-            <KPICard title="Growth Rate" value={kpiData.sales.growth} />
-          </>
-        )}
+      {!loading && kpiData && (
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {selectedReport === "sales" && (
+            <>
+              <KPICard title="Total Revenue" value={kpiData.totalRevenue} change={kpiData.growth} />
+              <KPICard title="Total Orders" value={kpiData.orders} />
+              <KPICard title="Avg Order Value" value={kpiData.avgOrderValue} />
+              <KPICard title="Growth Rate" value={kpiData.growth} />
+            </>
+          )}
 
-        {selectedReport === "production" && (
-          <>
-            <KPICard title="Units Produced" value={kpiData.production.unitsProduced} />
-            <KPICard title="Efficiency Rate" value={kpiData.production.efficiency} change="+2.3%" />
-            <KPICard title="Defect Rate" value={kpiData.production.defectRate} change="-0.5%" />
-            <KPICard title="On-Time Delivery" value={kpiData.production.onTimeDelivery} change="+1.2%" />
-          </>
-        )}
+          {selectedReport === "production" && (
+            <>
+              <KPICard title="Units Produced" value={kpiData.unitsProduced} />
+              <KPICard title="Efficiency Rate" value={kpiData.efficiency} />
+              <KPICard title="Defect Rate" value={kpiData.defectRate} />
+              <KPICard title="On-Time Delivery" value={kpiData.onTimeDelivery} />
+            </>
+          )}
 
-        {selectedReport === "inventory" && (
-          <>
-            <KPICard title="Total Value" value={kpiData.inventory.totalValue} />
-            <KPICard title="Turnover Rate" value={kpiData.inventory.turnoverRate} />
-            <KPICard title="Stockouts" value={kpiData.inventory.stockouts} />
-            <KPICard title="Excess Stock" value={kpiData.inventory.excessStock} />
-          </>
-        )}
+          {selectedReport === "inventory" && (
+            <>
+              <KPICard title="Total Value" value={kpiData.totalValue} />
+              <KPICard title="Turnover Rate" value={kpiData.turnoverRate} />
+              <KPICard title="Stockouts" value={kpiData.stockouts} />
+              <KPICard title="Excess Stock" value={kpiData.excessStock} />
+            </>
+          )}
 
-        {selectedReport === "financial" && (
-          <>
-            <KPICard title="Gross Profit" value={kpiData.financial.grossProfit} change="+15.2%" />
-            <KPICard title="Profit Margin" value={kpiData.financial.margin} />
-            <KPICard title="Total Expenses" value={kpiData.financial.expenses} />
-            <KPICard title="Net Profit" value={kpiData.financial.netProfit} change="+18.5%" />
-          </>
-        )}
+          {selectedReport === "financial" && (
+            <>
+              <KPICard title="Gross Profit" value={kpiData.grossProfit} />
+              <KPICard title="Profit Margin" value={kpiData.margin} />
+              <KPICard title="Total Expenses" value={kpiData.expenses} />
+              <KPICard title="Net Profit" value={kpiData.netProfit} />
+            </>
+          )}
 
-        {selectedReport === "hr" && (
-          <>
-            <KPICard title="Total Employees" value={kpiData.hr.totalEmployees} />
-            <KPICard title="Attendance Rate" value={kpiData.hr.attendance} change="+1.2%" />
-            <KPICard title="Productivity" value={kpiData.hr.productivity} />
-            <KPICard title="Payroll Cost" value={kpiData.hr.payrollCost} />
-          </>
-        )}
-      </div>
+          {selectedReport === "hr" && (
+            <>
+              <KPICard title="Total Employees" value={kpiData.totalEmployees} />
+              <KPICard title="Attendance Rate" value={kpiData.attendance} />
+              <KPICard title="Productivity" value={kpiData.productivity} />
+              <KPICard title="Payroll Cost" value={kpiData.payrollCost} />
+            </>
+          )}
+        </div>
+      )}
 
       {/* Chart/Table Section */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -212,37 +228,39 @@ export default function ReportsPage() {
         <div className="rounded-lg bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-gray-900">Detailed Breakdown</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="p-3 font-semibold text-gray-700">Category</th>
-                  <th className="p-3 font-semibold text-gray-700">Value</th>
-                  <th className="p-3 font-semibold text-gray-700">Change</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                <tr className="hover:bg-gray-50">
-                  <td className="p-3">Category A</td>
-                  <td className="p-3 font-semibold">₱250,000</td>
-                  <td className="p-3 text-green-600">+12.5%</td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="p-3">Category B</td>
-                  <td className="p-3 font-semibold">₱180,000</td>
-                  <td className="p-3 text-green-600">+8.2%</td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="p-3">Category C</td>
-                  <td className="p-3 font-semibold">₱120,000</td>
-                  <td className="p-3 text-red-600">-3.5%</td>
-                </tr>
-                <tr className="hover:bg-gray-50">
-                  <td className="p-3">Category D</td>
-                  <td className="p-3 font-semibold">₱95,000</td>
-                  <td className="p-3 text-green-600">+5.8%</td>
-                </tr>
-              </tbody>
-            </table>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-sm text-gray-500">Loading breakdown...</div>
+              </div>
+            ) : breakdown && breakdown.length > 0 ? (
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-gray-200 bg-gray-50">
+                  <tr>
+                    <th className="p-3 font-semibold text-gray-700">Category</th>
+                    <th className="p-3 font-semibold text-gray-700">Value</th>
+                    <th className="p-3 font-semibold text-gray-700">Change</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {breakdown.map((item, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="p-3">{item.category}</td>
+                      <td className="p-3 font-semibold">{item.value}</td>
+                      <td className={`p-3 ${item.change.startsWith("+") ? "text-green-600" : item.change.startsWith("-") ? "text-red-600" : "text-gray-600"}`}>
+                        {item.change}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center text-gray-500">
+                  <BarChart3 className="mx-auto mb-2 h-8 w-8" />
+                  <p className="text-sm">No breakdown data available</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

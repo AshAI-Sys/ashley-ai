@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Mock WhatsApp sending function
- * Replace with actual WhatsApp provider (Twilio, Meta Business API, etc.)
+ * Send WhatsApp using Twilio or Meta Business API
+ * Supports multiple providers with automatic fallback
  */
 async function sendWhatsApp(
   phone: string,
@@ -71,46 +71,118 @@ async function sendWhatsApp(
   type: string,
   mediaUrl?: string
 ) {
-  // Check for WhatsApp API credentials
-  const apiKey = process.env.TWILIO_WHATSAPP_KEY || process.env.META_WHATSAPP_TOKEN;
+  // Try Twilio WhatsApp (most common provider)
+  if (
+    process.env.TWILIO_ACCOUNT_SID &&
+    process.env.TWILIO_AUTH_TOKEN &&
+    process.env.TWILIO_WHATSAPP_NUMBER
+  ) {
+    try {
+      console.log("[WhatsApp] Sending via Twilio to:", phone);
 
-  if (!apiKey) {
-    console.warn("[WhatsApp] No WhatsApp API key configured - running in mock mode");
-    return {
-      messageId: `mock_wa_${Date.now()}`,
-      status: "sent_mock",
-    };
+      const auth = Buffer.from(
+        `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`
+      ).toString("base64");
+
+      const body: Record<string, string> = {
+        To: `whatsapp:+${phone}`,
+        From: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+        Body: message,
+      };
+
+      if (mediaUrl) {
+        body.MediaUrl = mediaUrl;
+      }
+
+      const response = await fetch(
+        `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${auth}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams(body),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.sid) {
+        console.log("[WhatsApp] Twilio success:", result.sid);
+        return {
+          messageId: result.sid,
+          status: result.status,
+          provider: "twilio",
+        };
+      } else {
+        console.error("[WhatsApp] Twilio error:", result);
+        throw new Error(result.message || "Twilio WhatsApp API error");
+      }
+    } catch (error: any) {
+      console.error("[WhatsApp] Twilio failed:", error.message);
+      // Fall through to try other providers
+    }
   }
 
-  // TODO: Implement actual WhatsApp provider
-  // Example for Twilio WhatsApp:
-  /*
-  const twilioClient = require('twilio')(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
+  // Try Meta Business API as backup
+  if (process.env.META_WHATSAPP_TOKEN && process.env.META_WHATSAPP_PHONE_ID) {
+    try {
+      console.log("[WhatsApp] Sending via Meta Business API to:", phone);
 
-  const messageData: any = {
-    from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-    to: `whatsapp:+${phone}`,
-    body: message,
-  };
+      const messageData: any = {
+        messaging_product: "whatsapp",
+        to: phone,
+        type: mediaUrl ? "image" : "text",
+      };
 
-  if (mediaUrl) {
-    messageData.mediaUrl = [mediaUrl];
+      if (mediaUrl) {
+        messageData.image = {
+          link: mediaUrl,
+          caption: message,
+        };
+      } else {
+        messageData.text = { body: message };
+      }
+
+      const response = await fetch(
+        `https://graph.facebook.com/v18.0/${process.env.META_WHATSAPP_PHONE_ID}/messages`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.META_WHATSAPP_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(messageData),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.messages && result.messages[0]?.id) {
+        console.log("[WhatsApp] Meta success:", result.messages[0].id);
+        return {
+          messageId: result.messages[0].id,
+          status: "sent",
+          provider: "meta",
+        };
+      } else {
+        console.error("[WhatsApp] Meta error:", result);
+        throw new Error(result.error?.message || "Meta WhatsApp API error");
+      }
+    } catch (error: any) {
+      console.error("[WhatsApp] Meta failed:", error.message);
+      // Fall through to mock mode
+    }
   }
 
-  const result = await twilioClient.messages.create(messageData);
+  // No API keys configured - mock mode
+  console.warn("[WhatsApp] No WhatsApp API keys configured - running in MOCK mode");
+  console.warn("[WhatsApp] To enable real WhatsApp, add TWILIO or META credentials to .env");
 
   return {
-    messageId: result.sid,
-    status: result.status,
-  };
-  */
-
-  // Mock response for development
-  return {
-    messageId: `wa_${Date.now()}`,
-    status: "sent",
+    messageId: `mock_wa_${Date.now()}`,
+    status: "sent_mock",
+    provider: "mock",
   };
 }

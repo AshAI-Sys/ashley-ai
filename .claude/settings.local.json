@@ -36,7 +36,9 @@
       "Bash(vercel projects:*)",
       "Bash(vercel remove:*)",
       "Bash(dir:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(nul)",
+      "Bash(git archive:*)"
     ],
     "deny": [],
     "ask": []

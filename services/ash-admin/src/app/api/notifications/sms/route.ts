@@ -60,44 +60,96 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Mock SMS sending function
- * Replace with actual SMS provider (Semaphore, Twilio, etc.)
+ * Send SMS using Semaphore or Twilio
+ * Supports multiple providers with automatic fallback
  */
 async function sendSMS(phone: string, message: string, type: string) {
-  // Check for SMS API credentials
-  const apiKey = process.env.SEMAPHORE_API_KEY || process.env.TWILIO_API_KEY;
+  // Try Semaphore first (Philippine SMS provider)
+  if (process.env.SEMAPHORE_API_KEY) {
+    try {
+      console.log("[SMS] Sending via Semaphore to:", phone);
 
-  if (!apiKey) {
-    console.warn("[SMS] No SMS API key configured - running in mock mode");
-    return {
-      messageId: `mock_${Date.now()}`,
-      status: "sent_mock",
-    };
+      const response = await fetch("https://api.semaphore.co/api/v4/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          apikey: process.env.SEMAPHORE_API_KEY,
+          number: phone,
+          message: message,
+          sendername: process.env.SEMAPHORE_SENDER_NAME || "AshleyAI",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.message_id) {
+        console.log("[SMS] Semaphore success:", result.message_id);
+        return {
+          messageId: result.message_id,
+          status: "sent",
+          provider: "semaphore",
+        };
+      } else {
+        console.error("[SMS] Semaphore error:", result);
+        throw new Error(result.message || "Semaphore API error");
+      }
+    } catch (error: any) {
+      console.error("[SMS] Semaphore failed:", error.message);
+      // Fall through to try other providers
+    }
   }
 
-  // TODO: Implement actual SMS provider
-  // Example for Semaphore (Philippine SMS provider):
-  /*
-  const response = await fetch("https://api.semaphore.co/api/v4/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      apikey: process.env.SEMAPHORE_API_KEY,
-      number: phone,
-      message: message,
-      sendername: "AshleyAI",
-    }),
-  });
-  const result = await response.json();
-  return {
-    messageId: result.message_id,
-    status: result.status,
-  };
-  */
+  // Try Twilio as backup (International SMS)
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN && process.env.TWILIO_PHONE_NUMBER) {
+    try {
+      console.log("[SMS] Sending via Twilio to:", phone);
 
-  // Mock response for development
+      const auth = Buffer.from(
+        `${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`
+      ).toString("base64");
+
+      const response = await fetch(
+        `https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${auth}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            To: phone,
+            From: process.env.TWILIO_PHONE_NUMBER,
+            Body: message,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (response.ok && result.sid) {
+        console.log("[SMS] Twilio success:", result.sid);
+        return {
+          messageId: result.sid,
+          status: result.status,
+          provider: "twilio",
+        };
+      } else {
+        console.error("[SMS] Twilio error:", result);
+        throw new Error(result.message || "Twilio API error");
+      }
+    } catch (error: any) {
+      console.error("[SMS] Twilio failed:", error.message);
+      // Fall through to mock mode
+    }
+  }
+
+  // No API keys configured - mock mode
+  console.warn("[SMS] No SMS API keys configured - running in MOCK mode");
+  console.warn("[SMS] To enable real SMS, add SEMAPHORE_API_KEY or TWILIO credentials to .env");
+
   return {
-    messageId: `sms_${Date.now()}`,
-    status: "sent",
+    messageId: `mock_${Date.now()}`,
+    status: "sent_mock",
+    provider: "mock",
   };
 }
