@@ -6,10 +6,10 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@ash-ai/database";
 import { verifyPassword } from "./utils";
-import { UserRole } from "./types";
+import { UserRole, Permission } from "./types";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(db) as any, // Type assertion for peer dependency compatibility
   providers: [
     CredentialsProvider({
       id: "credentials",
@@ -114,7 +114,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as UserRole;
         session.user.workspace_id = token.workspace_id as string;
         session.user.workspace_name = token.workspace_name as string;
-        session.user.permissions = token.permissions as string[];
+        session.user.permissions = token.permissions as Permission[];
         session.user.requires_2fa = token.requires_2fa as boolean;
       }
       return session;

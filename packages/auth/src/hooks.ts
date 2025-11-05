@@ -202,7 +202,7 @@ export function use2FA() {
 
 // Hook for session management
 export function useSessionManagement() {
-  const { session } = useSession();
+  const { data: session } = useSession();
 
   const refreshSession = async () => {
     // Trigger session refresh

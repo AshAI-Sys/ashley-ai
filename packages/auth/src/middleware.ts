@@ -220,7 +220,7 @@ async function handleWebRoute(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Get session token
-  const token = await getToken({ req: request });
+  const token = await getToken({ req: request as any }); // Type assertion for Next.js version compatibility
 
   // Find matching route configuration
   const routeConfig = PROTECTED_ROUTES.find(config =>
