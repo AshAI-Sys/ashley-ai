@@ -1,5 +1,9 @@
 import { LalamoveProvider } from "./providers/lalamove";
 import { JNTProvider } from "./providers/jnt";
+import { GrabProvider } from "./providers/grab";
+import { LBCProvider } from "./providers/lbc";
+import { NinjaVanProvider } from "./providers/ninjavan";
+import { FlashProvider } from "./providers/flash";
 import {
   Provider,
   ShipmentDetails,
@@ -30,17 +34,13 @@ export class ThreePLService {
       case "JNT":
         return new JNTProvider(this.config.jnt || {});
       case "GRAB":
-        // TODO: Implement GrabExpress provider
-        throw new Error("Grab Express integration coming soon");
+        return new GrabProvider(this.config.grab || {});
       case "LBC":
-        // TODO: Implement LBC provider
-        throw new Error("LBC integration coming soon");
+        return new LBCProvider(this.config.lbc || {});
       case "NINJAVAN":
-        // TODO: Implement Ninja Van provider
-        throw new Error("Ninja Van integration coming soon");
+        return new NinjaVanProvider(this.config.ninjavan || {});
       case "FLASH":
-        // TODO: Implement Flash Express provider
-        throw new Error("Flash Express integration coming soon");
+        return new FlashProvider(this.config.flash || {});
       default:
         throw new Error(`Unsupported provider: ${provider}`);
     }
@@ -52,7 +52,7 @@ export class ThreePLService {
   async getQuotes(request: QuoteRequest): Promise<QuoteResponse[]> {
     const providers: Provider[] = request.provider
       ? [request.provider]
-      : ["LALAMOVE", "JNT"]; // Add more as implemented
+      : ["LALAMOVE", "JNT", "GRAB", "LBC", "NINJAVAN", "FLASH"];
 
     const quotes = await Promise.allSettled(
       providers.map(async provider => {
