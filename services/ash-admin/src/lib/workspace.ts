@@ -7,6 +7,7 @@
 
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
 
 /**
  * No default workspace in production
@@ -17,8 +18,9 @@ import { NextRequest } from "next/server";
  * Get workspace ID from various sources
  * Priority order:
  * 1. Request headers (X-Workspace-ID)
- * 2. Cookies (workspace_id)
- * 3. Query parameters (?workspaceId=...)
+ * 2. JWT token (Authorization header)
+ * 3. Cookies (workspace_id)
+ * 4. Query parameters (?workspaceId=...)
  *
  * IMPORTANT: Returns null if no workspace found - requires authentication
  */
@@ -30,6 +32,16 @@ export async function getWorkspaceId(
     const headerWorkspaceId = request.headers.get("X-Workspace-ID");
     if (headerWorkspaceId) {
       return headerWorkspaceId;
+    }
+
+    // Try to extract from JWT token in Authorization header
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+      const workspaceId = await getWorkspaceFromToken(token);
+      if (workspaceId) {
+        return workspaceId;
+      }
     }
 
     // Try to get from query parameters
@@ -63,14 +75,32 @@ export async function getWorkspaceId(
 }
 
 /**
- * Get workspace ID from request (synchronous version for API routes)
+ * Get workspace ID from request (async version for API routes with JWT support)
+ * Priority order:
+ * 1. Request headers (X-Workspace-ID)
+ * 2. JWT token (Authorization header)
+ * 3. Cookies (workspace_id)
+ * 4. Query parameters (?workspaceId=...)
+ *
  * Returns null if no workspace found - requires authentication
  */
-export function getWorkspaceIdFromRequest(request: NextRequest): string | null {
+export async function getWorkspaceIdFromRequest(
+  request: NextRequest
+): Promise<string | null> {
   // Try request headers first
   const headerWorkspaceId = request.headers.get("X-Workspace-ID");
   if (headerWorkspaceId) {
     return headerWorkspaceId;
+  }
+
+  // Try to extract from JWT token in Authorization header
+  const authHeader = request.headers.get("Authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    const workspaceId = await getWorkspaceFromToken(token);
+    if (workspaceId) {
+      return workspaceId;
+    }
   }
 
   // Try query parameters
@@ -121,13 +151,55 @@ export function isValidWorkspaceId(workspaceId: string): boolean {
 }
 
 /**
- * Get workspace context from JWT token (for future implementation)
- * This is a placeholder for when proper JWT authentication is implemented
+ * Get workspace context from JWT token
+ * Extracts workspace ID from authenticated JWT token payload
  */
-export function getWorkspaceFromToken(_token: string): string | null {
-  // TODO: Implement JWT token parsing to extract workspace ID
-  // For now, return null to fall back to other methods
-  return null;
+export async function getWorkspaceFromToken(
+  token: string
+): Promise<string | null> {
+  try {
+    // Get JWT secret from environment
+    const JWT_SECRET =
+      process.env.JWT_SECRET || process.env.NEXT_PUBLIC_JWT_SECRET;
+
+    if (!JWT_SECRET) {
+      console.warn(
+        "JWT_SECRET not configured, cannot extract workspace from token"
+      );
+      return null;
+    }
+
+    // Verify and decode the JWT token
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret, {
+      issuer: "ashley-ai",
+      audience: "ashley-ai-users",
+    });
+
+    // Extract workspace ID from token payload
+    const workspaceId = payload.workspaceId as string | undefined;
+
+    if (!workspaceId) {
+      console.warn("Token does not contain workspaceId field");
+      return null;
+    }
+
+    // Validate workspace ID format
+    if (!isValidWorkspaceId(workspaceId)) {
+      console.warn("Invalid workspace ID format in token:", workspaceId);
+      return null;
+    }
+
+    return workspaceId;
+  } catch (error) {
+    // Token is invalid, expired, or malformed
+    if (error instanceof Error) {
+      console.warn("Failed to extract workspace from token:", error.message);
+    } else {
+      console.warn("Failed to extract workspace from token:", error);
+    }
+    return null;
+  }
 }
 
 /**
