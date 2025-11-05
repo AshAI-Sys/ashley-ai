@@ -30,8 +30,8 @@ class Logger {
     context?: LogContext
   ): string {
     const timestamp = new Date().toISOString();
-    const contextStr = context ? \` | \${JSON.stringify(context)}\` : "";
-    return \`[\${timestamp}] [\${level.toUpperCase()}] \${message}\${contextStr}\`;
+    const contextStr = context ? ` | ${JSON.stringify(context)}` : "";
+    return `[${timestamp}] [${level.toUpperCase()}] ${message}${contextStr}`;
   }
 
   /**
@@ -110,7 +110,7 @@ class Logger {
    * API request logging
    */
   apiRequest(method: string, endpoint: string, context?: LogContext): void {
-    this.debug(\`API \${method} \${endpoint}\`, context);
+    this.debug(`API ${method} ${endpoint}`, context);
   }
 
   /**
@@ -126,13 +126,13 @@ class Logger {
     const logContext = {
       ...context,
       statusCode,
-      duration: \`\${duration}ms\`,
+      duration: `${duration}ms`,
     };
 
     if (statusCode >= 400) {
-      this.warn(\`API \${method} \${endpoint} failed\`, logContext);
+      this.warn(`API ${method} ${endpoint} failed`, logContext);
     } else {
-      this.debug(\`API \${method} \${endpoint} success\`, logContext);
+      this.debug(`API ${method} ${endpoint} success`, logContext);
     }
   }
 
@@ -140,9 +140,9 @@ class Logger {
    * Database query logging
    */
   dbQuery(query: string, duration?: number, context?: LogContext): void {
-    this.debug(\`DB Query: \${query}\`, {
+    this.debug(`DB Query: ${query}`, {
       ...context,
-      duration: duration ? \`\${duration}ms\` : undefined,
+      duration: duration ? `${duration}ms` : undefined,
     });
   }
 
@@ -150,7 +150,7 @@ class Logger {
    * Authentication event logging
    */
   auth(event: string, userId?: string, context?: LogContext): void {
-    this.info(\`Auth: \${event}\`, {
+    this.info(`Auth: ${event}`, {
       ...context,
       userId,
     });
@@ -162,13 +162,13 @@ class Logger {
   performance(operation: string, duration: number, context?: LogContext): void {
     const logContext = {
       ...context,
-      duration: \`\${duration}ms\`,
+      duration: `${duration}ms`,
     };
 
     if (duration > 1000) {
-      this.warn(\`Slow operation: \${operation}\`, logContext);
+      this.warn(`Slow operation: ${operation}`, logContext);
     } else {
-      this.debug(\`Performance: \${operation}\`, logContext);
+      this.debug(`Performance: ${operation}`, logContext);
     }
   }
 }
@@ -210,7 +210,7 @@ export async function withPerformanceLogging<T>(
     return result;
   } catch (error) {
     logger.error(
-      \`Operation failed: \${operationName}\`,
+      `Operation failed: ${operationName}`,
       error as Error,
       context
     );
