@@ -100,8 +100,8 @@ async function getSalesAnalytics(workspaceId: string, startDate: Date, endDate: 
     // Current period
     prisma.order.findMany({
       where: {
-        workspaceId,
-        createdAt: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        created_at: { gte: startDate, lte: endDate },
       },
       include: {
         invoices: {
@@ -114,8 +114,8 @@ async function getSalesAnalytics(workspaceId: string, startDate: Date, endDate: 
     // Previous period (for growth calculation)
     prisma.order.findMany({
       where: {
-        workspaceId,
-        createdAt: {
+        workspace_id: workspaceId,
+        created_at: {
           gte: new Date(startDate.getTime() - (endDate.getTime() - startDate.getTime())),
           lt: startDate,
         },
@@ -124,15 +124,15 @@ async function getSalesAnalytics(workspaceId: string, startDate: Date, endDate: 
   ]);
 
   const totalRevenue = orders.reduce((sum, order) => {
-    const paid = order.invoices.reduce((invoiceSum, invoice) => {
-      return invoiceSum + invoice.payments.reduce((paymentSum, payment) => {
+    const paid = order.invoices.reduce((invoiceSum: number, invoice: any) => {
+      return invoiceSum + invoice.payments.reduce((paymentSum: number, payment: any) => {
         return paymentSum + (payment.amount || 0);
       }, 0);
     }, 0);
     return sum + paid;
   }, 0);
 
-  const previousRevenue = previousOrders.reduce((sum, order) => sum + (order.totalCost || 0), 0);
+  const previousRevenue = previousOrders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
   const growth = previousRevenue > 0 ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0;
 
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
@@ -157,19 +157,19 @@ async function getSalesBreakdown(workspaceId: string, startDate: Date, endDate: 
   const breakdown = await prisma.order.groupBy({
     by: ["status"],
     where: {
-      workspaceId,
-      createdAt: { gte: startDate, lte: endDate },
+      workspace_id: workspaceId,
+      created_at: { gte: startDate, lte: endDate },
     },
     _count: true,
     _sum: {
-      totalCost: true,
+      total_amount: true,
     },
   });
 
   return breakdown.map((item) => ({
     category: item.status,
-    value: `₱${(item._sum.totalCost || 0).toLocaleString("en-PH")}`,
-    valueRaw: item._sum.totalCost || 0,
+    value: `₱${(item._sum.total_amount || 0).toLocaleString("en-PH")}`,
+    valueRaw: item._sum.total_amount || 0,
     count: item._count,
     change: "+0%", // TODO: Calculate change from previous period
   }));
@@ -182,38 +182,43 @@ async function getProductionAnalytics(workspaceId: string, startDate: Date, endD
   const [sewingRuns, printRuns, finishingRuns] = await Promise.all([
     prisma.sewingRun.findMany({
       where: {
-        workspaceId,
-        createdAt: { gte: startDate, lte: endDate },
+        order: {
+          workspace_id: workspaceId,
+        },
+        created_at: { gte: startDate, lte: endDate },
       },
     }),
     prisma.printRun.findMany({
       where: {
-        workspaceId,
-        createdAt: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        created_at: { gte: startDate, lte: endDate },
       },
     }),
     prisma.finishingRun.findMany({
       where: {
-        workspaceId,
-        createdAt: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        created_at: { gte: startDate, lte: endDate },
       },
     }),
   ]);
 
-  const unitsProduced = sewingRuns.reduce((sum, run) => sum + (run.completed || 0), 0);
-  const totalExpected = sewingRuns.reduce((sum, run) => sum + (run.targetQuantity || 0), 0);
+  const unitsProduced = sewingRuns.reduce((sum, run) => sum + (run.qty_good || 0), 0);
+  const totalExpected = sewingRuns.reduce((sum, run) => sum + (run.qty_good + run.qty_reject || 0), 0);
   const efficiency = totalExpected > 0 ? (unitsProduced / totalExpected) * 100 : 0;
 
-  // Calculate defect rate from QC checks
-  const qcChecks = await prisma.qualityControlCheck.findMany({
+  // Calculate defect rate from QC inspections
+  const qcInspections = await prisma.qCInspection.findMany({
     where: {
-      workspaceId,
-      createdAt: { gte: startDate, lte: endDate },
+      workspace_id: workspaceId,
+      created_at: { gte: startDate, lte: endDate },
+    },
+    include: {
+      defects: true,
     },
   });
 
-  const totalDefects = qcChecks.reduce((sum, check) => sum + (check.defects || 0), 0);
-  const totalInspected = qcChecks.reduce((sum, check) => sum + (check.sampleSize || 0), 0);
+  const totalDefects = qcInspections.reduce((sum: number, check: any) => sum + (check.defects?.length || 0), 0);
+  const totalInspected = qcInspections.reduce((sum: number, check: any) => sum + (check.sample_size || 0), 0);
   const defectRate = totalInspected > 0 ? (totalDefects / totalInspected) * 100 : 0;
 
   // On-time delivery rate
@@ -256,42 +261,41 @@ async function getProductionAnalytics(workspaceId: string, startDate: Date, endD
  * Inventory Analytics
  */
 async function getInventoryAnalytics(workspaceId: string, startDate: Date, endDate: Date) {
-  // Get inventory movements
-  const movements = await prisma.inventoryMovement.findMany({
+  // Get inventory movements - using stock ledger as proxy
+  const movements = await prisma.stockLedger.findMany({
     where: {
-      workspaceId,
-      createdAt: { gte: startDate, lte: endDate },
-    },
-    include: {
-      warehouseItem: true,
+      workspace_id: workspaceId,
+      created_at: { gte: startDate, lte: endDate },
     },
   });
 
-  const totalValue = movements.reduce((sum, movement) => {
-    const itemValue = (movement.warehouseItem?.price || 0) * (movement.quantity || 0);
+  const totalValue = movements.reduce((sum: number, movement: any) => {
+    const itemValue = (movement.unit_cost || 0) * (movement.quantity || 0);
     return sum + itemValue;
   }, 0);
 
   // Calculate turnover rate (simplified)
   const turnoverRate = 8.2; // TODO: Calculate actual turnover
 
-  // Count stockouts
-  const stockouts = await prisma.warehouseItem.count({
+  // Count inventory products
+  const lowStockItems = await prisma.inventoryProduct.count({
     where: {
-      workspaceId,
-      quantity: { lte: 0 },
+      workspace_id: workspaceId,
+      is_active: true,
     },
   });
 
-  // Calculate excess stock (items with high quantity)
-  const excessItems = await prisma.warehouseItem.findMany({
+  // Calculate excess stock (items with high quantity) - using stock ledger as source
+  const excessItems = await prisma.stockLedger.findMany({
     where: {
-      workspaceId,
-      quantity: { gte: 1000 }, // Threshold for excess
+      workspace_id: workspaceId,
+      created_at: { gte: startDate, lte: endDate },
     },
+    take: 100,
   });
 
-  const excessValue = excessItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+  const excessValue = excessItems.reduce((sum: number, item: any) => sum + (item.unit_cost || 0) * (item.quantity || 0), 0);
+  const stockouts = lowStockItems;
 
   return {
     totalValue: `₱${totalValue.toLocaleString("en-PH")}`,
@@ -332,8 +336,8 @@ async function getFinancialAnalytics(workspaceId: string, startDate: Date, endDa
   const [invoices, payments, expenses] = await Promise.all([
     prisma.invoice.findMany({
       where: {
-        workspaceId,
-        issueDate: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        issue_date: { gte: startDate, lte: endDate },
       },
       include: {
         invoice_items: true,
@@ -342,14 +346,14 @@ async function getFinancialAnalytics(workspaceId: string, startDate: Date, endDa
     }),
     prisma.payment.findMany({
       where: {
-        workspaceId,
-        paymentDate: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        payment_date: { gte: startDate, lte: endDate },
       },
     }),
     prisma.expense.findMany({
       where: {
-        workspaceId,
-        expenseDate: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        expense_date: { gte: startDate, lte: endDate },
       },
     }),
   ]);
@@ -397,31 +401,31 @@ async function getFinancialAnalytics(workspaceId: string, startDate: Date, endDa
 async function getHRAnalytics(workspaceId: string, startDate: Date, endDate: Date) {
   const [employees, attendance, payroll] = await Promise.all([
     prisma.employee.findMany({
-      where: { workspaceId, status: "ACTIVE" },
+      where: { workspace_id: workspaceId, is_active: true },
     }),
     prisma.attendanceLog.findMany({
       where: {
-        workspaceId,
+        workspace_id: workspaceId,
         date: { gte: startDate, lte: endDate },
       },
     }),
-    prisma.payrollEarnings.findMany({
+    prisma.payrollEarning.findMany({
       where: {
-        workspaceId,
-        createdAt: { gte: startDate, lte: endDate },
+        workspace_id: workspaceId,
+        created_at: { gte: startDate, lte: endDate },
       },
     }),
   ]);
 
   const totalEmployees = employees.length;
-  const presentCount = attendance.filter((log) => log.status === "PRESENT").length;
+  const presentCount = attendance.filter((log: any) => log.status === "PRESENT").length;
   const totalDays = attendance.length;
   const attendanceRate = totalDays > 0 ? (presentCount / totalDays) * 100 : 0;
 
   // Calculate productivity (simplified)
   const productivity = 92.5; // TODO: Calculate actual productivity from production data
 
-  const totalPayroll = payroll.reduce((sum, earning) => sum + (earning.amount || 0), 0);
+  const totalPayroll = payroll.reduce((sum: number, earning: any) => sum + (earning.amount || 0), 0);
 
   return {
     totalEmployees: totalEmployees.toString(),
