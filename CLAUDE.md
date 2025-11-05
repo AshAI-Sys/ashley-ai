@@ -1,8 +1,8 @@
 # Ashley AI - Development Guide
 
-**Last Updated**: 2025-11-03
+**Last Updated**: 2025-11-05
 **Current Status**: 15 Manufacturing Stages + Mobile App - PRODUCTION READY WITH ZERO ERRORS
-**Latest Update**: TypeScript Error Resolution - All 34 TypeScript errors fixed, zero compilation errors achieved
+**Latest Update**: Codebase Cleanup & Refactoring - Removed 8 duplicate files, consolidated navigation menu, fixed icon duplicates
 
 ## Quick Start Commands
 
@@ -37,7 +37,7 @@ fix-changes.bat
 - **Finance Operations**: http://localhost:3001/finance
 - **HR & Payroll**: http://localhost:3001/hr-payroll
 - **Automation & Reminders**: http://localhost:3001/automation
-- **Inventory Management**: http://localhost:3001/inventory/*
+- **Inventory Management**: http://localhost:3001/inventory/\*
 
 ### 🔐 **PRODUCTION AUTHENTICATION** (NEW - Oct 19, 2025)
 
@@ -249,6 +249,33 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - **Enhanced Order Intake**: ColorVariant, GarmentAddon, OrderFile, OrderActivityLog, PrintLocation
 
 ## Recent Updates Log
+
+### 2025-11-05 - CODEBASE CLEANUP & REFACTORING - DUPLICATES REMOVED 🧹✅
+
+- ✅ **8 Duplicate Files Removed**: Systematic cleanup of redundant code and pages
+- ✅ **Sidebar Menu Consolidated**: Reduced from 32 to 29 navigation items, removed duplicate entries
+- ✅ **5 Icon Duplicates Fixed**: Added unique icons (Shield, ScanLine, Receipt, Warehouse, Tag)
+- ✅ **32 Import Path Fixes**: Batch-updated @/lib/database to @/lib/db using sed
+- ✅ **3PL Mock Service Removed**: Deleted blocking mock, enabled real Lalamove/JNT integrations
+- ✅ **Navigation Improvements**:
+  - User Management: Users → Shield icon
+  - Store Scanner: PackageSearch → ScanLine icon
+  - Cashier POS: DollarSign → Receipt icon
+  - Warehouse: Package → Warehouse icon
+  - Print Labels: Printer → Tag icon
+- 📦 **Files Deleted**:
+  - services/ash-admin/src/app/employee/login/page.tsx (duplicate login)
+  - services/ash-admin/src/app/employee-login/page.tsx (duplicate login)
+  - services/ash-admin/src/lib/database.ts (re-export only)
+  - services/ash-admin/src/lib/emailService.ts (duplicate email service)
+  - services/ash-admin/src/lib/auth/session-manager.ts (duplicate session manager)
+  - services/ash-admin/src/lib/audit/logger.ts (duplicate audit logger)
+  - services/ash-admin/src/lib/3pl.ts (blocking mock)
+  - services/ash-admin/src/app/analytics/page.tsx (duplicate analytics)
+- 📦 **Code Reduction**: ~2,500 lines of duplicate code removed
+- 🚀 **Deployment**: Successfully deployed to Vercel production (commit: a2b902be)
+- 📖 **Documentation**: Updated CLAUDE.md with cleanup details
+- 🎯 **Result**: Cleaner codebase with improved maintainability and unique visual icons for all navigation items
 
 ### 2025-11-03 - TYPESCRIPT ERROR RESOLUTION - ZERO ERRORS ACHIEVED ✅🎉
 
