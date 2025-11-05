@@ -1,7 +1,7 @@
 // Multi-Tenant Management System
 // Handles workspace creation, isolation, and tenant-specific configurations
 
-import { prisma } from "@/lib/database";
+import { prisma } from "@/lib/db";
 import * as bcrypt from "bcryptjs";
 
 export interface TenantConfig {

@@ -3,7 +3,7 @@
  * Add caching, logging, and optimization to Prisma queries
  */
 
-import { Prisma } from "@/lib/database";
+import { Prisma } from "@/lib/db";
 
 /**
  * Query performance logging extension

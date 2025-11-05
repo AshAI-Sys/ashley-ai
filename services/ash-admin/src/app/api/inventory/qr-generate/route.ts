@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
-import { db } from '@/lib/database';
+import { db } from '@/lib/db';
 import QRCode from 'qrcode';
 
 /**

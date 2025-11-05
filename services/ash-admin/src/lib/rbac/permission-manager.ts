@@ -533,7 +533,7 @@ export class PermissionManager {
 
   // Get user permissions
   async getUserPermissions(user_id: string): Promise<UserPermissions> {
-    const { prisma } = await import("@/lib/database");
+    const { prisma } = await import("@/lib/db");
 
     const user = await prisma.user.findUnique({
       where: { id: user_id },
@@ -619,7 +619,7 @@ export class PermissionManager {
     user_id: string,
     permissionNames: string[]
   ): Promise<boolean> {
-    const { prisma } = await import("@/lib/database");
+    const { prisma } = await import("@/lib/db");
 
     const allPerms = this.getAllPermissions();
     const permissions = allPerms.filter(p => permissionNames.includes(p.name));

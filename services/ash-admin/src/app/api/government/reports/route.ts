@@ -1,6 +1,6 @@
 ﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
+import { db } from "@/lib/db";
 // Unused import removed: birService
 import { sssService } from "@/lib/government/sss";
 import { philHealthService } from "@/lib/government/philhealth";

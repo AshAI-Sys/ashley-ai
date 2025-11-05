@@ -43,7 +43,17 @@
       "Bash(node delete-users.js:*)",
       "Bash(node:*)",
       "Bash(npx prettier:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(tasklist:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd //c \"taskkill /PID 11512 /F\")",
+      "Bash(do echo \"Waiting... $i/5\")",
+      "Bash(del \"services\\ash-admin\\src\\app\\employee\\login\\page.tsx\")",
+      "Bash(del \"services\\ash-admin\\src\\app\\employee-login\\page.tsx\")",
+      "Bash(del \"services\\ash-admin\\src\\lib\\database.ts\")",
+      "Bash(del \"services\\ash-admin\\src\\lib\\auth\\session-manager.ts\")",
+      "Bash(del \"services\\ash-admin\\src\\lib\\audit\\logger.ts\")"
     ],
     "deny": [],
     "ask": []

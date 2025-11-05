@@ -204,21 +204,9 @@ export default function Sidebar() {
       department: "Management",
     },
     {
-      name: "Advanced Analytics",
+      name: "Analytics & Reports",
       href: "/admin/analytics",
       icon: "BarChart3",
-      department: "Management",
-    },
-    {
-      name: "Reports & Analytics",
-      href: "/reports",
-      icon: "BarChart3",
-      department: "Management",
-    },
-    {
-      name: "AI Features",
-      href: "/ai-features",
-      icon: "Brain",
       department: "Management",
     },
     {
@@ -243,12 +231,6 @@ export default function Sidebar() {
       name: "Warehouse",
       href: "/inventory/warehouse",
       icon: "Package",
-      department: "Inventory",
-    },
-    {
-      name: "Inventory Admin",
-      href: "/inventory/admin",
-      icon: "BarChart3",
       department: "Inventory",
     },
     {

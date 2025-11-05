@@ -1,4 +1,4 @@
-import { db } from "@/lib/database";
+import { db } from "@/lib/db";
 import { NextRequest } from "next/server";
 
 const prisma = db;

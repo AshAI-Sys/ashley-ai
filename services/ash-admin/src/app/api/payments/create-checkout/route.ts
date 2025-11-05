@@ -9,7 +9,7 @@ import {
   AppError,
   ErrorCode,
 } from "@/lib/error-handling";
-import { db } from "@/lib/database";
+import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;

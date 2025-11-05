@@ -1,6 +1,6 @@
 ﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/database";
+import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/auth-middleware';
-import { db } from '@/lib/database';
+import { db } from '@/lib/db';
 
 /**
  * Get mobile app sessions

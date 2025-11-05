@@ -78,6 +78,60 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 }
 
 /**
+ * Send approval request email to client
+ */
+export async function sendApprovalRequest(
+  to: string,
+  data: {
+    client_name: string;
+    design_name: string;
+    order_number: string;
+    approval_link: string;
+    expiry_date: string;
+  }
+): Promise<EmailResult> {
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px 12px 0 0; text-align: center; }
+    .content { background: #fff; padding: 30px; border: 1px solid #e5e5e5; }
+    .button { display: inline-block; padding: 16px 32px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+    .expiry { background: #fff3cd; padding: 15px; border-radius: 6px; margin: 20px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎨 Design Approval Request</h1>
+      <p>Your custom design is ready for review</p>
+    </div>
+    <div class="content">
+      <p>Hi <strong>${data.client_name}</strong>,</p>
+      <p>Your design "<strong>${data.design_name}</strong>" for order <strong>${data.order_number}</strong> is ready for approval.</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${data.approval_link}" class="button">🔍 Review & Approve Design</a>
+      </div>
+      <div class="expiry">
+        <strong>⏰ Important:</strong> This link expires on <strong>${data.expiry_date}</strong>
+      </div>
+      <p>If you have any questions, please contact us at support@ashleyai.com</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return sendEmail({
+    to,
+    subject: `Design Approval Required - ${data.design_name}`,
+    html,
+  });
+}
+
+/**
  * Send order confirmation email
  */
 export async function sendOrderConfirmation(
