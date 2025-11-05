@@ -265,12 +265,6 @@ function MaterialsTab() {
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm">
                     <button
-                      onClick={() => toast(`Stock adjustment feature for ${mat.name} coming soon`)}
-                      className="mr-3 text-blue-600 hover:text-blue-800"
-                    >
-                      Adjust
-                    </button>
-                    <button
                       onClick={() => router.push(`/inventory/create-po?material=${encodeURIComponent(mat.name)}`)}
                       className="text-green-600 hover:text-green-800"
                     >
@@ -354,20 +348,14 @@ function SuppliersTab() {
 
             <div className="mt-4 flex gap-2 border-t border-gray-200 pt-4">
               <button
-                onClick={() => toast(`Supplier details page for ${supplier.name} coming soon`)}
-                className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
-              >
-                View Details
-              </button>
-              <button
                 onClick={() =>
                   router.push(
                     `/inventory/create-po?supplier=${encodeURIComponent(supplier.name)}`
                   )
                 }
-                className="flex-1 rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+                className="w-full rounded bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
               >
-                Create PO
+                Create Purchase Order
               </button>
             </div>
           </div>
@@ -608,14 +596,6 @@ function AlertsTab() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button
-                  onClick={() =>
-                    toast(`Material details page for ${stockAlert.material} coming soon`)
-                  }
-                  className="rounded border border-gray-300 bg-white px-4 py-2 text-sm hover:bg-gray-50"
-                >
-                  View Material
-                </button>
                 <button
                   onClick={() => {
                     toast.success(`Creating auto-reorder PO for ${stockAlert.material}`);

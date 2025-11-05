@@ -361,14 +361,9 @@ function ProductsTab() {
                 </span>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => toast("Edit feature coming soon")}
-                    className="rounded p-1 text-blue-600 hover:bg-blue-50"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
                     onClick={() => handleDeleteProduct(product.id)}
                     className="rounded p-1 text-red-600 hover:bg-red-50"
+                    title="Delete product"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -386,11 +381,20 @@ function VariantsTab() {
   return (
     <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
       <Layers className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-      <p className="text-lg font-semibold text-gray-900">Variants Management</p>
-      <p className="text-gray-600">Create and manage product variants (size, color, etc.)</p>
-      <button className="mt-4 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">
-        Coming Soon
-      </button>
+      <p className="text-lg font-semibold text-gray-900 mb-3">Variants Management</p>
+      <p className="text-gray-600 mb-6">
+        Product variants allow you to manage different sizes, colors, and styles as separate SKUs.
+      </p>
+      <div className="mx-auto max-w-md bg-blue-50 border border-blue-200 rounded-lg p-6 text-left">
+        <h4 className="font-semibold text-blue-900 mb-2">Planned Features:</h4>
+        <ul className="list-disc list-inside space-y-1 text-blue-800 text-sm">
+          <li>Size variants (XS, S, M, L, XL, XXL)</li>
+          <li>Color variants with swatches</li>
+          <li>Style variants (V-neck, Round neck, etc.)</li>
+          <li>Variant-specific pricing and SKUs</li>
+          <li>Inventory tracking per variant</li>
+        </ul>
+      </div>
     </div>
   );
 }
@@ -598,14 +602,9 @@ function LocationsTab() {
 
               <div className="flex justify-end gap-2 border-t border-gray-200 pt-4">
                 <button
-                  onClick={() => toast("Edit feature coming soon")}
-                  className="rounded p-2 text-blue-600 hover:bg-blue-50"
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button
                   onClick={() => handleDeleteLocation(location.id)}
                   className="rounded p-2 text-red-600 hover:bg-red-50"
+                  title="Delete location"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -679,15 +678,6 @@ function ReportsTab() {
               <BarChart3 className="h-4 w-4" />
               {loading ? "Generating..." : "Generate Report"}
             </button>
-            {reportData && (
-              <button
-                onClick={() => toast("Export feature coming soon")}
-                className="flex items-center gap-2 rounded-lg border border-gray-300 px-6 py-2 text-gray-600 hover:bg-gray-50"
-              >
-                <Download className="h-4 w-4" />
-                Export
-              </button>
-            )}
           </div>
         </div>
       </div>

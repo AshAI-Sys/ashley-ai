@@ -281,14 +281,9 @@ export default function AutoReorderSettingsPage() {
                         <td className="whitespace-nowrap px-6 py-4">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => toast("Edit feature coming soon")}
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </button>
-                            <button
                               onClick={() => deleteSetting(setting.id)}
                               className="text-red-600 hover:text-red-800"
+                              title="Delete rule"
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
@@ -328,15 +323,29 @@ export default function AutoReorderSettingsPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="max-w-2xl rounded-lg bg-white p-6 shadow-xl">
               <h3 className="mb-4 text-xl font-semibold text-gray-900">
-                Create New Auto-Reorder Rule
+                Create Auto-Reorder Rules
               </h3>
-              <p className="text-gray-600">
-                Feature coming soon. For now, rules can be created via the inventory
-                management page when viewing material details.
-              </p>
+              <div className="space-y-4">
+                <p className="text-gray-600">
+                  Auto-reorder rules help maintain optimal inventory levels by automatically
+                  triggering reorder notifications when stock falls below threshold.
+                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">How to Create Rules:</h4>
+                  <ol className="list-decimal list-inside space-y-1 text-blue-800 text-sm">
+                    <li>Navigate to Inventory → Materials Management</li>
+                    <li>Select a material to view details</li>
+                    <li>Set the reorder point and quantity in material settings</li>
+                    <li>Enable auto-reorder and save changes</li>
+                  </ol>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Rules created through material settings will appear in this list automatically.
+                </p>
+              </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="mt-4 rounded-lg bg-gray-600 px-4 py-2 text-white hover:bg-gray-700"
+                className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
               >
                 Close
               </button>

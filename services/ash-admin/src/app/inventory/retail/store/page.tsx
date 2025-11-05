@@ -90,7 +90,7 @@ export default function StoreInterfacePage() {
 
   const startCameraScan = () => {
     setScanning(true);
-    toast.success("Camera scanning feature coming soon! Use manual input for now.");
+    toast.info("Please use manual input to add products to your cart.");
     // TODO: Integrate @zxing/browser for QR code scanning
     setTimeout(() => setScanning(false), 2000);
   };
