@@ -36,6 +36,11 @@ import {
   X,
   QrCode,
   Smartphone,
+  Shield,
+  ScanLine,
+  Receipt,
+  Warehouse,
+  Tag,
 } from "lucide-react";
 
 const iconMap = {
@@ -67,6 +72,11 @@ const iconMap = {
   X,
   QrCode,
   Smartphone,
+  Shield,
+  ScanLine,
+  Receipt,
+  Warehouse,
+  Tag,
 };
 
 export default function Sidebar() {
@@ -182,7 +192,7 @@ export default function Sidebar() {
     {
       name: "User Management",
       href: "/admin/users",
-      icon: "Users",
+      icon: "Shield",
       department: "Administration",
     },
     {
@@ -218,19 +228,19 @@ export default function Sidebar() {
     {
       name: "Store Scanner",
       href: "/inventory/store",
-      icon: "PackageSearch",
+      icon: "ScanLine",
       department: "Inventory",
     },
     {
       name: "Cashier POS",
       href: "/inventory/cashier",
-      icon: "DollarSign",
+      icon: "Receipt",
       department: "Inventory",
     },
     {
       name: "Warehouse",
       href: "/inventory/warehouse",
-      icon: "Package",
+      icon: "Warehouse",
       department: "Inventory",
     },
     {
@@ -242,7 +252,7 @@ export default function Sidebar() {
     {
       name: "Print Labels",
       href: "/inventory/print-labels",
-      icon: "Printer",
+      icon: "Tag",
       department: "Inventory",
     },
     {
