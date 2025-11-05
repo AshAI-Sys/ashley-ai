@@ -741,14 +741,17 @@ export default function AnalyticsPage() {
               Create {activeTab === "reports" ? "Report" : "Dashboard"}
             </h3>
             <p className="mb-4 text-gray-600">
-              Custom report builder is in development. For now, you can generate reports through:
+              Reports and analytics are organized by department for easy access. You can generate detailed reports from:
             </p>
             <ul className="mb-6 space-y-2 text-sm text-gray-700">
-              <li>• Finance dashboard for financial reports</li>
-              <li>• HR & Payroll for employee reports</li>
-              <li>• Quality Control analytics for QC insights</li>
-              <li>• Production dashboard for manufacturing metrics</li>
+              <li>• <strong>Finance</strong> - Financial reports and accounting analytics</li>
+              <li>• <strong>HR & Payroll</strong> - Employee performance and payroll reports</li>
+              <li>• <strong>Quality Control</strong> - QC insights and defect analysis</li>
+              <li>• <strong>Production</strong> - Manufacturing metrics and efficiency reports</li>
             </ul>
+            <p className="mb-6 text-sm text-gray-500">
+              Each module provides specialized reporting tailored to your department's needs.
+            </p>
             <button
               onClick={() => setShowCreateModal(false)}
               className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
