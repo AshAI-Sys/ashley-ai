@@ -177,6 +177,21 @@ class Logger {
 export const logger = new Logger();
 
 /**
+ * Specialized logger for authentication events
+ * Provides domain-specific logging for auth operations
+ */
+export const authLogger = {
+  debug: (message: string, context?: LogContext) =>
+    logger.debug(`[AUTH] ${message}`, context),
+  info: (message: string, context?: LogContext) =>
+    logger.info(`[AUTH] ${message}`, context),
+  warn: (message: string, context?: LogContext) =>
+    logger.warn(`[AUTH] ${message}`, context),
+  error: (message: string, error?: Error, context?: LogContext) =>
+    logger.error(`[AUTH] ${message}`, error, context),
+};
+
+/**
  * Performance timer utility
  *
  * Usage:

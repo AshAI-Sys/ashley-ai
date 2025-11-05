@@ -54,7 +54,8 @@
       "Bash(del \"services\\ash-admin\\src\\lib\\database.ts\")",
       "Bash(del \"services\\ash-admin\\src\\lib\\auth\\session-manager.ts\")",
       "Bash(del \"services\\ash-admin\\src\\lib\\audit\\logger.ts\")",
-      "Bash(do taskkill /PID $pid /F)"
+      "Bash(do taskkill /PID $pid /F)",
+      "Bash(DEPLOYMENT-QUICK-START.md)"
     ],
     "deny": [],
     "ask": []

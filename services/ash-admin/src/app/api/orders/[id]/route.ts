@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { apiSuccess, apiNotFound, apiServerError } from "@/lib/api-response";
-import { logError } from "@/lib/logger";
+import { logError, ErrorCategory } from "@/lib/error-logger";
 
 const prisma = db;
 
@@ -55,7 +55,11 @@ export const GET = requireAuth(async (
 
     return apiSuccess(order);
   } catch (error) {
-    logError("Failed to fetch order", error, { orderId: context!.params.id });
+    logError(error as Error, {
+      category: ErrorCategory.API,
+      orderId: context!.params.id,
+      operation: "fetch_order"
+    });
     return apiServerError(error);
   }
 });
@@ -100,7 +104,11 @@ export const PUT = requireAuth(async (
 
       return apiSuccess(order, "Order updated successfully");
   } catch (error) {
-    logError("Failed to update order", error, { orderId: context!.params.id });
+    logError(error as Error, {
+      category: ErrorCategory.API,
+      orderId: context!.params.id,
+      operation: "update_order"
+    });
     return apiServerError(error);
   }
 });
@@ -120,7 +128,11 @@ export const DELETE = requireAuth(async (
 
     return apiSuccess({ id: orderId }, "Order deleted successfully");
   } catch (error) {
-    logError("Failed to delete order", error, { orderId: context!.params.id });
+    logError(error as Error, {
+      category: ErrorCategory.API,
+      orderId: context!.params.id,
+      operation: "delete_order"
+    });
     return apiServerError(error);
   }
 });
