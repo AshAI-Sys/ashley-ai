@@ -67,7 +67,13 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
+    // Remove console.log/debug/info in production, keep error/warn for monitoring
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? {
+            exclude: ["error", "warn"],
+          }
+        : false,
   },
   poweredByHeader: false,
   generateEtags: false,

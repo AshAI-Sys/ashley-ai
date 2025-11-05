@@ -1,178 +1,188 @@
 /**
- * Production-Ready Logging Utility
+ * Production Logger Utility
  *
- * Replaces console.log with structured logging that:
- * - Respects LOG_LEVEL environment variable
- * - Adds timestamps and context
- * - Can be easily disabled in production
- * - Supports different log levels (debug, info, warn, error)
- * - Can be integrated with external logging services
+ * Provides structured logging with environment-aware behavior:
+ * - Development: Logs everything to console
+ * - Production: Only logs errors/warnings, can integrate with external services
  */
 
-export enum LogLevel {
-  DEBUG = 0,
-  INFO = 1,
-  WARN = 2,
-  ERROR = 3,
-  SILENT = 4,
-}
+type LogLevel = "debug" | "info" | "warn" | "error";
 
 interface LogContext {
   [key: string]: any;
 }
 
 class Logger {
-  private level: LogLevel;
-  private prefix: string;
+  private isDevelopment: boolean;
+  private isProduction: boolean;
 
-  constructor(prefix: string = "APP") {
-    this.prefix = prefix;
-    this.level = this.getLogLevelFromEnv();
+  constructor() {
+    this.isDevelopment = process.env.NODE_ENV === "development";
+    this.isProduction = process.env.NODE_ENV === "production";
   }
 
-  private getLogLevelFromEnv(): LogLevel {
-    const envLevel = process.env.LOG_LEVEL?.toUpperCase() || "INFO";
-
-    switch (envLevel) {
-      case "DEBUG":
-        return LogLevel.DEBUG;
-      case "INFO":
-        return LogLevel.INFO;
-      case "WARN":
-        return LogLevel.WARN;
-      case "ERROR":
-        return LogLevel.ERROR;
-      case "SILENT":
-        return LogLevel.SILENT;
-      default:
-        return LogLevel.INFO;
-    }
-  }
-
-  private shouldLog(level: LogLevel): boolean {
-    return level >= this.level;
-  }
-
+  /**
+   * Format log message with context
+   */
   private formatMessage(
-    level: string,
+    level: LogLevel,
     message: string,
     context?: LogContext
   ): string {
     const timestamp = new Date().toISOString();
-    const contextStr = context ? ` ${JSON.stringify(context)}` : "";
-    return `[${timestamp}] [${this.prefix}] ${level}: ${message}${contextStr}`;
+    const contextStr = context ? \` | \${JSON.stringify(context)}\` : "";
+    return \`[\${timestamp}] [\${level.toUpperCase()}] \${message}\${contextStr}\`;
   }
 
   /**
-   * Debug level logging - for development/debugging only
+   * Send log to external service (e.g., Sentry, Datadog, CloudWatch)
+   * This is a placeholder for integration with external logging services
+   */
+  private async sendToExternalService(
+    level: LogLevel,
+    message: string,
+    context?: LogContext
+  ): Promise<void> {
+    // TODO: Integrate with external logging service
+    // Example integrations:
+    // - Sentry for error tracking
+    // - CloudWatch for AWS deployments
+    // - Datadog for monitoring
+    // - LogRocket for session replay
+
+    // For now, we rely on Sentry which is already configured
+    if (level === "error" && typeof window !== "undefined") {
+      // Client-side error logging
+      // Sentry is already configured via @sentry/nextjs
+    }
+  }
+
+  /**
+   * Debug logging - only in development
    */
   debug(message: string, context?: LogContext): void {
-    if (this.shouldLog(LogLevel.DEBUG)) {
-      console.debug(this.formatMessage("DEBUG", message, context));
+    if (this.isDevelopment) {
+      console.log(this.formatMessage("debug", message, context));
     }
   }
 
   /**
-   * Info level logging - general information
+   * Info logging - only in development
    */
   info(message: string, context?: LogContext): void {
-    if (this.shouldLog(LogLevel.INFO)) {
-      console.info(this.formatMessage("INFO", message, context));
+    if (this.isDevelopment) {
+      console.log(this.formatMessage("info", message, context));
     }
   }
 
   /**
-   * Warning level logging - potential issues
+   * Warning logging - always logged
    */
   warn(message: string, context?: LogContext): void {
-    if (this.shouldLog(LogLevel.WARN)) {
-      console.warn(this.formatMessage("WARN", message, context));
+    const formatted = this.formatMessage("warn", message, context);
+    console.warn(formatted);
+
+    if (this.isProduction) {
+      this.sendToExternalService("warn", message, context);
     }
   }
 
   /**
-   * Error level logging - errors and exceptions
+   * Error logging - always logged and sent to monitoring
    */
-  error(message: string, error?: Error | any, context?: LogContext): void {
-    if (this.shouldLog(LogLevel.ERROR)) {
-      const errorContext = error
-        ? { error: error.message, stack: error.stack, ...context }
-        : context;
-      console.error(this.formatMessage("ERROR", message, errorContext));
+  error(message: string, error?: Error, context?: LogContext): void {
+    const errorContext = {
+      ...context,
+      errorName: error?.name,
+      errorMessage: error?.message,
+      errorStack: error?.stack,
+    };
+
+    const formatted = this.formatMessage("error", message, errorContext);
+    console.error(formatted);
+
+    if (this.isProduction) {
+      this.sendToExternalService("error", message, errorContext);
     }
   }
 
   /**
-   * Create a child logger with a specific prefix
+   * API request logging
    */
-  child(prefix: string): Logger {
-    return new Logger(`${this.prefix}:${prefix}`);
+  apiRequest(method: string, endpoint: string, context?: LogContext): void {
+    this.debug(\`API \${method} \${endpoint}\`, context);
+  }
+
+  /**
+   * API response logging
+   */
+  apiResponse(
+    method: string,
+    endpoint: string,
+    statusCode: number,
+    duration: number,
+    context?: LogContext
+  ): void {
+    const logContext = {
+      ...context,
+      statusCode,
+      duration: \`\${duration}ms\`,
+    };
+
+    if (statusCode >= 400) {
+      this.warn(\`API \${method} \${endpoint} failed\`, logContext);
+    } else {
+      this.debug(\`API \${method} \${endpoint} success\`, logContext);
+    }
+  }
+
+  /**
+   * Database query logging
+   */
+  dbQuery(query: string, duration?: number, context?: LogContext): void {
+    this.debug(\`DB Query: \${query}\`, {
+      ...context,
+      duration: duration ? \`\${duration}ms\` : undefined,
+    });
+  }
+
+  /**
+   * Authentication event logging
+   */
+  auth(event: string, userId?: string, context?: LogContext): void {
+    this.info(\`Auth: \${event}\`, {
+      ...context,
+      userId,
+    });
+  }
+
+  /**
+   * Performance logging
+   */
+  performance(operation: string, duration: number, context?: LogContext): void {
+    const logContext = {
+      ...context,
+      duration: \`\${duration}ms\`,
+    };
+
+    if (duration > 1000) {
+      this.warn(\`Slow operation: \${operation}\`, logContext);
+    } else {
+      this.debug(\`Performance: \${operation}\`, logContext);
+    }
   }
 }
 
-// Default logger instance
-export const logger = new Logger("ASHLEY-AI");
-
-// Create domain-specific loggers
-export const apiLogger = logger.child("API");
-export const dbLogger = logger.child("DB");
-export const authLogger = logger.child("AUTH");
-export const workspaceLogger = logger.child("WORKSPACE");
-export const cacheLogger = logger.child("CACHE");
-
-/**
- * Helper function to replace console.error with proper error logging
- */
-export function logError(
-  context: string,
-  error: any,
-  additionalContext?: LogContext
-): void {
-  logger.error(
-    `${context}: ${error?.message || error}`,
-    error,
-    additionalContext
-  );
-}
-
-/**
- * Helper function to log API requests
- */
-export function logApiRequest(
-  method: string,
-  path: string,
-  context?: LogContext
-): void {
-  apiLogger.info(`${method} ${path}`, context);
-}
-
-/**
- * Helper function to log API responses
- */
-export function logApiResponse(
-  method: string,
-  path: string,
-  status: number,
-  duration?: number
-): void {
-  apiLogger.info(`${method} ${path} - ${status}`, {
-    duration: duration ? `${duration}ms` : undefined,
-  });
-}
-
-/**
- * Helper function to log database queries (for debugging)
- */
-export function logDbQuery(
-  operation: string,
-  model: string,
-  context?: LogContext
-): void {
-  dbLogger.debug(`${operation} ${model}`, context);
-}
+// Export singleton instance
+export const logger = new Logger();
 
 /**
  * Performance timer utility
+ *
+ * Usage:
+ * const timer = startTimer();
+ * // ... do work
+ * logger.performance('operation-name', timer());
  */
 export function startTimer(): () => number {
   const start = Date.now();
@@ -180,29 +190,30 @@ export function startTimer(): () => number {
 }
 
 /**
- * Example usage:
+ * Async performance wrapper
  *
- * import { logger, apiLogger, logError, startTimer } from '@/lib/logger'
- *
- * // Basic logging
- * logger.info('Application started')
- * logger.debug('Debug information', { userId: '123' })
- * logger.warn('Deprecated API used', { endpoint: '/old-api' })
- * logger.error('Failed to process request', error, { userId: '123' })
- *
- * // Domain-specific logging
- * apiLogger.info('POST /api/orders', { orderId: 'abc123' })
- *
- * // Error logging
- * try {
- *   // ... code
- * } catch (error) {
- *   logError('Order creation failed', error, { orderId: '123' })
- * }
- *
- * // Performance timing
- * const timer = startTimer()
- * // ... operation
- * const duration = timer()
- * apiLogger.info('Operation completed', { duration: `${duration}ms` })
+ * Usage:
+ * const result = await withPerformanceLogging('operation-name', async () => {
+ *   // ... async work
+ *   return result;
+ * });
  */
+export async function withPerformanceLogging<T>(
+  operationName: string,
+  fn: () => Promise<T>,
+  context?: LogContext
+): Promise<T> {
+  const timer = startTimer();
+  try {
+    const result = await fn();
+    logger.performance(operationName, timer(), context);
+    return result;
+  } catch (error) {
+    logger.error(
+      \`Operation failed: \${operationName}\`,
+      error as Error,
+      context
+    );
+    throw error;
+  }
+}
