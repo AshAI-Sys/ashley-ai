@@ -53,7 +53,8 @@
       "Bash(del \"services\\ash-admin\\src\\app\\employee-login\\page.tsx\")",
       "Bash(del \"services\\ash-admin\\src\\lib\\database.ts\")",
       "Bash(del \"services\\ash-admin\\src\\lib\\auth\\session-manager.ts\")",
-      "Bash(del \"services\\ash-admin\\src\\lib\\audit\\logger.ts\")"
+      "Bash(del \"services\\ash-admin\\src\\lib\\audit\\logger.ts\")",
+      "Bash(do taskkill /PID $pid /F)"
     ],
     "deny": [],
     "ask": []

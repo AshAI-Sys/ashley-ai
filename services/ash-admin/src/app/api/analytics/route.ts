@@ -336,7 +336,7 @@ async function getFinancialAnalytics(workspaceId: string, startDate: Date, endDa
         issueDate: { gte: startDate, lte: endDate },
       },
       include: {
-        items: true,
+        invoice_items: true,
         payments: true,
       },
     }),

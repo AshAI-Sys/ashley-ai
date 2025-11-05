@@ -13,13 +13,8 @@ interface SMSRequest {
  * Send SMS Notification
  * POST /api/notifications/sms
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body: SMSRequest = await request.json();
     const { to, message, type = "custom" } = body;
 
@@ -57,7 +52,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * Send SMS using Semaphore or Twilio
