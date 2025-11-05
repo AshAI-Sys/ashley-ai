@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcrypt';
 import { requireAuth } from "@/lib/auth-middleware";
 
 const prisma = db;

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateTokenPair } from "../../../../lib/jwt";
 import { prisma } from "../../../../lib/db";
 import { createSession } from "../../../../lib/session-manager";
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcrypt';
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";

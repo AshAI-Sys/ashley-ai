@@ -1,7 +1,7 @@
 ﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcrypt';
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
 import { sendEmail } from "../../../../lib/email";

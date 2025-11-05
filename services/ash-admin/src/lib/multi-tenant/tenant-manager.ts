@@ -2,7 +2,7 @@
 // Handles workspace creation, isolation, and tenant-specific configurations
 
 import { prisma } from "@/lib/db";
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcrypt';
 
 export interface TenantConfig {
   workspace_id: string;

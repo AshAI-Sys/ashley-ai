@@ -100,7 +100,7 @@ export function generateBackupCodes(count: number = 8): string[] {
  * Hash backup codes before storing (bcrypt)
  */
 export async function hashBackupCodes(codes: string[]): Promise<string[]> {
-  const bcrypt = require("bcryptjs");
+  const bcrypt = require('bcrypt');
   const hashedCodes = await Promise.all(
     codes.map(code => bcrypt.hash(code, 10))
   );
@@ -114,7 +114,7 @@ export async function verifyBackupCode(
   code: string,
   hashedCodes: string[]
 ): Promise<{ valid: boolean; usedIndex: number }> {
-  const bcrypt = require("bcryptjs");
+  const bcrypt = require('bcrypt');
 
   for (let i = 0; i < hashedCodes.length; i++) {
     const isValid = await bcrypt.compare(code, hashedCodes[i]);

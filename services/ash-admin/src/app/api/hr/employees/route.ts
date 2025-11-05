@@ -12,7 +12,7 @@ import {
   requireAuth,
   requireAnyPermission,
 } from "../../../../lib/auth-middleware";
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcrypt';
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";

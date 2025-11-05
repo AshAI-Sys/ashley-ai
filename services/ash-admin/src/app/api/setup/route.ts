@@ -1,7 +1,7 @@
 ﻿/* eslint-disable */
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
-import * as bcrypt from "bcryptjs";
+import * as bcrypt from 'bcrypt';
 // Unused import removed: requireAuth
 
 export async function GET() {
