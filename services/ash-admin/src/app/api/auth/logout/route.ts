@@ -59,7 +59,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     
       return response;
   } catch (error) {
-    authLogger.error("Logout error", error);
+    authLogger.error("Logout error", error as Error);
 
     // Still return success and clear cookies even if there's an error
     const response = NextResponse.json({
