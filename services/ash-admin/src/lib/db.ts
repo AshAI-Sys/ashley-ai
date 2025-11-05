@@ -1,9 +1,14 @@
 import { PrismaClient } from "@prisma/client";
-// import { performanceExtension, queryLoggingExtension, autoPaginationExtension } from './performance/prisma-extensions'
+// import { performanceExtension, queryLoggingExtension, autoPaginationExtension} from './performance/prisma-extensions'
 
 // Create single prisma instance (singleton pattern)
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient({
+    log:
+      process.env.NODE_ENV === "development"
+        ? ["query", "info", "warn", "error"]
+        : ["error"],
+  });
 };
 
 declare global {
