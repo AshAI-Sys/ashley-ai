@@ -7,7 +7,7 @@ import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 // GET - Fetch all shipments for workspace
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
+    const workspaceId = user.workspaceId;
     const { searchParams } = new URL(request.url);
 
     // Pagination
@@ -41,7 +41,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
               client: {
                 select: {
                   id: true,
-                  company_name: true,
+                  name: true,
                 },
               },
             },
@@ -51,20 +51,16 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
               carton: {
                 select: {
                   id: true,
-                  carton_number: true,
-                  total_weight: true,
-                  unit_count: true,
+                  carton_no: true,
+                  actual_weight_kg: true,
                 },
               },
             },
           },
           deliveries: {
             select: {
-              id: true,
-              tracking_number: true,
-              status: true,
-              estimated_delivery: true,
-              actual_delivery: true,
+              delivery_id: true,
+              shipment_id: true,
             },
           },
         },
@@ -99,7 +95,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 // POST - Create a new shipment
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
+    const workspaceId = user.workspaceId;
     const body = await request.json();
 
     const {
@@ -185,7 +181,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             client: {
               select: {
                 id: true,
-                company_name: true,
+                name: true,
               },
             },
           },
@@ -195,9 +191,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
             carton: {
               select: {
                 id: true,
-                carton_number: true,
-                total_weight: true,
-                unit_count: true,
+                carton_no: true,
+                actual_weight_kg: true,
               },
             },
           },
@@ -209,7 +204,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     await prisma.auditLog.create({
       data: {
         workspace_id: workspaceId!,
-        user_id: user.user_id,
+        user_id: user.id,
         action: "SHIPMENT_CREATED",
         resource: "shipment",
         resource_id: shipment.id,

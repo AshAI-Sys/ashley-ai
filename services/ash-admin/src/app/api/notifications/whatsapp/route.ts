@@ -14,13 +14,8 @@ interface WhatsAppRequest {
  * Send WhatsApp Notification
  * POST /api/notifications/whatsapp
  */
-export async function POST(request: NextRequest) {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body: WhatsAppRequest = await request.json();
     const { to, message, type = "custom", mediaUrl } = body;
 
@@ -59,7 +54,7 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * Send WhatsApp using Twilio or Meta Business API

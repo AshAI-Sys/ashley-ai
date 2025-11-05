@@ -3,7 +3,7 @@
  * Add caching, logging, and optimization to Prisma queries
  */
 
-import { Prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 /**
  * Query performance logging extension
@@ -12,7 +12,12 @@ export const queryLoggingExtension = Prisma.defineExtension({
   name: "queryLogging",
   query: {
     $allModels: {
-      async $allOperations({ operation, model, args, query }) {
+      async $allOperations({ operation, model, args, query }: {
+        operation: string;
+        model: string;
+        args: any;
+        query: (args: any) => Promise<any>;
+      }) {
         const start = Date.now();
         try {
           const result = await query(args);
@@ -56,7 +61,12 @@ export const queryCachingExtension = Prisma.defineExtension({
   name: "queryCaching",
   query: {
     $allModels: {
-      async findUnique({ model, operation, args, query }) {
+      async findUnique({ model, operation, args, query }: {
+        model: string;
+        operation: string;
+        args: any;
+        query: (args: any) => Promise<any>;
+      }) {
         // Only cache findUnique operations
         if (operation !== "findUnique") {
           return query(args);
@@ -96,7 +106,11 @@ export const autoPaginationExtension = Prisma.defineExtension({
   name: "autoPagination",
   query: {
     $allModels: {
-      async findMany({ model, args, query }) {
+      async findMany({ model, args, query }: {
+        model: string;
+        args: any;
+        query: (args: any) => Promise<any>;
+      }) {
         // If no take/limit is specified, default to 100
         if (!args.take) {
           console.warn(
@@ -129,7 +143,12 @@ export const n1DetectionExtension = Prisma.defineExtension({
   name: "n1Detection",
   query: {
     $allModels: {
-      async $allOperations({ model, operation, args, query }) {
+      async $allOperations({ model, operation, args, query }: {
+        model: string;
+        operation: string;
+        args: any;
+        query: (args: any) => Promise<any>;
+      }) {
         // Record query
         queryLog.push({
           model,
@@ -169,7 +188,12 @@ export const performanceExtension = Prisma.defineExtension({
   name: "performance",
   query: {
     $allModels: {
-      async $allOperations({ operation, model, args, query }) {
+      async $allOperations({ operation, model, args, query }: {
+        operation: string;
+        model: string;
+        args: any;
+        query: (args: any) => Promise<any>;
+      }) {
         const start = Date.now();
         const queryId = Math.random().toString(36).substring(7);
 

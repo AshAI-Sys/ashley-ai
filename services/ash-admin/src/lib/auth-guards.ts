@@ -189,7 +189,7 @@ export async function getUserFromRequest(
     authLogger.debug("No valid authentication found");
     return null;
   } catch (error) {
-    authLogger.error("Failed to extract user from request", error);
+    authLogger.error("Failed to extract user from request", error as Error);
     return null;
   }
 }

@@ -4,19 +4,26 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
 // PUT - Update a comment
-export async function PUT(
+export const PUT = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
+  const params = context?.params;
+  if (!params) {
+    return NextResponse.json(
+      { success: false, message: "Missing params" },
+      { status: 400 }
+    );
+  }
   try {
-    const { user } = await requireAuth(request);
     const body = await request.json();
     const { comment_text, status, priority } = body;
 
     // Verify comment exists
     const existingComment = await prisma.designComment.findUnique({
       where: { id: params.id },
-      include: { design_version: { include: { asset: true } } },
+      include: { design_version: { include: { design_asset: true } } },
     });
 
     if (!existingComment) {
@@ -27,7 +34,7 @@ export async function PUT(
     }
 
     // Verify workspace access
-    if (existingComment.workspace_id !== user.workspace_id) {
+    if (existingComment.workspace_id !== user.workspaceId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 403 }
@@ -40,7 +47,7 @@ export async function PUT(
     if (status !== undefined) {
       updateData.status = status;
       if (status === "RESOLVED") {
-        updateData.resolved_by = user.user_id;
+        updateData.resolved_by = user.id;
         updateData.resolved_at = new Date();
       }
     }
@@ -74,7 +81,7 @@ export async function PUT(
     await prisma.auditLog.create({
       data: {
         workspace_id: existingComment.workspace_id,
-        user_id: user.user_id,
+        user_id: user.id,
         action: "COMMENT_UPDATED",
         resource: "design_comment",
         resource_id: params.id,
@@ -112,15 +119,22 @@ export async function PUT(
   } finally {
     await prisma.$disconnect();
   }
-}
+});
 
 // DELETE - Delete a comment
-export async function DELETE(
+export const DELETE = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
+  const params = context?.params;
+  if (!params) {
+    return NextResponse.json(
+      { success: false, message: "Missing params" },
+      { status: 400 }
+    );
+  }
   try {
-    const { user } = await requireAuth(request);
 
     // Verify comment exists
     const existingComment = await prisma.designComment.findUnique({
@@ -138,7 +152,7 @@ export async function DELETE(
     }
 
     // Verify workspace access
-    if (existingComment.workspace_id !== user.workspace_id) {
+    if (existingComment.workspace_id !== user.workspaceId) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
         { status: 403 }
@@ -147,7 +161,7 @@ export async function DELETE(
 
     // Verify user is the creator or has admin privileges
     if (
-      existingComment.created_by !== user.user_id &&
+      existingComment.created_by !== user.id &&
       user.role?.toLowerCase() !== "admin"
     ) {
       return NextResponse.json(
@@ -175,7 +189,7 @@ export async function DELETE(
     await prisma.auditLog.create({
       data: {
         workspace_id: existingComment.workspace_id,
-        user_id: user.user_id,
+        user_id: user.id,
         action: "COMMENT_DELETED",
         resource: "design_comment",
         resource_id: params.id,
@@ -202,4 +216,4 @@ export async function DELETE(
   } finally {
     await prisma.$disconnect();
   }
-}
+});

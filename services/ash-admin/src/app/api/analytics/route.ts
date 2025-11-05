@@ -8,17 +8,12 @@ export const runtime = "nodejs";
  * Get Analytics Data
  * GET /api/analytics?type=sales&range=month
  */
-export async function GET(request: NextRequest) {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const authResult = await requireAuth(request);
-    if (!authResult.authenticated || !authResult.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type") || "sales";
     const range = searchParams.get("range") || "month";
-    const workspaceId = authResult.user.workspaceId;
+    const workspaceId = user.workspaceId;
 
     // Calculate date range
     const { startDate, endDate } = getDateRange(range);
@@ -60,7 +55,7 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 /**
  * Calculate date range based on range parameter

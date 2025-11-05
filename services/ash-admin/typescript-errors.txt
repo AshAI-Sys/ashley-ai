@@ -1,0 +1,32 @@
+src/app/api/analytics/route.ts(16,30): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/app/api/comments/[id]/route.ts(7,32): error TS2345: Argument of type '(request: NextRequest, user: AuthUser, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ success: boolean; message: string; }>>' is not assignable to parameter of type '(request: NextRequest, user: AuthUser, context?: { params: { id: string; }; } | undefined) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__2' and 'context' are incompatible.
+    Type '{ params: { id: string; }; } | undefined' is not assignable to type '{ params: { id: string; }; }'.
+      Type 'undefined' is not assignable to type '{ params: { id: string; }; }'.
+src/app/api/comments/[id]/route.ts(19,47): error TS2353: Object literal may only specify known properties, and 'asset' does not exist in type 'DesignVersionInclude<DefaultArgs>'.
+src/app/api/comments/[id]/route.ts(30,47): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/app/api/comments/[id]/route.ts(43,39): error TS2339: Property 'user_id' does not exist on type 'AuthUser'.
+src/app/api/comments/[id]/route.ts(77,23): error TS2339: Property 'user_id' does not exist on type 'AuthUser'.
+src/app/api/comments/[id]/route.ts(118,35): error TS2345: Argument of type '(request: NextRequest, user: AuthUser, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ success: boolean; message: string; }>>' is not assignable to parameter of type '(request: NextRequest, user: AuthUser, context?: { params: { id: string; }; } | undefined) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__2' and 'context' are incompatible.
+    Type '{ params: { id: string; }; } | undefined' is not assignable to type '{ params: { id: string; }; }'.
+      Type 'undefined' is not assignable to type '{ params: { id: string; }; }'.
+src/app/api/comments/[id]/route.ts(141,47): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/app/api/comments/[id]/route.ts(150,43): error TS2339: Property 'user_id' does not exist on type 'AuthUser'.
+src/app/api/comments/[id]/route.ts(178,23): error TS2339: Property 'user_id' does not exist on type 'AuthUser'.
+src/app/api/delivery/shipments/route.ts(10,30): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/app/api/delivery/shipments/route.ts(44,19): error TS2353: Object literal may only specify known properties, and 'company_name' does not exist in type 'ClientSelect<DefaultArgs>'.
+src/app/api/delivery/shipments/route.ts(54,19): error TS2353: Object literal may only specify known properties, and 'carton_number' does not exist in type 'CartonSelect<DefaultArgs>'.
+src/app/api/delivery/shipments/route.ts(64,15): error TS2353: Object literal may only specify known properties, and 'tracking_number' does not exist in type 'ShipmentDeliverySelect<DefaultArgs>'.
+src/app/api/delivery/shipments/route.ts(102,30): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/app/api/delivery/shipments/route.ts(188,17): error TS2353: Object literal may only specify known properties, and 'company_name' does not exist in type 'ClientSelect<DefaultArgs>'.
+src/app/api/delivery/shipments/route.ts(198,17): error TS2353: Object literal may only specify known properties, and 'carton_number' does not exist in type 'CartonSelect<DefaultArgs>'.
+src/app/api/delivery/shipments/route.ts(212,23): error TS2339: Property 'user_id' does not exist on type 'AuthUser'.
+src/app/api/delivery/stats/route.ts(9,30): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/app/api/orders/[id]/activity-logs/route.ts(47,33): error TS2345: Argument of type '(request: NextRequest, user: AuthUser, { params }: { params: { id: string; }; }) => Promise<NextResponse<{ success: boolean; data: { activityLog: { id: string; workspace_id: string; metadata: string | null; ... 5 more ...; title: string; }; }; message: string; }> | NextResponse<...>>' is not assignable to parameter of type '(request: NextRequest, user: AuthUser, context?: { params: { id: string; }; } | undefined) => Promise<NextResponse<unknown>>'.
+  Types of parameters '__2' and 'context' are incompatible.
+    Type '{ params: { id: string; }; } | undefined' is not assignable to type '{ params: { id: string; }; }'.
+      Type 'undefined' is not assignable to type '{ params: { id: string; }; }'.
+src/app/api/orders/[id]/activity-logs/route.ts(53,30): error TS2551: Property 'workspace_id' does not exist on type 'AuthUser'. Did you mean 'workspaceId'?
+src/lib/3pl/providers/grab.ts(62,5): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.

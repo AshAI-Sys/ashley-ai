@@ -54,7 +54,11 @@ export class GrabProvider {
       throw new Error(data.message || "Failed to get Grab access token");
     }
 
-    this.accessToken = data.access_token;
+    if (!data.access_token) {
+      throw new Error("No access token received from Grab API");
+    }
+
+    this.accessToken = data.access_token as string;
     return this.accessToken;
   }
 

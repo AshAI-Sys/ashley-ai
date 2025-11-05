@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 import { requireAuth } from "@/lib/auth-middleware";
 
 const ActivityLogSchema = z.object({
@@ -45,19 +44,28 @@ export async function GET(
   }
 }
 
-export async function POST(
+export const POST = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
+    const params = context?.params;
+    if (!params) {
+      return NextResponse.json(
+        { success: false, error: "Missing params" },
+        { status: 400 }
+      );
+    }
+
+    const workspaceId = user.workspaceId;
     const orderId = params.id;
     const body = await request.json();
     const validatedData = ActivityLogSchema.parse(body);
 
     const activityLog = await prisma.orderActivityLog.create({
       data: {
-        workspace_id: workspaceId!,
+        workspace_id: workspaceId,
         order_id: orderId,
         event_type: validatedData.event_type,
         title: validatedData.title,
@@ -65,9 +73,7 @@ export async function POST(
         performed_by: validatedData.performed_by || null,
         metadata: validatedData.metadata || null,
       },
-        
-      
-        });
+    });
 
     return NextResponse.json(
       {
@@ -97,4 +103,4 @@ export async function POST(
       { status: 500 }
     );
   }
-}
+});

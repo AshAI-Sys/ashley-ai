@@ -4,9 +4,9 @@ import { prisma } from "@/lib/db";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 import { requireAuth } from "@/lib/auth-middleware";
 
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspaceId = getWorkspaceIdFromRequest(request);
+    const workspaceId = user.workspaceId;
     // Calculate delivery statistics using updated_at as proxy for delivery timestamp
     const today = new Date();
     today.setHours(0, 0, 0, 0);

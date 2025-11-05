@@ -47,7 +47,7 @@ export function generateAccessToken(
     authLogger.debug("Access token generated", { userId: payload.userId });
     return token;
   } catch (error) {
-    authLogger.error("Failed to generate access token", error);
+    authLogger.error("Failed to generate access token", error as Error);
     throw new Error("Token generation failed");
   }
 }
@@ -66,7 +66,7 @@ export function generateRefreshToken(
     authLogger.debug("Refresh token generated", { userId: payload.userId });
     return token;
   } catch (error) {
-    authLogger.error("Failed to generate refresh token", error);
+    authLogger.error("Failed to generate refresh token", error as Error);
     throw new Error("Token generation failed");
   }
 }
@@ -127,7 +127,7 @@ export function verifyToken(token: string): JWTPayload | null {
     } else if (error instanceof jwt.TokenExpiredError) {
       authLogger.debug("JWT token expired", { error: error.message });
     } else {
-      authLogger.error("JWT verification error", error);
+      authLogger.error("JWT verification error", error as Error);
     }
     return null;
   }
@@ -192,7 +192,7 @@ export function refreshAccessToken(refreshToken: string): string | null {
     authLogger.info("Access token refreshed", { userId: payload.userId });
     return newAccessToken;
   } catch (error) {
-    authLogger.error("Failed to refresh access token", error);
+    authLogger.error("Failed to refresh access token", error as Error);
     return null;
   }
 }
