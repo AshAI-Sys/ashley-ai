@@ -568,8 +568,26 @@ export default function WarehousePage() {
                 <h2 className="text-xl font-bold text-gray-800">Inventory Reports</h2>
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-8 text-center">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-blue-600" />
-                  <p className="text-gray-600">
-                    Report functionality coming soon. This will display inventory levels, stock movements, and analytics.
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Inventory Reports</h3>
+                  <p className="text-gray-600 mb-4">
+                    Access detailed inventory reports from the main inventory management page.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <p className="font-semibold text-gray-900">Stock Levels</p>
+                      <p className="text-sm text-gray-600 mt-1">Current inventory status by material</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <p className="font-semibold text-gray-900">Stock Movements</p>
+                      <p className="text-sm text-gray-600 mt-1">Transfer and adjustment history</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <p className="font-semibold text-gray-900">Low Stock Alerts</p>
+                      <p className="text-sm text-gray-600 mt-1">Materials below reorder point</p>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-sm text-gray-500">
+                    💡 Navigate to Inventory → Materials Management for detailed reports
                   </p>
                 </div>
               </div>

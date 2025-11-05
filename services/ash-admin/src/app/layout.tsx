@@ -11,7 +11,7 @@ import { LanguageProvider } from "@/lib/language-context";
 import dynamicImport from "next/dynamic";
 
 // Load ChatWidget only on client side to prevent hydration issues
-const _ChatWidget = dynamicImport(
+const ChatWidget = dynamicImport(
   () =>
     import("@/components/ai-chat/ChatWidget").then(mod => ({
       default: mod.ChatWidget,
@@ -136,8 +136,8 @@ export default function RootLayout({
 
                 <GlobalKeyboardShortcutsProvider>
                   {children}
-                  {/* ChatWidget temporarily disabled for faster page load */}
-                  {/* <ChatWidget /> */}
+                  {/* AI Chat Assistant - Stage 15 */}
+                  <ChatWidget />
 
                   {/* PWA Components */}
                   <PWARegister />

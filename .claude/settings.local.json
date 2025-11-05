@@ -38,7 +38,12 @@
       "Bash(dir:*)",
       "Bash(find:*)",
       "Bash(nul)",
-      "Bash(git archive:*)"
+      "Bash(git archive:*)",
+      "Bash(timeout /t 8 /nobreak)",
+      "Bash(node delete-users.js:*)",
+      "Bash(node:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
