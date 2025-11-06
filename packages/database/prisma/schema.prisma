@@ -2529,22 +2529,26 @@ model FinishingRun {
 }
 
 model FinishedUnit {
-  id              String          @id @default(cuid())
-  workspace_id    String
-  order_id        String
-  sku             String
-  size_code       String
-  color           String?
-  serial          String?
-  packed          Boolean         @default(false)
-  created_at      DateTime        @default(now())
-  carton_contents CartonContent[]
-  order           Order           @relation(fields: [order_id], references: [id])
-  workspace       Workspace       @relation(fields: [workspace_id], references: [id])
+  id                String          @id @default(cuid())
+  workspace_id      String
+  order_id          String
+  sku               String
+  size_code         String
+  color             String?
+  serial            String?
+  product_image_url String?          // Product photo for inventory display
+  crate_number      String?          // Storage location (e.g., "α16", "G-9")
+  category          String?          // Product category (e.g., "T-SHIRT", "POLO")
+  packed            Boolean         @default(false)
+  created_at        DateTime        @default(now())
+  carton_contents   CartonContent[]
+  order             Order           @relation(fields: [order_id], references: [id])
+  workspace         Workspace       @relation(fields: [workspace_id], references: [id])
 
   @@index([workspace_id])
   @@index([order_id])
   @@index([sku])
+  @@index([crate_number])
   @@index([created_at])
   @@map("finished_units")
 }
