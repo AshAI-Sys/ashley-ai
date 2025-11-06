@@ -25,7 +25,7 @@ export default function FinishedGoodsInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategory Filter] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
 
   useEffect(() => {
