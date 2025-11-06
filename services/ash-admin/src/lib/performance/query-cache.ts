@@ -116,12 +116,17 @@ export const CacheKeys = {
 export const InvalidateCache = {
   orders: async () => {
     await userCache.deletePattern("orders:*");
+    // Also invalidate sales and financial analytics
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:sales:*");
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:financial:*");
   },
 
   orderById: async (orderId: string) => {
     await userCache.del(CacheKeys.orderDetail(orderId));
     await userCache.deletePattern("orders:list:*");
     await userCache.deletePattern("orders:stats:*");
+    // Also invalidate sales analytics
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:sales:*");
   },
 
   clients: async () => {
@@ -131,11 +136,15 @@ export const InvalidateCache = {
   employees: async () => {
     await userCache.deletePattern("employees:*");
     await userCache.deletePattern("hr:*");
+    // Also invalidate HR analytics
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:hr:*");
   },
 
   finance: async () => {
     await userCache.deletePattern("finance:*");
     await userCache.deletePattern("invoices:*");
+    // Also invalidate financial analytics
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:financial:*");
   },
 
   production: async () => {
@@ -143,6 +152,24 @@ export const InvalidateCache = {
     await userCache.deletePattern("cutting:*");
     await userCache.deletePattern("sewing:*");
     await userCache.deletePattern("printing:*");
+    // Also invalidate production analytics
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:production:*");
+  },
+
+  inventory: async () => {
+    await userCache.deletePattern("inventory:*");
+    // Also invalidate inventory analytics
+    await userCache.deletePattern("workspace-cache:workspace:*:analytics:inventory:*");
+  },
+
+  analytics: async (workspaceId?: string) => {
+    if (workspaceId) {
+      // Invalidate specific workspace analytics
+      await userCache.deletePattern(`workspace-cache:workspace:${workspaceId}:analytics:*`);
+    } else {
+      // Invalidate all analytics
+      await userCache.deletePattern("workspace-cache:workspace:*:analytics:*");
+    }
   },
 
   dashboard: async () => {

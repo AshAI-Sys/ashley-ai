@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 import { prisma } from "@/lib/db";
+import { cachedForWorkspace } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
 /**
- * Get Analytics Data
+ * Get Analytics Data with Redis Caching
  * GET /api/analytics?type=sales&range=month
+ *
+ * Cache Strategy:
+ * - TTL: 5 minutes (300s) - balances freshness with performance
+ * - SWR: Enabled - serves stale data while revalidating in background
+ * - Stale Time: 2 minutes - data older than 2min triggers background refresh
  */
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
@@ -18,27 +24,44 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     // Calculate date range
     const { startDate, endDate } = getDateRange(range);
 
-    let analytics: any = {};
+    // Generate cache key based on type and range
+    const cacheKey = `analytics:${type}:${range}`;
 
-    switch (type) {
-      case "sales":
-        analytics = await getSalesAnalytics(workspaceId, startDate, endDate);
-        break;
-      case "production":
-        analytics = await getProductionAnalytics(workspaceId, startDate, endDate);
-        break;
-      case "inventory":
-        analytics = await getInventoryAnalytics(workspaceId, startDate, endDate);
-        break;
-      case "financial":
-        analytics = await getFinancialAnalytics(workspaceId, startDate, endDate);
-        break;
-      case "hr":
-        analytics = await getHRAnalytics(workspaceId, startDate, endDate);
-        break;
-      default:
-        return NextResponse.json({ error: "Invalid analytics type" }, { status: 400 });
-    }
+    // Use workspace-specific cache with SWR
+    const analytics = await cachedForWorkspace(
+      workspaceId,
+      cacheKey,
+      async () => {
+        let data: any = {};
+
+        switch (type) {
+          case "sales":
+            data = await getSalesAnalytics(workspaceId, startDate, endDate);
+            break;
+          case "production":
+            data = await getProductionAnalytics(workspaceId, startDate, endDate);
+            break;
+          case "inventory":
+            data = await getInventoryAnalytics(workspaceId, startDate, endDate);
+            break;
+          case "financial":
+            data = await getFinancialAnalytics(workspaceId, startDate, endDate);
+            break;
+          case "hr":
+            data = await getHRAnalytics(workspaceId, startDate, endDate);
+            break;
+          default:
+            throw new Error("Invalid analytics type");
+        }
+
+        return data;
+      },
+      {
+        ttl: 300, // 5 minutes
+        swr: true, // Enable stale-while-revalidate
+        staleTime: 120, // 2 minutes
+      }
+    );
 
     return NextResponse.json({
       success: true,
@@ -47,6 +70,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
       data: analytics,
+      cached: true, // Indicator that caching is active
     });
   } catch (error: any) {
     console.error("[Analytics API] Error:", error);
