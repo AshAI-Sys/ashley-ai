@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Download, Smartphone } from "lucide-react";
+import { X, Download, Smartphone, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { isStandalone } from "@/lib/pwa";
 
@@ -10,15 +10,27 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+// Detect iOS devices
+const isIOS = () => {
+  if (typeof window === 'undefined') return false;
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOSDevice, setIsIOSDevice] = useState(false);
 
   useEffect(() => {
     // Check if already installed
     setIsInstalled(isStandalone());
+
+    // Detect if iOS device
+    const iosDevice = isIOS();
+    setIsIOSDevice(iosDevice);
 
     // Check if user dismissed prompt before
     const dismissed = localStorage.getItem("pwa-install-dismissed");
@@ -33,7 +45,15 @@ export default function PWAInstallPrompt() {
       }
     }
 
-    // Listen for beforeinstallprompt event
+    // For iOS devices, show manual install instructions after 3 seconds
+    if (iosDevice && !isStandalone()) {
+      const timer = setTimeout(() => {
+        setShowPrompt(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+
+    // For Android/Desktop - Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent the default browser install prompt
       e.preventDefault();
@@ -92,8 +112,13 @@ export default function PWAInstallPrompt() {
     localStorage.setItem("pwa-install-dismissed", new Date().toISOString());
   };
 
-  // Don't show if already installed or no prompt available
-  if (isInstalled || !showPrompt || !deferredPrompt) {
+  // Don't show if already installed
+  if (isInstalled || !showPrompt) {
+    return null;
+  }
+
+  // Don't show for non-iOS if no deferred prompt
+  if (!isIOSDevice && !deferredPrompt) {
     return null;
   }
 
@@ -106,7 +131,11 @@ export default function PWAInstallPrompt() {
             <div className="flex items-start gap-3">
               {/* Icon */}
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                <Smartphone className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                {isIOSDevice ? (
+                  <Share2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                ) : (
+                  <Smartphone className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                )}
               </div>
 
               {/* Content */}
@@ -114,27 +143,43 @@ export default function PWAInstallPrompt() {
                 <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
                   Install Ashley AI
                 </h3>
-                <p className="mb-3 text-xs text-gray-600 dark:text-gray-500">
-                  Add to your home screen for quick access and offline use
-                </p>
+
+                {isIOSDevice ? (
+                  <>
+                    <p className="mb-2 text-xs text-gray-600 dark:text-gray-500">
+                      To install on iOS/iPad:
+                    </p>
+                    <ol className="mb-3 list-inside list-decimal text-xs text-gray-600 dark:text-gray-500 space-y-1">
+                      <li>Tap the <Share2 className="inline h-3 w-3" /> Share button below</li>
+                      <li>Scroll and tap "Add to Home Screen"</li>
+                      <li>Tap "Add" to confirm</li>
+                    </ol>
+                  </>
+                ) : (
+                  <p className="mb-3 text-xs text-gray-600 dark:text-gray-500">
+                    Add to your home screen for quick access and offline use
+                  </p>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <Button
-                    onClick={handleInstallClick}
-                    size="sm"
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Download className="mr-1 h-4 w-4" />
-                    Install
-                  </Button>
+                  {!isIOSDevice && (
+                    <Button
+                      onClick={handleInstallClick}
+                      size="sm"
+                      className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Download className="mr-1 h-4 w-4" />
+                      Install
+                    </Button>
+                  )}
                   <Button
                     onClick={handleDismiss}
                     size="sm"
                     variant="ghost"
-                    className="flex-shrink-0"
+                    className={isIOSDevice ? "flex-1" : "flex-shrink-0"}
                   >
-                    Not now
+                    {isIOSDevice ? "Got it" : "Not now"}
                   </Button>
                 </div>
               </div>
@@ -158,7 +203,11 @@ export default function PWAInstallPrompt() {
             <div className="flex items-start gap-3">
               {/* Icon */}
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                <Download className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                {isIOSDevice ? (
+                  <Share2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                ) : (
+                  <Download className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                )}
               </div>
 
               {/* Content */}
@@ -166,21 +215,37 @@ export default function PWAInstallPrompt() {
                 <h3 className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
                   Install Ashley AI
                 </h3>
-                <p className="mb-3 text-xs text-gray-600 dark:text-gray-500">
-                  Install as an app for better performance and offline access
-                </p>
+
+                {isIOSDevice ? (
+                  <>
+                    <p className="mb-2 text-xs text-gray-600 dark:text-gray-500">
+                      To install on iPad:
+                    </p>
+                    <ol className="mb-3 list-inside list-decimal text-xs text-gray-600 dark:text-gray-500 space-y-1">
+                      <li>Tap the <Share2 className="inline h-3 w-3" /> Share button in Safari</li>
+                      <li>Scroll and tap "Add to Home Screen"</li>
+                      <li>Tap "Add" to confirm</li>
+                    </ol>
+                  </>
+                ) : (
+                  <p className="mb-3 text-xs text-gray-600 dark:text-gray-500">
+                    Install as an app for better performance and offline access
+                  </p>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  <Button
-                    onClick={handleInstallClick}
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    Install Now
-                  </Button>
-                  <Button onClick={handleDismiss} size="sm" variant="outline">
-                    Maybe Later
+                  {!isIOSDevice && (
+                    <Button
+                      onClick={handleInstallClick}
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      Install Now
+                    </Button>
+                  )}
+                  <Button onClick={handleDismiss} size="sm" variant={isIOSDevice ? "default" : "outline"}>
+                    {isIOSDevice ? "Got it" : "Maybe Later"}
                   </Button>
                 </div>
               </div>
