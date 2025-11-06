@@ -8,6 +8,7 @@ import {
   CACHE_DURATION,
   InvalidateCache,
 } from "@/lib/performance/query-cache";
+import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
@@ -204,6 +205,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       console.warn("Failed to invalidate cache:", cacheError);
       // Don't fail the request if cache invalidation fails
     }
+
+    // Trigger auto-sync to Google Sheets (non-blocking)
+    await syncAfterChange(workspaceId, 'orders');
 
     return NextResponse.json(
       {

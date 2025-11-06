@@ -214,6 +214,12 @@ export default function Sidebar() {
       department: "Management",
     },
     {
+      name: "Integrations",
+      href: "/integrations/google-sheets",
+      icon: "Globe",
+      department: "Management",
+    },
+    {
       name: "Analytics & Reports",
       href: "/admin/analytics",
       icon: "BarChart3",
