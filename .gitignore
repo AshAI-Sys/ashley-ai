@@ -145,3 +145,12 @@ nul
 build-output*.txt
 .prisma
 node_modules/.prisma
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Credentials (NEVER COMMIT!)
+*credentials*.txt
+*credentials*.json
+google-sheets-credentials.txt
+service-account-key.json
