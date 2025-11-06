@@ -10,11 +10,12 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/lib/language-context";
 import dynamicImport from "next/dynamic";
 
-// Load ChatWidget only on client side to prevent hydration issues
-const ChatWidget = dynamicImport(
+// Load ChatWidgetWrapper only on client side to prevent hydration issues
+// ChatWidgetWrapper conditionally renders ChatWidget based on current route
+const ChatWidgetWrapper = dynamicImport(
   () =>
-    import("@/components/ai-chat/ChatWidget").then(mod => ({
-      default: mod.ChatWidget,
+    import("@/components/ai-chat/ChatWidgetWrapper").then(mod => ({
+      default: mod.ChatWidgetWrapper,
     })),
   {
     ssr: false,
@@ -137,7 +138,8 @@ export default function RootLayout({
                 <GlobalKeyboardShortcutsProvider>
                   {children}
                   {/* AI Chat Assistant - Stage 15 */}
-                  <ChatWidget />
+                  {/* ChatWidgetWrapper conditionally renders ChatWidget only on authenticated pages */}
+                  <ChatWidgetWrapper />
 
                   {/* PWA Components */}
                   <PWARegister />
