@@ -7,6 +7,10 @@ import {
   withErrorHandling,
 } from "../../../../lib/error-handling";
 
+// Force Node.js runtime and dynamic rendering
+export const runtime = "nodejs";
+export const dynamic = 'force-dynamic'; // Prevent static generation (uses request.url)
+
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const department = searchParams.get("department");

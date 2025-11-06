@@ -5,6 +5,7 @@ import { logAuthEvent } from "../../../../lib/audit-logger";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
+export const dynamic = 'force-dynamic'; // Prevent static generation (uses request.url)
 
 // Email verification is PUBLIC - no auth required
 export async function GET(request: NextRequest) {
