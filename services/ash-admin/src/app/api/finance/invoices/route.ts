@@ -13,6 +13,7 @@ import {
 } from "../../../../lib/error-handling";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { requireAuth } from "@/lib/auth-middleware";
+import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
@@ -265,6 +266,9 @@ export const POST = requireAnyPermission(["finance:create"])(
         invoice_items: true,
       },
     });
+
+    // Trigger auto-sync to Google Sheets (non-blocking)
+    await syncAfterChange("default", 'finance');
 
     return createSuccessResponse(invoice, 201);
   })
