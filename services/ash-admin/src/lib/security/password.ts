@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 /**
  * Common weak passwords to reject

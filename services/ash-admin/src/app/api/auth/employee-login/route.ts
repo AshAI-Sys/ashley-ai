@@ -1,7 +1,7 @@
 ﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 // Unused import removed: requireAuth
 import {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 
