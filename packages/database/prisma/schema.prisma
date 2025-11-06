@@ -3986,3 +3986,15 @@ model MobileSession {
   @@index([expires_at])
   @@map("mobile_sessions")
 }
+
+// System Settings - Key-Value Store for Application Settings
+model SystemSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("system_settings")
+}
