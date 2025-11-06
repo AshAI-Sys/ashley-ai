@@ -22,9 +22,35 @@ export default function LoginPage() {
       const user = localStorage.getItem("ash_user");
 
       if (token && user) {
-        console.log("[LOGIN] User already logged in, redirecting to dashboard");
-        router.push("/dashboard");
-        return;
+        // Verify token is still valid by checking expiration
+        try {
+          // Decode JWT token to check expiration (JWT format: header.payload.signature)
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const expiration = payload.exp * 1000; // Convert to milliseconds
+          const now = Date.now();
+
+          if (expiration > now) {
+            console.log("[LOGIN] Valid token found, redirecting to dashboard");
+            router.push("/dashboard");
+            return;
+          } else {
+            console.log("[LOGIN] Token expired, clearing old session");
+            // Clear expired token and user data
+            localStorage.removeItem("ash_token");
+            localStorage.removeItem("ash_user");
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("employee_data");
+            localStorage.removeItem("user_type");
+          }
+        } catch (error) {
+          console.error("[LOGIN] Error decoding token, clearing session:", error);
+          // Clear invalid token
+          localStorage.removeItem("ash_token");
+          localStorage.removeItem("ash_user");
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("employee_data");
+          localStorage.removeItem("user_type");
+        }
       }
 
       // FORCE LIGHT MODE - Remove any dark class from document
