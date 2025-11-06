@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
+import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
@@ -190,9 +191,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
           },
         },
       },
-        
-      
-        });
+    });
+
+    // Trigger auto-sync to Google Sheets (non-blocking)
+    await syncAfterChange(workspaceId, 'clients');
 
     return NextResponse.json(
       {
