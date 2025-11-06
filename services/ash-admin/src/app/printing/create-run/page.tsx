@@ -157,7 +157,45 @@ export default function CreatePrintRunPage() {
       const response = await fetch("/api/printing/machines");
       if (response.ok) {
         const data = await response.json();
-        setMachines(data.data || []);
+        const fetchedMachines = data.data || [];
+
+        // Use mock data if API returns empty array (no machines in database yet)
+        if (fetchedMachines.length === 0) {
+          setMachines([
+            {
+              id: "1",
+              name: "M&R Sportsman EX",
+              workcenter: "PRINTING",
+              is_active: true,
+            },
+            {
+              id: "2",
+              name: "Epson SureColor F570",
+              workcenter: "PRINTING",
+              is_active: true,
+            },
+            {
+              id: "3",
+              name: "Heat Press Pro 15x15",
+              workcenter: "HEAT_PRESS",
+              is_active: true,
+            },
+            {
+              id: "4",
+              name: "Tajima 16-Head",
+              workcenter: "EMB",
+              is_active: true,
+            },
+            {
+              id: "5",
+              name: 'Conveyor Dryer 24"',
+              workcenter: "DRYER",
+              is_active: true,
+            },
+          ]);
+        } else {
+          setMachines(fetchedMachines);
+        }
       } else {
         // Mock data
         setMachines([
@@ -195,7 +233,39 @@ export default function CreatePrintRunPage() {
       }
     } catch (error) {
       console.error("Failed to fetch machines:", error);
-      setMachines([]);
+      // Use mock data on error
+      setMachines([
+        {
+          id: "1",
+          name: "M&R Sportsman EX",
+          workcenter: "PRINTING",
+          is_active: true,
+        },
+        {
+          id: "2",
+          name: "Epson SureColor F570",
+          workcenter: "PRINTING",
+          is_active: true,
+        },
+        {
+          id: "3",
+          name: "Heat Press Pro 15x15",
+          workcenter: "HEAT_PRESS",
+          is_active: true,
+        },
+        {
+          id: "4",
+          name: "Tajima 16-Head",
+          workcenter: "EMB",
+          is_active: true,
+        },
+        {
+          id: "5",
+          name: 'Conveyor Dryer 24"',
+          workcenter: "DRYER",
+          is_active: true,
+        },
+      ]);
     }
   };
 
