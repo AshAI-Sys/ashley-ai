@@ -636,10 +636,10 @@ function CreateOnboardingModal({ onClose, onSubmit }: any) {
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500"
             >
               {" "}
-              <option value="basic">Basic (3 days)</option>{" "}
-              <option value="production">Production (7 days)</option>{" "}
-              <option value="office">Office (5 days)</option>{" "}
-              <option value="management">Management (10 days)</option>{" "}
+              <option value="basic">Basic</option>{" "}
+              <option value="production">Production</option>{" "}
+              <option value="office">Office</option>{" "}
+              <option value="management">Management</option>{" "}
             </select>{" "}
           </div>{" "}
           <div>
