@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/dashboard-layout";
 import {
   Truck,
@@ -101,6 +102,7 @@ interface DeliveryStats {
 }
 
 export default function DeliveryPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterMethod, setFilterMethod] = useState("all");
@@ -313,7 +315,7 @@ export default function DeliveryPage() {
               <Printer className="mr-2 h-4 w-4" />
               Dispatch Reports
             </Button>
-            <Button onClick={() => setShowNewShipmentDialog(true)}>
+            <Button onClick={() => router.push('/inventory/warehouse')}>
               <Plus className="mr-2 h-4 w-4" />
               New Shipment
             </Button>
