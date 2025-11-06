@@ -54,14 +54,14 @@ interface ProductDesignSectionProps {
 }
 
 const GARMENT_TYPES = [
-  { value: "t-shirt", label: "T-Shirt", icon: "ðŸ‘•" },
-  { value: "polo", label: "Polo Shirt", icon: "ðŸ‘”" },
-  { value: "hoodie", label: "Hoodie", icon: "ðŸ§¥" },
-  { value: "jersey", label: "Jersey", icon: "ðŸƒ" },
-  { value: "uniform", label: "Uniform", icon: "ðŸ‘®" },
-  { value: "cap", label: "Cap/Hat", icon: "ðŸ§¢" },
-  { value: "bag", label: "Bag", icon: "ðŸŽ’" },
-  { value: "custom", label: "Custom", icon: "âœ¨" },
+  { value: "t-shirt", label: "👕 T-Shirt", icon: "👕" },
+  { value: "polo", label: "👔 Polo Shirt", icon: "👔" },
+  { value: "hoodie", label: "🧥 Hoodie", icon: "🧥" },
+  { value: "jersey", label: "👕 Jersey", icon: "👕" },
+  { value: "uniform", label: "👮 Uniform", icon: "👮" },
+  { value: "cap", label: "🧢 Cap/Hat", icon: "🧢" },
+  { value: "bag", label: "🎒 Bag", icon: "🎒" },
+  { value: "custom", label: "✨ Custom", icon: "✨" },
 ];
 
 const PRINTING_METHODS = [
