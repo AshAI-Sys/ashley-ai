@@ -22,7 +22,7 @@ async function main() {
   // Hash password for demo user
   const passwordHash = await bcrypt.hash("password123", 10);
 
-  // Create demo user
+  // Create admin user
   const user = await prisma.user.upsert({
     where: {
       workspace_id_email: {
@@ -44,6 +44,29 @@ async function main() {
     },
   });
   console.log("✅ User created:", user.email);
+
+  // Create demo user (for easier testing)
+  const demoUser = await prisma.user.upsert({
+    where: {
+      workspace_id_email: {
+        workspace_id: workspace.id,
+        email: "demo@ashleyai.com",
+      },
+    },
+    update: {},
+    create: {
+      email: "demo@ashleyai.com",
+      password_hash: passwordHash,
+      first_name: "Demo",
+      last_name: "User",
+      role: "admin",
+      workspace_id: workspace.id,
+      position: "Demo Administrator",
+      department: "IT",
+      is_active: true,
+    },
+  });
+  console.log("✅ Demo user created:", demoUser.email);
 
   // Create demo clients
   const client1 = await prisma.client.upsert({

@@ -50,6 +50,29 @@ async function main() {
     console.log("✅ Admin user already exists:", adminUser.email);
   }
 
+  // Check if demo user exists (for easier testing)
+  let demoUser = await prisma.user.findFirst({
+    where: { email: "demo@ashleyai.com" },
+  });
+
+  if (!demoUser) {
+    demoUser = await prisma.user.create({
+      data: {
+        email: "demo@ashleyai.com",
+        first_name: "Demo",
+        last_name: "User",
+        password_hash: hashedPassword,
+        role: "ADMIN",
+        workspace_id: workspace.id,
+        position: "System Administrator",
+        department: "Management",
+      },
+    });
+    console.log("✅ Demo user created:", demoUser.email);
+  } else {
+    console.log("✅ Demo user already exists:", demoUser.email);
+  }
+
   // Check if demo client exists
   let client = await prisma.client.findFirst({
     where: { email: "client@demo.com" },
