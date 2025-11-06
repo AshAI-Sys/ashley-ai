@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth } from '@/lib/auth-middleware';
+import { syncAfterChange } from '@/lib/google-sheets-auto-sync';
 
 const prisma = new PrismaClient();
 
@@ -66,6 +67,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         category,
       },
     });
+
+    // Trigger auto-sync to Google Sheets (non-blocking)
+    await syncAfterChange(workspaceId, 'inventory');
 
     return NextResponse.json({
       success: true,
