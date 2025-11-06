@@ -56,6 +56,15 @@ export default function TopNavbar() {
     router.push("/login");
   };
 
+  const handleSearch = (e?: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e && e.key !== "Enter") return;
+
+    if (searchQuery.trim().length > 0) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSearch(false); // Close mobile search
+    }
+  };
+
   // Mock notifications
   const notifications = [
     {
@@ -105,6 +114,7 @@ export default function TopNavbar() {
               placeholder="Search orders, clients, products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
               className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm text-white placeholder-white/60 transition-all focus:border-white/30 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
             />
           </div>
@@ -276,6 +286,7 @@ export default function TopNavbar() {
               placeholder="Search orders, clients, products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
               autoFocus
               className="w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/60 transition-all focus:border-white/30 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
             />
