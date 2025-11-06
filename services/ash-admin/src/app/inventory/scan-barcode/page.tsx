@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Camera, X, CheckCircle, AlertCircle } from "lucide-react";
-// import { Html5Qrcode } from "html5-qrcode";  // Package not installed
+import { ArrowLeft, Camera, CheckCircle, AlertCircle } from "lucide-react";
+import { Scanner } from "@/components/mobile/Scanner";
 
 export default function ScanBarcodePage() {
   const router = useRouter();
@@ -12,95 +12,50 @@ export default function ScanBarcodePage() {
   const [lastScanned, setLastScanned] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const scannerRef = useRef<any | null>(null); // Html5Qrcode package not installed
-  const [cameraPermission, setCameraPermission] = useState<
-    "granted" | "denied" | "prompt"
-  >("prompt");
+  const [lookupResult, setLookupResult] = useState<any>(null);
 
-  useEffect(() => {
-    // Cleanup scanner on unmount
-    return () => {
-      if (scannerRef.current && isScanning) {
-        scannerRef.current
-          .stop()
-          .catch((err: any) => console.error("Error stopping scanner:", err));
-      }
-    };
-  }, [isScanning]);
+  const handleScan = async (code: string, format: string) => {
+    console.log("Scanned:", code, format);
+    setLastScanned(code);
+    setSuccess(`Scanned: ${code}`);
+    setError("");
+    setIsScanning(false);
 
-  const startScanner = async () => {
+    // API lookup
     try {
-      setError("");
-      setSuccess("");
+      const response = await fetch(`/api/inventory/lookup?code=${encodeURIComponent(code)}`);
+      const data = await response.json();
 
-      // Check camera permission
-      const permissionStatus = await navigator.permissions.query({
-        name: "camera" as PermissionName,
-      });
-      setCameraPermission(permissionStatus.state);
-
-      if (permissionStatus.state === "denied") {
-        setError(
-          "Camera access denied. Please enable camera permissions in your browser settings."
-        );
-        return;
-      }
-
-      // Html5Qrcode package not installed - placeholder for future implementation
-      // const html5QrCode = new Html5Qrcode("qr-reader");
-      // scannerRef.current = html5QrCode;
-      setError("QR scanner library not installed. Please install html5-qrcode package.");
-      setIsScanning(false);
-      return;
-    } catch (err) {
-      console.error("Error starting scanner:", err);
-      if (err instanceof Error) {
-        if (err.message.includes("Permission denied")) {
-          setError(
-            "Camera access denied. Please allow camera access to scan barcodes."
-          );
-          setCameraPermission("denied");
-        } else if (err.message.includes("NotFoundError")) {
-          setError(
-            "No camera found on this device. Please use manual entry instead."
-          );
-        } else {
-          setError(`Failed to start scanner: ${err.message}`);
-        }
+      if (data.success && data.material) {
+        setLookupResult(data.material);
+        setSuccess(`Material found: ${data.material.name || code}`);
       } else {
-        setError("Failed to start camera scanner. Please try again.");
+        setError("Material not found in inventory");
+        setLookupResult(null);
       }
-      setIsScanning(false);
-    }
-  };
-
-  const stopScanner = async () => {
-    try {
-      if (scannerRef.current) {
-        await scannerRef.current.stop();
-        scannerRef.current = null;
-      }
-      setIsScanning(false);
     } catch (err) {
-      console.error("Error stopping scanner:", err);
-      setIsScanning(false);
+      console.error("Lookup error:", err);
+      setError("Failed to look up material");
+      setLookupResult(null);
     }
   };
 
-  const handleManualEntry = (e: React.FormEvent) => {
+  const handleManualEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (scannedCode.trim()) {
-      setLastScanned(scannedCode);
-      setSuccess(`Looking up material: ${scannedCode}`);
-      setError("");
-
-      // Here you would typically make an API call to look up the material
-      setTimeout(() => {
-        setSuccess(`Material found: ${scannedCode}`);
-      }, 500);
+      handleScan(scannedCode.trim(), "MANUAL");
+      setScannedCode("");
     } else {
       setError("Please enter a barcode or SKU");
     }
+  };
+
+  const resetScanner = () => {
+    setLastScanned("");
+    setSuccess("");
+    setError("");
+    setLookupResult(null);
+    setScannedCode("");
   };
 
   return (
@@ -137,15 +92,18 @@ export default function ScanBarcodePage() {
           </div>
         )}
 
-        {/* Last Scanned */}
-        {lastScanned && (
+        {/* Last Scanned Result */}
+        {lookupResult && (
           <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <p className="text-sm font-semibold text-blue-900">
-              Last Scanned Code:
-            </p>
+            <p className="text-sm font-semibold text-blue-900">Material Found:</p>
             <p className="mt-1 font-mono text-lg font-bold text-blue-700">
-              {lastScanned}
+              {lookupResult.name || lookupResult.sku || lastScanned}
             </p>
+            {lookupResult.quantity && (
+              <p className="mt-1 text-sm text-blue-600">
+                Quantity: {lookupResult.quantity}
+              </p>
+            )}
           </div>
         )}
 
@@ -158,7 +116,7 @@ export default function ScanBarcodePage() {
                   <Camera className="h-32 w-32 text-gray-500" />
                 </div>
                 <button
-                  onClick={startScanner}
+                  onClick={() => setIsScanning(true)}
                   className="mx-auto flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
                 >
                   <Camera className="h-5 w-5" />
@@ -169,24 +127,10 @@ export default function ScanBarcodePage() {
                 </p>
               </div>
             ) : (
-              <div>
-                <div className="relative mx-auto overflow-hidden rounded-lg">
-                  {/* Scanner container */}
-                  <div id="qr-reader" className="w-full"></div>
-                </div>
-                <div className="mt-4 text-center">
-                  <button
-                    onClick={stopScanner}
-                    className="mx-auto flex items-center gap-2 rounded-lg bg-red-600 px-6 py-3 text-white hover:bg-red-700"
-                  >
-                    <X className="h-5 w-5" />
-                    Stop Scanner
-                  </button>
-                  <p className="mt-2 text-xs text-gray-600">
-                    Point camera at barcode or QR code
-                  </p>
-                </div>
-              </div>
+              <Scanner
+                onScan={handleScan}
+                onClose={() => setIsScanning(false)}
+              />
             )}
           </div>
 
@@ -210,24 +154,19 @@ export default function ScanBarcodePage() {
               </button>
             </form>
           </div>
-        </div>
 
-        {/* Camera Permission Help */}
-        {cameraPermission === "denied" && (
-          <div className="mt-4 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-            <h4 className="mb-2 font-semibold text-yellow-900">
-              Camera Access Required
-            </h4>
-            <p className="mb-2 text-sm text-yellow-800">
-              To use the barcode scanner, please enable camera permissions:
-            </p>
-            <ul className="list-inside list-disc space-y-1 text-sm text-yellow-800">
-              <li>Click the camera icon in your browser's address bar</li>
-              <li>Select "Allow" for camera access</li>
-              <li>Refresh the page and try again</li>
-            </ul>
-          </div>
-        )}
+          {/* Reset Button */}
+          {(lastScanned || lookupResult) && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={resetScanner}
+                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                Clear and scan another
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
