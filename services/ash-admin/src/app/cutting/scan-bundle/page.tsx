@@ -7,12 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Scanner } from "@/components/mobile/Scanner";
 import {
   QrCode,
   ArrowLeft,
   Package,
-  Scissors, Calendar,
+  Scissors,
+  Calendar,
   Hash,
+  Camera,
 } from "lucide-react";
 
 export default function ScanBundlePage() {
@@ -21,6 +24,7 @@ export default function ScanBundlePage() {
   const [scannedBundle, setScannedBundle] = useState<any>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCameraScanner, setShowCameraScanner] = useState(false);
 
   const handleScan = async () => {
     if (!qrCode.trim()) {
@@ -56,6 +60,34 @@ export default function ScanBundlePage() {
     }
   };
 
+  const handleCameraScan = async (code: string, format: string) => {
+    console.log("Camera scanned:", code, format);
+    setQrCode(code);
+    setShowCameraScanner(false);
+
+    // Automatically lookup the scanned code
+    setIsScanning(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/cutting/bundles/scan?qrCode=${encodeURIComponent(code)}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Bundle not found");
+      }
+
+      const data = await response.json();
+      setScannedBundle(data.bundle);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to scan bundle");
+      setScannedBundle(null);
+    } finally {
+      setIsScanning(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -88,19 +120,44 @@ export default function ScanBundlePage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter or scan QR code..."
-                value={qrCode}
-                onChange={e => setQrCode(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="flex-1 font-mono"
-                autoFocus
+            {!showCameraScanner ? (
+              <>
+                {/* Camera Scanner Button */}
+                <div className="flex justify-center mb-4">
+                  <Button
+                    onClick={() => setShowCameraScanner(true)}
+                    size="lg"
+                    className="flex items-center gap-2"
+                  >
+                    <Camera className="h-5 w-5" />
+                    Use Camera Scanner
+                  </Button>
+                </div>
+
+                {/* Manual Entry */}
+                <div className="border-t pt-4">
+                  <p className="text-sm text-muted-foreground mb-2">Or enter manually:</p>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter or scan QR code..."
+                      value={qrCode}
+                      onChange={e => setQrCode(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="flex-1 font-mono"
+                      autoFocus
+                    />
+                    <Button onClick={handleScan} disabled={isScanning}>
+                      {isScanning ? "Scanning..." : "Scan"}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Scanner
+                onScan={handleCameraScan}
+                onClose={() => setShowCameraScanner(false)}
               />
-              <Button onClick={handleScan} disabled={isScanning}>
-                {isScanning ? "Scanning..." : "Scan"}
-              </Button>
-            </div>
+            )}
 
             {error && (
               <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
