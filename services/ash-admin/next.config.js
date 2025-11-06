@@ -28,31 +28,31 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: "/:path*",
         headers: [
           {
-            key: 'Permissions-Policy',
-            value: 'camera=(self), microphone=(self), geolocation=(self)',
+            key: "Permissions-Policy",
+            value: "camera=(self), microphone=(self), geolocation=(self)",
           },
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
+            key: "X-Frame-Options",
+            value: "DENY",
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
           {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
           },
           {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
           },
           {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
           },
         ],
       },
@@ -132,12 +132,8 @@ const nextConfig = {
       // Tell webpack to treat @prisma/client as external (don't bundle it)
       config.externals.push("@prisma/client");
 
-      // Set Prisma environment variables for query engine location
-      process.env.PRISMA_QUERY_ENGINE_LIBRARY = path.resolve(
-        __dirname,
-        "../../node_modules/.pnpm/@prisma+client@5.22.0_prisma@5.22.0/node_modules/.prisma/client/query_engine-windows.dll.node"
-      );
-      process.env.PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = "1";
+      // Prisma will automatically use the correct query engine for the platform
+      // No need to hardcode the path - schema.prisma handles this with binaryTargets
     }
 
     // Production optimizations
@@ -215,6 +211,7 @@ const sentryWebpackPluginOptions = {
 
 // Make sure adding Sentry options is the last code to run before exporting
 // Only apply Sentry config if DSN is configured
-module.exports = (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN)
-  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
-  : nextConfig;
+module.exports =
+  process.env.NODE_ENV === "production" && process.env.SENTRY_DSN
+    ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+    : nextConfig;
