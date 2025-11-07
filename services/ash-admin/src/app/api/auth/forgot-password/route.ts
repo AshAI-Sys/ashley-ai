@@ -4,8 +4,6 @@ import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import crypto from "crypto";
 import { z } from "zod";
-import { requireAuth } from "@/lib/auth-middleware";
-
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 
@@ -13,7 +11,7 @@ const ForgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
 });
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -107,16 +105,21 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       console.log("⏰ Expires:", resetExpires);
     }
 
-    // Log event
-    await logAuthEvent(
-      "PASSWORD_RESET_REQUESTED",
-      user.workspace_id,
-      user.id,
-      request,
-      {
-        email: user.email,
-      }
-    );
+    // Log event (only if user exists)
+    try {
+      await logAuthEvent(
+        "PASSWORD_RESET_REQUESTED",
+        user.workspace_id || "system",
+        user.id,
+        request,
+        {
+          email: user.email,
+        }
+      );
+    } catch (logError) {
+      console.error("Failed to log auth event:", logError);
+      // Don't fail the request if logging fails
+    }
 
     return NextResponse.json(
       {
