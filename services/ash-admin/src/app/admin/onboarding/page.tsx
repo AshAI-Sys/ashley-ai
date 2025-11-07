@@ -318,13 +318,13 @@ export default function OnboardingManagementPage() {
                   {" "}
                   <div className="relative">
                     {" "}
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />{" "}
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500 pointer-events-none" />{" "}
                     <input
                       type="text"
                       placeholder="Search employees..."
                       value={search}
                       onChange={e => setSearch(e.target.value)}
-                      className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
+                      className="w-full rounded-md border border-gray-300 py-2 pl-11 pr-4 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500"
                     />{" "}
                   </div>{" "}
                 </div>{" "}

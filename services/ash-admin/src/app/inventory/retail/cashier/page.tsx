@@ -211,14 +211,14 @@ export default function CashierPage() {
             </h3>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <QrCode className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <QrCode className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
                   value={scanInput}
                   onChange={(e) => setScanInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && addProductToCart()}
                   placeholder="Scan barcode or enter SKU/Product ID"
-                  className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 py-3 pl-11 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <button
@@ -339,14 +339,14 @@ export default function CashierPage() {
                 Discount (%)
               </label>
               <div className="relative">
-                <Percent className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Percent className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={discountPercent}
                   onChange={(e) => setDiscountPercent(Number(e.target.value))}
-                  className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 py-2 pl-11 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -357,14 +357,14 @@ export default function CashierPage() {
                 Tax (%)
               </label>
               <div className="relative">
-                <Percent className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Percent className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 pointer-events-none" />
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={taxPercent}
                   onChange={(e) => setTaxPercent(Number(e.target.value))}
-                  className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 py-2 pl-11 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>

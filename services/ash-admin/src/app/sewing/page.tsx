@@ -584,14 +584,14 @@ export default function SewingPage() {
               <CardContent className="py-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
                     <Input
                       placeholder="Search runs..."
                       value={filters.search}
                       onChange={e =>
                         setFilters({ ...filters, search: e.target.value })
                       }
-                      className="pl-9"
+                      className="pl-11"
                     />
                   </div>
 

@@ -9,6 +9,7 @@ interface SheetRow {
   quantity: number;
   price: number;
   salePrice?: number;
+  brand?: string;
   status: string;
 }
 
@@ -100,7 +101,7 @@ export const POST = requireAuth(async (req: NextRequest, { user }: any) => {
 
     for (const row of sheetData as SheetRow[]) {
       try {
-        const { size, sku, crate, quantity, price, salePrice, status } = row;
+        const { size, sku, crate, quantity, price, salePrice, brand, status } = row;
 
         // Determine if packed based on status or quantity
         const isPacked = status?.toLowerCase().includes('out of stock') || quantity === 0;
@@ -120,6 +121,7 @@ export const POST = requireAuth(async (req: NextRequest, { user }: any) => {
                 product_image_url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
                 crate_number: crate,
                 category: 'T-SHIRT',
+                brand: brand || null,
                 price: price,
                 sale_price: salePrice || null,
                 packed: false,
@@ -140,6 +142,7 @@ export const POST = requireAuth(async (req: NextRequest, { user }: any) => {
               product_image_url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
               crate_number: crate,
               category: 'T-SHIRT',
+              brand: brand || null,
               price: price,
               sale_price: salePrice || null,
               packed: true, // Out of stock

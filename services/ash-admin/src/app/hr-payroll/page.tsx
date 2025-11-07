@@ -503,12 +503,12 @@ export default function HRPayrollPage() {
                 <div className="mb-6 flex gap-4">
                   <div className="max-w-sm flex-1">
                     <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                       <Input
                         placeholder="Search employees..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="pl-9"
+                        className="pl-11"
                       />
                     </div>
                   </div>

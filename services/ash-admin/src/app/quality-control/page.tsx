@@ -429,11 +429,11 @@ export default function QualityControlPage() {
             <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500 pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Search inspections..."
-                    className="rounded-md border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-blue-500"
+                    className="rounded-md border border-gray-300 py-2 pl-11 pr-4 focus:border-blue-500 focus:ring-blue-500"
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                   />

@@ -529,12 +529,12 @@ export default function SewingOperationsPage() {
           <div className="flex items-center gap-4">
             <div className="max-w-sm flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   placeholder="Search operations..."
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="pl-9"
+                  className="pl-11"
                 />
               </div>
             </div>

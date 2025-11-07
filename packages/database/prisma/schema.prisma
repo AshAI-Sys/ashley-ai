@@ -2539,6 +2539,7 @@ model FinishedUnit {
   product_image_url String?          // Product photo for inventory display
   crate_number      String?          // Storage location (e.g., "α16", "G-9")
   category          String?          // Product category (e.g., "T-SHIRT", "POLO")
+  brand             String?          // Brand name (e.g., "Reefer's Inn", "Nike", "Adidas")
   price             Decimal?         @db.Decimal(10, 2) // Product price
   sale_price        Decimal?         @db.Decimal(10, 2) // Sale/discounted price
   packed            Boolean         @default(false)

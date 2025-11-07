@@ -165,12 +165,12 @@ export default function OrdersPage() {
             <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
                   <Input
                     placeholder="Search orders..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    className="h-10 pl-9"
+                    className="h-10 pl-11"
                   />
                 </div>
               </div>

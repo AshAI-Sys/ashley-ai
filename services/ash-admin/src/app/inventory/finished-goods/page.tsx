@@ -11,6 +11,7 @@ interface FinishedUnit {
   sku: string;
   product_name: string;
   category: string;
+  brand: string | null;
   size_code: string;
   color: string | null;
   product_image_url: string | null;
@@ -27,6 +28,7 @@ interface ProductDetails {
   sku: string;
   product_name: string;
   category: string;
+  brand: string | null;
   size_code: string;
   color: string | null;
   product_image_url: string | null;
@@ -43,6 +45,7 @@ export default function FinishedGoodsInventoryPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [brandFilter, setBrandFilter] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -55,7 +58,7 @@ export default function FinishedGoodsInventoryPage() {
 
   useEffect(() => {
     fetchInventory();
-  }, [token, categoryFilter]);
+  }, [token, categoryFilter, brandFilter]);
 
   const fetchInventory = async () => {
     try {
@@ -64,6 +67,7 @@ export default function FinishedGoodsInventoryPage() {
 
       const params = new URLSearchParams();
       if (categoryFilter) params.append('category', categoryFilter);
+      if (brandFilter) params.append('brand', brandFilter);
 
       const response = await fetch(`/api/inventory/finished-units?${params.toString()}`, {
         headers: {
@@ -232,6 +236,20 @@ export default function FinishedGoodsInventoryPage() {
       const lines = importData.trim().split('\n');
       const sheetData = [];
 
+      // Get header row to detect format
+      const headerLine = lines[0].trim();
+      const headers = headerLine.includes('\t') ? headerLine.split('\t') : headerLine.split(',');
+      const headerMap = headers.map(h => h.trim().toLowerCase());
+
+      // Detect column indices
+      const scanProductIndex = headerMap.findIndex(h => h.includes('scan') || h.includes('product'));
+      const quantityIndex = headerMap.findIndex(h => h.includes('quantity'));
+      const crateIndex = headerMap.findIndex(h => h.includes('crate'));
+      const skuIndex = headerMap.findIndex(h => h === 'sku');
+      const sizeIndex = headerMap.findIndex(h => h.includes('size'));
+      const priceIndex = headerMap.findIndex(h => h.includes('price') && !h.includes('sale'));
+      const salePriceIndex = headerMap.findIndex(h => h.includes('sale'));
+
       // Skip header row (first line)
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
@@ -240,18 +258,43 @@ export default function FinishedGoodsInventoryPage() {
         // Split by tab or comma
         const columns = line.includes('\t') ? line.split('\t') : line.split(',');
 
-        // Expected format: SKU, Size, Crate, Quantity, Price, Sale Price, Status
-        if (columns.length >= 7) {
-          sheetData.push({
-            sku: columns[0].trim(),
-            size: columns[1].trim(),
-            crate: columns[2].trim(),
-            quantity: parseInt(columns[3].trim()) || 0,
-            price: parseFloat(columns[4].trim()) || 0,
-            salePrice: columns[5].trim() ? parseFloat(columns[5].trim()) : null,
-            status: columns[6].trim(),
-          });
+        // Get SKU from either SCAN PRODUCT or SKU column
+        let sku = '';
+        if (scanProductIndex >= 0 && columns[scanProductIndex]) {
+          sku = columns[scanProductIndex].trim();
+        } else if (skuIndex >= 0 && columns[skuIndex]) {
+          sku = columns[skuIndex].trim();
         }
+
+        if (!sku) continue; // Skip if no SKU
+
+        // Extract size from SKU if not provided (e.g., R001US -> S, R208UL -> L)
+        let size = 'N/A';
+        if (sizeIndex >= 0 && columns[sizeIndex]) {
+          size = columns[sizeIndex].trim();
+        } else {
+          // Try to extract size from SKU
+          const sizeMatch = sku.match(/U(XS|S|M|L|XL|2XL|3XL|XXL)$/i);
+          if (sizeMatch) {
+            size = sizeMatch[1].toUpperCase();
+          }
+        }
+
+        const quantity = quantityIndex >= 0 ? (parseInt(columns[quantityIndex].trim()) || 0) : 0;
+        const crate = crateIndex >= 0 ? columns[crateIndex].trim() : '';
+        const price = priceIndex >= 0 ? (parseFloat(columns[priceIndex].trim()) || 450.00) : 450.00;
+        const salePrice = salePriceIndex >= 0 ? (columns[salePriceIndex].trim() ? parseFloat(columns[salePriceIndex].trim()) : null) : null;
+        const status = quantity > 0 ? 'Available' : 'Out of Stock';
+
+        sheetData.push({
+          sku,
+          size,
+          crate,
+          quantity,
+          price,
+          salePrice,
+          status,
+        });
       }
 
       if (sheetData.length === 0) {
@@ -353,23 +396,23 @@ export default function FinishedGoodsInventoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by SKU, name, color, or crate..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                placeholder="Search by SKU, name, brand, color, or crate..."
+                className="w-full pl-11 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
               />
             </div>
 
             {/* Category Filter */}
             <div className="relative">
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent appearance-none"
+                className="w-full pl-11 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent appearance-none"
               >
                 <option value="">All Categories</option>
                 <option value="T-SHIRT">T-SHIRT</option>
@@ -380,6 +423,26 @@ export default function FinishedGoodsInventoryPage() {
                 <option value="SHORTS">SHORTS</option>
                 <option value="DRESS">DRESS</option>
                 <option value="SKIRT">SKIRT</option>
+              </select>
+            </div>
+
+            {/* Brand Filter */}
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
+              <select
+                value={brandFilter}
+                onChange={(e) => setBrandFilter(e.target.value)}
+                className="w-full pl-11 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent appearance-none"
+              >
+                <option value="">All Brands</option>
+                <option value="Reefer's Inn">Reefer's Inn</option>
+                <option value="Nike">Nike</option>
+                <option value="Adidas">Adidas</option>
+                <option value="Puma">Puma</option>
+                <option value="Under Armour">Under Armour</option>
+                <option value="Bench">Bench</option>
+                <option value="Penshoppe">Penshoppe</option>
+                <option value="Uniqlo">Uniqlo</option>
               </select>
             </div>
 
@@ -412,6 +475,51 @@ export default function FinishedGoodsInventoryPage() {
           </div>
         )}
 
+        {/* Brand Statistics */}
+        {!loading && filteredInventory.length > 0 && (() => {
+          const brandCounts = filteredInventory.reduce((acc, item) => {
+            const brandName = item.brand || 'No Brand';
+            if (!acc[brandName]) {
+              acc[brandName] = {
+                total: 0,
+                available: 0,
+              };
+            }
+            acc[brandName].total += item.total_quantity;
+            acc[brandName].available += item.available_quantity;
+            return acc;
+          }, {} as Record<string, { total: number; available: number }>);
+
+          const sortedBrands = Object.entries(brandCounts).sort((a, b) => b[1].total - a[1].total);
+
+          return sortedBrands.length > 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Inventory by Brand</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {sortedBrands.map(([brand, counts]) => (
+                  <div
+                    key={brand}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-purple-500 hover:shadow-md transition-all cursor-pointer"
+                    onClick={() => setBrandFilter(brand === 'No Brand' ? '' : brand)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900 truncate">{brand}</h4>
+                      {brandFilter === brand && (
+                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Filtered</span>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-2xl font-bold text-purple-600">{counts.total}</p>
+                      <p className="text-xs text-gray-600">Total Units</p>
+                      <p className="text-sm text-green-600">{counts.available} available</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null;
+        })()}
+
         {/* Loading */}
         {loading ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
@@ -427,10 +535,16 @@ export default function FinishedGoodsInventoryPage() {
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Product
+                        Photo
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        QR Code
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Category
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                        Brand
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                         Crate #
@@ -461,7 +575,7 @@ export default function FinishedGoodsInventoryPage() {
                   <tbody className="divide-y divide-gray-200">
                     {filteredInventory.length === 0 ? (
                       <tr>
-                        <td colSpan={10} className="px-6 py-12 text-center text-gray-500">
+                        <td colSpan={12} className="px-6 py-12 text-center text-gray-500">
                           No inventory found
                         </td>
                       </tr>
@@ -504,11 +618,41 @@ export default function FinishedGoodsInventoryPage() {
                             </div>
                           </td>
 
+                          {/* QR Code */}
+                          <td className="px-6 py-4">
+                            <div className="flex flex-col items-center gap-1">
+                              <div className="w-16 h-16 bg-white border-2 border-gray-300 rounded flex items-center justify-center">
+                                <img
+                                  src={`https://api.qrserver.com/v1/create-qr-code/?size=64x64&data=${encodeURIComponent(item.sku)}`}
+                                  alt={`QR: ${item.sku}`}
+                                  className="w-14 h-14"
+                                />
+                              </div>
+                              <button
+                                onClick={() => window.open(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(item.sku)}`, '_blank')}
+                                className="text-xs text-blue-600 hover:text-blue-800"
+                              >
+                                Print
+                              </button>
+                            </div>
+                          </td>
+
                           {/* Category */}
                           <td className="px-6 py-4">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               {item.category}
                             </span>
+                          </td>
+
+                          {/* Brand */}
+                          <td className="px-6 py-4">
+                            {item.brand ? (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {item.brand}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 text-sm">-</span>
+                            )}
                           </td>
 
                           {/* Crate Numbers */}
@@ -701,6 +845,12 @@ export default function FinishedGoodsInventoryPage() {
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Product Name</label>
                       <p className="text-lg text-gray-900">{selectedProduct.product_name}</p>
                     </div>
+                    {selectedProduct.brand && (
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-1">Brand</label>
+                        <p className="text-lg text-gray-900">{selectedProduct.brand}</p>
+                      </div>
+                    )}
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Size</label>
                       <p className="text-lg text-gray-900">{selectedProduct.size_code}</p>
@@ -725,16 +875,35 @@ export default function FinishedGoodsInventoryPage() {
                     </div>
                   </div>
 
-                  {/* Price Fields (Editable) */}
+                  {/* Editable Fields */}
                   <div className="border-t pt-4 mt-4">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Pricing</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Edit Product Details</h3>
+
+                    {/* Brand Field */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Brand
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedProduct.brand || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          brand: e.target.value || null,
+                        })}
+                        placeholder="e.g., Reefer's Inn, Nike, Adidas"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      />
+                    </div>
+
+                    {/* Price Fields */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                           Price
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none">₱</span>
                           <input
                             type="number"
                             step="0.01"
@@ -744,7 +913,7 @@ export default function FinishedGoodsInventoryPage() {
                               price: e.target.value ? parseFloat(e.target.value) : null,
                             })}
                             placeholder="0.00"
-                            className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="w-full pl-11 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                           />
                         </div>
                       </div>
@@ -753,7 +922,7 @@ export default function FinishedGoodsInventoryPage() {
                           Sale Price
                         </label>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₱</span>
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none">₱</span>
                           <input
                             type="number"
                             step="0.01"
@@ -763,7 +932,7 @@ export default function FinishedGoodsInventoryPage() {
                               sale_price: e.target.value ? parseFloat(e.target.value) : null,
                             })}
                             placeholder="0.00"
-                            className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="w-full pl-11 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                           />
                         </div>
                         {selectedProduct.price && selectedProduct.sale_price && selectedProduct.sale_price < selectedProduct.price && (
@@ -788,13 +957,14 @@ export default function FinishedGoodsInventoryPage() {
                     </button>
                     <button
                       onClick={() => handleUpdateProduct({
+                        brand: selectedProduct.brand,
                         price: selectedProduct.price,
                         sale_price: selectedProduct.sale_price,
                       })}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold flex items-center justify-center gap-2"
                     >
                       <HydrationSafeIcon Icon={Edit2} className="w-4 h-4" />
-                      Update Prices
+                      Update Product
                     </button>
                   </div>
                 </div>

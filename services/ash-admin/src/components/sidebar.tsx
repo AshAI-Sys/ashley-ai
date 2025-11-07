@@ -230,12 +230,6 @@ export default function Sidebar() {
     {
       name: "Inventory",
       href: "/inventory",
-      icon: "PackageSearch",
-      department: "Inventory",
-    },
-    {
-      name: "Finished Goods",
-      href: "/inventory/finished-goods",
       icon: "PackageCheck",
       department: "Inventory",
     },

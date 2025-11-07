@@ -15,6 +15,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const { workspaceId } = user;
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
+    const brand = searchParams.get('brand');
     const crate_number = searchParams.get('crate_number');
     const search = searchParams.get('search');
 
@@ -27,6 +28,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where.category = category;
     }
 
+    if (brand) {
+      where.brand = brand;
+    }
+
     if (crate_number) {
       where.crate_number = crate_number;
     }
@@ -36,6 +41,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         { sku: { contains: search, mode: 'insensitive' } },
         { color: { contains: search, mode: 'insensitive' } },
         { serial: { contains: search, mode: 'insensitive' } },
+        { brand: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -67,13 +73,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const inventoryMap = new Map();
 
     finishedUnits.forEach((unit) => {
-      const key = `${unit.sku}-${unit.size_code}-${unit.color || 'default'}`;
+      const key = `${unit.sku}-${unit.size_code}-${unit.color || 'default'}-${unit.brand || 'default'}`;
 
       if (!inventoryMap.has(key)) {
         inventoryMap.set(key, {
           sku: unit.sku,
           product_name: unit.order.design_name || 'Unknown Product',
           category: unit.category || 'APPAREL',
+          brand: unit.brand,
           size_code: unit.size_code,
           color: unit.color,
           product_image_url: unit.product_image_url,
@@ -135,6 +142,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       product_image_url,
       crate_number,
       category,
+      brand,
       packed = false,
     } = body;
 
@@ -156,6 +164,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         product_image_url,
         crate_number,
         category,
+        brand,
         packed,
       },
       include: {
@@ -192,6 +201,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       product_image_url,
       crate_number,
       category,
+      brand,
       packed,
       color,
       serial,
@@ -213,6 +223,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         ...(product_image_url !== undefined && { product_image_url }),
         ...(crate_number !== undefined && { crate_number }),
         ...(category !== undefined && { category }),
+        ...(brand !== undefined && { brand }),
         ...(packed !== undefined && { packed }),
         ...(color !== undefined && { color }),
         ...(serial !== undefined && { serial }),

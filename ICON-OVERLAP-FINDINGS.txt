@@ -1,0 +1,53 @@
+COMPREHENSIVE ICON OVERLAP ANALYSIS
+Generated: 2025-11-07
+Total Files Affected: 20 TSX files
+Total Instances Found: 34 instances
+
+CRITICAL FINDINGS:
+
+HIGH SEVERITY (6 files) - pl-9 padding with left-3 icons:
+1. clients/page.tsx - Line 139-144: Search icon, pl-9 needs pl-11
+2. designs/page.tsx - Line 220-225: Search icon, pl-9 needs pl-11
+3. hr-payroll/page.tsx - Line 506-511: Search icon, pl-9 needs pl-11
+4. orders/page.tsx - Line 168-173: Search icon, pl-9 needs pl-11
+5. sewing/operations/page.tsx - Line 532-537: Search icon, pl-9 needs pl-11
+6. sewing/page.tsx - Line 587-594: Search icon, pl-9 needs pl-11
+
+MEDIUM SEVERITY (11 files) - pl-10 padding with left-3 icons:
+7. admin/onboarding/page.tsx - Line 321-327: Search icon, pl-10 needs pl-11
+8. admin/users/page.tsx - Line 264-270: Search icon, pl-10 needs pl-11
+9. capa/page.tsx - Line 337-341: Search icon, pl-10 needs pl-11
+10. delivery/page.tsx - Line 484-488: Search icon, pl-10 needs pl-11
+11. finishing-packing/page.tsx - Line 443-447: Search icon, pl-10 needs pl-11
+12. inventory/retail/admin/page.tsx - Line 208-214: Search icon, pl-10 needs pl-11
+13. inventory/retail/cashier/page.tsx:
+    - Line 214-221: QrCode icon, pl-10 needs pl-11
+    - Line 342-349: Percent icon, pl-10 needs pl-11
+    - Line 360-367: Percent icon, pl-10 needs pl-11
+14. quality-control/capa/page.tsx - Line 324-328: Search icon, pl-10 needs pl-11
+15. quality-control/page.tsx - Line 432-436: Search icon, pl-10 needs pl-11
+
+SPECIAL CASES (2 files) - Currency symbols with pl-8:
+16. inventory/finished-goods/page.tsx:
+    - Line 798-808: Price currency symbol, pl-8 needs pl-11
+    - Line 817-827: Sale price currency symbol, pl-8 needs pl-11
+
+CORRECTLY IMPLEMENTED (3 files) - Already have proper padding and pointer-events-none:
+✓ admin/audit/page.tsx - Line 310: Has pl-11 (audit already done)
+✓ inventory/finished-goods/page.tsx - Lines 395-401: Has pl-11 and pointer-events-none
+✓ inventory/finished-goods/page.tsx - Lines 407-411: Has pl-11 and pointer-events-none
+✓ inventory/qr-generator/page.tsx - Line 268-274: Has pl-11 and pointer-events-none
+
+REQUIRED PATTERN FIX:
+Change from: className="absolute left-3 ... "
+Change to: className="absolute left-3 ... pointer-events-none"
+
+Change from: className="... pl-9 ..."
+Change to: className="... pl-11 ..."
+
+Change from: className="... pl-10 ..."
+Change to: className="... pl-11 ..."
+
+Change from: className="... pl-8 ..."
+Change to: className="... pl-11 ..."
+
