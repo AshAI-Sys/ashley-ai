@@ -45,12 +45,21 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
       setError("");
       setIsScanning(true);
 
-      // Initialize scanner
+      console.log("[Scanner] Starting camera initialization...");
+
+      // Step 1: Check if browser supports camera
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera not supported in this browser. Please use Chrome, Edge, or Safari.");
+      }
+
+      // Step 2: Initialize barcode scanner
+      console.log("[Scanner] Initializing barcode reader...");
       const reader = new BrowserMultiFormatReader();
       readerRef.current = reader;
 
-      // Get available video devices
+      // Step 3: Get available video devices
       const videoInputDevices = await reader.listVideoInputDevices();
+      console.log("[Scanner] Found cameras:", videoInputDevices.length);
 
       if (videoInputDevices.length === 0) {
         throw new Error("No camera found on this device");
@@ -63,15 +72,19 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
           device.label.toLowerCase().includes("rear")
       );
       const selectedDevice = backCamera || videoInputDevices[0];
+      console.log("[Scanner] Using camera:", selectedDevice.label);
 
-      // Start decoding
-      reader.decodeFromVideoDevice(
-        selectedDevice!.deviceId,
+      // Step 4: Start continuous decoding from video device
+      console.log("[Scanner] Starting video decode...");
+      await reader.decodeFromVideoDevice(
+        selectedDevice.deviceId,
         videoRef.current!,
         (result, error) => {
           if (result) {
             const code = result.getText();
             const format = result.getBarcodeFormat().toString();
+
+            console.log("[Scanner] Code scanned:", code, format);
 
             // Vibrate on successful scan
             if ("vibrate" in navigator) {
@@ -92,19 +105,27 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
           }
 
           if (error && !(error instanceof NotFoundException)) {
-            console.error("Scan error:", error);
+            console.error("[Scanner] Scan error:", error);
           }
         }
       );
 
-      // Store stream for torch control
+      // Step 5: Store stream for torch control
       if (videoRef.current?.srcObject) {
         setCameraStream(videoRef.current.srcObject as MediaStream);
+        console.log("[Scanner] Camera stream stored for torch control");
       }
+
+      console.log("[Scanner] Scanner started successfully!");
     } catch (err: any) {
-      console.error("Camera error:", err);
+      console.error("[Scanner] Camera error:", err);
       setError(err.message || "Failed to access camera");
       setIsScanning(false);
+
+      // Clean up if reader was initialized
+      if (readerRef.current) {
+        readerRef.current.reset();
+      }
     }
   };
 

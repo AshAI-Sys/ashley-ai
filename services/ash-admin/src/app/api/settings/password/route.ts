@@ -93,12 +93,6 @@ export const PUT = requireAuth(async (request: NextRequest, authUser) => {
         { status: 400 }
       );
   }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(new_password)) {
-      return NextResponse.json(
-        { error: "Password must contain a special character" },
-        { status: 400 }
-      );
-  }
 
     // Hash new password (10 rounds - optimized for speed while maintaining security)
     const passwordHash = await bcrypt.hash(new_password, 10);

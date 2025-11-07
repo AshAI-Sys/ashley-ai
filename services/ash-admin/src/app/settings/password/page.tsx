@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import {
   Lock,
   Eye,
@@ -18,6 +19,7 @@ import toast from "react-hot-toast";
 
 export default function PasswordSettingsPage() {
   const router = useRouter();
+  const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -34,7 +36,6 @@ export default function PasswordSettingsPage() {
     hasUppercase: false,
     hasLowercase: false,
     hasNumber: false,
-    hasSpecialChar: false,
   });
 
   const validatePassword = (password: string) => {
@@ -43,7 +44,6 @@ export default function PasswordSettingsPage() {
       hasUppercase: /[A-Z]/.test(password),
       hasLowercase: /[a-z]/.test(password),
       hasNumber: /[0-9]/.test(password),
-      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
     });
   };
 
@@ -87,6 +87,7 @@ export default function PasswordSettingsPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           current_password: formData.currentPassword,
@@ -113,7 +114,6 @@ export default function PasswordSettingsPage() {
         hasUppercase: false,
         hasLowercase: false,
         hasNumber: false,
-        hasSpecialChar: false,
       });
     } catch (error: any) {
       toast.error(error.message || "Failed to change password");
@@ -227,10 +227,6 @@ export default function PasswordSettingsPage() {
                 <PasswordRequirement
                   met={passwordStrength.hasNumber}
                   text="One number (0-9)"
-                />
-                <PasswordRequirement
-                  met={passwordStrength.hasSpecialChar}
-                  text="One special character (!@#$%^&*)"
                 />
               </div>
             </div>

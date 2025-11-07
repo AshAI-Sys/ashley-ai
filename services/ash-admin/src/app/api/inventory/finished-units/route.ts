@@ -47,8 +47,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           select: {
             id: true,
             order_number: true,
-            product_name: true,
-            quantity: true,
+            design_name: true,
+            total_amount: true,
             client: {
               select: {
                 name: true,
@@ -72,11 +72,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       if (!inventoryMap.has(key)) {
         inventoryMap.set(key, {
           sku: unit.sku,
-          product_name: unit.order.product_name,
+          product_name: unit.order.design_name || 'Unknown Product',
           category: unit.category || 'APPAREL',
           size_code: unit.size_code,
           color: unit.color,
           product_image_url: unit.product_image_url,
+          price: unit.price ? parseFloat(unit.price.toString()) : null,
+          sale_price: unit.sale_price ? parseFloat(unit.sale_price.toString()) : null,
           crate_numbers: new Set(),
           total_quantity: 0,
           packed_quantity: 0,
