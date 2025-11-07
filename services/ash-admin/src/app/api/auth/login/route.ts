@@ -8,6 +8,9 @@ import bcrypt from 'bcryptjs';
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 
+// Prevent static generation
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
