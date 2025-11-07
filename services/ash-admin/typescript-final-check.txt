@@ -1,0 +1,8 @@
+src/app/login/page.tsx(28,43): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(data: string): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+  Overload 2 of 2, '(data: string): string', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+src/lib/google-sheets-sync.ts(400,15): error TS2339: Property 'paid_amount' does not exist on type '{ client: { address: string | null; id: string; name: string; email: string | null; is_active: boolean; contact_person: string | null; phone: string | null; tax_id: string | null; payment_terms: number | null; ... 5 more ...; portal_settings: string | null; }; } & { ...; }'.

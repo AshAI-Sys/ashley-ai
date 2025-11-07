@@ -36,14 +36,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           { order_number: { contains: searchTerm, mode: 'insensitive' } },
           { po_number: { contains: searchTerm, mode: 'insensitive' } },
           { design_name: { contains: searchTerm, mode: 'insensitive' } },
-          { client: { company_name: { contains: searchTerm, mode: 'insensitive' } } },
+          { client: { name: { contains: searchTerm, mode: 'insensitive' } } },
         ],
       },
       include: {
         client: {
           select: {
             id: true,
-            company_name: true,
+            name: true,
           },
         },
       },
@@ -56,7 +56,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       where: {
         workspace_id: workspaceId,
         OR: [
-          { company_name: { contains: searchTerm, mode: 'insensitive' } },
+          { name: { contains: searchTerm, mode: 'insensitive' } },
           { contact_person: { contains: searchTerm, mode: 'insensitive' } },
           { email: { contains: searchTerm, mode: 'insensitive' } },
         ],
@@ -65,23 +65,28 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       orderBy: { created_at: 'desc' },
     });
 
-    // Search inventory products (if they exist)
+    // Search inventory products - using FinishedUnit model
     let products: any[] = [];
     try {
-      products = await prisma.product.findMany({
+      const finishedUnits = await prisma.finishedUnit.findMany({
         where: {
           workspace_id: workspaceId,
           OR: [
-            { name: { contains: searchTerm, mode: 'insensitive' } },
             { sku: { contains: searchTerm, mode: 'insensitive' } },
-            { barcode: { contains: searchTerm, mode: 'insensitive' } },
+            { serial: { contains: searchTerm, mode: 'insensitive' } },
           ],
         },
         take: 10,
         orderBy: { created_at: 'desc' },
       });
+      products = finishedUnits.map((unit) => ({
+        id: unit.id,
+        name: unit.sku,
+        sku: unit.sku,
+        price: unit.price ? Number(unit.price) : 0,
+      }));
     } catch (error) {
-      // Product table might not exist, ignore error
+      // Product search failed, ignore error
       console.log('Product search skipped:', error);
     }
 
@@ -94,15 +99,15 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           id: order.id,
           type: 'order',
           title: order.order_number,
-          subtitle: order.client.company_name,
-          description: order.design_name || `${order.quantity} pcs`,
+          subtitle: order.client.name,
+          description: order.design_name || 'Order',
           status: order.status,
           url: `/orders/${order.id}`,
         })),
         clients: clients.map((client) => ({
           id: client.id,
           type: 'client',
-          title: client.company_name,
+          title: client.name,
           subtitle: client.contact_person,
           description: client.email,
           url: `/clients/${client.id}`,

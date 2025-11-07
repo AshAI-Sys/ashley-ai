@@ -72,6 +72,11 @@ export function Scanner({ onScan, onClose }: ScannerProps) {
           device.label.toLowerCase().includes("rear")
       );
       const selectedDevice = backCamera || videoInputDevices[0];
+
+      if (!selectedDevice) {
+        throw new Error("No video input devices available");
+      }
+
       console.log("[Scanner] Using camera:", selectedDevice.label);
 
       // Step 4: Start continuous decoding from video device

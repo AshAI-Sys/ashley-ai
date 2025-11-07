@@ -255,33 +255,34 @@ export async function syncInventoryToSheets(workspaceId: string) {
     const sheets = await getGoogleSheetsClient();
     const spreadsheetId = await getOrCreateSpreadsheet();
 
-    const inventory = await prisma.inventoryItem.findMany({
+    // Using FinishedUnit as the inventory model
+    const inventory = await prisma.finishedUnit.findMany({
       where: { workspace_id: workspaceId },
-      orderBy: { updated_at: 'desc' },
+      orderBy: { created_at: 'desc' },
       take: 5000,
     });
 
     const headers = [
-      'Item Name',
       'SKU',
+      'Size',
+      'Color',
       'Category',
-      'Unit',
-      'Quantity',
-      'Reorder Point',
-      'Unit Cost',
-      'Location',
+      'Brand',
+      'Crate',
+      'Price',
+      'Packed',
       'Last Updated',
     ];
 
-    const rows = inventory.map(item => [
-      item.name,
+    const rows = inventory.map((item: any) => [
       item.sku || '',
+      item.size_code || '',
+      item.color || '',
       item.category || '',
-      item.unit || '',
-      item.quantity,
-      item.reorder_point || 0,
-      item.unit_cost || 0,
-      item.location || '',
+      item.brand || '',
+      item.crate_number || '',
+      item.price || 0,
+      item.packed ? 'Yes' : 'No',
       item.updated_at.toISOString().split('T')[0],
     ]);
 
@@ -315,7 +316,7 @@ export async function syncProductionToSheets(workspaceId: string) {
     const sheets = await getGoogleSheetsClient();
     const spreadsheetId = await getOrCreateSpreadsheet();
 
-    const cuttingRuns = await prisma.cuttingRun.findMany({
+    const cuttingRuns = await prisma.cutLay.findMany({
       where: { workspace_id: workspaceId },
       include: { order: true },
       orderBy: { created_at: 'desc' },
@@ -323,21 +324,21 @@ export async function syncProductionToSheets(workspaceId: string) {
     });
 
     const headers = [
-      'Run Number',
+      'Lay Number',
       'Order',
-      'Status',
-      'Total Bundles',
+      'Fabric Type',
+      'Total Layers',
       'Total Pieces',
       'Efficiency %',
       'Started At',
       'Completed At',
     ];
 
-    const rows = cuttingRuns.map(run => [
-      run.run_number,
+    const rows = cuttingRuns.map((run: any) => [
+      run.lay_number || '',
       run.order?.order_number || '',
-      run.status,
-      run.total_bundles || 0,
+      run.fabric_type || '',
+      run.total_layers || 0,
       run.total_pieces || 0,
       run.efficiency_percentage || 0,
       run.started_at?.toISOString().split('T')[0] || '',
@@ -396,11 +397,11 @@ export async function syncFinanceToSheets(workspaceId: string) {
       invoice.invoice_number,
       invoice.client?.name || '',
       invoice.total_amount,
-      invoice.amount_paid || 0,
+      invoice.status === 'paid' ? invoice.total_amount : 0, // Approximate paid amount based on status
       invoice.status,
       invoice.due_date?.toISOString().split('T')[0] || '',
       invoice.issue_date.toISOString().split('T')[0],
-      invoice.payment_method || '',
+      invoice.notes || '',
     ]);
 
     await sheets.spreadsheets.values.clear({
@@ -455,7 +456,7 @@ export async function syncHRToSheets(workspaceId: string) {
       emp.position || '',
       emp.department || '',
       emp.salary_type || '',
-      emp.salary_amount || 0,
+      emp.base_salary || emp.piece_rate || 0,
       emp.is_active ? 'Active' : 'Inactive',
       emp.hire_date?.toISOString().split('T')[0] || '',
     ]);

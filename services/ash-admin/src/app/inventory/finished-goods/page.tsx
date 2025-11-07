@@ -113,26 +113,10 @@ export default function FinishedGoodsInventoryPage() {
       const uploadResult = await uploadResponse.json();
       const imageUrl = uploadResult.url;
 
-      // Update all finished units with this SKU
-      const unitsToUpdate = inventory
-        .filter(item => item.sku === sku)
-        .flatMap(item => item.units?.map((u: any) => u.id) || []);
+      // Note: Image URL is now uploaded. The inventory will be updated when we refresh.
+      // Individual units would need to be updated separately via the API if needed.
 
-      if (unitsToUpdate.length > 0) {
-        await fetch('/api/inventory/finished-units', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            ids: unitsToUpdate,
-            updates: { product_image_url: imageUrl },
-          }),
-        });
-      }
-
-      // Refresh inventory
+      // Refresh inventory to show updated data
       await fetchInventory();
     } catch (err) {
       alert((err as Error).message);
@@ -178,6 +162,7 @@ export default function FinishedGoodsInventoryPage() {
           sku: result.material.sku || sku,
           product_name: result.material.name || result.material.product_name || 'Unknown Product',
           category: result.material.category || 'UNCATEGORIZED',
+          brand: result.material.brand || null,
           size_code: result.material.size_code || 'N/A',
           color: result.material.color || null,
           product_image_url: result.material.product_image_url || null,
@@ -236,8 +221,12 @@ export default function FinishedGoodsInventoryPage() {
       const lines = importData.trim().split('\n');
       const sheetData = [];
 
+      if (lines.length === 0) {
+        throw new Error('No data found in import file');
+      }
+
       // Get header row to detect format
-      const headerLine = lines[0].trim();
+      const headerLine = lines[0]?.trim() || '';
       const headers = headerLine.includes('\t') ? headerLine.split('\t') : headerLine.split(',');
       const headerMap = headers.map(h => h.trim().toLowerCase());
 
@@ -252,7 +241,7 @@ export default function FinishedGoodsInventoryPage() {
 
       // Skip header row (first line)
       for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
+        const line = lines[i]?.trim();
         if (!line) continue;
 
         // Split by tab or comma
@@ -261,9 +250,9 @@ export default function FinishedGoodsInventoryPage() {
         // Get SKU from either SCAN PRODUCT or SKU column
         let sku = '';
         if (scanProductIndex >= 0 && columns[scanProductIndex]) {
-          sku = columns[scanProductIndex].trim();
+          sku = columns[scanProductIndex]?.trim() || '';
         } else if (skuIndex >= 0 && columns[skuIndex]) {
-          sku = columns[skuIndex].trim();
+          sku = columns[skuIndex]?.trim() || '';
         }
 
         if (!sku) continue; // Skip if no SKU
@@ -271,19 +260,19 @@ export default function FinishedGoodsInventoryPage() {
         // Extract size from SKU if not provided (e.g., R001US -> S, R208UL -> L)
         let size = 'N/A';
         if (sizeIndex >= 0 && columns[sizeIndex]) {
-          size = columns[sizeIndex].trim();
+          size = columns[sizeIndex]?.trim() || 'N/A';
         } else {
           // Try to extract size from SKU
           const sizeMatch = sku.match(/U(XS|S|M|L|XL|2XL|3XL|XXL)$/i);
-          if (sizeMatch) {
+          if (sizeMatch && sizeMatch[1]) {
             size = sizeMatch[1].toUpperCase();
           }
         }
 
-        const quantity = quantityIndex >= 0 ? (parseInt(columns[quantityIndex].trim()) || 0) : 0;
-        const crate = crateIndex >= 0 ? columns[crateIndex].trim() : '';
-        const price = priceIndex >= 0 ? (parseFloat(columns[priceIndex].trim()) || 450.00) : 450.00;
-        const salePrice = salePriceIndex >= 0 ? (columns[salePriceIndex].trim() ? parseFloat(columns[salePriceIndex].trim()) : null) : null;
+        const quantity = quantityIndex >= 0 && columns[quantityIndex] ? (parseInt(columns[quantityIndex]?.trim() || '0') || 0) : 0;
+        const crate = crateIndex >= 0 && columns[crateIndex] ? (columns[crateIndex]?.trim() || '') : '';
+        const price = priceIndex >= 0 && columns[priceIndex] ? (parseFloat(columns[priceIndex]?.trim() || '0') || 450.00) : 450.00;
+        const salePrice = salePriceIndex >= 0 && columns[salePriceIndex] ? (columns[salePriceIndex]?.trim() ? parseFloat(columns[salePriceIndex]?.trim() || '0') : null) : null;
         const status = quantity > 0 ? 'Available' : 'Out of Stock';
 
         sheetData.push({

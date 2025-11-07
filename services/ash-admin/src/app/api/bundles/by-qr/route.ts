@@ -66,9 +66,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         bundle_id: bundle.id,
       },
       include: {
-        operation: {
+        operator: {
           select: {
-            name: true,
+            first_name: true,
+            last_name: true,
           },
         },
       },

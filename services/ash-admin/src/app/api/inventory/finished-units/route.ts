@@ -171,7 +171,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
         order: {
           select: {
             order_number: true,
-            product_name: true,
+            design_name: true,
           },
         },
       },
@@ -232,7 +232,7 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
         order: {
           select: {
             order_number: true,
-            product_name: true,
+            design_name: true,
           },
         },
       },

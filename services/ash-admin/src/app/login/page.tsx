@@ -25,7 +25,11 @@ export default function LoginPage() {
         // Verify token is still valid by checking expiration
         try {
           // Decode JWT token to check expiration (JWT format: header.payload.signature)
-          const payload = JSON.parse(atob(token.split('.')[1]));
+          const parts = token.split('.');
+          if (parts.length !== 3 || !parts[1]) {
+            throw new Error('Invalid token format');
+          }
+          const payload = JSON.parse(atob(parts[1]));
           const expiration = payload.exp * 1000; // Convert to milliseconds
           const now = Date.now();
 
