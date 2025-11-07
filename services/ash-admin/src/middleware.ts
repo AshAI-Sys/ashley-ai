@@ -249,7 +249,10 @@ export async function middleware(request: NextRequest) {
   );
   const isAPI = pathname.startsWith("/api/");
   const isAuthEndpoint =
-    pathname.includes("/auth/login") || pathname.includes("/auth/register");
+    pathname.includes("/auth/login") ||
+    pathname.includes("/auth/register") ||
+    pathname.includes("/auth/forgot-password") ||
+    pathname.includes("/auth/reset-password");
   const isWebhook = pathname.includes("/webhooks/");
   const isAnalytics = pathname.startsWith("/api/analytics/");
 
