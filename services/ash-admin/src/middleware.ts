@@ -255,10 +255,11 @@ export async function middleware(request: NextRequest) {
     pathname.includes("/auth/reset-password");
   const isWebhook = pathname.includes("/webhooks/");
   const isAnalytics = pathname.startsWith("/api/analytics/");
+  const isAdminUnlock = pathname.includes("/api/admin/unlock-account");
 
   // Skip CSRF for development or specific endpoints
   const skipCSRF =
-    process.env.NODE_ENV === "development" || isAuthEndpoint || isWebhook || isAnalytics;
+    process.env.NODE_ENV === "development" || isAuthEndpoint || isWebhook || isAnalytics || isAdminUnlock;
 
   if (isStateChanging && isAPI && !skipCSRF) {
     if (!(await verifyCSRFToken(request))) {
