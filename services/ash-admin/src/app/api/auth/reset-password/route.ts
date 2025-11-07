@@ -5,8 +5,6 @@ import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
 import bcrypt from 'bcryptjs';
 import { z } from "zod";
-import { requireAuth } from "@/lib/auth-middleware";
-
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 
@@ -15,7 +13,7 @@ const ResetPasswordSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
@@ -116,7 +114,7 @@ console.log("✅ Password reset successful for user:", user.email);
       },
       { status: 200 }
     );
-  
+
   } catch (error: any) {
     console.error("Reset password error:", error);
     return NextResponse.json(
@@ -129,4 +127,4 @@ console.log("✅ Password reset successful for user:", user.email);
       { status: 500 }
     );
   }
-});
+}
