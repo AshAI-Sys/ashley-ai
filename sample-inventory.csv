@@ -1,0 +1,18 @@
+SKU,Product Name,Category,Brand,Size,Color,Crate Number,Price,Sale Price,Quantity
+RI-TSHIRT-001,Reefer's Inn T-Shirt Black,T-SHIRT,Reefer's Inn,S,Black,A-1,250,200,20
+RI-TSHIRT-001,Reefer's Inn T-Shirt Black,T-SHIRT,Reefer's Inn,M,Black,A-1,250,200,50
+RI-TSHIRT-001,Reefer's Inn T-Shirt Black,T-SHIRT,Reefer's Inn,L,Black,A-2,250,200,40
+RI-TSHIRT-001,Reefer's Inn T-Shirt Black,T-SHIRT,Reefer's Inn,XL,Black,A-2,250,200,30
+RI-POLO-001,Reefer's Inn Polo White,POLO,Reefer's Inn,S,White,B-1,350,300,15
+RI-POLO-001,Reefer's Inn Polo White,POLO,Reefer's Inn,M,White,B-1,350,300,30
+RI-POLO-001,Reefer's Inn Polo White,POLO,Reefer's Inn,L,White,B-2,350,300,25
+RI-POLO-001,Reefer's Inn Polo White,POLO,Reefer's Inn,XL,White,B-2,350,300,20
+RI-HOODIE-001,Reefer's Inn Hoodie Gray,HOODIE,Reefer's Inn,M,Gray,C-1,650,550,20
+RI-HOODIE-001,Reefer's Inn Hoodie Gray,HOODIE,Reefer's Inn,L,Gray,C-1,650,550,30
+RI-HOODIE-001,Reefer's Inn Hoodie Gray,HOODIE,Reefer's Inn,XL,Gray,C-2,650,550,25
+RI-JACKET-001,Reefer's Inn Jacket Navy,JACKET,Reefer's Inn,M,Navy,D-1,850,750,10
+RI-JACKET-001,Reefer's Inn Jacket Navy,JACKET,Reefer's Inn,L,Navy,D-1,850,750,15
+RI-JACKET-001,Reefer's Inn Jacket Navy,JACKET,Reefer's Inn,XL,Navy,D-2,850,750,12
+RI-PANTS-001,Reefer's Inn Pants Black,PANTS,Reefer's Inn,30,Black,E-1,450,380,18
+RI-PANTS-001,Reefer's Inn Pants Black,PANTS,Reefer's Inn,32,Black,E-1,450,380,25
+RI-PANTS-001,Reefer's Inn Pants Black,PANTS,Reefer's Inn,34,Black,E-2,450,380,20
