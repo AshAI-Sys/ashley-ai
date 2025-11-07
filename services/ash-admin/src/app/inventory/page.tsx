@@ -13,6 +13,7 @@ import {
   Search, Download,
   Upload,
 } from "lucide-react";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 export default function InventoryPage() {
   const [activeTab, setActiveTab] = useState<
@@ -52,7 +53,7 @@ export default function InventoryPage() {
         <div className="rounded-lg bg-white p-4 shadow">
           <p className="mb-1 text-sm text-gray-600">Stock Value</p>
           <p className="text-2xl font-bold text-green-600">
-            â‚±{(summary.total_value / 1000000).toFixed(1)}M
+            ₱{(summary.total_value / 1000000).toFixed(1)}M
           </p>
         </div>
 
@@ -80,7 +81,7 @@ export default function InventoryPage() {
         <div className="rounded-lg border border-purple-200 bg-purple-50 p-4">
           <p className="mb-1 text-sm text-purple-700">Monthly Waste</p>
           <p className="text-2xl font-bold text-purple-800">
-            â‚±{(summary.monthly_waste_cost / 1000).toFixed(0)}K
+            ₱{(summary.monthly_waste_cost / 1000).toFixed(0)}K
           </p>
         </div>
       </div>
@@ -110,7 +111,7 @@ export default function InventoryPage() {
                       : "border-transparent text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  <Icon className="mr-2 inline-block h-5 w-5" />
+                  <HydrationSafeIcon Icon={Icon} className="mr-2 inline-block h-5 w-5" />
                   {tab.label}
                 </button>
               );
@@ -174,7 +175,7 @@ function MaterialsTab() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div className="relative max-w-md flex-1">
-          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" />
+          <HydrationSafeIcon Icon={Search} className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-500" />
           <input
             type="text"
             placeholder="Search materials by SKU or name..."
@@ -187,14 +188,14 @@ function MaterialsTab() {
             onClick={() => router.push("/inventory/scan-barcode")}
             className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-gray-600 hover:bg-gray-50"
           >
-            <QrCode className="h-4 w-4" />
+            <HydrationSafeIcon Icon={QrCode} className="h-4 w-4" />
             Scan Barcode
           </button>
           <button
             onClick={() => router.push("/inventory/add-material")}
             className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
-            <Plus className="h-4 w-4" />
+            <HydrationSafeIcon Icon={Plus} className="h-4 w-4" />
             Add Material
           </button>
         </div>
@@ -261,7 +262,7 @@ function MaterialsTab() {
                     {mat.reorder} {mat.unit}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                    â‚±{mat.cost.toFixed(2)}
+                    ₱{mat.cost.toFixed(2)}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-sm">
                     <button
@@ -329,7 +330,7 @@ function SuppliersTab() {
             <div className="mb-4 flex items-start justify-between">
               <h3 className="font-semibold text-gray-900">{supplier.name}</h3>
               <div className="flex items-center gap-1">
-                <span className="text-yellow-500">â˜…</span>
+                <span className="text-yellow-500">★</span>
                 <span className="text-sm font-medium">{supplier.rating}</span>
               </div>
             </div>
@@ -472,7 +473,7 @@ function PurchaseOrdersTab() {
                   {order.delivery}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                  â‚±{order.amount.toLocaleString()}
+                  ₱{order.amount.toLocaleString()}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <span
@@ -590,7 +591,7 @@ function AlertsTab() {
                         : "text-yellow-700"
                     }`}
                   >
-                    {stockAlert.message} â€¢ Current: {stockAlert.current} /
+                    {stockAlert.message} • Current: {stockAlert.current} /
                     Threshold: {stockAlert.threshold}
                   </p>
                 </div>

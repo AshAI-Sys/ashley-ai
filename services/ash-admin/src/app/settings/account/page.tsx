@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import {
   Save,
   User,
@@ -18,6 +19,7 @@ import toast from "react-hot-toast";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
+  const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -37,7 +39,11 @@ export default function AccountSettingsPage() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("/api/settings/account");
+      const response = await fetch("/api/settings/account", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setFormData({
@@ -91,6 +97,9 @@ export default function AccountSettingsPage() {
     try {
       const response = await fetch("/api/settings/avatar", {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -116,6 +125,9 @@ export default function AccountSettingsPage() {
     try {
       const response = await fetch("/api/settings/avatar", {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
@@ -148,6 +160,7 @@ export default function AccountSettingsPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           name: formData.name,

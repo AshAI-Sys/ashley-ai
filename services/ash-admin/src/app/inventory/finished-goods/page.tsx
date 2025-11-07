@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { Package, Search, Filter, Upload, Image as ImageIcon, QrCode, X, Edit2, Keyboard } from 'lucide-react';
+import { Package, Search, Filter, Upload, Image as ImageIcon, QrCode, X, Edit2, Keyboard, FileSpreadsheet } from 'lucide-react';
 import Image from 'next/image';
 import { Scanner } from '@/components/mobile/Scanner';
 import HydrationSafeIcon from '@/components/hydration-safe-icon';
@@ -49,6 +49,9 @@ export default function FinishedGoodsInventoryPage() {
   const [selectedProduct, setSelectedProduct] = useState<ProductDetails | null>(null);
   const [manualSKU, setManualSKU] = useState('');
   const [showManualEntry, setShowManualEntry] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importData, setImportData] = useState('');
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     fetchInventory();
@@ -216,6 +219,79 @@ export default function FinishedGoodsInventoryPage() {
     }
   };
 
+  const handleImport = async () => {
+    if (!importData.trim()) {
+      alert('Please paste your Google Sheets data');
+      return;
+    }
+
+    try {
+      setImporting(true);
+
+      // Parse CSV data (tab-separated or comma-separated)
+      const lines = importData.trim().split('\n');
+      const sheetData = [];
+
+      // Skip header row (first line)
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        // Split by tab or comma
+        const columns = line.includes('\t') ? line.split('\t') : line.split(',');
+
+        // Expected format: SKU, Size, Crate, Quantity, Price, Sale Price, Status
+        if (columns.length >= 7) {
+          sheetData.push({
+            sku: columns[0].trim(),
+            size: columns[1].trim(),
+            crate: columns[2].trim(),
+            quantity: parseInt(columns[3].trim()) || 0,
+            price: parseFloat(columns[4].trim()) || 0,
+            salePrice: columns[5].trim() ? parseFloat(columns[5].trim()) : null,
+            status: columns[6].trim(),
+          });
+        }
+      }
+
+      if (sheetData.length === 0) {
+        throw new Error('No valid data found. Please check your format.');
+      }
+
+      // Import the data
+      const response = await fetch('/api/inventory/import-sheet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sheetData,
+          productName: "REEFER'S INN (Black)",
+          clientName: "Reefer's Inn",
+          orderNumber: 'ORD-REEFER-001',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to import data');
+      }
+
+      const result = await response.json();
+      alert(result.message);
+
+      // Reset and refresh
+      setImportData('');
+      setShowImportModal(false);
+      await fetchInventory();
+    } catch (err) {
+      alert((err as Error).message);
+    } finally {
+      setImporting(false);
+    }
+  };
+
   // Filter inventory based on search term
   const filteredInventory = inventory.filter(item => {
     const search = searchTerm.toLowerCase();
@@ -241,6 +317,13 @@ export default function FinishedGoodsInventoryPage() {
               </div>
             </div>
             <div className="flex gap-3">
+              <button
+                onClick={() => setShowImportModal(true)}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
+              >
+                <HydrationSafeIcon Icon={FileSpreadsheet} className="w-4 h-4" />
+                Import from Sheets
+              </button>
               <button
                 onClick={() => setShowManualEntry(true)}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
@@ -712,6 +795,97 @@ export default function FinishedGoodsInventoryPage() {
                     >
                       <HydrationSafeIcon Icon={Edit2} className="w-4 h-4" />
                       Update Prices
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Import from Google Sheets Modal */}
+        {showImportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Import from Google Sheets</h2>
+                    <p className="text-sm text-gray-600 mt-1">Copy and paste your inventory data from Google Sheets</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowImportModal(false);
+                      setImportData('');
+                    }}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <HydrationSafeIcon Icon={X} className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Instructions */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-blue-900 mb-2">Instructions:</h3>
+                    <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
+                      <li>Open your Google Sheets inventory</li>
+                      <li>Select all data (including header row)</li>
+                      <li>Copy (Ctrl+C or Cmd+C)</li>
+                      <li>Paste below (Ctrl+V or Cmd+V)</li>
+                    </ol>
+                    <p className="text-xs text-blue-700 mt-2">
+                      Expected format: SKU, Size, Crate, Quantity, Price, Sale Price, Status
+                    </p>
+                  </div>
+
+                  {/* Textarea for pasting data */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Paste your data here:
+                    </label>
+                    <textarea
+                      value={importData}
+                      onChange={(e) => setImportData(e.target.value)}
+                      placeholder="SKU	Size	Crate	Quantity	Price	Sale Price	Status
+R001US	SMALL	α16	6	450.00	350.00	Available
+R001UM	MEDIUM	α16	0	450.00		Out of Stock"
+                      rows={12}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent font-mono text-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {importData ? `${importData.split('\n').length} lines` : 'No data pasted yet'}
+                    </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4 border-t">
+                    <button
+                      onClick={() => {
+                        setShowImportModal(false);
+                        setImportData('');
+                      }}
+                      disabled={importing}
+                      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-3 rounded-lg font-semibold disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleImport}
+                      disabled={importing || !importData.trim()}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {importing ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Importing...
+                        </>
+                      ) : (
+                        <>
+                          <HydrationSafeIcon Icon={FileSpreadsheet} className="w-4 h-4" />
+                          Import Data
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>

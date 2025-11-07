@@ -22,7 +22,7 @@ function getSecurityHeaders(nonce: string) {
     "X-Content-Type-Options": "nosniff",
     "X-XSS-Protection": "1; mode=block",
     "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Permissions-Policy": "camera=(self), microphone=(), geolocation=()",
     "Content-Security-Policy": createCSPHeader(nonce),
   };
 }

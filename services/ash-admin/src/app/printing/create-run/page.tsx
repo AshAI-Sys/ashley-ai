@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface Order {
   id: string;
@@ -378,7 +379,7 @@ export default function CreatePrintRunPage() {
       <div className="mb-6 flex items-center gap-4">
         <Link href="/printing">
           <Button variant="outline" size="sm">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <HydrationSafeIcon Icon={ArrowLeft} className="mr-2 h-4 w-4" />
             Back to Printing
           </Button>
         </Link>
@@ -476,12 +477,10 @@ export default function CreatePrintRunPage() {
               {formData.method ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 rounded-lg border bg-green-50 p-4">
-                    {React.createElement(
-                      methodIcons[formData.method as keyof typeof methodIcons],
-                      {
-                        className: "w-6 h-6 text-green-600",
-                      }
-                    )}
+                    <HydrationSafeIcon
+                      Icon={methodIcons[formData.method as keyof typeof methodIcons]}
+                      className="w-6 h-6 text-green-600"
+                    />
                     <div>
                       <h3 className="font-medium">{formData.method}</h3>
                       <p className="text-sm text-muted-foreground">
@@ -512,7 +511,7 @@ export default function CreatePrintRunPage() {
                       className="flex items-center gap-3 rounded-lg border p-4 text-left transition-colors hover:border-blue-500 hover:bg-blue-50"
                       onClick={() => setFormData({ ...formData, method })}
                     >
-                      <Icon className="h-6 w-6 text-blue-600" />
+                      <HydrationSafeIcon Icon={Icon} className="h-6 w-6 text-blue-600" />
                       <div>
                         <h3 className="font-medium">{method}</h3>
                         <p className="text-sm text-muted-foreground">
@@ -642,7 +641,7 @@ export default function CreatePrintRunPage() {
               "Creating..."
             ) : (
               <>
-                <Printer className="mr-2 h-4 w-4" />
+                <HydrationSafeIcon Icon={Printer} className="mr-2 h-4 w-4" />
                 Create Print Run
               </>
             )}

@@ -1,45 +1,36 @@
-const { PrismaClient } = require("./packages/database/dist/index.js");
+const { PrismaClient } = require('@prisma/client');
 
-const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: "file:./packages/database/prisma/dev.db",
-    },
-  },
-});
+const prisma = new PrismaClient();
 
 async function checkUser() {
   try {
-    // Check for user with email containing 'kelvin'
-    const users = await prisma.user.findMany({
-      where: {
-        email: {
-          contains: "kelvin",
-        },
-      },
+    const user = await prisma.user.findFirst({
+      where: { email: 'ashai.system@gmail.com' },
       select: {
         id: true,
         email: true,
         first_name: true,
         last_name: true,
-        workspace_id: true,
-      },
+        email_verified: true,
+        is_active: true,
+        password_hash: true,
+        created_at: true
+      }
     });
 
-    console.log('Users with email containing "kelvin":');
-    console.log(JSON.stringify(users, null, 2));
-
-    // Check workspace with slug 'reefer'
-    const workspace = await prisma.workspace.findUnique({
-      where: {
-        slug: "reefer",
-      },
-    });
-
-    console.log('\nWorkspace with slug "reefer":');
-    console.log(JSON.stringify(workspace, null, 2));
+    if (user) {
+      console.log('✅ User Account Status:');
+      console.log('Email:', user.email);
+      console.log('Name:', user.first_name, user.last_name);
+      console.log('Email Verified:', user.email_verified ? '✅ TRUE' : '❌ FALSE');
+      console.log('Active:', user.is_active ? '✅ TRUE' : '❌ FALSE');
+      console.log('Password Hash:', user.password_hash ? `✅ EXISTS (${user.password_hash.length} chars)` : '❌ MISSING');
+      console.log('Created:', user.created_at);
+    } else {
+      console.log('❌ User not found');
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error.message);
   } finally {
     await prisma.$disconnect();
   }

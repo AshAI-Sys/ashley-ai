@@ -42,20 +42,30 @@ async function seedReefersInn() {
       });
     }
 
-    // Create order for Reefer's Inn Black T-Shirt
-    const order = await prisma.order.create({
-      data: {
-        workspace_id: workspace.id,
-        client_id: client.id,
+    // Get or create order for Reefer's Inn Black T-Shirt
+    let order = await prisma.order.findFirst({
+      where: {
         order_number: 'ORD-REEFER-001',
-        design_name: 'REEFER\'S INN (Black)',
-        total_amount: 10250.00, // Total order amount
-        status: 'PRODUCTION',
-        delivery_date: new Date('2025-12-01'),
+        workspace_id: workspace.id
       }
     });
 
-    console.log('✅ Order created:', order.order_number);
+    if (!order) {
+      order = await prisma.order.create({
+        data: {
+          workspace_id: workspace.id,
+          client_id: client.id,
+          order_number: 'ORD-REEFER-001',
+          design_name: 'REEFER\'S INN (Black)',
+          total_amount: 10250.00, // Total order amount
+          status: 'PRODUCTION',
+          delivery_date: new Date('2025-12-01'),
+        }
+      });
+      console.log('✅ Order created:', order.order_number);
+    } else {
+      console.log('✅ Order already exists:', order.order_number);
+    }
 
     // Create finished units for each size with crate numbers
     const sizes = [
@@ -66,6 +76,17 @@ async function seedReefersInn() {
       { size: '2XL', sku: 'R001U2XL', crate: 'G-9', qty: 5, price: 500.00, salePrice: 400.00 },
       { size: '3XL', sku: 'R001U3XL', crate: 'G-9', qty: 0, price: 500.00, salePrice: null },
     ];
+
+    // Delete existing finished units for this order to avoid duplicates
+    const deleted = await prisma.finishedUnit.deleteMany({
+      where: {
+        order_id: order.id,
+        workspace_id: workspace.id
+      }
+    });
+    if (deleted.count > 0) {
+      console.log(`🗑️  Deleted ${deleted.count} existing units`);
+    }
 
     for (const sizeData of sizes) {
       if (sizeData.qty > 0) {

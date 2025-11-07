@@ -2539,6 +2539,8 @@ model FinishedUnit {
   product_image_url String?          // Product photo for inventory display
   crate_number      String?          // Storage location (e.g., "α16", "G-9")
   category          String?          // Product category (e.g., "T-SHIRT", "POLO")
+  price             Decimal?         @db.Decimal(10, 2) // Product price
+  sale_price        Decimal?         @db.Decimal(10, 2) // Sale/discounted price
   packed            Boolean         @default(false)
   created_at        DateTime        @default(now())
   carton_contents   CartonContent[]

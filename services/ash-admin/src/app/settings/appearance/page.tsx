@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { Save, Palette, Sun, Check, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,7 @@ type ColorScheme = "blue" | "green" | "purple" | "orange" | "red";
 
 export default function AppearanceSettingsPage() {
   const router = useRouter();
+  const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [_theme] = useState<Theme>("light");
   const [colorScheme, setColorScheme] = useState<ColorScheme>("blue");
@@ -30,7 +32,11 @@ export default function AppearanceSettingsPage() {
 
   const fetchAppearanceSettings = async () => {
     try {
-      const response = await fetch("/api/settings/appearance");
+      const response = await fetch("/api/settings/appearance", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         const data = await response.json();
         setColorScheme(data.color_scheme || "blue");
@@ -52,6 +58,7 @@ export default function AppearanceSettingsPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           theme: "light",

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Camera, CheckCircle, AlertCircle } from "lucide-react";
 import { Scanner } from "@/components/mobile/Scanner";
+import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 export default function ScanBarcodePage() {
   const router = useRouter();
@@ -67,7 +68,7 @@ export default function ScanBarcodePage() {
             onClick={() => router.push("/inventory")}
             className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <HydrationSafeIcon Icon={ArrowLeft} className="h-5 w-5" />
             Back to Inventory
           </button>
           <h1 className="text-3xl font-bold text-gray-900">Scan Barcode</h1>
@@ -79,7 +80,7 @@ export default function ScanBarcodePage() {
         {/* Success Message */}
         {success && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border-2 border-green-300 bg-green-50 p-4 text-sm font-semibold text-green-800">
-            <CheckCircle className="h-5 w-5" />
+            <HydrationSafeIcon Icon={CheckCircle} className="h-5 w-5" />
             {success}
           </div>
         )}
@@ -87,7 +88,7 @@ export default function ScanBarcodePage() {
         {/* Error Message */}
         {error && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border-2 border-red-300 bg-red-50 p-4 text-sm font-semibold text-red-800">
-            <AlertCircle className="h-5 w-5" />
+            <HydrationSafeIcon Icon={AlertCircle} className="h-5 w-5" />
             {error}
           </div>
         )}
@@ -113,13 +114,13 @@ export default function ScanBarcodePage() {
             {!isScanning ? (
               <div className="text-center">
                 <div className="mx-auto mb-4 flex h-64 w-64 items-center justify-center rounded-lg bg-gray-100">
-                  <Camera className="h-32 w-32 text-gray-500" />
+                  <HydrationSafeIcon Icon={Camera} className="h-32 w-32 text-gray-500" />
                 </div>
                 <button
                   onClick={() => setIsScanning(true)}
                   className="mx-auto flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
                 >
-                  <Camera className="h-5 w-5" />
+                  <HydrationSafeIcon Icon={Camera} className="h-5 w-5" />
                   Start Camera Scanner
                 </button>
                 <p className="mt-2 text-xs text-gray-500">

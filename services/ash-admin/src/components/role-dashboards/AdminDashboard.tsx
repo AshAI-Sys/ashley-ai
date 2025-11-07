@@ -189,10 +189,10 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Total Revenue</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{formatCurrency(stats?.totalRevenue || 0)}</p>
-              <p className="text-sm font-medium text-green-600 mt-2 flex items-center">
+              <div className="text-sm font-medium text-green-600 mt-2 flex items-center">
                 <HydrationSafeIcon Icon={TrendingUp} className="w-4 h-4 mr-1.5" />
                 {stats?.totalOrders || 0} orders
-              </p>
+              </div>
             </div>
             <div className="bg-green-50 p-3.5 rounded-xl">
               <HydrationSafeIcon Icon={DollarSign} className="w-7 h-7 text-green-600" />
@@ -205,10 +205,10 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Active Orders</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.totalOrders || 0}</p>
-              <p className="text-sm font-medium text-blue-600 mt-2 flex items-center">
+              <div className="text-sm font-medium text-blue-600 mt-2 flex items-center">
                 <HydrationSafeIcon Icon={Package} className="w-4 h-4 mr-1.5" />
                 {stats?.ordersInProduction || 0} in production
-              </p>
+              </div>
             </div>
             <div className="bg-blue-50 p-3.5 rounded-xl">
               <HydrationSafeIcon Icon={Package} className="w-7 h-7 text-blue-600" />
@@ -221,10 +221,10 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Total Clients</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.totalClients || 0}</p>
-              <p className="text-sm font-medium text-purple-600 mt-2 flex items-center">
+              <div className="text-sm font-medium text-purple-600 mt-2 flex items-center">
                 <HydrationSafeIcon Icon={Building2} className="w-4 h-4 mr-1.5" />
                 Active partnerships
-              </p>
+              </div>
             </div>
             <div className="bg-purple-50 p-3.5 rounded-xl">
               <HydrationSafeIcon Icon={Building2} className="w-7 h-7 text-purple-600" />
@@ -237,10 +237,10 @@ export default function AdminDashboard() {
             <div className="flex-1">
               <p className="text-sm font-semibold text-gray-600 mb-1.5">Employees</p>
               <p className="text-3xl font-bold text-gray-900" style={{ letterSpacing: '-0.02em' }}>{stats?.activeEmployees || 0}</p>
-              <p className="text-sm font-medium text-orange-600 mt-2 flex items-center">
+              <div className="text-sm font-medium text-orange-600 mt-2 flex items-center">
                 <HydrationSafeIcon Icon={Users} className="w-4 h-4 mr-1.5" />
                 Active workforce
-              </p>
+              </div>
             </div>
             <div className="bg-orange-50 p-3.5 rounded-xl">
               <HydrationSafeIcon Icon={Users} className="w-7 h-7 text-orange-600" />
