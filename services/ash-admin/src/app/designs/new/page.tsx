@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { BackButton } from '@/components/ui/back-button';
 // Unused import removed: Badge
 // Unused import removed: Separator
 import { Progress } from "@/components/ui/progress";
@@ -569,6 +570,7 @@ export default function NewDesignPage() {
 
   return (
     <div className="container mx-auto py-6">
+      <BackButton />
       <div className="mb-6">
         <h1 className="text-3xl font-bold">Upload New Design</h1>
         <p className="text-muted-foreground">

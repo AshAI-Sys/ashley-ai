@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Warehouse, Package, ArrowRightLeft, Edit, FileText, Plus, Minus, CheckCircle, XCircle } from 'lucide-react';
+import { BackButton } from '@/components/ui/back-button';
 
 type Tab = 'delivery' | 'transfer' | 'adjust' | 'report';
 
@@ -218,6 +219,8 @@ export default function WarehousePage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-5xl mx-auto">
+        <BackButton />
+
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">

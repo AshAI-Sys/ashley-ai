@@ -15,7 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Building, X, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/lib/auth-context";
 
 interface Client {
   id: string;
