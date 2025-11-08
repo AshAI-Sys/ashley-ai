@@ -4,7 +4,7 @@
  * Implements secure token rotation with refresh tokens
  */
 
-import { getRedisClient } from "./redis/client";
+import { getRedisClient } from "./redis";
 import { generateToken } from "./jwt";
 import { UserRole } from "./auth-guards";
 import crypto from "crypto";

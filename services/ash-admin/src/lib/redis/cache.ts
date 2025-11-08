@@ -1,4 +1,4 @@
-import { getRedisClient } from "./client";
+import { getRedisClient } from "../redis";
 
 /**
  * Redis Cache Service

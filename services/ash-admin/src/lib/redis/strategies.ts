@@ -304,7 +304,7 @@ export async function warmCache(workspaceId: string) {
  * Cache statistics
  */
 export async function getCacheStats() {
-  const redis = (await import("./client")).getRedisClient();
+  const redis = (await import("../redis")).getRedisClient();
 
   try {
     const info = await redis.info("stats");

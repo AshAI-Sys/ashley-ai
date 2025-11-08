@@ -13,16 +13,24 @@ function getResendClient(): Resend | null {
   return resendClient;
 }
 
-interface EmailOptions {
-  to: string;
+export interface EmailOptions {
+  to: string | string[];
   subject: string;
   html: string;
   text?: string;
   from?: string;
   replyTo?: string;
+  reply_to?: string; // Alias for replyTo
+  cc?: string | string[];
+  bcc?: string | string[];
+  attachments?: Array<{
+    filename: string;
+    content: string | Buffer;
+    content_type?: string;
+  }>;
 }
 
-interface EmailResult {
+export interface EmailResult {
   success: boolean;
   id?: string;
   error?: string;
@@ -57,11 +65,13 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
         options.from ||
         process.env.EMAIL_FROM ||
         "Ashley AI <noreply@ashleyai.com>",
-      to: options.to,
+      to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,
       html: options.html,
       text: options.text,
-      replyTo: options.replyTo,
+      replyTo: options.replyTo || options.reply_to,
+      cc: options.cc,
+      bcc: options.bcc,
     });
 
     if (result.error) {

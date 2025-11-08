@@ -4,7 +4,7 @@
  * Prevents brute force attacks by locking accounts after failed login attempts
  */
 
-import { getRedisClient } from "./redis/client";
+import { getRedisClient } from "./redis";
 
 // Lazy initialization - only create Redis client when needed
 function getRedis() {
