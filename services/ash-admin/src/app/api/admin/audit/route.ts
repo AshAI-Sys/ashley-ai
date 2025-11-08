@@ -70,10 +70,13 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     const date_to = searchParams.get("date_to") || "";
     const search = searchParams.get("search") || "";
 
+    // Convert page to offset for database query
+    const offset = (page - 1) * limit;
+
     // Use getAuditLogs utility for real data
     const result = await getAuditLogs({
       workspaceId: user.workspace_id,
-      page,
+      offset,
       limit,
       action: action && action !== "all" ? action : undefined,
       resource,
@@ -317,7 +320,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       data: {
         audit_logs: finalLogs,
         pagination: {
-          page,
+          offset,
           limit,
           total: result.total > 0 ? result.total : demoAuditLogs.length,
           totalPages: result.total > 0 ? Math.ceil(result.total / limit) : 1,

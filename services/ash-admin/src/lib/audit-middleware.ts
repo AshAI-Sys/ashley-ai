@@ -26,14 +26,14 @@ export interface AuditContext {
  * @returns Wrapped handler with audit logging
  */
 export function withAudit<T = any>(
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse<T>>,
+  handler: (request: NextRequest, context?: any) => Promise<NextResponse<any>>,
   options: {
     resource: string; // Entity being modified (e.g., "order", "client")
     action?: "CREATE" | "UPDATE" | "DELETE"; // Optional: auto-detect if not provided
     captureOldValues?: boolean; // Default: true for UPDATE/DELETE
   }
 ) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse<T>> => {
+  return async (request: NextRequest, context?: any): Promise<NextResponse<any>> => {
     const { resource, action, captureOldValues = true } = options;
 
     // Extract user from context or request
@@ -88,7 +88,8 @@ export function withAudit<T = any>(
           user.id,
           oldValues,
           newData,
-          { ip_address: ipAddress, user_agent: userAgent }
+          ipAddress,
+          userAgent
         );
       } catch (error) {
         // Log error but don't fail the request

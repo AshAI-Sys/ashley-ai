@@ -163,7 +163,9 @@ export async function logDataChange(
   workspaceId: string,
   userId: string,
   oldValues?: Record<string, any>,
-  newValues?: Record<string, any>
+  newValues?: Record<string, any>,
+  ipAddress?: string,
+  userAgent?: string
 ): Promise<void> {
   await logAudit({
     workspaceId,
@@ -173,6 +175,8 @@ export async function logDataChange(
     resourceId,
     oldValues,
     newValues,
+    ipAddress,
+    userAgent,
   });
 }
 
