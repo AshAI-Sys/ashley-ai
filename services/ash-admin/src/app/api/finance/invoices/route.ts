@@ -13,6 +13,7 @@ import {
 } from "../../../../lib/error-handling";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { requireAuth } from "@/lib/auth-middleware";
+import { withAudit } from "@/lib/audit-middleware";
 import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
@@ -99,7 +100,8 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
 });
 
 export const POST = requireAnyPermission(["finance:create"])(
-  withErrorHandling(async (request: NextRequest, _user: any) => {
+  withAudit(
+    withErrorHandling(async (request: NextRequest, _user: any) => {
     const data = await request.json();
     const { brand_id,
       client_id,
@@ -271,5 +273,7 @@ export const POST = requireAnyPermission(["finance:create"])(
     await syncAfterChange("default", 'finance');
 
     return createSuccessResponse(invoice, 201);
-  })
+    }),
+    { resource: "invoice", action: "CREATE" }
+  )
 );

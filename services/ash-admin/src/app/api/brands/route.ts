@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
+import { withAudit } from "@/lib/audit-middleware";
 
 const CreateBrandSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
@@ -98,7 +99,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   }
 })
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(
+  withAudit(
+    async (request: NextRequest, _user) => {
   try {
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
@@ -182,9 +185,14 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-})
+    },
+    { resource: "brand", action: "CREATE" }
+  )
+)
 
-export const PUT = requireAuth(async (request: NextRequest, _user) => {
+export const PUT = requireAuth(
+  withAudit(
+    async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -276,9 +284,14 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-});
+    },
+    { resource: "brand", action: "UPDATE" }
+  )
+);
 
-export const DELETE = requireAuth(async (request: NextRequest, _user) => {
+export const DELETE = requireAuth(
+  withAudit(
+    async (request: NextRequest, _user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -337,4 +350,7 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
       { status: 500 }
     );
   }
-});
+    },
+    { resource: "brand", action: "DELETE" }
+  )
+);

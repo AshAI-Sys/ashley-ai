@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { withAudit } from "@/lib/audit-middleware";
 import { apiSuccess, apiNotFound, apiServerError } from "@/lib/api-response";
 import { logError, ErrorCategory } from "@/lib/error-logger";
 
@@ -65,74 +66,76 @@ export const GET = requireAuth(async (
 });
 
 // PUT /api/orders/[id] - Update order
-export const PUT = requireAuth(async (
-  request: NextRequest,
-  user,
-  context?: { params: { id: string } }
-) => {
-  try {
-    const orderId = context!.params.id;
-    const ____workspaceId = user.workspaceId;
-    const body = await request.json();
+export const PUT = requireAuth(
+  withAudit(
+    async (request: NextRequest, user, context?: { params: { id: string } }) => {
+      try {
+        const orderId = context!.params.id;
+        const ____workspaceId = user.workspaceId;
+        const body = await request.json();
 
-    const order = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        order_number: body.order_number,
-        client_id: body.client_id,
-        brand_id: body.brand_id || null,
-        status: body.status ? body.status.toLowerCase() : undefined,
-        total_amount: body.total_amount
-          ? parseFloat(body.total_amount)
-          : undefined,
-        currency: body.currency,
-        delivery_date: body.delivery_date
-          ? new Date(body.delivery_date)
-          : undefined,
-        notes: body.notes,
-      },
-      include: {
-        client: true,
-        brand: true,
-        _count: {
-          select: {
-            line_items: true,
+        const order = await prisma.order.update({
+          where: { id: orderId },
+          data: {
+            order_number: body.order_number,
+            client_id: body.client_id,
+            brand_id: body.brand_id || null,
+            status: body.status ? body.status.toLowerCase() : undefined,
+            total_amount: body.total_amount
+              ? parseFloat(body.total_amount)
+              : undefined,
+            currency: body.currency,
+            delivery_date: body.delivery_date
+              ? new Date(body.delivery_date)
+              : undefined,
+            notes: body.notes,
           },
-        },
-      },
-      });
+          include: {
+            client: true,
+            brand: true,
+            _count: {
+              select: {
+                line_items: true,
+              },
+            },
+          },
+        });
 
-      return apiSuccess(order, "Order updated successfully");
-  } catch (error) {
-    logError(error as Error, {
-      category: ErrorCategory.API,
-      orderId: context!.params.id,
-      operation: "update_order"
-    });
-    return apiServerError(error);
-  }
-});
+        return apiSuccess(order, "Order updated successfully");
+      } catch (error) {
+        logError(error as Error, {
+          category: ErrorCategory.API,
+          orderId: context!.params.id,
+          operation: "update_order",
+        });
+        return apiServerError(error);
+      }
+    },
+    { resource: "order", action: "UPDATE" }
+  )
+);
 
 // DELETE /api/orders/[id] - Delete order
-export const DELETE = requireAuth(async (
-  _request: NextRequest,
-  user,
-  context?: { params: { id: string } }
-) => {
-  try {
-    const orderId = context!.params.id;
-    const ____workspaceId = user.workspaceId;
-    await prisma.order.delete({
-      where: { id: orderId },
-    });
+export const DELETE = requireAuth(
+  withAudit(
+    async (_request: NextRequest, user, context?: { params: { id: string } }) => {
+      try {
+        const orderId = context!.params.id;
+        const ____workspaceId = user.workspaceId;
+        await prisma.order.delete({
+          where: { id: orderId },
+        });
 
-    return apiSuccess({ id: orderId }, "Order deleted successfully");
-  } catch (error) {
-    logError(error as Error, {
-      category: ErrorCategory.API,
-      orderId: context!.params.id,
-      operation: "delete_order"
-    });
-    return apiServerError(error);
-  }
-});
+        return apiSuccess({ id: orderId }, "Order deleted successfully");
+      } catch (error) {
+        logError(error as Error, {
+          category: ErrorCategory.API,
+          orderId: context!.params.id,
+          operation: "delete_order",
+        });
+        return apiServerError(error);
+      }
+    },
+    { resource: "order", action: "DELETE" }
+  )
+);

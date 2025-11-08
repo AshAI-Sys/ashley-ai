@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { withAudit } from "@/lib/audit-middleware";
 
 const prisma = db;
 
@@ -72,81 +73,79 @@ export const GET = requireAuth(async (
 });
 
 // PUT /api/clients/[id] - Update client
-export const PUT = requireAuth(async (
-  request: NextRequest,
-  _user,
-  context?: { params: { id: string } }
-) => {
-  try {
-    const body = await request.json();
+export const PUT = requireAuth(
+  withAudit(
+    async (request: NextRequest, _user, context?: { params: { id: string } }) => {
+      try {
+        const body = await request.json();
 
-    // Convert address object to JSON string if it's an object
-    const addressData =
-      body.address && typeof body.address === "object"
-        ? JSON.stringify(body.address)
-        : body.address;
+        // Convert address object to JSON string if it's an object
+        const addressData =
+          body.address && typeof body.address === "object"
+            ? JSON.stringify(body.address)
+            : body.address;
 
-    const client = await prisma.client.update({
-      where: { id: context!.params.id },
-      data: {
-        name: body.name,
-        contact_person: body.contact_person,
-        email: body.email,
-        phone: body.phone,
-        address: addressData,
-        tax_id: body.tax_id,
-        payment_terms: body.payment_terms ? parseInt(body.payment_terms) : null,
-        credit_limit: body.credit_limit ? parseFloat(body.credit_limit) : null,
-        is_active: body.is_active !== undefined ? body.is_active : true,
-      },
-      include: {
-        _count: {
-          select: {
-            orders: true,
-            brands: true,
+        const client = await prisma.client.update({
+          where: { id: context!.params.id },
+          data: {
+            name: body.name,
+            contact_person: body.contact_person,
+            email: body.email,
+            phone: body.phone,
+            address: addressData,
+            tax_id: body.tax_id,
+            payment_terms: body.payment_terms ? parseInt(body.payment_terms) : null,
+            credit_limit: body.credit_limit ? parseFloat(body.credit_limit) : null,
+            is_active: body.is_active !== undefined ? body.is_active : true,
           },
-        },
-      },
-    
+          include: {
+            _count: {
+              select: {
+                orders: true,
+                brands: true,
+              },
+            },
+          },
+        });
 
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: client,
-      message: "Client updated successfully",
-    });
-  } catch (error) {
-    console.error("Failed to update client:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update client" },
-      { status: 500 }
-    );
-  }
-});
+        return NextResponse.json({
+          success: true,
+          data: client,
+          message: "Client updated successfully",
+        });
+      } catch (error) {
+        console.error("Failed to update client:", error);
+        return NextResponse.json(
+          { success: false, error: "Failed to update client" },
+          { status: 500 }
+        );
+      }
+    },
+    { resource: "client", action: "UPDATE" }
+  )
+);
 
 // DELETE /api/clients/[id] - Delete client
-export const DELETE = requireAuth(async (
-  _request: NextRequest,
-  _user,
-  context?: { params: { id: string } }
-) => {
-  try {
-    await prisma.client.delete({
-      where: { id: context!.params.id },
-    
+export const DELETE = requireAuth(
+  withAudit(
+    async (_request: NextRequest, _user, context?: { params: { id: string } }) => {
+      try {
+        await prisma.client.delete({
+          where: { id: context!.params.id },
+        });
 
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: "Client deleted successfully",
-    });
-  } catch (error) {
-    console.error("Failed to delete client:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete client" },
-      { status: 500 }
-    );
-  }
-});
+        return NextResponse.json({
+          success: true,
+          message: "Client deleted successfully",
+        });
+      } catch (error) {
+        console.error("Failed to delete client:", error);
+        return NextResponse.json(
+          { success: false, error: "Failed to delete client" },
+          { status: 500 }
+        );
+      }
+    },
+    { resource: "client", action: "DELETE" }
+  )
+);

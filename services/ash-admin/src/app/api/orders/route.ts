@@ -13,6 +13,7 @@ import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 import { requireAuth } from "@/lib/auth-middleware";
+import { withAudit } from "@/lib/audit-middleware";
 
 const OrderLineItemSchema = z.object({
   productType: z.string().min(1, "Product type is required"),
@@ -156,84 +157,88 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
-    const workspaceId = user.workspaceId;
-    const body = await request.json();
-    const validatedData = CreateOrderSchema.parse(body);
+export const POST = requireAuth(
+  withAudit(
+    async (request: NextRequest, user) => {
+      try {
+        const workspaceId = user.workspaceId;
+        const body = await request.json();
+        const validatedData = CreateOrderSchema.parse(body);
 
-    // Generate order number if not provided
-    const orderNumber =
-      validatedData.orderNumber ||
-      `ORD-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
+        // Generate order number if not provided
+        const orderNumber =
+          validatedData.orderNumber ||
+          `ORD-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
 
-    // Create new order
-    const newOrder = await prisma.order.create({
-      data: {
-        workspace_id: workspaceId,
-        order_number: orderNumber,
-        client_id: validatedData.clientId,
-        brand_id: validatedData.brandId || null,
-        status: validatedData.status.toLowerCase(),
-        total_amount: validatedData.totalAmount,
-        currency: validatedData.currency,
-        delivery_date: validatedData.deliveryDate || null,
-        notes: validatedData.notes || null,
-        // New Order Details fields
-        po_number: validatedData.po_number || null,
-        order_type: validatedData.order_type || "NEW",
-        design_name: validatedData.design_name || null,
-        fabric_type: validatedData.fabric_type || null,
-        size_distribution: validatedData.size_distribution || null,
-        mockup_url: validatedData.mockup_url || null,
-      },
-      include: {
-        client: true,
-        brand: true,
-        _count: {
-          select: {
-            line_items: true,
+        // Create new order
+        const newOrder = await prisma.order.create({
+          data: {
+            workspace_id: workspaceId,
+            order_number: orderNumber,
+            client_id: validatedData.clientId,
+            brand_id: validatedData.brandId || null,
+            status: validatedData.status.toLowerCase(),
+            total_amount: validatedData.totalAmount,
+            currency: validatedData.currency,
+            delivery_date: validatedData.deliveryDate || null,
+            notes: validatedData.notes || null,
+            // New Order Details fields
+            po_number: validatedData.po_number || null,
+            order_type: validatedData.order_type || "NEW",
+            design_name: validatedData.design_name || null,
+            fabric_type: validatedData.fabric_type || null,
+            size_distribution: validatedData.size_distribution || null,
+            mockup_url: validatedData.mockup_url || null,
           },
-        },
-      },
-      });
+          include: {
+            client: true,
+            brand: true,
+            _count: {
+              select: {
+                line_items: true,
+              },
+            },
+          },
+        });
 
-    // Invalidate orders cache (non-blocking)
-    try {
-      await InvalidateCache.orders();
-    } catch (cacheError) {
-      console.warn("Failed to invalidate cache:", cacheError);
-      // Don't fail the request if cache invalidation fails
-    }
+        // Invalidate orders cache (non-blocking)
+        try {
+          await InvalidateCache.orders();
+        } catch (cacheError) {
+          console.warn("Failed to invalidate cache:", cacheError);
+          // Don't fail the request if cache invalidation fails
+        }
 
-    // Trigger auto-sync to Google Sheets (non-blocking)
-    await syncAfterChange(workspaceId, 'orders');
+        // Trigger auto-sync to Google Sheets (non-blocking)
+        await syncAfterChange(workspaceId, "orders");
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: { order: newOrder },
-        message: "Order created successfully",
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Validation failed",
-          details: error.errors,
-        },
-        { status: 400 }
-      );
-    }
+        return NextResponse.json(
+          {
+            success: true,
+            data: { order: newOrder },
+            message: "Order created successfully",
+          },
+          { status: 201 }
+        );
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: "Validation failed",
+              details: error.errors,
+            },
+            { status: 400 }
+          );
+        }
 
-    console.error("Error creating order:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create order" },
-      { status: 500 }
-    );
-  }
-  });
+        console.error("Error creating order:", error);
+        return NextResponse.json(
+          { success: false, error: "Failed to create order" },
+          { status: 500 }
+        );
+      }
+    },
+    { resource: "order", action: "CREATE" }
+  )
+);

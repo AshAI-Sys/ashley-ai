@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
+import { withAudit } from "@/lib/audit-middleware";
 import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
@@ -123,7 +124,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, user) => {
+export const POST = requireAuth(
+  withAudit(
+    async (request: NextRequest, user) => {
   try {
     const workspaceId = user.workspaceId;
     const body = await request.json();
@@ -224,4 +227,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       { status: 500 }
     );
   }
-});
+    },
+    { resource: "client", action: "CREATE" }
+  )
+);
