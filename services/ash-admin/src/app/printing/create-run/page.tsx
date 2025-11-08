@@ -27,6 +27,8 @@ import {
   Zap,
   Package2,
   Shirt,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -81,12 +83,40 @@ export default function CreatePrintRunPage() {
 
   const [formData, setFormData] = useState({
     routing_step_id: "",
-    machine_id: "",
     method: "",
-    target_qty: "",
+    machineAllocations: [{ machine_id: "", target_qty: "" }],
     priority: "NORMAL" as "LOW" | "NORMAL" | "HIGH" | "URGENT",
     notes: "",
   });
+
+  // Functions to manage machine allocations
+  const addMachine = () => {
+    setFormData({
+      ...formData,
+      machineAllocations: [
+        ...formData.machineAllocations,
+        { machine_id: "", target_qty: "" },
+      ],
+    });
+  };
+
+  const removeMachine = (index: number) => {
+    if (formData.machineAllocations.length > 1) {
+      const updated = formData.machineAllocations.filter((_, i) => i !== index);
+      setFormData({ ...formData, machineAllocations: updated });
+    }
+  };
+
+  const updateMachineAllocation = (
+    index: number,
+    field: "machine_id" | "target_qty",
+    value: string
+  ) => {
+    const updated = formData.machineAllocations.map((item, i) =>
+      i === index ? { ...item, [field]: value } : item
+    );
+    setFormData({ ...formData, machineAllocations: updated });
+  };
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -278,7 +308,12 @@ export default function CreatePrintRunPage() {
       ...formData,
       routing_step_id: "",
       method: "",
-      target_qty: order?.line_items[0]?.qty.toString() || "",
+      machineAllocations: [
+        {
+          machine_id: "",
+          target_qty: order?.line_items[0]?.qty.toString() || "",
+        },
+      ],
     });
   };
 
@@ -319,17 +354,35 @@ export default function CreatePrintRunPage() {
 
     if (!formData.routing_step_id)
       newErrors.routing_step_id = "Please select a routing step";
-    if (!formData.machine_id) newErrors.machine_id = "Please select a machine";
     if (!formData.method) newErrors.method = "Please select a printing method";
-    if (!formData.target_qty)
-      newErrors.target_qty = "Target quantity is required";
 
-    const targetQty = parseInt(formData.target_qty);
-    if (targetQty <= 0)
-      newErrors.target_qty = "Target quantity must be greater than 0";
+    // Validate machine allocations
+    if (formData.machineAllocations.length === 0) {
+      newErrors.machines = "At least one machine allocation is required";
+    } else {
+      formData.machineAllocations.forEach((allocation, index) => {
+        if (!allocation.machine_id) {
+          newErrors[`machine_${index}`] = "Please select a machine";
+        }
+        if (!allocation.target_qty) {
+          newErrors[`target_qty_${index}`] = "Target quantity is required";
+        }
+        const qty = parseInt(allocation.target_qty);
+        if (qty <= 0) {
+          newErrors[`target_qty_${index}`] = "Quantity must be greater than 0";
+        }
+      });
+    }
 
-    if (selectedOrder && targetQty > (selectedOrder.line_items[0]?.qty || 0)) {
-      newErrors.target_qty = `Cannot exceed order quantity (${selectedOrder.line_items[0]?.qty})`;
+    // Check total quantity against order
+    if (selectedOrder) {
+      const totalQty = formData.machineAllocations.reduce(
+        (sum, a) => sum + (parseInt(a.target_qty) || 0),
+        0
+      );
+      if (totalQty > (selectedOrder.line_items[0]?.qty || 0)) {
+        newErrors.total_qty = `Total quantity (${totalQty}) cannot exceed order quantity (${selectedOrder.line_items[0]?.qty})`;
+      }
     }
 
     setErrors(newErrors);
@@ -344,11 +397,21 @@ export default function CreatePrintRunPage() {
     setLoading(true);
 
     try {
+      // For now, send the first machine allocation (API expects single machine)
+      // TODO: Update API to support multiple machine allocations
+      const firstAllocation = formData.machineAllocations[0];
+
+      if (!firstAllocation) {
+        setErrors({ submit: "At least one machine allocation is required" });
+        setLoading(false);
+        return;
+      }
+
       const submitData = {
         routing_step_id: formData.routing_step_id,
-        machine_id: formData.machine_id,
+        machine_id: firstAllocation.machine_id,
         method: formData.method,
-        target_qty: parseInt(formData.target_qty),
+        target_qty: parseInt(firstAllocation.target_qty),
         priority: formData.priority,
         notes: formData.notes || undefined,
       };
@@ -478,8 +541,10 @@ export default function CreatePrintRunPage() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 rounded-lg border bg-green-50 p-4">
                     <HydrationSafeIcon
-                      Icon={methodIcons[formData.method as keyof typeof methodIcons]}
-                      className="w-6 h-6 text-green-600"
+                      Icon={
+                        methodIcons[formData.method as keyof typeof methodIcons]
+                      }
+                      className="h-6 w-6 text-green-600"
                     />
                     <div>
                       <h3 className="font-medium">{formData.method}</h3>
@@ -511,7 +576,10 @@ export default function CreatePrintRunPage() {
                       className="flex items-center gap-3 rounded-lg border p-4 text-left transition-colors hover:border-blue-500 hover:bg-blue-50"
                       onClick={() => setFormData({ ...formData, method })}
                     >
-                      <HydrationSafeIcon Icon={Icon} className="h-6 w-6 text-blue-600" />
+                      <HydrationSafeIcon
+                        Icon={Icon}
+                        className="h-6 w-6 text-blue-600"
+                      />
                       <div>
                         <h3 className="font-medium">{method}</h3>
                         <p className="text-sm text-muted-foreground">
@@ -537,57 +605,116 @@ export default function CreatePrintRunPage() {
         {formData.method && (
           <Card>
             <CardHeader>
-              <CardTitle>Machine & Quantity</CardTitle>
-              <CardDescription>
-                Select machine and set target quantity
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Machine & Quantity</CardTitle>
+                  <CardDescription>
+                    Select machines and set target quantities
+                  </CardDescription>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addMachine}
+                  className="flex items-center gap-2"
+                >
+                  <HydrationSafeIcon Icon={Plus} className="h-4 w-4" />
+                  Add Machine
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="machine">Machine</Label>
-                  <Select
-                    value={formData.machine_id}
-                    onValueChange={value =>
-                      setFormData({ ...formData, machine_id: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select machine" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getAvailableMachines().map(machine => (
-                        <SelectItem key={machine.id} value={machine.id}>
-                          {machine.name} (
-                          {machine.workcenter?.replace("_", " ") ||
-                            "No workcenter"}
-                          )
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.machine_id && (
-                    <p className="text-sm text-red-600">{errors.machine_id}</p>
-                  )}
-                </div>
+              {formData.machineAllocations.map((allocation, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-4 rounded-lg border p-4"
+                >
+                  <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor={`machine-${index}`}>Machine</Label>
+                      <Select
+                        value={allocation.machine_id}
+                        onValueChange={value =>
+                          updateMachineAllocation(index, "machine_id", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select machine" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getAvailableMachines().map(machine => (
+                            <SelectItem key={machine.id} value={machine.id}>
+                              {machine.name} (
+                              {machine.workcenter?.replace("_", " ") ||
+                                "No workcenter"}
+                              )
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="target_qty">Target Quantity</Label>
-                  <Input
-                    id="target_qty"
-                    type="number"
-                    min="1"
-                    value={formData.target_qty}
-                    onChange={e =>
-                      setFormData({ ...formData, target_qty: e.target.value })
-                    }
-                    placeholder="100"
-                  />
-                  {errors.target_qty && (
-                    <p className="text-sm text-red-600">{errors.target_qty}</p>
+                    <div className="space-y-2">
+                      <Label htmlFor={`target-qty-${index}`}>
+                        Target Quantity
+                      </Label>
+                      <Input
+                        id={`target-qty-${index}`}
+                        type="number"
+                        min="1"
+                        value={allocation.target_qty}
+                        onChange={e =>
+                          updateMachineAllocation(
+                            index,
+                            "target_qty",
+                            e.target.value
+                          )
+                        }
+                        placeholder="50"
+                      />
+                    </div>
+                  </div>
+
+                  {formData.machineAllocations.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeMachine(index)}
+                      className="mt-8 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    >
+                      <HydrationSafeIcon Icon={Trash2} className="h-4 w-4" />
+                    </Button>
                   )}
                 </div>
-              </div>
+              ))}
+
+              {/* Total Quantity Summary */}
+              {formData.machineAllocations.length > 1 && (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-blue-900">
+                      Total Allocated Quantity:
+                    </span>
+                    <span className="text-lg font-bold text-blue-900">
+                      {formData.machineAllocations.reduce(
+                        (sum, a) => sum + (parseInt(a.target_qty) || 0),
+                        0
+                      )}
+                    </span>
+                  </div>
+                  {selectedOrder && (
+                    <p className="mt-1 text-sm text-blue-700">
+                      Order Quantity: {selectedOrder.line_items[0]?.qty || 0}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {errors.total_qty && (
+                <p className="text-sm text-red-600">{errors.total_qty}</p>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="priority">Priority</Label>
@@ -634,7 +761,13 @@ export default function CreatePrintRunPage() {
           </Link>
           <Button
             type="submit"
-            disabled={loading || !formData.method || !formData.machine_id}
+            disabled={
+              loading ||
+              !formData.method ||
+              formData.machineAllocations.some(
+                a => !a.machine_id || !a.target_qty
+              )
+            }
             className="bg-blue-600 hover:bg-blue-700"
           >
             {loading ? (
