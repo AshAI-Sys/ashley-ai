@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
         id: session.client.id,
         name: session.client.name,
         email: session.client.email,
-        company: session.client.company,
+        contact_person: session.client.contact_person,
       },
       token: jwtToken,
       redirect_url: '/client-portal/dashboard',

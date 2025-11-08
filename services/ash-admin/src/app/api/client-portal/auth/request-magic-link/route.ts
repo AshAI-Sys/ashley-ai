@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    if (!client) {
+    if (!client || !client.email) {
       // Don't reveal if email exists for security
       return NextResponse.json({
         success: true,

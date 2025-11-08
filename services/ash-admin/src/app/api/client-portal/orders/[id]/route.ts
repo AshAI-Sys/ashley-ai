@@ -32,35 +32,42 @@ export async function GET(
             id: true,
             name: true,
             email: true,
-            company: true,
+            contact_person: true,
           },
         },
         design_assets: {
           select: {
             id: true,
-            file_url: true,
-            file_type: true,
-            approval_status: true,
-            approval_token: true,
+            name: true,
+            method: true,
+            status: true,
             created_at: true,
           },
         },
-        color_variants: {
+        line_items: {
           select: {
             id: true,
-            color_name: true,
+            description: true,
             quantity: true,
-            percentage: true,
-          },
-        },
-        garment_addons: {
-          select: {
-            id: true,
-            addon_type: true,
-            addon_name: true,
             unit_price: true,
-            quantity: true,
             total_price: true,
+            color_variants: {
+              select: {
+                id: true,
+                color_name: true,
+                quantity: true,
+                percentage: true,
+              },
+            },
+            garment_addons: {
+              select: {
+                id: true,
+                addon_type: true,
+                addon_name: true,
+                price_per_unit: true,
+                is_selected: true,
+              },
+            },
           },
         },
         order_files: {
@@ -69,15 +76,7 @@ export async function GET(
             file_type: true,
             file_url: true,
             file_name: true,
-            uploaded_at: true,
-          },
-        },
-        print_locations: {
-          select: {
-            id: true,
-            location: true,
-            width: true,
-            height: true,
+            created_at: true,
           },
         },
       },
@@ -105,8 +104,12 @@ export async function GET(
         invoice_number: true,
         status: true,
         total_amount: true,
-        paid_amount: true,
         due_date: true,
+        payments: {
+          select: {
+            amount: true,
+          },
+        },
         created_at: true,
       },
     });
@@ -155,11 +158,11 @@ async function calculate7StageProgress(orderId: string) {
   // Fetch production data
   const [designAssets, cuttingRuns, printRuns, sewingRuns, qcChecks, finishingRuns, shipments] =
     await Promise.all([
-      db.designAsset.count({ where: { order_id: orderId, approval_status: 'APPROVED' } }),
-      db.cuttingRun.count({ where: { order_id: orderId, status: 'COMPLETED' } }),
+      db.designAsset.count({ where: { order_id: orderId, status: 'APPROVED' } }),
+      db.cutLay.count({ where: { order_id: orderId } }),
       db.printRun.count({ where: { order_id: orderId, status: 'COMPLETED' } }),
       db.sewingRun.count({ where: { order_id: orderId, status: 'COMPLETED' } }),
-      db.qualityControlCheck.count({ where: { order_id: orderId, status: 'PASS' } }),
+      db.qCInspection.count({ where: { order_id: orderId, result: 'PASS' } }),
       db.finishingRun.count({ where: { order_id: orderId, status: 'COMPLETED' } }),
       db.shipment.count({ where: { order_id: orderId, status: 'DELIVERED' } }),
     ]);

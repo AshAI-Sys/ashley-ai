@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
             select: {
               id: true,
               order_number: true,
-              description: true,
+              status: true,
             },
           },
           invoice_items: {
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
               description: true,
               quantity: true,
               unit_price: true,
-              total_price: true,
+              line_total: true,
             },
           },
           payments: {
@@ -69,48 +69,59 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Calculate summary statistics
-    const [totalOwed, totalPaid, overdueCount] = await Promise.all([
-      db.invoice.aggregate({
-        where: {
-          workspace_id: session.workspace_id,
-          client_id: session.client_id,
-          status: {
-            in: ['PENDING', 'OVERDUE', 'PARTIAL'],
+    // Get all pending/overdue invoices with their payments
+    const pendingInvoices = await db.invoice.findMany({
+      where: {
+        workspace_id: session.workspace_id,
+        client_id: session.client_id,
+        status: {
+          in: ['PENDING', 'OVERDUE', 'PARTIAL'],
+        },
+      },
+      select: {
+        total_amount: true,
+        payments: {
+          select: {
+            amount: true,
           },
         },
-        _sum: {
-          total_amount: true,
-          paid_amount: true,
-        },
-      }),
-      db.payment.aggregate({
-        where: {
-          workspace_id: session.workspace_id,
-          client_id: session.client_id,
-          status: 'COMPLETED',
-        },
-        _sum: {
-          amount: true,
-        },
-      }),
-      db.invoice.count({
-        where: {
-          workspace_id: session.workspace_id,
-          client_id: session.client_id,
-          status: 'OVERDUE',
-        },
-      }),
-    ]);
+      },
+    });
 
-    const outstandingBalance =
-      (totalOwed._sum.total_amount || 0) - (totalOwed._sum.paid_amount || 0);
+    const totalOwedAmount = pendingInvoices.reduce((sum, inv) => {
+      const paidAmount = inv.payments.reduce((total, payment) => total + payment.amount, 0);
+      return sum + (inv.total_amount - paidAmount);
+    }, 0);
+
+    const totalPaid = await db.payment.aggregate({
+      where: {
+        workspace_id: session.workspace_id,
+        invoice: {
+          client_id: session.client_id,
+        },
+        status: 'COMPLETED',
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+
+    const overdueCount = await db.invoice.count({
+      where: {
+        workspace_id: session.workspace_id,
+        client_id: session.client_id,
+        status: 'OVERDUE',
+      },
+    });
+
+    const outstandingBalance = totalOwedAmount;
 
     return NextResponse.json({
       success: true,
       invoices,
       summary: {
         outstanding_balance: outstandingBalance,
-        total_paid: totalPaid._sum.amount || 0,
+        total_paid: totalPaid._sum?.amount || 0,
         overdue_count: overdueCount,
       },
       pagination: {

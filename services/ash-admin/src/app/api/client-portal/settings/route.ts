@@ -47,7 +47,6 @@ export async function GET(request: NextRequest) {
         name: true,
         email: true,
         phone: true,
-        company: true,
         address: true,
         contact_person: true,
       },
@@ -166,7 +165,6 @@ export async function PUT(request: NextRequest) {
       data: {
         name: name || undefined,
         phone: phone || undefined,
-        company: company || undefined,
         address: address || undefined,
         contact_person: contact_person || undefined,
       },

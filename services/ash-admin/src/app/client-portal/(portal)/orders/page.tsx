@@ -40,7 +40,7 @@ export default function OrdersPage() {
       DELIVERED: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Delivered' },
       CANCELLED: { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' },
     };
-    const c = config[status] || config.PENDING;
+    const c = (config[status] || config.PENDING)!;
     return <span className={`px-3 py-1 rounded-full text-xs font-medium ${c.bg} ${c.text}`}>{c.label}</span>;
   };
 

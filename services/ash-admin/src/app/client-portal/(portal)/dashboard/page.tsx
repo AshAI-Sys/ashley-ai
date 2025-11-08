@@ -96,7 +96,7 @@ export default function ClientDashboardPage() {
       CANCELLED: { bg: 'bg-red-100', text: 'text-red-800', label: 'Cancelled' },
     };
 
-    const config = statusConfig[status] || statusConfig.PENDING;
+    const config = (statusConfig[status] || statusConfig.PENDING)!;
     return (
       <span className={`px-3 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
         {config.label}

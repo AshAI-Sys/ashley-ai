@@ -115,12 +115,19 @@ export async function GET(request: NextRequest) {
       },
       select: {
         total_amount: true,
-        paid_amount: true,
+        payments: {
+          select: {
+            amount: true,
+          },
+        },
       },
     });
 
     const outstandingBalance = outstandingInvoices.reduce(
-      (sum, inv) => sum + (inv.total_amount - inv.paid_amount),
+      (sum, inv) => {
+        const paidAmount = inv.payments.reduce((total, payment) => total + payment.amount, 0);
+        return sum + (inv.total_amount - paidAmount);
+      },
       0
     );
 
@@ -141,7 +148,7 @@ export async function GET(request: NextRequest) {
           id: client.id,
           name: client.name,
           email: client.email,
-          company: client.company,
+          contact_person: client.contact_person,
           phone: client.phone,
         },
         stats: {
