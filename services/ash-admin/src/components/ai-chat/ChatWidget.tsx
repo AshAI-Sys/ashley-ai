@@ -10,6 +10,7 @@ import {
   Maximize2,
 } from "lucide-react";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
+import { useAuth } from "@/lib/auth-context";
 
 interface Message {
   id: string;
@@ -25,6 +26,7 @@ interface Conversation {
 }
 
 export function ChatWidget() {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -72,8 +74,8 @@ export function ChatWidget() {
         body: JSON.stringify({
           conversation_id: conversationId,
           message: userMessage,
-          workspace_id: "demo-workspace-1", // Using demo workspace
-          user_id: "cmg8yu1ke0001c81pbqgcamxu", // Using real demo user ID
+          workspace_id: user?.workspaceId || "demo-workspace-1", // Use real workspace or fallback
+          user_id: user?.id || "demo-user", // Use real user ID or fallback
         }),
       });
 
