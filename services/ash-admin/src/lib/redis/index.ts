@@ -9,7 +9,7 @@ export {
   closeRedis,
   isRedisAvailable,
   getRedisInfo,
-} from "./client";
+} from "../redis";
 
 // Cache service
 export {

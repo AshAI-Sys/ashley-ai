@@ -104,7 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     // Send verification email using Gmail SMTP
     try {
       const { sendEmailVerification } = await import(
-        "../../../../lib/gmail-email"
+        "../../../../lib/email"
       );
       await sendEmailVerification(user.email, {
         user_name: `${user.first_name} ${user.last_name}`,

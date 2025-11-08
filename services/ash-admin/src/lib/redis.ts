@@ -1,7 +1,7 @@
 ﻿import Redis from "ioredis";
 
 let redis: Redis | null = null;
-let isRedisAvailable = false;
+let _isRedisAvailable = false;
 
 // In-memory fallback for when Redis is not available
 const inMemoryStore = new Map<string, { value: string; expiry: number }>();
@@ -26,7 +26,7 @@ export function getRedisClient(): Redis | null {
           console.error(
             "âŒ Redis connection failed after 3 retries. Using in-memory fallback."
           );
-          isRedisAvailable = false;
+          _isRedisAvailable = false;
           return null;
         }
         return Math.min(times * 200, 2000);
@@ -39,12 +39,12 @@ export function getRedisClient(): Redis | null {
 
     redis.on("connect", () => {
       console.log("âœ… Redis connected successfully");
-      isRedisAvailable = true;
+      _isRedisAvailable = true;
     });
 
     redis.on("error", err => {
       console.error("âŒ Redis error:", err.message);
-      isRedisAvailable = false;
+      _isRedisAvailable = false;
     });
 
     return redis;
@@ -79,7 +79,7 @@ export const redisClient = {
   async get(key: string): Promise<string | null> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         return await client.get(key);
       }
     } catch (error) {
@@ -101,7 +101,7 @@ export const redisClient = {
   async set(key: string, value: string, expirySeconds?: number): Promise<void> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         if (expirySeconds) {
           await client.setex(key, expirySeconds, value);
         } else {
@@ -124,7 +124,7 @@ export const redisClient = {
   async del(key: string): Promise<void> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         await client.del(key);
         return;
       }
@@ -142,7 +142,7 @@ export const redisClient = {
   async incr(key: string): Promise<number> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         return await client.incr(key);
       }
     } catch (error) {
@@ -165,7 +165,7 @@ export const redisClient = {
   async expire(key: string, seconds: number): Promise<void> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         await client.expire(key, seconds);
         return;
       }
@@ -187,7 +187,7 @@ export const redisClient = {
   async ttl(key: string): Promise<number> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         return await client.ttl(key);
       }
     } catch (error) {
@@ -208,7 +208,7 @@ export const redisClient = {
   async deletePattern(pattern: string): Promise<void> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         const keys = await client.keys(pattern);
         if (keys.length > 0) {
           await client.del(...keys);
@@ -237,7 +237,7 @@ export const redisClient = {
   async flushall(): Promise<void> {
     try {
       const client = getRedisClient();
-      if (client && isRedisAvailable) {
+      if (client && _isRedisAvailable) {
         await client.flushall();
         return;
       }
@@ -253,7 +253,7 @@ export const redisClient = {
    * Check if Redis is connected
    */
   isConnected(): boolean {
-    return isRedisAvailable;
+    return _isRedisAvailable;
   },
 
   /**
@@ -263,18 +263,18 @@ export const redisClient = {
     if (redis) {
       await redis.quit();
       redis = null;
-      isRedisAvailable = false;
+      _isRedisAvailable = false;
     }
   },
 };
 
 /**
- * Check if Redis is available
+ * Check if Redis is available (alias for backward compatibility)
  */
-export async function checkRedisAvailable(): Promise<boolean> {
+export async function isRedisAvailable(): Promise<boolean> {
   try {
     const client = getRedisClient();
-    if (client && isRedisAvailable) {
+    if (client && redisClient.isConnected()) {
       await client.ping();
       return true;
     }
@@ -285,12 +285,26 @@ export async function checkRedisAvailable(): Promise<boolean> {
 }
 
 /**
+ * Check if Redis is available (legacy name)
+ */
+export async function checkRedisAvailable(): Promise<boolean> {
+  return isRedisAvailable();
+}
+
+/**
+ * Close Redis connection
+ */
+export async function closeRedis(): Promise<void> {
+  return redisClient.disconnect();
+}
+
+/**
  * Get Redis info
  */
 export async function getRedisInfo(): Promise<string | null> {
   try {
     const client = getRedisClient();
-    if (client && isRedisAvailable) {
+    if (client && redisClient.isConnected()) {
       return await client.info();
     }
     return null;

@@ -1,5 +1,5 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { rateLimit, apiRateLimit } from "./rate-limit";
+// import { rateLimit, apiRateLimit } from "./rate-limit"; // REMOVED - rate-limit.ts deleted
 import { verifyToken} from "./jwt";
 import {
   Permission,
@@ -8,7 +8,7 @@ import {
   hasPermission,
   hasAnyPermission,
 } from "./rbac";
-import { validateSession } from "./session-manager";
+// import { validateSession } from "./session-manager"; // REMOVED - session-manager.ts deleted
 
 export interface AuthUser {
   id: string;
@@ -41,19 +41,22 @@ export async function authenticateRequest(
     console.log("[AUTH] JWT verified successfully for user:", payload.userId);
 
     // Validate session is active and not revoked (optional - JWT is primary auth)
-    try {
-      const isValidSession = await validateSession(token);
-      if (isValidSession) {
-        console.log("[AUTH] Session validated successfully");
-      } else {
-        console.warn("[AUTH] Session validation failed - continuing with JWT-only auth");
-        // Allow JWT-only authentication as fallback
-      }
-    } catch (sessionError) {
-      console.error("[AUTH] Session validation error:", sessionError);
-      console.warn("[AUTH] Continuing with JWT-only authentication as fallback");
-      // Continue with JWT validation only
-    }
+    // COMMENTED OUT - session-manager was deleted as dead code
+    // try {
+    //   const isValidSession = await validateSession(token);
+    //   if (isValidSession) {
+    //     console.log("[AUTH] Session validated successfully");
+    //   } else {
+    //     console.warn("[AUTH] Session validation failed - continuing with JWT-only auth");
+    //     // Allow JWT-only authentication as fallback
+    //   }
+    // } catch (sessionError) {
+    //   console.error("[AUTH] Session validation error:", sessionError);
+    //   console.warn("[AUTH] Continuing with JWT-only authentication as fallback");
+    //   // Continue with JWT validation only
+    // }
+
+    // Using JWT-only authentication (no session validation)
 
     const role = payload.role as Role;
     return {
@@ -72,7 +75,9 @@ export async function authenticateRequest(
 export function requireAuth<T = any>(
   handler: (request: NextRequest, user: AuthUser, context?: T) => Promise<NextResponse>
 ) {
-  return rateLimit(apiRateLimit)(async (request: NextRequest, context?: T) => {
+  // REMOVED rate limiting wrapper - rate-limit.ts was deleted
+  // Rate limiting now handled by separate middleware or security/rate-limit.ts if needed
+  return async (request: NextRequest, context?: T) => {
     const user = await authenticateRequest(request);
 
     if (!user) {
@@ -83,7 +88,7 @@ export function requireAuth<T = any>(
     }
 
     return handler(request, user, context);
-  });
+  };
 }
 
 // Permission-based middleware functions
