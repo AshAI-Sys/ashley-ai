@@ -407,7 +407,14 @@ export default function CreatePrintRunPage() {
         return;
       }
 
+      if (!selectedOrder) {
+        setErrors({ submit: "Please select an order first" });
+        setLoading(false);
+        return;
+      }
+
       const submitData = {
+        order_id: selectedOrder.id, // REQUIRED by API
         routing_step_id: formData.routing_step_id,
         machine_id: firstAllocation.machine_id,
         method: formData.method,
