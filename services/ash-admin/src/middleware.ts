@@ -260,8 +260,8 @@ export async function middleware(request: NextRequest) {
   // Check if request has authentication token (JWT provides CSRF protection)
   const hasAuthToken =
     request.headers.get("Authorization")?.startsWith("Bearer ") ||
-    request.cookies.has("access_token") ||
-    request.cookies.has("refresh_token");
+    !!request.cookies.get("auth_token")?.value ||
+    !!request.cookies.get("refresh_token")?.value;
 
   // Skip CSRF for development, specific endpoints, or authenticated requests
   const skipCSRF =
