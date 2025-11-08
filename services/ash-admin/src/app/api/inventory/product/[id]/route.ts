@@ -34,6 +34,8 @@ export const GET = requirePermission('inventory:read')(
         workspace_id, // Only products in user's workspace
       },
       include: {
+        category: true,
+        brand: true,
         variants: {
           where: { id: variantId },
         },
@@ -89,7 +91,10 @@ export const GET = requirePermission('inventory:read')(
         description: product.description,
         photo_url: product.photo_url,
         base_sku: product.base_sku,
-        category: product.category,
+        category: product.category?.name || null,
+        category_id: product.category_id,
+        brand: product.brand?.name || null,
+        brand_id: product.brand_id,
       },
       variant: {
         id: variant.id,

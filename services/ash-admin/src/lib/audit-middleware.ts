@@ -79,18 +79,21 @@ export function withAudit<T = any>(
                           "unknown";
         const userAgent = request.headers.get("user-agent") || "unknown";
 
-        // Log the audit entry
-        await logDataChange(
-          detectedAction,
-          resource,
-          finalResourceId,
-          user.workspace_id,
-          user.id,
-          oldValues,
-          newData,
-          ipAddress,
-          userAgent
-        );
+        // Only log data-modifying operations (skip READ)
+        if (detectedAction !== "READ") {
+          // Log the audit entry
+          await logDataChange(
+            detectedAction,
+            resource,
+            finalResourceId,
+            user.workspace_id,
+            user.id,
+            oldValues,
+            newData,
+            ipAddress,
+            userAgent
+          );
+        }
       } catch (error) {
         // Log error but don't fail the request
         console.error("Failed to create audit log:", error);

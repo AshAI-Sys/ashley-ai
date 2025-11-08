@@ -30,6 +30,8 @@ model Workspace {
   brands                   Brand[]
   capa_tasks               CAPATask[]               @relation("WorkspaceCAPATasks")
   cartons                  Carton[]
+  categories               Category[]
+  inventory_brands         InventoryBrand[]
   client_activities        ClientActivity[]
   client_messages          ClientMessage[]
   client_notifications     ClientNotification[]
@@ -3763,6 +3765,49 @@ model AutoReorderSetting {
 // For Store/Cashier/Warehouse retail inventory
 // ============================================
 
+// Product Categories (for inventory classification)
+model Category {
+  id           String             @id @default(cuid())
+  workspace_id String
+  name         String // e.g., "T-Shirts", "Polo", "Pants"
+  code         String? // e.g., "TSHIRT", "POLO"
+  description  String?
+  parent_id    String? // For sub-categories
+  is_active    Boolean            @default(true)
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @updatedAt
+  workspace    Workspace          @relation(fields: [workspace_id], references: [id])
+  parent       Category?          @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
+  subcategories Category[]        @relation("CategoryHierarchy")
+  products     InventoryProduct[]
+
+  @@unique([workspace_id, name])
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([parent_id])
+  @@map("categories")
+}
+
+// Inventory Brands (different from client brands)
+model InventoryBrand {
+  id           String             @id @default(cuid())
+  workspace_id String
+  name         String // e.g., "Nike", "Adidas", "Generic"
+  code         String? // e.g., "NIKE", "ADID"
+  logo_url     String?
+  description  String?
+  is_active    Boolean            @default(true)
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @updatedAt
+  workspace    Workspace          @relation(fields: [workspace_id], references: [id])
+  products     InventoryProduct[]
+
+  @@unique([workspace_id, name])
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@map("inventory_brands")
+}
+
 // Retail Products (different from manufacturing materials)
 model InventoryProduct {
   id           String           @id @default(cuid())
@@ -3771,18 +3816,22 @@ model InventoryProduct {
   description  String?
   photo_url    String?
   base_sku     String
-  category     String?
+  category_id  String? // Relational to Category table
+  brand_id     String? // Relational to InventoryBrand table
   is_active    Boolean          @default(true)
   created_at   DateTime         @default(now())
   updated_at   DateTime         @updatedAt
   workspace    Workspace        @relation(fields: [workspace_id], references: [id])
+  category     Category?        @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  brand        InventoryBrand?  @relation(fields: [brand_id], references: [id], onDelete: SetNull)
   variants     ProductVariant[]
 
   @@unique([workspace_id, base_sku])
   @@index([workspace_id])
   @@index([workspace_id, is_active])
   @@index([base_sku])
-  @@index([category])
+  @@index([category_id])
+  @@index([brand_id])
   @@map("inventory_products")
 }
 

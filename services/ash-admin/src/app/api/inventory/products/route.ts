@@ -23,10 +23,16 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const products = await prisma.inventoryProduct.findMany({
       where: {
         workspace_id: workspaceId,
-        ...(category && { category }),
+        ...(category && {
+          category: {
+            name: { contains: category, mode: 'insensitive' }
+          }
+        }),
         ...(is_active !== null && { is_active: is_active === 'true' }),
       },
       include: {
+        category: true,
+        brand: true,
         variants: {
           where: { is_active: true },
         },
