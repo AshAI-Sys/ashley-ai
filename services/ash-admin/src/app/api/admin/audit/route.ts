@@ -80,9 +80,8 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       limit,
       action: action && action !== "all" ? action : undefined,
       resource,
-      dateFrom: date_from ? new Date(date_from) : undefined,
-      dateTo: date_to ? new Date(date_to) : undefined,
-      search,
+      startDate: date_from ? new Date(date_from) : undefined,
+      endDate: date_to ? new Date(date_to) : undefined,
     });
 
     // Map database records to API format
