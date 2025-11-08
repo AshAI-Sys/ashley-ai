@@ -8,3 +8,7 @@ clear-lockout.js
 reset-password.js
 unlock-admin-account.js
 verify-password.js
+create-production-admin.js
+packages/database/check-account.js
+packages/database/verify-password.js
+packages/database/create-production-admin.js
