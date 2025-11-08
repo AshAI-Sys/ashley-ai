@@ -127,59 +127,32 @@ export default function CreatePrintRunPage() {
 
   const fetchOrders = async () => {
     try {
-      // Mock data for demo - in real app, fetch from API
-      setOrders([
-        {
-          id: "1",
-          order_number: "TCAS-2025-000001",
-          brand: { name: "Trendy Casual", code: "TCAS" },
-          line_items: [
-            {
-              id: "1",
-              description: "Premium Hoodie - Navy",
-              garment_type: "Hoodie",
-              qty: 100,
-            },
-          ],
-          routing_steps: [
-            {
-              id: "step1",
-              operation_type: "SILKSCREEN",
-              status: "ready",
-              sequence: 1,
-            },
-            {
-              id: "step2",
-              operation_type: "HEAT_CURE",
-              status: "pending",
-              sequence: 2,
-            },
-          ],
-        },
-        {
-          id: "2",
-          order_number: "URBN-2025-000001",
-          brand: { name: "Urban Streetwear", code: "URBN" },
-          line_items: [
-            {
-              id: "2",
-              description: "Logo T-Shirt - White",
-              garment_type: "T-Shirt",
-              qty: 50,
-            },
-          ],
-          routing_steps: [
-            {
-              id: "step3",
-              operation_type: "EMBROIDERY",
-              status: "ready",
-              sequence: 1,
-            },
-          ],
-        },
-      ]);
+      setLoading(true);
+
+      // Fetch real orders from API with all necessary relationships
+      const response = await fetch(
+        "/api/orders?limit=100&include=brand,line_items,routing_steps"
+      );
+      const data = await response.json();
+
+      console.log("Orders API response:", data); // Debug log
+
+      if (
+        data.success &&
+        data.data?.orders &&
+        Array.isArray(data.data.orders)
+      ) {
+        setOrders(data.data.orders);
+        console.log("Loaded orders:", data.data.orders.length); // Debug log
+      } else {
+        console.log("No orders found in response"); // Debug log
+        setOrders([]);
+      }
     } catch (error) {
       console.error("Failed to fetch orders:", error);
+      setOrders([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -481,12 +454,18 @@ export default function CreatePrintRunPage() {
                   <SelectValue placeholder="Select production order" />
                 </SelectTrigger>
                 <SelectContent>
-                  {orders.map(order => (
-                    <SelectItem key={order.id} value={order.id}>
-                      {order.order_number} - {order.brand.name} (
-                      {order.line_items[0]?.garment_type})
-                    </SelectItem>
-                  ))}
+                  {orders?.length > 0 ? (
+                    orders.map(order => (
+                      <SelectItem key={order.id} value={order.id}>
+                        {order.order_number} - {order.brand?.name || "No Brand"}{" "}
+                        ({order.line_items?.[0]?.garment_type || "N/A"})
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="px-2 py-1 text-sm text-muted-foreground">
+                      No orders available. Create an order first.
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -494,14 +473,15 @@ export default function CreatePrintRunPage() {
             {selectedOrder && (
               <div className="rounded-lg bg-blue-50 p-4">
                 <div className="mb-2 flex items-center gap-2">
-                  <Badge>{selectedOrder.brand.code}</Badge>
+                  <Badge>{selectedOrder.brand?.code || "N/A"}</Badge>
                   <span className="font-medium">
                     {selectedOrder.order_number}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {selectedOrder.line_items[0]?.description} - Qty:{" "}
-                  {selectedOrder.line_items[0]?.qty}
+                  {selectedOrder.line_items?.[0]?.description ||
+                    "No description"}{" "}
+                  - Qty: {selectedOrder.line_items?.[0]?.qty || 0}
                 </p>
               </div>
             )}
