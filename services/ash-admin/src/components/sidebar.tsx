@@ -252,12 +252,6 @@ export default function Sidebar() {
       department: "Inventory",
     },
     {
-      name: "QR Code Generator",
-      href: "/inventory/qr-generator",
-      icon: "QrCode",
-      department: "Inventory",
-    },
-    {
       name: "Print Labels",
       href: "/inventory/print-labels",
       icon: "Tag",
