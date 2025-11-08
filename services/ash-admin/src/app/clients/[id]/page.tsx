@@ -16,10 +16,12 @@ import {
   CreditCard,
   Calendar,
   Trash2,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
+import { ActivityTab } from "@/components/audit/activity-tab";
 
 interface Client {
   id: string;
@@ -56,6 +58,7 @@ export default function ClientDetailPage() {
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"details" | "activity">("details");
 
   useEffect(() => {
     if (clientId) {
@@ -199,7 +202,39 @@ export default function ClientDetailPage() {
         </div>
       </div>
 
-      <div className="grid gap-6">
+      {/* Tab Navigation */}
+      <div className="mb-6">
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex gap-6">
+            <button
+              onClick={() => setActiveTab("details")}
+              className={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
+                activeTab === "details"
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              }`}
+            >
+              <Building2 size={18} />
+              Client Details
+            </button>
+            <button
+              onClick={() => setActiveTab("activity")}
+              className={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
+                activeTab === "activity"
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              }`}
+            >
+              <Activity size={18} />
+              Activity Log
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "details" && (
+        <div className="grid gap-6">
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -424,6 +459,20 @@ export default function ClientDetailPage() {
           </Card>
         )}
       </div>
+      )}
+
+      {/* Activity Tab */}
+      {activeTab === "activity" && (
+        <Card>
+          <CardContent className="pt-6">
+            <ActivityTab
+              resourceType="client"
+              resourceId={client.id}
+              workspaceId="default"
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
