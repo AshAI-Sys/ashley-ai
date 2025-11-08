@@ -17,7 +17,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { workspaceId } = user;
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
+    const category = searchParams.get('category'); // Search by category name
+    const category_id = searchParams.get('category_id'); // Filter by category ID
+    const brand_id = searchParams.get('brand_id'); // Filter by brand ID
     const is_active = searchParams.get('is_active');
 
     const products = await prisma.inventoryProduct.findMany({
@@ -28,6 +30,8 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
             name: { contains: category, mode: 'insensitive' }
           }
         }),
+        ...(category_id && { category_id }),
+        ...(brand_id && { brand_id }),
         ...(is_active !== null && { is_active: is_active === 'true' }),
       },
       include: {
@@ -35,6 +39,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
         brand: true,
         variants: {
           where: { is_active: true },
+        },
+        _count: {
+          select: {
+            variants: true,
+          },
         },
       },
       orderBy: { created_at: 'desc' },
@@ -57,13 +66,62 @@ export const POST = requireAuth(
       try {
         const { workspaceId } = user;
         const body = await request.json();
-        const { name, description, photo_url, base_sku, category } = body;
+        const { name, description, photo_url, base_sku, category_id, brand_id, is_active } = body;
 
         if (!name || !base_sku) {
           return NextResponse.json(
             { success: false, error: 'name and base_sku are required' },
             { status: 400 }
           );
+        }
+
+        // Check if SKU already exists in workspace
+        const existingSKU = await prisma.inventoryProduct.findFirst({
+          where: {
+            workspace_id: workspaceId,
+            base_sku,
+          },
+        });
+
+        if (existingSKU) {
+          return NextResponse.json(
+            { success: false, error: 'Product with this SKU already exists' },
+            { status: 400 }
+          );
+        }
+
+        // Verify category exists if provided
+        if (category_id) {
+          const category = await prisma.category.findFirst({
+            where: {
+              id: category_id,
+              workspace_id: workspaceId,
+            },
+          });
+
+          if (!category) {
+            return NextResponse.json(
+              { success: false, error: 'Category not found' },
+              { status: 404 }
+            );
+          }
+        }
+
+        // Verify brand exists if provided
+        if (brand_id) {
+          const brand = await prisma.inventoryBrand.findFirst({
+            where: {
+              id: brand_id,
+              workspace_id: workspaceId,
+            },
+          });
+
+          if (!brand) {
+            return NextResponse.json(
+              { success: false, error: 'Brand not found' },
+              { status: 404 }
+            );
+          }
         }
 
         const product = await prisma.inventoryProduct.create({
@@ -73,7 +131,18 @@ export const POST = requireAuth(
             description,
             photo_url,
             base_sku,
-            category,
+            category_id,
+            brand_id,
+            is_active: is_active !== undefined ? is_active : true,
+          },
+          include: {
+            category: true,
+            brand: true,
+            _count: {
+              select: {
+                variants: true,
+              },
+            },
           },
         });
 
@@ -84,7 +153,7 @@ export const POST = requireAuth(
           success: true,
           message: 'Product created successfully',
           data: product,
-        });
+        }, { status: 201 });
       } catch (error: unknown) {
         console.error('Error creating product:', error);
         return NextResponse.json(
@@ -104,20 +173,98 @@ export const PUT = requireAuth(
       try {
         const { workspaceId } = user;
         const body = await request.json();
-        const { id, name, description, photo_url, category, is_active } = body;
+        const { id, name, description, photo_url, category_id, brand_id, is_active, base_sku } = body;
 
         if (!id) {
           return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
         }
 
+        // Verify product exists and belongs to workspace
+        const existing = await prisma.inventoryProduct.findFirst({
+          where: {
+            id,
+            workspace_id: workspaceId,
+          },
+        });
+
+        if (!existing) {
+          return NextResponse.json(
+            { success: false, error: 'Product not found' },
+            { status: 404 }
+          );
+        }
+
+        // Check SKU uniqueness if being updated
+        if (base_sku && base_sku !== existing.base_sku) {
+          const existingSKU = await prisma.inventoryProduct.findFirst({
+            where: {
+              workspace_id: workspaceId,
+              base_sku,
+              id: { not: id },
+            },
+          });
+
+          if (existingSKU) {
+            return NextResponse.json(
+              { success: false, error: 'Product with this SKU already exists' },
+              { status: 400 }
+            );
+          }
+        }
+
+        // Verify category exists if provided
+        if (category_id !== undefined && category_id !== null) {
+          const category = await prisma.category.findFirst({
+            where: {
+              id: category_id,
+              workspace_id: workspaceId,
+            },
+          });
+
+          if (!category) {
+            return NextResponse.json(
+              { success: false, error: 'Category not found' },
+              { status: 404 }
+            );
+          }
+        }
+
+        // Verify brand exists if provided
+        if (brand_id !== undefined && brand_id !== null) {
+          const brand = await prisma.inventoryBrand.findFirst({
+            where: {
+              id: brand_id,
+              workspace_id: workspaceId,
+            },
+          });
+
+          if (!brand) {
+            return NextResponse.json(
+              { success: false, error: 'Brand not found' },
+              { status: 404 }
+            );
+          }
+        }
+
         const product = await prisma.inventoryProduct.update({
-          where: { id, workspace_id: workspaceId },
+          where: { id },
           data: {
             ...(name && { name }),
+            ...(base_sku && { base_sku }),
             ...(description !== undefined && { description }),
             ...(photo_url !== undefined && { photo_url }),
-            ...(category !== undefined && { category }),
+            ...(category_id !== undefined && { category_id }),
+            ...(brand_id !== undefined && { brand_id }),
             ...(is_active !== undefined && { is_active }),
+          },
+          include: {
+            category: true,
+            brand: true,
+            _count: {
+              select: {
+                variants: true,
+              },
+            },
           },
         });
 
