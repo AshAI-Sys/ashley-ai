@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/auth-middleware';
+import { withAudit } from '@/lib/audit-middleware';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +11,8 @@ export const dynamic = 'force-dynamic';
  * Requires: inventory:adjust permission
  */
 export const POST = requirePermission('inventory:adjust')(
-  async (request: NextRequest, user) => {
+  withAudit(
+    async (request: NextRequest, user) => {
     try {
       const body = await request.json();
       const { variant_id, location_id, quantity_change, notes, reason } = body;
@@ -66,5 +68,7 @@ export const POST = requirePermission('inventory:adjust')(
       console.error('[INVENTORY] Stock adjustment error:', error);
       return NextResponse.json({ error: error.message || 'Failed to adjust stock' }, { status: 500 });
     }
-  }
+    },
+    { resource: 'stock_adjustment', action: 'CREATE' }
+  )
 );

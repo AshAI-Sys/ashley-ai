@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { requireAuth } from '@/lib/auth-middleware';
+import { withAudit } from '@/lib/audit-middleware';
 import { syncAfterChange } from '@/lib/google-sheets-auto-sync';
 
 const prisma = new PrismaClient();
@@ -44,107 +45,122 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 });
 
 // POST create new product
-export const POST = requireAuth(async (request: NextRequest, user) => {
-  try {
-    const { workspaceId } = user;
-    const body = await request.json();
-    const { name, description, photo_url, base_sku, category } = body;
+export const POST = requireAuth(
+  withAudit(
+    async (request: NextRequest, user) => {
+      try {
+        const { workspaceId } = user;
+        const body = await request.json();
+        const { name, description, photo_url, base_sku, category } = body;
 
-    if (!name || !base_sku) {
-      return NextResponse.json(
-        { success: false, error: 'name and base_sku are required' },
-        { status: 400 }
-      );
-    }
+        if (!name || !base_sku) {
+          return NextResponse.json(
+            { success: false, error: 'name and base_sku are required' },
+            { status: 400 }
+          );
+        }
 
-    const product = await prisma.inventoryProduct.create({
-      data: {
-        workspace_id: workspaceId,
-        name,
-        description,
-        photo_url,
-        base_sku,
-        category,
-      },
-    });
+        const product = await prisma.inventoryProduct.create({
+          data: {
+            workspace_id: workspaceId,
+            name,
+            description,
+            photo_url,
+            base_sku,
+            category,
+          },
+        });
 
-    // Trigger auto-sync to Google Sheets (non-blocking)
-    await syncAfterChange(workspaceId, 'inventory');
+        // Trigger auto-sync to Google Sheets (non-blocking)
+        await syncAfterChange(workspaceId, 'inventory');
 
-    return NextResponse.json({
-      success: true,
-      message: 'Product created successfully',
-      data: product,
-    });
-  } catch (error: unknown) {
-    console.error('Error creating product:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create product' },
-      { status: 500 }
-    );
-  }
-});
+        return NextResponse.json({
+          success: true,
+          message: 'Product created successfully',
+          data: product,
+        });
+      } catch (error: unknown) {
+        console.error('Error creating product:', error);
+        return NextResponse.json(
+          { success: false, error: 'Failed to create product' },
+          { status: 500 }
+        );
+      }
+    },
+    { resource: 'inventory_product', action: 'CREATE' }
+  )
+);
 
 // PUT update product
-export const PUT = requireAuth(async (request: NextRequest, user) => {
-  try {
-    const { workspaceId } = user;
-    const body = await request.json();
-    const { id, name, description, photo_url, category, is_active } = body;
+export const PUT = requireAuth(
+  withAudit(
+    async (request: NextRequest, user) => {
+      try {
+        const { workspaceId } = user;
+        const body = await request.json();
+        const { id, name, description, photo_url, category, is_active } = body;
 
-    if (!id) {
-      return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
-    }
+        if (!id) {
+          return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
+        }
 
-    const product = await prisma.inventoryProduct.update({
-      where: { id, workspace_id: workspaceId },
-      data: {
-        ...(name && { name }),
-        ...(description !== undefined && { description }),
-        ...(photo_url !== undefined && { photo_url }),
-        ...(category !== undefined && { category }),
-        ...(is_active !== undefined && { is_active }),
-      },
-    });
+        const product = await prisma.inventoryProduct.update({
+          where: { id, workspace_id: workspaceId },
+          data: {
+            ...(name && { name }),
+            ...(description !== undefined && { description }),
+            ...(photo_url !== undefined && { photo_url }),
+            ...(category !== undefined && { category }),
+            ...(is_active !== undefined && { is_active }),
+          },
+        });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Product updated successfully',
-      data: product,
-    });
-  } catch (error: unknown) {
-    console.error('Error updating product:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update product' },
-      { status: 500 }
-    );
-  }
-});
+        return NextResponse.json({
+          success: true,
+          message: 'Product updated successfully',
+          data: product,
+        });
+      } catch (error: unknown) {
+        console.error('Error updating product:', error);
+        return NextResponse.json(
+          { success: false, error: 'Failed to update product' },
+          { status: 500 }
+        );
+      }
+    },
+    { resource: 'inventory_product', action: 'UPDATE' }
+  )
+);
 
 // DELETE product
-export const DELETE = requireAuth(async (request: NextRequest, user) => {
-  try {
-    const { workspaceId } = user;
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+export const DELETE = requireAuth(
+  withAudit(
+    async (request: NextRequest, user) => {
+      try {
+        const { workspaceId } = user;
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
 
-    if (!id) {
-      return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
-    }
+        if (!id) {
+          return NextResponse.json({ success: false, error: 'id is required' }, { status: 400 });
+        }
 
-    await prisma.inventoryProduct.delete({
-      where: { id, workspace_id: workspaceId },
-    });
+        await prisma.inventoryProduct.delete({
+          where: { id, workspace_id: workspaceId },
+        });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Product deleted successfully',
-    });
-  } catch (error: unknown) {
-    console.error('Error deleting product:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete product' },
-      { status: 500 }
-    );
-  }
-});
+        return NextResponse.json({
+          success: true,
+          message: 'Product deleted successfully',
+        });
+      } catch (error: unknown) {
+        console.error('Error deleting product:', error);
+        return NextResponse.json(
+          { success: false, error: 'Failed to delete product' },
+          { status: 500 }
+        );
+      }
+    },
+    { resource: 'inventory_product', action: 'DELETE' }
+  )
+);
