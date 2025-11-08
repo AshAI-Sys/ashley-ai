@@ -106,6 +106,7 @@ model Workspace {
   retail_sales             RetailSale[]
   warehouse_deliveries     WarehouseDelivery[]
   mobile_sessions          MobileSession[]
+  qr_codes                 QRCode[]
 
   @@index([is_active])
   @@index([created_at])
@@ -171,6 +172,7 @@ model User {
   retail_sales_as_cashier        RetailSale[]            @relation("RetailSaleCashier")
   warehouse_deliveries_received  WarehouseDelivery[]     @relation("DeliveryReceiver")
   mobile_sessions                MobileSession[]         @relation("MobileSessions")
+  qr_codes_generated             QRCode[]                @relation("QRCodeGenerator")
 
   @@unique([workspace_id, email])
   @@index([workspace_id])
@@ -303,6 +305,7 @@ model Order {
   routing_steps         RoutingStep[]
   sewing_runs           SewingRun[]
   shipments             Shipment[]
+  qr_codes              QRCode[]
 
   @@unique([workspace_id, order_number])
   @@index([workspace_id])
@@ -3780,6 +3783,7 @@ model Category {
   parent       Category?          @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
   subcategories Category[]        @relation("CategoryHierarchy")
   products     InventoryProduct[]
+  qr_codes     QRCode[]
 
   @@unique([workspace_id, name])
   @@index([workspace_id])
@@ -3801,6 +3805,7 @@ model InventoryBrand {
   updated_at   DateTime           @updatedAt
   workspace    Workspace          @relation(fields: [workspace_id], references: [id])
   products     InventoryProduct[]
+  qr_codes     QRCode[]
 
   @@unique([workspace_id, name])
   @@index([workspace_id])
@@ -3825,6 +3830,7 @@ model InventoryProduct {
   category     Category?        @relation(fields: [category_id], references: [id], onDelete: SetNull)
   brand        InventoryBrand?  @relation(fields: [brand_id], references: [id], onDelete: SetNull)
   variants     ProductVariant[]
+  qr_codes     QRCode[]
 
   @@unique([workspace_id, base_sku])
   @@index([workspace_id])
@@ -3853,6 +3859,7 @@ model ProductVariant {
   product      InventoryProduct @relation(fields: [product_id], references: [id], onDelete: Cascade)
   stock_ledger StockLedger[]
   sale_items   RetailSaleItem[]
+  qr_codes     QRCode[]         @relation("QRCodeVariant")
 
   @@index([product_id])
   @@index([sku])
@@ -3912,6 +3919,54 @@ model StockLedger {
   @@index([transaction_type])
   @@index([reference_type, reference_id])
   @@map("stock_ledger")
+}
+
+// QR Code Management System
+// Tracks QR code generation, printing, and assignment
+model QRCode {
+  id               String           @id @default(cuid())
+  workspace_id     String
+  qr_code          String           @unique // The actual QR code data/URL
+  qr_type          String // PRODUCT, VARIANT, BUNDLE, BATCH
+  product_id       String?
+  variant_id       String?
+  category_id      String?
+  brand_id         String?
+  batch_id         String? // For batch printing tracking
+  order_id         String? // For order-first workflow
+  workflow_type    String // INVENTORY_FIRST, ORDER_FIRST
+  status           String           @default("GENERATED") // GENERATED, PRINTED, ASSIGNED, SCANNED, INACTIVE
+  print_count      Int              @default(0) // Track how many times printed
+  first_scanned_at DateTime?
+  last_scanned_at  DateTime?
+  scan_count       Int              @default(0)
+  generated_by     String?
+  notes            String?
+  metadata         String? // JSON for additional data
+  is_active        Boolean          @default(true)
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+  workspace        Workspace        @relation(fields: [workspace_id], references: [id])
+  product          InventoryProduct? @relation(fields: [product_id], references: [id], onDelete: SetNull)
+  variant          ProductVariant?  @relation("QRCodeVariant", fields: [variant_id], references: [id], onDelete: SetNull)
+  category         Category?        @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  brand            InventoryBrand?  @relation(fields: [brand_id], references: [id], onDelete: SetNull)
+  order            Order?           @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  generator        User?            @relation("QRCodeGenerator", fields: [generated_by], references: [id])
+
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([workspace_id, qr_type])
+  @@index([workspace_id, workflow_type])
+  @@index([product_id])
+  @@index([variant_id])
+  @@index([category_id])
+  @@index([brand_id])
+  @@index([batch_id])
+  @@index([order_id])
+  @@index([qr_code])
+  @@index([status])
+  @@map("qr_codes")
 }
 
 // Retail Sales (POS transactions)
