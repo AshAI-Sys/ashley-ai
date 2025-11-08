@@ -32,13 +32,13 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
           ? {
               OR: [
                 { name: { contains: search, mode: "insensitive" as const } },
-                { description: { contains: search, mode: "insensitive" as const } },
+                { code: { contains: search, mode: "insensitive" as const } },
                 { client: { name: { contains: search, mode: "insensitive" as const } } },
               ],
             }
           : {},
         client_id ? { client_id } : {},
-        status ? { status } : {},
+        status === 'active' ? { is_active: true } : status === 'inactive' ? { is_active: false } : {},
       ],
     };
 

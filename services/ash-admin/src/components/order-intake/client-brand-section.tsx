@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Building, X, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/contexts/auth-context";
 
 interface Client {
   id: string;
@@ -50,6 +51,8 @@ export function ClientBrandSection({
   onChannelChange,
   onClientCreated,
 }: ClientBrandSectionProps) {
+  const { token } = useAuth();
+
   // Ensure clients is an array
   const clientsArray = Array.isArray(clients) ? clients : [];
   const selectedClient = clientsArray.find(c => c.id === selectedClientId);
@@ -83,7 +86,10 @@ export function ClientBrandSection({
     try {
       const response = await fetch("/api/clients", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify(newClient),
       });
 
@@ -128,7 +134,10 @@ export function ClientBrandSection({
     try {
       const response = await fetch("/api/brands", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: newBrand.name,
           code: newBrand.code,
