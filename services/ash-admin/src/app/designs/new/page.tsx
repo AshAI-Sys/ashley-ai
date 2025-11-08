@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from "@/components/ui/back-button";
 // Unused import removed: Badge
 // Unused import removed: Separator
 import { Progress } from "@/components/ui/progress";
@@ -136,12 +136,24 @@ export default function NewDesignPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "/api/orders?include=brand,client&status=INTAKE,DESIGN_PENDING"
-      );
+      // Fetch all orders (API already includes brand and client)
+      const response = await fetch("/api/orders?limit=100");
       const data = await response.json();
-      if (data.success && Array.isArray(data.data)) {
-        setOrders(data.data);
+
+      if (
+        data.success &&
+        data.data?.orders &&
+        Array.isArray(data.data.orders)
+      ) {
+        // Filter for orders in INTAKE or DESIGN_PENDING status
+        const filteredOrders = data.data.orders.filter(
+          (order: Order) =>
+            order.status === "INTAKE" ||
+            order.status === "DESIGN_PENDING" ||
+            order.status === "intake" ||
+            order.status === "design_pending"
+        );
+        setOrders(filteredOrders);
       } else {
         setOrders([]);
       }
@@ -385,7 +397,7 @@ export default function NewDesignPage() {
       } else if (result.status === "WARN") {
         toast(
           `Design validation passed with warnings: ${result.issues?.length || 0} issues found`,
-          { icon: 'âš ï¸' }
+          { icon: "âš ï¸" }
         );
       } else {
         toast.error(
