@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { QRScanner } from '@/components/inventory/qr-scanner';
-import { Package, MapPin, AlertCircle, CheckCircle, Camera, XCircle } from 'lucide-react';
+import { Package, MapPin, AlertCircle, CheckCircle, Camera, XCircle, FolderTree, Tag } from 'lucide-react';
 
 interface ProductData {
   product: {
@@ -12,7 +12,10 @@ interface ProductData {
     description: string;
     photo_url: string;
     base_sku: string;
-    category: string;
+    category: string | null;
+    category_id: string | null;
+    brand: string | null;
+    brand_id: string | null;
   };
   variant: {
     id: string;
@@ -147,6 +150,26 @@ export default function StorePage() {
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">
                   {productData.product.name}
                 </h2>
+
+                {/* Category & Brand Badges */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {productData.product.category && (
+                    <div className="inline-flex items-center gap-1.5 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                      <FolderTree className="w-4 h-4" />
+                      {productData.product.category}
+                    </div>
+                  )}
+                  {productData.product.brand && (
+                    <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                      <Tag className="w-4 h-4" />
+                      {productData.product.brand}
+                    </div>
+                  )}
+                  <div className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-mono">
+                    SKU: {productData.product.base_sku}
+                  </div>
+                </div>
+
                 {productData.product.description && (
                   <p className="text-gray-600 mb-4">{productData.product.description}</p>
                 )}

@@ -11,6 +11,8 @@ import {
   CheckCircle,
   ArrowLeft,
   Camera,
+  FolderTree,
+  Tag,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -20,6 +22,8 @@ interface ProductDetails {
   sku: string;
   price: number;
   photo_url?: string;
+  category?: string | null;
+  brand?: string | null;
   stock: Array<{
     location_code: string;
     location_name: string;
@@ -209,6 +213,27 @@ export default function StoreInterfacePage() {
                     {productDetails.variant_name}
                   </p>
                 )}
+
+                {/* Category & Brand Badges */}
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {productDetails.category && (
+                    <div className="flex items-center gap-1.5 rounded-lg bg-purple-100 px-3 py-1">
+                      <FolderTree className="h-4 w-4 text-purple-700" />
+                      <span className="text-sm font-medium text-purple-900">
+                        {productDetails.category}
+                      </span>
+                    </div>
+                  )}
+                  {productDetails.brand && (
+                    <div className="flex items-center gap-1.5 rounded-lg bg-blue-100 px-3 py-1">
+                      <Tag className="h-4 w-4 text-blue-700" />
+                      <span className="text-sm font-medium text-blue-900">
+                        {productDetails.brand}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-1">
                     <Package className="h-4 w-4 text-gray-600" />
