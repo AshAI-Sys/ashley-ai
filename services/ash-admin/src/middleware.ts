@@ -257,9 +257,20 @@ export async function middleware(request: NextRequest) {
   const isAnalytics = pathname.startsWith("/api/analytics/");
   const isAdminUnlock = pathname.includes("/api/admin/unlock-account");
 
-  // Skip CSRF for development or specific endpoints
+  // Check if request has authentication token (JWT provides CSRF protection)
+  const hasAuthToken =
+    request.headers.get("Authorization")?.startsWith("Bearer ") ||
+    request.cookies.has("access_token") ||
+    request.cookies.has("refresh_token");
+
+  // Skip CSRF for development, specific endpoints, or authenticated requests
   const skipCSRF =
-    process.env.NODE_ENV === "development" || isAuthEndpoint || isWebhook || isAnalytics || isAdminUnlock;
+    process.env.NODE_ENV === "development" ||
+    isAuthEndpoint ||
+    isWebhook ||
+    isAnalytics ||
+    isAdminUnlock ||
+    hasAuthToken; // Skip CSRF for authenticated requests
 
   if (isStateChanging && isAPI && !skipCSRF) {
     if (!(await verifyCSRFToken(request))) {
