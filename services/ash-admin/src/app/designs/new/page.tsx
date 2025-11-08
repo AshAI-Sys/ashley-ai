@@ -140,21 +140,18 @@ export default function NewDesignPage() {
       const response = await fetch("/api/orders?limit=100");
       const data = await response.json();
 
+      console.log("Orders API response:", data); // Debug log
+
       if (
         data.success &&
         data.data?.orders &&
         Array.isArray(data.data.orders)
       ) {
-        // Filter for orders in INTAKE or DESIGN_PENDING status
-        const filteredOrders = data.data.orders.filter(
-          (order: Order) =>
-            order.status === "INTAKE" ||
-            order.status === "DESIGN_PENDING" ||
-            order.status === "intake" ||
-            order.status === "design_pending"
-        );
-        setOrders(filteredOrders);
+        // Show ALL orders (removed status filter for debugging)
+        setOrders(data.data.orders);
+        console.log("Loaded orders:", data.data.orders.length); // Debug log
       } else {
+        console.log("No orders found in response"); // Debug log
         setOrders([]);
       }
     } catch (error) {
@@ -615,19 +612,33 @@ export default function NewDesignPage() {
                     <SelectValue placeholder="Select purchase order" />
                   </SelectTrigger>
                   <SelectContent>
-                    {orders?.map(order => (
-                      <SelectItem key={order.id} value={order.id}>
-                        {order.order_number} - {order.client.name} (
-                        {order.brand.name})
-                      </SelectItem>
-                    ))}
+                    {orders?.length > 0 ? (
+                      orders.map(order => (
+                        <SelectItem key={order.id} value={order.id}>
+                          {order.order_number} -{" "}
+                          {order.client?.name || "No Client"}
+                          {order.brand?.name ? ` (${order.brand.name})` : ""}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <div className="px-2 py-1 text-sm text-muted-foreground">
+                        No orders available. Create an order first.
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
                 {selectedOrder && (
                   <div className="mt-2 rounded bg-blue-50 p-2 text-sm">
-                    <strong>Brand:</strong> {selectedOrder.brand.name} (
-                    {selectedOrder.brand.code})<br />
-                    <strong>Client:</strong> {selectedOrder.client.name}
+                    {selectedOrder.brand && (
+                      <>
+                        <strong>Brand:</strong> {selectedOrder.brand.name}
+                        {selectedOrder.brand.code &&
+                          ` (${selectedOrder.brand.code})`}
+                        <br />
+                      </>
+                    )}
+                    <strong>Client:</strong>{" "}
+                    {selectedOrder.client?.name || "No Client"}
                   </div>
                 )}
               </div>
