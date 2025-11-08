@@ -8,6 +8,7 @@ const nextConfig = {
     instrumentationHook: true,
     scrollRestoration: true,
   },
+  output: "standalone",
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,
