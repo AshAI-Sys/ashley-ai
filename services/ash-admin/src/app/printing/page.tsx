@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-// Unused import removed: Input
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -182,7 +182,7 @@ export default function PrintingPage() {
     refetchDashboard();
   };
 
-  const ____isLoading = runsLoading || machinesLoading || dashboardLoading;
+  const isLoading = runsLoading || machinesLoading || dashboardLoading;
   const isFetching = runsFetching || machinesFetching || dashboardFetching;
 
   const handleRunAction = async (
@@ -255,7 +255,7 @@ export default function PrintingPage() {
   );
 
   // Skeleton Loaders
-  const ____StatCardSkeleton = () => (
+  const StatCardSkeleton = () => (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <Skeleton className="h-4 w-24" />
@@ -267,7 +267,7 @@ export default function PrintingPage() {
     </Card>
   );
 
-  const ____PrintRunCardSkeleton = () => (
+  const PrintRunCardSkeleton = () => (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">

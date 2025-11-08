@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-// Unused import removed: Separator
+import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
   Plus,
