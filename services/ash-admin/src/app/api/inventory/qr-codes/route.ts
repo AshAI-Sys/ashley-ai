@@ -16,8 +16,36 @@ import QRCode from 'qrcode';
 // Force dynamic route
 export const dynamic = 'force-dynamic';
 
+// Constants
+const MAX_QR_CODES_PER_REQUEST = 500;
+const MIN_QR_SIZE = 100;
+const MAX_QR_SIZE = 1000;
+const QR_TYPES = ['PRODUCT', 'VARIANT', 'BUNDLE', 'BATCH'] as const;
+const WORKFLOW_TYPES = ['INVENTORY_FIRST', 'ORDER_FIRST'] as const;
+
+// Helper function to generate QR code image
+async function generateQRCodeImage(data: string, size: number): Promise<string> {
+  return QRCode.toDataURL(data, { width: size, margin: 2 });
+}
+
+// Helper function to create QR data objects for batch insert
+interface QRCodeData {
+  workspace_id: string;
+  qr_code: string;
+  qr_type: string;
+  product_id?: string;
+  variant_id?: string;
+  category_id?: string | null;
+  brand_id?: string | null;
+  batch_id?: string;
+  order_id?: string;
+  workflow_type: string;
+  status: string;
+  generated_by: string;
+}
+
 /**
- * POST - Generate QR Codes
+ * POST - Generate QR Codes (OPTIMIZED)
  *
  * Body:
  * - qr_type: 'PRODUCT' | 'VARIANT' | 'BUNDLE' | 'BATCH'
@@ -51,45 +79,65 @@ export const POST = requirePermission('inventory:report')(
       const workspace_id = user.workspaceId;
       const generated_by = user.id;
 
-      // Validate QR type
-      const validQRTypes = ['PRODUCT', 'VARIANT', 'BUNDLE', 'BATCH'];
-      if (!qr_type || !validQRTypes.includes(qr_type)) {
+      // Input Validation
+      if (!qr_type || !QR_TYPES.includes(qr_type)) {
         return NextResponse.json(
-          { error: `qr_type must be one of: ${validQRTypes.join(', ')}` },
+          { error: `qr_type must be one of: ${QR_TYPES.join(', ')}` },
           { status: 400 }
         );
       }
 
-      // Validate workflow type
-      const validWorkflowTypes = ['INVENTORY_FIRST', 'ORDER_FIRST'];
-      if (!validWorkflowTypes.includes(workflow_type)) {
+      if (!WORKFLOW_TYPES.includes(workflow_type)) {
         return NextResponse.json(
-          { error: `workflow_type must be one of: ${validWorkflowTypes.join(', ')}` },
+          { error: `workflow_type must be one of: ${WORKFLOW_TYPES.join(', ')}` },
+          { status: 400 }
+        );
+      }
+
+      // Validate size parameter
+      const validSize = Math.min(Math.max(size, MIN_QR_SIZE), MAX_QR_SIZE);
+
+      // Validate array sizes
+      if (product_ids && product_ids.length > MAX_QR_CODES_PER_REQUEST) {
+        return NextResponse.json(
+          { error: `Maximum ${MAX_QR_CODES_PER_REQUEST} products per request` },
+          { status: 400 }
+        );
+      }
+
+      if (variant_ids && variant_ids.length > MAX_QR_CODES_PER_REQUEST) {
+        return NextResponse.json(
+          { error: `Maximum ${MAX_QR_CODES_PER_REQUEST} variants per request` },
           { status: 400 }
         );
       }
 
       let generatedQRCodes: any[] = [];
+      let qrDataObjects: QRCodeData[] = [];
 
-      // Generate QR codes based on type
+      // OPTIMIZATION: Generate QR codes based on type with parallel processing
       if (qr_type === 'PRODUCT' && product_ids && product_ids.length > 0) {
-        // Generate product-level QR codes
+        // Fetch all products in one query
         const products = await db.inventoryProduct.findMany({
           where: {
             id: { in: product_ids },
             workspace_id,
           },
           include: {
-            category: true,
-            brand: true,
+            category: { select: { name: true } },
+            brand: { select: { name: true } },
           },
         });
 
-        for (const product of products) {
+        // OPTIMIZATION: Parallel QR code generation
+        const qrGenerationPromises = products.map(async (product) => {
           const qrData = `https://inventory.ashleyai.com/p/${product.id}`;
-          const qrCodeImage = await QRCode.toDataURL(qrData, { width: size, margin: 2 });
+          const qrCodeImage = await generateQRCodeImage(qrData, validSize);
 
-          const qrCode = await db.qRCode.create({
+          return {
+            qrData,
+            qrCodeImage,
+            product,
             data: {
               workspace_id,
               qr_code: qrData,
@@ -102,19 +150,29 @@ export const POST = requirePermission('inventory:report')(
               workflow_type,
               status: 'GENERATED',
               generated_by,
-            },
-          });
+            } as QRCodeData,
+          };
+        });
 
-          generatedQRCodes.push({
-            ...qrCode,
-            qr_code_image: qrCodeImage,
-            product_name: product.name,
-            category: product.category?.name,
-            brand: product.brand?.name,
-          });
-        }
+        const results = await Promise.all(qrGenerationPromises);
+
+        qrDataObjects = results.map((r) => r.data);
+
+        // OPTIMIZATION: Batch insert all QR codes at once
+        const createdQRCodes = await db.$transaction(
+          qrDataObjects.map((data) => db.qRCode.create({ data }))
+        );
+
+        generatedQRCodes = results.map((r, i) => ({
+          ...createdQRCodes[i],
+          qr_code_image: r.qrCodeImage,
+          product_name: r.product.name,
+          category: r.product.category?.name,
+          brand: r.product.brand?.name,
+        }));
+
       } else if (qr_type === 'VARIANT' && variant_ids && variant_ids.length > 0) {
-        // Generate variant-level QR codes
+        // Fetch all variants in one query
         const variants = await db.productVariant.findMany({
           where: {
             id: { in: variant_ids },
@@ -122,19 +180,27 @@ export const POST = requirePermission('inventory:report')(
           },
           include: {
             product: {
-              include: {
-                category: true,
-                brand: true,
+              select: {
+                id: true,
+                name: true,
+                category_id: true,
+                brand_id: true,
+                category: { select: { name: true } },
+                brand: { select: { name: true } },
               },
             },
           },
         });
 
-        for (const variant of variants) {
+        // OPTIMIZATION: Parallel QR code generation
+        const qrGenerationPromises = variants.map(async (variant) => {
           const qrData = `https://inventory.ashleyai.com/i/${variant.product.id}?v=${variant.id}`;
-          const qrCodeImage = await QRCode.toDataURL(qrData, { width: size, margin: 2 });
+          const qrCodeImage = await generateQRCodeImage(qrData, validSize);
 
-          const qrCode = await db.qRCode.create({
+          return {
+            qrData,
+            qrCodeImage,
+            variant,
             data: {
               workspace_id,
               qr_code: qrData,
@@ -148,19 +214,29 @@ export const POST = requirePermission('inventory:report')(
               workflow_type,
               status: 'GENERATED',
               generated_by,
-            },
-          });
+            } as QRCodeData,
+          };
+        });
 
-          generatedQRCodes.push({
-            ...qrCode,
-            qr_code_image: qrCodeImage,
-            product_name: variant.product.name,
-            variant_name: variant.variant_name,
-            sku: variant.sku,
-            category: variant.product.category?.name,
-            brand: variant.product.brand?.name,
-          });
-        }
+        const results = await Promise.all(qrGenerationPromises);
+
+        qrDataObjects = results.map((r) => r.data);
+
+        // OPTIMIZATION: Batch insert with transaction
+        const createdQRCodes = await db.$transaction(
+          qrDataObjects.map((data) => db.qRCode.create({ data }))
+        );
+
+        generatedQRCodes = results.map((r, i) => ({
+          ...createdQRCodes[i],
+          qr_code_image: r.qrCodeImage,
+          product_name: r.variant.product.name,
+          variant_name: r.variant.variant_name,
+          sku: r.variant.sku,
+          category: r.variant.product.category?.name,
+          brand: r.variant.product.brand?.name,
+        }));
+
       } else if ((category_id || brand_id) && qr_type === 'BATCH') {
         // Batch generation by category or brand
         const where: any = { workspace_id, is_active: true };
@@ -170,10 +246,11 @@ export const POST = requirePermission('inventory:report')(
         const products = await db.inventoryProduct.findMany({
           where,
           include: {
-            category: true,
-            brand: true,
+            category: { select: { name: true } },
+            brand: { select: { name: true } },
             variants: {
               where: { is_active: true },
+              select: { id: true, variant_name: true, sku: true },
             },
           },
           take: 100, // Limit to prevent performance issues
@@ -181,39 +258,65 @@ export const POST = requirePermission('inventory:report')(
 
         const batchIdGenerated = batch_id || `BATCH-${Date.now()}`;
 
-        for (const product of products) {
-          for (const variant of product.variants) {
-            const qrData = `https://inventory.ashleyai.com/i/${product.id}?v=${variant.id}`;
-            const qrCodeImage = await QRCode.toDataURL(qrData, { width: size, margin: 2 });
+        // OPTIMIZATION: Flatten variants and process in parallel
+        const allVariants = products.flatMap((product) =>
+          product.variants.map((variant) => ({ product, variant }))
+        );
 
-            const qrCode = await db.qRCode.create({
-              data: {
-                workspace_id,
-                qr_code: qrData,
-                qr_type: 'VARIANT',
-                product_id: product.id,
-                variant_id: variant.id,
-                category_id: product.category_id,
-                brand_id: product.brand_id,
-                batch_id: batchIdGenerated,
-                order_id,
-                workflow_type,
-                status: 'GENERATED',
-                generated_by,
-              },
-            });
-
-            generatedQRCodes.push({
-              ...qrCode,
-              qr_code_image: qrCodeImage,
-              product_name: product.name,
-              variant_name: variant.variant_name,
-              sku: variant.sku,
-              category: product.category?.name,
-              brand: product.brand?.name,
-            });
-          }
+        // Validate total count
+        if (allVariants.length > MAX_QR_CODES_PER_REQUEST) {
+          return NextResponse.json(
+            { error: `Batch would generate ${allVariants.length} QR codes. Maximum is ${MAX_QR_CODES_PER_REQUEST}. Please use more specific filters.` },
+            { status: 400 }
+          );
         }
+
+        // OPTIMIZATION: Parallel QR generation for all variants
+        const qrGenerationPromises = allVariants.map(async ({ product, variant }) => {
+          const qrData = `https://inventory.ashleyai.com/i/${product.id}?v=${variant.id}`;
+          const qrCodeImage = await generateQRCodeImage(qrData, validSize);
+
+          return {
+            qrData,
+            qrCodeImage,
+            product,
+            variant,
+            data: {
+              workspace_id,
+              qr_code: qrData,
+              qr_type: 'VARIANT',
+              product_id: product.id,
+              variant_id: variant.id,
+              category_id: product.category_id,
+              brand_id: product.brand_id,
+              batch_id: batchIdGenerated,
+              order_id,
+              workflow_type,
+              status: 'GENERATED',
+              generated_by,
+            } as QRCodeData,
+          };
+        });
+
+        const results = await Promise.all(qrGenerationPromises);
+
+        qrDataObjects = results.map((r) => r.data);
+
+        // OPTIMIZATION: Batch insert with transaction
+        const createdQRCodes = await db.$transaction(
+          qrDataObjects.map((data) => db.qRCode.create({ data }))
+        );
+
+        generatedQRCodes = results.map((r, i) => ({
+          ...createdQRCodes[i],
+          qr_code_image: r.qrCodeImage,
+          product_name: r.product.name,
+          variant_name: r.variant.variant_name,
+          sku: r.variant.sku,
+          category: r.product.category?.name,
+          brand: r.product.brand?.name,
+        }));
+
       } else {
         return NextResponse.json(
           { error: 'Invalid parameters. Please provide product_ids, variant_ids, or category_id/brand_id for batch generation' },
@@ -270,7 +373,7 @@ export const GET = requirePermission('inventory:report')(
       const batch_id = searchParams.get('batch_id');
       const order_id = searchParams.get('order_id');
       const search = searchParams.get('search');
-      const limit = parseInt(searchParams.get('limit') || '50');
+      const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200); // Max 200
       const offset = parseInt(searchParams.get('offset') || '0');
 
       const workspace_id = user.workspaceId;
@@ -289,7 +392,8 @@ export const GET = requirePermission('inventory:report')(
       if (batch_id) where.batch_id = batch_id;
       if (order_id) where.order_id = order_id;
 
-      const [qrCodes, total] = await Promise.all([
+      // OPTIMIZATION: Use Promise.all for parallel queries
+      const [qrCodes, total, stats] = await Promise.all([
         db.qRCode.findMany({
           where,
           include: {
@@ -346,14 +450,12 @@ export const GET = requirePermission('inventory:report')(
           take: limit,
         }),
         db.qRCode.count({ where }),
+        db.qRCode.groupBy({
+          by: ['status'],
+          where: { workspace_id, is_active: true },
+          _count: true,
+        }),
       ]);
-
-      // Get statistics
-      const stats = await db.qRCode.groupBy({
-        by: ['status'],
-        where: { workspace_id, is_active: true },
-        _count: true,
-      });
 
       const statusCounts = stats.reduce((acc, stat) => {
         acc[stat.status] = stat._count;
@@ -411,6 +513,14 @@ export const PATCH = requirePermission('inventory:report')(
         );
       }
 
+      // Validate array size
+      if (qr_code_ids.length > MAX_QR_CODES_PER_REQUEST) {
+        return NextResponse.json(
+          { error: `Maximum ${MAX_QR_CODES_PER_REQUEST} QR codes per request` },
+          { status: 400 }
+        );
+      }
+
       const workspace_id = user.workspaceId;
 
       const updateData: any = {
@@ -431,48 +541,47 @@ export const PATCH = requirePermission('inventory:report')(
       if (notes !== undefined) updateData.notes = notes;
       if (metadata !== undefined) updateData.metadata = JSON.stringify(metadata);
 
-      // Handle scan tracking
-      if (increment_scan_count) {
+      // OPTIMIZATION: Handle scan/print tracking with batch update
+      if (increment_scan_count || increment_print_count) {
         const qrCodes = await db.qRCode.findMany({
           where: {
             id: { in: qr_code_ids },
             workspace_id,
           },
+          select: { id: true, scan_count: true, print_count: true, first_scanned_at: true },
         });
 
-        for (const qrCode of qrCodes) {
-          await db.qRCode.update({
-            where: { id: qrCode.id },
-            data: {
-              ...updateData,
-              scan_count: qrCode.scan_count + 1,
-              last_scanned_at: new Date(),
-              first_scanned_at: qrCode.first_scanned_at || new Date(),
-              status: status || 'SCANNED',
-            },
-          });
-        }
-      } else if (increment_print_count) {
-        // Handle print tracking
-        const qrCodes = await db.qRCode.findMany({
-          where: {
-            id: { in: qr_code_ids },
-            workspace_id,
-          },
-        });
+        // OPTIMIZATION: Use transaction for batch updates
+        await db.$transaction(
+          qrCodes.map((qrCode) => {
+            const updatePayload: any = { ...updateData };
 
-        for (const qrCode of qrCodes) {
-          await db.qRCode.update({
-            where: { id: qrCode.id },
-            data: {
-              ...updateData,
-              print_count: qrCode.print_count + 1,
-              status: status || 'PRINTED',
-            },
-          });
-        }
+            if (increment_scan_count) {
+              updatePayload.scan_count = qrCode.scan_count + 1;
+              updatePayload.last_scanned_at = new Date();
+              if (!qrCode.first_scanned_at) {
+                updatePayload.first_scanned_at = new Date();
+              }
+              if (!status) {
+                updatePayload.status = 'SCANNED';
+              }
+            }
+
+            if (increment_print_count) {
+              updatePayload.print_count = qrCode.print_count + 1;
+              if (!status) {
+                updatePayload.status = 'PRINTED';
+              }
+            }
+
+            return db.qRCode.update({
+              where: { id: qrCode.id },
+              data: updatePayload,
+            });
+          })
+        );
       } else {
-        // Standard update
+        // Standard batch update
         await db.qRCode.updateMany({
           where: {
             id: { in: qr_code_ids },
@@ -518,6 +627,14 @@ export const DELETE = requirePermission('inventory:report')(
         );
       }
 
+      // Validate array size
+      if (qr_code_ids.length > MAX_QR_CODES_PER_REQUEST) {
+        return NextResponse.json(
+          { error: `Maximum ${MAX_QR_CODES_PER_REQUEST} QR codes per request` },
+          { status: 400 }
+        );
+      }
+
       const workspace_id = user.workspaceId;
 
       if (permanent) {
@@ -529,7 +646,7 @@ export const DELETE = requirePermission('inventory:report')(
           },
         });
       } else {
-        // Soft delete (deactivate)
+        // Soft delete (deactivate) - OPTIMIZATION: Use updateMany
         await db.qRCode.updateMany({
           where: {
             id: { in: qr_code_ids },
