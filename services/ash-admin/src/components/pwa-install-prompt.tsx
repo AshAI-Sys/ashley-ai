@@ -61,9 +61,11 @@ export default function PWAInstallPrompt() {
       // Store the event so we can trigger it later
       setDeferredPrompt(e as BeforeInstallPromptEvent);
 
-      // Show our custom prompt immediately (no delay to avoid browser warnings)
-      // The banner won't show until user interacts with the page anyway
-      setShowPrompt(true);
+      // Show our custom prompt after a delay (prevents browser warnings)
+      // Delay ensures user has interacted with page before showing prompt
+      setTimeout(() => {
+        setShowPrompt(true);
+      }, 3000);
     };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
