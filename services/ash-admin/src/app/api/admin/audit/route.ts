@@ -2,6 +2,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
+import { getAuditLogs } from "@/lib/audit-logger";
+import { prisma } from "@/lib/db";
+
+// Helper function to determine severity based on action
+function determineSeverity(action: string): "low" | "medium" | "high" | "critical" {
+  // Critical severity actions
+  if (action.includes("DELETE") || action.includes("SECURITY") || action.includes("FAILED")) {
+    return "critical";
+  }
+  // High severity actions
+  if (action.includes("PASSWORD") || action.includes("PERMISSION") || action.includes("ROLE")) {
+    return "high";
+  }
+  // Medium severity actions
+  if (action.includes("UPDATE") || action.includes("CHANGE")) {
+    return "medium";
+  }
+  // Low severity actions (CREATE, LOGIN, etc.)
+  return "low";
+}
 
 // Audit log validation schema
 const CreateAuditLogSchema = z.object({
@@ -44,13 +64,82 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "50");
     const action = searchParams.get("action") || "";
-    const target_user_id = searchParams.get("target_user_id") || "";
+    const resource = searchParams.get("resource") || "";
     const severity = searchParams.get("severity") || "";
     const date_from = searchParams.get("date_from") || "";
     const date_to = searchParams.get("date_to") || "";
     const search = searchParams.get("search") || "";
 
-    // Return demo audit logs data
+    // Use getAuditLogs utility for real data
+    const result = await getAuditLogs({
+      workspaceId: user.workspace_id,
+      page,
+      limit,
+      action: action && action !== "all" ? action : undefined,
+      resource,
+      dateFrom: date_from ? new Date(date_from) : undefined,
+      dateTo: date_to ? new Date(date_to) : undefined,
+      search,
+    });
+
+    // Map database records to API format
+    const auditLogs = result.logs.map((log: any) => ({
+      id: log.id,
+      action: log.action,
+      description: `${log.action} on ${log.resource}`,
+      resource: log.resource,
+      resource_id: log.resource_id,
+      performer_user_id: log.user_id,
+      old_values: log.old_values ? JSON.parse(log.old_values) : null,
+      new_values: log.new_values ? JSON.parse(log.new_values) : null,
+      metadata: {
+        old_values: log.old_values ? JSON.parse(log.old_values) : null,
+        new_values: log.new_values ? JSON.parse(log.new_values) : null,
+      },
+      ip_address: log.ip_address,
+      user_agent: log.user_agent,
+      severity: determineSeverity(log.action),
+      timestamp: log.created_at.toISOString(),
+      workspace_id: log.workspace_id,
+    }));
+
+    // Calculate summary statistics from real data
+    const allLogs = await prisma.auditLog.findMany({
+      where: {
+        workspace_id: user.workspace_id,
+      },
+      orderBy: { created_at: 'desc' },
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const summary = {
+      total: result.total,
+      today: allLogs.filter(log => {
+        const logDate = new Date(log.created_at);
+        logDate.setHours(0, 0, 0, 0);
+        return logDate.getTime() === today.getTime();
+      }).length,
+      this_week: allLogs.filter(log => new Date(log.created_at) >= weekAgo).length,
+      severity_counts: {
+        low: auditLogs.filter((log: any) => log.severity === "low").length,
+        medium: auditLogs.filter((log: any) => log.severity === "medium").length,
+        high: auditLogs.filter((log: any) => log.severity === "high").length,
+        critical: auditLogs.filter((log: any) => log.severity === "critical").length,
+      },
+      action_counts: {
+        user_actions: allLogs.filter(log => log.action.includes("USER_")).length,
+        security_events: allLogs.filter(log =>
+          ["AUTH_LOGIN", "AUTH_LOGOUT", "SECURITY_"].some(prefix => log.action.includes(prefix))
+        ).length,
+        admin_actions: allLogs.filter(log => log.action.includes("ADMIN_")).length,
+      },
+    };
+
+    // DEMO FALLBACK: If no real logs exist, return demo data
     const demoAuditLogs = [
       {
         id: "audit-001",
@@ -200,79 +289,24 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       },
     ];
 
-    // Apply filters
-    let filteredLogs = demoAuditLogs.filter(log => {
-      let matches = true;
-
-      if (action && action !== "all") {
-        matches = matches && log.action === action;
-      }
-
-      if (target_user_id) {
-        matches = matches && log.target_user_id === target_user_id;
-      }
-
-      if (severity && severity !== "all") {
-        matches = matches && log.severity === severity;
-      }
-
-      if (search) {
-        matches =
-          matches &&
-          (log.description.toLowerCase().includes(search.toLowerCase()) ||
-            (log.target_user_email
-              ?.toLowerCase()
-              .includes(search.toLowerCase()) ?? false) ||
-            (log.performer?.email?.toLowerCase().includes(search.toLowerCase()) ?? false));
-      }
-
-      if (date_from) {
-        matches = matches && new Date(log.timestamp) >= new Date(date_from);
-      }
-
-      if (date_to) {
-        matches = matches && new Date(log.timestamp) <= new Date(date_to);
-      }
-
-      return matches;
-    });
-
-    // Sort by timestamp (newest first)
-    filteredLogs.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-
-    // Apply pagination
-    const skip = (page - 1) * limit;
-    const paginatedLogs = filteredLogs.slice(skip, skip + limit);
-
-    // Calculate summary statistics
-    const summary = {
-      total: filteredLogs.length,
-      today: filteredLogs.filter(log => {
-        const today = new Date();
-        const logDate = new Date(log.timestamp);
-        return logDate.toDateString() === today.toDateString();
-      }).length,
-      this_week: filteredLogs.filter(log => {
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        return new Date(log.timestamp) >= weekAgo;
-      }).length,
+    // Fallback to demo data ONLY if no real logs exist
+    const finalLogs = result.total > 0 ? auditLogs : demoAuditLogs;
+    const finalSummary = result.total > 0 ? summary : {
+      total: demoAuditLogs.length,
+      today: 0,
+      this_week: demoAuditLogs.length,
       severity_counts: {
-        low: filteredLogs.filter(log => log.severity === "low").length,
-        medium: filteredLogs.filter(log => log.severity === "medium").length,
-        high: filteredLogs.filter(log => log.severity === "high").length,
-        critical: filteredLogs.filter(log => log.severity === "critical")
-          .length,
+        low: demoAuditLogs.filter(log => log.severity === "low").length,
+        medium: demoAuditLogs.filter(log => log.severity === "medium").length,
+        high: demoAuditLogs.filter(log => log.severity === "high").length,
+        critical: demoAuditLogs.filter(log => log.severity === "critical").length,
       },
       action_counts: {
-        user_actions: filteredLogs.filter(log => log.action.startsWith("USER_"))
-          .length,
-        security_events: filteredLogs.filter(log =>
+        user_actions: demoAuditLogs.filter(log => log.action.startsWith("USER_")).length,
+        security_events: demoAuditLogs.filter(log =>
           ["SECURITY_ALERT", "USER_LOGIN", "USER_LOGOUT"].includes(log.action)
         ).length,
-        admin_actions: filteredLogs.filter(log =>
+        admin_actions: demoAuditLogs.filter(log =>
           ["BULK_USER_UPDATE", "SYSTEM_SETTING_CHANGED"].includes(log.action)
         ).length,
       },
@@ -281,14 +315,14 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     return NextResponse.json({
       success: true,
       data: {
-        audit_logs: paginatedLogs,
+        audit_logs: finalLogs,
         pagination: {
           page,
           limit,
-          total: filteredLogs.length,
-          totalPages: Math.ceil(filteredLogs.length / limit),
+          total: result.total > 0 ? result.total : demoAuditLogs.length,
+          totalPages: result.total > 0 ? Math.ceil(result.total / limit) : 1,
         },
-        summary,
+        summary: finalSummary,
       },
     });
   } catch (error) {
@@ -321,33 +355,49 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       request.headers.get("user-agent") ||
       "unknown";
 
-    // Create new audit log entry (demo response)
-    const newAuditLog = {
-      id: `audit-${Date.now()}`,
-      action: validatedData.action,
-      description: validatedData.description,
-      performer_user_id: user.id,
-      target_user_id: validatedData.target_user_id,
-      target_user_email: validatedData.target_user_email,
-      metadata: validatedData.metadata || {},
-      ip_address,
-      user_agent,
-      severity: validatedData.severity,
-      timestamp: new Date().toISOString(),
-      workspace_id: user.workspace_id || "default",
-    };
+    // Create new audit log entry in DATABASE
+    const newAuditLog = await prisma.auditLog.create({
+      data: {
+        workspace_id: user.workspace_id,
+        user_id: user.id,
+        action: validatedData.action,
+        resource: "admin_action",
+        resource_id: validatedData.target_user_id || "system",
+        old_values: null,
+        new_values: JSON.stringify({
+          description: validatedData.description,
+          target_user_email: validatedData.target_user_email,
+          metadata: validatedData.metadata,
+        }),
+        ip_address,
+        user_agent,
+      },
+    });
 
     console.log("AUDIT LOG CREATED:", newAuditLog);
 
     return NextResponse.json(
       {
         success: true,
-        data: { audit_log: newAuditLog },
+        data: { audit_log: {
+          id: newAuditLog.id,
+          action: newAuditLog.action,
+          description: validatedData.description,
+          performer_user_id: newAuditLog.user_id,
+          target_user_id: validatedData.target_user_id,
+          target_user_email: validatedData.target_user_email,
+          metadata: validatedData.metadata || {},
+          ip_address: newAuditLog.ip_address,
+          user_agent: newAuditLog.user_agent,
+          severity: validatedData.severity,
+          timestamp: newAuditLog.created_at.toISOString(),
+          workspace_id: newAuditLog.workspace_id,
+        }},
         message: "Audit log entry created successfully",
       },
       { status: 201 }
     );
-  
+
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -367,37 +417,3 @@ export const POST = requireAnyPermission(["admin:create"])(async (
     );
   }
 });
-
-// Helper function to create audit log (internal use only)
-async function _createAuditLog(
-  performer_user_id: string,
-  action: string,
-  description: string,
-  metadata?: any,
-  target_user_id?: string,
-  target_user_email?: string,
-  severity: "low" | "medium" | "high" | "critical" = "medium"
-) {
-  try {
-    const auditLog = {
-      action,
-      description,
-      target_user_id,
-      target_user_email,
-      metadata,
-      severity,
-    };
-
-    // In a real implementation, this would make an API call or write directly to database
-    console.log("AUDIT LOG:", {
-      performer_user_id,
-      ...auditLog,
-      timestamp: new Date().toISOString(),
-      });
-    
-      return true;
-  } catch (error) {
-    console.error("Error creating audit log:", error);
-    return false;
-  }
-}
