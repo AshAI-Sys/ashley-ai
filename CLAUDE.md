@@ -1,8 +1,8 @@
 # Ashley AI - Development Guide
 
-**Last Updated**: 2025-11-05
-**Current Status**: 15 Manufacturing Stages + Mobile App - PRODUCTION READY WITH ZERO TYPESCRIPT ERRORS
-**Latest Update**: TypeScript Error Resolution - All 98 TypeScript errors fixed, zero compilation errors achieved
+**Last Updated**: 2025-11-08
+**Current Status**: 15 Manufacturing Stages + Mobile App + Enhanced Inventory System - PRODUCTION READY WITH ZERO TYPESCRIPT ERRORS
+**Latest Update**: Inventory & QR System Update - Complete relational category/brand system with comprehensive QR lifecycle management (7 phases, 2,530+ lines)
 
 ## Quick Start Commands
 
@@ -38,6 +38,8 @@ fix-changes.bat
 - **HR & Payroll**: http://localhost:3001/hr-payroll
 - **Automation & Reminders**: http://localhost:3001/automation
 - **Inventory Management**: http://localhost:3001/inventory/\*
+- **QR Printer**: http://localhost:3001/inventory/qr-printer (Batch QR generation)
+- **Product Scanner**: http://localhost:3001/inventory/store (Category/Brand badges)
 
 ### 🔐 **PRODUCTION AUTHENTICATION** (NEW - Oct 19, 2025)
 
@@ -242,6 +244,7 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - **Finance**: Invoices, InvoiceItems, Payments, CreditNotes, BankAccounts, Expenses, CostCenters, Budgets, FinancialReports
 - **HR**: Employees, AttendanceLogs, PayrollPeriods, PayrollEarnings
 - **Maintenance**: Assets, WorkOrders, MaintenanceSchedules
+- **Inventory**: InventoryProduct, ProductVariant, Category, InventoryBrand, QRCode, StockLedger, StoreLocation
 - **Client Portal**: ClientSessions, ClientNotifications, ClientActivities, ClientMessages, ClientPortalSettings
 - **Merchandising AI**: DemandForecasts, ProductRecommendations, MarketTrends, InventoryInsights, AIModelMetrics, CustomerSegments
 - **Automation & Reminders**: AutomationRule, AutomationExecution, NotificationTemplate, Notification, Alert, Integration, IntegrationSyncLog
@@ -249,6 +252,70 @@ Located in `packages/database/prisma/schema.prisma` with models for:
 - **Enhanced Order Intake**: ColorVariant, GarmentAddon, OrderFile, OrderActivityLog, PrintLocation
 
 ## Recent Updates Log
+
+### 2025-11-08 - INVENTORY & QR SYSTEM UPDATE - COMPLETE RELATIONAL MODEL WITH LIFECYCLE TRACKING 🏷️✅
+
+- ✅ **7 Phases Completed**: Comprehensive inventory enhancement (Database → UI → API → Documentation)
+- ✅ **Relational Category/Brand System**: Full database relationships with InventoryProduct
+  - Added `category_id` and `brand_id` to InventoryProduct model
+  - Foreign key constraints with SetNull on delete
+  - Comprehensive indexing for performance
+- ✅ **Reusable UI Components**: Category & Brand selectors with inline creation
+  - `CategorySelect` component (280 lines) - Hierarchical category support
+  - `BrandSelect` component (330 lines) - Brand logo display
+  - Inline creation with **+** button (create without leaving form)
+  - Real-time preview and validation
+- ✅ **Enhanced Scanner UI**: Category/Brand badges on all scanners
+  - Purple category badges with FolderTree icon
+  - Blue brand badges with Tag icon
+  - Conditional rendering (only show if data exists)
+  - Applied to main scanner and retail scanner
+- ✅ **Comprehensive QR Code System**: Full lifecycle management
+  - New `QRCode` database model (47 fields + 12 indexes)
+  - Relational links: Product, Variant, Category, Brand, Order, User
+  - Support for INVENTORY_FIRST and ORDER_FIRST workflows
+  - Status lifecycle: GENERATED → PRINTED → ASSIGNED → SCANNED → INACTIVE
+  - Print count and scan count tracking with timestamps
+- ✅ **QR Code Management API**: `/api/inventory/qr-codes` - Full CRUD
+  - POST: Generate QR codes (single, batch by category, batch by brand)
+  - GET: List QR codes with filters and pagination
+  - PATCH: Update status, increment print/scan counts
+  - DELETE: Soft/hard delete QR codes
+- ✅ **QR Printer Page**: `/inventory/qr-printer` - Professional batch printing
+  - Batch generation by category or brand
+  - Workflow type selection (INVENTORY_FIRST/ORDER_FIRST)
+  - Professional 3-column print layout
+  - Download individual or batch QR codes
+  - Mark as printed functionality with count tracking
+  - Multi-format support (PNG, SVG, Data URL)
+  - Size customization (100-500px)
+- ✅ **Product Creation Enhancement**: Inline category/brand creation
+  - Integrated CategorySelect and BrandSelect into product creation form
+  - Create categories/brands without leaving the product creation page
+  - Hierarchical category selection with parent/child support
+  - Brand logo preview in creation dialog
+- ✅ **Complete Documentation**: `INVENTORY-QR-SYSTEM-UPDATE.md` (411 lines)
+  - Executive summary and phase breakdown
+  - Database schema changes with code examples
+  - API documentation with request/response examples
+  - User guide for all new features
+  - Technical specifications and indexes
+  - Deployment checklist
+  - Success metrics and future enhancements
+- 📦 **Files Modified**: 15 files across database, API, and UI
+- 📦 **Files Created**: 6 files (2 APIs, 3 components, 1 page, 1 documentation)
+- 📦 **Code Added**: 2,530+ lines of production-ready code
+- 🚀 **Git Commits**: 7 commits (one per phase)
+  - `11243fa4` - Phase 1: Database Schema Enhancement
+  - `1ae97ff2` - Phase 2: Categories and Brands CRUD APIs
+  - `c3dda616` - Phase 3: Update Products API
+  - `a32806c5` - Phase 4: Inline Category/Brand Creation UI
+  - `6ef15bfa` - Phase 5: Store Scanner Enhancement
+  - `2f77389e` - Phase 6: QR Code System Redesign
+  - `3456b1dc` - Phase 7: Documentation & Final Verification
+- 🚀 **Deployment**: Successfully deployed to Vercel production
+- 🎯 **TypeScript**: Zero errors - Production ready
+- 🎯 **Result**: Complete category/brand relational system with comprehensive QR lifecycle management, batch printing, and professional UI components
 
 ### 2025-11-06 - FINISHED GOODS INVENTORY & SYSTEM AUDIT - COMPREHENSIVE DOCUMENTATION CREATED 📦✅
 
