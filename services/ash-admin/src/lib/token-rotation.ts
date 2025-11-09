@@ -9,8 +9,6 @@ import { generateToken } from "./jwt";
 import { UserRole } from "./auth-guards";
 import crypto from "crypto";
 
-const redis = getRedisClient();
-
 // Token configuration
 const ACCESS_TOKEN_EXPIRY = 15 * 60; // 15 minutes
 const REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60; // 7 days
@@ -53,27 +51,31 @@ export async function generateTokenPair(
   // Generate refresh token (long-lived, cryptographically secure)
   const refreshToken = crypto.randomBytes(REFRESH_TOKEN_LENGTH).toString("hex");
 
-  // Store refresh token in Redis
-  const refreshTokenData: RefreshTokenData = {
-    userId: userData.userId,
-    deviceId: deviceInfo?.deviceId,
-    userAgent: deviceInfo?.userAgent,
-    ipAddress: deviceInfo?.ipAddress,
-    createdAt: new Date(),
-  };
+  const redis = getRedisClient();
 
-  await redis.setex(
-    `refresh_token:${refreshToken}`,
-    REFRESH_TOKEN_EXPIRY,
-    JSON.stringify(refreshTokenData)
-  );
+  if (redis) {
+    // Store refresh token in Redis
+    const refreshTokenData: RefreshTokenData = {
+      userId: userData.userId,
+      deviceId: deviceInfo?.deviceId,
+      userAgent: deviceInfo?.userAgent,
+      ipAddress: deviceInfo?.ipAddress,
+      createdAt: new Date(),
+    };
 
-  // Also track all refresh tokens for this user
-  await redis.sadd(`user_refresh_tokens:${userData.userId}`, refreshToken);
-  await redis.expire(
-    `user_refresh_tokens:${userData.userId}`,
-    REFRESH_TOKEN_EXPIRY
-  );
+    await redis.setex(
+      `refresh_token:${refreshToken}`,
+      REFRESH_TOKEN_EXPIRY,
+      JSON.stringify(refreshTokenData)
+    );
+
+    // Also track all refresh tokens for this user
+    await redis.sadd(`user_refresh_tokens:${userData.userId}`, refreshToken);
+    await redis.expire(
+      `user_refresh_tokens:${userData.userId}`,
+      REFRESH_TOKEN_EXPIRY
+    );
+  }
 
   return {
     accessToken,
@@ -94,6 +96,9 @@ export async function refreshAccessToken(
   }
 ): Promise<TokenPair | null> {
   try {
+    const redis = getRedisClient();
+    if (!redis) return null;
+
     // Get refresh token data from Redis
     const data = await redis.get(`refresh_token:${refreshToken}`);
 
@@ -144,6 +149,9 @@ export async function refreshAccessToken(
  */
 export async function revokeRefreshToken(refreshToken: string): Promise<void> {
   try {
+    const redis = getRedisClient();
+    if (!redis) return;
+
     // Get token data before deletion
     const data = await redis.get(`refresh_token:${refreshToken}`);
 
@@ -169,6 +177,9 @@ export async function revokeRefreshToken(refreshToken: string): Promise<void> {
  */
 export async function revokeAllUserTokens(userId: string): Promise<void> {
   try {
+    const redis = getRedisClient();
+    if (!redis) return;
+
     // Get all refresh tokens for this user
     const refreshTokens = await redis.smembers(`user_refresh_tokens:${userId}`);
 
@@ -198,6 +209,9 @@ export async function getUserActiveSessions(
   userId: string
 ): Promise<RefreshTokenData[]> {
   try {
+    const redis = getRedisClient();
+    if (!redis) return [];
+
     const refreshTokens = await redis.smembers(`user_refresh_tokens:${userId}`);
 
     const sessions: RefreshTokenData[] = [];
@@ -224,6 +238,9 @@ export async function validateRefreshToken(
   refreshToken: string
 ): Promise<boolean> {
   try {
+    const redis = getRedisClient();
+    if (!redis) return false;
+
     const exists = await redis.exists(`refresh_token:${refreshToken}`);
     return exists === 1;
   } catch (error) {
@@ -239,6 +256,9 @@ export async function getRefreshTokenTTL(
   refreshToken: string
 ): Promise<number> {
   try {
+    const redis = getRedisClient();
+    if (!redis) return -1;
+
     return await redis.ttl(`refresh_token:${refreshToken}`);
   } catch (error) {
     console.error("Error getting refresh token TTL:", error);

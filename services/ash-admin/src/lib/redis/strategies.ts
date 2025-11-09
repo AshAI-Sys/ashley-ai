@@ -306,6 +306,8 @@ export async function warmCache(workspaceId: string) {
 export async function getCacheStats() {
   const redis = (await import("../redis")).getRedisClient();
 
+  if (!redis) return null;
+
   try {
     const info = await redis.info("stats");
     const keyspace = await redis.info("keyspace");

@@ -25,6 +25,8 @@ export class CacheService {
   async get<T = any>(key: string): Promise<T | null> {
     try {
       const redis = getRedisClient();
+      if (!redis) return null;
+
       const value = await redis.get(this.key(key));
 
       if (!value) return null;
@@ -46,6 +48,8 @@ export class CacheService {
   async set(key: string, value: any, ttlSeconds?: number): Promise<boolean> {
     try {
       const redis = getRedisClient();
+      if (!redis) return false;
+
       const serialized =
         typeof value === "string" ? value : JSON.stringify(value);
 
@@ -68,6 +72,8 @@ export class CacheService {
   async delete(...keys: string[]): Promise<number> {
     try {
       const redis = getRedisClient();
+      if (!redis) return 0;
+
       const prefixedKeys = keys.map(k => this.key(k));
       return await redis.del(...prefixedKeys);
     } catch (error) {
@@ -82,6 +88,8 @@ export class CacheService {
   async exists(...keys: string[]): Promise<number> {
     try {
       const redis = getRedisClient();
+      if (!redis) return 0;
+
       const prefixedKeys = keys.map(k => this.key(k));
       return await redis.exists(...prefixedKeys);
     } catch (error) {
@@ -96,6 +104,8 @@ export class CacheService {
   async expire(key: string, ttlSeconds: number): Promise<boolean> {
     try {
       const redis = getRedisClient();
+      if (!redis) return false;
+
       const result = await redis.expire(this.key(key), ttlSeconds);
       return result === 1;
     } catch (error) {
@@ -110,6 +120,8 @@ export class CacheService {
   async ttl(key: string): Promise<number> {
     try {
       const redis = getRedisClient();
+      if (!redis) return -2;
+
       return await redis.ttl(this.key(key));
     } catch (error) {
       console.error("Cache TTL error:", error);
@@ -146,6 +158,8 @@ export class CacheService {
   async invalidatePattern(pattern: string): Promise<number> {
     try {
       const redis = getRedisClient();
+      if (!redis) return 0;
+
       const keys = await redis.keys(this.key(pattern));
 
       if (keys.length === 0) return 0;
@@ -163,6 +177,8 @@ export class CacheService {
   async increment(key: string, amount = 1): Promise<number> {
     try {
       const redis = getRedisClient();
+      if (!redis) return 0;
+
       return await redis.incrby(this.key(key), amount);
     } catch (error) {
       console.error("Cache increment error:", error);
@@ -176,6 +192,8 @@ export class CacheService {
   async decrement(key: string, amount = 1): Promise<number> {
     try {
       const redis = getRedisClient();
+      if (!redis) return 0;
+
       return await redis.decrby(this.key(key), amount);
     } catch (error) {
       console.error("Cache decrement error:", error);
