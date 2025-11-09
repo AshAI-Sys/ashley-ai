@@ -168,49 +168,77 @@ export default function AttendancePage() {
 
   // Calculate stats from attendance data
   const calculateStats = (data: AttendanceLog[]) => {
-    const today = new Date().toISOString().split("T")[0] || "";
-    const todayLogs = data.filter((log) => log.date.startsWith(today));
+    try {
+      // Ensure data is an array
+      if (!Array.isArray(data)) {
+        console.error("calculateStats received non-array data:", data);
+        return;
+      }
 
-    const present = todayLogs.filter((log) => log.time_in).length;
-    const pending = data.filter((log) => log.status === "PENDING").length;
+      const today = new Date().toISOString().split("T")[0] || "";
+      const todayLogs = (data || []).filter((log) => log?.date?.startsWith(today));
 
-    // Calculate average hours
-    const completedLogs = data.filter((log) => log.time_in && log.time_out);
-    const totalHours = completedLogs.reduce((sum, log) => {
-      if (!log.time_in || !log.time_out) return sum;
-      const hoursWorked = calculateHoursWorked(
-        log.time_in,
-        log.time_out,
-        log.break_minutes
-      );
-      return sum + hoursWorked;
-    }, 0);
-    const avgHours =
-      completedLogs.length > 0 ? totalHours / completedLogs.length : 0;
+      const present = todayLogs.filter((log) => log?.time_in).length;
+      const pending = (data || []).filter((log) => log?.status === "PENDING").length;
 
-    // Calculate late arrivals (after 9 AM)
-    const lateArrivals = todayLogs.filter((log) => {
-      if (!log.time_in) return false;
-      const timeIn = new Date(log.time_in);
-      const hour = timeIn.getHours();
-      return hour >= 9;
-    }).length;
+      // Calculate average hours
+      const completedLogs = (data || []).filter((log) => log?.time_in && log?.time_out);
+      const totalHours = completedLogs.reduce((sum, log) => {
+        if (!log?.time_in || !log?.time_out) return sum;
+        const hoursWorked = calculateHoursWorked(
+          log.time_in,
+          log.time_out,
+          log.break_minutes || 0
+        );
+        return sum + hoursWorked;
+      }, 0);
+      const avgHours =
+        completedLogs.length > 0 ? totalHours / completedLogs.length : 0;
 
-    // Calculate early departures (before 5 PM)
-    const earlyDepartures = todayLogs.filter((log) => {
-      if (!log.time_out) return false;
-      const timeOut = new Date(log.time_out);
-      const hour = timeOut.getHours();
-      return hour < 17;
-    }).length;
+      // Calculate late arrivals (after 9 AM)
+      const lateArrivals = todayLogs.filter((log) => {
+        if (!log?.time_in) return false;
+        try {
+          const timeIn = new Date(log.time_in);
+          if (isNaN(timeIn.getTime())) return false;
+          const hour = timeIn.getHours();
+          return hour >= 9;
+        } catch {
+          return false;
+        }
+      }).length;
 
-    setStats({
-      total_present: present,
-      pending_approvals: pending,
-      average_hours: avgHours,
-      late_arrivals: lateArrivals,
-      early_departures: earlyDepartures,
-    });
+      // Calculate early departures (before 5 PM)
+      const earlyDepartures = todayLogs.filter((log) => {
+        if (!log?.time_out) return false;
+        try {
+          const timeOut = new Date(log.time_out);
+          if (isNaN(timeOut.getTime())) return false;
+          const hour = timeOut.getHours();
+          return hour < 17;
+        } catch {
+          return false;
+        }
+      }).length;
+
+      setStats({
+        total_present: present,
+        pending_approvals: pending,
+        average_hours: avgHours,
+        late_arrivals: lateArrivals,
+        early_departures: earlyDepartures,
+      });
+    } catch (error) {
+      console.error("Error calculating stats:", error);
+      // Set default stats on error
+      setStats({
+        total_present: 0,
+        pending_approvals: 0,
+        average_hours: 0,
+        late_arrivals: 0,
+        early_departures: 0,
+      });
+    }
   };
 
   // Calculate hours worked
@@ -219,33 +247,63 @@ export default function AttendancePage() {
     timeOut: string,
     breakMinutes: number
   ): number => {
-    const start = new Date(timeIn);
-    const end = new Date(timeOut);
-    const diffMs = end.getTime() - start.getTime();
-    const diffMins = diffMs / (1000 * 60);
-    const workMinutes = diffMins - breakMinutes;
-    return workMinutes / 60;
+    try {
+      const start = new Date(timeIn);
+      const end = new Date(timeOut);
+
+      // Validate dates
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        console.error("Invalid date in calculateHoursWorked:", { timeIn, timeOut });
+        return 0;
+      }
+
+      const diffMs = end.getTime() - start.getTime();
+      const diffMins = diffMs / (1000 * 60);
+      const workMinutes = diffMins - (breakMinutes || 0);
+      return Math.max(0, workMinutes / 60);
+    } catch (error) {
+      console.error("Error calculating hours worked:", error);
+      return 0;
+    }
   };
 
   // Format time to 12-hour format
   const formatTime = (dateString: string | null): string => {
     if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date in formatTime:", dateString);
+        return "Invalid";
+      }
+      return date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } catch (error) {
+      console.error("Error formatting time:", error);
+      return "Error";
+    }
   };
 
   // Format date
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.error("Invalid date in formatDate:", dateString);
+        return "Invalid Date";
+      }
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "Error";
+    }
   };
 
   // Handle approve

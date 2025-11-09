@@ -139,13 +139,24 @@ export default function ExpensesPage() {
   });
 
   // Fetch expenses
-  const { data: expenses = [], isLoading } = useQuery<Expense[]>({
+  const { data: expenses = [], isLoading, error: expensesError } = useQuery<Expense[]>({
     queryKey: ["expenses"],
     queryFn: async () => {
-      const res = await fetch("/api/finance/expenses");
-      if (!res.ok) throw new Error("Failed to fetch expenses");
-      return res.json();
+      const res = await fetch("/api/finance/expenses", {
+        headers: {
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("ash_token") : ""}`,
+        },
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Failed to fetch expenses" }));
+        throw new Error(errorData.error || "Failed to fetch expenses");
+      }
+      const data = await res.json();
+      // Ensure we return an array
+      return Array.isArray(data) ? data : (data.data || []);
     },
+    retry: 2,
+    retryDelay: 1000,
   });
 
   // Create expense mutation
@@ -153,10 +164,16 @@ export default function ExpensesPage() {
     mutationFn: async (data: Partial<Expense>) => {
       const res = await fetch("/api/finance/expenses", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("ash_token") : ""}`,
+        },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to create expense");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Failed to create expense" }));
+        throw new Error(errorData.error || "Failed to create expense");
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -165,8 +182,9 @@ export default function ExpensesPage() {
       setShowCreateModal(false);
       resetForm();
     },
-    onError: () => {
-      toast.error("Failed to create expense");
+    onError: (error: Error) => {
+      console.error("Create expense error:", error);
+      toast.error(error.message || "Failed to create expense");
     },
   });
 
@@ -175,10 +193,16 @@ export default function ExpensesPage() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<Expense> }) => {
       const res = await fetch("/api/finance/expenses", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("ash_token") : ""}`,
+        },
         body: JSON.stringify({ id, ...data }),
       });
-      if (!res.ok) throw new Error("Failed to update expense");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Failed to update expense" }));
+        throw new Error(errorData.error || "Failed to update expense");
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -188,8 +212,9 @@ export default function ExpensesPage() {
       setIsEditing(false);
       setSelectedExpense(null);
     },
-    onError: () => {
-      toast.error("Failed to update expense");
+    onError: (error: Error) => {
+      console.error("Update expense error:", error);
+      toast.error(error.message || "Failed to update expense");
     },
   });
 
@@ -198,8 +223,14 @@ export default function ExpensesPage() {
     mutationFn: async (id: string) => {
       const res = await fetch(`/api/finance/expenses?id=${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${typeof window !== "undefined" ? localStorage.getItem("ash_token") : ""}`,
+        },
       });
-      if (!res.ok) throw new Error("Failed to delete expense");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: "Failed to delete expense" }));
+        throw new Error(errorData.error || "Failed to delete expense");
+      }
       return res.json();
     },
     onSuccess: () => {
@@ -209,8 +240,9 @@ export default function ExpensesPage() {
       setShowViewModal(false);
       setSelectedExpense(null);
     },
-    onError: () => {
-      toast.error("Failed to delete expense");
+    onError: (error: Error) => {
+      console.error("Delete expense error:", error);
+      toast.error(error.message || "Failed to delete expense");
     },
   });
 

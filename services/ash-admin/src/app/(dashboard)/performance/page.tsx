@@ -349,7 +349,7 @@ export default function PerformancePage() {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
-            {metrics.recommendations.map((recommendation, index) => (
+            {(metrics?.recommendations || []).map((recommendation, index) => (
               <li key={index} className="flex items-start gap-2">
                 <span className="mt-1 text-primary">•</span>
                 <span className="text-sm">{recommendation}</span>

@@ -46,7 +46,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (storedToken) {
-        setToken(storedToken);
+        // Verify token is valid before using it
+        try {
+          // Decode JWT to check expiration (without verification - just parsing)
+          const tokenParts = storedToken.split(".");
+          if (tokenParts.length === 3) {
+            const payload = JSON.parse(atob(tokenParts[1]));
+            const now = Math.floor(Date.now() / 1000);
+
+            // Check if token is expired
+            if (payload.exp && payload.exp < now) {
+              console.warn("⚠️ Stored token is expired - clearing");
+              localStorage.removeItem("ash_token");
+              localStorage.removeItem("ash_user");
+              setIsLoading(false);
+              return;
+            }
+
+            // Token is valid
+            setToken(storedToken);
+          }
+        } catch (error) {
+          console.error("❌ Error decoding token:", error);
+          localStorage.removeItem("ash_token");
+          localStorage.removeItem("ash_user");
+          setIsLoading(false);
+          return;
+        }
 
         // Get stored user data if available
         const storedUser = localStorage.getItem("ash_user");
@@ -93,10 +119,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        throw new Error("Invalid credentials");
+        const errorData = await response.json().catch(() => ({ error: "Invalid credentials" }));
+        throw new Error(errorData.error || "Invalid credentials");
       }
 
       const data = await response.json();
+
+      // Validate response structure
+      if (!data || !data.access_token || !data.user) {
+        console.error("❌ Invalid login response structure:", data);
+        throw new Error("Invalid server response");
+      }
+
       const { access_token, user: userData } = data;
 
       setUser(userData);
@@ -111,8 +145,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         name: userData.name || userData.email,
         role: userData.role,
       });
+
+      console.log("✅ Login successful for user:", userData.email);
     } catch (error) {
-      throw new Error("Invalid credentials");
+      console.error("❌ Login error:", error);
+      // Clear any partial state
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem("ash_token");
+      localStorage.removeItem("ash_user");
+      throw error instanceof Error ? error : new Error("Login failed");
     }
   };
 

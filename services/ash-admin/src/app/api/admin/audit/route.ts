@@ -5,6 +5,16 @@ import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { getAuditLogs } from "@/lib/audit-logger";
 import { prisma } from "@/lib/db";
 
+// Helper function to safely parse JSON
+function safeJSONParse(jsonString: string): any {
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    console.error("Failed to parse JSON:", error);
+    return null;
+  }
+}
+
 // Helper function to determine severity based on action
 function determineSeverity(action: string): "low" | "medium" | "high" | "critical" {
   // Critical severity actions
@@ -92,11 +102,11 @@ export const GET = requireAnyPermission(["admin:read"])(async (
       resource: log.resource,
       resource_id: log.resource_id,
       performer_user_id: log.user_id,
-      old_values: log.old_values ? JSON.parse(log.old_values) : null,
-      new_values: log.new_values ? JSON.parse(log.new_values) : null,
+      old_values: log.old_values ? safeJSONParse(log.old_values) : null,
+      new_values: log.new_values ? safeJSONParse(log.new_values) : null,
       metadata: {
-        old_values: log.old_values ? JSON.parse(log.old_values) : null,
-        new_values: log.new_values ? JSON.parse(log.new_values) : null,
+        old_values: log.old_values ? safeJSONParse(log.old_values) : null,
+        new_values: log.new_values ? safeJSONParse(log.new_values) : null,
       },
       ip_address: log.ip_address,
       user_agent: log.user_agent,
