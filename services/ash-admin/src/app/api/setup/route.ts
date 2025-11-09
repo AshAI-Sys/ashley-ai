@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/db";
 import bcrypt from 'bcryptjs';
+
+export const dynamic = 'force-dynamic';
+
 // Unused import removed: requireAuth
 
 export async function GET() {

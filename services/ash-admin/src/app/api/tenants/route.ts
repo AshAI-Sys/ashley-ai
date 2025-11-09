@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // POST /api/tenants - Create new tenant workspace
 export const POST = requireAuth(async (req: NextRequest, _user) => {

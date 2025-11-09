@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/3pl/track?provider=LALAMOVE&tracking_number=xxx - Track shipment
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {

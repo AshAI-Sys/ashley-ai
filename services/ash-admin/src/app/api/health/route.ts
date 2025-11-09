@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest } from "next/server";
 import {
   createSuccessResponse,
@@ -6,6 +6,9 @@ import {
   withErrorHandling,
 } from "../../../lib/error-handling";
 import { prisma as _db } from "../../../lib/db";
+
+export const dynamic = 'force-dynamic';
+
 // Unused import removed: requireAuth
 
 // Simple health check endpoint to test error handling system

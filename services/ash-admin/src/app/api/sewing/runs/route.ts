@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 const CreateSewingRunSchema = z.object({
   order_id: z.string().min(1, "Order ID is required"),

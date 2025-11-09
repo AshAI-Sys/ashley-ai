@@ -1,10 +1,13 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import bcrypt from 'bcryptjs';
 // Unused import removed: requireAuth
 import { prisma } from "@/lib/db";
+
+export const dynamic = 'force-dynamic';
+
 
 // Validation schemas
 const CreateUserSchema = z.object({

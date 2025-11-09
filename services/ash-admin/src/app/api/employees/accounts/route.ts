@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // Employee accounts reference - for admin use only
 export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {

@@ -15,6 +15,9 @@ export const runtime = "nodejs";
 import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const OrderLineItemSchema = z.object({
   productType: z.string().min(1, "Product type is required"),
   description: z.string().optional(),

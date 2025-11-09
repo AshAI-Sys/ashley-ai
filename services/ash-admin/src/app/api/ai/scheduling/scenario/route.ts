@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // POST /api/ai/scheduling/scenario - Analyze what-if scenarios
 export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {

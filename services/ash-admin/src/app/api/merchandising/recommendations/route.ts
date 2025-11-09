@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
@@ -8,6 +8,9 @@ import {
   validateEnum,
   createValidationErrorResponse,
 } from "@/lib/validation";
+
+export const dynamic = 'force-dynamic';
+
 
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {

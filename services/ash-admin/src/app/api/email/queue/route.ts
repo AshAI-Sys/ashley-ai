@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { emailQueue } from "@/lib/email/queue";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 /**
  * GET /api/email/queue - Get queue statistics
  */

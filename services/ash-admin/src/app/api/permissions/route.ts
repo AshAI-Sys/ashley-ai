@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { permissionManager } from "@/lib/rbac/permission-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/permissions - Get all available permissions
 export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {

@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { inventoryManager } from "@/lib/inventory/inventory-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/inventory - Get inventory summary and alerts
 export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {

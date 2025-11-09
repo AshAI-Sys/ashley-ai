@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // POST /api/3pl/cancel - Cancel shipment with 3PL provider
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {

@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { SMS_TEMPLATES } from "@/lib/sms/types";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/sms/templates - Get all SMS templates
 export async function GET() {
   try {

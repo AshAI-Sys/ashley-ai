@@ -9,6 +9,9 @@ import {
   MAX_FILE_SIZE,
 } from "@/lib/file-validator";
 
+export const dynamic = 'force-dynamic';
+
+
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

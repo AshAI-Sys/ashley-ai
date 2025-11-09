@@ -4,6 +4,9 @@ import { authLogger } from "../../../../lib/logger";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 /**
  * POST /api/auth/logout
  * Logout current user and clear session

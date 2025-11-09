@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
@@ -147,7 +150,7 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
           (cartonWithContents.length_cm || 40) *
           (cartonWithContents.width_cm || 30) *
           (cartonWithContents.height_cm || 25);
-        const unitVolume = 300; // cmÂ³ per unit (estimated)
+        const unitVolume = 300; // cm³ per unit (estimated)
         const usedVolume = totalUnits * unitVolume;
         const fillPercentage = Math.min(100, (usedVolume / cartonVolume) * 100);
 

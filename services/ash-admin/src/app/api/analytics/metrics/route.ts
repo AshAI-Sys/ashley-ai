@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAllMetrics } from "@/lib/analytics/metrics";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 export const GET = requireAuth(async (_request: NextRequest, user) => {
   try {
     const workspace_id = user.workspaceId;

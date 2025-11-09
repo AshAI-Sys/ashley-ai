@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest} from "next/server";
 import { prisma } from "@/lib/db";
 import {
@@ -13,6 +13,9 @@ import {
   requireAnyPermission,
 } from "../../../../lib/auth-middleware";
 import bcrypt from 'bcryptjs';
+
+export const dynamic = 'force-dynamic';
+
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";

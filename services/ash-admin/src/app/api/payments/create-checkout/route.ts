@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest } from "next/server";
 import { paymentService } from "@/lib/paymentService";
 import {
@@ -11,6 +11,9 @@ import {
 } from "@/lib/error-handling";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 const prisma = db;
 

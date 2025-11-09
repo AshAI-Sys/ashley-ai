@@ -6,6 +6,9 @@ import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
 import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 
+export const dynamic = 'force-dynamic';
+
+
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 

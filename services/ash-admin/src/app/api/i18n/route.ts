@@ -4,6 +4,9 @@ import { translationManager } from "@/lib/i18n/translation-manager";
 import { currencyManager } from "@/lib/i18n/currency-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/i18n?action=languages|translations|currencies
 export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {

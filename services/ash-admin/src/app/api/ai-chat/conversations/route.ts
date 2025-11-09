@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const prisma = db;
 
 // GET /api/ai-chat/conversations - Get all conversations for a user

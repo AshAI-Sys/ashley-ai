@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 // Unused import removed: prisma
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {

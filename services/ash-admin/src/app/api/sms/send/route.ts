@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { smsService } from "@/lib/sms";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // POST /api/sms/send - Send SMS
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {

@@ -1,9 +1,12 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
+
+export const dynamic = 'force-dynamic';
+
 
 const prisma = db;
 
@@ -90,7 +93,7 @@ async function getBusinessContext(
       contextParts.push(`\n## Recent Orders (Last 10):`);
       orders.forEach((order: any, idx: number) => {
         contextParts.push(
-          `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - â‚±${order.total_amount?.toLocaleString() || "0"}`
+          `${idx + 1}. Order #${order.order_number} - ${order.client?.name || "N/A"} (${order.brand?.name || "N/A"}) - Status: ${order.status} - ₱${order.total_amount?.toLocaleString() || "0"}`
         );
       });
     }

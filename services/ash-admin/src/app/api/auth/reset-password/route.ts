@@ -5,6 +5,9 @@ import { logAuthEvent } from "../../../../lib/audit-logger";
 import { validatePassword } from "../../../../lib/password-validator";
 import bcrypt from 'bcryptjs';
 import { z } from "zod";
+
+export const dynamic = 'force-dynamic';
+
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 

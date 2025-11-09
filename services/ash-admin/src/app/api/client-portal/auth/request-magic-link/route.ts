@@ -3,6 +3,9 @@ import { db } from '@/lib/db';
 import crypto from 'crypto';
 import { sendEmail } from '@/lib/email';
 
+export const dynamic = 'force-dynamic';
+
+
 // Generate magic link and send email to client
 export async function POST(request: NextRequest) {
   try {

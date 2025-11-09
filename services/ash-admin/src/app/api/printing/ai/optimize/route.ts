@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
@@ -348,7 +351,7 @@ function generateRecommendations(
       recommendations.push({
         type: "TEMPERATURE",
         priority: "HIGH",
-        message: `Optimal film temperature: ${methodOpt.film_temperature}Â°F`,
+        message: `Optimal film temperature: ${methodOpt.film_temperature}°F`,
         impact: "quality_improvement",
       });
       break;

@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { defectDetectionAI } from "@/lib/ai/defect-detection";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // GET /api/ai/defect-detection/patterns - Analyze defect patterns
 export const GET = requireAuth(async (req: NextRequest, _user) => {

@@ -3,6 +3,9 @@ import { cookies } from 'next/headers';
 import { db } from '@/lib/db';
 import jwt from 'jsonwebtoken';
 
+export const dynamic = 'force-dynamic';
+
+
 const JWT_SECRET = process.env.JWT_SECRET || 'ashley-ai-client-portal-secret-key-2024';
 
 // Logout client and clear session

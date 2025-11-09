@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // POST /api/ai/scheduling - Generate optimized schedule
 export const POST = requireAuth(async (req: NextRequest, user) => {

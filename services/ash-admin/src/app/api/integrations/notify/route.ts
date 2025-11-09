@@ -7,6 +7,9 @@ import { emailService } from "@/lib/integrations/email";
 import { webhookService } from "@/lib/integrations/webhooks";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // POST /api/integrations/notify - Send notifications through all configured channels
 export const POST = requireAuth(async (req: NextRequest, _user) => {
   try {

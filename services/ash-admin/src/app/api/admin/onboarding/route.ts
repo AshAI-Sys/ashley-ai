@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // Onboarding step validation schema
 const _OnboardingStepSchema = z.object({

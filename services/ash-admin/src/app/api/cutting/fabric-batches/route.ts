@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const CreateFabricBatchSchema = z.object({
   lot_no: z.string().min(1, "Lot number is required"),
   brand_id: z.string().min(1, "Brand ID is required"),

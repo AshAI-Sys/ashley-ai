@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { backupService } from "@/lib/backup/service";
 import { requireRole } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // POST /api/backups/restore - Restore backup (ADMIN ONLY)
 export const POST = requireRole("admin")(async (request: NextRequest, _user) => {
   try {

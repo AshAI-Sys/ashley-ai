@@ -3,6 +3,9 @@ import { db } from '@/lib/db';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+
+
 const JWT_SECRET = process.env.JWT_SECRET || 'ashley-ai-client-portal-secret-key-2024';
 const JWT_EXPIRY = '7d'; // 7 days
 

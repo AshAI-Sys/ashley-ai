@@ -5,6 +5,9 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const CreateBrandSchema = z.object({
   name: z.string().min(1, "Brand name is required"),
   code: z.string().optional(), // Brand code (auto-generated, editable)

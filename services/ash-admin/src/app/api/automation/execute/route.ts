@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import {
@@ -8,6 +8,9 @@ import {
   ValidationError,
   withErrorHandling,
 } from "../../../../lib/error-handling";
+
+export const dynamic = 'force-dynamic';
+
 
 // POST /api/automation/execute - Execute automation rule
 export const POST = withErrorHandling(async (request: NextRequest) => {

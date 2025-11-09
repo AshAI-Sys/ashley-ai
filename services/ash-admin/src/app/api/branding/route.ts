@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { brandingManager } from "@/lib/white-label/branding-manager";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/branding?workspace_id=xxx - Get branding configuration
 export const GET = requireAuth(async (req: NextRequest, _user) => {
   try {

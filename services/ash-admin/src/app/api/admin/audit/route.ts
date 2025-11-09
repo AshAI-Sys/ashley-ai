@@ -1,9 +1,12 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { getAuditLogs } from "@/lib/audit-logger";
 import { prisma } from "@/lib/db";
+
+export const dynamic = 'force-dynamic';
+
 
 // Helper function to safely parse JSON
 function safeJSONParse(jsonString: string): any {

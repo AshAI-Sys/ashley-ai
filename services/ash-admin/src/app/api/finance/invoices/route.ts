@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest} from "next/server";
 import { prisma } from "@/lib/db";
 import {
@@ -15,6 +15,9 @@ import { requireAnyPermission } from "../../../../lib/auth-middleware";
 import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
 import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
+
+export const dynamic = 'force-dynamic';
+
 
 export const GET = withErrorHandling(async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);

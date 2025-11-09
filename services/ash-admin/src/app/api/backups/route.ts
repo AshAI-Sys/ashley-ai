@@ -4,6 +4,9 @@ import { backupService } from "@/lib/backup/service";
 import { backupScheduler } from "@/lib/backup/scheduler";
 import { requireRole } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/backups - List all backups (ADMIN ONLY)
 export const GET = requireRole("admin")(async (_request: NextRequest, _user) => {
   try {

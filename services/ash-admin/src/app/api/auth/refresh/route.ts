@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { refreshAccessToken, verifyRefreshToken } from "../../../../lib/jwt";
 import { authLogger } from "../../../../lib/logger";
@@ -8,6 +8,9 @@ import {
   apiUnauthorized,
   apiServerError,
 } from "../../../../lib/api-response";
+
+export const dynamic = 'force-dynamic';
+
 
 /**
  * POST /api/auth/refresh

@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from 'bcryptjs';
@@ -9,6 +9,9 @@ import {
   withErrorHandling,
   validateRequiredFields,
 } from "../../../../lib/error-handling";
+
+export const dynamic = 'force-dynamic';
+
 
 const JWT_SECRET =
   process.env.JWT_SECRET || "ashley-ai-jwt-secret-2025-production";

@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
 export const GET = requireAuth(async (req: NextRequest, _user) => {
@@ -224,10 +227,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       const priceIncrease = ((suggestedPrice - avgPrice) / avgPrice) * 100;
 
       recommendations.insights.push(
-        `ðŸ’° Opportunity to increase prices by ${priceIncrease.toFixed(1)}% to reach ${targetMarginValue}% margin`
+        `💰 Opportunity to increase prices by ${priceIncrease.toFixed(1)}% to reach ${targetMarginValue}% margin`
       );
       recommendations.insights.push(
-        `âœ… High acceptance rate (${acceptanceRate.toFixed(0)}%) suggests room for price optimization`
+        `✅ High acceptance rate (${acceptanceRate.toFixed(0)}%) suggests room for price optimization`
       );
       recommendations.suggested_price = Math.round(suggestedPrice * 100) / 100;
     } else if (
@@ -239,10 +242,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       const priceDecrease = ((avgPrice - suggestedPrice) / avgPrice) * 100;
 
       recommendations.insights.push(
-        `ðŸ“‰ Consider reducing prices by ${priceDecrease.toFixed(1)}% to improve acceptance rate`
+        `📉 Consider reducing prices by ${priceDecrease.toFixed(1)}% to improve acceptance rate`
       );
       recommendations.insights.push(
-        `âš ï¸ Low acceptance rate (${acceptanceRate.toFixed(0)}%) indicates pricing may be too high`
+        `⚠️ Low acceptance rate (${acceptanceRate.toFixed(0)}%) indicates pricing may be too high`
       );
       recommendations.suggested_price = Math.round(suggestedPrice * 100) / 100;
     } else if (
@@ -251,22 +254,22 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
     ) {
       // Optimal pricing
       recommendations.insights.push(
-        "âœ… Current pricing is optimal - meeting both margin and acceptance targets"
+        "✅ Current pricing is optimal - meeting both margin and acceptance targets"
       );
       recommendations.insights.push(
-        `ðŸ’° Margin: ${currentMargin.toFixed(1)}% (target: ${targetMarginValue}%)`
+        `💰 Margin: ${currentMargin.toFixed(1)}% (target: ${targetMarginValue}%)`
       );
       recommendations.insights.push(
-        `ðŸ“Š Acceptance: ${acceptanceRate.toFixed(0)}% (target: ${minAcceptanceValue}%)`
+        `📊 Acceptance: ${acceptanceRate.toFixed(0)}% (target: ${minAcceptanceValue}%)`
       );
       recommendations.suggested_price = Math.round(avgPrice * 100) / 100;
     } else {
       // Below both targets
       recommendations.insights.push(
-        "âš ï¸ Pricing challenges detected - low margin and low acceptance"
+        "⚠️ Pricing challenges detected - low margin and low acceptance"
       );
       recommendations.insights.push(
-        "ðŸ’¡ Focus on cost reduction or value differentiation"
+        "💡 Focus on cost reduction or value differentiation"
       );
       recommendations.suggested_price = Math.round(avgPrice * 100) / 100;
     }

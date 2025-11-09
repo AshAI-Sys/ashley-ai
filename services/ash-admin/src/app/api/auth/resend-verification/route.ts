@@ -6,6 +6,9 @@ import crypto from "crypto";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 

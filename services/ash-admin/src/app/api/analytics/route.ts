@@ -3,6 +3,9 @@ import { requireAuth } from "@/lib/auth-middleware";
 import { prisma } from "@/lib/db";
 import { cachedForWorkspace } from "@/lib/cache";
 
+export const dynamic = 'force-dynamic';
+
+
 export const runtime = "nodejs";
 
 /**

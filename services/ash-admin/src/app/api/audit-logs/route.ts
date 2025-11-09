@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "../../../lib/auth-middleware";
 import { getAuditLogs, getSecurityAlerts } from "../../../lib/audit-logger";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET - Retrieve audit logs with filtering
 export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
   try {

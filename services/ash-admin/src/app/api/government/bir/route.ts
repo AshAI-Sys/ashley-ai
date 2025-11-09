@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { birService } from "@/lib/government/bir";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 const prisma = db;
 

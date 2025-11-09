@@ -2,6 +2,9 @@
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/automation/stats - Get automation dashboard statistics (Demo Data)
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {

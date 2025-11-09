@@ -4,6 +4,9 @@ import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import crypto from "crypto";
 import { z } from "zod";
+
+export const dynamic = 'force-dynamic';
+
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
 

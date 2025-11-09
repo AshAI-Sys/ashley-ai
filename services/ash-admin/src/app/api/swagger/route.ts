@@ -1,5 +1,8 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextResponse } from "next/server";
+
+export const dynamic = 'force-dynamic';
+
 // Unused import removed: requireAuth
 
 /**

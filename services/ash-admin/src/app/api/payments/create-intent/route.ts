@@ -13,6 +13,9 @@ import {
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const prisma = db;
 
 /**

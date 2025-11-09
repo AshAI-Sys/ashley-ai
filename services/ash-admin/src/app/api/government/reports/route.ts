@@ -1,4 +1,4 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 // Unused import removed: birService
@@ -6,6 +6,9 @@ import { sssService } from "@/lib/government/sss";
 import { philHealthService } from "@/lib/government/philhealth";
 import { pagIBIGService } from "@/lib/government/pagibig";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 const prisma = db;
 

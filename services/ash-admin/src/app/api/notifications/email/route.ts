@@ -11,6 +11,9 @@ import {
   send2FASetupEmail,
 } from "@/lib/email";
 
+export const dynamic = 'force-dynamic';
+
+
 const prisma = db;
 
 // POST /api/notifications/email - Send email notification

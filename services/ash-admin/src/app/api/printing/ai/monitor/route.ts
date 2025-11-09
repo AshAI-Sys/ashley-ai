@@ -1,7 +1,10 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
@@ -504,7 +507,7 @@ async function processMonitoringData(_runId: string, data: any) {
       analysis.alerts.push({
         type: "ENVIRONMENTAL",
         severity: "MEDIUM",
-        message: `Temperature out of optimal range: ${temperature}Â°C`,
+        message: `Temperature out of optimal range: ${temperature}°C`,
       });
     }
 

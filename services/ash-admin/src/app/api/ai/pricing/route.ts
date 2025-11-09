@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // POST /api/ai/pricing - Get pricing recommendation
 export const POST = requireAuth(async (req: NextRequest, _user) => {

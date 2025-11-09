@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { verify2FA } from "@/lib/2fa-server";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const prisma = db;
 
 // POST /api/auth/2fa/verify - Verify 2FA token and enable 2FA

@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET - Fetch all shipments for workspace
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {

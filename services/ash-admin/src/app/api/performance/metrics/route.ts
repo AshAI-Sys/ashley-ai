@@ -9,6 +9,9 @@ import { getQueryMetrics } from "@/lib/performance/query-cache";
 import { checkRedisAvailable, getRedisInfo } from "@/lib/redis";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
     // Get query performance metrics

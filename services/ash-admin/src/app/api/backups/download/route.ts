@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { backupService } from "@/lib/backup/service";
 import { requireRole } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/backups/download?id={backupId} - Download backup file (ADMIN ONLY)
 export const GET = requireRole("admin")(async (request: NextRequest, _user) => {
   try {

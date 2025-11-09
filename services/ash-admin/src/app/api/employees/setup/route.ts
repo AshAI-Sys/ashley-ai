@@ -5,6 +5,9 @@ import bcrypt from 'bcryptjs';
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const CreateEmployeeSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),

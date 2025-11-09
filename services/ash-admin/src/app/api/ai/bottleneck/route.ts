@@ -1,8 +1,11 @@
-﻿/* eslint-disable */
+/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { bottleneckDetectionAI } from "@/lib/ai/bottleneck-detection";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+
+export const dynamic = 'force-dynamic';
+
 
 // GET /api/ai/bottleneck - Detect bottlenecks in production system
 export const GET = requireAuth(async (_req: NextRequest, _user) => {

@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { threePLService } from "@/lib/3pl";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 const prisma = db;
 
 // POST /api/3pl/book - Book shipment with 3PL provider

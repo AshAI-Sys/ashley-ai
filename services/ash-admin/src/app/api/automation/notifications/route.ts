@@ -3,6 +3,9 @@ import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+export const dynamic = 'force-dynamic';
+
+
 // GET /api/automation/notifications - Get notifications
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {

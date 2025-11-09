@@ -4,6 +4,9 @@ import { smsService } from "@/lib/sms";
 import crypto from "crypto";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
+
 // In-memory OTP storage (use Redis in production)
 const otpStore = new Map<string, { code: string; expires: number }>();
 

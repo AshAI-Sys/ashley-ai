@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getClientFromRequest } from '@/lib/client-portal-auth';
 
+export const dynamic = 'force-dynamic';
+
+
 // Get client portal settings
 export async function GET(request: NextRequest) {
   try {
