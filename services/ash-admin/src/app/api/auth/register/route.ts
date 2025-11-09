@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(`? Auto-generated unique slug: ${finalSlug} (original: ${workspaceSlug})`);
+      console.log(`✨ Auto-generated unique slug: ${finalSlug} (original: ${workspaceSlug})`);
     }
 
     // Check if user email already exists
@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
           <body>
             <div class="container">
               <div class="header">
-                <h1>?? Welcome to Ashley AI!</h1>
+                <h1>👋 Welcome to Ashley AI!</h1>
               </div>
               <div class="content">
                 <h2>Hi ${user.first_name}!</h2>
@@ -276,20 +276,20 @@ Workspace Details:
 If you didn't create this account, please ignore this email.
 
 ---
-� 2025 Ashley AI - Manufacturing ERP System
+© 2025 Ashley AI - Manufacturing ERP System
 This is an automated email. Please do not reply.
         `
       });
 
       // Check if email was sent successfully
       if (!emailResult.success) {
-        console.error("? Failed to send verification email:", emailResult.error);
+        console.error("❌ Failed to send verification email:", emailResult.error);
 
         // Email sending failed - delete the user and workspace to allow retry
         try {
           await prisma.user.delete({ where: { id: user.id } });
           await prisma.workspace.delete({ where: { id: workspace.id } });
-          console.log("??? Cleaned up user and workspace after email failure");
+          console.log("🧹 Cleaned up user and workspace after email failure");
         } catch (cleanupError) {
           console.error("Failed to cleanup after email error:", cleanupError);
         }
@@ -306,9 +306,9 @@ This is an automated email. Please do not reply.
         );
       }
 
-      console.log("? Verification email sent successfully to:", user.email, "ID:", emailResult.id);
+      console.log("✉️ Verification email sent successfully to:", user.email, "ID:", emailResult.id);
     } else {
-      console.log("? Development mode - Email verification skipped. Account auto-verified.");
+      console.log("🚀 Development mode - Email verification skipped. Account auto-verified.");
     }
 
     // Log successful registration
