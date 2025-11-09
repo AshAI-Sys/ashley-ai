@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
 
 interface BackButtonProps {
   href?: string;
@@ -10,10 +10,14 @@ interface BackButtonProps {
   className?: string;
 }
 
-export function BackButton({ href, label = "Back", className = "" }: BackButtonProps) {
+export function BackButton({
+  href,
+  label = "Back",
+  className = "",
+}: BackButtonProps) {
   const router = useRouter();
 
-  const handleClick = () => {
+  const handleBack = () => {
     if (href) {
       router.push(href);
     } else {
@@ -24,8 +28,9 @@ export function BackButton({ href, label = "Back", className = "" }: BackButtonP
   return (
     <Button
       variant="ghost"
-      onClick={handleClick}
-      className={`flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 ${className}`}
+      size="sm"
+      onClick={handleBack}
+      className={`gap-2 ${className}`}
     >
       <ArrowLeft className="h-4 w-4" />
       {label}

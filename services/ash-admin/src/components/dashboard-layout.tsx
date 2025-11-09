@@ -2,6 +2,7 @@
 
 import Sidebar from "./sidebar";
 import TopNavbar from "./top-navbar";
+import { BackButton } from "./ui/back-button";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <TopNavbar />
         <main className="flex-1 overflow-auto bg-gray-50 pt-16 lg:pt-0">
           {/* pt-16 on mobile to account for hamburger menu button */}
+          <div className="px-4 py-2 lg:px-6">
+            <BackButton />
+          </div>
           {children}
         </main>
       </div>
