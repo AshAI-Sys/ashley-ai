@@ -1,52 +1,61 @@
 "use client";
 
-import { WifiOff, RefreshCw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { WifiOff } from "lucide-react";
 
 export default function OfflinePage() {
-  const router = useRouter();
-
-  const handleRetry = () => {
-    if (navigator.onLine) {
-      router.push("/dashboard");
-    } else {
-      window.location.reload();
-    }
-  };
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
-        <div className="mb-6">
-          <WifiOff className="mx-auto h-24 w-24 text-gray-500" />
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 dark:bg-gray-900">
+      <div className="w-full max-w-md text-center">
+        {/* Icon */}
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800">
+          <WifiOff className="h-10 w-10 text-gray-600 dark:text-gray-400" />
         </div>
 
-        <h1 className="mb-2 text-2xl font-bold text-gray-900">
+        {/* Title */}
+        <h1 className="mb-3 text-3xl font-bold text-gray-900 dark:text-white">
           You're Offline
         </h1>
 
-        <p className="mb-6 text-gray-600">
-          It looks like you've lost your internet connection. Some features may
-          not be available.
+        {/* Description */}
+        <p className="mb-8 text-gray-600 dark:text-gray-400">
+          It looks like you've lost your internet connection. Some features may not be available right now.
         </p>
 
-        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-          <p className="text-sm text-blue-800">
-            <strong>Don't worry!</strong> Your work is safe. Any changes you
-            make will be synced when you're back online.
-          </p>
+        {/* Offline Capabilities */}
+        <div className="mb-8 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+          <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            What you can still do:
+          </h2>
+          <ul className="space-y-2 text-left text-sm text-gray-600 dark:text-gray-400">
+            <li className="flex items-start">
+              <span className="mr-2">✓</span>
+              <span>View cached orders and production data</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">✓</span>
+              <span>Scan QR codes for bundle tracking</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">✓</span>
+              <span>View client information</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">✓</span>
+              <span>Access previously loaded reports</span>
+            </li>
+          </ul>
         </div>
 
+        {/* Retry Button */}
         <button
-          onClick={handleRetry}
-          className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
+          onClick={() => window.location.reload()}
+          className="w-full rounded-lg bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
         >
-          <RefreshCw className="h-5 w-5" />
-          <span>Try Again</span>
+          Try Again
         </button>
 
-        <p className="mt-4 text-sm text-gray-500">
-          Cached data is available for recent pages
+        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+          You'll automatically reconnect when your internet is back
         </p>
       </div>
     </div>
