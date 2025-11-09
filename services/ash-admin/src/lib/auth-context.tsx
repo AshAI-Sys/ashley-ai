@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           // Decode JWT to check expiration (without verification - just parsing)
           const tokenParts = storedToken.split(".");
-          if (tokenParts.length === 3) {
+          if (tokenParts.length === 3 && tokenParts[1]) {
             const payload = JSON.parse(atob(tokenParts[1]));
             const now = Math.floor(Date.now() / 1000);
 
@@ -98,7 +98,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(null);
           }
         } else {
-          console.log("⚠️ Token found but no user data - will attempt to fetch from API");
+          console.log(
+            "⚠️ Token found but no user data - will attempt to fetch from API"
+          );
           // Token exists but no user data - this could be a timing issue
           // Keep the token and let the app try to use it
           // If it's invalid, the API calls will fail and trigger logout
@@ -119,7 +121,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Invalid credentials" }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Invalid credentials" }));
         throw new Error(errorData.error || "Invalid credentials");
       }
 

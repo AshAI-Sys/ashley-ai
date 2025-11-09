@@ -32,9 +32,9 @@ export async function apiFetch<T = any>(
     typeof window !== "undefined" ? localStorage.getItem("ash_token") : null;
 
   // Build headers
-  const requestHeaders: HeadersInit = {
+  const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    ...headers,
+    ...(headers as Record<string, string>),
   };
 
   // Add auth token if not skipped
@@ -60,7 +60,10 @@ export async function apiFetch<T = any>(
       }
 
       // Redirect to login if not already there
-      if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.includes("/login")
+      ) {
         window.location.href = "/login?expired=true";
       }
 
@@ -174,7 +177,7 @@ export function isTokenExpired(): boolean {
 
   try {
     const tokenParts = token.split(".");
-    if (tokenParts.length !== 3) return true;
+    if (tokenParts.length !== 3 || !tokenParts[1]) return true;
 
     const payload = JSON.parse(atob(tokenParts[1]));
     const now = Math.floor(Date.now() / 1000);
@@ -196,7 +199,7 @@ export function getUserFromToken(): any {
 
   try {
     const tokenParts = token.split(".");
-    if (tokenParts.length !== 3) return null;
+    if (tokenParts.length !== 3 || !tokenParts[1]) return null;
 
     return JSON.parse(atob(tokenParts[1]));
   } catch {
@@ -213,6 +216,8 @@ export function clearAuthAndRedirect(reason?: string) {
   localStorage.removeItem("ash_token");
   localStorage.removeItem("ash_user");
 
-  const loginUrl = reason ? `/login?reason=${encodeURIComponent(reason)}` : "/login";
+  const loginUrl = reason
+    ? `/login?reason=${encodeURIComponent(reason)}`
+    : "/login";
   window.location.href = loginUrl;
 }
