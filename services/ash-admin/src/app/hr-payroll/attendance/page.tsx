@@ -168,7 +168,7 @@ export default function AttendancePage() {
 
   // Calculate stats from attendance data
   const calculateStats = (data: AttendanceLog[]) => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0] || "";
     const todayLogs = data.filter((log) => log.date.startsWith(today));
 
     const present = todayLogs.filter((log) => log.time_in).length;

@@ -265,7 +265,7 @@ export class JNTProvider {
     const bracket = JNTProvider.WEIGHT_BRACKETS.find((b) => weight <= b.max);
     if (!bracket) {
       // Fallback to highest weight bracket if weight exceeds all brackets
-      return JNTProvider.WEIGHT_BRACKETS[JNTProvider.WEIGHT_BRACKETS.length - 1];
+      return JNTProvider.WEIGHT_BRACKETS[JNTProvider.WEIGHT_BRACKETS.length - 1]!;
     }
     return bracket;
   }
