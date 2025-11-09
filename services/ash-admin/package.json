@@ -70,7 +70,7 @@
     "tailwindcss-animate": "^1.0.7",
     "twilio": "^5.10.1",
     "web-vitals": "^5.1.0",
-    "zod": "^3.21.0"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
