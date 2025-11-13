@@ -10,9 +10,11 @@ const nextConfig = {
     scrollRestoration: true,
     workerThreads: false,
     cpus: 1,
+    optimisticClientCache: false, // Disable aggressive prefetching to prevent 404s
   },
   // output: "standalone", // Disabled for development builds
   reactStrictMode: false,
+
   eslint: {
     ignoreDuringBuilds: true,
   },
