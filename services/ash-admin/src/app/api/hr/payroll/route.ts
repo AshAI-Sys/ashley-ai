@@ -99,12 +99,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
     const workspaceId = _user.workspace_id || _user.workspaceId;
 
     const data = await request.json();
-    const {
-      period_start,
-      period_end, cutoff_type, // "1-15" or "16-EOM"
-      include_overtime = true,
-      include_leaves = true,
-    } = data;
+    const { period_start, period_end } = data;
 
     const periodStart = new Date(period_start);
     const periodEnd = new Date(period_end);
@@ -312,7 +307,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 export const PUT = requireAuth(async (request: NextRequest, _user) => {
   try {
     const data = await request.json();
-    const { id, status, __approval_notes } = data;
+    const { id, status } = data;
 
     const payrollPeriod = await prisma.payrollPeriod.update({
       where: { id },

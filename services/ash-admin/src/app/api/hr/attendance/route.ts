@@ -94,7 +94,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       employee_id,
       type, // IN/OUT/BREAK_START/BREAK_END
       source = "MANUAL", // KIOSK/MOBILE/SUPERVISOR/WEBHOOK/MANUAL
-      geo, selfie_url,
+      geo,
       device_id,
       timestamp,
     } = data;
