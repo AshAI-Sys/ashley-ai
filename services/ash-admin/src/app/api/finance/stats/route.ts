@@ -9,6 +9,9 @@ export const dynamic = 'force-dynamic';
 // Finance statistics API endpoint
 export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
+    // SECURITY: Get user's workspace_id for data isolation
+    const workspaceId = _user.workspace_id || _user.workspaceId;
+
     const today = new Date();
     const yearStart = new Date(today.getFullYear(), 0, 1);
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -29,6 +32,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Total Receivables (AR)
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: { in: ["sent", "pending", "partial"] },
         },
         _sum: { total_amount: true },
@@ -37,6 +41,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Overdue invoices
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: { in: ["sent", "pending", "partial"] },
           due_date: { lt: today },
         },
@@ -46,6 +51,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Aging 0-30 days
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: { in: ["sent", "pending", "partial"] },
           issue_date: { gte: thirtyDaysAgo },
         },
@@ -55,6 +61,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Aging 31-60 days
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: { in: ["sent", "pending", "partial"] },
           issue_date: { gte: sixtyDaysAgo, lt: thirtyDaysAgo },
         },
@@ -64,6 +71,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Aging 61-90 days
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: { in: ["sent", "pending", "partial"] },
           issue_date: { gte: ninetyDaysAgo, lt: sixtyDaysAgo },
         },
@@ -73,6 +81,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Aging 90+ days
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: { in: ["sent", "pending", "partial"] },
           issue_date: { lt: ninetyDaysAgo },
         },
@@ -82,6 +91,7 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // YTD Revenue
       prisma.invoice.aggregate({
         where: {
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           status: "paid",
           issue_date: {
             gte: yearStart,
@@ -137,7 +147,12 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       },
     });
   } catch (error) {
-    console.error("Error calculating finance stats:", error);
+    // SECURITY: Only log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error calculating finance stats:", error);
+    } else {
+      console.error("Error calculating finance stats");
+    }
     return NextResponse.json(
       { success: false, error: "Failed to calculate finance statistics" },
       { status: 500 }

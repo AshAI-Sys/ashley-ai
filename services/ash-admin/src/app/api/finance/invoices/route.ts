@@ -26,10 +26,24 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   const brand_id = searchParams.get("brand_id");
   const overdue_only = searchParams.get("overdue_only");
 
-  const where: any = {};
+  // SECURITY: Get user's workspace_id for data isolation
+  const workspaceId = _user.workspace_id || _user.workspaceId;
+
+  // SECURITY: Start with workspace filter
+  const where: any = {
+    workspace_id: workspaceId,
+  };
+
+  // SECURITY: Validate and add filters
   if (status && status !== "all") where.status = status;
-  if (client_id) where.client_id = client_id;
-  if (brand_id) where.brand_id = brand_id;
+
+  // SECURITY: Validate UUIDs before using
+  if (client_id && /^[a-z0-9-]{20,}$/i.test(client_id)) {
+    where.client_id = client_id;
+  }
+  if (brand_id && /^[a-z0-9-]{20,}$/i.test(brand_id)) {
+    where.brand_id = brand_id;
+  }
 
   // For overdue invoices
   if (overdue_only === "true") {
@@ -102,7 +116,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
     return createSuccessResponse(processedInvoices);
   } catch (error) {
-    console.error("Error fetching invoices:", error);
+    // SECURITY: Only log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error fetching invoices:", error);
+    } else {
+      console.error("Error fetching invoices");
+    }
     return createSuccessResponse([], 200);
   }
 });
