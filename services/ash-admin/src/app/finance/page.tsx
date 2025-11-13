@@ -14,9 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DataTableSkeleton } from "@/components/ui/loading-skeletons";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ErrorAlert } from "@/components/ui/error-alert";
+import DataTableSkeleton from "@/components/data-table-skeleton";
+import EmptyState from "@/components/empty-state";
+import ErrorAlert from "@/components/error-alert";
 import DashboardLayout from "@/components/dashboard-layout";
 import { exportInvoices } from "@/lib/export";
 import {

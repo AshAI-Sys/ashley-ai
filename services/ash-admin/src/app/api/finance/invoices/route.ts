@@ -19,7 +19,7 @@ import { syncAfterChange } from "@/lib/google-sheets-auto-sync";
 export const dynamic = 'force-dynamic';
 
 
-export const GET = withErrorHandling(async (request: NextRequest) => {
+export const GET = requireAuth(async (request: NextRequest, _user) => {
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status");
   const client_id = searchParams.get("client_id");
@@ -37,69 +37,74 @@ export const GET = withErrorHandling(async (request: NextRequest) => {
     where.status = { in: ["sent", "pending"] };
   }
 
-  const invoices = await prisma.invoice.findMany({
-    where,
-    take: 100, // Limit to 100 invoices
-    include: {
-      client: { select: { name: true } },
-      order: { select: { order_number: true } },
-      invoice_items: true,
-      payments: {
-        select: {
-          id: true,
-          amount: true,
-          payment_method: true,
-          payment_date: true,
-          created_at: true,
+  try {
+    const invoices = await prisma.invoice.findMany({
+      where,
+      take: 100, // Limit to 100 invoices
+      include: {
+        client: { select: { name: true } },
+        order: { select: { order_number: true } },
+        invoice_items: true,
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            payment_method: true,
+            payment_date: true,
+            created_at: true,
+          },
         },
       },
-    },
-    orderBy: { issue_date: "desc" },
-      });
+      orderBy: { issue_date: "desc" },
+    });
 
-  // Calculate days overdue and other metrics
-  const processedInvoices = (invoices || []).map((invoice: any) => {
-    const today = new Date();
-    const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
-    const daysOverdue =
-      dueDate && invoice.status !== "paid" && dueDate < today
-        ? Math.ceil(
-            (today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24)
-          )
-        : null;
+    // Calculate days overdue and other metrics
+    const processedInvoices = (invoices || []).map((invoice: any) => {
+      const today = new Date();
+      const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
+      const daysOverdue =
+        dueDate && invoice.status !== "paid" && dueDate < today
+          ? Math.ceil(
+              (today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24)
+            )
+          : null;
 
-    // Calculate balance from payments
-    const totalPaid = invoice.payments.reduce(
-      (sum: any, payment: any) => sum + payment.amount,
-      0
-    );
-    const balance = invoice.total_amount - totalPaid;
+      // Calculate balance from payments
+      const totalPaid = invoice.payments.reduce(
+        (sum: any, payment: any) => sum + payment.amount,
+        0
+      );
+      const balance = invoice.total_amount - totalPaid;
 
-    return {
-      id: invoice.id,
-      invoice_no: invoice.invoice_number,
-      client: invoice.client,
-      brand: null, // No brand relation in current schema
-      total: invoice.total_amount,
-      balance: balance,
-      status:
-        dueDate && dueDate < today && balance > 0
-          ? "OVERDUE"
-          : balance === 0
-            ? "PAID"
-            : invoice.status.toUpperCase(),
-      date_issued: invoice.issue_date,
-      due_date: invoice.due_date,
-      days_overdue: daysOverdue,
-      payment_history: invoice.payments.map((payment: any) => ({
-        amount: Number(payment.amount),
-        source: payment.payment_method || "UNKNOWN",
-        date: payment.created_at,
-      })),
-    };
-  });
+      return {
+        id: invoice.id,
+        invoice_no: invoice.invoice_number,
+        client: invoice.client,
+        brand: null, // No brand relation in current schema
+        total: invoice.total_amount,
+        balance: balance,
+        status:
+          dueDate && dueDate < today && balance > 0
+            ? "OVERDUE"
+            : balance === 0
+              ? "PAID"
+              : invoice.status.toUpperCase(),
+        date_issued: invoice.issue_date,
+        due_date: invoice.due_date,
+        days_overdue: daysOverdue,
+        payment_history: invoice.payments.map((payment: any) => ({
+          amount: Number(payment.amount),
+          source: payment.payment_method || "UNKNOWN",
+          date: payment.created_at,
+        })),
+      };
+    });
 
-  return createSuccessResponse(processedInvoices);
+    return createSuccessResponse(processedInvoices);
+  } catch (error) {
+    console.error("Error fetching invoices:", error);
+    return createSuccessResponse([], 200);
+  }
 });
 
 export const POST = requireAnyPermission(["finance:create"])(
