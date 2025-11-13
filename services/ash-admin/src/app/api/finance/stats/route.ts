@@ -12,31 +12,24 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
     const today = new Date();
     const yearStart = new Date(today.getFullYear(), 0, 1);
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
+    const ninetyDaysAgo = new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000);
 
     // Run all queries in parallel for better performance
     const [
-      totalRevenueResult,
-      outstandingInvoicesResult,
+      totalReceivablesResult,
       overdueInvoicesResult,
+      aging0_30Result,
+      aging31_60Result,
+      aging61_90Result,
+      aging90PlusResult,
       ytdRevenueResult,
-      lastMonthRevenueResult,
     ] = await Promise.all([
-      // Total revenue (current month)
+      // Total Receivables (AR)
       prisma.invoice.aggregate({
         where: {
-          status: "paid",
-          issue_date: {
-            gte: monthStart,
-            lt: new Date(today.getFullYear(), today.getMonth() + 1, 1),
-          },
-        },
-        _sum: { total_amount: true },
-      }),
-
-      // Outstanding invoices
-      prisma.invoice.aggregate({
-        where: {
-          status: { in: ["sent", "pending"] },
+          status: { in: ["sent", "pending", "partial"] },
         },
         _sum: { total_amount: true },
       }),
@@ -44,8 +37,44 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       // Overdue invoices
       prisma.invoice.aggregate({
         where: {
-          status: { in: ["sent", "pending", "overdue"] },
+          status: { in: ["sent", "pending", "partial"] },
           due_date: { lt: today },
+        },
+        _sum: { total_amount: true },
+      }),
+
+      // Aging 0-30 days
+      prisma.invoice.aggregate({
+        where: {
+          status: { in: ["sent", "pending", "partial"] },
+          issue_date: { gte: thirtyDaysAgo },
+        },
+        _sum: { total_amount: true },
+      }),
+
+      // Aging 31-60 days
+      prisma.invoice.aggregate({
+        where: {
+          status: { in: ["sent", "pending", "partial"] },
+          issue_date: { gte: sixtyDaysAgo, lt: thirtyDaysAgo },
+        },
+        _sum: { total_amount: true },
+      }),
+
+      // Aging 61-90 days
+      prisma.invoice.aggregate({
+        where: {
+          status: { in: ["sent", "pending", "partial"] },
+          issue_date: { gte: ninetyDaysAgo, lt: sixtyDaysAgo },
+        },
+        _sum: { total_amount: true },
+      }),
+
+      // Aging 90+ days
+      prisma.invoice.aggregate({
+        where: {
+          status: { in: ["sent", "pending", "partial"] },
+          issue_date: { lt: ninetyDaysAgo },
         },
         _sum: { total_amount: true },
       }),
@@ -61,85 +90,50 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
         },
         _sum: { total_amount: true },
       }),
-
-      // Last month revenue for growth calculation
-      prisma.invoice.aggregate({
-        where: {
-          status: "paid",
-          issue_date: {
-            gte: new Date(today.getFullYear(), today.getMonth() - 1, 1),
-            lt: monthStart,
-          },
-        },
-        _sum: { total_amount: true },
-      }),
     ]);
 
-    const currentRevenue = totalRevenueResult._sum.total_amount || 0;
+    const totalReceivables = totalReceivablesResult._sum.total_amount || 0;
+    const overdueInvoices = overdueInvoicesResult._sum.total_amount || 0;
     const ytdRevenue = ytdRevenueResult._sum.total_amount || 0;
-    const totalCogs = 0; // Will be calculated from actual cost data later
-    const lastMonthRevenue = lastMonthRevenueResult._sum.total_amount || 1; // Avoid division by zero
 
-    // Calculate gross margin
-    const grossMargin =
-      ytdRevenue > 0 ? ((ytdRevenue - totalCogs) / ytdRevenue) * 100 : 0;
+    // Calculate costing (placeholder - will be integrated with actual cost data)
+    const materialsCost = 0; // From BOM/purchases
+    const laborCost = 0; // From payroll allocations
+    const overheadCost = 0; // From bills/expenses
+    const totalCogs = materialsCost + laborCost + overheadCost;
 
-    // Calculate revenue growth
-    const revenueGrowth =
-      ((currentRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
-
-    // Get top clients by revenue
-    const topClients = await prisma.invoice.groupBy({
-      by: ["client_id"],
-      where: {
-        status: "paid",
-        issue_date: {
-          gte: yearStart,
-        },
-      },
-      _sum: {
-        total_amount: true,
-      },
-      orderBy: {
-        _sum: {
-          total_amount: "desc",
-        },
-      },
-      take: 5,
-      });
-
-    // Get client names for top clients
-    const clientIds = topClients.map((client: any) => client.client_id);
-    const clients = await prisma.client.findMany({
-      where: { id: { in: clientIds } },
-      take: 10, // Limit to 10 clients (should match clientIds length from topClients)
-      select: { id: true, name: true },
-      });
-
-    const topClientsWithNames = topClients.map((client: any) => {
-      const clientInfo = clients.find((c: any) => c.id === client.client_id);
-      return {
-        client_name: clientInfo?.name || "Unknown",
-        revenue: client._sum.total_amount || 0,
-      };
-    });
-
-    const cashFlow = 0; // Will be calculated from payments later
+    // Calculate P&L
+    const grossProfit = ytdRevenue - totalCogs;
+    const grossMargin = ytdRevenue > 0 ? (grossProfit / ytdRevenue) * 100 : 0;
+    const netProfit = grossProfit; // Will subtract operating expenses later
 
     return NextResponse.json({
       success: true,
       data: {
-        total_revenue: currentRevenue,
-        outstanding_invoices: outstandingInvoicesResult._sum.total_amount || 0,
-        overdue_invoices: overdueInvoicesResult._sum.total_amount || 0,
-        pending_bills: 0, // No bills table yet
-        ytd_revenue: ytdRevenue,
+        // AR Stats
+        total_receivables: totalReceivables,
+        overdue_invoices: overdueInvoices,
+        aging_0_30: aging0_30Result._sum.total_amount || 0,
+        aging_31_60: aging31_60Result._sum.total_amount || 0,
+        aging_61_90: aging61_90Result._sum.total_amount || 0,
+        aging_90_plus: aging90PlusResult._sum.total_amount || 0,
+
+        // AP Stats
+        total_payables: 0, // Will be calculated from bills
+        overdue_bills: 0,
+        upcoming_payments: 0,
+
+        // P&L Stats
+        total_revenue: ytdRevenue,
         total_cogs: totalCogs,
+        gross_profit: grossProfit,
         gross_margin: Math.round(grossMargin * 10) / 10,
-        cash_flow: cashFlow,
-        revenue_growth: Math.round(revenueGrowth * 10) / 10,
-        payment_distribution: [],
-        top_clients: topClientsWithNames,
+        net_profit: netProfit,
+
+        // Costing Stats
+        materials_cost: materialsCost,
+        labor_cost: laborCost,
+        overhead_cost: overheadCost,
       },
     });
   } catch (error) {

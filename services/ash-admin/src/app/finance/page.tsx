@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,34 +13,565 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
-import DataTableSkeleton from "@/components/data-table-skeleton";
-import EmptyState from "@/components/empty-state";
-import ErrorAlert from "@/components/error-alert";
-import DashboardLayout from "@/components/dashboard-layout";
-import { exportInvoices } from "@/lib/export";
 import {
   DollarSign,
   Receipt,
   FileText,
   CreditCard,
-  AlertCircle,
   TrendingUp,
   TrendingDown,
-  Calendar,
-  Users,
-  Building2,
-  Plus,
-  Eye,
   Download,
-  Filter,
+  Plus,
+  Building2,
+  Users,
+  Wallet,
+  ShoppingCart,
+  Package,
   RefreshCw,
-} from "lucide-react"; interface FinanceMetrics { total_revenue: number; outstanding_invoices: number; overdue_invoices: number; total_cogs: number; gross_margin: number; pending_bills: number; cash_flow: number; ytd_revenue: number; revenue_growth?: number;
-} interface Invoice { id: string; invoice_no: string; client: { name: string } | null; brand: { name: string } | null; total: number; balance: number; status: string; date_issued: string; due_date: string; days_overdue?: number | null;
-} interface Bill { id: string; bill_no: string; supplier: { name: string } | null; total: number; status: string; due_date: string; days_until_due?: number | null;
+} from "lucide-react";
+import DashboardLayout from "@/components/dashboard-layout";
+
+interface FinanceStats {
+  // AR Stats
+  total_receivables: number;
+  overdue_invoices: number;
+  aging_0_30: number;
+  aging_31_60: number;
+  aging_61_90: number;
+  aging_90_plus: number;
+
+  // AP Stats
+  total_payables: number;
+  overdue_bills: number;
+  upcoming_payments: number;
+
+  // P&L Stats
+  total_revenue: number;
+  total_cogs: number;
+  gross_profit: number;
+  gross_margin: number;
+  net_profit: number;
+
+  // Costing Stats
+  materials_cost: number;
+  labor_cost: number;
+  overhead_cost: number;
 }
 
 export default function FinancePage() {
   const router = useRouter();
-  const [_statusFilter, _setStatusFilter] = useState<string>("all"); // Fetch finance metrics const { data: metrics, isLoading: metricsLoading, error: metricsError, refetch: refetchMetrics, isFetching: metricsFetching, } = useQuery({ queryKey: ["finance-metrics"], queryFn: async () => { const response = await fetch("/api/finance/stats"); const data = await response.json(); if (!data.success) throw new Error(data.error ||"Failed to fetch finance metrics"); return data.data as FinanceMetrics; }, staleTime: 30000, refetchInterval: 60000, }); // Fetch invoices const { data: invoices = [], isLoading: invoicesLoading, error: invoicesError, refetch: refetchInvoices, isFetching: invoicesFetching, } = useQuery({ queryKey: ["finance-invoices", _statusFilter], queryFn: async () => { const params = new URLSearchParams(); if (_statusFilter !=="all") params.append("status", _statusFilter); const response = await fetch(`/api/finance/invoices?${params}`); const data = await response.json(); if (!data.success) throw new Error(data.error ||"Failed to fetch invoices"); return data.data as Invoice[]; }, staleTime: 30000, refetchInterval: 60000, }); // Fetch bills const { data: bills = [], isLoading: billsLoading, error: billsError, refetch: refetchBills, isFetching: billsFetching, } = useQuery({ queryKey: ["finance-bills"], queryFn: async () => { const response = await fetch("/api/finance/bills"); const data = await response.json(); if (!data.success) throw new Error(data.error ||"Failed to fetch bills"); // Calculate days_until_due for each bill return (data.data || []).map((bill: any) => { const today = new Date(); const dueDate = new Date(bill.due_date); const daysUntilDue = bill.status !=="PAID" && dueDate > today ? Math.ceil( (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) ) : null; return { ...bill, days_until_due: daysUntilDue, }; }); }, staleTime: 30000, refetchInterval: 60000, }); const handleRefreshAll = () => { refetchMetrics(); refetchInvoices(); refetchBills(); }; const isLoading = metricsLoading || invoicesLoading || billsLoading; const isFetching = metricsFetching || invoicesFetching || billsFetching; const getStatusBadge = (status: string) => { switch (status) { case"OVERDUE": return <Badge className="bg-red-100 text-red-800">Overdue</Badge>; case"OPEN": return <Badge className="bg-blue-100 text-blue-800">Open</Badge>; case"PARTIAL": return <Badge className="bg-yellow-100 text-yellow-800">Partial</Badge>; case"PAID": return <Badge className="bg-green-100 text-green-800">Paid</Badge>; default: return <Badge className="bg-gray-100 text-gray-800">{status}</Badge>; } }; const formatCurrency = (amount: number) => { return `â‚±${amount.toLocaleString()}`; }; const formatDate = (dateString: string) => { return new Date(dateString).toLocaleDateString(); }; return ( <DashboardLayout> <div className="space-y-6 p-6"> {/* Header - Responsive */} <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"> <div> <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl"> Finance Management </h1> <p className="text-sm text-gray-600 lg:text-base"> Manage invoices, payments, bills, and financial reporting </p> </div> <div className="flex flex-wrap gap-2"> <Button variant="outline" onClick={handleRefreshAll} disabled={isFetching} size="sm" className="flex-1 sm:flex-none" > <RefreshCw className={`h-4 w-4 ${isFetching ?"animate-spin" :""}`} /> <span className="ml-2 hidden sm:inline"> {isFetching ?"Refreshing..." :"Refresh"} </span> </Button> <Button variant="outline" onClick={() => exportInvoices(invoices,"excel")} disabled={invoices.length === 0} size="sm" className="flex-1 sm:flex-none" > <Download className="h-4 w-4" /> <span className="ml-2 hidden sm:inline">Export</span> </Button> </div> </div> {/* Error Alerts */} {metricsError && ( <ErrorAlert title="Failed to load metrics" message={metricsError.message} retry={refetchMetrics} /> )} {/* Finance Metrics */} <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"> {metricsLoading ? ( <> {[...Array(4)].map((_, i) => ( <Card key={i}> <CardContent className="p-6"> <div className="space-y-3"> <Skeleton className="h-4 w-3/4" /> <Skeleton className="h-8 w-1/2" /> <Skeleton className="h-4 w-2/3" /> </div> </CardContent> </Card> ))} </> ) : ( <> <Card> <CardContent className="p-6"> <div className="flex items-center justify-between"> <div> <p className="mb-1 text-sm text-gray-600"> Total Revenue (YTD) </p> <p className="text-2xl font-bold text-gray-900"> {formatCurrency(metrics?.ytd_revenue || 0)} </p> </div> <div className="rounded-full bg-green-100 p-3"> <DollarSign className="h-6 w-6 text-green-600" /> </div> </div> <div className="mt-2 flex items-center"> {(metrics?.revenue_growth || 0) >= 0 ? ( <> <TrendingUp className="mr-1 h-4 w-4 text-green-500" /> <span className="text-sm text-green-600"> +{metrics?.revenue_growth?.toFixed(1) || 0}% from last month </span> </> ) : ( <> <TrendingDown className="mr-1 h-4 w-4 text-red-500" /> <span className="text-sm text-red-600"> {metrics?.revenue_growth?.toFixed(1) || 0}% from last month </span> </> )} </div> </CardContent> </Card> <Card> <CardContent className="p-6"> <div className="flex items-center justify-between"> <div> <p className="mb-1 text-sm text-gray-600"> Outstanding Invoices </p> <p className="text-2xl font-bold text-gray-900"> {formatCurrency(metrics?.outstanding_invoices || 0)} </p> </div> <div className="rounded-full bg-blue-100 p-3"> <Receipt className="h-6 w-6 text-blue-600" /> </div> </div> <div className="mt-2 flex items-center"> <AlertCircle className="mr-1 h-4 w-4 text-red-500" /> <span className="text-sm text-red-600"> {formatCurrency(metrics?.overdue_invoices || 0)} overdue </span> </div> </CardContent> </Card> <Card> <CardContent className="p-6"> <div className="flex items-center justify-between"> <div> <p className="mb-1 text-sm text-gray-600">Gross Margin</p> <p className="text-2xl font-bold text-gray-900"> {metrics?.gross_margin || 0}% </p> </div> <div className="rounded-full bg-purple-100 p-3"> <TrendingUp className="h-6 w-6 text-purple-600" /> </div> </div> <div className="mt-2 flex items-center"> <span className="text-sm text-gray-600"> COGS: {formatCurrency(metrics?.total_cogs || 0)} </span> </div> </CardContent> </Card> <Card> <CardContent className="p-6"> <div className="flex items-center justify-between"> <div> <p className="mb-1 text-sm text-gray-600"> Pending Bills </p> <p className="text-2xl font-bold text-gray-900"> {formatCurrency(metrics?.pending_bills || 0)} </p> </div> <div className="rounded-full bg-orange-100 p-3"> <FileText className="h-6 w-6 text-orange-600" /> </div> </div> <div className="mt-2 flex items-center"> <Calendar className="mr-1 h-4 w-4 text-gray-500" /> <span className="text-sm text-gray-600"> Due within 30 days </span> </div> </CardContent> </Card> </> )} </div> {/* Main Content Tabs */} <Tabs defaultValue="invoices" className="space-y-4"> <TabsList> <TabsTrigger value="invoices">Accounts Receivable</TabsTrigger> <TabsTrigger value="bills">Accounts Payable</TabsTrigger> <TabsTrigger value="costing">Cost Analysis</TabsTrigger> <TabsTrigger value="reports">Reports</TabsTrigger> </TabsList> {/* Invoices/AR Tab */} <TabsContent value="invoices" className="space-y-4"> {invoicesError && ( <ErrorAlert title="Failed to load invoices" message={invoicesError.message} retry={refetchInvoices} /> )} <Card> <CardHeader> <div className="flex items-center justify-between"> <div> <CardTitle>Outstanding Invoices</CardTitle> <CardDescription> Manage customer invoices and payments </CardDescription> </div> <div className="flex gap-4"> <select value={_statusFilter} onChange={e => _setStatusFilter(e.target.value)} className="min-w-[140px] rounded-md border border-gray-300 px-3 py-2 text-sm" > <option value="all">All Status</option> <option value="OPEN">Open</option> <option value="PARTIAL">Partial</option> <option value="PAID">Paid</option> <option value="OVERDUE">Overdue</option> </select> <Button size="sm" onClick={() => router.push("/finance/invoices/new")} > <Plus className="mr-2 h-4 w-4" /> New Invoice </Button> </div> </div> </CardHeader> <CardContent> {invoicesLoading ? ( <DataTableSkeleton rows={5} /> ) : invoices.length === 0 ? ( <EmptyState icon={Receipt} title="No invoices found" description={ _statusFilter !=="all" ? `No invoices with status"${_statusFilter}"` :"No invoices in the system yet" } action={{ label:"Create Invoice", onClick: () => router.push("/finance/invoices/new"), }} /> ) : ( <div className="space-y-4"> {invoices.map(invoice => ( <div key={invoice.id} className="rounded-lg border p-4 transition-colors hover:bg-gray-50" > <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"> <div className="min-w-0 flex-1"> {/* Header */} <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"> <h3 className="truncate font-semibold"> {invoice.invoice_no} </h3> {getStatusBadge(invoice.status)} {invoice.days_overdue && ( <Badge className="w-fit bg-red-100 text-red-800"> {invoice.days_overdue}d overdue </Badge> )} </div> {/* Details Grid - Optimized for mobile */} <div className="xs:grid-cols-2 grid grid-cols-1 gap-3 text-sm lg:grid-cols-4"> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Client </span> <span className="mt-0.5 truncate font-medium"> {invoice.client?.name ||"N/A"} </span> </div> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Brand </span> <span className="mt-0.5 truncate font-medium"> {invoice.brand?.name ||"N/A"} </span> </div> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Amount </span> <span className="mt-0.5 font-medium"> {formatCurrency(invoice.total)} </span> </div> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Balance </span> <span className="mt-0.5 font-medium text-red-600"> {formatCurrency(invoice.balance)} </span> </div> </div> {/* Dates */} <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500"> <span> Issued: {formatDate(invoice.date_issued)} </span> <span>Due: {formatDate(invoice.due_date)}</span> </div> </div> {/* Actions */} <div className="flex flex-shrink-0 gap-2 sm:flex-col"> <Button variant="outline" size="sm" className="flex-1 sm:flex-none" > <Eye className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">View</span> </Button> <Button variant="outline" size="sm" className="flex-1 sm:flex-none" > <CreditCard className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Payment</span> </Button> </div> </div> </div> ))} </div> )} </CardContent> </Card> </TabsContent> {/* Bills/AP Tab */} <TabsContent value="bills" className="space-y-4"> {billsError && ( <ErrorAlert title="Failed to load bills" message={billsError.message} retry={refetchBills} /> )} <Card> <CardHeader> <div className="flex items-center justify-between"> <div> <CardTitle>Pending Bills</CardTitle> <CardDescription> Manage supplier bills and payments </CardDescription> </div> <div className="flex gap-2"> <Button size="sm" onClick={() => router.push("/finance/bills/new")} > <Plus className="mr-2 h-4 w-4" /> New Bill </Button> </div> </div> </CardHeader> <CardContent> {billsLoading ? ( <DataTableSkeleton rows={3} /> ) : bills.length === 0 ? ( <EmptyState icon={FileText} title="No bills found" description="No pending bills in the system" action={{ label:"Create Bill", onClick: () => router.push("/finance/bills/new"), }} /> ) : ( <div className="space-y-4"> {bills.map(bill => ( <div key={bill.id} className="rounded-lg border p-4 transition-colors hover:bg-gray-50" > <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"> <div className="min-w-0 flex-1"> {/* Header */} <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3"> <h3 className="truncate font-semibold"> {bill.bill_no} </h3> {getStatusBadge(bill.status)} {bill.days_until_due && ( <Badge className="w-fit bg-yellow-100 text-yellow-800"> Due in {bill.days_until_due}d </Badge> )} </div> {/* Details Grid - Optimized for mobile */} <div className="xs:grid-cols-2 grid grid-cols-1 gap-3 text-sm lg:grid-cols-3"> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Supplier </span> <span className="mt-0.5 truncate font-medium"> {bill.supplier?.name ||"N/A"} </span> </div> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Amount </span> <span className="mt-0.5 font-medium"> {formatCurrency(bill.total)} </span> </div> <div className="flex flex-col"> <span className="text-xs font-medium text-gray-500"> Due Date </span> <span className="mt-0.5 font-medium"> {formatDate(bill.due_date)} </span> </div> </div> </div> {/* Actions */} <div className="flex flex-shrink-0 gap-2 sm:flex-col"> <Button variant="outline" size="sm" className="flex-1 sm:flex-none" > <Eye className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">View</span> </Button> <Button variant="outline" size="sm" className="flex-1 sm:flex-none" > <CreditCard className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Pay</span> </Button> </div> </div> </div> ))} </div> )} </CardContent> </Card> </TabsContent> {/* Cost Analysis Tab */} <TabsContent value="costing" className="space-y-4"> <Card> <CardHeader> <CardTitle>Cost Analysis & P&L</CardTitle> <CardDescription> Manufacturing costs and profitability by order/brand </CardDescription> </CardHeader> <CardContent> <div className="py-12 text-center"> <FileText className="mx-auto mb-4 h-12 w-12 text-gray-500" /> <p className="mb-4 text-gray-600"> Cost analysis tools will be available here </p> <p className="text-sm text-gray-500"> Material costs, labor allocation, overhead distribution, and P&L analysis </p> </div> </CardContent> </Card> </TabsContent> {/* Reports Tab */} <TabsContent value="reports" className="space-y-4"> <Card> <CardHeader> <CardTitle>Financial Reports</CardTitle> <CardDescription> Export financial data and compliance reports </CardDescription> </CardHeader> <CardContent> <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"> <Button variant="outline" className="flex h-20 flex-col gap-2" > <Receipt className="h-6 w-6" /> <span>Aging Report</span> </Button> <Button variant="outline" className="flex h-20 flex-col gap-2" > <FileText className="h-6 w-6" /> <span>Sales Book</span> </Button> <Button variant="outline" className="flex h-20 flex-col gap-2" > <Building2 className="h-6 w-6" /> <span>Purchase Book</span> </Button> <Button variant="outline" className="flex h-20 flex-col gap-2" > <DollarSign className="h-6 w-6" /> <span>P&L Statement</span> </Button> <Button variant="outline" className="flex h-20 flex-col gap-2" > <TrendingUp className="h-6 w-6" /> <span>Cash Flow</span> </Button> <Button variant="outline" className="flex h-20 flex-col gap-2" > <Users className="h-6 w-6" /> <span>BIR Reports</span> </Button> </div> </CardContent> </Card> </TabsContent> </Tabs> </div> </DashboardLayout> );
+  const [selectedPeriod, setSelectedPeriod] = useState("current_month");
+
+  // Fetch finance statistics
+  const { data: stats, isLoading, error, refetch } = useQuery<FinanceStats>({
+    queryKey: ["finance-stats", selectedPeriod],
+    queryFn: async () => {
+      const response = await fetch(`/api/finance/stats?period=${selectedPeriod}`);
+      if (!response.ok) throw new Error("Failed to fetch finance stats");
+      const data = await response.json();
+      return data.data;
+    },
+    staleTime: 30000,
+  });
+
+  const formatCurrency = (amount: number) => {
+    return `₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6 p-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Finance Management
+            </h1>
+            <p className="text-gray-600">
+              Accounts Receivable, Payable, Costing & P&L
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            <select
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+            >
+              <option value="current_month">Current Month</option>
+              <option value="last_month">Last Month</option>
+              <option value="current_quarter">Current Quarter</option>
+              <option value="ytd">Year to Date</option>
+            </select>
+
+            <Button variant="outline" onClick={() => refetch()}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
+        </div>
+
+        {/* Key Metrics Dashboard */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {/* Total Receivables */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Receivables</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoading ? "..." : formatCurrency(stats?.total_receivables || 0)}
+                  </p>
+                </div>
+                <div className="rounded-full bg-blue-100 p-3">
+                  <Receipt className="h-6 w-6 text-blue-600" />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm">
+                <span className="text-red-600">
+                  {formatCurrency(stats?.overdue_invoices || 0)} overdue
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Payables */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Total Payables</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoading ? "..." : formatCurrency(stats?.total_payables || 0)}
+                  </p>
+                </div>
+                <div className="rounded-full bg-orange-100 p-3">
+                  <FileText className="h-6 w-6 text-orange-600" />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm">
+                <span className="text-orange-600">
+                  {formatCurrency(stats?.upcoming_payments || 0)} due soon
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Gross Profit */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Gross Profit</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoading ? "..." : formatCurrency(stats?.gross_profit || 0)}
+                  </p>
+                </div>
+                <div className="rounded-full bg-green-100 p-3">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm">
+                <span className="text-green-600">
+                  {stats?.gross_margin?.toFixed(1) || 0}% margin
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Net Profit */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Net Profit</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoading ? "..." : formatCurrency(stats?.net_profit || 0)}
+                  </p>
+                </div>
+                <div className="rounded-full bg-purple-100 p-3">
+                  <DollarSign className="h-6 w-6 text-purple-600" />
+                </div>
+              </div>
+              <div className="mt-2 flex items-center text-sm">
+                <span className="text-gray-600">
+                  After all expenses
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Tabs */}
+        <Tabs defaultValue="ar" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="ar">
+              <Receipt className="h-4 w-4 mr-2" />
+              Accounts Receivable
+            </TabsTrigger>
+            <TabsTrigger value="ap">
+              <FileText className="h-4 w-4 mr-2" />
+              Accounts Payable
+            </TabsTrigger>
+            <TabsTrigger value="costing">
+              <Package className="h-4 w-4 mr-2" />
+              Costing & P&L
+            </TabsTrigger>
+            <TabsTrigger value="compliance">
+              <Building2 className="h-4 w-4 mr-2" />
+              Compliance & Exports
+            </TabsTrigger>
+          </TabsList>
+
+          {/* AR Tab */}
+          <TabsContent value="ar" className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push("/finance/invoices")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Receipt className="h-5 w-5" />
+                    Invoices
+                  </CardTitle>
+                  <CardDescription>
+                    Create and manage customer invoices
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Invoice
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push("/finance/payments")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Payments
+                  </CardTitle>
+                  <CardDescription>
+                    Apply payments and allocations
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Record Payment
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push("/finance/credit-notes")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <RefreshCw className="h-5 w-5" />
+                    Credit Notes
+                  </CardTitle>
+                  <CardDescription>
+                    Refunds and adjustments
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Credit Note
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Aging Report */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Aging Report</CardTitle>
+                <CardDescription>
+                  Receivables aging by period
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">0-30 Days</p>
+                    <p className="text-xl font-bold text-green-600">
+                      {formatCurrency(stats?.aging_0_30 || 0)}
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">31-60 Days</p>
+                    <p className="text-xl font-bold text-yellow-600">
+                      {formatCurrency(stats?.aging_31_60 || 0)}
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">61-90 Days</p>
+                    <p className="text-xl font-bold text-orange-600">
+                      {formatCurrency(stats?.aging_61_90 || 0)}
+                    </p>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 rounded-lg">
+                    <p className="text-sm text-gray-600 mb-1">90+ Days</p>
+                    <p className="text-xl font-bold text-red-600">
+                      {formatCurrency(stats?.aging_90_plus || 0)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* AP Tab */}
+          <TabsContent value="ap" className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push("/finance/bills")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Bills
+                  </CardTitle>
+                  <CardDescription>
+                    Supplier invoices and expenses
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Bill
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push("/finance/bill-payments")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Wallet className="h-5 w-5" />
+                    Bill Payments
+                  </CardTitle>
+                  <CardDescription>
+                    Pay suppliers and vendors
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Schedule Payment
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => router.push("/finance/suppliers")}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Suppliers
+                  </CardTitle>
+                  <CardDescription>
+                    Manage supplier database
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Supplier
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Costing & P&L Tab */}
+          <TabsContent value="costing" className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Materials Cost</CardTitle>
+                  <CardDescription>BOM and fabric costs</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(stats?.materials_cost || 0)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {((stats?.materials_cost || 0) / (stats?.total_cogs || 1) * 100).toFixed(1)}% of COGS
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Labor Cost</CardTitle>
+                  <CardDescription>Payroll allocations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(stats?.labor_cost || 0)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {((stats?.labor_cost || 0) / (stats?.total_cogs || 1) * 100).toFixed(1)}% of COGS
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Overhead Cost</CardTitle>
+                  <CardDescription>Utilities and other</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatCurrency(stats?.overhead_cost || 0)}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {((stats?.overhead_cost || 0) / (stats?.total_cogs || 1) * 100).toFixed(1)}% of COGS
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Brand P&L Analysis</CardTitle>
+                    <CardDescription>Profitability by brand and channel</CardDescription>
+                  </div>
+                  <Button onClick={() => router.push("/finance/brand-pl")}>
+                    View Details
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Channel Settlements</CardTitle>
+                    <CardDescription>Shopee, TikTok, and marketplace imports</CardDescription>
+                  </div>
+                  <Button onClick={() => router.push("/finance/settlements")}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Import Settlement
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+          </TabsContent>
+
+          {/* Compliance & Exports Tab */}
+          <TabsContent value="compliance" className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Sales Book (BIR)
+                  </CardTitle>
+                  <CardDescription>
+                    Export sales for BIR compliance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShoppingCart className="h-5 w-5" />
+                    Purchase Book (BIR)
+                  </CardTitle>
+                  <CardDescription>
+                    Export purchases for BIR compliance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    SSS/PhilHealth/Pag-IBIG
+                  </CardTitle>
+                  <CardDescription>
+                    Government remittance schedules
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    General Ledger
+                  </CardTitle>
+                  <CardDescription>
+                    CSV/Excel for accounting software
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Receipt className="h-5 w-5" />
+                    VAT Report
+                  </CardTitle>
+                  <CardDescription>
+                    Input/Output VAT summary
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Withholding Tax (2307)
+                  </CardTitle>
+                  <CardDescription>
+                    EWT certificates and schedules
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Export
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </DashboardLayout>
+  );
 }
