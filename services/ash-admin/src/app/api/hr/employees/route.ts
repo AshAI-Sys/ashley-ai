@@ -177,7 +177,7 @@ export const POST = requireAnyPermission(["hr:create"])(
     }
 
     // SECURITY: Use user's workspace
-    const workspaceId = user.workspaceId;
+    const workspaceId = _user.workspaceId;
 
     const employee = await prisma.employee.create({
       data: {
