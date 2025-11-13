@@ -32,11 +32,6 @@ model Workspace {
   cartons                  Carton[]
   categories               Category[]
   inventory_brands         InventoryBrand[]
-  client_activities        ClientActivity[]
-  client_messages          ClientMessage[]
-  client_notifications     ClientNotification[]
-  client_portal_settings   ClientPortalSettings[]
-  client_sessions          ClientSession[]
   clients                  Client[]
   custom_reports           CustomReport[]
   customer_segments        CustomerSegment[]
@@ -202,11 +197,6 @@ model Client {
   updated_at              DateTime                @updatedAt
   deleted_at              DateTime?
   brands                  Brand[]
-  client_activities       ClientActivity[]
-  client_messages         ClientMessage[]
-  client_notifications    ClientNotification[]
-  client_portal_settings  ClientPortalSettings[]  @relation("ClientPortalSettings")
-  client_sessions         ClientSession[]
   workspace               Workspace               @relation(fields: [workspace_id], references: [id])
   demand_forecasts        DemandForecast[]
   design_approvals        DesignApproval[]
@@ -284,7 +274,6 @@ model Order {
   cut_issues            CutIssue[]
   cut_lays              CutLay[]
   deliveries            Delivery[]
-  design_assets         DesignAsset[]
   expenses              Expense[]
   finished_units        FinishedUnit[]
   finishing_runs        FinishingRun[]
@@ -2952,121 +2941,6 @@ model CustomerSegment {
   @@map("customer_segments")
 }
 
-model ClientSession {
-  id           String    @id @default(cuid())
-  workspace_id String
-  client_id    String
-  email        String
-  magic_token  String    @unique
-  is_used      Boolean   @default(false)
-  expires_at   DateTime
-  created_at   DateTime  @default(now())
-  client       Client    @relation(fields: [client_id], references: [id])
-  workspace    Workspace @relation(fields: [workspace_id], references: [id])
-
-  @@unique([workspace_id, magic_token])
-  @@index([workspace_id])
-  @@index([workspace_id, client_id])
-  @@index([workspace_id, is_used])
-  @@index([client_id])
-  @@index([magic_token])
-  @@index([is_used])
-  @@index([expires_at])
-  @@index([created_at])
-  @@map("client_sessions")
-}
-
-model ClientNotification {
-  id            String    @id @default(cuid())
-  workspace_id  String
-  client_id     String
-  type          String
-  title         String
-  message       String
-  action_url    String?
-  is_read       Boolean   @default(false)
-  is_email_sent Boolean   @default(false)
-  priority      String    @default("MEDIUM")
-  metadata      String?
-  created_at    DateTime  @default(now())
-  read_at       DateTime?
-  client        Client    @relation(fields: [client_id], references: [id])
-  workspace     Workspace @relation(fields: [workspace_id], references: [id])
-
-  @@index([workspace_id])
-  @@index([workspace_id, client_id])
-  @@index([workspace_id, is_read])
-  @@index([client_id])
-  @@index([type])
-  @@index([is_read])
-  @@index([created_at])
-  @@map("client_notifications")
-}
-
-model ClientActivity {
-  id            String    @id @default(cuid())
-  workspace_id  String
-  client_id     String
-  session_id    String?
-  activity_type String
-  resource_type String?
-  resource_id   String?
-  description   String?
-  ip_address    String?
-  user_agent    String?
-  metadata      String?
-  created_at    DateTime  @default(now())
-  client        Client    @relation(fields: [client_id], references: [id])
-  workspace     Workspace @relation(fields: [workspace_id], references: [id])
-
-  @@map("client_activities")
-}
-
-model ClientMessage {
-  id           String    @id @default(cuid())
-  workspace_id String
-  client_id    String
-  order_id     String?
-  thread_id    String?
-  sender_type  String
-  sender_name  String
-  sender_email String?
-  subject      String?
-  message      String
-  attachments  String?
-  is_read      Boolean   @default(false)
-  is_internal  Boolean   @default(false)
-  priority     String    @default("NORMAL")
-  status       String    @default("OPEN")
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  order        Order?    @relation(fields: [order_id], references: [id])
-  client       Client    @relation(fields: [client_id], references: [id])
-  workspace    Workspace @relation(fields: [workspace_id], references: [id])
-
-  @@map("client_messages")
-}
-
-model ClientPortalSettings {
-  id                     String    @id @default(cuid())
-  workspace_id           String
-  client_id              String
-  email_notifications    Boolean   @default(true)
-  sms_notifications      Boolean   @default(false)
-  push_notifications     Boolean   @default(true)
-  notification_frequency String    @default("REAL_TIME")
-  preferred_language     String    @default("en")
-  timezone               String    @default("UTC")
-  theme                  String    @default("LIGHT")
-  dashboard_layout       String?
-  created_at             DateTime  @default(now())
-  updated_at             DateTime  @updatedAt
-  client                 Client    @relation("ClientPortalSettings", fields: [client_id], references: [id])
-  workspace              Workspace @relation(fields: [workspace_id], references: [id])
-
-  @@unique([workspace_id, client_id])
-  @@map("client_portal_settings")
-}
 
 model AutomationRule {
   id              String                @id @default(cuid())
