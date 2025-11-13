@@ -42,6 +42,7 @@ import {
   Warehouse,
   Tag,
   PackageCheck,
+  History,
 } from "lucide-react";
 
 const iconMap = {
@@ -79,6 +80,7 @@ const iconMap = {
   Warehouse,
   Tag,
   PackageCheck,
+  History,
 };
 
 export default function Sidebar() {
@@ -231,6 +233,12 @@ export default function Sidebar() {
       name: "Inventory",
       href: "/inventory",
       icon: "PackageCheck",
+      department: "Inventory",
+    },
+    {
+      name: "Inventory History",
+      href: "/inventory/history",
+      icon: "History",
       department: "Inventory",
     },
     {
