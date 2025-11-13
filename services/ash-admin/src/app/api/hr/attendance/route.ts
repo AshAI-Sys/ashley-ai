@@ -8,6 +8,9 @@ export const dynamic = 'force-dynamic';
 
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
+    // SECURITY: Get user's workspace_id for data isolation
+    const workspaceId = _user.workspace_id || _user.workspaceId;
+
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
     const date_from = searchParams.get("date_from");
@@ -15,7 +18,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
     const status = searchParams.get("status");
     // Unused: const ____type = searchParams.get("type");
 
-    const where: any = { workspace_id: "default" };
+    const where: any = { workspace_id: workspaceId }; // SECURITY: Filter by workspace
     if (employee_id) where.employee_id = employee_id;
     if (status && status !== "all") {
       // Map status to our schema fields
@@ -83,6 +86,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
+    // SECURITY: Get user's workspace_id for data isolation
+    const workspaceId = _user.workspace_id || _user.workspaceId;
+
     const data = await request.json();
     const {
       employee_id,
@@ -170,7 +176,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Create new attendance record
       attendanceLog = await prisma.attendanceLog.create({
         data: {
-          workspace_id: "default",
+          workspace_id: workspaceId, // SECURITY: Use user's workspace
           employee_id,
           date: dateOnly,
           time_in:

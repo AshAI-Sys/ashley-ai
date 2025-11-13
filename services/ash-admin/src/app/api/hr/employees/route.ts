@@ -176,21 +176,12 @@ export const POST = requireAnyPermission(["hr:create"])(
       }
     }
 
-    // Ensure default workspace exists
-    await prisma.workspace.upsert({
-      where: { slug: "default" },
-      update: {},
-      create: {
-        id: "default",
-        name: "Default Workspace",
-        slug: "default",
-        is_active: true,
-      },
-    });
+    // SECURITY: Use user's workspace
+    const workspaceId = user.workspaceId;
 
     const employee = await prisma.employee.create({
       data: {
-        workspace_id: "default",
+        workspace_id: workspaceId, // SECURITY: Use user's workspace
         employee_number: employee_number || `EMP${Date.now()}`,
         first_name,
         last_name,

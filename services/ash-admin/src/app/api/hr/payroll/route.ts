@@ -8,12 +8,17 @@ export const dynamic = 'force-dynamic';
 
 export const GET = requireAuth(async (request: NextRequest, _user) => {
   try {
+    // SECURITY: Get user's workspace_id for data isolation
+    const workspaceId = _user.workspace_id || _user.workspaceId;
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const year = searchParams.get("year");
     const month = searchParams.get("month");
 
-    const where: any = {};
+    const where: any = {
+      workspace_id: workspaceId, // SECURITY: Filter by workspace
+    };
     if (status && status !== "all") where.status = status;
 
     if (year || month) {
@@ -75,7 +80,12 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       data: processedRuns,
     });
   } catch (error) {
-    console.error("Error fetching payroll runs:", error);
+    // SECURITY: Only log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error fetching payroll runs:", error);
+    } else {
+      console.error("Error fetching payroll runs");
+    }
     return NextResponse.json(
       { success: false, error: "Failed to fetch payroll runs" },
       { status: 500 }
@@ -85,6 +95,9 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
 
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
+    // SECURITY: Get user's workspace_id for data isolation
+    const workspaceId = _user.workspace_id || _user.workspaceId;
+
     const data = await request.json();
     const {
       period_start,
@@ -101,7 +114,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Create payroll period;
       const payrollPeriod = await tx.payrollPeriod.create({
         data: {
-          workspace_id: "default",
+          workspace_id: workspaceId, // SECURITY: Use user's workspace
           period_start: periodStart,
           period_end: periodEnd,
           status: "draft",
@@ -111,7 +124,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       // Get all active employees
       const employees = await tx.employee.findMany({
         where: {
-          workspace_id: "default",
+          workspace_id: workspaceId, // SECURITY: Filter by workspace
           is_active: true,
         },
       });
@@ -203,7 +216,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         const netPay = grossPay - deductions;
 
         payrollItems.push({
-          workspace_id: "default",
+          workspace_id: workspaceId, // SECURITY: Use user's workspace
           payroll_period_id: payrollPeriod.id,
           employee_id: employee.id,
           regular_hours: regularHours,
@@ -283,7 +296,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating payroll run:", error);
+    // SECURITY: Only log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error creating payroll run:", error);
+    } else {
+      console.error("Error creating payroll run");
+    }
     return NextResponse.json(
       { success: false, error: "Failed to create payroll run" },
       { status: 500 }
@@ -334,7 +352,12 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       },
 });
 } catch (error) {
-    console.error("Error updating payroll run:", error);
+    // SECURITY: Only log detailed errors in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error updating payroll run:", error);
+    } else {
+      console.error("Error updating payroll run");
+    }
     return NextResponse.json(
       { success: false, error: "Failed to update payroll run" },
       { status: 500 }
