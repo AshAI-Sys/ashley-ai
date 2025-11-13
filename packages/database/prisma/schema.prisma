@@ -102,6 +102,14 @@ model Workspace {
   warehouse_deliveries     WarehouseDelivery[]
   mobile_sessions          MobileSession[]
   qr_codes                 QRCode[]
+  leave_types              LeaveType[]
+  leave_requests           LeaveRequest[]
+  leave_balances           LeaveBalance[]
+  benefit_types            BenefitType[]
+  employee_benefits        EmployeeBenefit[]
+  drivers                  Driver[]
+  driver_assignments       DriverAssignment[]
+  driver_performances      DriverPerformance[]
 
   @@index([is_active])
   @@index([created_at])
@@ -168,6 +176,8 @@ model User {
   warehouse_deliveries_received  WarehouseDelivery[]     @relation("DeliveryReceiver")
   mobile_sessions                MobileSession[]         @relation("MobileSessions")
   qr_codes_generated             QRCode[]                @relation("QRCodeGenerator")
+  leave_requests_approved        LeaveRequest[]          @relation("LeaveRequestApprover")
+  drivers                        Driver[]                @relation("DriverUser")
 
   @@unique([workspace_id, email])
   @@index([workspace_id])
@@ -269,7 +279,6 @@ model Order {
   bundles               Bundle[]
   capa_tasks            CAPATask[]            @relation("OrderCAPATasks")
   cartons               Carton[]
-  client_messages       ClientMessage[]
   cost_allocations      CostAllocation[]
   cut_issues            CutIssue[]
   cut_lays              CutLay[]
@@ -295,6 +304,7 @@ model Order {
   sewing_runs           SewingRun[]
   shipments             Shipment[]
   qr_codes              QRCode[]
+  design_assets         DesignAsset[]
 
   @@unique([workspace_id, order_number])
   @@index([workspace_id])
@@ -691,6 +701,9 @@ model Employee {
   assigned_work_orders  WorkOrder[]
   worker_allocations    WorkerAllocation[]
   worker_assignments    WorkerAssignment[]
+  leave_requests        LeaveRequest[]
+  leave_balances        LeaveBalance[]
+  employee_benefits     EmployeeBenefit[]
 
   @@unique([workspace_id, employee_number])
   @@index([workspace_id])
@@ -2651,6 +2664,7 @@ model Delivery {
   tracking_events         DeliveryTrackingEvent[]
   pod_records             PODRecord[]
   shipments               ShipmentDelivery[]
+  driver_assignments      DriverAssignment[]
 
   @@index([workspace_id])
   @@index([workspace_id, status])
@@ -3978,4 +3992,258 @@ model SystemSettings {
   updated_at  DateTime @updatedAt
 
   @@map("system_settings")
+}
+
+// ============================================
+// HR & PAYROLL - LEAVE MANAGEMENT
+// ============================================
+
+// Leave Types (Sick, Vacation, Maternity, etc.)
+model LeaveType {
+  id                 String          @id @default(cuid())
+  workspace_id       String
+  name               String          // 'Sick Leave', 'Vacation Leave', 'Maternity Leave', etc.
+  code               String          // 'SL', 'VL', 'ML', etc.
+  days_per_year      Float
+  is_paid            Boolean         @default(true)
+  requires_proof     Boolean         @default(false)
+  description        String?
+  is_active          Boolean         @default(true)
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @updatedAt
+  workspace          Workspace       @relation(fields: [workspace_id], references: [id])
+  leave_requests     LeaveRequest[]
+  leave_balances     LeaveBalance[]
+
+  @@unique([workspace_id, code])
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@map("leave_types")
+}
+
+// Employee Leave Requests
+model LeaveRequest {
+  id                String      @id @default(cuid())
+  workspace_id      String
+  employee_id       String
+  leave_type_id     String
+  start_date        DateTime
+  end_date          DateTime
+  days_requested    Float
+  reason            String      @db.Text
+  proof_document    String?     // URL to uploaded proof (medical cert, etc.)
+  status            String      @default("PENDING") // 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
+  approved_by       String?
+  approved_at       DateTime?
+  rejection_reason  String?
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @updatedAt
+  employee          Employee    @relation(fields: [employee_id], references: [id])
+  leave_type        LeaveType   @relation(fields: [leave_type_id], references: [id])
+  workspace         Workspace   @relation(fields: [workspace_id], references: [id])
+  approver          User?       @relation("LeaveRequestApprover", fields: [approved_by], references: [id])
+
+  @@index([workspace_id])
+  @@index([workspace_id, employee_id])
+  @@index([workspace_id, status])
+  @@index([employee_id])
+  @@index([leave_type_id])
+  @@index([status])
+  @@index([start_date])
+  @@map("leave_requests")
+}
+
+// Employee Leave Balances
+model LeaveBalance {
+  id                 String     @id @default(cuid())
+  workspace_id       String
+  employee_id        String
+  leave_type_id      String
+  year               Int
+  total_days         Float      // Allocated days for the year
+  used_days          Float      @default(0)
+  remaining_days     Float      // Calculated: total_days - used_days
+  carried_over_days  Float      @default(0) // Days carried from previous year
+  created_at         DateTime   @default(now())
+  updated_at         DateTime   @updatedAt
+  employee           Employee   @relation(fields: [employee_id], references: [id])
+  leave_type         LeaveType  @relation(fields: [leave_type_id], references: [id])
+  workspace          Workspace  @relation(fields: [workspace_id], references: [id])
+
+  @@unique([workspace_id, employee_id, leave_type_id, year])
+  @@index([workspace_id])
+  @@index([workspace_id, employee_id])
+  @@index([employee_id])
+  @@index([leave_type_id])
+  @@index([year])
+  @@map("leave_balances")
+}
+
+// ============================================
+// HR & PAYROLL - BENEFITS MANAGEMENT
+// ============================================
+
+// Benefit Types (Health Insurance, SSS, PhilHealth, Pag-IBIG, etc.)
+model BenefitType {
+  id                      String             @id @default(cuid())
+  workspace_id            String
+  name                    String             // 'Health Insurance', 'SSS', 'PhilHealth', 'Pag-IBIG', etc.
+  code                    String             // 'HI', 'SSS', 'PH', 'HDMF', etc.
+  description             String?            @db.Text
+  employee_contribution   Float?             // Monthly employee contribution amount
+  employer_contribution   Float?             // Monthly employer contribution amount
+  contribution_percentage Float?             // Percentage of salary (if applicable)
+  is_mandatory            Boolean            @default(false) // Government mandated benefits
+  is_active               Boolean            @default(true)
+  created_at              DateTime           @default(now())
+  updated_at              DateTime           @updatedAt
+  workspace               Workspace          @relation(fields: [workspace_id], references: [id])
+  employee_benefits       EmployeeBenefit[]
+
+  @@unique([workspace_id, code])
+  @@index([workspace_id])
+  @@index([workspace_id, is_active])
+  @@index([is_mandatory])
+  @@map("benefit_types")
+}
+
+// Employee Benefit Enrollments
+model EmployeeBenefit {
+  id                    String       @id @default(cuid())
+  workspace_id          String
+  employee_id           String
+  benefit_type_id       String
+  enrollment_date       DateTime
+  effective_start_date  DateTime
+  effective_end_date    DateTime?
+  employee_contribution Float        // Actual monthly contribution
+  employer_contribution Float        // Actual monthly contribution
+  policy_number         String?      // For insurance policies
+  status                String       @default("ACTIVE") // 'ACTIVE' | 'SUSPENDED' | 'TERMINATED'
+  notes                 String?      @db.Text
+  created_at            DateTime     @default(now())
+  updated_at            DateTime     @updatedAt
+  employee              Employee     @relation(fields: [employee_id], references: [id])
+  benefit_type          BenefitType  @relation(fields: [benefit_type_id], references: [id])
+  workspace             Workspace    @relation(fields: [workspace_id], references: [id])
+
+  @@unique([workspace_id, employee_id, benefit_type_id])
+  @@index([workspace_id])
+  @@index([workspace_id, employee_id])
+  @@index([workspace_id, status])
+  @@index([employee_id])
+  @@index([benefit_type_id])
+  @@index([status])
+  @@map("employee_benefits")
+}
+
+// ============================================
+// DELIVERY - DRIVER MANAGEMENT
+// ============================================
+
+// Drivers
+model Driver {
+  id                    String               @id @default(cuid())
+  workspace_id          String
+  driver_code           String               // Unique driver identifier (e.g., DRV-001)
+  user_id               String?              // Link to User account (if driver has portal access)
+  first_name            String
+  last_name             String
+  phone_number          String
+  email                 String?
+  license_number        String
+  license_expiry        DateTime
+  vehicle_type          String               // 'MOTORCYCLE' | 'VAN' | 'TRUCK'
+  vehicle_plate_number  String
+  vehicle_model         String?
+  employment_type       String               @default("FULL_TIME") // 'FULL_TIME' | 'PART_TIME' | 'CONTRACTOR'
+  status                String               @default("ACTIVE") // 'ACTIVE' | 'ON_LEAVE' | 'SUSPENDED' | 'TERMINATED'
+  date_hired            DateTime
+  date_terminated       DateTime?
+  profile_photo_url     String?
+  emergency_contact     String?
+  emergency_phone       String?
+  notes                 String?              @db.Text
+  created_at            DateTime             @default(now())
+  updated_at            DateTime             @updatedAt
+  workspace             Workspace            @relation(fields: [workspace_id], references: [id])
+  user                  User?                @relation("DriverUser", fields: [user_id], references: [id])
+  driver_assignments    DriverAssignment[]
+  driver_performances   DriverPerformance[]
+
+  @@unique([workspace_id, driver_code])
+  @@unique([workspace_id, license_number])
+  @@index([workspace_id])
+  @@index([workspace_id, status])
+  @@index([user_id])
+  @@index([status])
+  @@map("drivers")
+}
+
+// Driver Delivery Assignments
+model DriverAssignment {
+  id                String    @id @default(cuid())
+  workspace_id      String
+  delivery_id       String
+  driver_id         String
+  assigned_at       DateTime  @default(now())
+  pickup_scheduled  DateTime
+  delivery_scheduled DateTime
+  actual_pickup     DateTime?
+  actual_delivery   DateTime?
+  status            String    @default("ASSIGNED") // 'ASSIGNED' | 'PICKED_UP' | 'IN_TRANSIT' | 'DELIVERED' | 'FAILED' | 'CANCELLED'
+  current_location  String?   // GPS coordinates or address
+  distance_km       Float?
+  notes             String?   @db.Text
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  delivery          Delivery  @relation(fields: [delivery_id], references: [id])
+  driver            Driver    @relation(fields: [driver_id], references: [id])
+  workspace         Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@index([workspace_id])
+  @@index([workspace_id, driver_id])
+  @@index([workspace_id, status])
+  @@index([delivery_id])
+  @@index([driver_id])
+  @@index([status])
+  @@index([pickup_scheduled])
+  @@index([delivery_scheduled])
+  @@map("driver_assignments")
+}
+
+// Driver Performance Metrics
+model DriverPerformance {
+  id                      String    @id @default(cuid())
+  workspace_id            String
+  driver_id               String
+  period_start            DateTime
+  period_end              DateTime
+  total_deliveries        Int       @default(0)
+  successful_deliveries   Int       @default(0)
+  failed_deliveries       Int       @default(0)
+  average_rating          Float?    // Customer ratings (1-5)
+  total_distance_km       Float     @default(0)
+  on_time_percentage      Float     @default(0)
+  average_delivery_time   Float?    // In minutes
+  fuel_consumption        Float?    // Liters
+  fuel_cost               Float?    // Total fuel cost
+  maintenance_cost        Float?    // Vehicle maintenance
+  total_earnings          Float     @default(0)
+  bonus_earned            Float     @default(0)
+  violations_count        Int       @default(0) // Traffic violations, incidents, etc.
+  customer_complaints     Int       @default(0)
+  performance_score       Float?    // Overall score (0-100)
+  notes                   String?   @db.Text
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
+  driver                  Driver    @relation(fields: [driver_id], references: [id])
+  workspace               Workspace @relation(fields: [workspace_id], references: [id])
+
+  @@unique([workspace_id, driver_id, period_start, period_end])
+  @@index([workspace_id])
+  @@index([workspace_id, driver_id])
+  @@index([driver_id])
+  @@index([period_start])
+  @@map("driver_performances")
 }
