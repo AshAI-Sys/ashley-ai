@@ -9,7 +9,7 @@ const nextConfig = {
     instrumentationHook: true,
     scrollRestoration: true,
   },
-  output: "standalone",
+  // output: "standalone", // Disabled for development builds
   reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,

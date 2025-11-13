@@ -1,5 +1,8 @@
 "use client";
 
+// Prevent static generation of error pages
+export const dynamic = "force-dynamic";
+
 export default function GlobalError({
   error,
   reset,
@@ -20,6 +23,7 @@ export default function GlobalError({
               An unexpected error occurred. Please try again.
             </p>
             <button
+              type="button"
               onClick={reset}
               className="inline-block rounded-lg bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700"
             >

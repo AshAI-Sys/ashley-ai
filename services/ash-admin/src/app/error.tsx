@@ -24,6 +24,7 @@ export default function Error({
           An unexpected error occurred. Please try again.
         </p>
         <button
+          type="button"
           onClick={reset}
           className="inline-block rounded-lg bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700"
         >
