@@ -1,15 +1,47 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Responsive, WidthProvider, Layout } from "react-grid-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Settings, X, Plus, Save, RotateCcw, Lock, Unlock } from "lucide-react";
+import {
+  Settings,
+  X,
+  Plus,
+  Save,
+  RotateCcw,
+  Lock,
+  Unlock,
+  Loader2,
+} from "lucide-react";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
-import ProductionTrendChart from "../charts/ProductionTrendChart";
-import EfficiencyGaugeChart from "../charts/EfficiencyGaugeChart";
 import RealTimeMetrics from "./RealTimeMetrics";
+
+// Lazy load heavy chart components (Recharts ~300KB)
+const ProductionTrendChart = dynamic(
+  () => import("../charts/ProductionTrendChart"),
+  {
+    loading: () => (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
+const EfficiencyGaugeChart = dynamic(
+  () => import("../charts/EfficiencyGaugeChart"),
+  {
+    loading: () => (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -58,7 +90,7 @@ export default function CustomizableDashboard() {
     lg: defaultLayout,
   });
   const [activeWidgets, setActiveWidgets] = useState<string[]>(
-    defaultLayout.map((l) => l.i)
+    defaultLayout.map(l => l.i)
   );
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLocked, setIsLocked] = useState(true);
@@ -89,7 +121,7 @@ export default function CustomizableDashboard() {
 
   const handleResetLayout = () => {
     setLayouts({ lg: defaultLayout });
-    setActiveWidgets(defaultLayout.map((l) => l.i));
+    setActiveWidgets(defaultLayout.map(l => l.i));
     localStorage.removeItem("dashboard-layout");
     localStorage.removeItem("dashboard-widgets");
   };
@@ -97,7 +129,7 @@ export default function CustomizableDashboard() {
   const handleAddWidget = (widgetId: string) => {
     if (activeWidgets.includes(widgetId)) return;
 
-    const newWidget = availableWidgets.find((w) => w.id === widgetId);
+    const newWidget = availableWidgets.find(w => w.id === widgetId);
     if (!newWidget) return;
 
     const newLayout: Layout = {
@@ -117,12 +149,12 @@ export default function CustomizableDashboard() {
   };
 
   const handleRemoveWidget = (widgetId: string) => {
-    setLayouts({ lg: layouts.lg.filter((l) => l.i !== widgetId) });
-    setActiveWidgets(activeWidgets.filter((id) => id !== widgetId));
+    setLayouts({ lg: layouts.lg.filter(l => l.i !== widgetId) });
+    setActiveWidgets(activeWidgets.filter(id => id !== widgetId));
   };
 
   const renderWidget = (widgetId: string) => {
-    const widget = availableWidgets.find((w) => w.id === widgetId);
+    const widget = availableWidgets.find(w => w.id === widgetId);
     if (!widget) return null;
 
     const WidgetComponent = widget.component;
@@ -181,7 +213,11 @@ export default function CustomizableDashboard() {
 
               {isEditMode ? (
                 <>
-                  <Button variant="outline" size="sm" onClick={handleResetLayout}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetLayout}
+                  >
                     <RotateCcw className="mr-1 h-4 w-4" />
                     Reset
                   </Button>
@@ -227,7 +263,7 @@ export default function CustomizableDashboard() {
                 Add Widgets:
               </h3>
               <div className="flex flex-wrap gap-2">
-                {availableWidgets.map((widget) => {
+                {availableWidgets.map(widget => {
                   const isActive = activeWidgets.includes(widget.id);
                   return (
                     <button
