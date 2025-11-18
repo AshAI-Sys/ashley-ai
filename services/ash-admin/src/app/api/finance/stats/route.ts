@@ -2,15 +2,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { CacheService } from "@/lib/redis/cache";
 
 export const dynamic = 'force-dynamic';
 
+const cache = new CacheService("ashley-ai");
+const FINANCE_STATS_CACHE_TTL = 120; /* 2 minutes TTL for finance stats */
 
 // Finance statistics API endpoint
 export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
     // SECURITY: Get user's workspace_id for data isolation
-    const workspaceId = _user.workspaceId || _user.workspaceId;
+    const workspaceId = _user.workspaceId;
+    const cacheKey = `finance-stats:${workspaceId}`;
+
+    /* Try cache first */
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        data: cached,
+        cached: true,
+      });
+    }
 
     const today = new Date();
     const yearStart = new Date(today.getFullYear(), 0, 1);
@@ -117,34 +131,39 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
     const grossMargin = ytdRevenue > 0 ? (grossProfit / ytdRevenue) * 100 : 0;
     const netProfit = grossProfit; // Will subtract operating expenses later
 
+    const result = {
+      // AR Stats
+      total_receivables: totalReceivables,
+      overdue_invoices: overdueInvoices,
+      aging_0_30: aging0_30Result._sum.total_amount || 0,
+      aging_31_60: aging31_60Result._sum.total_amount || 0,
+      aging_61_90: aging61_90Result._sum.total_amount || 0,
+      aging_90_plus: aging90PlusResult._sum.total_amount || 0,
+
+      // AP Stats
+      total_payables: 0, // Will be calculated from bills
+      overdue_bills: 0,
+      upcoming_payments: 0,
+
+      // P&L Stats
+      total_revenue: ytdRevenue,
+      total_cogs: totalCogs,
+      gross_profit: grossProfit,
+      gross_margin: Math.round(grossMargin * 10) / 10,
+      net_profit: netProfit,
+
+      // Costing Stats
+      materials_cost: materialsCost,
+      labor_cost: laborCost,
+      overhead_cost: overheadCost,
+    };
+
+    /* Cache the result */
+    await cache.set(cacheKey, result, FINANCE_STATS_CACHE_TTL);
+
     return NextResponse.json({
       success: true,
-      data: {
-        // AR Stats
-        total_receivables: totalReceivables,
-        overdue_invoices: overdueInvoices,
-        aging_0_30: aging0_30Result._sum.total_amount || 0,
-        aging_31_60: aging31_60Result._sum.total_amount || 0,
-        aging_61_90: aging61_90Result._sum.total_amount || 0,
-        aging_90_plus: aging90PlusResult._sum.total_amount || 0,
-
-        // AP Stats
-        total_payables: 0, // Will be calculated from bills
-        overdue_bills: 0,
-        upcoming_payments: 0,
-
-        // P&L Stats
-        total_revenue: ytdRevenue,
-        total_cogs: totalCogs,
-        gross_profit: grossProfit,
-        gross_margin: Math.round(grossMargin * 10) / 10,
-        net_profit: netProfit,
-
-        // Costing Stats
-        materials_cost: materialsCost,
-        labor_cost: laborCost,
-        overhead_cost: overheadCost,
-      },
+      data: result,
     });
   } catch (error) {
     // SECURITY: Only log detailed errors in development
