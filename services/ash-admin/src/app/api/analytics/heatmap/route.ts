@@ -2,23 +2,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { CacheService } from "@/lib/redis/cache";
 
 export const dynamic = 'force-dynamic';
 
-
 const prisma = db;
+const cache = new CacheService("ashley-ai");
+const HEATMAP_CACHE_TTL = 300; /* 5 minutes TTL for heatmap data */
 
 // GET /api/analytics/heatmap - Get production efficiency heatmap data
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
-    const workspaceId =
-      req.headers.get("x-workspace-id") || "default-workspace";
+    const workspaceId = user.workspaceId;
     const url = new URL(req.url);
 
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
     const stationType = url.searchParams.get("stationType");
     const shift = url.searchParams.get("shift");
+
+    /* Build cache key based on query params */
+    const cacheKey = `heatmap:${workspaceId}:${startDate || 'none'}:${endDate || 'none'}:${stationType || 'all'}:${shift || 'all'}`;
+
+    /* Try cache first */
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
 
     const where: any = { workspace_id: workspaceId };
 
@@ -85,12 +95,17 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       achievement_rate: (item.output / item.target) * 100,
     }));
 
-    return NextResponse.json({
+    const result = {
       success: true,
       data: heatmapData,
       heatmap: heatmapGrid,
       stats,
-    });
+    };
+
+    /* Cache the result */
+    await cache.set(cacheKey, result, HEATMAP_CACHE_TTL);
+
+    return NextResponse.json(result);
   } catch (error: any) {
     console.error("Error fetching heatmap data:", error);
     return NextResponse.json(
@@ -101,10 +116,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // POST /api/analytics/heatmap - Create heatmap data point
-export const POST = requireAuth(async (req: NextRequest, _user) => {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
-    const workspaceId =
-      req.headers.get("x-workspace-id") || "default-workspace";
+    const workspaceId = user.workspaceId;
     const body = await req.json();
 
     const {
@@ -143,9 +157,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
         downtime_mins: downtime_mins || 0,
         operators_count: operators_count || 1,
       },
-      
-    
+
+
       });
+
+    /* Invalidate heatmap cache for this workspace */
+    await cache.invalidatePattern(`heatmap:${workspaceId}:*`);
 
     return NextResponse.json({
       success: true,

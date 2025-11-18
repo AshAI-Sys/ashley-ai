@@ -2,17 +2,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { CacheService } from "@/lib/redis/cache";
 
 export const dynamic = 'force-dynamic';
 
-
 const prisma = db;
+const cache = new CacheService("ashley-ai");
+const PROFIT_CACHE_TTL = 180; /* 3 minutes TTL for profit analysis */
 
 // GET /api/analytics/profit - Get profit analysis data
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
-    const workspaceId =
-      req.headers.get("x-workspace-id") || "default-workspace";
+    const workspaceId = user.workspaceId;
     const url = new URL(req.url);
 
     const clientId = url.searchParams.get("clientId");
@@ -21,6 +22,15 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
     const endDate = url.searchParams.get("endDate");
     const sortBy = url.searchParams.get("sortBy") || "analysis_date";
     const sortOrder = url.searchParams.get("sortOrder") || "desc";
+
+    /* Build cache key based on query params */
+    const cacheKey = `profit:${workspaceId}:${clientId || 'all'}:${orderId || 'all'}:${startDate || 'none'}:${endDate || 'none'}:${sortBy}:${sortOrder}`;
+
+    /* Try cache first */
+    const cached = await cache.get(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
 
     const where: any = { workspace_id: workspaceId };
 
@@ -101,12 +111,17 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       (a: any, b: any) => b.total_profit - a.total_profit
     );
 
-    return NextResponse.json({
+    const result = {
       success: true,
       analyses,
       stats,
       clientComparison,
-    });
+    };
+
+    /* Cache the result */
+    await cache.set(cacheKey, result, PROFIT_CACHE_TTL);
+
+    return NextResponse.json(result);
   } catch (error: any) {
     console.error("Error fetching profit analysis:", error);
     return NextResponse.json(
@@ -117,10 +132,9 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // POST /api/analytics/profit - Create profit analysis
-export const POST = requireAuth(async (req: NextRequest, _user) => {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
-    const workspaceId =
-      req.headers.get("x-workspace-id") || "default-workspace";
+    const workspaceId = user.workspaceId;
     const body = await req.json();
 
     const {
@@ -200,9 +214,12 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
           },
         },
       },
-      
-    
+
+
       });
+
+    /* Invalidate profit cache for this workspace */
+    await cache.invalidatePattern(`profit:${workspaceId}:*`);
 
     return NextResponse.json({
       success: true,
@@ -218,10 +235,9 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
 });
 
 // PUT /api/analytics/profit - Auto-generate profit analysis for an order
-export const PUT = requireAuth(async (req: NextRequest, _user) => {
+export const PUT = requireAuth(async (req: NextRequest, user) => {
   try {
-    const workspaceId =
-      req.headers.get("x-workspace-id") || "default-workspace";
+    const workspaceId = user.workspaceId;
     const body = await req.json();
     const { order_id } = body;
 
@@ -320,9 +336,12 @@ export const PUT = requireAuth(async (req: NextRequest, _user) => {
           },
         },
       },
-      
-    
+
+
       });
+
+    /* Invalidate profit cache for this workspace */
+    await cache.invalidatePattern(`profit:${workspaceId}:*`);
 
     return NextResponse.json({
       success: true,
