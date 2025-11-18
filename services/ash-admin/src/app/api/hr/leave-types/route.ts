@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch all leave types with filters
  * Requires: hr:view permission
  */
-export const GET = requirePermission('hr:view')(
+export const GET = requirePermission('hr:read')(
   async (request: NextRequest, user) => {
     try {
       const { searchParams } = new URL(request.url);
@@ -66,7 +66,7 @@ export const GET = requirePermission('hr:view')(
  * Create a new leave type
  * Requires: hr:manage permission
  */
-export const POST = requirePermission('hr:manage')(
+export const POST = requirePermission('hr:update')(
   async (request: NextRequest, user) => {
     try {
       const body = await request.json();

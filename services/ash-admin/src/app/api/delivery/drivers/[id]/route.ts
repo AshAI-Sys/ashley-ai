@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch a single driver by ID
  * Requires: delivery:view permission
  */
-export const GET = requirePermission('delivery:view')(
+export const GET = requirePermission('delivery:read')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -61,7 +61,7 @@ export const GET = requirePermission('delivery:view')(
  * Update driver information
  * Requires: delivery:manage permission
  */
-export const PATCH = requirePermission('delivery:manage')(
+export const PATCH = requirePermission('delivery:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -128,7 +128,7 @@ export const PATCH = requirePermission('delivery:manage')(
  * Delete/deactivate driver
  * Requires: delivery:manage permission
  */
-export const DELETE = requirePermission('delivery:manage')(
+export const DELETE = requirePermission('delivery:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;

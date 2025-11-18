@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch all drivers with filters
  * Requires: delivery:view permission
  */
-export const GET = requirePermission('delivery:view')(
+export const GET = requirePermission('delivery:read')(
   async (request: NextRequest, user) => {
     try {
       const { searchParams } = new URL(request.url);
@@ -81,7 +81,7 @@ export const GET = requirePermission('delivery:view')(
  * Create a new driver
  * Requires: delivery:manage permission
  */
-export const POST = requirePermission('delivery:manage')(
+export const POST = requirePermission('delivery:create')(
   async (request: NextRequest, user) => {
     try {
       const body = await request.json();

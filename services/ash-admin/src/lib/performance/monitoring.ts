@@ -238,8 +238,8 @@ export function logPerformanceSummary() {
   console.table(
     Object.keys(resourcesByType).map(type => ({
       Type: type,
-      Count: resourcesByType[type],
-      'Total Size': `${(resourceSizeByType[type] / 1024).toFixed(2)} KB`,
+      Count: resourcesByType[type] || 0,
+      'Total Size': `${((resourceSizeByType[type] || 0) / 1024).toFixed(2)} KB`,
     }))
   );
 

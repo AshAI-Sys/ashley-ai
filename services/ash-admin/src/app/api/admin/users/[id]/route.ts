@@ -47,7 +47,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     const targetUser = await prisma.user.findFirst({
       where: {
         id,
-        workspace_id: user.workspace_id || "default",
+        workspace_id: user.workspaceId || "default",
       },
       select: {
         id: true,
@@ -102,7 +102,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
     const existingUser = await prisma.user.findFirst({
       where: {
         id,
-        workspace_id: user.workspace_id || "default",
+        workspace_id: user.workspaceId || "default",
       },
     });
 
@@ -130,7 +130,7 @@ export const PUT = requireAnyPermission(["admin:update"])(async (
               ],
             },
           ],
-          workspace_id: user.workspace_id || "default",
+          workspace_id: user.workspaceId || "default",
         },
       });
 
@@ -239,7 +239,7 @@ export const DELETE = requireAnyPermission(["admin:delete"])(async (
     const existingUser = await prisma.user.findFirst({
       where: {
         id,
-        workspace_id: user.workspace_id || "default",
+        workspace_id: user.workspaceId || "default",
       },
     });
 

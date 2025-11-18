@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch employee benefits with filters
  * Requires: hr:view permission
  */
-export const GET = requirePermission('hr:view')(
+export const GET = requirePermission('hr:read')(
   async (request: NextRequest, user) => {
     try {
       const { searchParams } = new URL(request.url);
@@ -76,7 +76,7 @@ export const GET = requirePermission('hr:view')(
  * Enroll employee in a benefit
  * Requires: hr:manage permission
  */
-export const POST = requirePermission('hr:manage')(
+export const POST = requirePermission('hr:update')(
   async (request: NextRequest, user) => {
     try {
       const body = await request.json();

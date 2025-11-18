@@ -193,7 +193,7 @@ export default function InventoryHistoryPage() {
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <HydrationSafeIcon
-                icon={History}
+                Icon={History}
                 className="w-6 h-6 text-purple-600"
               />
             </div>

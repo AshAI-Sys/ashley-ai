@@ -27,7 +27,7 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   const overdue_only = searchParams.get("overdue_only");
 
   // SECURITY: Get user's workspace_id for data isolation
-  const workspaceId = _user.workspace_id || _user.workspaceId;
+  const workspaceId = _user.workspaceId || _user.workspaceId;
 
   // SECURITY: Start with workspace filter
   const where: any = {

@@ -88,7 +88,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
 
     // Use getAuditLogs utility for real data
     const result = await getAuditLogs({
-      workspaceId: user.workspace_id,
+      workspaceId: user.workspaceId,
       offset,
       limit,
       action: action && action !== "all" ? action : undefined,
@@ -121,7 +121,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     // Calculate summary statistics from real data
     const allLogs = await prisma.auditLog.findMany({
       where: {
-        workspace_id: user.workspace_id,
+        workspace_id: user.workspaceId,
       },
       orderBy: { created_at: 'desc' },
     });
@@ -373,7 +373,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
     // Create new audit log entry in DATABASE
     const newAuditLog = await prisma.auditLog.create({
       data: {
-        workspace_id: user.workspace_id,
+        workspace_id: user.workspaceId,
         user_id: user.id,
         action: validatedData.action,
         resource: "admin_action",

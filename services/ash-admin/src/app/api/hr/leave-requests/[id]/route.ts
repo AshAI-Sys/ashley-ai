@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch a single leave request by ID
  * Requires: hr:view permission
  */
-export const GET = requirePermission('hr:view')(
+export const GET = requirePermission('hr:read')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -67,7 +67,7 @@ export const GET = requirePermission('hr:view')(
  * Update leave request status (approve/reject) or edit details
  * Requires: hr:manage permission
  */
-export const PATCH = requirePermission('hr:manage')(
+export const PATCH = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -190,7 +190,7 @@ export const PATCH = requirePermission('hr:manage')(
  * Delete a leave request (only if PENDING)
  * Requires: hr:manage permission
  */
-export const DELETE = requirePermission('hr:manage')(
+export const DELETE = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;

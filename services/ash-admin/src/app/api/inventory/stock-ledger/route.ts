@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch stock ledger history with filters and pagination
  * Requires: inventory:view permission
  */
-export const GET = requirePermission('inventory:view')(
+export const GET = requirePermission('inventory:read')(
   async (request: NextRequest, user) => {
     try {
       const { searchParams } = new URL(request.url);
@@ -73,7 +73,8 @@ export const GET = requirePermission('inventory:view')(
               select: {
                 id: true,
                 email: true,
-                full_name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },

@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 export const GET = requireAuth(async (_request: NextRequest, _user) => {
   try {
     // SECURITY: Get user's workspace_id for data isolation
-    const workspaceId = _user.workspace_id || _user.workspaceId;
+    const workspaceId = _user.workspaceId || _user.workspaceId;
     const today = new Date();
     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
     const endOfToday = new Date(today.setHours(23, 59, 59, 999));

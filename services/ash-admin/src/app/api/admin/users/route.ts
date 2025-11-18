@@ -81,7 +81,7 @@ export const GET = requireAnyPermission(["admin:read"])(async (
     const status = searchParams.get("status") || "";
 
     const where: any = {
-      workspace_id: user.workspace_id || "default",
+      workspace_id: user.workspaceId || "default",
     };
 
     // Apply filters
@@ -170,7 +170,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
           { email: validatedData.email },
           { username: validatedData.username },
         ],
-        workspace_id: user.workspace_id || "default",
+        workspace_id: user.workspaceId || "default",
       },
     });
 
@@ -192,7 +192,7 @@ export const POST = requireAnyPermission(["admin:create"])(async (
       data: {
         ...validatedData,
         password_hash: hashedPassword,
-        workspace_id: user.workspace_id || "default",
+        workspace_id: user.workspaceId || "default",
       },
       select: {
         id: true,

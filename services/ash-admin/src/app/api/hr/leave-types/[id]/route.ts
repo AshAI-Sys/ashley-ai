@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Fetch a single leave type by ID
  * Requires: hr:view permission
  */
-export const GET = requirePermission('hr:view')(
+export const GET = requirePermission('hr:read')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -56,7 +56,7 @@ export const GET = requirePermission('hr:view')(
  * Update a leave type
  * Requires: hr:manage permission
  */
-export const PATCH = requirePermission('hr:manage')(
+export const PATCH = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -127,7 +127,7 @@ export const PATCH = requirePermission('hr:manage')(
  * Delete a leave type (soft delete by setting is_active = false)
  * Requires: hr:manage permission
  */
-export const DELETE = requirePermission('hr:manage')(
+export const DELETE = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;

@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Update employee benefit (e.g., change status to INACTIVE)
  * Requires: hr:manage permission
  */
-export const PATCH = requirePermission('hr:manage')(
+export const PATCH = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -74,7 +74,7 @@ export const PATCH = requirePermission('hr:manage')(
  * Delete employee benefit (set status to TERMINATED)
  * Requires: hr:manage permission
  */
-export const DELETE = requirePermission('hr:manage')(
+export const DELETE = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;

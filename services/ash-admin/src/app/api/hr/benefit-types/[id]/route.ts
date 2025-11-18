@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * Update a benefit type
  * Requires: hr:manage permission
  */
-export const PATCH = requirePermission('hr:manage')(
+export const PATCH = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;
@@ -65,7 +65,7 @@ export const PATCH = requirePermission('hr:manage')(
  * Delete a benefit type
  * Requires: hr:manage permission
  */
-export const DELETE = requirePermission('hr:manage')(
+export const DELETE = requirePermission('hr:update')(
   async (request: NextRequest, user, { params }: { params: { id: string } }) => {
     try {
       const workspace_id = user.workspaceId;

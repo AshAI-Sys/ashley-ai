@@ -27,7 +27,7 @@ export const POST = requireAuth(async (req: NextRequest, { user }: any) => {
 
     // Get or create workspace
     let workspace = await prisma.workspace.findFirst({
-      where: { id: user.workspace_id || user.workspaceId }
+      where: { id: user.workspaceId || user.workspaceId }
     });
 
     if (!workspace) {
