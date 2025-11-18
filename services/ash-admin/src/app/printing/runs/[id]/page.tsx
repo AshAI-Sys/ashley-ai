@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import {
   Card,
   CardContent,
@@ -30,15 +31,42 @@ import {
   Camera,
   Plus,
   Save,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import SilkscreenWorkflow from "@/components/printing/SilkscreenWorkflow";
-import SublimationWorkflow from "@/components/printing/SublimationWorkflow";
-import DTFWorkflow from "@/components/printing/DTFWorkflow";
-import EmbroideryWorkflow from "@/components/printing/EmbroideryWorkflow";
-import MaterialConsumption from "@/components/printing/MaterialConsumption";
-import AshleyAIOptimization from "@/components/printing/AshleyAIOptimization";
+
+// Lazy load heavy workflow components
+const WorkflowFallback = () => (
+  <div className="flex h-32 items-center justify-center">
+    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+  </div>
+);
+
+const SilkscreenWorkflow = dynamic(
+  () => import("@/components/printing/SilkscreenWorkflow"),
+  { loading: WorkflowFallback, ssr: false }
+);
+const SublimationWorkflow = dynamic(
+  () => import("@/components/printing/SublimationWorkflow"),
+  { loading: WorkflowFallback, ssr: false }
+);
+const DTFWorkflow = dynamic(
+  () => import("@/components/printing/DTFWorkflow"),
+  { loading: WorkflowFallback, ssr: false }
+);
+const EmbroideryWorkflow = dynamic(
+  () => import("@/components/printing/EmbroideryWorkflow"),
+  { loading: WorkflowFallback, ssr: false }
+);
+const MaterialConsumption = dynamic(
+  () => import("@/components/printing/MaterialConsumption"),
+  { loading: WorkflowFallback, ssr: false }
+);
+const AshleyAIOptimization = dynamic(
+  () => import("@/components/printing/AshleyAIOptimization"),
+  { loading: WorkflowFallback, ssr: false }
+);
 
 interface PrintRun {
   id: string;

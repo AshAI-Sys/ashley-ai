@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/dashboard-layout";
 import {
@@ -34,10 +35,23 @@ import {
   Palette, Brain,
   RefreshCw,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import AIInsightsDashboard from "@/components/printing/AIInsightsDashboard";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load heavy AI component
+const AIInsightsDashboard = dynamic(
+  () => import("@/components/printing/AIInsightsDashboard"),
+  {
+    loading: () => (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    ),
+    ssr: false,
+  }
+);
 import {
   DashboardStatsSkeleton,
   DataTableSkeleton,
