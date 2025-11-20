@@ -121,6 +121,16 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
                 },
               },
               line_items: true,
+              design_assets: {
+                include: {
+                  approvals: {
+                    orderBy: {
+                      created_at: "desc",
+                    },
+                    take: 1,
+                  },
+                },
+              },
               _count: {
                 select: {
                   line_items: true,
@@ -134,8 +144,54 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
           prisma.order.count({ where }),
         ]);
 
+        /* Calculate approval status for each order */
+        const ordersWithApprovalStatus = orders.map(order => {
+          let approvalStatus = "NO_DESIGNS"; // No designs yet
+          let hasApprovals = false;
+          let allApproved = true;
+          let anyPending = false;
+          let anyRejected = false;
+
+          if (order.design_assets && order.design_assets.length > 0) {
+            hasApprovals = true;
+
+            for (const asset of order.design_assets) {
+              if (asset.approvals && asset.approvals.length > 0) {
+                const latestApproval = asset.approvals[0];
+
+                if (latestApproval.status === "APPROVED") {
+                  continue; // This design is approved
+                } else if (latestApproval.status === "SENT" || latestApproval.status === "PENDING") {
+                  anyPending = true;
+                  allApproved = false;
+                } else if (latestApproval.status === "REJECTED" || latestApproval.status === "CHANGES_REQUESTED") {
+                  anyRejected = true;
+                  allApproved = false;
+                }
+              } else {
+                // Design exists but no approval sent yet
+                allApproved = false;
+                anyPending = true;
+              }
+            }
+
+            if (allApproved && hasApprovals) {
+              approvalStatus = "APPROVED";
+            } else if (anyRejected) {
+              approvalStatus = "REJECTED";
+            } else if (anyPending) {
+              approvalStatus = "PENDING";
+            }
+          }
+
+          return {
+            ...order,
+            approval_status: approvalStatus,
+          };
+        });
+
         return {
-          orders,
+          orders: ordersWithApprovalStatus,
           pagination: {
             page,
             limit,

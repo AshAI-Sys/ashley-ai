@@ -15,6 +15,10 @@ import {
   Package,
   RefreshCw,
   Download,
+  CheckCircle,
+  Clock,
+  XCircle,
+  FileQuestion,
 } from "lucide-react";
 import Link from "next/link";
 import DashboardLayout from "@/components/dashboard-layout";
@@ -32,6 +36,7 @@ interface Order {
   total_amount: number;
   delivery_date: string;
   created_at: string;
+  approval_status?: string;
   client: {
     id: string;
     name: string;
@@ -50,6 +55,7 @@ interface Order {
 export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [approvalFilter, setApprovalFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
   // Debounce search to reduce API calls
@@ -106,6 +112,39 @@ export default function OrdersPage() {
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getApprovalBadge = (approvalStatus?: string) => {
+    if (!approvalStatus) return null;
+
+    switch (approvalStatus) {
+      case "APPROVED":
+        return {
+          color: "bg-green-100 text-green-800 border-green-200",
+          icon: CheckCircle,
+          label: "Approved",
+        };
+      case "PENDING":
+        return {
+          color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+          icon: Clock,
+          label: "Pending Approval",
+        };
+      case "REJECTED":
+        return {
+          color: "bg-red-100 text-red-800 border-red-200",
+          icon: XCircle,
+          label: "Rejected",
+        };
+      case "NO_DESIGNS":
+        return {
+          color: "bg-gray-100 text-gray-600 border-gray-200",
+          icon: FileQuestion,
+          label: "No Design",
+        };
+      default:
+        return null;
     }
   };
 
@@ -175,7 +214,7 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="flex flex-shrink-0 items-center gap-2">
+              <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <select
                   value={statusFilter}
@@ -183,7 +222,7 @@ export default function OrdersPage() {
                     setStatusFilter(e.target.value);
                     setCurrentPage(1); // Reset to first page on filter change
                   }}
-                  className="h-10 min-w-0 flex-1 rounded-md border border-gray-200 px-3 py-2 text-sm sm:flex-none"
+                  className="h-10 min-w-0 flex-1 rounded-md border border-gray-200 px-3 py-2 text-sm sm:flex-none sm:min-w-[140px]"
                 >
                   <option value="all">All Status</option>
                   <option value="DRAFT">Draft</option>
@@ -196,6 +235,22 @@ export default function OrdersPage() {
                   <option value="DELIVERED">Delivered</option>
                   <option value="COMPLETED">Completed</option>
                   <option value="CANCELLED">Cancelled</option>
+                </select>
+
+                <select
+                  value={approvalFilter}
+                  onChange={e => {
+                    setApprovalFilter(e.target.value);
+                    setCurrentPage(1); // Reset to first page on filter change
+                  }}
+                  aria-label="Filter by approval status"
+                  className="h-10 min-w-0 flex-1 rounded-md border border-gray-200 px-3 py-2 text-sm sm:flex-none sm:min-w-[160px]"
+                >
+                  <option value="all">All Approvals</option>
+                  <option value="APPROVED">✓ Approved</option>
+                  <option value="PENDING">⏳ Pending Approval</option>
+                  <option value="REJECTED">✗ Rejected</option>
+                  <option value="NO_DESIGNS">No Design</option>
                 </select>
               </div>
             </div>
@@ -224,7 +279,13 @@ export default function OrdersPage() {
           <DataTableSkeleton rows={10} />
         ) : (
           <div className="grid gap-4">
-            {orders.map((order: any) => (
+            {orders.filter((order: any) => {
+              // Apply approval status filter
+              if (approvalFilter !== "all" && order.approval_status !== approvalFilter) {
+                return false;
+              }
+              return true;
+            }).map((order: any) => (
               <Card
                 key={order.id}
                 className="transition-shadow hover:shadow-md"
@@ -237,11 +298,24 @@ export default function OrdersPage() {
                         <h3 className="truncate text-lg font-semibold">
                           {order?.order_number || "Unknown Order"}
                         </h3>
-                        <Badge className={getStatusColor(order?.status)}>
-                          {order?.status
-                            ? order.status.replace("_", " ").toUpperCase()
-                            : "UNKNOWN"}
-                        </Badge>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge className={getStatusColor(order?.status)}>
+                            {order?.status
+                              ? order.status.replace("_", " ").toUpperCase()
+                              : "UNKNOWN"}
+                          </Badge>
+                          {(() => {
+                            const approvalBadge = getApprovalBadge(order?.approval_status);
+                            if (!approvalBadge) return null;
+                            const Icon = approvalBadge.icon;
+                            return (
+                              <Badge className={`${approvalBadge.color} flex items-center gap-1 border`}>
+                                <Icon className="h-3 w-3" />
+                                {approvalBadge.label}
+                              </Badge>
+                            );
+                          })()}
+                        </div>
                       </div>
 
                       {/* Details Grid - Optimized for mobile */}
@@ -335,7 +409,12 @@ export default function OrdersPage() {
               </Card>
             ))}
 
-            {orders.length === 0 && !isLoading && !isError && (
+            {orders.filter((order: any) => {
+              if (approvalFilter !== "all" && order.approval_status !== approvalFilter) {
+                return false;
+              }
+              return true;
+            }).length === 0 && !isLoading && !isError && (
               <EmptyState
                 icon={Package}
                 title="No orders found"
