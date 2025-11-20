@@ -1,16 +1,22 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const dynamic = "force-dynamic";
 
-// GET - Get single supplier
-export async function GET(
+/**
+ * GET /api/inventory/suppliers/[id]
+ * Get single supplier for authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
 
     const supplier = await prisma.supplier.findFirst({
       where: {
@@ -46,16 +52,21 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-// PUT - Update supplier
-export async function PUT(
+/**
+ * PUT /api/inventory/suppliers/[id]
+ * Update supplier in authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const PUT = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
     const body = await request.json();
 
     const {
@@ -118,16 +129,21 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
-// DELETE - Delete supplier
-export async function DELETE(
+/**
+ * DELETE /api/inventory/suppliers/[id]
+ * Delete supplier from authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const DELETE = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
 
     // Check if supplier exists
     const existing = await prisma.supplier.findFirst({
@@ -173,4 +189,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

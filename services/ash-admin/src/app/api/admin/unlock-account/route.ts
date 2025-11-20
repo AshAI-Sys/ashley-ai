@@ -2,57 +2,53 @@
  * Admin Endpoint: Unlock Account
  *
  * POST /api/admin/unlock-account
- * Body: { email: string, adminPassword: string }
+ * Body: { email: string }
  *
  * Emergency endpoint to unlock rate-limited accounts
- * SECURITY: Requires ADMIN_UNLOCK_PASSWORD environment variable
+ * SECURITY: Requires admin:update permission via RBAC
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { unlockAccount, isAccountLocked } from '@/lib/account-lockout';
 import { authLogger } from '@/lib/logger';
+import { requirePermission } from '@/lib/auth-middleware';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Emergency admin password (MUST be set in environment - no fallback for security)
-const ADMIN_PASSWORD = process.env.ADMIN_UNLOCK_PASSWORD;
-
-if (!ADMIN_PASSWORD) {
-  throw new Error(
-    'ADMIN_UNLOCK_PASSWORD environment variable is required for admin unlock functionality. ' +
-    'This is a security requirement - no default password is permitted.'
-  );
-}
-
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/admin/unlock-account
+ * Unlock a locked user account
+ * SECURITY: Requires admin:update permission
+ */
+export const POST = requirePermission("admin:update")(async (request: NextRequest, admin) => {
   try {
     const body = await request.json();
-    const { email, adminPassword } = body;
+    const { email } = body;
 
-    // Validate inputs
-    if (!email || !adminPassword) {
+    // Validate input
+    if (!email) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Email and admin password are required',
+          error: 'Email is required',
         },
         { status: 400 }
       );
     }
 
-    // Verify admin password
-    if (adminPassword !== ADMIN_PASSWORD) {
-      // Log security event without exposing email in production
-      authLogger.warn('Invalid admin password attempt for account unlock', {
-        timestamp: new Date().toISOString(),
+    // Prevent admins from unlocking their own account (use password reset instead)
+    if (email === admin.email) {
+      authLogger.warn('Admin attempted to unlock own account', {
+        adminId: admin.id,
+        adminEmail: admin.email,
         ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       });
 
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid admin password',
+          error: 'Cannot unlock your own account. Use password reset instead.',
         },
         { status: 403 }
       );
@@ -62,16 +58,20 @@ export async function POST(request: NextRequest) {
     const statusBefore = await isAccountLocked(email);
 
     // Unlock the account
-    await unlockAccount(email, 'admin-api');
+    await unlockAccount(email, 'admin-rbac');
 
     // Verify unlock succeeded
     const statusAfter = await isAccountLocked(email);
 
-    // Log admin action securely (no PII in production logs)
-    authLogger.info('Account unlocked via admin API', {
-      timestamp: new Date().toISOString(),
+    // Log admin action with full audit trail
+    authLogger.info('Account unlocked via admin RBAC', {
+      adminId: admin.id,
+      adminEmail: admin.email,
+      targetEmail: email,
       wasLocked: statusBefore.isLocked,
       previousAttempts: statusBefore.failedAttempts,
+      timestamp: new Date().toISOString(),
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
     });
 
     return NextResponse.json(
@@ -79,6 +79,10 @@ export async function POST(request: NextRequest) {
         success: true,
         message: 'Account unlocked successfully',
         email,
+        unlockedBy: {
+          id: admin.id,
+          email: admin.email,
+        },
         statusBefore: {
           isLocked: statusBefore.isLocked,
           failedAttempts: statusBefore.failedAttempts,
@@ -96,7 +100,10 @@ export async function POST(request: NextRequest) {
     authLogger.error(
       'Error unlocking account',
       error instanceof Error ? error : undefined,
-      { timestamp: new Date().toISOString() }
+      {
+        adminId: admin.id,
+        timestamp: new Date().toISOString()
+      }
     );
 
     return NextResponse.json(
@@ -111,52 +118,49 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// GET endpoint to check lockout status
-// SECURITY: Admin password MUST be sent via X-Admin-Password header, NOT URL parameters
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/admin/unlock-account?email={email}
+ * Check account lockout status
+ * SECURITY: Requires admin:read permission
+ */
+export const GET = requirePermission("admin:read")(async (request: NextRequest, admin) => {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
 
-    // Get admin password from header (NEVER from URL for security)
-    const adminPassword = request.headers.get('X-Admin-Password');
-
-    if (!email || !adminPassword) {
+    if (!email) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Email and admin password (via X-Admin-Password header) are required',
+          error: 'Email is required',
         },
         { status: 400 }
-      );
-    }
-
-    // Verify admin password
-    if (adminPassword !== ADMIN_PASSWORD) {
-      authLogger.warn('Invalid admin password attempt for lockout status check', {
-        timestamp: new Date().toISOString(),
-        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid admin password',
-        },
-        { status: 403 }
       );
     }
 
     // Get lockout status
     const status = await isAccountLocked(email);
 
+    // Log status check for audit trail
+    authLogger.info('Account lockout status checked', {
+      adminId: admin.id,
+      adminEmail: admin.email,
+      targetEmail: email,
+      isLocked: status.isLocked,
+      timestamp: new Date().toISOString(),
+    });
+
     return NextResponse.json(
       {
         success: true,
         email,
         status,
+        checkedBy: {
+          id: admin.id,
+          email: admin.email,
+        },
       },
       { status: 200 }
     );
@@ -164,7 +168,10 @@ export async function GET(request: NextRequest) {
     authLogger.error(
       'Error checking account lockout status',
       error instanceof Error ? error : undefined,
-      { timestamp: new Date().toISOString() }
+      {
+        adminId: admin.id,
+        timestamp: new Date().toISOString()
+      }
     );
 
     return NextResponse.json(
@@ -178,4 +185,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

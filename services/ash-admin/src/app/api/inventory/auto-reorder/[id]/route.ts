@@ -1,16 +1,22 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const dynamic = "force-dynamic";
 
-// GET - Get single auto-reorder setting
-export async function GET(
+/**
+ * GET /api/inventory/auto-reorder/[id]
+ * Get single auto-reorder setting for authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
 
     const setting = await prisma.autoReorderSetting.findFirst({
       where: {
@@ -57,16 +63,21 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-// PUT - Update auto-reorder setting
-export async function PUT(
+/**
+ * PUT /api/inventory/auto-reorder/[id]
+ * Update auto-reorder setting in authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const PUT = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
     const body = await request.json();
 
     const {
@@ -140,16 +151,21 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
-// DELETE - Delete auto-reorder setting
-export async function DELETE(
+/**
+ * DELETE /api/inventory/auto-reorder/[id]
+ * Delete auto-reorder setting from authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const DELETE = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
 
     // Check if setting exists
     const existing = await prisma.autoReorderSetting.findFirst({
@@ -179,4 +195,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});

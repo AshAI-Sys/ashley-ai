@@ -1,16 +1,22 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const dynamic = "force-dynamic";
 
-// GET - Get single purchase order
-export async function GET(
+/**
+ * GET /api/inventory/purchase-orders/[id]
+ * Get single purchase order for authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const GET = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
 
     const purchaseOrder = await prisma.purchaseOrder.findFirst({
       where: {
@@ -58,16 +64,21 @@ export async function GET(
       { status: 500 }
     );
   }
-}
+});
 
-// PUT - Update purchase order
-export async function PUT(
+/**
+ * PUT /api/inventory/purchase-orders/[id]
+ * Update purchase order in authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const PUT = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
     const body = await request.json();
 
     const { status, expected_delivery, notes, payment_status } = body;
@@ -111,16 +122,21 @@ export async function PUT(
       { status: 500 }
     );
   }
-}
+});
 
-// DELETE - Delete purchase order
-export async function DELETE(
+/**
+ * DELETE /api/inventory/purchase-orders/[id]
+ * Delete purchase order from authenticated user's workspace
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const DELETE = requireAuth(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  user,
+  context?: { params: { id: string } }
+) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const { id } = params;
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const { id } = context!.params;
 
     // Check if purchase order exists
     const existing = await prisma.purchaseOrder.findFirst({
@@ -161,4 +177,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-}
+});
