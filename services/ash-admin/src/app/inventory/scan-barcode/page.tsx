@@ -25,18 +25,29 @@ export default function ScanBarcodePage() {
     // API lookup
     try {
       const response = await fetch(`/api/inventory/lookup?code=${encodeURIComponent(code)}`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to lookup material: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
 
-      if (data.success && data.material) {
-        setLookupResult(data.material);
-        setSuccess(`Material found: ${data.material.name || code}`);
+      if (data.success && (data.product || data.bundle || data.finished_unit)) {
+        const item = data.product || data.bundle || data.finished_unit;
+        setLookupResult(item);
+        const itemName = data.type === 'product'
+          ? item.name
+          : data.type === 'bundle'
+            ? `Bundle ${item.qr_code} (Size: ${item.size_code}, Qty: ${item.qty})`
+            : `SKU: ${item.sku}`;
+        setSuccess(`${data.type === 'product' ? 'Product' : data.type === 'bundle' ? 'Bundle' : 'Finished Unit'} found: ${itemName}`);
       } else {
-        setError("Material not found in inventory");
+        setError(data.message || "Item not found in inventory");
         setLookupResult(null);
       }
     } catch (err) {
       console.error("Lookup error:", err);
-      setError("Failed to look up material");
+      setError(err instanceof Error ? err.message : "Failed to look up item");
       setLookupResult(null);
     }
   };

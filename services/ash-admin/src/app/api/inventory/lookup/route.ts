@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAuth } from "@/lib/auth-guards";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // GET /api/inventory/lookup?code={barcode/sku/qr}
 // Lookup material or product by barcode, SKU, or QR code
-export async function GET(req: NextRequest) {
-  return requireAuth(req, async (user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
     try {
       const { searchParams } = new URL(req.url);
       const code = searchParams.get("code");
@@ -17,17 +16,13 @@ export async function GET(req: NextRequest) {
         );
       }
 
-      const workspaceId = user.workspace_id || user.workspaceId;
+      const workspaceId = user.workspaceId;
 
       // Search in inventory products first
       const product = await prisma.inventoryProduct.findFirst({
         where: {
           workspace_id: workspaceId,
-          OR: [
-            { barcode: code },
-            { sku: code },
-            { qr_code: code },
-          ],
+          base_sku: code,
         },
         include: {
           category: true,
@@ -43,16 +38,13 @@ export async function GET(req: NextRequest) {
           product: {
             id: product.id,
             name: product.name,
-            sku: product.sku,
-            barcode: product.barcode,
-            qr_code: product.qr_code,
-            current_stock: product.current_stock,
-            reorder_point: product.reorder_point,
-            unit_price: product.unit_price,
+            base_sku: product.base_sku,
+            description: product.description,
             category: product.category?.name,
             brand: product.brand?.name,
             variants: product.variants,
-            image_url: product.image_url,
+            photo_url: product.photo_url,
+            is_active: product.is_active,
           },
         });
       }
@@ -83,9 +75,9 @@ export async function GET(req: NextRequest) {
           type: "bundle",
           bundle: {
             id: bundle.id,
-            bundle_number: bundle.bundle_number,
             qr_code: bundle.qr_code,
-            total_pieces: bundle.total_pieces,
+            size_code: bundle.size_code,
+            qty: bundle.qty,
             status: bundle.status,
             order_number: bundle.lay?.order?.order_number,
             client_name: bundle.lay?.order?.client?.name,
@@ -97,10 +89,7 @@ export async function GET(req: NextRequest) {
       const finishedUnit = await prisma.finishedUnit.findFirst({
         where: {
           workspace_id: workspaceId,
-          OR: [
-            { sku: code },
-            { barcode: code },
-          ],
+          sku: code,
         },
       });
 
@@ -111,13 +100,14 @@ export async function GET(req: NextRequest) {
           finished_unit: {
             id: finishedUnit.id,
             sku: finishedUnit.sku,
-            barcode: finishedUnit.barcode,
-            size: finishedUnit.size,
+            size_code: finishedUnit.size_code,
             color: finishedUnit.color,
-            quantity: finishedUnit.quantity,
-            status: finishedUnit.status,
+            category: finishedUnit.category,
+            brand: finishedUnit.brand,
             product_image_url: finishedUnit.product_image_url,
             crate_number: finishedUnit.crate_number,
+            price: finishedUnit.price?.toString(),
+            sale_price: finishedUnit.sale_price?.toString(),
           },
         });
       }
@@ -140,5 +130,4 @@ export async function GET(req: NextRequest) {
         { status: 500 }
       );
     }
-  });
-}
+});

@@ -2543,12 +2543,12 @@ model FinishedUnit {
   size_code         String
   color             String?
   serial            String?
-  product_image_url String?          // Product photo for inventory display
-  crate_number      String?          // Storage location (e.g., "α16", "G-9")
-  category          String?          // Product category (e.g., "T-SHIRT", "POLO")
-  brand             String?          // Brand name (e.g., "Reefer's Inn", "Nike", "Adidas")
-  price             Decimal?         @db.Decimal(10, 2) // Product price
-  sale_price        Decimal?         @db.Decimal(10, 2) // Sale/discounted price
+  product_image_url String? // Product photo for inventory display
+  crate_number      String? // Storage location (e.g., "α16", "G-9")
+  category          String? // Product category (e.g., "T-SHIRT", "POLO")
+  brand             String? // Brand name (e.g., "Reefer's Inn", "Nike", "Adidas")
+  price             Decimal?        @db.Decimal(10, 2) // Product price
+  sale_price        Decimal?        @db.Decimal(10, 2) // Sale/discounted price
   packed            Boolean         @default(false)
   created_at        DateTime        @default(now())
   carton_contents   CartonContent[]
@@ -2954,7 +2954,6 @@ model CustomerSegment {
 
   @@map("customer_segments")
 }
-
 
 model AutomationRule {
   id              String                @id @default(cuid())
@@ -3658,20 +3657,20 @@ model AutoReorderSetting {
 
 // Product Categories (for inventory classification)
 model Category {
-  id           String             @id @default(cuid())
-  workspace_id String
-  name         String // e.g., "T-Shirts", "Polo", "Pants"
-  code         String? // e.g., "TSHIRT", "POLO"
-  description  String?
-  parent_id    String? // For sub-categories
-  is_active    Boolean            @default(true)
-  created_at   DateTime           @default(now())
-  updated_at   DateTime           @updatedAt
-  workspace    Workspace          @relation(fields: [workspace_id], references: [id])
-  parent       Category?          @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
-  subcategories Category[]        @relation("CategoryHierarchy")
-  products     InventoryProduct[]
-  qr_codes     QRCode[]
+  id            String             @id @default(cuid())
+  workspace_id  String
+  name          String // e.g., "T-Shirts", "Polo", "Pants"
+  code          String? // e.g., "TSHIRT", "POLO"
+  description   String?
+  parent_id     String? // For sub-categories
+  is_active     Boolean            @default(true)
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
+  workspace     Workspace          @relation(fields: [workspace_id], references: [id])
+  parent        Category?          @relation("CategoryHierarchy", fields: [parent_id], references: [id], onDelete: SetNull)
+  subcategories Category[]         @relation("CategoryHierarchy")
+  products      InventoryProduct[]
+  qr_codes      QRCode[]
 
   @@unique([workspace_id, name])
   @@index([workspace_id])
@@ -3812,9 +3811,9 @@ model StockLedger {
 // QR Code Management System
 // Tracks QR code generation, printing, and assignment
 model QRCode {
-  id               String           @id @default(cuid())
+  id               String            @id @default(cuid())
   workspace_id     String
-  qr_code          String           @unique // The actual QR code data/URL
+  qr_code          String            @unique // The actual QR code data/URL
   qr_type          String // PRODUCT, VARIANT, BUNDLE, BATCH
   product_id       String?
   variant_id       String?
@@ -3823,24 +3822,24 @@ model QRCode {
   batch_id         String? // For batch printing tracking
   order_id         String? // For order-first workflow
   workflow_type    String // INVENTORY_FIRST, ORDER_FIRST
-  status           String           @default("GENERATED") // GENERATED, PRINTED, ASSIGNED, SCANNED, INACTIVE
-  print_count      Int              @default(0) // Track how many times printed
+  status           String            @default("GENERATED") // GENERATED, PRINTED, ASSIGNED, SCANNED, INACTIVE
+  print_count      Int               @default(0) // Track how many times printed
   first_scanned_at DateTime?
   last_scanned_at  DateTime?
-  scan_count       Int              @default(0)
+  scan_count       Int               @default(0)
   generated_by     String?
   notes            String?
   metadata         String? // JSON for additional data
-  is_active        Boolean          @default(true)
-  created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
-  workspace        Workspace        @relation(fields: [workspace_id], references: [id])
+  is_active        Boolean           @default(true)
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  workspace        Workspace         @relation(fields: [workspace_id], references: [id])
   product          InventoryProduct? @relation(fields: [product_id], references: [id], onDelete: SetNull)
-  variant          ProductVariant?  @relation("QRCodeVariant", fields: [variant_id], references: [id], onDelete: SetNull)
-  category         Category?        @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  brand            InventoryBrand?  @relation(fields: [brand_id], references: [id], onDelete: SetNull)
-  order            Order?           @relation(fields: [order_id], references: [id], onDelete: SetNull)
-  generator        User?            @relation("QRCodeGenerator", fields: [generated_by], references: [id])
+  variant          ProductVariant?   @relation("QRCodeVariant", fields: [variant_id], references: [id], onDelete: SetNull)
+  category         Category?         @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  brand            InventoryBrand?   @relation(fields: [brand_id], references: [id], onDelete: SetNull)
+  order            Order?            @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  generator        User?             @relation("QRCodeGenerator", fields: [generated_by], references: [id])
 
   @@index([workspace_id])
   @@index([workspace_id, status])
@@ -3861,7 +3860,7 @@ model QRCode {
 model RetailSale {
   id              String           @id @default(cuid())
   workspace_id    String
-  location_id     String?          // Store location where sale occurred
+  location_id     String? // Store location where sale occurred
   sale_number     String
   sale_date       DateTime         @default(now())
   subtotal        Float
@@ -3871,8 +3870,8 @@ model RetailSale {
   payment_method  String // CASH, CARD, GCASH, etc.
   payment_status  String           @default("PAID") // PAID, PENDING, CANCELLED
   cashier_id      String?
-  amount_paid     Float?           // Amount paid by customer
-  change_given    Float?           // Change given to customer
+  amount_paid     Float? // Amount paid by customer
+  change_given    Float? // Change given to customer
   notes           String?
   created_at      DateTime         @default(now())
   updated_at      DateTime         @updatedAt
@@ -3953,26 +3952,26 @@ model WarehouseDeliveryItem {
 
 // Mobile App Sessions
 model MobileSession {
-  id                 String    @id @default(cuid())
-  workspace_id       String
-  user_id            String
-  session_token      String    @unique
-  device_platform    String    // 'ios' | 'android'
-  device_model       String?
-  device_os_version  String?
-  app_version        String
-  fcm_token          String?   // Firebase Cloud Messaging token for push notifications
-  ip_address         String?
-  location           String?   // Optional location info
-  status             String    @default("active") // 'active' | 'expired' | 'revoked'
-  started_at         DateTime  @default(now())
-  last_activity_at   DateTime  @default(now())
-  expires_at         DateTime
-  ended_at           DateTime?
-  created_at         DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
-  workspace          Workspace @relation(fields: [workspace_id], references: [id])
-  user               User      @relation("MobileSessions", fields: [user_id], references: [id])
+  id                String    @id @default(cuid())
+  workspace_id      String
+  user_id           String
+  session_token     String    @unique
+  device_platform   String // 'ios' | 'android'
+  device_model      String?
+  device_os_version String?
+  app_version       String
+  fcm_token         String? // Firebase Cloud Messaging token for push notifications
+  ip_address        String?
+  location          String? // Optional location info
+  status            String    @default("active") // 'active' | 'expired' | 'revoked'
+  started_at        DateTime  @default(now())
+  last_activity_at  DateTime  @default(now())
+  expires_at        DateTime
+  ended_at          DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  workspace         Workspace @relation(fields: [workspace_id], references: [id])
+  user              User      @relation("MobileSessions", fields: [user_id], references: [id])
 
   @@index([workspace_id])
   @@index([user_id])
@@ -4000,20 +3999,20 @@ model SystemSettings {
 
 // Leave Types (Sick, Vacation, Maternity, etc.)
 model LeaveType {
-  id                 String          @id @default(cuid())
-  workspace_id       String
-  name               String          // 'Sick Leave', 'Vacation Leave', 'Maternity Leave', etc.
-  code               String          // 'SL', 'VL', 'ML', etc.
-  days_per_year      Float
-  is_paid            Boolean         @default(true)
-  requires_proof     Boolean         @default(false)
-  description        String?
-  is_active          Boolean         @default(true)
-  created_at         DateTime        @default(now())
-  updated_at         DateTime        @updatedAt
-  workspace          Workspace       @relation(fields: [workspace_id], references: [id])
-  leave_requests     LeaveRequest[]
-  leave_balances     LeaveBalance[]
+  id             String         @id @default(cuid())
+  workspace_id   String
+  name           String // 'Sick Leave', 'Vacation Leave', 'Maternity Leave', etc.
+  code           String // 'SL', 'VL', 'ML', etc.
+  days_per_year  Float
+  is_paid        Boolean        @default(true)
+  requires_proof Boolean        @default(false)
+  description    String?
+  is_active      Boolean        @default(true)
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  workspace      Workspace      @relation(fields: [workspace_id], references: [id])
+  leave_requests LeaveRequest[]
+  leave_balances LeaveBalance[]
 
   @@unique([workspace_id, code])
   @@index([workspace_id])
@@ -4023,25 +4022,25 @@ model LeaveType {
 
 // Employee Leave Requests
 model LeaveRequest {
-  id                String      @id @default(cuid())
-  workspace_id      String
-  employee_id       String
-  leave_type_id     String
-  start_date        DateTime
-  end_date          DateTime
-  days_requested    Float
-  reason            String      @db.Text
-  proof_document    String?     // URL to uploaded proof (medical cert, etc.)
-  status            String      @default("PENDING") // 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
-  approved_by       String?
-  approved_at       DateTime?
-  rejection_reason  String?
-  created_at        DateTime    @default(now())
-  updated_at        DateTime    @updatedAt
-  employee          Employee    @relation(fields: [employee_id], references: [id])
-  leave_type        LeaveType   @relation(fields: [leave_type_id], references: [id])
-  workspace         Workspace   @relation(fields: [workspace_id], references: [id])
-  approver          User?       @relation("LeaveRequestApprover", fields: [approved_by], references: [id])
+  id               String    @id @default(cuid())
+  workspace_id     String
+  employee_id      String
+  leave_type_id    String
+  start_date       DateTime
+  end_date         DateTime
+  days_requested   Float
+  reason           String    @db.Text
+  proof_document   String? // URL to uploaded proof (medical cert, etc.)
+  status           String    @default("PENDING") // 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED'
+  approved_by      String?
+  approved_at      DateTime?
+  rejection_reason String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+  employee         Employee  @relation(fields: [employee_id], references: [id])
+  leave_type       LeaveType @relation(fields: [leave_type_id], references: [id])
+  workspace        Workspace @relation(fields: [workspace_id], references: [id])
+  approver         User?     @relation("LeaveRequestApprover", fields: [approved_by], references: [id])
 
   @@index([workspace_id])
   @@index([workspace_id, employee_id])
@@ -4055,20 +4054,20 @@ model LeaveRequest {
 
 // Employee Leave Balances
 model LeaveBalance {
-  id                 String     @id @default(cuid())
-  workspace_id       String
-  employee_id        String
-  leave_type_id      String
-  year               Int
-  total_days         Float      // Allocated days for the year
-  used_days          Float      @default(0)
-  remaining_days     Float      // Calculated: total_days - used_days
-  carried_over_days  Float      @default(0) // Days carried from previous year
-  created_at         DateTime   @default(now())
-  updated_at         DateTime   @updatedAt
-  employee           Employee   @relation(fields: [employee_id], references: [id])
-  leave_type         LeaveType  @relation(fields: [leave_type_id], references: [id])
-  workspace          Workspace  @relation(fields: [workspace_id], references: [id])
+  id                String    @id @default(cuid())
+  workspace_id      String
+  employee_id       String
+  leave_type_id     String
+  year              Int
+  total_days        Float // Allocated days for the year
+  used_days         Float     @default(0)
+  remaining_days    Float // Calculated: total_days - used_days
+  carried_over_days Float     @default(0) // Days carried from previous year
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  employee          Employee  @relation(fields: [employee_id], references: [id])
+  leave_type        LeaveType @relation(fields: [leave_type_id], references: [id])
+  workspace         Workspace @relation(fields: [workspace_id], references: [id])
 
   @@unique([workspace_id, employee_id, leave_type_id, year])
   @@index([workspace_id])
@@ -4085,19 +4084,19 @@ model LeaveBalance {
 
 // Benefit Types (Health Insurance, SSS, PhilHealth, Pag-IBIG, etc.)
 model BenefitType {
-  id                      String             @id @default(cuid())
+  id                      String            @id @default(cuid())
   workspace_id            String
-  name                    String             // 'Health Insurance', 'SSS', 'PhilHealth', 'Pag-IBIG', etc.
-  code                    String             // 'HI', 'SSS', 'PH', 'HDMF', etc.
-  description             String?            @db.Text
-  employee_contribution   Float?             // Monthly employee contribution amount
-  employer_contribution   Float?             // Monthly employer contribution amount
-  contribution_percentage Float?             // Percentage of salary (if applicable)
-  is_mandatory            Boolean            @default(false) // Government mandated benefits
-  is_active               Boolean            @default(true)
-  created_at              DateTime           @default(now())
-  updated_at              DateTime           @updatedAt
-  workspace               Workspace          @relation(fields: [workspace_id], references: [id])
+  name                    String // 'Health Insurance', 'SSS', 'PhilHealth', 'Pag-IBIG', etc.
+  code                    String // 'HI', 'SSS', 'PH', 'HDMF', etc.
+  description             String?           @db.Text
+  employee_contribution   Float? // Monthly employee contribution amount
+  employer_contribution   Float? // Monthly employer contribution amount
+  contribution_percentage Float? // Percentage of salary (if applicable)
+  is_mandatory            Boolean           @default(false) // Government mandated benefits
+  is_active               Boolean           @default(true)
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+  workspace               Workspace         @relation(fields: [workspace_id], references: [id])
   employee_benefits       EmployeeBenefit[]
 
   @@unique([workspace_id, code])
@@ -4109,23 +4108,23 @@ model BenefitType {
 
 // Employee Benefit Enrollments
 model EmployeeBenefit {
-  id                    String       @id @default(cuid())
+  id                    String      @id @default(cuid())
   workspace_id          String
   employee_id           String
   benefit_type_id       String
   enrollment_date       DateTime
   effective_start_date  DateTime
   effective_end_date    DateTime?
-  employee_contribution Float        // Actual monthly contribution
-  employer_contribution Float        // Actual monthly contribution
-  policy_number         String?      // For insurance policies
-  status                String       @default("ACTIVE") // 'ACTIVE' | 'SUSPENDED' | 'TERMINATED'
-  notes                 String?      @db.Text
-  created_at            DateTime     @default(now())
-  updated_at            DateTime     @updatedAt
-  employee              Employee     @relation(fields: [employee_id], references: [id])
-  benefit_type          BenefitType  @relation(fields: [benefit_type_id], references: [id])
-  workspace             Workspace    @relation(fields: [workspace_id], references: [id])
+  employee_contribution Float // Actual monthly contribution
+  employer_contribution Float // Actual monthly contribution
+  policy_number         String? // For insurance policies
+  status                String      @default("ACTIVE") // 'ACTIVE' | 'SUSPENDED' | 'TERMINATED'
+  notes                 String?     @db.Text
+  created_at            DateTime    @default(now())
+  updated_at            DateTime    @updatedAt
+  employee              Employee    @relation(fields: [employee_id], references: [id])
+  benefit_type          BenefitType @relation(fields: [benefit_type_id], references: [id])
+  workspace             Workspace   @relation(fields: [workspace_id], references: [id])
 
   @@unique([workspace_id, employee_id, benefit_type_id])
   @@index([workspace_id])
@@ -4143,33 +4142,33 @@ model EmployeeBenefit {
 
 // Drivers
 model Driver {
-  id                    String               @id @default(cuid())
-  workspace_id          String
-  driver_code           String               // Unique driver identifier (e.g., DRV-001)
-  user_id               String?              // Link to User account (if driver has portal access)
-  first_name            String
-  last_name             String
-  phone_number          String
-  email                 String?
-  license_number        String
-  license_expiry        DateTime
-  vehicle_type          String               // 'MOTORCYCLE' | 'VAN' | 'TRUCK'
-  vehicle_plate_number  String
-  vehicle_model         String?
-  employment_type       String               @default("FULL_TIME") // 'FULL_TIME' | 'PART_TIME' | 'CONTRACTOR'
-  status                String               @default("ACTIVE") // 'ACTIVE' | 'ON_LEAVE' | 'SUSPENDED' | 'TERMINATED'
-  date_hired            DateTime
-  date_terminated       DateTime?
-  profile_photo_url     String?
-  emergency_contact     String?
-  emergency_phone       String?
-  notes                 String?              @db.Text
-  created_at            DateTime             @default(now())
-  updated_at            DateTime             @updatedAt
-  workspace             Workspace            @relation(fields: [workspace_id], references: [id])
-  user                  User?                @relation("DriverUser", fields: [user_id], references: [id])
-  driver_assignments    DriverAssignment[]
-  driver_performances   DriverPerformance[]
+  id                   String              @id @default(cuid())
+  workspace_id         String
+  driver_code          String // Unique driver identifier (e.g., DRV-001)
+  user_id              String? // Link to User account (if driver has portal access)
+  first_name           String
+  last_name            String
+  phone_number         String
+  email                String?
+  license_number       String
+  license_expiry       DateTime
+  vehicle_type         String // 'MOTORCYCLE' | 'VAN' | 'TRUCK'
+  vehicle_plate_number String
+  vehicle_model        String?
+  employment_type      String              @default("FULL_TIME") // 'FULL_TIME' | 'PART_TIME' | 'CONTRACTOR'
+  status               String              @default("ACTIVE") // 'ACTIVE' | 'ON_LEAVE' | 'SUSPENDED' | 'TERMINATED'
+  date_hired           DateTime
+  date_terminated      DateTime?
+  profile_photo_url    String?
+  emergency_contact    String?
+  emergency_phone      String?
+  notes                String?             @db.Text
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+  workspace            Workspace           @relation(fields: [workspace_id], references: [id])
+  user                 User?               @relation("DriverUser", fields: [user_id], references: [id])
+  driver_assignments   DriverAssignment[]
+  driver_performances  DriverPerformance[]
 
   @@unique([workspace_id, driver_code])
   @@unique([workspace_id, license_number])
@@ -4182,24 +4181,24 @@ model Driver {
 
 // Driver Delivery Assignments
 model DriverAssignment {
-  id                String    @id @default(cuid())
-  workspace_id      String
-  delivery_id       String
-  driver_id         String
-  assigned_at       DateTime  @default(now())
-  pickup_scheduled  DateTime
+  id                 String    @id @default(cuid())
+  workspace_id       String
+  delivery_id        String
+  driver_id          String
+  assigned_at        DateTime  @default(now())
+  pickup_scheduled   DateTime
   delivery_scheduled DateTime
-  actual_pickup     DateTime?
-  actual_delivery   DateTime?
-  status            String    @default("ASSIGNED") // 'ASSIGNED' | 'PICKED_UP' | 'IN_TRANSIT' | 'DELIVERED' | 'FAILED' | 'CANCELLED'
-  current_location  String?   // GPS coordinates or address
-  distance_km       Float?
-  notes             String?   @db.Text
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
-  delivery          Delivery  @relation(fields: [delivery_id], references: [id])
-  driver            Driver    @relation(fields: [driver_id], references: [id])
-  workspace         Workspace @relation(fields: [workspace_id], references: [id])
+  actual_pickup      DateTime?
+  actual_delivery    DateTime?
+  status             String    @default("ASSIGNED") // 'ASSIGNED' | 'PICKED_UP' | 'IN_TRANSIT' | 'DELIVERED' | 'FAILED' | 'CANCELLED'
+  current_location   String? // GPS coordinates or address
+  distance_km        Float?
+  notes              String?   @db.Text
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+  delivery           Delivery  @relation(fields: [delivery_id], references: [id])
+  driver             Driver    @relation(fields: [driver_id], references: [id])
+  workspace          Workspace @relation(fields: [workspace_id], references: [id])
 
   @@index([workspace_id])
   @@index([workspace_id, driver_id])
@@ -4214,31 +4213,31 @@ model DriverAssignment {
 
 // Driver Performance Metrics
 model DriverPerformance {
-  id                      String    @id @default(cuid())
-  workspace_id            String
-  driver_id               String
-  period_start            DateTime
-  period_end              DateTime
-  total_deliveries        Int       @default(0)
-  successful_deliveries   Int       @default(0)
-  failed_deliveries       Int       @default(0)
-  average_rating          Float?    // Customer ratings (1-5)
-  total_distance_km       Float     @default(0)
-  on_time_percentage      Float     @default(0)
-  average_delivery_time   Float?    // In minutes
-  fuel_consumption        Float?    // Liters
-  fuel_cost               Float?    // Total fuel cost
-  maintenance_cost        Float?    // Vehicle maintenance
-  total_earnings          Float     @default(0)
-  bonus_earned            Float     @default(0)
-  violations_count        Int       @default(0) // Traffic violations, incidents, etc.
-  customer_complaints     Int       @default(0)
-  performance_score       Float?    // Overall score (0-100)
-  notes                   String?   @db.Text
-  created_at              DateTime  @default(now())
-  updated_at              DateTime  @updatedAt
-  driver                  Driver    @relation(fields: [driver_id], references: [id])
-  workspace               Workspace @relation(fields: [workspace_id], references: [id])
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  driver_id             String
+  period_start          DateTime
+  period_end            DateTime
+  total_deliveries      Int       @default(0)
+  successful_deliveries Int       @default(0)
+  failed_deliveries     Int       @default(0)
+  average_rating        Float? // Customer ratings (1-5)
+  total_distance_km     Float     @default(0)
+  on_time_percentage    Float     @default(0)
+  average_delivery_time Float? // In minutes
+  fuel_consumption      Float? // Liters
+  fuel_cost             Float? // Total fuel cost
+  maintenance_cost      Float? // Vehicle maintenance
+  total_earnings        Float     @default(0)
+  bonus_earned          Float     @default(0)
+  violations_count      Int       @default(0) // Traffic violations, incidents, etc.
+  customer_complaints   Int       @default(0)
+  performance_score     Float? // Overall score (0-100)
+  notes                 String?   @db.Text
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @updatedAt
+  driver                Driver    @relation(fields: [driver_id], references: [id])
+  workspace             Workspace @relation(fields: [workspace_id], references: [id])
 
   @@unique([workspace_id, driver_id, period_start, period_end])
   @@index([workspace_id])

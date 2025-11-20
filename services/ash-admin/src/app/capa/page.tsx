@@ -88,7 +88,12 @@ export default function CAPAPage() {
         params.append("priority", selectedPriority);
       if (selectedType !== "all") params.append("type", selectedType);
 
-      const response = await fetch(`/api/capa?${params}`);
+      const response = await fetch(`/api/quality-control/capa?${params}`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch CAPA data: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       if (data.capa_tasks) {
@@ -103,7 +108,12 @@ export default function CAPAPage() {
 
   const loadAnalytics = async () => {
     try {
-      const response = await fetch("/api/capa/analytics/summary");
+      const response = await fetch("/api/quality-control/capa/analytics/summary");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch CAPA analytics: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
       setAnalytics(data);
     } catch (error) {

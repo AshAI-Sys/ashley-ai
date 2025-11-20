@@ -21,6 +21,7 @@ import {
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Client {
   id: string;

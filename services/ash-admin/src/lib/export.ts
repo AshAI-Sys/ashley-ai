@@ -3,6 +3,8 @@
  * Provides Excel and CSV export functionality for orders, invoices, and reports
  */
 
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
+
 export interface ExportColumn {
   header: string;
   key: string;
