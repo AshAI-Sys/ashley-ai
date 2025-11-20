@@ -159,12 +159,12 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
               if (asset.approvals && asset.approvals.length > 0) {
                 const latestApproval = asset.approvals[0];
 
-                if (latestApproval.status === "APPROVED") {
+                if (latestApproval && latestApproval.status === "APPROVED") {
                   continue; // This design is approved
-                } else if (latestApproval.status === "SENT" || latestApproval.status === "PENDING") {
+                } else if (latestApproval && (latestApproval.status === "SENT" || latestApproval.status === "PENDING")) {
                   anyPending = true;
                   allApproved = false;
-                } else if (latestApproval.status === "REJECTED" || latestApproval.status === "CHANGES_REQUESTED") {
+                } else if (latestApproval && (latestApproval.status === "REJECTED" || latestApproval.status === "CHANGES_REQUESTED")) {
                   anyRejected = true;
                   allApproved = false;
                 }

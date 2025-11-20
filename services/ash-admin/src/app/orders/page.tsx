@@ -28,6 +28,7 @@ import { ErrorAlert } from "@/components/ui/error-alert";
 import { useDebounce } from "@/hooks/useDebounce";
 import { exportOrders } from "@/lib/export";
 import { api } from "@/lib/api";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Order {
   id: string;
@@ -147,6 +148,7 @@ export default function OrdersPage() {
         return null;
     }
   };
+
 
   return (
     <DashboardLayout>
@@ -349,11 +351,7 @@ export default function OrdersPage() {
                             Delivery
                           </span>
                           <span className="mt-0.5 font-medium">
-                            {order?.delivery_date
-                              ? new Date(
-                                  order.delivery_date
-                                ).toLocaleDateString()
-                              : "TBD"}
+                            {order?.delivery_date ? formatDateUtil(order.delivery_date) : "TBD"}
                           </span>
                         </div>
                       </div>
@@ -367,10 +365,7 @@ export default function OrdersPage() {
                         <span>{order?._count?.design_assets || 0} designs</span>
                         <span>{order?._count?.bundles || 0} bundles</span>
                         <span className="hidden sm:inline">
-                          Created{" "}
-                          {order?.created_at
-                            ? new Date(order.created_at).toLocaleDateString()
-                            : "Unknown"}
+                          Created {order?.created_at ? formatDateUtil(order.created_at) : "Unknown"}
                         </span>
                       </div>
                     </div>
