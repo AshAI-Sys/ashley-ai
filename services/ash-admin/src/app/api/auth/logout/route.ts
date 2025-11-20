@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { authLogger } from "../../../../lib/logger";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import { requireAuth } from "@/lib/auth-middleware";
+import { verifyAccessToken, verifyRefreshToken } from "../../../../lib/jwt";
+import { blacklistToken } from "../../../../lib/token-blacklist";
 
 export const dynamic = 'force-dynamic';
 
@@ -10,12 +12,41 @@ export const dynamic = 'force-dynamic';
 /**
  * POST /api/auth/logout
  * Logout current user and clear session
+ *
+ * SECURITY ENHANCEMENTS:
+ * - Blacklists both access and refresh tokens before clearing cookies
+ * - Prevents logged-out users from reusing saved JWT tokens
+ * - Audit logging for compliance
  */
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     // User is already authenticated via requireAuth wrapper
     const userId = user.id;
     const workspaceId = user.workspaceId;
+
+    // SECURITY: Blacklist tokens before clearing cookies
+    // This prevents the user from reusing saved tokens after logout
+
+    // Get access token from cookie or Authorization header
+    const accessToken =
+      request.cookies.get("auth_token")?.value ||
+      request.headers.get("Authorization")?.replace("Bearer ", "");
+
+    if (accessToken) {
+      const accessPayload = await verifyAccessToken(accessToken);
+      if (accessPayload) {
+        await blacklistToken(accessPayload, "LOGOUT");
+      }
+    }
+
+    // Get refresh token from cookie
+    const refreshToken = request.cookies.get("refresh_token")?.value;
+    if (refreshToken) {
+      const refreshPayload = await verifyRefreshToken(refreshToken);
+      if (refreshPayload) {
+        await blacklistToken(refreshPayload, "LOGOUT");
+      }
+    }
 
     // Log logout event
     await logAuthEvent("LOGOUT", workspaceId, userId, request, {
@@ -25,6 +56,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     authLogger.info("User logged out", {
       userId: userId,
       email: user.email,
+      tokensBlacklisted: true,
     });
 
     // Clear cookies

@@ -32,10 +32,10 @@ export async function authenticateRequest(
     const token = authHeader.substring(7);
     console.log("[AUTH] Token received:", token.substring(0, 20) + "...");
 
-    // Proper JWT validation
-    const payload = verifyToken(token);
+    // Proper JWT validation with blacklist and revocation checking
+    const payload = await verifyToken(token);
     if (!payload) {
-      console.error("[AUTH] JWT verification failed - token invalid or expired");
+      console.error("[AUTH] JWT verification failed - token invalid, expired, blacklisted, or revoked");
       return null;
     }
     console.log("[AUTH] JWT verified successfully for user:", payload.userId);

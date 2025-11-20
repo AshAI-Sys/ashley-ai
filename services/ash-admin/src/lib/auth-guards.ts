@@ -151,7 +151,7 @@ export async function getUserFromRequest(
     if (authHeader) {
       const token = extractTokenFromHeader(authHeader);
       if (token) {
-        const payload = verifyAccessToken(token);
+        const payload = await verifyAccessToken(token);
         if (payload) {
           authLogger.debug("User authenticated via JWT token", {
             userId: payload.userId,
@@ -171,7 +171,7 @@ export async function getUserFromRequest(
     // Check for session cookie with JWT
     const sessionCookie = request.cookies.get("auth_token");
     if (sessionCookie?.value) {
-      const payload = verifyAccessToken(sessionCookie.value);
+      const payload = await verifyAccessToken(sessionCookie.value);
       if (payload) {
         authLogger.debug("User authenticated via session cookie", {
           userId: payload.userId,

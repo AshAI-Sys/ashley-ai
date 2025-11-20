@@ -8,6 +8,7 @@ import {
   apiUnauthorized,
   apiServerError,
 } from "../../../../lib/api-response";
+import { blacklistToken } from "../../../../lib/token-blacklist";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,53 +16,70 @@ export const dynamic = 'force-dynamic';
 /**
  * POST /api/auth/refresh
  * Refresh an expired access token using a valid refresh token
+ *
+ * SECURITY ENHANCEMENTS:
+ * - Implements refresh token rotation (generates NEW refresh token)
+ * - Blacklists old refresh token to prevent reuse
+ * - Prevents stolen refresh tokens from being used indefinitely
  */
 export const POST = requireAuth(async (request: NextRequest, _user) => {
   try {
-    // Try to get refresh token from cookie or request body;
-    let refreshToken = request.cookies.get("refresh_token")?.value;
+    // Try to get refresh token from cookie or request body
+    let oldRefreshToken = request.cookies.get("refresh_token")?.value;
 
-    if (!refreshToken) {
-      
+    if (!oldRefreshToken) {
       const body = await request.json().catch(() => ({}));
-      refreshToken = body.refresh_token;
+      oldRefreshToken = body.refresh_token;
+    }
 
-    if (!refreshToken) {
+    if (!oldRefreshToken) {
       authLogger.warn("Refresh token missing in request");
-      }
       return apiUnauthorized("Refresh token required");
     }
 
-    // Verify refresh token and generate new access token
-    const newAccessToken = refreshAccessToken(refreshToken);
+    // SECURITY: Verify refresh token and generate NEW token pair (rotation)
+    const newTokenPair = await refreshAccessToken(oldRefreshToken);
 
-    if (!newAccessToken) {
+    if (!newTokenPair) {
       authLogger.warn("Invalid or expired refresh token");
       return apiUnauthorized("Invalid or expired refresh token");
     }
 
-    // Extract user info from refresh token for logging
-    const payload = verifyRefreshToken(refreshToken);
-    if (payload) {
-      authLogger.info("Access token refreshed", {
-        userId: payload.userId,
-        email: payload.email,
+    // SECURITY: Blacklist the old refresh token to prevent reuse
+    const oldPayload = await verifyRefreshToken(oldRefreshToken);
+    if (oldPayload) {
+      await blacklistToken(oldPayload, "REFRESH_ROTATION");
+
+      authLogger.info("Token pair refreshed with rotation", {
+        userId: oldPayload.userId,
+        email: oldPayload.email,
+        oldTokenBlacklisted: true,
       });
     }
 
-    // Return new access token
+    // Return new token pair
     const response = NextResponse.json({
       success: true,
-      access_token: newAccessToken,
+      access_token: newTokenPair.accessToken,
+      refresh_token: newTokenPair.refreshToken, // NEW refresh token
       expires_in: 15 * 60, // 15 minutes in seconds
     });
 
     // Update auth_token cookie with new access token
-    response.cookies.set("auth_token", newAccessToken, {
+    response.cookies.set("auth_token", newTokenPair.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 15 * 60, // 15 minutes
+      path: "/",
+    });
+
+    // Update refresh_token cookie with NEW refresh token
+    response.cookies.set("refresh_token", newTokenPair.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60, // 7 days
       path: "/",
     });
 

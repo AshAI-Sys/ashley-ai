@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { authLogger } from "./logger";
 import { UserRole } from "./auth-guards";
+import { isTokenBlacklisted, areUserSessionsRevoked } from "./token-blacklist";
 
 // CRITICAL: JWT_SECRET must be set in environment variables
 // Never use a fallback in production!
@@ -111,13 +112,39 @@ export function generateToken(
 }
 
 /**
- * Verify and decode JWT token
+ * Verify and decode JWT token with blacklist and revocation checking
+ *
+ * SECURITY CHECKS:
+ * 1. JWT signature and expiry validation
+ * 2. Token blacklist check (logout, refresh rotation)
+ * 3. User session revocation check (password change, security incident)
  */
-export function verifyToken(token: string): JWTPayload | null {
+export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
+    // Step 1: Verify JWT signature and expiry
     const decoded = jwt.verify(token, SECRET, {
       algorithms: ["HS256"],
     }) as JWTPayload;
+
+    // Step 2: Check if token is blacklisted
+    const isBlacklisted = await isTokenBlacklisted(decoded);
+    if (isBlacklisted) {
+      authLogger.warn("Blacklisted token rejected", {
+        userId: decoded.userId,
+        tokenType: decoded.type || 'access',
+      });
+      return null;
+    }
+
+    // Step 3: Check if all user sessions have been revoked
+    const areSessionsRevoked = await areUserSessionsRevoked(decoded);
+    if (areSessionsRevoked) {
+      authLogger.warn("Token rejected - user sessions revoked", {
+        userId: decoded.userId,
+        tokenType: decoded.type || 'access',
+      });
+      return null;
+    }
 
     authLogger.debug("Token verified successfully", { userId: decoded.userId });
     return decoded;
@@ -136,8 +163,8 @@ export function verifyToken(token: string): JWTPayload | null {
 /**
  * Verify access token specifically
  */
-export function verifyAccessToken(token: string): JWTPayload | null {
-  const payload = verifyToken(token);
+export async function verifyAccessToken(token: string): Promise<JWTPayload | null> {
+  const payload = await verifyToken(token);
 
   if (!payload) {
     return null;
@@ -154,8 +181,8 @@ export function verifyAccessToken(token: string): JWTPayload | null {
 /**
  * Verify refresh token specifically
  */
-export function verifyRefreshToken(token: string): JWTPayload | null {
-  const payload = verifyToken(token);
+export async function verifyRefreshToken(token: string): Promise<JWTPayload | null> {
+  const payload = await verifyToken(token);
 
   if (!payload) {
     return null;
@@ -171,30 +198,50 @@ export function verifyRefreshToken(token: string): JWTPayload | null {
 
 /**
  * Refresh access token using refresh token
+ *
+ * SECURITY: Returns both new access token AND new refresh token (rotation)
+ * This prevents stolen refresh tokens from being reused indefinitely
  */
-export function refreshAccessToken(refreshToken: string): string | null {
+export async function refreshAccessToken(
+  refreshToken: string
+): Promise<{ accessToken: string; refreshToken: string } | null> {
   try {
-    const payload = verifyRefreshToken(refreshToken);
+    const payload = await verifyRefreshToken(refreshToken);
 
     if (!payload) {
       authLogger.warn("Invalid refresh token");
       return null;
     }
 
-    // Generate new access token with same payload
-    const newAccessToken = generateAccessToken({
-      userId: payload.userId,
+    // Generate new token pair (both access AND refresh)
+    const newTokenPair = generateTokenPair({
+      id: payload.userId,
       email: payload.email,
       role: payload.role,
       workspaceId: payload.workspaceId,
     });
 
-    authLogger.info("Access token refreshed", { userId: payload.userId });
-    return newAccessToken;
+    authLogger.info("Token pair refreshed with rotation", {
+      userId: payload.userId,
+    });
+
+    return {
+      accessToken: newTokenPair.accessToken,
+      refreshToken: newTokenPair.refreshToken,
+    };
   } catch (error) {
     authLogger.error("Failed to refresh access token", error as Error);
     return null;
   }
+}
+
+/**
+ * Legacy refreshAccessToken that returns only access token
+ * @deprecated Use refreshAccessToken (now returns token pair) instead
+ */
+export async function refreshAccessTokenLegacy(refreshToken: string): Promise<string | null> {
+  const result = await refreshAccessToken(refreshToken);
+  return result ? result.accessToken : null;
 }
 
 /**
@@ -234,6 +281,6 @@ export function isTokenExpiringSoon(payload: JWTPayload): boolean {
  * Legacy function - kept for backward compatibility
  * @deprecated Use refreshAccessToken instead
  */
-export function refreshToken(token: string): string | null {
-  return refreshAccessToken(token);
+export async function refreshToken(token: string): Promise<string | null> {
+  return refreshAccessTokenLegacy(token);
 }
