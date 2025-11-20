@@ -1,6 +1,8 @@
 // Slack & Microsoft Teams Integration
 // For team collaboration, approvals, and notifications
 
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
+
 interface SlackConfig {
   webhookUrl: string;
   channel?: string;
@@ -84,7 +86,7 @@ export class SlackService {
           value: affectedOrders.join(", "),
           short: false,
         },
-        { title: "Time", value: ( ? formatDateUtil(, "datetime") : "-"), short: true },
+        { title: "Time", value: formatDateUtil(new Date(), "datetime"), short: true },
       ],
       urgent: true,
     });
@@ -117,7 +119,7 @@ export class SlackService {
   }): Promise<boolean> {
     return this.send({
       title: "📊 Daily Production Summary",
-      message: `Production report for ${( ? formatDateUtil() : "-")}`,
+      message: `Production report for ${formatDateUtil(new Date())}`,
       color: "good",
       fields: [
         {
