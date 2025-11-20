@@ -390,19 +390,7 @@ export default function OrdersPage() {
                           <span className="hidden sm:inline">View</span>
                         </Button>
                       </Link>
-                      <Link
-                        href={`/orders/${order?.id || ""}/edit`}
-                        className="flex-1 sm:flex-none"
-                      >
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-9 w-full px-3"
-                        >
-                          <Edit className="h-4 w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Edit</span>
-                        </Button>
-                      </Link>
+                      {/* Edit button temporarily removed - edit page needs to be created */}
                     </div>
                   </div>
                 </CardContent>
