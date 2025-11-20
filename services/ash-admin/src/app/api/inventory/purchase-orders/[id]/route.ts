@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse, notFoundError } from "@/lib/error-sanitization";
 
 export const dynamic = "force-dynamic";
 
@@ -47,10 +48,7 @@ export const GET = requireAuth(async (
     });
 
     if (!purchaseOrder) {
-      return NextResponse.json(
-        { success: false, error: "Purchase order not found" },
-        { status: 404 }
-      );
+      return notFoundError("Purchase order");
     }
 
     return NextResponse.json({
@@ -58,11 +56,10 @@ export const GET = requireAuth(async (
       purchase_order: purchaseOrder,
     });
   } catch (error) {
-    console.error("[API] Error fetching purchase order:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch purchase order" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -89,10 +86,7 @@ export const PUT = requireAuth(async (
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Purchase order not found" },
-        { status: 404 }
-      );
+      return notFoundError("Purchase order");
     }
 
     // Update purchase order
@@ -116,11 +110,10 @@ export const PUT = requireAuth(async (
       purchase_order: purchaseOrder,
     });
   } catch (error) {
-    console.error("[API] Error updating purchase order:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update purchase order" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -144,10 +137,7 @@ export const DELETE = requireAuth(async (
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Purchase order not found" },
-        { status: 404 }
-      );
+      return notFoundError("Purchase order");
     }
 
     // Only allow deletion of DRAFT orders
@@ -171,10 +161,9 @@ export const DELETE = requireAuth(async (
       message: "Purchase order deleted successfully",
     });
   } catch (error) {
-    console.error("[API] Error deleting purchase order:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete purchase order" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

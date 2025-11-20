@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse, notFoundError } from "@/lib/error-sanitization";
 
 export const dynamic = "force-dynamic";
 
@@ -35,10 +36,7 @@ export const GET = requireAuth(async (
     });
 
     if (!supplier) {
-      return NextResponse.json(
-        { success: false, error: "Supplier not found" },
-        { status: 404 }
-      );
+      return notFoundError("Supplier");
     }
 
     return NextResponse.json({
@@ -46,11 +44,10 @@ export const GET = requireAuth(async (
       supplier,
     });
   } catch (error) {
-    console.error("[API] Error fetching supplier:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch supplier" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -91,10 +88,7 @@ export const PUT = requireAuth(async (
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Supplier not found" },
-        { status: 404 }
-      );
+      return notFoundError("Supplier");
     }
 
     // Update supplier
@@ -123,11 +117,10 @@ export const PUT = requireAuth(async (
       supplier,
     });
   } catch (error) {
-    console.error("[API] Error updating supplier:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update supplier" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -156,10 +149,7 @@ export const DELETE = requireAuth(async (
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Supplier not found" },
-        { status: 404 }
-      );
+      return notFoundError("Supplier");
     }
 
     // Check if supplier has purchase orders
@@ -183,10 +173,9 @@ export const DELETE = requireAuth(async (
       message: "Supplier deleted successfully",
     });
   } catch (error) {
-    console.error("[API] Error deleting supplier:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete supplier" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

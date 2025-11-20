@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse, notFoundError } from "@/lib/error-sanitization";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +27,7 @@ export const GET = requireAuth(async (
     });
 
     if (!setting) {
-      return NextResponse.json(
-        { success: false, error: "Auto-reorder setting not found" },
-        { status: 404 }
-      );
+      return notFoundError("Auto-reorder setting");
     }
 
     // Get related material inventory details
@@ -57,11 +55,10 @@ export const GET = requireAuth(async (
       },
     });
   } catch (error) {
-    console.error("[API] Error fetching auto-reorder setting:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch auto-reorder setting" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -96,10 +93,7 @@ export const PUT = requireAuth(async (
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Auto-reorder setting not found" },
-        { status: 404 }
-      );
+      return notFoundError("Auto-reorder setting");
     }
 
     // Verify preferred_supplier if provided
@@ -145,11 +139,10 @@ export const PUT = requireAuth(async (
       setting,
     });
   } catch (error) {
-    console.error("[API] Error updating auto-reorder setting:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update auto-reorder setting" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -173,10 +166,7 @@ export const DELETE = requireAuth(async (
     });
 
     if (!existing) {
-      return NextResponse.json(
-        { success: false, error: "Auto-reorder setting not found" },
-        { status: 404 }
-      );
+      return notFoundError("Auto-reorder setting");
     }
 
     // Delete auto-reorder setting
@@ -189,10 +179,9 @@ export const DELETE = requireAuth(async (
       message: "Auto-reorder setting deleted successfully",
     });
   } catch (error) {
-    console.error("[API] Error deleting auto-reorder setting:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete auto-reorder setting" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
