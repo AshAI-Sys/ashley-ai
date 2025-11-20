@@ -88,14 +88,23 @@ export default function VersionManagementPage() {
       const designResponse = await fetch(
         `/api/designs/${id}?include=brand,order`
       );
+      if (!designResponse.ok) {
+        throw new Error(`Failed to fetch design: ${designResponse.statusText}`);
+      }
       const designData = await designResponse.json();
 
       // Fetch versions
       const versionsResponse = await fetch(`/api/designs/${id}/versions`);
+      if (!versionsResponse.ok) {
+        throw new Error(`Failed to fetch versions: ${versionsResponse.statusText}`);
+      }
       const versionsData = await versionsResponse.json();
 
       // Fetch validation checks
       const checksResponse = await fetch(`/api/designs/${id}/checks`);
+      if (!checksResponse.ok) {
+        throw new Error(`Failed to fetch checks: ${checksResponse.statusText}`);
+      }
       const checksData = await checksResponse.json();
 
       if (designData.success) {
@@ -103,7 +112,7 @@ export default function VersionManagementPage() {
       }
 
       if (versionsData.success) {
-        setVersions(versionsData.data);
+        setVersions(versionsData.versions || versionsData.data);
       }
 
       if (checksData.success) {
