@@ -1,9 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
-import { apiSuccess, apiNotFound, apiServerError } from "@/lib/api-response";
+import { apiSuccess, apiNotFound, apiServerError, apiError } from "@/lib/api-response";
 import { logError, ErrorCategory } from "@/lib/error-logger";
 
 const prisma = db;
@@ -15,12 +14,18 @@ export const GET = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
-    const orderId = context!.params.id;
+    // Validate context parameters (fix non-null assertion vulnerability)
+    if (!context?.params?.id) {
+      return apiError("Invalid request - order ID is required", undefined, 400);
+    }
+
+    const orderId = context.params.id;
     const workspaceId = user.workspaceId;
+
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
-        workspace_id: workspaceId,
+        workspace_id: workspaceId, // Already has workspace isolation - GOOD!
       },
       include: {
         client: true,
@@ -50,7 +55,6 @@ export const GET = requireAuth(async (
     });
 
     if (!order) {
-      
       return apiNotFound("Order");
     }
 
@@ -58,8 +62,9 @@ export const GET = requireAuth(async (
   } catch (error) {
     logError(error as Error, {
       category: ErrorCategory.API,
-      orderId: context!.params.id,
-      operation: "fetch_order"
+      orderId: context?.params?.id,
+      operation: "fetch_order",
+      metadata: { workspaceId: user.workspaceId }
     });
     return apiServerError(error);
   }
@@ -70,12 +75,22 @@ export const PUT = requireAuth(
   withAudit(
     async (request: NextRequest, user, context?: { params: { id: string } }) => {
       try {
-        const orderId = context!.params.id;
-        const ____workspaceId = user.workspaceId;
+        // Validate context parameters (fix non-null assertion vulnerability)
+        if (!context?.params?.id) {
+          return apiError("Invalid request - order ID is required", undefined, 400);
+        }
+
+        const orderId = context.params.id;
+        const workspaceId = user.workspaceId;
         const body = await request.json();
 
+        // CRITICAL FIX: Include workspace_id in WHERE clause for multi-tenancy isolation
+        // This prevents users from updating orders in other workspaces
         const order = await prisma.order.update({
-          where: { id: orderId },
+          where: {
+            id: orderId,
+            workspace_id: workspaceId, // REQUIRED for workspace isolation
+          },
           data: {
             order_number: body.order_number,
             client_id: body.client_id,
@@ -103,10 +118,16 @@ export const PUT = requireAuth(
 
         return apiSuccess(order, "Order updated successfully");
       } catch (error) {
+        // Handle case where order doesn't exist or doesn't belong to workspace
+        if (error instanceof Error && error.message.includes("Record to update not found")) {
+          return apiError("Order not found or access denied", undefined, 404);
+        }
+
         logError(error as Error, {
           category: ErrorCategory.API,
-          orderId: context!.params.id,
+          orderId: context?.params?.id,
           operation: "update_order",
+          metadata: { workspaceId: user.workspaceId }
         });
         return apiServerError(error);
       }
@@ -120,18 +141,35 @@ export const DELETE = requireAuth(
   withAudit(
     async (_request: NextRequest, user, context?: { params: { id: string } }) => {
       try {
-        const orderId = context!.params.id;
-        const ____workspaceId = user.workspaceId;
-        await prisma.order.delete({
-          where: { id: orderId },
+        // Validate context parameters (fix non-null assertion vulnerability)
+        if (!context?.params?.id) {
+          return apiError("Invalid request - order ID is required", undefined, 400);
+        }
+
+        const orderId = context.params.id;
+        const workspaceId = user.workspaceId;
+
+        // CRITICAL FIX: Include workspace_id in WHERE clause for multi-tenancy isolation
+        // This prevents users from deleting orders in other workspaces
+        const deletedOrder = await prisma.order.delete({
+          where: {
+            id: orderId,
+            workspace_id: workspaceId, // REQUIRED for workspace isolation
+          },
         });
 
-        return apiSuccess({ id: orderId }, "Order deleted successfully");
+        return apiSuccess({ id: deletedOrder.id }, "Order deleted successfully");
       } catch (error) {
+        // Handle case where order doesn't exist or doesn't belong to workspace
+        if (error instanceof Error && error.message.includes("Record to delete does not exist")) {
+          return apiError("Order not found or access denied", undefined, 404);
+        }
+
         logError(error as Error, {
           category: ErrorCategory.API,
-          orderId: context!.params.id,
+          orderId: context?.params?.id,
           operation: "delete_order",
+          metadata: { workspaceId: user.workspaceId }
         });
         return apiServerError(error);
       }

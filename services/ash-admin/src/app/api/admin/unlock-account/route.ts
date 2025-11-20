@@ -5,16 +5,25 @@
  * Body: { email: string, adminPassword: string }
  *
  * Emergency endpoint to unlock rate-limited accounts
+ * SECURITY: Requires ADMIN_UNLOCK_PASSWORD environment variable
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { unlockAccount, isAccountLocked } from '@/lib/account-lockout';
+import { authLogger } from '@/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Emergency admin password (should match ADMIN_UNLOCK_PASSWORD env var)
-const ADMIN_PASSWORD = process.env.ADMIN_UNLOCK_PASSWORD || 'AshleyAI2025Emergency!';
+// Emergency admin password (MUST be set in environment - no fallback for security)
+const ADMIN_PASSWORD = process.env.ADMIN_UNLOCK_PASSWORD;
+
+if (!ADMIN_PASSWORD) {
+  throw new Error(
+    'ADMIN_UNLOCK_PASSWORD environment variable is required for admin unlock functionality. ' +
+    'This is a security requirement - no default password is permitted.'
+  );
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +43,12 @@ export async function POST(request: NextRequest) {
 
     // Verify admin password
     if (adminPassword !== ADMIN_PASSWORD) {
-      console.warn(`❌ Invalid admin password attempt for unlocking: ${email}`);
+      // Log security event without exposing email in production
+      authLogger.warn('Invalid admin password attempt for account unlock', {
+        timestamp: new Date().toISOString(),
+        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      });
+
       return NextResponse.json(
         {
           success: false,
@@ -53,9 +67,12 @@ export async function POST(request: NextRequest) {
     // Verify unlock succeeded
     const statusAfter = await isAccountLocked(email);
 
-    console.log(`✅ Account unlocked via admin API: ${email}`);
-    console.log(`   Before: locked=${statusBefore.isLocked}, attempts=${statusBefore.failedAttempts}`);
-    console.log(`   After:  locked=${statusAfter.isLocked}, attempts=${statusAfter.failedAttempts}`);
+    // Log admin action securely (no PII in production logs)
+    authLogger.info('Account unlocked via admin API', {
+      timestamp: new Date().toISOString(),
+      wasLocked: statusBefore.isLocked,
+      previousAttempts: statusBefore.failedAttempts,
+    });
 
     return NextResponse.json(
       {
@@ -74,13 +91,22 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error('❌ Error unlocking account:', error);
+  } catch (error: unknown) {
+    // Log error securely without exposing details to client
+    authLogger.error(
+      'Error unlocking account',
+      error instanceof Error ? error : undefined,
+      { timestamp: new Date().toISOString() }
+    );
+
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to unlock account',
-        message: error.message,
+        error: 'Failed to unlock account. Please contact system administrator.',
+        // Only include debug info in development
+        ...(process.env.NODE_ENV === 'development' && {
+          debug: error instanceof Error ? error.message : String(error),
+        }),
       },
       { status: 500 }
     );
@@ -88,17 +114,20 @@ export async function POST(request: NextRequest) {
 }
 
 // GET endpoint to check lockout status
+// SECURITY: Admin password MUST be sent via X-Admin-Password header, NOT URL parameters
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
-    const adminPassword = searchParams.get('adminPassword');
+
+    // Get admin password from header (NEVER from URL for security)
+    const adminPassword = request.headers.get('X-Admin-Password');
 
     if (!email || !adminPassword) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Email and admin password are required',
+          error: 'Email and admin password (via X-Admin-Password header) are required',
         },
         { status: 400 }
       );
@@ -106,6 +135,11 @@ export async function GET(request: NextRequest) {
 
     // Verify admin password
     if (adminPassword !== ADMIN_PASSWORD) {
+      authLogger.warn('Invalid admin password attempt for lockout status check', {
+        timestamp: new Date().toISOString(),
+        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      });
+
       return NextResponse.json(
         {
           success: false,
@@ -126,13 +160,20 @@ export async function GET(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error: any) {
-    console.error('❌ Error checking account lockout:', error);
+  } catch (error: unknown) {
+    authLogger.error(
+      'Error checking account lockout status',
+      error instanceof Error ? error : undefined,
+      { timestamp: new Date().toISOString() }
+    );
+
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to check lockout status',
-        message: error.message,
+        error: 'Failed to check lockout status. Please contact system administrator.',
+        ...(process.env.NODE_ENV === 'development' && {
+          debug: error instanceof Error ? error.message : String(error),
+        }),
       },
       { status: 500 }
     );

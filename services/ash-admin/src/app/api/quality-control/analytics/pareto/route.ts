@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -29,8 +28,18 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         startDate.setMonth(endDate.getMonth() - 1);
     }
 
-    // Get defect counts by type
-    const defectData = (await prisma.$queryRaw`
+    // Type definition for query result
+    type DefectData = {
+      defect_code: string;
+      defect_name: string;
+      category: string;
+      defect_count: bigint;
+      total_quantity: bigint;
+    };
+
+    // Get defect counts by type with type-safe query
+    // Using $queryRaw<T> for type safety and proper date casting
+    const defectData = await prisma.$queryRaw<DefectData[]>`
       SELECT
         dc.code as defect_code,
         dc.name as defect_name,
@@ -40,17 +49,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       FROM qc_defects qd
       JOIN qc_defect_codes dc ON qd.defect_code_id = dc.id
       JOIN qc_inspections qi ON qd.inspection_id = qi.id
-      WHERE qi.inspection_date >= ${startDate}
-        AND qi.inspection_date <= ${endDate}
+      WHERE qi.inspection_date >= ${startDate}::timestamp
+        AND qi.inspection_date <= ${endDate}::timestamp
       GROUP BY dc.id, dc.code, dc.name, dc.category
       ORDER BY total_quantity DESC
-    `) as Array<{
-      defect_code: string;
-      defect_name: string;
-      category: string;
-      defect_count: bigint;
-      total_quantity: bigint;
-    }>;
+    `;
 
     if (defectData.length === 0) {
       

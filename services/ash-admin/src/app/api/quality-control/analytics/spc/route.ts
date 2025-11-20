@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -30,8 +29,18 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         startDate.setDate(endDate.getDate() - 30);
     }
 
-    // Get daily aggregated data
-    const dailyData = (await prisma.$queryRaw`
+    // Type definition for query result
+    type DailyData = {
+      date: string;
+      total_inspections: bigint;
+      avg_sample_size: number;
+      avg_defects: number;
+      pass_rate: number;
+    };
+
+    // Get daily aggregated data with type-safe query
+    // Using $queryRaw<T> for type safety and proper date casting
+    const dailyData = await prisma.$queryRaw<DailyData[]>`
       SELECT
         DATE(inspection_date) as date,
         COUNT(*) as total_inspections,
@@ -39,17 +48,11 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         AVG(CAST(critical_found + major_found + minor_found AS DECIMAL)) as avg_defects,
         AVG(CASE WHEN result = 'ACCEPT' THEN 100.0 ELSE 0.0 END) as pass_rate
       FROM qc_inspections
-      WHERE inspection_date >= ${startDate}
-        AND inspection_date <= ${endDate});
+      WHERE inspection_date >= ${startDate}::timestamp
+        AND inspection_date <= ${endDate}::timestamp
       GROUP BY DATE(inspection_date)
       ORDER BY date ASC
-    `) as Array<{
-      date: string;
-      total_inspections: bigint;
-      avg_sample_size: number;
-      avg_defects: number;
-      pass_rate: number;
-    }>;
+    `;
 
     // Process data based on selected metric
     const spcData = dailyData.map(day => {
