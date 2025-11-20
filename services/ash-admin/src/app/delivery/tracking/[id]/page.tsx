@@ -373,7 +373,7 @@ export default function ShipmentTrackingPage({
                   {shipment.cod_amount && (
                     <div className="rounded-lg bg-green-50 p-3">
                       <div className="text-sm font-medium text-green-800">
-                        COD Amount: â‚±{shipment.cod_amount.toLocaleString()}
+                        COD Amount: ₱{shipment.cod_amount.toLocaleString()}
                       </div>
                     </div>
                   )}
@@ -500,7 +500,9 @@ export default function ShipmentTrackingPage({
                               "Unknown Event"}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {(event.timestamp ? formatDateUtil(event.timestamp, "datetime") : "-")}
+                            {event.timestamp
+                              ? formatDateUtil(event.timestamp, "datetime")
+                              : "-"}
                           </div>
                         </div>
 

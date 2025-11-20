@@ -26,7 +26,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle, DialogTrigger,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Settings,
@@ -36,8 +37,10 @@ import {
   Clock,
   DollarSign,
   GitBranch,
-  Search, ArrowRight,
-  CheckCircle, AlertCircle,
+  Search,
+  ArrowRight,
+  CheckCircle,
+  AlertCircle,
   Shirt,
 } from "lucide-react";
 
@@ -509,7 +512,7 @@ export default function SewingOperationsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              â‚±
+              ₱
               {operations.filter(op => op.piece_rate).length > 0
                 ? (
                     operations
@@ -529,7 +532,7 @@ export default function SewingOperationsPage() {
           <div className="flex items-center gap-4">
             <div className="max-w-sm flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search operations..."
                   value={search}
@@ -609,7 +612,7 @@ export default function SewingOperationsPage() {
                           <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4" />
                             <span>
-                              â‚±{operation.piece_rate?.toFixed(2) || "N/A"} per
+                              ₱{operation.piece_rate?.toFixed(2) || "N/A"} per
                               piece
                             </span>
                           </div>
@@ -734,7 +737,7 @@ export default function SewingOperationsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="piece_rate">Piece Rate (â‚±)</Label>
+                <Label htmlFor="piece_rate">Piece Rate (₱)</Label>
                 <Input
                   id="piece_rate"
                   type="number"
@@ -858,7 +861,7 @@ export default function SewingOperationsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit_piece_rate">Piece Rate (â‚±)</Label>
+                <Label htmlFor="edit_piece_rate">Piece Rate (₱)</Label>
                 <Input
                   id="edit_piece_rate"
                   type="number"
@@ -917,4 +920,3 @@ export default function SewingOperationsPage() {
     </div>
   );
 }
-

@@ -436,7 +436,8 @@ const PRODUCTION_ROUTES: ProductionRoute[] = [
 
 export function ProductionRouteSection({
   printingMethod,
-  totalQuantity, deliveryDate,
+  totalQuantity,
+  deliveryDate,
   selectedRoute,
   onRouteChange,
   onRouteOptimized,
@@ -491,7 +492,7 @@ export function ProductionRouteSection({
           "",
         efficiencyGain: Math.floor(Math.random() * 15) + 5, // 5-20%
         timeSaving: Math.floor(Math.random() * 2) + 1, // 1-3 days
-        costSaving: Math.floor(Math.random() * 8000) + 2000, // â‚±2000-10000
+        costSaving: Math.floor(Math.random() * 8000) + 2000, // ₱2000-10000
         confidence: Math.floor(Math.random() * 20) + 80, // 80-100%
         reasoning: [
           "Current route has optimal efficiency for quantity and timeline",
@@ -754,7 +755,7 @@ export function ProductionRouteSection({
                 <div className="rounded bg-amber-100 p-2">
                   <div className="font-medium text-amber-700">Cost Saving</div>
                   <div className="text-amber-800">
-                    â‚±{ashleyOptimization.costSaving.toLocaleString()}
+                    ₱{ashleyOptimization.costSaving.toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -930,8 +931,8 @@ export function ProductionRouteSection({
                           </div>
 
                           <div className="rounded bg-white/50 p-2 text-xs text-muted-foreground">
-                            ðŸ’¡ Tip: Custom settings will override default values
-                            for this production run
+                            ðŸ’¡ Tip: Custom settings will override default
+                            values for this production run
                           </div>
                         </div>
                       )}

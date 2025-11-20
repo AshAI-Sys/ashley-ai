@@ -19,14 +19,19 @@ import DashboardLayout from "@/components/dashboard-layout";
 import {
   Settings,
   Wrench,
-  AlertTriangle, CheckCircle,
-  Clock, Calendar,
-  DollarSign, TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Calendar,
+  DollarSign,
+  TrendingUp,
   Plus,
   Filter,
   Eye,
-  Edit, Trash2,
-  Users, Activity,
+  Edit,
+  Trash2,
+  Users,
+  Activity,
   BarChart3,
   RefreshCw,
 } from "lucide-react";
@@ -308,7 +313,7 @@ export default function MaintenancePage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return `â‚±${amount.toLocaleString()}`;
+    return `₱${amount.toLocaleString()}`;
   };
 
   const ____formatDateTime = (dateString: string) => {
@@ -612,7 +617,8 @@ export default function MaintenancePage() {
             </div>
 
             <div className="rounded-md border">
-              <div><table className="w-full">
+              <div>
+                <table className="w-full">
                   <thead className="border-b bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-medium">
@@ -711,7 +717,8 @@ export default function MaintenancePage() {
             </div>
 
             <div className="rounded-md border">
-              <div><table className="w-full">
+              <div>
+                <table className="w-full">
                   <thead className="border-b bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-medium">
@@ -813,7 +820,8 @@ export default function MaintenancePage() {
             </div>
 
             <div className="rounded-md border">
-              <div><table className="w-full">
+              <div>
+                <table className="w-full">
                   <thead className="border-b bg-gray-50">
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-medium">

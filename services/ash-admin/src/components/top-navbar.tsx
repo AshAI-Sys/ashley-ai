@@ -84,7 +84,7 @@ export default function TopNavbar() {
     {
       id: 3,
       title: "Payment Received",
-      message: "Payment of â‚±50,000 received",
+      message: "Payment of ₱50,000 received",
       time: "2h ago",
       unread: false,
     },
@@ -97,13 +97,13 @@ export default function TopNavbar() {
       <div className="flex items-center justify-between gap-4 px-4 py-3.5 lg:px-6">
         {/* Left Section - Logo/Brand */}
         <div className="flex items-center gap-4">
-          <h1 className="hidden text-lg font-bold text-white md:block !text-white dark:!text-white">
+          <h1 className="hidden text-lg font-bold !text-white text-white dark:!text-white md:block">
             Ashley AI
           </h1>
         </div>
 
         {/* Center Section - Search (Desktop & Tablet) */}
-        <div className="hidden flex-1 max-w-md mx-4 sm:block" ref={searchRef}>
+        <div className="mx-4 hidden max-w-md flex-1 sm:block" ref={searchRef}>
           <div className="relative">
             <HydrationSafeIcon
               Icon={Search}
@@ -113,7 +113,7 @@ export default function TopNavbar() {
               type="text"
               placeholder="Search orders, clients, products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
               className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm text-white placeholder-white/60 transition-all focus:border-white/30 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
             />
@@ -130,7 +130,10 @@ export default function TopNavbar() {
             {!mounted ? (
               <div className="h-5 w-5" />
             ) : (
-              <HydrationSafeIcon Icon={showSearch ? X : Search} className="h-5 w-5" />
+              <HydrationSafeIcon
+                Icon={showSearch ? X : Search}
+                className="h-5 w-5"
+              />
             )}
           </button>
 
@@ -180,7 +183,9 @@ export default function TopNavbar() {
                       <div className="flex items-start gap-3">
                         <div
                           className={`mt-1.5 h-2 w-2 flex-shrink-0 rounded-full ${
-                            notification.unread ? "bg-primary" : "bg-muted-foreground/30"
+                            notification.unread
+                              ? "bg-primary"
+                              : "bg-muted-foreground/30"
                           }`}
                         ></div>
                         <div className="min-w-0 flex-1">
@@ -199,7 +204,7 @@ export default function TopNavbar() {
                   ))}
                 </div>
                 <div className="border-t border-border bg-muted/30 px-4 py-3 text-center">
-                  <button className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">
+                  <button className="text-sm font-semibold text-primary transition-colors hover:text-primary/80">
                     View all notifications
                   </button>
                 </div>
@@ -254,14 +259,17 @@ export default function TopNavbar() {
                     }}
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-accent/5"
                   >
-                    <HydrationSafeIcon Icon={Settings} className="h-4 w-4 text-muted-foreground" />
+                    <HydrationSafeIcon
+                      Icon={Settings}
+                      className="h-4 w-4 text-muted-foreground"
+                    />
                     <span className="font-medium">Settings</span>
                   </button>
                 </div>
                 <div className="border-t border-border bg-muted/30 py-2">
                   <button
                     onClick={handleLogout}
-                    className="mx-1 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm text-red-600 dark:text-red-400 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
+                    className="mx-1 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
                   >
                     <HydrationSafeIcon Icon={LogOut} className="h-4 w-4" />
                     <span className="font-semibold">Logout</span>
@@ -285,7 +293,7 @@ export default function TopNavbar() {
               type="text"
               placeholder="Search orders, clients, products..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
               autoFocus
               className="w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/60 transition-all focus:border-white/30 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"

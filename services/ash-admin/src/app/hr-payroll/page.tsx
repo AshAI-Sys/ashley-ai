@@ -249,7 +249,7 @@ export default function HRPayrollPage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return `â‚±${amount.toLocaleString()}`;
+    return `₱${amount.toLocaleString()}`;
   };
 
   const handleAddEmployee = async () => {
@@ -461,7 +461,10 @@ export default function HRPayrollPage() {
                 <div className="mt-2 flex items-center">
                   <Calendar className="mr-1 h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-600">
-                    Next run: {metrics.upcoming_payroll ? formatDateUtil(metrics.upcoming_payroll) : "TBD"}
+                    Next run:{" "}
+                    {metrics.upcoming_payroll
+                      ? formatDateUtil(metrics.upcoming_payroll)
+                      : "TBD"}
                   </span>
                 </div>
               </CardContent>
@@ -496,7 +499,7 @@ export default function HRPayrollPage() {
                 <div className="mb-6 flex gap-4">
                   <div className="max-w-sm flex-1">
                     <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                      <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-gray-500" />
                       <Input
                         placeholder="Search employees..."
                         value={searchQuery}
@@ -609,10 +612,13 @@ export default function HRPayrollPage() {
                             </div>
                             <div className="mt-2 flex gap-4 text-xs text-gray-500">
                               <span>
-                                Hired: {employee.hire_date ? formatDateUtil(employee.hire_date) : "Unknown"}
+                                Hired:{" "}
+                                {employee.hire_date
+                                  ? formatDateUtil(employee.hire_date)
+                                  : "Unknown"}
                               </span>
                               {employee.piece_rate && (
-                                <span>Piece Rate: â‚±{employee.piece_rate}</span>
+                                <span>Piece Rate: ₱{employee.piece_rate}</span>
                               )}
                             </div>
                           </div>
@@ -821,8 +827,14 @@ export default function HRPayrollPage() {
                           <div className="flex-1">
                             <div className="mb-2 flex items-center gap-3">
                               <h3 className="font-semibold">
-                                Payroll {payroll.period_start ? formatDateUtil(payroll.period_start) : "Unknown"} -{" "}
-                                {payroll.period_end ? formatDateUtil(payroll.period_end) : "Unknown"}
+                                Payroll{" "}
+                                {payroll.period_start
+                                  ? formatDateUtil(payroll.period_start)
+                                  : "Unknown"}{" "}
+                                -{" "}
+                                {payroll.period_end
+                                  ? formatDateUtil(payroll.period_end)
+                                  : "Unknown"}
                               </h3>
                               {getStatusBadge(payroll.status)}
                             </div>
@@ -849,7 +861,9 @@ export default function HRPayrollPage() {
                                 <span className="text-gray-600">Created:</span>
                                 <br />
                                 <span className="font-medium">
-                                  {payroll.created_at ? formatDateUtil(payroll.created_at) : "Unknown"}
+                                  {payroll.created_at
+                                    ? formatDateUtil(payroll.created_at)
+                                    : "Unknown"}
                                 </span>
                               </div>
                             </div>
@@ -1105,7 +1119,7 @@ export default function HRPayrollPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="mb-1 block text-sm font-medium">
-                      Base Salary (â‚±)
+                      Base Salary (₱)
                     </label>
                     <Input
                       type="number"
@@ -1121,7 +1135,7 @@ export default function HRPayrollPage() {
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">
-                      Piece Rate (â‚±)
+                      Piece Rate (₱)
                     </label>
                     <Input
                       type="number"
@@ -1185,7 +1199,7 @@ export default function HRPayrollPage() {
                 employeeId={selectedEmployee.id}
                 employeeName={`${selectedEmployee.first_name} ${selectedEmployee.last_name}`}
                 size="lg"
-                onUploadSuccess={(_url) => {
+                onUploadSuccess={_url => {
                   // Refetch employees to show updated picture
                   refetchEmployees();
                 }}

@@ -199,7 +199,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const formatCurrency = (amount: number) => `â‚±${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number) => `₱${amount.toLocaleString()}`;
 
   return (
     <div className="space-y-6">

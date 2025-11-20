@@ -23,7 +23,8 @@ import {
   FileText,
   Calculator,
   Download,
-  Building2, Users,
+  Building2,
+  Users,
   Receipt,
 } from "lucide-react";
 
@@ -141,7 +142,7 @@ export default function GovernmentReportsPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="salary">Monthly Salary (â‚±)</Label>
+                  <Label htmlFor="salary">Monthly Salary (₱)</Label>
                   <Input id="salary" type="number" placeholder="25000" />
                 </div>
                 <Button
@@ -159,15 +160,15 @@ export default function GovernmentReportsPage() {
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>Employee Share:</div>
                         <div className="font-medium">
-                          â‚±{contributionCalc.contributions.sss.ee_contribution}
+                          ₱{contributionCalc.contributions.sss.ee_contribution}
                         </div>
                         <div>Employer Share:</div>
                         <div className="font-medium">
-                          â‚±{contributionCalc.contributions.sss.er_contribution}
+                          ₱{contributionCalc.contributions.sss.er_contribution}
                         </div>
                         <div>EC Fund:</div>
                         <div className="font-medium">
-                          â‚±{contributionCalc.contributions.sss.ec_contribution}
+                          ₱{contributionCalc.contributions.sss.ec_contribution}
                         </div>
                       </div>
                     </div>
@@ -177,7 +178,7 @@ export default function GovernmentReportsPage() {
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>Employee Share:</div>
                         <div className="font-medium">
-                          â‚±
+                          ₱
                           {
                             contributionCalc.contributions.philhealth
                               .ee_contribution
@@ -185,7 +186,7 @@ export default function GovernmentReportsPage() {
                         </div>
                         <div>Employer Share:</div>
                         <div className="font-medium">
-                          â‚±
+                          ₱
                           {
                             contributionCalc.contributions.philhealth
                               .er_contribution
@@ -203,7 +204,7 @@ export default function GovernmentReportsPage() {
                           %):
                         </div>
                         <div className="font-medium">
-                          â‚±
+                          ₱
                           {
                             contributionCalc.contributions.pagibig
                               .ee_contribution
@@ -215,7 +216,7 @@ export default function GovernmentReportsPage() {
                           %):
                         </div>
                         <div className="font-medium">
-                          â‚±
+                          ₱
                           {
                             contributionCalc.contributions.pagibig
                               .er_contribution
@@ -229,11 +230,11 @@ export default function GovernmentReportsPage() {
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>Total Employee Deduction:</div>
                         <div className="font-bold text-red-600">
-                          â‚±{contributionCalc.totals.total_employee_deduction}
+                          ₱{contributionCalc.totals.total_employee_deduction}
                         </div>
                         <div>Total Employer Contribution:</div>
                         <div className="font-bold text-blue-600">
-                          â‚±{contributionCalc.totals.total_employer_contribution}
+                          ₱{contributionCalc.totals.total_employer_contribution}
                         </div>
                       </div>
                     </div>
@@ -261,7 +262,7 @@ export default function GovernmentReportsPage() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="vat_amount">Amount (â‚±)</Label>
+                  <Label htmlFor="vat_amount">Amount (₱)</Label>
                   <Input id="vat_amount" type="number" placeholder="11200" />
                 </div>
                 <Button
@@ -276,11 +277,11 @@ export default function GovernmentReportsPage() {
                   <div className="space-y-4 border-t pt-4">
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>Net Amount:</div>
-                      <div className="font-medium">â‚±{vatCalc.result.net}</div>
+                      <div className="font-medium">₱{vatCalc.result.net}</div>
                       <div>VAT (12%):</div>
-                      <div className="font-medium">â‚±{vatCalc.result.vat}</div>
+                      <div className="font-medium">₱{vatCalc.result.vat}</div>
                       <div className="font-semibold">Gross Amount:</div>
-                      <div className="font-bold">â‚±{vatCalc.result.gross}</div>
+                      <div className="font-bold">₱{vatCalc.result.gross}</div>
                     </div>
                   </div>
                 )}
@@ -380,9 +381,12 @@ export default function GovernmentReportsPage() {
                     â€¢ Reports include all active employees with registered
                     government numbers
                   </li>
-                  <li>â€¢ Calculations use 2025 contribution rates and tables</li>
                   <li>
-                    â€¢ Reports are generated in JSON format - Copy data to Excel for filing
+                    â€¢ Calculations use 2025 contribution rates and tables
+                  </li>
+                  <li>
+                    â€¢ Reports are generated in JSON format - Copy data to
+                    Excel for filing
                   </li>
                   <li>
                     â€¢ Ensure employee government numbers are updated before

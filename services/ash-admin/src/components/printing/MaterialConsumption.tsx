@@ -33,7 +33,8 @@ import {
   Plus,
   Search,
   Trash2,
-  Save, CheckCircle,
+  Save,
+  CheckCircle,
 } from "lucide-react";
 
 interface Material {
@@ -340,7 +341,7 @@ export default function MaterialConsumption({
             </div>
             <div className="rounded-lg bg-green-50 p-3 text-center">
               <div className="text-2xl font-bold text-green-600">
-                â‚±{getTotalCost().toFixed(2)}
+                ₱{getTotalCost().toFixed(2)}
               </div>
               <p className="text-sm text-muted-foreground">Total Cost</p>
             </div>
@@ -502,7 +503,7 @@ export default function MaterialConsumption({
                             <div className="flex items-center justify-between">
                               <span>Estimated Cost:</span>
                               <span className="font-bold text-green-600">
-                                â‚±
+                                ₱
                                 {(
                                   parseFloat(newConsumption.quantity || "0") *
                                   (materials.find(
@@ -570,7 +571,7 @@ export default function MaterialConsumption({
                       )}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {material.quantity} {material.unit} â€¢ â‚±
+                      {material.quantity} {material.unit} â€¢ ₱
                       {material.cost.toFixed(2)}
                       {material.notes && (
                         <span className="ml-2 italic">({material.notes})</span>

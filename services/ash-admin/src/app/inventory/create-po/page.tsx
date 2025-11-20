@@ -56,7 +56,7 @@ function CreatePOForm() {
       unit_price: "",
       tax_rate: "0",
       discount_percent: "0",
-      total: 0
+      total: 0,
     },
   ]);
 
@@ -64,11 +64,14 @@ function CreatePOForm() {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("/api/inventory/suppliers?status=active&limit=100", {
-          headers: {
-            "x-workspace-id": "default-workspace",
-          },
-        });
+        const response = await fetch(
+          "/api/inventory/suppliers?status=active&limit=100",
+          {
+            headers: {
+              "x-workspace-id": "default-workspace",
+            },
+          }
+        );
         const data = await response.json();
         if (data.success) {
           setSuppliers(data.suppliers || []);
@@ -335,7 +338,10 @@ function CreatePOForm() {
                 required
                 value={formData.expected_delivery}
                 onChange={e =>
-                  setFormData({ ...formData, expected_delivery: e.target.value })
+                  setFormData({
+                    ...formData,
+                    expected_delivery: e.target.value,
+                  })
                 }
                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
               />
@@ -420,7 +426,11 @@ function CreatePOForm() {
                           required
                           value={item.material_name}
                           onChange={e =>
-                            updateLineItem(item.id, "material_name", e.target.value)
+                            updateLineItem(
+                              item.id,
+                              "material_name",
+                              e.target.value
+                            )
                           }
                           className="w-32 rounded border border-gray-300 px-2 py-1 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
                           placeholder="Material name"
@@ -431,7 +441,11 @@ function CreatePOForm() {
                           required
                           value={item.material_type}
                           onChange={e =>
-                            updateLineItem(item.id, "material_type", e.target.value)
+                            updateLineItem(
+                              item.id,
+                              "material_type",
+                              e.target.value
+                            )
                           }
                           className="w-28 rounded border border-gray-300 px-2 py-1 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
                         >
@@ -450,7 +464,11 @@ function CreatePOForm() {
                           type="text"
                           value={item.description}
                           onChange={e =>
-                            updateLineItem(item.id, "description", e.target.value)
+                            updateLineItem(
+                              item.id,
+                              "description",
+                              e.target.value
+                            )
                           }
                           className="w-40 rounded border border-gray-300 px-2 py-1 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
                           placeholder="Optional description"
@@ -493,7 +511,11 @@ function CreatePOForm() {
                           required
                           value={item.unit_price}
                           onChange={e =>
-                            updateLineItem(item.id, "unit_price", e.target.value)
+                            updateLineItem(
+                              item.id,
+                              "unit_price",
+                              e.target.value
+                            )
                           }
                           className="w-24 rounded border border-gray-300 px-2 py-1 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
                           placeholder="0.00"
@@ -517,7 +539,11 @@ function CreatePOForm() {
                           step="0.1"
                           value={item.discount_percent}
                           onChange={e =>
-                            updateLineItem(item.id, "discount_percent", e.target.value)
+                            updateLineItem(
+                              item.id,
+                              "discount_percent",
+                              e.target.value
+                            )
                           }
                           className="w-16 rounded border border-gray-300 px-2 py-1 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
                           placeholder="0"
@@ -525,7 +551,7 @@ function CreatePOForm() {
                       </td>
                       <td className="px-3 py-3">
                         <span className="font-medium text-gray-900">
-                          â‚±{item.total.toFixed(2)}
+                          ₱{item.total.toFixed(2)}
                         </span>
                       </td>
                       <td className="px-3 py-3">
@@ -551,19 +577,19 @@ function CreatePOForm() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>
                     <span className="font-medium text-gray-900">
-                      â‚±{calculateSubtotal().toFixed(2)}
+                      ₱{calculateSubtotal().toFixed(2)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Tax:</span>
                     <span className="font-medium text-gray-900">
-                      â‚±{calculateTax().toFixed(2)}
+                      ₱{calculateTax().toFixed(2)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Shipping:</span>
                     <span className="font-medium text-gray-900">
-                      â‚±{parseFloat(formData.shipping_cost || "0").toFixed(2)}
+                      ₱{parseFloat(formData.shipping_cost || "0").toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t border-gray-300 pt-2">
@@ -572,7 +598,7 @@ function CreatePOForm() {
                         Total Amount:
                       </span>
                       <span className="text-2xl font-bold text-blue-600">
-                        â‚±{calculateTotal().toFixed(2)}
+                        ₱{calculateTotal().toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -603,14 +629,14 @@ function CreatePOForm() {
               type="button"
               onClick={() => router.push("/inventory")}
               disabled={loading}
-              className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-lg border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               {loading ? "Creating..." : "Create Purchase Order"}
@@ -637,4 +663,3 @@ export default function CreatePOPage() {
     </Suspense>
   );
 }
-

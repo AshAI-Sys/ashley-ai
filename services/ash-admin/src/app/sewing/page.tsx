@@ -25,13 +25,15 @@ import {
   Scissors,
   Play,
   Pause,
-  Square, Clock,
+  Square,
+  Clock,
   TrendingUp,
   Users,
   AlertCircle,
   CheckCircle,
   QrCode,
-  Search, Filter,
+  Search,
+  Filter,
   Plus,
   Eye,
   BarChart3,
@@ -584,7 +586,7 @@ export default function SewingPage() {
               <CardContent className="py-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+                    <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search runs..."
                       value={filters.search}
@@ -750,7 +752,7 @@ export default function SewingPage() {
                             <span className="font-medium">Pay:</span>
                             <br />
                             {run.piece_rate_pay
-                              ? `â‚±${run.piece_rate_pay.toFixed(2)}`
+                              ? `₱${run.piece_rate_pay.toFixed(2)}`
                               : "Pending"}
                           </div>
                           <div>
@@ -1014,7 +1016,7 @@ export default function SewingPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>Total Earnings</span>
-                      <span className="font-medium">â‚±1,450.00</span>
+                      <span className="font-medium">₱1,450.00</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Reject Rate</span>
@@ -1040,7 +1042,7 @@ export default function SewingPage() {
                           <div>
                             <p className="font-medium">{operation.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {operation.standard_minutes}min â€¢ â‚±
+                              {operation.standard_minutes}min â€¢ ₱
                               {operation.piece_rate?.toFixed(2)}
                             </p>
                           </div>

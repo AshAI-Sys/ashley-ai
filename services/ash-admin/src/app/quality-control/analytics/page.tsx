@@ -7,7 +7,8 @@ import {
   TrendingDown,
   AlertTriangle,
   CheckCircle,
-  XCircle, Calendar,
+  XCircle,
+  Calendar,
   Filter,
   Download,
 } from "lucide-react";
@@ -402,10 +403,10 @@ export default function QCAnalyticsPage() {
             />
             <MetricCard
               title="Cost of Quality"
-              value={`â‚±${(metrics.cost_of_quality / 1000).toFixed(0)}K`}
+              value={`₱${(metrics.cost_of_quality / 1000).toFixed(0)}K`}
               icon={TrendingDown}
               trend="down"
-              trendValue="â†“ â‚±8K from last period"
+              trendValue="â†“ ₱8K from last period"
             />
             <MetricCard
               title="Customer Complaints"
@@ -610,7 +611,9 @@ export default function QCAnalyticsPage() {
                   </p>
                 </div>
                 <div>
-                  <span className="font-medium text-blue-600">â†’ Forecast:</span>
+                  <span className="font-medium text-blue-600">
+                    â†’ Forecast:
+                  </span>
                   <p className="mt-1 text-gray-600">
                     Expected to achieve 2.3% defect rate by month-end if current
                     trend continues. Quality target of &lt;2.5% within reach.

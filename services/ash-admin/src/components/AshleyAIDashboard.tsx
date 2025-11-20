@@ -17,7 +17,8 @@ import {
   AlertTriangle,
   TrendingUp,
   TrendingDown,
-  Target, Clock,
+  Target,
+  Clock,
   Shield,
   Wrench,
   Users,
@@ -532,7 +533,8 @@ export function AshleyAIDashboard() {
                 </p>
               </div>
 
-              {(insights?.insights.workforce.data.fatigue_alerts?.length || 0) > 0 && (
+              {(insights?.insights.workforce.data.fatigue_alerts?.length || 0) >
+                0 && (
                 <div className="space-y-2">
                   <h4 className="font-medium">Fatigue Alerts</h4>
                   <div className="space-y-2">
@@ -609,8 +611,8 @@ export function AshleyAIDashboard() {
                 </p>
               </div>
 
-              {(insights?.insights.maintenance.data.immediate_attention?.length ||
-                0) > 0 && (
+              {(insights?.insights.maintenance.data.immediate_attention
+                ?.length || 0) > 0 && (
                 <Alert className="border-red-200 bg-red-50">
                   <AlertTriangle className="h-4 w-4 text-red-600" />
                   <AlertDescription>
@@ -681,7 +683,7 @@ export function AshleyAIDashboard() {
                                 {maintenance.urgency}
                               </Badge>
                               <div className="text-sm text-gray-600">
-                                Est. â‚±
+                                Est. ₱
                                 {maintenance.estimated_cost.toLocaleString()}
                               </div>
                             </div>

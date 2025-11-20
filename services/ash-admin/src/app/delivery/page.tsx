@@ -1,7 +1,7 @@
 ﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,8 @@ import {
   Phone,
   Navigation,
   Plus,
-  Search, Filter,
+  Search,
+  Filter,
   Eye,
   Edit,
   Printer,
@@ -316,7 +317,7 @@ export default function DeliveryPage() {
               <Printer className="mr-2 h-4 w-4" />
               Dispatch Reports
             </Button>
-            <Button onClick={() => router.push('/inventory/warehouse')}>
+            <Button onClick={() => router.push("/inventory/warehouse")}>
               <Plus className="mr-2 h-4 w-4" />
               New Shipment
             </Button>
@@ -482,7 +483,7 @@ export default function DeliveryPage() {
             <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500 pointer-events-none" />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
                   <Input
                     type="text"
                     placeholder="Search shipments..."
@@ -553,7 +554,8 @@ export default function DeliveryPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div><table className="min-w-full divide-y divide-gray-200">
+            <div>
+              <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -649,7 +651,7 @@ export default function DeliveryPage() {
                             </div>
                             {shipment.cod_amount && (
                               <div className="text-sm font-medium text-green-600">
-                                COD: â‚±{shipment.cod_amount.toLocaleString()}
+                                COD: ₱{shipment.cod_amount.toLocaleString()}
                               </div>
                             )}
                           </td>
@@ -661,7 +663,9 @@ export default function DeliveryPage() {
                               })}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {shipment.eta ? formatDateUtil(shipment.eta) : "-"}
+                              {shipment.eta
+                                ? formatDateUtil(shipment.eta)
+                                : "-"}
                             </div>
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">

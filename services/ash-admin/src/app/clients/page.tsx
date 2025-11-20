@@ -1,7 +1,7 @@
 ﻿"use client";
 
 // Force dynamic rendering (don't pre-render during build)
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Plus,
+import {
+  Plus,
   Search,
   Filter,
   Eye,
@@ -98,16 +99,18 @@ export default function ClientsPage() {
 
   const ____formatCurrency = (amount: number | null) => {
     if (amount === null || amount === undefined) return "No limit";
-    return `â‚±${amount.toLocaleString()}`;
+    return `₱${amount.toLocaleString()}`;
   };
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto py-6 min-h-screen bg-white">
+      <div className="container mx-auto min-h-screen bg-white py-6">
         {/* Page Header - Responsive */}
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">Clients</h1>
+            <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
+              Clients
+            </h1>
             <p className="text-sm text-gray-600 lg:text-base">
               Manage your clients and their information
             </p>
@@ -137,7 +140,7 @@ export default function ClientsPage() {
             <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+                  <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search clients..."
                     value={search}
@@ -269,11 +272,15 @@ export default function ClientsPage() {
                       <div className="mt-3 hidden gap-4 text-xs text-muted-foreground sm:flex">
                         <span>
                           Created{" "}
-                          {client.created_at ? formatDateUtil(client.created_at) : "Unknown"}
+                          {client.created_at
+                            ? formatDateUtil(client.created_at)
+                            : "Unknown"}
                         </span>
                         <span>
                           Updated{" "}
-                          {client.updated_at ? formatDateUtil(client.updated_at) : "Unknown"}
+                          {client.updated_at
+                            ? formatDateUtil(client.updated_at)
+                            : "Unknown"}
                         </span>
                       </div>
                     </div>

@@ -199,7 +199,7 @@ export function VariantsAddonsSection({
         case "per_piece":
           return total + addOn.price * totalQuantity;
         case "percentage":
-          // Base on a standard unit price of â‚±200 for percentage calculations
+          // Base on a standard unit price of ₱200 for percentage calculations
           return total + (200 * totalQuantity * addOn.price) / 100;
         default:
           return total;
@@ -397,9 +397,9 @@ export function VariantsAddonsSection({
   const formatPrice = (addOn: AddOn) => {
     switch (addOn.priceType) {
       case "fixed":
-        return `â‚±${addOn.price.toLocaleString()}`;
+        return `₱${addOn.price.toLocaleString()}`;
       case "per_piece":
-        return `â‚±${addOn.price}/pc`;
+        return `₱${addOn.price}/pc`;
       case "percentage":
         return `+${addOn.price}%`;
       default:
@@ -667,7 +667,7 @@ export function VariantsAddonsSection({
                               {selectedAddOns.includes(addOn.id) &&
                                 addOn.priceType !== "percentage" && (
                                   <div className="mt-2 text-xs text-blue-600">
-                                    Total: â‚±
+                                    Total: ₱
                                     {(addOn.priceType === "fixed"
                                       ? addOn.price
                                       : addOn.price * totalQuantity
@@ -770,7 +770,7 @@ export function VariantsAddonsSection({
                                 </Label>
                                 <Input
                                   type="number"
-                                  placeholder={`Default: â‚±${addOn.price}`}
+                                  placeholder={`Default: ₱${addOn.price}`}
                                   value={customization?.customPrice || ""}
                                   onChange={e =>
                                     updateCustomization(
@@ -786,8 +786,8 @@ export function VariantsAddonsSection({
                             </div>
 
                             <div className="rounded bg-white/50 p-2 text-xs text-muted-foreground">
-                              ðŸ’¡ Tip: Leave quantity/price blank to use default
-                              values
+                              ðŸ’¡ Tip: Leave quantity/price blank to use
+                              default values
                             </div>
                           </div>
                         )}
@@ -904,7 +904,7 @@ export function VariantsAddonsSection({
                                     Price{" "}
                                     {addOn.priceType === "percentage"
                                       ? "(%)"
-                                      : "(â‚±)"}
+                                      : "(₱)"}
                                   </Label>
                                   <Input
                                     type="number"
@@ -952,7 +952,7 @@ export function VariantsAddonsSection({
                               {selectedAddOns.includes(addOn.id) &&
                                 addOn.priceType !== "percentage" && (
                                   <div className="rounded bg-purple-100 p-2 text-xs text-purple-600">
-                                    Total: â‚±
+                                    Total: ₱
                                     {(addOn.priceType === "fixed"
                                       ? addOn.price
                                       : addOn.price * totalQuantity
@@ -1065,7 +1065,7 @@ export function VariantsAddonsSection({
                   >
                     <span>{addOn.name}</span>
                     <span className="font-medium text-green-700">
-                      â‚±{cost.toLocaleString()}
+                      ₱{cost.toLocaleString()}
                     </span>
                   </div>
                 );

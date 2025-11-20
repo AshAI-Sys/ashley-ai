@@ -13,7 +13,8 @@ import { Progress } from "@/components/ui/progress";
 import {
   TrendingUp,
   TrendingDown,
-  Clock, Target,
+  Clock,
+  Target,
   Zap,
   BarChart3,
   Activity,
@@ -419,13 +420,13 @@ export default function EfficiencyTracker({
                 <div className="flex justify-between">
                   <span>Current Earnings:</span>
                   <span className="font-medium">
-                    â‚±{efficiencyData.earned_pay.toFixed(2)}
+                    ₱{efficiencyData.earned_pay.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Projected Earnings:</span>
                   <span className="font-medium">
-                    â‚±{efficiencyData.projected_pay.toFixed(2)}
+                    ₱{efficiencyData.projected_pay.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">

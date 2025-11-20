@@ -24,7 +24,8 @@ import {
   MessageSquare,
   Send,
   CheckCircle,
-  AlertCircle, DollarSign,
+  AlertCircle,
+  DollarSign,
   Shield,
 } from "lucide-react";
 
@@ -189,7 +190,7 @@ export default function SMSNotificationsPage() {
                       ? "Configured"
                       : "Not configured"}
                     {status.balances?.semaphore &&
-                      ` â€¢ â‚±${status.balances.semaphore.toFixed(2)}`}
+                      ` â€¢ ₱${status.balances.semaphore.toFixed(2)}`}
                   </p>
                 </div>
               </div>
@@ -202,7 +203,7 @@ export default function SMSNotificationsPage() {
                   <p className="text-sm text-muted-foreground">
                     {status.providers.movider ? "Configured" : "Not configured"}
                     {status.balances?.movider &&
-                      ` â€¢ â‚±${status.balances.movider.toFixed(2)}`}
+                      ` â€¢ ₱${status.balances.movider.toFixed(2)}`}
                   </p>
                 </div>
               </div>

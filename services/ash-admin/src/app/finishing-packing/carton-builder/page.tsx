@@ -7,11 +7,14 @@ import {
   Plus,
   Minus,
   ArrowLeft,
-  Save, AlertTriangle,
+  Save,
+  AlertTriangle,
   CheckCircle,
-  Box, Scale,
+  Box,
+  Scale,
   Maximize,
-  Zap, Calculator,
+  Zap,
+  Calculator,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -649,7 +652,7 @@ export default function CartonBuilderPage() {
                               Shipping Cost
                             </div>
                             <div className="text-lg font-bold text-blue-900">
-                              â‚±
+                              ₱
                               {optimization.cost_analysis.shipping_cost.toFixed(
                                 2
                               )}
@@ -660,7 +663,7 @@ export default function CartonBuilderPage() {
                               Material Cost
                             </div>
                             <div className="text-lg font-bold text-green-900">
-                              â‚±
+                              ₱
                               {optimization.cost_analysis.material_cost.toFixed(
                                 2
                               )}
@@ -671,7 +674,7 @@ export default function CartonBuilderPage() {
                               Total Cost
                             </div>
                             <div className="text-lg font-bold text-purple-900">
-                              â‚±
+                              ₱
                               {optimization.cost_analysis.total_cost.toFixed(2)}
                             </div>
                           </div>

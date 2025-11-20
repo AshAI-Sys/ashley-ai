@@ -72,9 +72,10 @@ export default function MobileProductionInterface({
   const [rejectCount, setRejectCount] = useState("");
 
   // Touch-optimized state management
-  const [_touchStart, _setTouchStart] = useState<{ x: number; y: number } | null>(
-    null
-  );
+  const [_touchStart, _setTouchStart] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   useEffect(() => {
     if (runId) {
@@ -169,7 +170,7 @@ export default function MobileProductionInterface({
 
     // Update efficiency based on progress
     // Unused: const ____progressPercentage =
-      (updatedRun.completed / updatedRun.bundle_qty) * 100;
+    (updatedRun.completed / updatedRun.bundle_qty) * 100;
     const timeElapsed =
       (Date.now() - new Date(updatedRun.time_started).getTime()) / (1000 * 60);
     const expectedTime = updatedRun.completed * 1.5; // SMV
@@ -289,8 +290,8 @@ export default function MobileProductionInterface({
                   {currentRun.operation_name}
                 </CardTitle>
                 <CardDescription>
-                  Bundle Size {currentRun.bundle_size} â€¢ {currentRun.bundle_qty}{" "}
-                  pieces
+                  Bundle Size {currentRun.bundle_size} â€¢{" "}
+                  {currentRun.bundle_qty} pieces
                 </CardDescription>
               </div>
               <Badge className={getStatusColor(currentRun.status)}>
@@ -358,7 +359,7 @@ export default function MobileProductionInterface({
               <div className="rounded-lg bg-green-50 p-3 text-center">
                 <DollarSign className="mx-auto mb-1 h-6 w-6 text-green-600" />
                 <div className="text-xl font-bold text-green-600">
-                  â‚±{currentRun.earnings.toFixed(2)}
+                  ₱{currentRun.earnings.toFixed(2)}
                 </div>
                 <div className="text-xs text-green-700">Earned</div>
               </div>
