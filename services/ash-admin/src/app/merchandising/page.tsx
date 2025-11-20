@@ -462,9 +462,9 @@ export default function MerchandisingAI() {
                           confidence
                         </Badge>
                         <p className="mt-1 text-xs text-gray-600">
-                          {new Date(
+                          {formatDateUtil(
                             forecast.forecast_date
-                          ).toLocaleDateString()}
+                          )}
                         </p>
                       </div>
                     </div>
@@ -566,16 +566,16 @@ export default function MerchandisingAI() {
                               </span>
                               <span className="text-xs text-gray-500">
                                 Started:{" "}
-                                {new Date(
+                                {formatDateUtil(
                                   trend.start_date
-                                ).toLocaleDateString()}
+                                )}
                               </span>
                               {trend.end_date && (
                                 <span className="text-xs text-gray-500">
                                   Ends:{" "}
-                                  {new Date(
+                                  {formatDateUtil(
                                     trend.end_date
-                                  ).toLocaleDateString()}
+                                  )}
                                 </span>
                               )}
                             </div>

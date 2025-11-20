@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 // Unused import removed: ApprovalStatus
 import {
   Send,
@@ -169,15 +170,7 @@ export function ApprovalTimeline({
 
                         <div className="ml-4 flex items-center gap-1 text-xs text-gray-500">
                           <Calendar className="h-3 w-3" />
-                          {new Date(event.timestamp).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            }
-                          )}
+                          {formatDateUtil(event.timestamp)}
                         </div>
                       </div>
                     </div>

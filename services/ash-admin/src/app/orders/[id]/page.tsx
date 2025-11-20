@@ -15,6 +15,7 @@ import {
   Activity,
 } from "lucide-react";
 import { ActivityTab } from "@/components/audit/activity-tab";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Order {
   id: string;
@@ -109,13 +110,10 @@ export default function OrderDetailPage() {
     return status.replace(/_/g, " ").toUpperCase();
   };
 
+  // Using formatDateUtil from utils/date instead
   const formatDate = (date: string | null) => {
     if (!date) return "N/A";
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    return formatDateUtil(date);
   };
 
   const formatCurrency = (amount: number, currency: string) => {

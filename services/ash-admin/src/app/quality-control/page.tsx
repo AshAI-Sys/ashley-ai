@@ -567,9 +567,9 @@ export default function QualityControlPage() {
                           {getStatusBadge(inspection.status, inspection.result)}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                          {new Date(
+                          {formatDateUtil(
                             inspection.inspection_date
-                          ).toLocaleDateString()}
+                          )}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
                           <div className="flex items-center space-x-2">

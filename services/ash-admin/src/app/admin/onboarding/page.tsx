@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/dashboard-layout";
 import PermissionGate from "@/components/PermissionGate";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 import {
   UserPlus,
   Clock,
@@ -156,11 +157,7 @@ export default function OnboardingManagementPage() {
     }
   };
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    return formatDateUtil(dateString);
   };
   const isOverdue = (process: OnboardingProcess) => {
     return (
