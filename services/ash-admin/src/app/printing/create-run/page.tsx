@@ -135,7 +135,9 @@ export default function CreatePrintRunPage() {
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch orders: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch orders: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -567,6 +569,7 @@ export default function CreatePrintRunPage() {
                       type="button"
                       className="flex items-center gap-3 rounded-lg border p-4 text-left transition-colors hover:border-blue-500 hover:bg-blue-50"
                       onClick={() => setFormData({ ...formData, method })}
+                      aria-label={`Select ${method} printing method`}
                     >
                       <HydrationSafeIcon
                         Icon={Icon}
@@ -675,6 +678,8 @@ export default function CreatePrintRunPage() {
                       size="sm"
                       onClick={() => removeMachine(index)}
                       className="mt-8 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      aria-label="Remove machine allocation"
+                      title="Remove machine allocation"
                     >
                       <HydrationSafeIcon Icon={Trash2} className="h-4 w-4" />
                     </Button>
