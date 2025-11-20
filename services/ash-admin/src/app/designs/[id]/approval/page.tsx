@@ -224,6 +224,11 @@ export default function DesignApprovalPage() {
   const fetchApprovalHistory = async (id: string) => {
     try {
       const response = await fetch(`/api/designs/${id}/approval-history`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch approval history: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       if (data.success) {

@@ -15,7 +15,7 @@ import {
   Search,
   Download,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -134,6 +134,11 @@ function ProductsTab() {
   const fetchProducts = async () => {
     try {
       const response = await fetch("/api/inventory/products");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+      }
+
       const result = await response.json();
       if (result.success) {
         setProducts(result.data);
@@ -157,6 +162,10 @@ function ProductsTab() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+
+      if (!response.ok) {
+        throw new Error(`Failed to create product: ${response.status} ${response.statusText}`);
+      }
 
       const result = await response.json();
       if (result.success) {

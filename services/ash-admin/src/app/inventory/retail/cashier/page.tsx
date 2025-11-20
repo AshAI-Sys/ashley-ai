@@ -13,7 +13,7 @@ import {
   ArrowLeft,
   Percent,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 interface CartItem {
   variant_id: string;
@@ -62,6 +62,11 @@ export default function CashierPage() {
       const response = await fetch(
         `/api/inventory/product/${productId}${variantId ? `?v=${variantId}` : ""}`
       );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch product: ${response.status} ${response.statusText}`);
+      }
+
       const result = await response.json();
 
       if (result.success) {

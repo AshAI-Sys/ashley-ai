@@ -94,6 +94,11 @@ export default function DesignUploadPage() {
       const response = await fetch(
         "/api/orders?include=brand,client&status=INTAKE,DESIGN_PENDING"
       );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch orders: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
       if (data.success) {
         setOrders(data.data);

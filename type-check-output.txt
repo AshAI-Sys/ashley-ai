@@ -1,0 +1,95 @@
+
+> ash-ai@1.1.0 type-check C:\Users\Khell\Desktop\Ashley AI
+> turbo run type-check
+
+turbo 2.5.8
+
+• Packages in scope: @ash-ai/ai, @ash-ai/auth, @ash-ai/database, @ash-ai/design, @ash-ai/eslint-config, @ash-ai/production, @ash-ai/quality, @ash-ai/typescript-config, @ash-ai/ui, @ash/admin, @ash/events, @ash/mobile, @ash/shared, @ash/types
+• Running type-check in 14 packages
+• Remote caching disabled
+@ash-ai/database:db:generate: cache bypass, force executing 666789530211bb2f
+@ash/types:build: cache hit, replaying logs 8eedbc2624c682cb
+@ash/types:build: 
+@ash/types:build: > @ash/types@1.0.0 build C:\Users\Khell\Desktop\Ashley AI\packages\types
+@ash/types:build: > tsc
+@ash/types:build: 
+@ash/admin:type-check: cache miss, executing 717b9010d08f96a4
+@ash-ai/ui:type-check: cache hit, replaying logs 9d62d6ff655e818a
+@ash-ai/ui:type-check: 
+@ash-ai/ui:type-check: > @ash-ai/ui@0.0.0 type-check C:\Users\Khell\Desktop\Ashley AI\packages\ui
+@ash-ai/ui:type-check: > tsc --noEmit
+@ash-ai/ui:type-check: 
+@ash-ai/database:db:generate: 
+@ash-ai/database:db:generate: > @ash-ai/database@0.0.0 db:generate C:\Users\Khell\Desktop\Ashley AI\packages\database
+@ash-ai/database:db:generate: > npx prisma generate
+@ash-ai/database:db:generate: 
+@ash/admin:type-check: 
+@ash/admin:type-check: > @ash/admin@1.0.0 type-check C:\Users\Khell\Desktop\Ashley AI\services\ash-admin
+@ash/admin:type-check: > tsc --noEmit
+@ash/admin:type-check: 
+@ash-ai/database:db:generate: Environment variables loaded from .env
+@ash-ai/database:db:generate: Prisma schema loaded from prisma\schema.prisma
+@ash-ai/database:db:generate: 
+@ash-ai/database:db:generate: ✔ Generated Prisma Client (v5.22.0) to .\..\..\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client in 4.60s
+@ash-ai/database:db:generate: 
+@ash-ai/database:db:generate: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+@ash-ai/database:db:generate: 
+@ash-ai/database:db:generate: Help us improve the Prisma ORM for everyone. Share your feedback in a short 2-min survey: https://pris.ly/orm/survey/release-5-22
+@ash-ai/database:db:generate: 
+@ash-ai/database:build: cache miss, executing 2175f109566ad8e9
+@ash-ai/database:type-check: cache miss, executing 2f600b7d9d061c99
+@ash-ai/database:build: 
+@ash-ai/database:build: > @ash-ai/database@0.0.0 build C:\Users\Khell\Desktop\Ashley AI\packages\database
+@ash-ai/database:build: > tsc
+@ash-ai/database:build: 
+@ash-ai/database:type-check: 
+@ash-ai/database:type-check: > @ash-ai/database@0.0.0 type-check C:\Users\Khell\Desktop\Ashley AI\packages\database
+@ash-ai/database:type-check: > tsc --noEmit
+@ash-ai/database:type-check: 
+@ash-ai/ai:build: cache miss, executing 1cb7db9ef9bc478c
+@ash-ai/auth:type-check: cache miss, executing 59b3f8595f2021c2
+@ash-ai/ai:build: 
+@ash-ai/ai:build: > @ash-ai/ai@0.1.0 build C:\Users\Khell\Desktop\Ashley AI\packages\ai
+@ash-ai/ai:build: > tsup
+@ash-ai/ai:build: 
+@ash-ai/auth:type-check: 
+@ash-ai/auth:type-check: > @ash-ai/auth@0.0.0 type-check C:\Users\Khell\Desktop\Ashley AI\packages\auth
+@ash-ai/auth:type-check: > tsc --noEmit
+@ash-ai/auth:type-check: 
+@ash-ai/ai:build: [34mCLI[39m Building entry: src/index.ts, src/types.ts, src/validation.ts
+@ash-ai/ai:build: [34mCLI[39m Using tsconfig: ..\..\tsconfig.json
+@ash-ai/ai:build: [34mCLI[39m tsup v8.5.0
+@ash-ai/ai:build: [34mCLI[39m Using tsup config: C:\Users\Khell\Desktop\Ashley AI\packages\ai\tsup.config.ts
+@ash-ai/ai:build: [34mCLI[39m Target: es2020
+@ash-ai/ai:build: [34mCLI[39m Cleaning output folder
+@ash-ai/ai:build: [34mCJS[39m Build start
+@ash-ai/ai:build: [34mESM[39m Build start
+@ash-ai/ai:build: [33mCJS[39m [33mYou have emitDecoratorMetadata enabled but @swc/core was not installed, skipping swc plugin[39m
+@ash-ai/ai:build: [33mESM[39m [33mYou have emitDecoratorMetadata enabled but @swc/core was not installed, skipping swc plugin[39m
+@ash-ai/ai:build: [32mCJS[39m [1mdist\index.js          [22m[32m21.77 KB[39m
+@ash-ai/ai:build: [32mCJS[39m [1mdist\types.js          [22m[32m777.00 B[39m
+@ash-ai/ai:build: [32mCJS[39m [1mdist\validation.js     [22m[32m5.56 KB[39m
+@ash-ai/ai:build: [32mCJS[39m [1mdist\index.js.map      [22m[32m38.35 KB[39m
+@ash-ai/ai:build: [32mCJS[39m [1mdist\validation.js.map [22m[32m6.50 KB[39m
+@ash-ai/ai:build: [32mCJS[39m [1mdist\types.js.map      [22m[32m1.84 KB[39m
+@ash-ai/ai:build: [32mCJS[39m ⚡️ Build success in 202ms
+@ash-ai/ai:build: [32mESM[39m [1mdist\index.mjs          [22m[32m18.44 KB[39m
+@ash-ai/ai:build: [32mESM[39m [1mdist\validation.mjs     [22m[32m3.20 KB[39m
+@ash-ai/ai:build: [32mESM[39m [1mdist\types.mjs          [22m[32m34.00 B[39m
+@ash-ai/ai:build: [32mESM[39m [1mdist\index.mjs.map      [22m[32m38.18 KB[39m
+@ash-ai/ai:build: [32mESM[39m [1mdist\types.mjs.map      [22m[32m71.00 B[39m
+@ash-ai/ai:build: [32mESM[39m [1mdist\validation.mjs.map [22m[32m6.42 KB[39m
+@ash-ai/ai:build: [32mESM[39m ⚡️ Build success in 204ms
+@ash-ai/ai:build: [34mDTS[39m Build start
+@ash-ai/ai:build: [32mDTS[39m ⚡️ Build success in 24425ms
+@ash-ai/ai:build: [32mDTS[39m [1mdist\index.d.ts       [22m[32m4.30 KB[39m
+@ash-ai/ai:build: [32mDTS[39m [1mdist\types.d.ts       [22m[32m1.65 KB[39m
+@ash-ai/ai:build: [32mDTS[39m [1mdist\validation.d.ts  [22m[32m12.44 KB[39m
+@ash-ai/ai:build: [32mDTS[39m [1mdist\index.d.mts      [22m[32m4.31 KB[39m
+@ash-ai/ai:build: [32mDTS[39m [1mdist\types.d.mts      [22m[32m1.65 KB[39m
+@ash-ai/ai:build: [32mDTS[39m [1mdist\validation.d.mts [22m[32m12.44 KB[39m
+
+ Tasks:    8 successful, 8 total
+Cached:    2 cached, 8 total
+  Time:    59.079s 
+

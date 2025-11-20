@@ -14,7 +14,7 @@ import {
   FolderTree,
   Tag,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 interface ProductDetails {
   product_name: string;
@@ -48,6 +48,11 @@ export default function StoreInterfacePage() {
         : `/api/inventory/product/${productId}`;
 
       const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch product: ${response.status} ${response.statusText}`);
+      }
+
       const result = await response.json();
 
       if (result.success) {

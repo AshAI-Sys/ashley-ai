@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Save, Palette, Sun, Check, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 type Theme = "light";
 type ColorScheme = "blue" | "green" | "purple" | "orange" | "red";

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Upload, X, Loader2, Image as _ImageIcon, File } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
 
 interface FileUploadProps {

@@ -115,6 +115,11 @@ export default function DesignDetailsPage() {
       const response = await fetch(
         `/api/designs/${id}?include=order,brand,versions,approvals,checks`
       );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch design: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       if (data.success) {

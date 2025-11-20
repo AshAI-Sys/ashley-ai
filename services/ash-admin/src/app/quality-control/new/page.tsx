@@ -93,6 +93,11 @@ export default function NewInspectionPage() {
   const loadDefectCodes = async () => {
     try {
       const response = await fetch("/api/quality-control/defect-codes");
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch defect codes: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
       setDefectCodes(data);
     } catch (error) {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/inventory/lookup?code={barcode/sku/qr}
 // Lookup material or product by barcode, SKU, or QR code
 export const GET = requireAuth(async (req: NextRequest, user) => {

@@ -12,7 +12,7 @@ import {
   ArrowLeft,
   PackageCheck,
 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 interface DeliveryItem {
   variant_id: string;

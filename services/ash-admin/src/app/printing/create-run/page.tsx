@@ -133,6 +133,11 @@ export default function CreatePrintRunPage() {
       const response = await fetch(
         "/api/orders?limit=100&include=brand,line_items,routing_steps"
       );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch orders: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
 
       console.log("Orders API response:", data); // Debug log

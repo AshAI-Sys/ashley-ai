@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import toast from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
