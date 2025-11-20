@@ -8,14 +8,30 @@ import {
   ValidationError,
   withErrorHandling,
 } from "../../../../lib/error-handling";
+import { requireAuth } from "../../../../lib/auth-middleware";
+import { authLogger } from "../../../../lib/logger";
 
 export const dynamic = 'force-dynamic';
 
 
-// POST /api/automation/execute - Execute automation rule
-export const POST = withErrorHandling(async (request: NextRequest) => {
+/**
+ * POST /api/automation/execute - Execute automation rule
+ *
+ * SECURITY: Requires authentication
+ * - Can execute arbitrary automation rules
+ * - Can send notifications, alerts, emails
+ * - Can update orders and create tasks
+ * - CRITICAL: Must validate workspace_id matches rule's workspace
+ */
+export const POST = requireAuth(withErrorHandling(async (request: NextRequest, user) => {
   const body = await request.json();
   const { rule_id, trigger_data } = body;
+
+  authLogger.info('Automation execution requested', {
+    userId: user.id,
+    workspaceId: user.workspaceId,
+    ruleId: rule_id,
+  });
 
   // Validate required fields
   const validationError = validateRequiredFields(body, ["rule_id"]);
@@ -30,6 +46,19 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
   if (!rule) {
     throw new NotFoundError("Automation rule");
+  }
+
+  // SECURITY: Enforce workspace isolation
+  if (rule.workspace_id !== user.workspaceId) {
+    authLogger.warn('Unauthorized automation execution attempt', {
+      userId: user.id,
+      userWorkspace: user.workspaceId,
+      ruleWorkspace: rule.workspace_id,
+      ruleId: rule_id,
+    });
+    throw new ValidationError("Access denied - automation rule not found in your workspace", "rule_id", {
+      rule_id,
+    });
   }
 
   if (!rule.is_active) {
@@ -132,7 +161,7 @@ export const POST = withErrorHandling(async (request: NextRequest) => {
 
     throw error;
   }
-});
+}));
 
 // Helper function to evaluate conditions
 async function evaluateConditions(

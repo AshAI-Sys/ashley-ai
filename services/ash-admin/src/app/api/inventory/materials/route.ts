@@ -1,13 +1,21 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Force dynamic route (don't pre-render during build)
 export const dynamic = "force-dynamic";
 
-// GET - Fetch all materials
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/inventory/materials
+ * Fetch all materials for the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication
+ * - Workspace isolation enforced via user.workspaceId
+ * - No longer accepts spoofable x-workspace-id header
+ */
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
 
     const materials = await prisma.materialInventory.findMany({
       where: { workspace_id },
@@ -26,12 +34,19 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// POST - Add new material
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/inventory/materials
+ * Add new material to the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication
+ * - Workspace isolation enforced via user.workspaceId
+ * - No longer accepts spoofable x-workspace-id header
+ */
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
     const body = await request.json();
 
     const {
@@ -122,4 +137,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
