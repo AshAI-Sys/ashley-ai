@@ -1,6 +1,8 @@
 ﻿// Email Automation Service
 // Supports SMTP, SendGrid, AWS SES, Mailgun, Resend
 
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
+
 interface EmailConfig {
   provider: "smtp" | "sendgrid" | "aws-ses" | "mailgun" | "resend";
   apiKey?: string;
@@ -159,7 +161,7 @@ export class EmailService {
 
     return this.send({
       to: recipients,
-      subject: `Weekly Production Report - ${( ? formatDateUtil() : "-")}`,
+      subject: `Weekly Production Report - ${formatDateUtil(new Date())}`,
       html,
     });
   }
@@ -397,7 +399,7 @@ export class EmailService {
           <h2 style="color: #3b82f6;">Production Update</h2>
           <p>Dear ${clientName},</p>
           <p>Your order ${orderNumber} has progressed to: <strong>${status}</strong></p>
-          ${estimatedCompletion ? `<p>Estimated completion: ${estimatedCompletion ? formatDateUtil(estimatedCompletion) : "-"}</p>` : ""}
+          ${estimatedCompletion ? `<p>Estimated completion: ${formatDateUtil(estimatedCompletion)}</p>` : ""}
           <p>We'll continue to keep you updated on the progress.</p>
           <p>Best regards,<br>Ashley AI Team</p>
         </div>
@@ -437,7 +439,7 @@ export class EmailService {
       <body>
         <div class="container">
           <h2>Weekly Production Report</h2>
-          <p>Summary for week ending ${( ? formatDateUtil() : "-")}</p>
+          <p>Summary for week ending ${formatDateUtil(new Date())}</p>
           <div style="background: #f3f4f6; padding: 20px; border-radius: 8px;">
             <p><strong>Orders Completed:</strong> ${stats.ordersCompleted || 0}</p>
             <p><strong>Units Produced:</strong> ${stats.unitsProduced?.toLocaleString() || 0}</p>
