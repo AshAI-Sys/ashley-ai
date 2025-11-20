@@ -416,6 +416,7 @@ export default function UserManagementPage() {
                                   }}
                                   className="text-blue-600 hover:text-blue-900 dark:text-blue-100"
                                   title="Edit user"
+                                  aria-label={`Edit user ${user.first_name} ${user.last_name}`}
                                 >
                                   <Edit className="h-4 w-4" />
                                 </button>
@@ -423,6 +424,7 @@ export default function UserManagementPage() {
                                   onClick={() => handleDeleteUser(user)}
                                   className="text-red-600 hover:text-red-900"
                                   title="Delete user"
+                                  aria-label={`Delete user ${user.first_name} ${user.last_name}`}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </button>
@@ -446,6 +448,8 @@ export default function UserManagementPage() {
                             onClick={() => setPage(page - 1)}
                             disabled={page === 1}
                             className="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800"
+                            aria-label="Previous page"
+                            title="Previous page"
                           >
                             <ChevronLeft className="h-4 w-4" />
                           </button>
@@ -453,6 +457,8 @@ export default function UserManagementPage() {
                             onClick={() => setPage(page + 1)}
                             disabled={page === totalPages}
                             className="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800"
+                            aria-label="Next page"
+                            title="Next page"
                           >
                             <ChevronRight className="h-4 w-4" />
                           </button>

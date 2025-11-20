@@ -540,6 +540,8 @@ export default function CreateLayPage() {
                   size="sm"
                   onClick={() => removeOutput(index)}
                   disabled={outputs.length <= 1}
+                  aria-label={`Remove size ${output.size_code || `#${index + 1}`}`}
+                  title={`Remove size ${output.size_code || `#${index + 1}`}`}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

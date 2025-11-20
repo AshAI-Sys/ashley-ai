@@ -180,11 +180,17 @@ export default function OrderDetailPage() {
               <button
                 onClick={() => router.push(`/orders/${order.id}/edit`)}
                 className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+                aria-label={`Edit order ${order.order_number}`}
+                title={`Edit order ${order.order_number}`}
               >
                 <Edit size={18} />
                 Edit
               </button>
-              <button className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700">
+              <button
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                aria-label={`Delete order ${order.order_number}`}
+                title={`Delete order ${order.order_number}`}
+              >
                 <Trash2 size={18} />
                 Delete
               </button>

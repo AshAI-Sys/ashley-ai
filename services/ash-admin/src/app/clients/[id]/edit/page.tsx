@@ -593,6 +593,8 @@ export default function EditClientPage() {
                         size="sm"
                         onClick={() => handleRemoveBrand(index)}
                         className="text-red-500 hover:bg-red-50 hover:text-red-700"
+                        aria-label={`Remove brand ${brand.name || `#${index + 1}`}`}
+                        title={`Remove brand ${brand.name || `#${index + 1}`}`}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

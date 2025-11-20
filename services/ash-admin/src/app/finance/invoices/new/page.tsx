@@ -317,6 +317,8 @@ export default function NewInvoicePage() {
                       size="sm"
                       onClick={() => handleRemoveItem(item.id)}
                       disabled={items.length === 1}
+                      aria-label={`Remove item ${item.description || 'from invoice'}`}
+                      title={`Remove item ${item.description || 'from invoice'}`}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

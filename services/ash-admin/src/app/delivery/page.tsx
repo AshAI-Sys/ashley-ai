@@ -735,8 +735,8 @@ export default function DeliveryPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="method">Delivery Method</Label>
-                  <Select>
-                    <SelectTrigger>
+                  <Select name="method">
+                    <SelectTrigger id="method">
                       <SelectValue placeholder="Select method" />
                     </SelectTrigger>
                     <SelectContent>
@@ -835,8 +835,8 @@ export default function DeliveryPage() {
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="report-type">Report Type</Label>
-                <Select>
-                  <SelectTrigger>
+                <Select name="report-type">
+                  <SelectTrigger id="report-type">
                     <SelectValue placeholder="Select report type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -865,8 +865,8 @@ export default function DeliveryPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="status-filter">Status Filter (Optional)</Label>
-                <Select>
-                  <SelectTrigger>
+                <Select name="status-filter">
+                  <SelectTrigger id="status-filter">
                     <SelectValue placeholder="All statuses" />
                   </SelectTrigger>
                   <SelectContent>
@@ -880,8 +880,8 @@ export default function DeliveryPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="format">Export Format</Label>
-                <Select>
-                  <SelectTrigger>
+                <Select name="format">
+                  <SelectTrigger id="format">
                     <SelectValue placeholder="Select format" />
                   </SelectTrigger>
                   <SelectContent>
