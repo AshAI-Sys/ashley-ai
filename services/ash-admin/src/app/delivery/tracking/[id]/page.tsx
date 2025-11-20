@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface TrackingEvent {
   id: string;
@@ -499,7 +500,7 @@ export default function ShipmentTrackingPage({
                               "Unknown Event"}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {new Date(event.timestamp).toLocaleString()}
+                            {(event.timestamp ? formatDateUtil(event.timestamp, "datetime") : "-")}
                           </div>
                         </div>
 

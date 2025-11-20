@@ -21,6 +21,7 @@ import { Users,
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface QCInspection {
   id: string;

@@ -613,11 +613,11 @@ export default function ClientBrandsPage() {
                       <div className="flex gap-4 text-xs text-muted-foreground">
                         <span>
                           Created{" "}
-                          {new Date(brand.created_at).toLocaleDateString()}
+                          {brand.created_at ? formatDateUtil(brand.created_at) : "-"}
                         </span>
                         <span>
                           Updated{" "}
-                          {new Date(brand.updated_at).toLocaleDateString()}
+                          {brand.updated_at ? formatDateUtil(brand.updated_at) : "-"}
                         </span>
                       </div>
                     </div>

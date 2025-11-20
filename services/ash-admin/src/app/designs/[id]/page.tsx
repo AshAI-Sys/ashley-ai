@@ -34,6 +34,7 @@ import {
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DesignAsset {
   id: string;
@@ -609,7 +610,7 @@ export default function DesignDetailsPage() {
                           <div className="text-sm text-muted-foreground">
                             <p>
                               Created:{" "}
-                              {new Date(version.created_at).toLocaleString()}
+                              {(version.created_at ? formatDateUtil(version.created_at, "datetime") : "-")}
                             </p>
                             <p>
                               Files:{" "}
@@ -655,7 +656,7 @@ export default function DesignDetailsPage() {
                             </span>
                           </div>
                           <span className="text-sm text-muted-foreground">
-                            {new Date(approval.created_at).toLocaleDateString()}
+                            {(approval.created_at ? formatDateUtil(approval.created_at) : "-")}
                           </span>
                         </div>
                         <p className="text-sm">
@@ -736,7 +737,7 @@ export default function DesignDetailsPage() {
                               </span>
                             </div>
                             <span className="text-sm text-muted-foreground">
-                              {new Date(check.created_at).toLocaleString()}
+                              {(check.created_at ? formatDateUtil(check.created_at, "datetime") : "-")}
                             </span>
                           </div>
 
@@ -927,12 +928,12 @@ export default function DesignDetailsPage() {
               <div>
                 <strong>Created:</strong>
                 <br />
-                {new Date(design.created_at).toLocaleDateString()}
+                {(design.created_at ? formatDateUtil(design.created_at) : "-")}
               </div>
               <div>
                 <strong>Last Updated:</strong>
                 <br />
-                {new Date(design.updated_at).toLocaleDateString()}
+                {(design.updated_at ? formatDateUtil(design.updated_at) : "-")}
               </div>
             </CardContent>
           </Card>

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { tokenService } from "@/lib/tokenService";
 import { requireAuth } from "@/lib/auth-middleware";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 // import { emailService } from '@/lib/emailService'
 // import { notificationService } from '@/lib/notificationService'
 
@@ -136,7 +137,7 @@ export async function POST(
           </div>
           
           <div style="border-top: 1px solid #e5e5e5; padding-top: 20px; margin-top: 30px; color: #666; font-size: 14px;">
-            <p><strong>Important:</strong> This approval link expires on ${expiresAt.toLocaleDateString()}.</p>
+            <p><strong>Important:</strong> This approval link expires on ${(expiresAt ? formatDateUtil(expiresAt) : "-")}.</p>
             <p>If you have any questions, please contact us at support@ashleyai.com</p>
             <p>Best regards,<br>Ashley AI Team</p>
           </div>

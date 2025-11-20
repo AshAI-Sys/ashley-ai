@@ -22,6 +22,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { toast } from "react-hot-toast";
 import { ActivityTab } from "@/components/audit/activity-tab";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Client {
   id: string;
@@ -307,7 +308,7 @@ export default function ClientDetailPage() {
                       Created
                     </label>
                     <p className="text-sm">
-                      {new Date(client.created_at).toLocaleDateString()}
+                      {(client.created_at ? formatDateUtil(client.created_at) : "-")}
                     </p>
                   </div>
                 </div>
@@ -347,7 +348,7 @@ export default function ClientDetailPage() {
                       Last Updated
                     </label>
                     <p className="text-sm">
-                      {new Date(client.updated_at).toLocaleDateString()}
+                      {(client.updated_at ? formatDateUtil(client.updated_at) : "-")}
                     </p>
                   </div>
                 </div>
@@ -441,7 +442,7 @@ export default function ClientDetailPage() {
                         {brand.is_active ? "Active" : "Inactive"}
                       </Badge>
                       <span className="text-sm text-muted-foreground">
-                        {new Date(brand.created_at).toLocaleDateString()}
+                        {(brand.created_at ? formatDateUtil(brand.created_at) : "-")}
                       </span>
                     </div>
                   </div>

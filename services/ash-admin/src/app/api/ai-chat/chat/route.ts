@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 export const dynamic = 'force-dynamic';
 

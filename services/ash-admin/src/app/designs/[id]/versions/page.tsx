@@ -26,6 +26,7 @@ import {
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DesignAsset {
   id: string;
@@ -316,7 +317,7 @@ export default function VersionManagementPage() {
                       </div>
                     </div>
                     <p className="text-muted-foreground">
-                      Created: {new Date(version.created_at).toLocaleString()}
+                      Created: {(version.created_at ? formatDateUtil(version.created_at, "datetime") : "-")}
                     </p>
                   </CardHeader>
 

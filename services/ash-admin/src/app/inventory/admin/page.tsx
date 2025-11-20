@@ -13,6 +13,7 @@ import {
   Download,
 } from 'lucide-react';
 import Link from 'next/link';
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface InventoryReport {
   success: boolean;

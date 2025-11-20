@@ -44,6 +44,7 @@ import {
   Cell,
 } from "recharts";
 import { api } from "@/lib/api";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DashboardStats {
   totalClients: number;

@@ -84,7 +84,7 @@ export class SlackService {
           value: affectedOrders.join(", "),
           short: false,
         },
-        { title: "Time", value: new Date().toLocaleString(), short: true },
+        { title: "Time", value: ( ? formatDateUtil(, "datetime") : "-"), short: true },
       ],
       urgent: true,
     });
@@ -117,7 +117,7 @@ export class SlackService {
   }): Promise<boolean> {
     return this.send({
       title: "📊 Daily Production Summary",
-      message: `Production report for ${new Date().toLocaleDateString()}`,
+      message: `Production report for ${( ? formatDateUtil() : "-")}`,
       color: "good",
       fields: [
         {

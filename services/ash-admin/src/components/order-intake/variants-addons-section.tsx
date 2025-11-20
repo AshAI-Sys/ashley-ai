@@ -27,6 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface ColorVariant {
   id: string;

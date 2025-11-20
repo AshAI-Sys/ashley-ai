@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
 import { prisma } from "@/lib/db";
 import { cachedForWorkspace } from "@/lib/cache";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 export const dynamic = 'force-dynamic';
 

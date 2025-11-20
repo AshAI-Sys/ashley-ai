@@ -37,6 +37,7 @@ import {
   Edit,
 } from "lucide-react";
 import Link from "next/link";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface SewingRun {
   id: string;
@@ -682,7 +683,7 @@ export default function SewingRunDetailsPage() {
                     </p>
                     <p className="font-medium">
                       {sewingRun.started_at
-                        ? new Date(sewingRun.started_at).toLocaleString()
+                        ? (sewingRun.started_at ? formatDateUtil(sewingRun.started_at, "datetime") : "-")
                         : "Not started"}
                     </p>
                   </div>
@@ -873,7 +874,7 @@ export default function SewingRunDetailsPage() {
                       <div>
                         <p className="font-medium">{reject.reason}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(reject.created_at).toLocaleString()}
+                          {(reject.created_at ? formatDateUtil(reject.created_at, "datetime") : "-")}
                         </p>
                       </div>
                       <div className="text-right">
@@ -935,7 +936,7 @@ export default function SewingRunDetailsPage() {
                           "Unknown Action"}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(entry.timestamp).toLocaleString()}
+                        {(entry.timestamp ? formatDateUtil(entry.timestamp, "datetime") : "-")}
                       </p>
                       {entry.notes && (
                         <p className="mt-1 text-sm text-muted-foreground">

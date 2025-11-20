@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/dashboard-layout";
 import { ArrowLeft, Save } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 export default function NewBillPage() {
   const router = useRouter();

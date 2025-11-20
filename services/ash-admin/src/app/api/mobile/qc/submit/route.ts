@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 export const dynamic = 'force-dynamic';
 
@@ -76,7 +77,7 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
               severity: defect.severity,
               quantity: defect.quantity || 1,
               location: "Production Floor",
-              description: `Detected via mobile QC at ${new Date(defect.timestamp).toLocaleString()}`,
+              description: `Detected via mobile QC at ${(defect.timestamp ? formatDateUtil(defect.timestamp, "datetime") : "-")}`,
               created_at: new Date(),
             },
           })

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MessageSquare, Send, Phone, CheckCircle, AlertCircle, Clock, ArrowLeft } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 type NotificationType = "sms" | "whatsapp";
 type MessageType = "order_update" | "payment_reminder" | "delivery_alert" | "custom";

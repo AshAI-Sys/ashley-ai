@@ -44,6 +44,7 @@ import {
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DesignAsset {
   id: string;
@@ -667,7 +668,7 @@ export default function DesignApprovalPage() {
                                 </span>
                               </div>
                               <p className="text-sm text-muted-foreground">
-                                {new Date(approval.created_at).toLocaleString()}
+                                {(approval.created_at ? formatDateUtil(approval.created_at, "datetime") : "-")}
                               </p>
                             </div>
                           </div>
@@ -884,12 +885,12 @@ export default function DesignApprovalPage() {
               <div>
                 <strong>Created:</strong>
                 <br />
-                {new Date(design.created_at).toLocaleDateString()}
+                {(design.created_at ? formatDateUtil(design.created_at) : "-")}
               </div>
               <div>
                 <strong>Last Updated:</strong>
                 <br />
-                {new Date(design.updated_at).toLocaleDateString()}
+                {(design.updated_at ? formatDateUtil(design.updated_at) : "-")}
               </div>
             </CardContent>
           </Card>

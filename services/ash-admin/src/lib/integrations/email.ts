@@ -159,7 +159,7 @@ export class EmailService {
 
     return this.send({
       to: recipients,
-      subject: `Weekly Production Report - ${new Date().toLocaleDateString()}`,
+      subject: `Weekly Production Report - ${( ? formatDateUtil() : "-")}`,
       html,
     });
   }
@@ -437,7 +437,7 @@ export class EmailService {
       <body>
         <div class="container">
           <h2>Weekly Production Report</h2>
-          <p>Summary for week ending ${new Date().toLocaleDateString()}</p>
+          <p>Summary for week ending ${( ? formatDateUtil() : "-")}</p>
           <div style="background: #f3f4f6; padding: 20px; border-radius: 8px;">
             <p><strong>Orders Completed:</strong> ${stats.ordersCompleted || 0}</p>
             <p><strong>Units Produced:</strong> ${stats.unitsProduced?.toLocaleString() || 0}</p>
