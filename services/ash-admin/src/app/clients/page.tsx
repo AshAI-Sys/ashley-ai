@@ -29,6 +29,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ErrorAlert } from "@/components/ui/error-alert";
 import { useDebounce } from "@/hooks/useDebounce";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Client {
   id: string;
@@ -268,11 +269,11 @@ export default function ClientsPage() {
                       <div className="mt-3 hidden gap-4 text-xs text-muted-foreground sm:flex">
                         <span>
                           Created{" "}
-                          {new Date(client.created_at).toLocaleDateString()}
+                          {client.created_at ? formatDateUtil(client.created_at) : "Unknown"}
                         </span>
                         <span>
                           Updated{" "}
-                          {new Date(client.updated_at).toLocaleDateString()}
+                          {client.updated_at ? formatDateUtil(client.updated_at) : "Unknown"}
                         </span>
                       </div>
                     </div>

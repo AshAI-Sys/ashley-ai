@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tantml:react-query";
 import {
   DollarSign,
   Plus,
@@ -20,6 +20,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 // Types
 interface Expense {
@@ -727,7 +728,7 @@ export default function ExpensesPage() {
                 filteredExpenses.map((expense) => (
                   <tr key={expense.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(expense.date).toLocaleDateString()}
+                      {expense.date ? formatDateUtil(expense.date) : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-900">
@@ -1069,7 +1070,7 @@ export default function ExpensesPage() {
                     Date
                   </label>
                   <p className="text-gray-900">
-                    {new Date(selectedExpense.date).toLocaleDateString()}
+                    {selectedExpense.date ? formatDateUtil(selectedExpense.date) : "-"}
                   </p>
                 </div>
                 <div>
@@ -1102,7 +1103,7 @@ export default function ExpensesPage() {
                   </label>
                   <p className="text-gray-900">
                     {selectedExpense.payment_date
-                      ? new Date(selectedExpense.payment_date).toLocaleDateString()
+                      ? formatDateUtil(selectedExpense.payment_date)
                       : "-"}
                   </p>
                 </div>

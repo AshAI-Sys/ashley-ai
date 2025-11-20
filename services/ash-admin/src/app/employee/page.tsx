@@ -35,6 +35,7 @@ import {
   Award, DollarSign,
 } from "lucide-react";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface EmployeeProfile {
   id: string;
@@ -348,7 +349,7 @@ export default function EmployeeDashboardPage() {
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <Clock className="h-3 w-3" />
                             {task.due_date
-                              ? new Date(task.due_date).toLocaleDateString()
+                              ? formatDateUtil(task.due_date)
                               : "No deadline"}
                           </div>
                         </div>
@@ -474,13 +475,13 @@ export default function EmployeeDashboardPage() {
                           <div className="flex items-center gap-1">
                             <Clock className="h-4 w-4" />
                             {task.due_date
-                              ? new Date(task.due_date).toLocaleDateString()
+                              ? formatDateUtil(task.due_date)
                               : "No deadline"}
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             Created{" "}
-                            {new Date(task.created_at).toLocaleDateString()}
+                            {task.created_at ? formatDateUtil(task.created_at) : "Unknown"}
                           </div>
                         </div>
                       </div>

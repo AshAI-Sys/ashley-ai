@@ -48,6 +48,7 @@ import {
   User,
   Camera,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface HRMetrics {
   total_employees: number;
@@ -297,14 +298,6 @@ export default function HRPayrollPage() {
     }
   };
 
-  const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
   const handleRefreshAll = () => {
     refetchMetrics();
     refetchEmployees();
@@ -468,7 +461,7 @@ export default function HRPayrollPage() {
                 <div className="mt-2 flex items-center">
                   <Calendar className="mr-1 h-4 w-4 text-gray-500" />
                   <span className="text-sm text-gray-600">
-                    Next run: {formatDate(metrics.upcoming_payroll)}
+                    Next run: {metrics.upcoming_payroll ? formatDateUtil(metrics.upcoming_payroll) : "TBD"}
                   </span>
                 </div>
               </CardContent>
@@ -616,7 +609,7 @@ export default function HRPayrollPage() {
                             </div>
                             <div className="mt-2 flex gap-4 text-xs text-gray-500">
                               <span>
-                                Hired: {formatDate(employee.hire_date)}
+                                Hired: {employee.hire_date ? formatDateUtil(employee.hire_date) : "Unknown"}
                               </span>
                               {employee.piece_rate && (
                                 <span>Piece Rate: â‚±{employee.piece_rate}</span>
@@ -725,7 +718,7 @@ export default function HRPayrollPage() {
                                 <span className="text-gray-600">Date:</span>
                                 <br />
                                 <span className="font-medium">
-                                  {log?.date ? formatDate(log.date) : "N/A"}
+                                  {log?.date ? formatDateUtil(log.date) : "N/A"}
                                 </span>
                               </div>
                               <div>
@@ -733,7 +726,7 @@ export default function HRPayrollPage() {
                                 <br />
                                 <span className="font-medium">
                                   {log?.time_in
-                                    ? formatDateTime(log.time_in)
+                                    ? formatDateUtil(log.time_in, "datetime")
                                     : "Not clocked in"}
                                 </span>
                               </div>
@@ -742,7 +735,7 @@ export default function HRPayrollPage() {
                                 <br />
                                 <span className="font-medium">
                                   {log?.time_out
-                                    ? formatDateTime(log.time_out)
+                                    ? formatDateUtil(log.time_out, "datetime")
                                     : "Not clocked out"}
                                 </span>
                               </div>
@@ -828,8 +821,8 @@ export default function HRPayrollPage() {
                           <div className="flex-1">
                             <div className="mb-2 flex items-center gap-3">
                               <h3 className="font-semibold">
-                                Payroll {formatDate(payroll.period_start)} -{" "}
-                                {formatDate(payroll.period_end)}
+                                Payroll {payroll.period_start ? formatDateUtil(payroll.period_start) : "Unknown"} -{" "}
+                                {payroll.period_end ? formatDateUtil(payroll.period_end) : "Unknown"}
                               </h3>
                               {getStatusBadge(payroll.status)}
                             </div>
@@ -856,7 +849,7 @@ export default function HRPayrollPage() {
                                 <span className="text-gray-600">Created:</span>
                                 <br />
                                 <span className="font-medium">
-                                  {formatDate(payroll.created_at)}
+                                  {payroll.created_at ? formatDateUtil(payroll.created_at) : "Unknown"}
                                 </span>
                               </div>
                             </div>

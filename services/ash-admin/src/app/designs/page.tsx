@@ -28,6 +28,7 @@ import { Plus,
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DesignAsset {
   id: string;
@@ -370,7 +371,7 @@ export default function DesignsPage() {
                           <span>{design._count.checks} checks</span>
                           <span>
                             Updated{" "}
-                            {new Date(design.updated_at).toLocaleDateString()}
+                            {design.updated_at ? formatDateUtil(design.updated_at) : "Unknown"}
                           </span>
                         </div>
                       </div>
