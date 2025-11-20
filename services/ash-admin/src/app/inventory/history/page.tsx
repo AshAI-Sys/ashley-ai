@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
@@ -18,6 +18,7 @@ import {
   Download
 } from 'lucide-react';
 import HydrationSafeIcon from '@/components/hydration-safe-icon';
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface StockLedgerEntry {
   id: string;
@@ -161,7 +162,7 @@ export default function InventoryHistoryPage() {
   const exportToCSV = () => {
     const headers = ['Date', 'Product', 'SKU', 'Size', 'Color', 'Location', 'Type', 'Quantity Change', 'Before', 'After', 'Reference', 'Notes', 'Performed By'];
     const rows = filteredEntries.map(entry => [
-      new Date(entry.created_at).toLocaleString(),
+      entry.created_at ? formatDateUtil(entry.created_at, "datetime") : "-",
       entry.variant.product.product_name,
       entry.variant.sku,
       entry.variant.size_code,
@@ -333,7 +334,7 @@ export default function InventoryHistoryPage() {
                   {filteredEntries.map((entry) => (
                     <tr key={entry.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(entry.created_at).toLocaleString()}
+                        {entry.created_at ? formatDateUtil(entry.created_at, "datetime") : "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         <div className="font-medium text-gray-900">{entry.variant.product.product_name}</div>

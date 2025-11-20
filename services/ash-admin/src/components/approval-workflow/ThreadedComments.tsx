@@ -29,6 +29,7 @@ import {
   Trash, Pin,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Comment {
   id: string;
@@ -442,7 +443,7 @@ export function ThreadedComments({
 
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Calendar className="h-3 w-3" />
-                      {new Date(comment.created_at).toLocaleString()}
+                      {comment.created_at ? formatDateUtil(comment.created_at, "datetime") : "-"}
                     </div>
                   </div>
 
@@ -564,7 +565,7 @@ export function ThreadedComments({
                               </span>
                             </div>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(reply.created_at).toLocaleString()}
+                              {reply.created_at ? formatDateUtil(reply.created_at, "datetime") : "-"}
                             </span>
                           </div>
                           <p className="text-sm">{reply.comment_text}</p>

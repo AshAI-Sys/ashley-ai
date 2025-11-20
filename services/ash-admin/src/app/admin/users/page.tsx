@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface User {
   id: string;
@@ -399,9 +400,11 @@ export default function UserManagementPage() {
                             </td>
                             <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
                               {user.last_login_at
-                                ? new Date(
+                                ? 
                                     user.last_login_at
-                                  ).toLocaleDateString()
+                                   ? formatDateUtil(
+                                    user.last_login_at
+                                  ) : "-"
                                 : "Never"}
                             </td>
                             <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">

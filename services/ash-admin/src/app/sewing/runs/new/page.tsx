@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -38,6 +38,7 @@ import {
   GitBranch,
 } from "lucide-react";
 import Link from "next/link";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Bundle {
   id: string;
@@ -630,7 +631,7 @@ export default function NewSewingRunPage() {
                       </span>
                       <span className="text-sm text-muted-foreground">
                         {progress.completed_at
-                          ? new Date(progress.completed_at).toLocaleString()
+                          ? progress.completed_at ? formatDateUtil(progress.completed_at, "datetime") : "-"
                           : "Recently completed"}
                       </span>
                     </div>

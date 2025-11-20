@@ -30,6 +30,7 @@ import {
   BarChart3,
   RefreshCw,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface MaintenanceStats {
   overview: {
@@ -311,11 +312,11 @@ export default function MaintenancePage() {
   };
 
   const ____formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+    return dateString ? formatDateUtil(dateString, "datetime") : "-";
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+    return dateString ? formatDateUtil(dateString) : "-";
   };
 
   return (

@@ -15,6 +15,7 @@ import {
   FileText,
   Target,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface CAPATask {
   id: string;
@@ -460,7 +461,7 @@ export default function CAPAPage() {
                         <div
                           className={`text-sm ${isOverdue(task.due_date) ? "font-medium text-red-600" : "text-gray-900"}`}
                         >
-                          {new Date(task.due_date).toLocaleDateString()}
+                          {task.due_date ? formatDateUtil(task.due_date) : "-"}
                           {isOverdue(task.due_date) && (
                             <div className="text-xs text-red-500">Overdue</div>
                           )}

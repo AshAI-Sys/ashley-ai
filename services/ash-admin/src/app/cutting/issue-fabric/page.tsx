@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Package, AlertTriangle, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Order {
   id: string;
@@ -367,7 +368,7 @@ export default function IssueFabricPage() {
                   <div>
                     <span className="font-medium">Received:</span>
                     <br />
-                    {new Date(selectedBatch.created_at).toLocaleDateString()}
+                    {selectedBatch.created_at ? formatDateUtil(selectedBatch.created_at) : "-"}
                   </div>
                 </div>
               </div>

@@ -16,6 +16,7 @@ import { Play, Pause,
   Link,
   RefreshCw,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface AutomationStats {
   summary: {
@@ -159,7 +160,7 @@ export default function AutomationPage() {
               {activity.title}
             </p>
             <p className="text-xs text-gray-500">
-              {new Date(activity.timestamp).toLocaleString()}
+              {activity.timestamp ? formatDateUtil(activity.timestamp, "datetime") : "-"}
             </p>
           </div>
         </div>

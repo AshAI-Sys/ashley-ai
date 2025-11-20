@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -28,6 +28,7 @@ import {
   Bell,
   Settings,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface AshleyInsight {
   id: string;
@@ -483,7 +484,7 @@ export default function AshleyAIMonitor({
                         Impact: {Math.round(insight.impact_score * 100)}%
                       </span>
                       <span>
-                        {new Date(insight.created_at).toLocaleString()}
+                        {insight.created_at ? formatDateUtil(insight.created_at, "datetime") : "-"}
                       </span>
                     </div>
                   </div>

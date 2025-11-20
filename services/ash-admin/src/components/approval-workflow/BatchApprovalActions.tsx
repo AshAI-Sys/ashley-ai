@@ -22,6 +22,7 @@ import { Send,
   AlertCircle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DesignApproval {
   id: string;
@@ -323,7 +324,7 @@ export function BatchApprovalActions({
                         <>
                           {" "}
                           Expires:{" "}
-                          {new Date(approval.expires_at).toLocaleDateString()}
+                          {approval.expires_at ? formatDateUtil(approval.expires_at) : "-"}
                         </>
                       )}
                     </p>

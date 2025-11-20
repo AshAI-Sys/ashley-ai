@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Clock, User, FileText, AlertCircle, CheckCircle, XCircle, Edit, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface AuditLog {
   id: string;
@@ -239,7 +240,7 @@ export function ActivityTab({ resourceType, resourceId, workspaceId }: ActivityT
                     </div>
                   </div>
                   <span className="text-xs text-gray-500">
-                    {new Date(log.created_at).toLocaleString()}
+                    {log.created_at ? formatDateUtil(log.created_at, "datetime") : "-"}
                   </span>
                 </div>
 

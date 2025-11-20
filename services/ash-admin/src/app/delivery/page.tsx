@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface DeliveryShipment {
   id: string;
@@ -660,7 +661,7 @@ export default function DeliveryPage() {
                               })}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {new Date(shipment.eta).toLocaleDateString()}
+                              {shipment.eta ? formatDateUtil(shipment.eta) : "-"}
                             </div>
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">

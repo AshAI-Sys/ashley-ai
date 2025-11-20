@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Export Utility
  * Provides Excel and CSV export functionality for orders, invoices, and reports
  */
@@ -92,13 +92,13 @@ export function exportOrders(orders: any[], format: "csv" | "excel" = "csv") {
       header: "Delivery Date",
       key: "delivery_date",
       width: 15,
-      format: v => (v ? new Date(v).toLocaleDateString() : ""),
+      format: v => (v ? v ? formatDateUtil(v) : "-" : ""),
     },
     {
       header: "Created At",
       key: "created_at",
       width: 20,
-      format: v => new Date(v).toLocaleString(),
+      format: v => v ? formatDateUtil(v, "datetime") : "-",
     },
   ];
 
@@ -134,13 +134,13 @@ export function exportInvoices(
       header: "Issue Date",
       key: "issue_date",
       width: 15,
-      format: v => new Date(v).toLocaleDateString(),
+      format: v => v ? formatDateUtil(v) : "-",
     },
     {
       header: "Due Date",
       key: "due_date",
       width: 15,
-      format: v => new Date(v).toLocaleDateString(),
+      format: v => v ? formatDateUtil(v) : "-",
     },
     {
       header: "Total Amount",
@@ -153,7 +153,7 @@ export function exportInvoices(
       header: "Created At",
       key: "created_at",
       width: 20,
-      format: v => new Date(v).toLocaleString(),
+      format: v => v ? formatDateUtil(v, "datetime") : "-",
     },
   ];
 
@@ -198,7 +198,7 @@ export function exportEmployees(
       header: "Hire Date",
       key: "hire_date",
       width: 15,
-      format: v => (v ? new Date(v).toLocaleDateString() : ""),
+      format: v => (v ? v ? formatDateUtil(v) : "-" : ""),
     },
     {
       header: "Status",
@@ -238,19 +238,19 @@ export function exportProductionRuns(
       header: "Started At",
       key: "started_at",
       width: 20,
-      format: v => (v ? new Date(v).toLocaleString() : ""),
+      format: v => (v ? v ? formatDateUtil(v, "datetime") : "-" : ""),
     },
     {
       header: "Ended At",
       key: "ended_at",
       width: 20,
-      format: v => (v ? new Date(v).toLocaleString() : ""),
+      format: v => (v ? v ? formatDateUtil(v, "datetime") : "-" : ""),
     },
     {
       header: "Created At",
       key: "created_at",
       width: 20,
-      format: v => new Date(v).toLocaleString(),
+      format: v => v ? formatDateUtil(v, "datetime") : "-",
     },
   ];
 
@@ -282,7 +282,7 @@ export function exportFinancialReport(
       header: "Date",
       key: "date",
       width: 15,
-      format: v => new Date(v).toLocaleDateString(),
+      format: v => v ? formatDateUtil(v) : "-",
     },
     { header: "Invoice Number", key: "invoice_number", width: 15 },
     { header: "Client", key: "client_name", width: 20 },
@@ -328,7 +328,7 @@ export function exportQualityControl(
       header: "Inspected At",
       key: "inspected_at",
       width: 20,
-      format: v => (v ? new Date(v).toLocaleString() : ""),
+      format: v => (v ? v ? formatDateUtil(v, "datetime") : "-" : ""),
     },
   ];
 

@@ -13,6 +13,7 @@ import {
   Eye,
   Edit,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface CAPATask {
   id: string;
@@ -425,7 +426,7 @@ export default function CAPAManagementPage() {
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                       {task.due_date
-                        ? new Date(task.due_date).toLocaleDateString()
+                        ? task.due_date ? formatDateUtil(task.due_date) : "-"
                         : "No due date"}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">

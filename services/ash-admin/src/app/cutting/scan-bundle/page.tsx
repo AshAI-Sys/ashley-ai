@@ -17,6 +17,7 @@ import {
   Hash,
   Camera,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 export default function ScanBundlePage() {
   const router = useRouter();
@@ -257,7 +258,7 @@ export default function ScanBundlePage() {
                       Created
                     </label>
                     <p className="font-medium">
-                      {new Date(scannedBundle.created_at).toLocaleDateString()}
+                      {scannedBundle.created_at ? formatDateUtil(scannedBundle.created_at) : "-"}
                     </p>
                   </div>
                 </div>

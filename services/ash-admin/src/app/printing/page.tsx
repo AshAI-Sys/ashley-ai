@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/loading-skeletons";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import HydrationSafeIcon from "@/components/hydration-safe-icon";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface PrintRun {
   id: string;
@@ -594,7 +595,7 @@ export default function PrintingPage() {
                             <span className="font-medium">Started:</span>
                             <br />
                             {run.started_at
-                              ? new Date(run.started_at).toLocaleString()
+                              ? run.started_at ? formatDateUtil(run.started_at, "datetime") : "-"
                               : "Not started"}
                           </div>
                         </div>

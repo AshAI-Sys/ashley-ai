@@ -18,6 +18,7 @@ import {
   Activity,
   Eye,
 } from "lucide-react";
+import { formatDate as formatDateUtil } from "@/lib/utils/date";
 
 interface Report {
   id: string;
@@ -582,7 +583,7 @@ function ReportDataModal({ __reportType, data, onClose }: any) {
                   Generated:
                 </span>
                 <p className="font-medium">
-                  {new Date(data.generated_at).toLocaleString()}
+                  {data.generated_at ? formatDateUtil(data.generated_at, "datetime") : "-"}
                 </p>
               </div>
               <div>
@@ -595,8 +596,8 @@ function ReportDataModal({ __reportType, data, onClose }: any) {
                     Period:
                   </span>
                   <p className="font-medium">
-                    {new Date(data.period.from).toLocaleDateString()} -{" "}
-                    {new Date(data.period.to).toLocaleDateString()}
+                    {data.period.from ? formatDateUtil(data.period.from) : "-"} -{" "}
+                    {data.period.to ? formatDateUtil(data.period.to) : "-"}
                   </p>
                 </div>
               )}
