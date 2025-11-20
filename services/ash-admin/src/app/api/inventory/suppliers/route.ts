@@ -1,13 +1,19 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 // Force dynamic route
 export const dynamic = "force-dynamic";
 
-// GET - Fetch all suppliers
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/inventory/suppliers
+ * Fetch all suppliers for the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search");
     const status = searchParams.get("status");
@@ -65,12 +71,17 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// POST - Create new supplier
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/inventory/suppliers
+ * Create new supplier in the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
     const body = await request.json();
 
     const {
@@ -149,4 +160,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

@@ -1,12 +1,18 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const dynamic = "force-dynamic";
 
-// GET - Fetch all purchase orders
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/inventory/purchase-orders
+ * Fetch all purchase orders for the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search");
     const status = searchParams.get("status");
@@ -87,13 +93,19 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// POST - Create new purchase order
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/inventory/purchase-orders
+ * Create new purchase order in the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication - workspace isolation enforced
+ * CRITICAL FIX: Also fixes spoofable x-user-id header
+ */
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
-    const user_id = request.headers.get("x-user-id") || "system";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
+    const user_id = user.id; // Use authenticated user ID
     const body = await request.json();
 
     const {
@@ -220,4 +232,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

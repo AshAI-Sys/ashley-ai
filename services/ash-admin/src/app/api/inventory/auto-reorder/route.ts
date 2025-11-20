@@ -1,12 +1,18 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireAuth } from "@/lib/auth-middleware";
 
 export const dynamic = "force-dynamic";
 
-// GET - Fetch all auto-reorder settings
-export async function GET(request: NextRequest) {
+/**
+ * GET /api/inventory/auto-reorder
+ * Fetch all auto-reorder settings for the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search");
     const enabled = searchParams.get("enabled");
@@ -55,12 +61,17 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
-// POST - Create new auto-reorder setting
-export async function POST(request: NextRequest) {
+/**
+ * POST /api/inventory/auto-reorder
+ * Create new auto-reorder setting in the authenticated user's workspace
+ *
+ * SECURITY: Requires authentication - workspace isolation enforced
+ */
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
-    const workspace_id = request.headers.get("x-workspace-id") || "default-workspace";
+    const workspace_id = user.workspaceId; // Use authenticated workspace ID
     const body = await request.json();
 
     const {
@@ -159,4 +170,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
