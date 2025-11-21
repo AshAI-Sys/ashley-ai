@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/auth-middleware';
 import { withAudit } from '@/lib/audit-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,9 +65,11 @@ export const POST = requirePermission('inventory:adjust')(
         new_quantity: quantity_after,
         change: quantity_change
       });
-    } catch (error: any) {
-      console.error('[INVENTORY] Stock adjustment error:', error);
-      return NextResponse.json({ error: error.message || 'Failed to adjust stock' }, { status: 500 });
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
     },
     { resource: 'stock_adjustment', action: 'CREATE' }

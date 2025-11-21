@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth-middleware';
 import { prisma } from '@/lib/db';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 interface SheetRow {
   size: string;
@@ -162,12 +163,11 @@ export const POST = requireAuth(async (req: NextRequest, { user }: any) => {
       errors: errors.length > 0 ? errors : undefined,
     });
 
-  } catch (error: unknown) {
-    console.error('Error importing sheet:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to import sheet data' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
 

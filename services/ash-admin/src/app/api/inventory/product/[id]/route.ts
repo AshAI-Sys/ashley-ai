@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/auth-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 // Force dynamic route (don't pre-render during build)
 export const dynamic = 'force-dynamic';
@@ -112,11 +113,10 @@ export const GET = requirePermission('inventory:read')(
         is_out_of_stock: totalQuantity <= 0,
       },
     });
-  } catch (error: any) {
-    console.error('[INVENTORY] Product scan error:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch product' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

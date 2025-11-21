@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/auth-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,9 +64,11 @@ export const POST = requirePermission('inventory:receive')(
       }
 
       return NextResponse.json({ success: true, delivery_id: delivery.id, delivery_number, delivery });
-    } catch (error: any) {
-      console.error('[INVENTORY] Delivery error:', error);
-      return NextResponse.json({ error: error.message || 'Failed' }, { status: 500 });
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
