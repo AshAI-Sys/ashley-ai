@@ -1,8 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 const ____DEFAULT_WORKSPACE_ID = "default-workspace";
 
@@ -17,8 +17,8 @@ const CreateBrandSchema = z.object({
 const ____UpdateBrandSchema = CreateBrandSchema.partial();
 
 export const GET = requireAuth(async (
-  _request: NextRequest,
-  _user,
+  request: NextRequest,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -73,17 +73,16 @@ export const GET = requireAuth(async (
       data: brands,
     });
   } catch (error) {
-    console.error("Error fetching client brands:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch brands" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 export const POST = requireAuth(async (
   request: NextRequest,
-  _user,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -181,10 +180,9 @@ export const POST = requireAuth(async (
       );
     }
 
-    console.error("Error creating brand:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create brand" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

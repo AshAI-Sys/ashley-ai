@@ -1,13 +1,13 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // POST /api/ai/scheduling/scenario - Analyze what-if scenarios
-export const POST = requireAuth(async (req: NextRequest, _user) => {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { base_schedule, scenario_type, scenario_data, jobs, resources } = await req.json();
 
@@ -114,11 +114,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       analysis,
       analyzed_at: new Date(),
     });
-  } catch (error: any) {
-    console.error("Scenario analysis error:", error);
-    return NextResponse.json(
-      { error: "Failed to analyze scenario", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
