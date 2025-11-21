@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { inventoryManager } from "@/lib/inventory/inventory-manager";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 export const dynamic = 'force-dynamic';
 
@@ -75,12 +75,11 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
           summary,
         });
     }
-  } catch (error: any) {
-    console.error("Inventory API error:", error);
-    return NextResponse.json(
-      { error: "Failed to process inventory request", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: _user.id,
+      path: req.url,
+    });
   }
 });
 
@@ -183,11 +182,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
-  } catch (error: any) {
-    console.error("Inventory operation error:", error);
-    return NextResponse.json(
-      { error: "Failed to complete operation", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: _user.id,
+      path: req.url,
+    });
   }
   });

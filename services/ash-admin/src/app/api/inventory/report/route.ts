@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/auth-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -126,9 +127,11 @@ export const GET = requirePermission('inventory:report')(
         },
         items: report
       });
-    } catch (error: any) {
-      console.error('[INVENTORY] Report generation error:', error);
-      return NextResponse.json({ error: error.message || 'Failed to generate report' }, { status: 500 });
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
