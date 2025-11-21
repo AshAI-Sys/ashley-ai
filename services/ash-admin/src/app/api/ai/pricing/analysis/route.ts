@@ -1,14 +1,14 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // GET /api/ai/pricing/analysis - Analyze historical pricing performance
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");
@@ -113,17 +113,16 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         end: new Date(),
       },
     });
-  } catch (error: any) {
-    console.error("Pricing analysis error:", error);
-    return NextResponse.json(
-      { error: "Failed to analyze pricing", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
 
 // POST /api/ai/pricing/analysis/optimize - Get optimization recommendations
-export const POST = requireAuth(async (req: NextRequest, _user) => {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { product_type, target_margin, min_acceptance_rate } = await req.json();
 
@@ -286,11 +285,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       success: true,
       recommendations,
     });
-  } catch (error: any) {
-    console.error("Pricing optimization error:", error);
-    return NextResponse.json(
-      { error: "Failed to optimize pricing", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });

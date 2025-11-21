@@ -1,8 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { smartSchedulingAI } from "@/lib/ai/smart-scheduling";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -168,16 +168,15 @@ export const POST = requireAuth(async (req: NextRequest, user) => {
       schedule,
       generated_at: new Date(),
     });
-  } catch (error: any) {
-    console.error("Scheduling optimization error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate schedule", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
 // GET /api/ai/scheduling/preview - Preview current schedule
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const days = parseInt(searchParams.get("days") || "7");
@@ -244,11 +243,10 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
       },
     });
-  } catch (error: any) {
-    console.error("Schedule preview error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate preview", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });

@@ -1,14 +1,14 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { dynamicPricingAI } from "@/lib/ai/dynamic-pricing";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // POST /api/ai/pricing - Get pricing recommendation
-export const POST = requireAuth(async (req: NextRequest, _user) => {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const {
       client_id,
@@ -148,17 +148,16 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       client_history: clientHistory,
       market_conditions: marketConditions,
     });
-  } catch (error: any) {
-    console.error("Pricing calculation error:", error);
-    return NextResponse.json(
-      { error: "Failed to calculate pricing", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
 
 // GET /api/ai/pricing/scenarios?client_id=xxx&... - Get multiple pricing scenarios
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const client_id = searchParams.get("client_id");
@@ -288,11 +287,10 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       client_history: clientHistory,
       market_conditions: marketConditions,
     });
-  } catch (error: any) {
-    console.error("Pricing scenarios error:", error);
-    return NextResponse.json(
-      { error: "Failed to calculate scenarios", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
