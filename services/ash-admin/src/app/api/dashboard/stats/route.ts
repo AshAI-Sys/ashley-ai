@@ -1,8 +1,8 @@
-﻿/* eslint-disable */
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { startOfDay, endOfDay, subDays, format } from "date-fns";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = "force-dynamic";
 
@@ -290,12 +290,11 @@ export const GET = requireAuth(async (request: NextRequest, authUser) => {
         },
       }
     );
-  
+
   } catch (error) {
-    console.error("Dashboard stats error:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch dashboard statistics" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: authUser.id,
+      path: request.url,
+    });
   }
 });

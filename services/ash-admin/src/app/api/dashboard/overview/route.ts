@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -110,10 +110,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       generated_at: new Date().toISOString()
     });
   } catch (error) {
-    console.error("Error fetching dashboard overview:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch dashboard overview" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
