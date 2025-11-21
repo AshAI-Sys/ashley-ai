@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/auth-middleware';
 import { withAudit } from '@/lib/audit-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,12 +66,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     });
 
     return NextResponse.json({ success: true, data: categories });
-  } catch (error: unknown) {
-    console.error('Error fetching categories:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch categories' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -139,7 +139,7 @@ export const POST = requireAuth(
           { success: true, data: category, message: 'Category created successfully' },
           { status: 201 }
         );
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof z.ZodError) {
           return NextResponse.json(
             { success: false, error: 'Validation failed', details: error.errors },
@@ -147,11 +147,10 @@ export const POST = requireAuth(
           );
         }
 
-        console.error('Error creating category:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to create category' },
-          { status: 500 }
-        );
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'category', action: 'CREATE' }
@@ -251,7 +250,7 @@ export const PUT = requireAuth(
           data: category,
           message: 'Category updated successfully',
         });
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof z.ZodError) {
           return NextResponse.json(
             { success: false, error: 'Validation failed', details: error.errors },
@@ -259,11 +258,10 @@ export const PUT = requireAuth(
           );
         }
 
-        console.error('Error updating category:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to update category' },
-          { status: 500 }
-        );
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'category', action: 'UPDATE' }
@@ -339,12 +337,11 @@ export const DELETE = requireAuth(
           success: true,
           message: 'Category deleted successfully',
         });
-      } catch (error: unknown) {
-        console.error('Error deleting category:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to delete category' },
-          { status: 500 }
-        );
+      } catch (error) {
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'category', action: 'DELETE' }
