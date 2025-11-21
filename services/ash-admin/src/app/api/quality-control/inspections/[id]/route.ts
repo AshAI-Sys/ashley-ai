@@ -1,16 +1,24 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const GET = requireAuth(async (
-  _request: NextRequest,
-  _user,
+  request: NextRequest,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
+    const inspectionId = context?.params?.id;
+    if (!inspectionId) {
+      return NextResponse.json(
+        { error: "Inspection ID is required" },
+        { status: 400 }
+      );
+    }
+
     const inspection = await prisma.qCInspection.findUnique({
-      where: { id: context!.params.id },
+      where: { id: inspectionId },
       include: {
         order: { select: { order_number: true } },
         bundle: { select: { qr_code: true, size_code: true, qty: true } },
@@ -45,24 +53,31 @@ export const GET = requireAuth(async (
 
     return NextResponse.json(inspection);
   } catch (error) {
-    console.error("Error fetching inspection:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch inspection" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 export const PUT = requireAuth(async (
   request: NextRequest,
-  _user,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
+    const inspectionId = context?.params?.id;
+    if (!inspectionId) {
+      return NextResponse.json(
+        { error: "Inspection ID is required" },
+        { status: 400 }
+      );
+    }
+
     const data = await request.json();
 
     const inspection = await prisma.qCInspection.update({
-      where: { id: context!.params.id },
+      where: { id: inspectionId },
       data: {
         ...data,
         updated_at: new Date(),
@@ -77,10 +92,9 @@ export const PUT = requireAuth(async (
 
     return NextResponse.json(inspection);
   } catch (error) {
-    console.error("Error updating inspection:", error);
-    return NextResponse.json(
-      { error: "Failed to update inspection" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

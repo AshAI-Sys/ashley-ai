@@ -1,22 +1,30 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 const prisma = db;
 
 // GET /api/clients/[id] - Get single client
 export const GET = requireAuth(async (
-  _request: NextRequest,
+  request: NextRequest,
   user,
   context?: { params: { id: string } }
 ) => {
   try {
     const workspaceId = user.workspaceId;
+    const clientId = context?.params?.id;
+    if (!clientId) {
+      return NextResponse.json(
+        { success: false, error: "Client ID is required" },
+        { status: 400 }
+      );
+    }
+
     const client = await prisma.client.findFirst({
       where: {
-        id: context!.params.id,
+        id: clientId,
         workspace_id: workspaceId,
       },
       include: {
@@ -64,19 +72,26 @@ export const GET = requireAuth(async (
       data: client,
     });
   } catch (error) {
-    console.error("Failed to fetch client:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch client" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // PUT /api/clients/[id] - Update client
 export const PUT = requireAuth(
   withAudit(
-    async (request: NextRequest, _user, context?: { params: { id: string } }) => {
+    async (request: NextRequest, user, context?: { params: { id: string } }) => {
       try {
+        const clientId = context?.params?.id;
+        if (!clientId) {
+          return NextResponse.json(
+            { success: false, error: "Client ID is required" },
+            { status: 400 }
+          );
+        }
+
         const body = await request.json();
 
         // Convert address object to JSON string if it's an object
@@ -86,7 +101,7 @@ export const PUT = requireAuth(
             : body.address;
 
         const client = await prisma.client.update({
-          where: { id: context!.params.id },
+          where: { id: clientId },
           data: {
             name: body.name,
             contact_person: body.contact_person,
@@ -114,11 +129,10 @@ export const PUT = requireAuth(
           message: "Client updated successfully",
         });
       } catch (error) {
-        console.error("Failed to update client:", error);
-        return NextResponse.json(
-          { success: false, error: "Failed to update client" },
-          { status: 500 }
-        );
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: "client", action: "UPDATE" }
@@ -128,10 +142,18 @@ export const PUT = requireAuth(
 // DELETE /api/clients/[id] - Delete client
 export const DELETE = requireAuth(
   withAudit(
-    async (_request: NextRequest, _user, context?: { params: { id: string } }) => {
+    async (request: NextRequest, user, context?: { params: { id: string } }) => {
       try {
+        const clientId = context?.params?.id;
+        if (!clientId) {
+          return NextResponse.json(
+            { success: false, error: "Client ID is required" },
+            { status: 400 }
+          );
+        }
+
         await prisma.client.delete({
-          where: { id: context!.params.id },
+          where: { id: clientId },
         });
 
         return NextResponse.json({
@@ -139,11 +161,10 @@ export const DELETE = requireAuth(
           message: "Client deleted successfully",
         });
       } catch (error) {
-        console.error("Failed to delete client:", error);
-        return NextResponse.json(
-          { success: false, error: "Failed to delete client" },
-          { status: 500 }
-        );
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: "client", action: "DELETE" }

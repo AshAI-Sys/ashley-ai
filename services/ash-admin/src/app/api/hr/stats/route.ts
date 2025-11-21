@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
@@ -7,16 +6,17 @@ import {
   CacheKeys,
   CACHE_DURATION,
 } from "@/lib/performance/query-cache";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // Fixed: Prisma groupBy nullable field issues - using manual grouping instead
 
-export const GET = requireAuth(async (_request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     // SECURITY: Get user's workspace_id for data isolation
-    const workspaceId = _user.workspaceId || _user.workspaceId;
+    const workspaceId = user.workspaceId;
     const today = new Date();
     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
     const endOfToday = new Date(today.setHours(23, 59, 59, 999));
@@ -44,11 +44,10 @@ export const GET = requireAuth(async (_request: NextRequest, _user) => {
       data: stats,
     });
   } catch (error) {
-    console.error("Error calculating HR stats:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to calculate HR statistics" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 })
 
@@ -241,8 +240,9 @@ async function calculateHRStats(
   let averageTenureMonths = 0;
   if (employeesWithTenure.length > 0) {
     const totalMonths = employeesWithTenure.reduce((sum: any, emp: any) => {
+      if (!emp.hire_date) return sum; // Skip if null (defensive check)
       const months =
-        (today.getTime() - emp.hire_date!.getTime()) /
+        (today.getTime() - emp.hire_date.getTime()) /
         (1000 * 60 * 60 * 24 * 30.44);
       return sum + months;
     }, 0);

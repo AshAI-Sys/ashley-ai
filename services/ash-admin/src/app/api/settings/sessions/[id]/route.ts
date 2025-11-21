@@ -1,24 +1,29 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 // Stub API for revoking individual sessions
 // TODO: Implement real session revocation
 
 export const DELETE = requireAuth(async (
-  _request: NextRequest,
-  _authUser,
+  request: NextRequest,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
-    const ____sessionId = context!.params.id;
+    const sessionId = context?.params?.id;
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: "Session ID is required" },
+        { status: 400 }
+      );
+    }
     // TODO: Revoke session from Redis or database
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error revoking session:", error);
-    return NextResponse.json(
-      { error: "Failed to revoke session" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
