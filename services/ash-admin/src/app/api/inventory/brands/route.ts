@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { db } from '@/lib/db';
 import { requireAuth } from '@/lib/auth-middleware';
 import { withAudit } from '@/lib/audit-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,12 +61,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     });
 
     return NextResponse.json({ success: true, data: brands });
-  } catch (error: unknown) {
-    console.error('Error fetching inventory brands:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch inventory brands' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -122,7 +122,7 @@ export const POST = requireAuth(
           { success: true, data: brand, message: 'Brand created successfully' },
           { status: 201 }
         );
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof z.ZodError) {
           return NextResponse.json(
             { success: false, error: 'Validation failed', details: error.errors },
@@ -130,11 +130,10 @@ export const POST = requireAuth(
           );
         }
 
-        console.error('Error creating inventory brand:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to create brand' },
-          { status: 500 }
-        );
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'inventory_brand', action: 'CREATE' }
@@ -206,7 +205,7 @@ export const PUT = requireAuth(
           data: brand,
           message: 'Brand updated successfully',
         });
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof z.ZodError) {
           return NextResponse.json(
             { success: false, error: 'Validation failed', details: error.errors },
@@ -214,11 +213,10 @@ export const PUT = requireAuth(
           );
         }
 
-        console.error('Error updating inventory brand:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to update brand' },
-          { status: 500 }
-        );
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'inventory_brand', action: 'UPDATE' }
@@ -282,12 +280,11 @@ export const DELETE = requireAuth(
           success: true,
           message: 'Brand deleted successfully',
         });
-      } catch (error: unknown) {
-        console.error('Error deleting inventory brand:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to delete brand' },
-          { status: 500 }
-        );
+      } catch (error) {
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'inventory_brand', action: 'DELETE' }
