@@ -23,13 +23,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     // Validate required parameters
     const workspaceError = validateRequired(workspaceId, "workspaceId");
-    if (workspaceError) {
-      
-      return createValidationErrorResponse([workspaceError]);
+    if (workspaceError || !workspaceId) {
+
+      return createValidationErrorResponse(workspaceError ? [workspaceError] : ["workspaceId is required"]);
     }
 
-    // Validate workspace access
-    if (!validateWorkspaceAccess(user.workspaceId, workspaceId!)) {
+    // Validate workspace access (workspaceId is non-null after validation)
+    if (!validateWorkspaceAccess(user.workspaceId, workspaceId)) {
       return NextResponse.json(
         { error: "Access denied to this workspace" },
         { status: 403 }
