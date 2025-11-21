@@ -22,7 +22,13 @@ export const GET = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
-    const clientId = context!.params.id;
+    const clientId = context?.params?.id;
+    if (!clientId) {
+      return NextResponse.json(
+        { success: false, error: "Client ID is required" },
+        { status: 404 }
+      );
+    }
 
     // Check if client exists
     const client = await prisma.client.findUnique({
@@ -86,7 +92,13 @@ export const POST = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
-    const clientId = context!.params.id;
+    const clientId = context?.params?.id;
+    if (!clientId) {
+      return NextResponse.json(
+        { success: false, error: "Client ID is required" },
+        { status: 400 }
+      );
+    }
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
 

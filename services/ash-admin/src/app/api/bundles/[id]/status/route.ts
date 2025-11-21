@@ -12,13 +12,21 @@ export const PUT = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
+    const bundleId = context?.params?.id;
+    if (!bundleId) {
+      return NextResponse.json(
+        { success: false, error: "Bundle ID is required" },
+        { status: 400 }
+      );
+    }
+
     const workspaceId = user.workspaceId;
     const _userId = user.id;
     const body = await req.json();
     const { status, ___notes, ___location } = body;
 
     if (!status) {
-      
+
       return NextResponse.json(
         { success: false, error: "Status is required" },
         { status: 400 }
@@ -28,13 +36,13 @@ export const PUT = requireAuth(async (
     // Verify bundle exists
     const bundle = await prisma.bundle.findFirst({
       where: {
-        id: context!.params.id,
+        id: bundleId,
         workspace_id: workspaceId,
       },
       });
 
     if (!bundle) {
-      
+
       return NextResponse.json(
         { success: false, error: "Bundle not found" },
         { status: 404 }
@@ -43,7 +51,7 @@ export const PUT = requireAuth(async (
 
     // Update bundle status
     const updatedBundle = await prisma.bundle.update({
-      where: { id: context!.params.id },
+      where: { id: bundleId },
       data: {
         status,
         updated_at: new Date(),

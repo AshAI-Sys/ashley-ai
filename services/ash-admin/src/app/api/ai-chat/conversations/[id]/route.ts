@@ -12,7 +12,15 @@ export const GET = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
-    const params = context!.params;
+    const conversationId = context?.params?.id;
+    if (!conversationId) {
+      return NextResponse.json(
+        { error: "Conversation ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const params = { id: conversationId };
     const conversation = await prisma.aIChatConversation.findUnique({
       where: {
         id: params.id,
@@ -57,7 +65,15 @@ export const PATCH = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
-    const params = context!.params;
+    const conversationId = context?.params?.id;
+    if (!conversationId) {
+      return NextResponse.json(
+        { error: "Conversation ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const params = { id: conversationId };
     const body = await request.json();
     const { title, is_archived, is_pinned } = body;
 
@@ -88,7 +104,15 @@ export const DELETE = requireAuth(async (
   context?: { params: { id: string } }
 ) => {
   try {
-    const params = context!.params;
+    const conversationId = context?.params?.id;
+    if (!conversationId) {
+      return NextResponse.json(
+        { error: "Conversation ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const params = { id: conversationId };
     await prisma.aIChatConversation.delete({
       where: {
         id: params.id,
