@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 export const dynamic = 'force-dynamic';
 
@@ -123,13 +124,9 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
         { status: 404 }
       );
     } catch (error) {
-      console.error("Inventory lookup error:", error);
-      return NextResponse.json(
-        {
-          success: false,
-          message: error instanceof Error ? error.message : "Internal server error",
-        },
-        { status: 500 }
-      );
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: req.url,
+      });
     }
 });

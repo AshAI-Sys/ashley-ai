@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission } from '@/lib/auth-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -122,12 +123,11 @@ export const GET = requirePermission('inventory:read')(
           return acc;
         }, {}),
       });
-    } catch (error: any) {
-      console.error('[INVENTORY] Stock ledger fetch error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to fetch stock ledger' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );

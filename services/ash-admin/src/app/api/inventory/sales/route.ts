@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requirePermission, validateWorkspaceAccess } from '@/lib/auth-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 // Force dynamic route
 export const dynamic = 'force-dynamic';
@@ -126,12 +127,11 @@ export const POST = requirePermission('inventory:sell')(
         sale_id: sale.id,
         sale,
       });
-    } catch (error: any) {
-      console.error('[INVENTORY] Sales processing error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to process sale' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
