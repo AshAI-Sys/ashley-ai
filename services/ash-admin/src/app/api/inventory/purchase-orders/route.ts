@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 export const dynamic = "force-dynamic";
 
@@ -87,11 +88,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
     });
   } catch (error) {
-    console.error("[API] Error fetching purchase orders:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch purchase orders" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -226,10 +226,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       purchase_order: purchaseOrder,
     });
   } catch (error) {
-    console.error("[API] Error creating purchase order:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create purchase order" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

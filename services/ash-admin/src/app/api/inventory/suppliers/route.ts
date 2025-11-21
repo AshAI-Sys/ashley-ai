@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 // Force dynamic route
 export const dynamic = "force-dynamic";
@@ -65,11 +66,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
     });
   } catch (error) {
-    console.error("[API] Error fetching suppliers:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch suppliers" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -154,10 +154,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       supplier,
     });
   } catch (error) {
-    console.error("[API] Error creating supplier:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create supplier" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

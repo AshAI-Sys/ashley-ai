@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 export const dynamic = "force-dynamic";
 
@@ -55,11 +56,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
     });
   } catch (error) {
-    console.error("[API] Error fetching auto-reorder settings:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch auto-reorder settings" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -164,10 +164,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       setting,
     });
   } catch (error) {
-    console.error("[API] Error creating auto-reorder setting:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create auto-reorder setting" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

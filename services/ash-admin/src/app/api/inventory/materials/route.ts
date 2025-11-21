@@ -1,6 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 // Force dynamic route (don't pre-render during build)
 export const dynamic = "force-dynamic";
@@ -28,11 +29,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       count: materials.length,
     });
   } catch (error) {
-    console.error("[API] Error fetching materials:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch materials" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -131,10 +131,9 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       material,
     });
   } catch (error) {
-    console.error("[API] Error adding material:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to add material" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
