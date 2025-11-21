@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { createErrorResponse, notFoundError } from "@/lib/error-sanitization";
+import { getRouteParam, type RouteContext } from "@/lib/route-helpers";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +14,11 @@ export const dynamic = "force-dynamic";
 export const GET = requireAuth(async (
   request: NextRequest,
   user,
-  context?: { params: { id: string } }
+  context?: RouteContext
 ) => {
   try {
-    const workspace_id = user.workspaceId; // Use authenticated workspace ID
-    const { id } = context!.params;
+    const workspace_id = user.workspaceId;
+    const id = getRouteParam(context, 'id');
 
     const setting = await prisma.autoReorderSetting.findFirst({
       where: {
@@ -70,11 +71,11 @@ export const GET = requireAuth(async (
 export const PUT = requireAuth(async (
   request: NextRequest,
   user,
-  context?: { params: { id: string } }
+  context?: RouteContext
 ) => {
   try {
-    const workspace_id = user.workspaceId; // Use authenticated workspace ID
-    const { id } = context!.params;
+    const workspace_id = user.workspaceId;
+    const id = getRouteParam(context, 'id');
     const body = await request.json();
 
     const {
@@ -154,11 +155,11 @@ export const PUT = requireAuth(async (
 export const DELETE = requireAuth(async (
   request: NextRequest,
   user,
-  context?: { params: { id: string } }
+  context?: RouteContext
 ) => {
   try {
-    const workspace_id = user.workspaceId; // Use authenticated workspace ID
-    const { id } = context!.params;
+    const workspace_id = user.workspaceId;
+    const id = getRouteParam(context, 'id');
 
     // Check if setting exists
     const existing = await prisma.autoReorderSetting.findFirst({
