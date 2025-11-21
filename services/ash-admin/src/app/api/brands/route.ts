@@ -1,9 +1,9 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
 import { withAudit } from "@/lib/audit-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +19,7 @@ const CreateBrandSchema = z.object({
 
 const UpdateBrandSchema = CreateBrandSchema.partial();
 
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -94,17 +94,16 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
   },
 });
 } catch (error) {
-    console.error("Error fetching brands:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch brands" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 })
 
 export const POST = requireAuth(
   withAudit(
-    async (request: NextRequest, _user) => {
+    async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const validatedData = CreateBrandSchema.parse(body);
@@ -175,18 +174,17 @@ export const POST = requireAuth(
   
   } catch (error) {
     if (error instanceof z.ZodError) {
-      
+
       return NextResponse.json(
         { success: false, error: "Validation failed", details: error.errors },
         { status: 400 }
       );
     }
 
-    console.error("Error creating brand:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create brand" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
     },
     { resource: "brand", action: "CREATE" }
@@ -195,7 +193,7 @@ export const POST = requireAuth(
 
 export const PUT = requireAuth(
   withAudit(
-    async (request: NextRequest, _user) => {
+    async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -281,11 +279,10 @@ export const PUT = requireAuth(
       );
     }
 
-    console.error("Error updating brand:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update brand" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
     },
     { resource: "brand", action: "UPDATE" }
@@ -294,7 +291,7 @@ export const PUT = requireAuth(
 
 export const DELETE = requireAuth(
   withAudit(
-    async (request: NextRequest, _user) => {
+    async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -347,11 +344,10 @@ export const DELETE = requireAuth(
       message: "Brand deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting brand:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete brand" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
     },
     { resource: "brand", action: "DELETE" }
