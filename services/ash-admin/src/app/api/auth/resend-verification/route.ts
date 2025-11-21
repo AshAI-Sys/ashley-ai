@@ -1,10 +1,10 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
 import crypto from "crypto";
 import { z } from "zod";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "../../../../lib/error-sanitization";
 
 export const dynamic = 'force-dynamic';
 
@@ -147,16 +147,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       { status: 200 }
     );
 
-  } catch (error: any) {
-    console.error("Resend verification error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to send verification email",
-        details:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      path: request.url,
+    });
   }
 });

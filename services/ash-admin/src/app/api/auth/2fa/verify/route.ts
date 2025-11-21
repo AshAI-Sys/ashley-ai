@@ -1,8 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { verify2FA } from "@/lib/2fa-server";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 export const dynamic = 'force-dynamic';
 
@@ -91,14 +91,9 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         ? "Backup code verified. Please generate new backup codes."
         : "2FA code verified successfully",
     });
-  } catch (error: any) {
-    console.error("Error verifying 2FA:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to verify 2FA code",
-        details: error.message,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      path: request.url,
+    });
   }
 });

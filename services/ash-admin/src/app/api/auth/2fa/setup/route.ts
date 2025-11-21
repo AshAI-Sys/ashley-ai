@@ -1,8 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { setup2FA } from "@/lib/2fa-server";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from "@/lib/error-sanitization";
 
 export const dynamic = 'force-dynamic';
 
@@ -64,15 +64,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       backup_codes: result.backup_codes,
       message: "Scan QR code with Google Authenticator or similar app",
     });
-  } catch (error: any) {
-    console.error("Error setting up 2FA:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to setup 2FA",
-        details: error.message,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      path: request.url,
+    });
   }
 });
 
@@ -105,14 +100,9 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
     return NextResponse.json({
       message: "2FA has been disabled",
     });
-  } catch (error: any) {
-    console.error("Error disabling 2FA:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to disable 2FA",
-        details: error.message,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      path: request.url,
+    });
   }
 });

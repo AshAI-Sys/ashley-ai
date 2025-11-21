@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import { logAuthEvent } from "../../../../lib/audit-logger";
+import { createErrorResponse } from "../../../../lib/error-sanitization";
 
 // Force Node.js runtime (Prisma doesn't support Edge)
 export const runtime = "nodejs";
@@ -90,16 +90,9 @@ console.log("✅ Email verified for user:", user.email);
       { status: 200 }
     );
   
-  } catch (error: any) {
-    console.error("Email verification error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to verify email",
-        details:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      path: request.url,
+    });
   }
 }

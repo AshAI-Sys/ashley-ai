@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/db";
 import bcrypt from 'bcryptjs';
@@ -7,6 +6,7 @@ import { validatePassword } from "../../../../lib/password-validator";
 import { sendEmail } from "../../../../lib/email";
 import { z } from "zod";
 import crypto from "crypto";
+import { createErrorResponse } from "../../../../lib/error-sanitization";
 
 export const dynamic = 'force-dynamic';
 
@@ -346,16 +346,9 @@ This is an automated email. Please do not reply.
       },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error("Registration error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to create account",
-        details:
-          process.env.NODE_ENV === "development" ? error.message : undefined,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      path: request.url,
+    });
   }
 }
