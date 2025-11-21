@@ -12,6 +12,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { unlockAccount, isAccountLocked } from '@/lib/account-lockout';
 import { authLogger } from '@/lib/logger';
 import { requirePermission } from '@/lib/auth-middleware';
+import {
+  getQueryParam,
+  parseRequestBody,
+  validateRequiredFields,
+  getAuditContext,
+  isValidEmail
+} from '@/lib/route-helpers';
+import { validationError } from '@/lib/error-sanitization';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -23,26 +31,24 @@ export const dynamic = 'force-dynamic';
  */
 export const POST = requirePermission("admin:update")(async (request: NextRequest, admin) => {
   try {
-    const body = await request.json();
+    // Parse and validate request body
+    const body = await parseRequestBody<{ email: string }>(request);
+    validateRequiredFields(body, ['email']);
+
     const { email } = body;
 
-    // Validate input
-    if (!email) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Email is required',
-        },
-        { status: 400 }
-      );
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return validationError('Invalid email format', 'email');
     }
 
     // Prevent admins from unlocking their own account (use password reset instead)
     if (email === admin.email) {
+      const auditContext = getAuditContext(request, admin.id);
+
       authLogger.warn('Admin attempted to unlock own account', {
-        adminId: admin.id,
+        ...auditContext,
         adminEmail: admin.email,
-        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       });
 
       return NextResponse.json(
@@ -65,13 +71,11 @@ export const POST = requirePermission("admin:update")(async (request: NextReques
 
     // Log admin action with full audit trail
     authLogger.info('Account unlocked via admin RBAC', {
-      adminId: admin.id,
+      ...getAuditContext(request, admin.id),
       adminEmail: admin.email,
       targetEmail: email,
       wasLocked: statusBefore.isLocked,
       previousAttempts: statusBefore.failedAttempts,
-      timestamp: new Date().toISOString(),
-      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
     });
 
     return NextResponse.json(
@@ -127,17 +131,16 @@ export const POST = requirePermission("admin:update")(async (request: NextReques
  */
 export const GET = requirePermission("admin:read")(async (request: NextRequest, admin) => {
   try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get('email');
+    // Extract and validate query parameter
+    const email = getQueryParam(request, 'email', true);
 
     if (!email) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Email is required',
-        },
-        { status: 400 }
-      );
+      return validationError('Email is required', 'email');
+    }
+
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return validationError('Invalid email format', 'email');
     }
 
     // Get lockout status
@@ -145,11 +148,10 @@ export const GET = requirePermission("admin:read")(async (request: NextRequest, 
 
     // Log status check for audit trail
     authLogger.info('Account lockout status checked', {
-      adminId: admin.id,
+      ...getAuditContext(request, admin.id),
       adminEmail: admin.email,
       targetEmail: email,
       isLocked: status.isLocked,
-      timestamp: new Date().toISOString(),
     });
 
     return NextResponse.json(
