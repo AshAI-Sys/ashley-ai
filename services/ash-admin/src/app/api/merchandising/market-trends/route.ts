@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
@@ -8,6 +7,7 @@ import {
   createValidationErrorResponse,
   validateAndSanitizeMarketTrendData,
 } from "@/lib/validation";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,13 +89,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     return NextResponse.json({ trends, stats: trendStats });
   } catch (error) {
-    console.error("Market trends fetch error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to fetch market trends",
-      },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 })
 
@@ -141,13 +138,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       return NextResponse.json({ trend });
     }
   } catch (error) {
-    console.error("Market trend creation error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to create market trend",
-      },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 

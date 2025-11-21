@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth, validateWorkspaceAccess } from "@/lib/auth-middleware";
@@ -8,6 +7,7 @@ import {
   validateEnum,
   createValidationErrorResponse,
 } from "@/lib/validation";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,13 +72,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     return NextResponse.json({ forecasts });
   } catch (error) {
-    console.error("Demand forecast fetch error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to fetch demand forecasts",
-      },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -141,13 +138,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     return NextResponse.json({ forecast });
   } catch (error) {
-    console.error("Demand forecast creation error:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to create demand forecast",
-      },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 })
 
