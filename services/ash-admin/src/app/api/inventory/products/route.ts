@@ -7,6 +7,7 @@ import { PrismaClient } from '@prisma/client';
 import { requireAuth } from '@/lib/auth-middleware';
 import { withAudit } from '@/lib/audit-middleware';
 import { syncAfterChange } from '@/lib/google-sheets-auto-sync';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 const prisma = new PrismaClient();
 
@@ -50,12 +51,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     });
 
     return NextResponse.json({ success: true, data: products });
-  } catch (error: unknown) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch products' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -154,12 +154,11 @@ export const POST = requireAuth(
           message: 'Product created successfully',
           data: product,
         }, { status: 201 });
-      } catch (error: unknown) {
-        console.error('Error creating product:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to create product' },
-          { status: 500 }
-        );
+      } catch (error) {
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'inventory_product', action: 'CREATE' }
@@ -273,12 +272,11 @@ export const PUT = requireAuth(
           message: 'Product updated successfully',
           data: product,
         });
-      } catch (error: unknown) {
-        console.error('Error updating product:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to update product' },
-          { status: 500 }
-        );
+      } catch (error) {
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'inventory_product', action: 'UPDATE' }
@@ -306,12 +304,11 @@ export const DELETE = requireAuth(
           success: true,
           message: 'Product deleted successfully',
         });
-      } catch (error: unknown) {
-        console.error('Error deleting product:', error);
-        return NextResponse.json(
-          { success: false, error: 'Failed to delete product' },
-          { status: 500 }
-        );
+      } catch (error) {
+        return createErrorResponse(error, 500, {
+          userId: user.id,
+          path: request.url,
+        });
       }
     },
     { resource: 'inventory_product', action: 'DELETE' }

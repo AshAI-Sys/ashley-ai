@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { db } from '@/lib/db';
 import QRCode from 'qrcode';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 /**
  * QR Code Management API
@@ -334,12 +335,11 @@ export const POST = requirePermission('inventory:report')(
         batch_id: batch_id || generatedQRCodes[0]?.batch_id,
         qr_codes: generatedQRCodes,
       });
-    } catch (error: any) {
-      console.error('[QR CODES] Generation error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to generate QR codes' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
@@ -472,12 +472,11 @@ export const GET = requirePermission('inventory:report')(
         stats: statusCounts,
         qr_codes: qrCodes,
       });
-    } catch (error: any) {
-      console.error('[QR CODES] List error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to fetch QR codes' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
@@ -597,12 +596,11 @@ export const PATCH = requirePermission('inventory:report')(
         success: true,
         updated_count: qr_code_ids.length,
       });
-    } catch (error: any) {
-      console.error('[QR CODES] Update error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to update QR codes' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
@@ -667,12 +665,11 @@ export const DELETE = requirePermission('inventory:report')(
         deleted_count: qr_code_ids.length,
         permanent,
       });
-    } catch (error: any) {
-      console.error('[QR CODES] Delete error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to delete QR codes' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
