@@ -1,12 +1,12 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -107,11 +107,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
     });
   } catch (error) {
-    console.error("AI optimization error:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to generate AI optimization" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 })
 
@@ -187,16 +186,14 @@ function calculateQuantityEfficiency(quantity: number, method: string) {
     EMBROIDERY: { min: 1, optimal: 12, max: 48 },
   };
 
-  const range = optimalRanges[method] || optimalRanges.SUBLIMATION;
+  const range = (optimalRanges[method] || optimalRanges.SUBLIMATION) as { min: number; optimal: number; max: number };
 
-  if (quantity >= range!.min && quantity <= range!.optimal) {
-
-    return 0.95 + (quantity / range!.optimal) * 0.05;
-  } else if (quantity <= range!.max) {
-
+  if (quantity >= range.min && quantity <= range.optimal) {
+    return 0.95 + (quantity / range.optimal) * 0.05;
+  } else if (quantity <= range.max) {
     return (
       0.85 +
-      (1 - (quantity - range!.optimal) / (range!.max - range!.optimal)) * 0.1
+      (1 - (quantity - range.optimal) / (range.max - range.optimal)) * 0.1
     );
   } else {
     return 0.75;

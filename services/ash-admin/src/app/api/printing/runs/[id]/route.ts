@@ -1,15 +1,21 @@
-﻿/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const GET = requireAuth(async (
-  _request: NextRequest,
-  _user,
+  request: NextRequest,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
-    const runId = context!.params.id;
+    const runId = context?.params?.id;
+    if (!runId) {
+      return NextResponse.json(
+        { success: false, error: "Run ID is required" },
+        { status: 400 }
+      );
+    }
 
     const run = await prisma.printRun.findUnique({
       where: { id: runId },
@@ -94,21 +100,26 @@ export const GET = requireAuth(async (
       data: transformedRun,
     });
   } catch (error) {
-    console.error("Get print run error:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch print run" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 export const PATCH = requireAuth(async (
   request: NextRequest,
-  _user,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
-    const runId = context!.params.id;
+    const runId = context?.params?.id;
+    if (!runId) {
+      return NextResponse.json(
+        { success: false, error: "Run ID is required" },
+        { status: 400 }
+      );
+    }
     const body = await request.json();
     const { status, notes, material_consumption, quality_data } = body;
 
@@ -200,11 +211,10 @@ export const PATCH = requireAuth(async (
       data: updatedRun,
     });
   } catch (error) {
-    console.error("Update print run error:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update print run" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
