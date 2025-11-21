@@ -1,14 +1,14 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 const prisma = db;
 
 // GET /api/ai-chat/conversations/:id - Get a specific conversation with messages
 export const GET = requireAuth(async (
-  _request: NextRequest,
-  _user,
+  request: NextRequest,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -43,18 +43,17 @@ export const GET = requireAuth(async (
 
     return NextResponse.json({ conversation });
   } catch (error) {
-    console.error("Error fetching conversation:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch conversation" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // PATCH /api/ai-chat/conversations/:id - Update conversation
 export const PATCH = requireAuth(async (
   request: NextRequest,
-  _user,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -75,18 +74,17 @@ export const PATCH = requireAuth(async (
 
     return NextResponse.json({ conversation });
   } catch (error) {
-    console.error("Error updating conversation:", error);
-    return NextResponse.json(
-      { error: "Failed to update conversation" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // DELETE /api/ai-chat/conversations/:id - Delete conversation
 export const DELETE = requireAuth(async (
-  _request: NextRequest,
-  _user,
+  request: NextRequest,
+  user,
   context?: { params: { id: string } }
 ) => {
   try {
@@ -99,10 +97,9 @@ export const DELETE = requireAuth(async (
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting conversation:", error);
-    return NextResponse.json(
-      { error: "Failed to delete conversation" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

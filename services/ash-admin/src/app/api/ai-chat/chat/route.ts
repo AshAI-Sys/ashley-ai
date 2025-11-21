@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { formatDate as formatDateUtil } from "@/lib/utils/date";
@@ -167,7 +167,7 @@ async function getBusinessContext(
 }
 
 // POST /api/ai-chat/chat - Send a message and get AI response
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -379,19 +379,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       assistant_message: assistantMessage,
       response: assistantResponse,
     });
-  } catch (error: any) {
-    console.error("Error in AI chat:", error);
-    return NextResponse.json(
-      {
-        error: "Failed to process chat message",
-        details: error.message,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 // GET /api/ai-chat/chat - Check AI configuration status
-export const GET = requireAuth(async (_request: NextRequest, _user) => {
+export const GET = requireAuth(async (_request: NextRequest, user) => {
   return NextResponse.json({
     configured: !!(groq || anthropic || openai),
     providers: {
