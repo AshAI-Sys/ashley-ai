@@ -1,5 +1,4 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-// import { rateLimit, apiRateLimit } from "./rate-limit"; // REMOVED - rate-limit.ts deleted
 import { verifyToken} from "./jwt";
 import {
   Permission,
@@ -8,7 +7,7 @@ import {
   hasPermission,
   hasAnyPermission,
 } from "./rbac";
-// import { validateSession } from "./session-manager"; // REMOVED - session-manager.ts deleted
+import { createRateLimiter, RateLimitPresets } from "./security/rate-limit";
 
 export interface AuthUser {
   id: string;
@@ -72,12 +71,46 @@ export async function authenticateRequest(
   }
 }
 
+// Rate limiters for different HTTP methods
+const readRateLimiter = createRateLimiter({
+  ...RateLimitPresets.GENEROUS, // 100 req/min for GET requests
+  keyGenerator: (req) => {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.substring(7);
+    // Use IP for unauthenticated, user ID for authenticated
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ||
+               req.headers.get("x-real-ip") || "unknown";
+    return token ? `user:${token.substring(0, 10)}:${ip}` : `ip:${ip}`;
+  },
+});
+
+const writeRateLimiter = createRateLimiter({
+  ...RateLimitPresets.MODERATE, // 30 req/min for POST/PUT/DELETE
+  keyGenerator: (req) => {
+    const authHeader = req.headers.get("authorization");
+    const token = authHeader?.substring(7);
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0] ||
+               req.headers.get("x-real-ip") || "unknown";
+    return token ? `user:${token.substring(0, 10)}:${ip}` : `ip:${ip}`;
+  },
+});
+
 export function requireAuth<T = any>(
   handler: (request: NextRequest, user: AuthUser, context?: T) => Promise<NextResponse>
 ) {
-  // REMOVED rate limiting wrapper - rate-limit.ts was deleted
-  // Rate limiting now handled by separate middleware or security/rate-limit.ts if needed
   return async (request: NextRequest, context?: T) => {
+    // Apply rate limiting based on HTTP method
+    const method = request.method.toUpperCase();
+    const isReadOperation = method === "GET" || method === "HEAD";
+    const rateLimiter = isReadOperation ? readRateLimiter : writeRateLimiter;
+
+    // Check rate limit
+    const rateLimitResponse = await rateLimiter(request);
+    if (rateLimitResponse) {
+      return rateLimitResponse; // Rate limit exceeded - return 429
+    }
+
+    // Authenticate user
     const user = await authenticateRequest(request);
 
     if (!user) {

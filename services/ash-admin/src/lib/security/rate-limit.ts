@@ -234,3 +234,33 @@ export async function isAccountLocked(identifier: string): Promise<{
 
   return { locked: false };
 }
+
+/**
+ * Universal rate limiting wrapper for any route handler
+ *
+ * @example
+ * export const POST = withRateLimit(
+ *   async (request: NextRequest) => { ... },
+ *   RateLimitPresets.STANDARD
+ * );
+ */
+export function withRateLimit(
+  handler: (request: NextRequest) => Promise<NextResponse>,
+  config: RateLimitConfig = RateLimitPresets.STANDARD
+) {
+  const limiter = createRateLimiter(config);
+
+  return async (request: NextRequest): Promise<NextResponse> => {
+    // Check rate limit first
+    const rateLimitResponse = await limiter(request);
+    if (rateLimitResponse) {
+      return rateLimitResponse; // Rate limit exceeded - return 429
+    }
+
+    // Execute handler if rate limit check passed
+    const response = await handler(request);
+
+    // Add rate limit headers to response
+    return addRateLimitHeaders(response, request);
+  };
+}
