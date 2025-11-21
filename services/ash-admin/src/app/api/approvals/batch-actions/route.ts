@@ -1,13 +1,13 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { formatDate as formatDateUtil } from "@/lib/utils/date";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { approval_ids, action, template_id, message, extension_days } = body;
@@ -130,10 +130,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
             results.processed++;
           } catch (error) {
-            console.error(
-              `Error sending reminder for approval ${approval.id}:`,
-              error
-            );
             results.errors.push(
               `Failed to send reminder for ${approval.design_asset.name}`
             );
@@ -179,7 +175,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
             results.processed++;
           } catch (error) {
-            console.error(`Error extending approval ${approval.id}:`, error);
             results.errors.push(
               `Failed to extend expiry for ${approval.design_asset.name}`
             );
@@ -212,7 +207,6 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
 
             results.processed++;
           } catch (error) {
-            console.error(`Error cancelling approval ${approval.id}:`, error);
             results.errors.push(
               `Failed to cancel approval for ${approval.design_asset.name}`
             );
@@ -231,11 +225,10 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
     });
   } catch (error) {
-    console.error("Error processing batch actions:", error);
-    return NextResponse.json(
-      { success: false, message: "Internal server error" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   } finally {
     await prisma.$disconnect();
   }
