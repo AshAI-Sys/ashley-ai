@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,11 +50,10 @@ export async function POST(request: NextRequest) {
     // });
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error: any) {
-    console.error('[Web Vitals] Error logging metric:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: 'anonymous',
+      path: request.url,
+    });
   }
 }

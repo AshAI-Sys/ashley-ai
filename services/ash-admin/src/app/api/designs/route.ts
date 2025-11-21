@@ -1,11 +1,11 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
@@ -183,15 +183,14 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching designs:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch designs" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
 
@@ -214,12 +213,12 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       },
       { status: 201 }
     );
-  
+
+
   } catch (error) {
-    console.error("Error creating design:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create design" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
