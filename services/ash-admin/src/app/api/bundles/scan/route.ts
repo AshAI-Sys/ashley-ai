@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 const prisma = db;
 
 // GET /api/bundles/scan?code=BUNDLE-XXX - Scan bundle QR code
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const workspaceId =
       req.headers.get("x-workspace-id") || "default-workspace";
@@ -71,11 +71,10 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
         created_at: bundle.created_at,
       },
     });
-  } catch (error: any) {
-    console.error("Bundle scan error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });

@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 const prisma = db;
 
@@ -82,11 +82,10 @@ export const PUT = requireAuth(async (
       bundle: updatedBundle,
       message: `Bundle status updated to ${status}`,
     });
-  } catch (error: any) {
-    console.error("Bundle status update error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });

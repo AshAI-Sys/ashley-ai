@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -105,11 +105,10 @@ export const GET = requireAuth(async (req: NextRequest, user) => {
       },
       progress,
     });
-  } catch (error: any) {
-    console.error("Bundle by-qr error:", error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
