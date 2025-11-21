@@ -1,8 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
 import { getWorkspaceIdFromRequest } from "@/lib/workspace";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,11 +85,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching shipments:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch shipments" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   } finally {
     await prisma.$disconnect();
   }
@@ -235,11 +234,10 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       data: shipment,
     });
   } catch (error) {
-    console.error("Error creating shipment:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to create shipment" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   } finally {
     await prisma.$disconnect();
   }

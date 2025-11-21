@@ -1,13 +1,13 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { permissionManager } from "@/lib/rbac/permission-manager";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // GET /api/permissions - Get all available permissions
-export const GET = requireAuth(async (req: NextRequest, _user) => {
+export const GET = requireAuth(async (req: NextRequest, user) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const user_id = searchParams.get("user_id");
@@ -37,17 +37,16 @@ export const GET = requireAuth(async (req: NextRequest, _user) => {
       permissions,
       total: permissions.length,
       });
-    } catch (error: any) {
-    console.error("Get permissions error:", error);
-    return NextResponse.json(
-      { error: "Failed to get permissions", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
 
 // POST /api/permissions/check - Check if user has permission
-export const POST = requireAuth(async (req: NextRequest, _user) => {
+export const POST = requireAuth(async (req: NextRequest, user) => {
   try {
     const { user_id, resource, action } = await req.json();
 
@@ -71,11 +70,10 @@ export const POST = requireAuth(async (req: NextRequest, _user) => {
       resource,
       action,
     });
-  } catch (error: any) {
-    console.error("Check permission error:", error);
-    return NextResponse.json(
-      { error: "Failed to check permission", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: req.url,
+    });
   }
 });
