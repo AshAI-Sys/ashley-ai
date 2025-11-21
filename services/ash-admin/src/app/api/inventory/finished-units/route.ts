@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requireAuth } from '@/lib/auth-middleware';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -119,12 +120,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       data: inventory,
       total: inventory.length,
     });
-  } catch (error: unknown) {
-    console.error('Error fetching finished units:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch finished units inventory' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -182,12 +182,11 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       message: 'Finished unit created successfully',
       data: finishedUnit,
     });
-  } catch (error: unknown) {
-    console.error('Error creating finished unit:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create finished unit' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -243,12 +242,11 @@ export const PUT = requireAuth(async (request: NextRequest, user) => {
       message: 'Finished unit updated successfully',
       data: finishedUnit,
     });
-  } catch (error: unknown) {
-    console.error('Error updating finished unit:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update finished unit' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -286,12 +284,11 @@ export const PATCH = requireAuth(async (request: NextRequest, user) => {
       message: `${result.count} finished units updated successfully`,
       count: result.count,
     });
-  } catch (error: unknown) {
-    console.error('Error bulk updating finished units:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to bulk update finished units' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -320,11 +317,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user) => {
       success: true,
       message: 'Finished unit deleted successfully',
     });
-  } catch (error: unknown) {
-    console.error('Error deleting finished unit:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete finished unit' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
