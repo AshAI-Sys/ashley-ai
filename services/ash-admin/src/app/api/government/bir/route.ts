@@ -1,8 +1,8 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { birService } from "@/lib/government/bir";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 const prisma = db;
 
 // POST /api/government/bir - Generate BIR reports (Sales Book, Purchase Book, 2307)
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { report_type, period, workspace_id, data } = body;
@@ -124,17 +124,16 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       period,
       report,
     });
-  } catch (error: any) {
-    console.error("Error generating BIR report:", error);
-    return NextResponse.json(
-      { error: "Failed to generate BIR report", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // GET /api/government/bir - Calculate VAT or withholding tax
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const operation = searchParams.get("operation"); // 'vat' or 'withholding'
@@ -198,11 +197,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         );
     }
     return NextResponse.json({ success: true, operation, result });
-  } catch (error: any) {
-    console.error("Error in BIR calculation:", error);
-    return NextResponse.json(
-      { error: "Failed to perform BIR calculation", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
   });

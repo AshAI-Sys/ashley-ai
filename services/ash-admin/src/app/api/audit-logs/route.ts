@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "../../../lib/auth-middleware";
 import { getAuditLogs, getSecurityAlerts } from "../../../lib/audit-logger";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -67,10 +67,9 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching audit logs:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch audit logs" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

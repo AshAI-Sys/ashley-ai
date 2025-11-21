@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 // Unused import removed: birService
@@ -6,6 +5,7 @@ import { sssService } from "@/lib/government/sss";
 import { philHealthService } from "@/lib/government/philhealth";
 import { pagIBIGService } from "@/lib/government/pagibig";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 const prisma = db;
 
 // POST /api/government/reports - Generate government remittance reports
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { agency, period, workspace_id, employer_details, employee_ids } =
@@ -152,17 +152,16 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       period,
       report,
     });
-  } catch (error: any) {
-    console.error("Error generating government report:", error);
-    return NextResponse.json(
-      { error: "Failed to generate report", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // GET /api/government/reports - Get contribution calculations for a single employee
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const employee_id = searchParams.get("employee_id");
@@ -258,11 +257,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
         grand_total: Math.round(grandTotal * 100) / 100,
       },
     });
-  } catch (error: any) {
-    console.error("Error calculating contributions:", error);
-    return NextResponse.json(
-      { error: "Failed to calculate contributions", details: error.message },
-      { status: 500 }
-    );
+  } catch (error) {
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
