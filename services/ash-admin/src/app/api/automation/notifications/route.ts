@@ -1,13 +1,13 @@
-/* eslint-disable */
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // GET /api/automation/notifications - Get notifications
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
@@ -51,16 +51,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching notifications:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch notifications" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // POST /api/automation/notifications - Create notification
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -141,16 +140,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       message: "Notification created successfully",
     });
   } catch (error) {
-    console.error("Error creating notification:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create notification" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // PUT /api/automation/notifications - Update notification status
-export const PUT = requireAuth(async (request: NextRequest, _user) => {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, status, error_message, sent_at, delivered_at } = body;
@@ -194,11 +192,10 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       message: "Notification updated successfully",
     });
   } catch (error) {
-    console.error("Error updating notification:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update notification" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 

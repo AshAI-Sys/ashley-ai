@@ -1,7 +1,7 @@
-/* eslint-disable */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAuth } from "@/lib/auth-middleware";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,11 +56,10 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching automation rules:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch automation rules" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
@@ -138,15 +137,14 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       message: "Automation rule created successfully",
     });
   } catch (error) {
-    console.error("Error creating automation rule:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create automation rule" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 // PUT /api/automation/rules - Update automation rule
-export const PUT = requireAuth(async (request: NextRequest, _user) => {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -188,15 +186,14 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       message: "Automation rule updated successfully",
     });
   } catch (error) {
-    console.error("Error updating automation rule:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update automation rule" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 // DELETE /api/automation/rules - Delete automation rule
-export const DELETE = requireAuth(async (request: NextRequest, _user) => {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -220,10 +217,9 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
       message: "Automation rule deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting automation rule:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete automation rule" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });

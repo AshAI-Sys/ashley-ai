@@ -1,12 +1,12 @@
-/* eslint-disable */
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // GET /api/automation/stats - Get automation dashboard statistics (Demo Data)
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get("time_range") || "7d"; // 24h, 7d, 30d
@@ -98,11 +98,10 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       data: demoStats,
     });
   } catch (error) {
-    console.error("Error fetching automation stats:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch automation statistics" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 

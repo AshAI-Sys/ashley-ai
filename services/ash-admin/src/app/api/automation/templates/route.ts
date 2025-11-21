@@ -1,13 +1,13 @@
-/* eslint-disable */
 import { requireAuth } from "@/lib/auth-middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 export const dynamic = 'force-dynamic';
 
 
 // GET /api/automation/templates - Get notification templates
-export const GET = requireAuth(async (request: NextRequest, _user) => {
+export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const workspaceId = searchParams.get("workspace_id") || "workspace_1";
@@ -80,16 +80,15 @@ export const GET = requireAuth(async (request: NextRequest, _user) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching notification templates:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch notification templates" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // POST /api/automation/templates - Create notification template
-export const POST = requireAuth(async (request: NextRequest, _user) => {
+export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const {
@@ -156,16 +155,15 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
       message: "Notification template created successfully",
     });
   } catch (error) {
-    console.error("Error creating notification template:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to create notification template" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // PUT /api/automation/templates - Update notification template
-export const PUT = requireAuth(async (request: NextRequest, _user) => {
+export const PUT = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -201,16 +199,15 @@ export const PUT = requireAuth(async (request: NextRequest, _user) => {
       message: "Notification template updated successfully",
     });
   } catch (error) {
-    console.error("Error updating notification template:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to update notification template" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
 
 // DELETE /api/automation/templates - Delete notification template
-export const DELETE = requireAuth(async (request: NextRequest, _user) => {
+export const DELETE = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -247,10 +244,9 @@ export const DELETE = requireAuth(async (request: NextRequest, _user) => {
       message: "Notification template deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting notification template:", error);
-    return NextResponse.json(
-      { success: false, error: "Failed to delete notification template" },
-      { status: 500 }
-    );
+    return createErrorResponse(error, 500, {
+      userId: user.id,
+      path: request.url,
+    });
   }
 });
