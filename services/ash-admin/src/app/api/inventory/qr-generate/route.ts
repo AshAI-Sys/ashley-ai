@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth-middleware';
 import { db } from '@/lib/db';
 import QRCode from 'qrcode';
+import { createErrorResponse } from '@/lib/error-sanitization';
 
 /**
  * Generate QR codes for product variants
@@ -97,7 +98,7 @@ export const POST = requirePermission('inventory:report')(
               });
             }
           } catch (qrError) {
-            console.error('QR code generation error:', qrError);
+            // Error will be caught and sanitized by outer handler
             throw new Error(`Failed to generate QR code for variant ${variant.id}`);
           }
 
@@ -126,12 +127,11 @@ export const POST = requirePermission('inventory:report')(
         format,
         qr_codes,
       });
-    } catch (error: any) {
-      console.error('[QR GENERATE] Error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to generate QR codes' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
@@ -213,12 +213,11 @@ export const GET = requirePermission('inventory:report')(
           category: v.product.category,
         })),
       });
-    } catch (error: any) {
-      console.error('[QR GENERATE] Error:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to fetch variants' },
-        { status: 500 }
-      );
+    } catch (error) {
+      return createErrorResponse(error, 500, {
+        userId: user.id,
+        path: request.url,
+      });
     }
   }
 );
