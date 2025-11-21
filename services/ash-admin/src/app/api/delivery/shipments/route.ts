@@ -99,6 +99,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const workspaceId = user.workspaceId;
+
+    if (!workspaceId) {
+      return NextResponse.json(
+        { success: false, message: "Workspace ID is required" },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
 
     const {
@@ -159,7 +167,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Create shipment
     const shipment = await prisma.shipment.create({
       data: {
-        workspace_id: workspaceId!,
+        workspace_id: workspaceId,
         order_id,
         consignee_name,
         consignee_address,
@@ -206,7 +214,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Create audit log
     await prisma.auditLog.create({
       data: {
-        workspace_id: workspaceId!,
+        workspace_id: workspaceId,
         user_id: user.id,
         action: "SHIPMENT_CREATED",
         resource: "shipment",

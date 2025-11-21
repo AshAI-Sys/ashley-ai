@@ -44,7 +44,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         const salesEntries = invoices.map((inv: any) => {
           const vat = birService.calculateVAT(inv.total_amount);
           return {
-            date: inv.issue_date.toISOString().split("T")[0]!,
+            date: inv.issue_date.toISOString().split("T")[0],
             invoice_number: inv.invoice_number,
             customer_name: inv.client.name,
             tin: inv.client.tax_id || "",
@@ -74,7 +74,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
         const purchaseEntries = expenses.map((exp: any) => {
           const vat = birService.calculateVAT(exp.amount);
           return {
-            date: exp.expense_date.toISOString().split("T")[0]!,
+            date: exp.expense_date.toISOString().split("T")[0],
             reference_number: exp.payment_ref || exp.id,
             supplier_name: exp.supplier || "N/A",
             tin: "000-000-000-000", // Should be stored in supplier/vendor table

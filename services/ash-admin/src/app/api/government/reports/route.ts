@@ -83,7 +83,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           .map((emp: any) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
-            sss_number: emp.sss_number!,
+            sss_number: emp.sss_number,
             monthly_salary: emp.monthly_salary,
           }));
 
@@ -104,7 +104,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           .map((emp: any) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
-            philhealth_number: emp.philhealth_number!,
+            philhealth_number: emp.philhealth_number,
             monthly_salary: emp.monthly_salary,
           }));
 
@@ -125,7 +125,7 @@ export const POST = requireAuth(async (request: NextRequest, _user) => {
           .map((emp: any) => ({
             employee_id: emp.id,
             employee_name: `${emp.first_name} ${emp.last_name}`,
-            pagibig_number: emp.pagibig_number!,
+            pagibig_number: emp.pagibig_number,
             monthly_salary: emp.monthly_salary,
           }));
 

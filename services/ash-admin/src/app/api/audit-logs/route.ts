@@ -22,11 +22,13 @@ export const GET = requireAdmin()(async (request: NextRequest, user: any) => {
     let startDate: Date | undefined;
     let endDate: Date | undefined;
 
-    if (searchParams.get("startDate")) {
-      startDate = new Date(searchParams.get("startDate")!);
+    const startDateParam = searchParams.get("startDate");
+    if (startDateParam) {
+      startDate = new Date(startDateParam);
     }
-    if (searchParams.get("endDate")) {
-      endDate = new Date(searchParams.get("endDate")!);
+    const endDateParam = searchParams.get("endDate");
+    if (endDateParam) {
+      endDate = new Date(endDateParam);
     }
 
     // If requesting security alerts
