@@ -78,10 +78,10 @@ export class ProductionWorkflowEngine extends EventEmitter {
         stage: "DESIGN",
         planned_start: startDate,
         planned_end: estimatedEndDate,
-        planned_quantity: order.line_items.reduce(
+        planned_quantity: order.line_items?.reduce(
           (sum, item) => sum + item.quantity,
           0
-        ),
+        ) || 0,
         status: "PLANNED",
         priority: this.priorityToNumber(priority),
         notes: JSON.stringify(metadata),
@@ -330,22 +330,22 @@ export class ProductionWorkflowEngine extends EventEmitter {
 
   private calculateEstimatedDuration(order: any): number {
     // Simple calculation based on quantity and complexity
-    const totalQuantity = order.line_items.reduce(
+    const totalQuantity = order.line_items?.reduce(
       (sum: number, item: any) => sum + item.quantity,
       0
-    );
+    ) || 0;
     const baseHours = 24; // Base 24 hours for any order
     const quantityFactor = totalQuantity / 100; // 1 hour per 100 pieces
-    const complexityFactor = order.line_items.length * 2; // 2 hours per line item
+    const complexityFactor = (order.line_items?.length || 0) * 2; // 2 hours per line item
 
     return Math.ceil(baseHours + quantityFactor + complexityFactor);
   }
 
   private getStageEstimatedHours(stage: ProductionStage, order: any): number {
-    const quantity = order.line_items.reduce(
+    const quantity = order.line_items?.reduce(
       (sum: number, item: any) => sum + item.quantity,
       0
-    );
+    ) || 0;
 
     const stageHours = {
       DESIGN: 4,
