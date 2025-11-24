@@ -17,7 +17,7 @@
     "eventemitter3": "^4.0.7"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
+    "@types/node": "^24.10.0",
     "jest": "^29.0.0",
     "typescript": "^5.0.0"
   },
