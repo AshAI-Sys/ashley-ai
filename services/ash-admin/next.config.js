@@ -241,16 +241,17 @@ const sentryWebpackPluginOptions = {
   automaticVercelMonitors: true,
 };
 
-// PWA Configuration
+// PWA Configuration - DISABLED to fix build
 const pwaConfig = withPWA({
   dest: "public",
-  disable: process.env.NODE_ENV === "development",
+  disable: true, // Disabled completely to fix build export errors
   register: true,
   skipWaiting: true,
   sw: "sw.js",
-  fallbacks: {
-    document: "/offline",
-  },
+  // Disabled fallbacks to prevent static export errors
+  // fallbacks: {
+  //   document: "/offline",
+  // },
   workboxOptions: {
     runtimeCaching: [
       {

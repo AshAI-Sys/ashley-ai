@@ -4,9 +4,9 @@
   "description": "ASH AI Admin Interface - Backoffice Management UI",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "build:wrapper": "node build-wrapper.js",
-    "vercel-build": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
+    "build": "node build-wrapper.js",
+    "build:direct": "next build",
+    "vercel-build": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma && node build-wrapper.js",
     "postinstall": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma || true",
     "dev": "next dev -H 0.0.0.0 -p 3001",
     "dev:generate": "npx prisma generate --schema=../../packages/database/prisma/schema.prisma && next dev -H 0.0.0.0 -p 3001",
