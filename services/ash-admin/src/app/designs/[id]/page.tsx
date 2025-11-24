@@ -312,7 +312,12 @@ export default function DesignDetailsPage() {
     );
   }
 
-  const currentVersion = design.versions.find(
+  // Ensure versions array exists and is valid
+  const versions = design.versions || [];
+  const approvals = design.approvals || [];
+  const checks = design.checks || [];
+
+  const currentVersion = versions.find(
     v => v.version === design.current_version
   );
   const files = currentVersion ? JSON.parse(currentVersion.files) : {};
@@ -576,7 +581,7 @@ export default function DesignDetailsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {design.versions
+                  {versions
                     .sort((a, b) => b.version - a.version)
                     .map(version => {
                       const versionFiles = JSON.parse(version.files);
@@ -642,8 +647,8 @@ export default function DesignDetailsPage() {
                 <CardTitle>Client Approvals</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {design.approvals.length > 0 ? (
-                  design.approvals
+                {approvals.length > 0 ? (
+                  approvals
                     .sort(
                       (a, b) =>
                         new Date(b.created_at).getTime() -
@@ -711,8 +716,8 @@ export default function DesignDetailsPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {design.checks.length > 0 ? (
-                  design.checks
+                {checks.length > 0 ? (
+                  checks
                     .sort(
                       (a, b) =>
                         new Date(b.created_at).getTime() -
@@ -836,12 +841,6 @@ export default function DesignDetailsPage() {
             <CardContent className="space-y-3">
               {design.status === "DRAFT" && (
                 <>
-                  <Link href={`/designs/${design.id}/edit`} className="block">
-                    <Button className="w-full" variant="outline">
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit Design
-                    </Button>
-                  </Link>
 
                   <Button
                     onClick={() => handleSendApproval()}
@@ -923,11 +922,11 @@ export default function DesignDetailsPage() {
               <div>
                 <strong>Statistics:</strong>
                 <br />
-                {design._count.versions} versions
+                {versions.length} versions
                 <br />
-                {design._count.approvals} approvals
+                {approvals.length} approvals
                 <br />
-                {design._count.checks} AI checks
+                {checks.length} AI checks
               </div>
               <Separator />
               <div>

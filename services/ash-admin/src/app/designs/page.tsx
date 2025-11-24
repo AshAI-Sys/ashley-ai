@@ -416,14 +416,14 @@ export default function DesignsPage() {
                           </Button>
                         )}
 
-                        <Link href={`/designs/${design.id}/edit`}>
+                        <Link href={`/designs/${design.id}/versions/new`}>
                           <Button
                             variant="outline"
                             size="sm"
                             disabled={design.status === "LOCKED"}
                           >
-                            <Edit className="mr-1 h-4 w-4" />
-                            Edit
+                            <Plus className="mr-1 h-4 w-4" />
+                            New Version
                           </Button>
                         </Link>
                       </div>
