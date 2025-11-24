@@ -176,7 +176,7 @@ export default function OrderDetailPage() {
     );
   }
 
-  if (error || !order) {
+  if (error || !order || !order.client) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -188,6 +188,7 @@ export default function OrderDetailPage() {
             {error || "The order you are looking for does not exist."}
           </p>
           <button
+            type="button"
             onClick={() => router.push("/orders")}
             className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
@@ -204,6 +205,7 @@ export default function OrderDetailPage() {
         {/* Header */}
         <div className="mb-6">
           <button
+            type="button"
             onClick={() => router.push("/orders")}
             className="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
@@ -245,6 +247,7 @@ export default function OrderDetailPage() {
                 </>
               )}
               <button
+                type="button"
                 onClick={() => router.push(`/orders/${order.id}/edit`)}
                 className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
                 aria-label={`Edit order ${order.order_number}`}
@@ -254,6 +257,7 @@ export default function OrderDetailPage() {
                 Edit
               </button>
               <button
+                type="button"
                 className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
                 aria-label={`Delete order ${order.order_number}`}
                 title={`Delete order ${order.order_number}`}
@@ -279,6 +283,7 @@ export default function OrderDetailPage() {
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex gap-6">
               <button
+                type="button"
                 onClick={() => setActiveTab("details")}
                 className={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
                   activeTab === "details"
@@ -290,6 +295,7 @@ export default function OrderDetailPage() {
                 Order Details
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab("activity")}
                 className={`flex items-center gap-2 border-b-2 px-1 py-4 text-sm font-medium transition-colors ${
                   activeTab === "activity"
@@ -365,7 +371,7 @@ export default function OrderDetailPage() {
               </div>
 
               {/* Line Items */}
-              {order.line_items.length > 0 && (
+              {order.line_items && order.line_items.length > 0 && (
                 <div className="rounded-lg bg-white p-6 shadow">
                   <h2 className="mb-4 text-xl font-semibold text-gray-900">
                     Line Items
