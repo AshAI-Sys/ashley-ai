@@ -1,6 +1,8 @@
 "use client";
 
 // Custom 404 page for App Router (without Html component to avoid build warnings)
+export const dynamic = 'force-dynamic';
+
 export default function NotFound() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
