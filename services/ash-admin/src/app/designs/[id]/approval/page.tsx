@@ -382,11 +382,15 @@ export default function DesignApprovalPage() {
     );
   }
 
-  const currentVersion = design.versions.find(
+  // Ensure versions and approvals arrays exist
+  const versions = design.versions || [];
+  const approvals = design.approvals || [];
+
+  const currentVersion = versions.find(
     v => v.version === selectedVersion
   );
   const files = currentVersion ? JSON.parse(currentVersion.files) : {};
-  const activeApproval = design.approvals.find(a => a.status === "SENT");
+  const activeApproval = approvals.find(a => a.status === "SENT");
 
   return (
     <div className="container mx-auto py-6">
@@ -461,7 +465,7 @@ export default function DesignApprovalPage() {
                       <SelectValue placeholder="Select version" />
                     </SelectTrigger>
                     <SelectContent>
-                      {design.versions
+                      {versions
                         .sort((a, b) => b.version - a.version)
                         .map(version => (
                           <SelectItem
@@ -648,9 +652,9 @@ export default function DesignApprovalPage() {
               </div>
             </CardHeader>
             <CardContent>
-              {design.approvals.length > 0 ? (
+              {approvals.length > 0 ? (
                 <div className="space-y-4">
-                  {design.approvals
+                  {approvals
                     .sort(
                       (a, b) =>
                         new Date(b.created_at).getTime() -
@@ -836,26 +840,26 @@ export default function DesignApprovalPage() {
             <CardContent className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span>Total Approvals:</span>
-                <span className="font-medium">{design._count.approvals}</span>
+                <span className="font-medium">{approvals.length}</span>
               </div>
               <Separator />
               <div className="flex justify-between">
                 <span>Active Requests:</span>
                 <span className="font-medium">
-                  {design.approvals.filter(a => a.status === "SENT").length}
+                  {approvals.filter(a => a.status === "SENT").length}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Approved:</span>
                 <span className="font-medium text-green-600">
-                  {design.approvals.filter(a => a.status === "APPROVED").length}
+                  {approvals.filter(a => a.status === "APPROVED").length}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Changes Requested:</span>
                 <span className="font-medium text-yellow-600">
                   {
-                    design.approvals.filter(
+                    approvals.filter(
                       a => a.status === "CHANGES_REQUESTED"
                     ).length
                   }
@@ -864,7 +868,7 @@ export default function DesignApprovalPage() {
               <div className="flex justify-between">
                 <span>Expired:</span>
                 <span className="font-medium text-red-600">
-                  {design.approvals.filter(a => a.status === "EXPIRED").length}
+                  {approvals.filter(a => a.status === "EXPIRED").length}
                 </span>
               </div>
             </CardContent>
