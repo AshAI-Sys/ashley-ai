@@ -79,7 +79,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.0",
     "tailwind-merge": "^2.3.0",
-    "zod": "^3.23.0"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@ash-ai/eslint-config": "workspace:*",
