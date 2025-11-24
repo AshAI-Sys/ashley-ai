@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "@types/pg": "^8.15.5",
+    "@types/pg": "^8.15.6",
     "bcryptjs": "^2.4.3",
     "nanoid": "^5.0.0",
     "pg": "^8.16.3",
