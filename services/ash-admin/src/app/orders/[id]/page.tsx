@@ -13,6 +13,8 @@ import {
   Edit,
   Trash2,
   Activity,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { ActivityTab } from "@/components/audit/activity-tab";
 import { formatDate as formatDateUtil } from "@/lib/utils/date";
@@ -68,6 +70,11 @@ export default function OrderDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"details" | "activity">("details");
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+  const [approvalAction, setApprovalAction] = useState<
+    "approve" | "reject" | null
+  >(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -92,6 +99,41 @@ export default function OrderDetailPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleApprovalAction = async () => {
+    if (!order || !approvalAction) return;
+
+    try {
+      setIsUpdating(true);
+      const newStatus = approvalAction === "approve" ? "approved" : "cancelled";
+
+      const response = await fetch(`/api/orders/${order.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...order, status: newStatus }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setOrder(data.data);
+        setShowApprovalDialog(false);
+        setApprovalAction(null);
+      } else {
+        alert(data.error || "Failed to update order status");
+      }
+    } catch (err) {
+      alert("Failed to update order status");
+      console.error(err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const openApprovalDialog = (action: "approve" | "reject") => {
+    setApprovalAction(action);
+    setShowApprovalDialog(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -177,6 +219,31 @@ export default function OrderDetailPage() {
               <p className="mt-1 text-gray-600">Order ID: {order.id}</p>
             </div>
             <div className="flex gap-3">
+              {/* Show Approve/Reject buttons only for pending_approval status */}
+              {order.status === "pending_approval" && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => openApprovalDialog("approve")}
+                    className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                    aria-label={`Approve order ${order.order_number}`}
+                    title={`Approve order ${order.order_number}`}
+                  >
+                    <CheckCircle size={18} />
+                    Approve Order
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openApprovalDialog("reject")}
+                    className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-white hover:bg-orange-700"
+                    aria-label={`Reject order ${order.order_number}`}
+                    title={`Reject order ${order.order_number}`}
+                  >
+                    <XCircle size={18} />
+                    Reject Order
+                  </button>
+                </>
+              )}
               <button
                 onClick={() => router.push(`/orders/${order.id}/edit`)}
                 className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
@@ -242,225 +309,227 @@ export default function OrderDetailPage() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* Main Content */}
             <div className="space-y-6 lg:col-span-2">
-            {/* Order Information */}
-            <div className="rounded-lg bg-white p-6 shadow">
-              <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                Order Information
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-gray-600">PO Number</label>
-                  <p className="font-medium text-gray-900">
-                    {order.po_number || "N/A"}
-                  </p>
+              {/* Order Information */}
+              <div className="rounded-lg bg-white p-6 shadow">
+                <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                  Order Information
+                </h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-gray-600">PO Number</label>
+                    <p className="font-medium text-gray-900">
+                      {order.po_number || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600">Order Type</label>
+                    <p className="font-medium text-gray-900">
+                      {order.order_type || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600">Design Name</label>
+                    <p className="font-medium text-gray-900">
+                      {order.design_name || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600">Fabric Type</label>
+                    <p className="font-medium text-gray-900">
+                      {order.fabric_type || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600">
+                      Size Distribution
+                    </label>
+                    <p className="font-medium text-gray-900">
+                      {order.size_distribution || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600">
+                      Delivery Date
+                    </label>
+                    <p className="font-medium text-gray-900">
+                      {formatDate(order.delivery_date)}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-600">Order Type</label>
-                  <p className="font-medium text-gray-900">
-                    {order.order_type || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Design Name</label>
-                  <p className="font-medium text-gray-900">
-                    {order.design_name || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Fabric Type</label>
-                  <p className="font-medium text-gray-900">
-                    {order.fabric_type || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">
-                    Size Distribution
-                  </label>
-                  <p className="font-medium text-gray-900">
-                    {order.size_distribution || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Delivery Date</label>
-                  <p className="font-medium text-gray-900">
-                    {formatDate(order.delivery_date)}
-                  </p>
-                </div>
+                {order.notes && (
+                  <div className="mt-4 border-t border-gray-200 pt-4">
+                    <label className="text-sm text-gray-600">Notes</label>
+                    <p className="mt-1 text-gray-900">{order.notes}</p>
+                  </div>
+                )}
               </div>
-              {order.notes && (
-                <div className="mt-4 border-t border-gray-200 pt-4">
-                  <label className="text-sm text-gray-600">Notes</label>
-                  <p className="mt-1 text-gray-900">{order.notes}</p>
+
+              {/* Line Items */}
+              {order.line_items.length > 0 && (
+                <div className="rounded-lg bg-white p-6 shadow">
+                  <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                    Line Items
+                  </h2>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                            SKU
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                            Description
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
+                            Quantity
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
+                            Unit Price
+                          </th>
+                          <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
+                            Total
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {order.line_items.map(item => (
+                          <tr key={item.id}>
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                              {item.sku}
+                            </td>
+                            <td className="px-4 py-3 text-sm text-gray-600">
+                              {item.description}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm text-gray-900">
+                              {item.quantity}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm text-gray-900">
+                              {formatCurrency(item.unit_price, order.currency)}
+                            </td>
+                            <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">
+                              {formatCurrency(item.total_price, order.currency)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Line Items */}
-            {order.line_items.length > 0 && (
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Summary Card */}
               <div className="rounded-lg bg-white p-6 shadow">
                 <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                  Line Items
+                  Summary
                 </h2>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                          SKU
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
-                          Description
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
-                          Quantity
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
-                          Unit Price
-                        </th>
-                        <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
-                          Total
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                      {order.line_items.map(item => (
-                        <tr key={item.id}>
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                            {item.sku}
-                          </td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {item.description}
-                          </td>
-                          <td className="px-4 py-3 text-right text-sm text-gray-900">
-                            {item.quantity}
-                          </td>
-                          <td className="px-4 py-3 text-right text-sm text-gray-900">
-                            {formatCurrency(item.unit_price, order.currency)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-sm font-medium text-gray-900">
-                            {formatCurrency(item.total_price, order.currency)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Summary Card */}
-            <div className="rounded-lg bg-white p-6 shadow">
-              <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                Summary
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-blue-100 p-2">
-                    <DollarSign size={20} className="text-blue-600" />
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-blue-100 p-2">
+                      <DollarSign size={20} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Total Amount</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {formatCurrency(order.total_amount, order.currency)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Total Amount</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {formatCurrency(order.total_amount, order.currency)}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-green-100 p-2">
+                      <Package size={20} className="text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Line Items</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {order._count.line_items}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-green-100 p-2">
-                    <Package size={20} className="text-green-600" />
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-purple-100 p-2">
+                      <FileText size={20} className="text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Design Assets</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {order._count.design_assets}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Line Items</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {order._count.line_items}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-purple-100 p-2">
-                    <FileText size={20} className="text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Design Assets</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {order._count.design_assets}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-yellow-100 p-2">
-                    <Calendar size={20} className="text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Created</p>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {formatDate(order.created_at)}
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-yellow-100 p-2">
+                      <Calendar size={20} className="text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Created</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {formatDate(order.created_at)}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Client Information */}
-            <div className="rounded-lg bg-white p-6 shadow">
-              <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                Client Information
-              </h2>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-blue-100 p-2">
-                    <User size={20} className="text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Client Name</p>
-                    <p className="font-medium text-gray-900">
-                      {order.client.name}
-                    </p>
-                  </div>
-                </div>
-                <div className="pl-11">
-                  <p className="text-sm text-gray-600">Email</p>
-                  <p className="text-gray-900">{order.client.email}</p>
-                </div>
-                {order.client.phone && (
-                  <div className="pl-11">
-                    <p className="text-sm text-gray-600">Phone</p>
-                    <p className="text-gray-900">{order.client.phone}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Brand Information */}
-            {order.brand && (
+              {/* Client Information */}
               <div className="rounded-lg bg-white p-6 shadow">
                 <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                  Brand Information
+                  Client Information
                 </h2>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-purple-100 p-2">
-                      <Building size={20} className="text-purple-600" />
+                    <div className="rounded-lg bg-blue-100 p-2">
+                      <User size={20} className="text-blue-600" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Brand Name</p>
+                      <p className="text-sm text-gray-600">Client Name</p>
                       <p className="font-medium text-gray-900">
-                        {order.brand.name}
+                        {order.client.name}
                       </p>
                     </div>
                   </div>
                   <div className="pl-11">
-                    <p className="text-sm text-gray-600">Brand Code</p>
-                    <p className="text-gray-900">{order.brand.code}</p>
+                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="text-gray-900">{order.client.email}</p>
                   </div>
+                  {order.client.phone && (
+                    <div className="pl-11">
+                      <p className="text-sm text-gray-600">Phone</p>
+                      <p className="text-gray-900">{order.client.phone}</p>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+
+              {/* Brand Information */}
+              {order.brand && (
+                <div className="rounded-lg bg-white p-6 shadow">
+                  <h2 className="mb-4 text-xl font-semibold text-gray-900">
+                    Brand Information
+                  </h2>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-lg bg-purple-100 p-2">
+                        <Building size={20} className="text-purple-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Brand Name</p>
+                        <p className="font-medium text-gray-900">
+                          {order.brand.name}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pl-11">
+                      <p className="text-sm text-gray-600">Brand Code</p>
+                      <p className="text-gray-900">{order.brand.code}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
         )}
 
         {/* Activity Tab */}
@@ -471,6 +540,66 @@ export default function OrderDetailPage() {
               resourceId={order.id}
               workspaceId={order.client.id}
             />
+          </div>
+        )}
+
+        {/* Approval Confirmation Dialog */}
+        {showApprovalDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+              <div className="mb-4 flex items-center gap-3">
+                {approvalAction === "approve" ? (
+                  <div className="rounded-lg bg-green-100 p-2">
+                    <CheckCircle size={24} className="text-green-600" />
+                  </div>
+                ) : (
+                  <div className="rounded-lg bg-orange-100 p-2">
+                    <XCircle size={24} className="text-orange-600" />
+                  </div>
+                )}
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {approvalAction === "approve"
+                    ? "Approve Order"
+                    : "Reject Order"}
+                </h2>
+              </div>
+
+              <p className="mb-6 text-gray-600">
+                {approvalAction === "approve"
+                  ? `Are you sure you want to approve order ${order.order_number}? This will move the order to the next production stage.`
+                  : `Are you sure you want to reject order ${order.order_number}? This will cancel the order.`}
+              </p>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowApprovalDialog(false);
+                    setApprovalAction(null);
+                  }}
+                  className="rounded-lg border border-gray-300 px-4 py-2 hover:bg-gray-50"
+                  disabled={isUpdating}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApprovalAction}
+                  className={`rounded-lg px-4 py-2 text-white ${
+                    approvalAction === "approve"
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-orange-600 hover:bg-orange-700"
+                  } ${isUpdating ? "cursor-not-allowed opacity-50" : ""}`}
+                  disabled={isUpdating}
+                >
+                  {isUpdating
+                    ? "Processing..."
+                    : approvalAction === "approve"
+                      ? "Approve Order"
+                      : "Reject Order"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
