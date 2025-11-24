@@ -21,38 +21,47 @@ export interface AuditContext {
 /**
  * Wraps an API route handler with automatic audit logging
  *
- * @param handler - The original API route handler
+ * @param handler - The original API route handler (receives request, user, routeContext)
  * @param options - Configuration options
  * @returns Wrapped handler with audit logging
  */
 export function withAudit<T = any>(
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse<any>>,
+  handler: (
+    request: NextRequest,
+    user: any,
+    routeContext?: T
+  ) => Promise<NextResponse<any>>,
   options: {
     resource: string; // Entity being modified (e.g., "order", "client")
     action?: "CREATE" | "UPDATE" | "DELETE"; // Optional: auto-detect if not provided
     captureOldValues?: boolean; // Default: true for UPDATE/DELETE
   }
 ) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse<any>> => {
+  return async (
+    request: NextRequest,
+    user: any,
+    routeContext?: T
+  ): Promise<NextResponse<any>> => {
     const { resource, action, captureOldValues = true } = options;
 
-    // Extract user from context or request
-    const user = context?.user || context;
-
-    if (!user || !user.id || !user.workspace_id) {
+    if (!user || !user.id || !user.workspaceId) {
       // If no user context, just run the handler without audit logging
-      return handler(request, context);
+      return handler(request, user, routeContext);
     }
 
     // Determine action from HTTP method if not provided
     const detectedAction = action || detectActionFromMethod(request.method);
 
     // Extract resource ID from request (if available)
-    const resourceId = await extractResourceId(request);
+    const resourceId = await extractResourceId(request, routeContext);
 
     // Capture old values BEFORE the operation (for UPDATE/DELETE)
     let oldValues: any = null;
-    if (captureOldValues && resourceId && (detectedAction === "UPDATE" || detectedAction === "DELETE")) {
+    if (
+      captureOldValues &&
+      resourceId &&
+      (detectedAction === "UPDATE" || detectedAction === "DELETE")
+    ) {
       try {
         oldValues = await fetchOldValues(resource, resourceId);
       } catch (error) {
@@ -61,7 +70,7 @@ export function withAudit<T = any>(
     }
 
     // Execute the original handler
-    const response = await handler(request, context);
+    const response = await handler(request, user, routeContext);
 
     // Only log if the operation was successful (2xx status)
     if (response.status >= 200 && response.status < 300) {
@@ -71,12 +80,14 @@ export function withAudit<T = any>(
         const newData = responseBody.data || responseBody;
 
         // Extract resource ID from response if not from request
-        const finalResourceId = resourceId || extractResourceIdFromResponse(newData, resource);
+        const finalResourceId =
+          resourceId || extractResourceIdFromResponse(newData, resource);
 
         // Get IP address and user agent
-        const ipAddress = request.headers.get("x-forwarded-for") ||
-                          request.headers.get("x-real-ip") ||
-                          "unknown";
+        const ipAddress =
+          request.headers.get("x-forwarded-for") ||
+          request.headers.get("x-real-ip") ||
+          "unknown";
         const userAgent = request.headers.get("user-agent") || "unknown";
 
         // Only log data-modifying operations (skip READ)
@@ -86,7 +97,7 @@ export function withAudit<T = any>(
             detectedAction,
             resource,
             finalResourceId,
-            user.workspace_id,
+            user.workspaceId,
             user.id,
             oldValues,
             newData,
@@ -107,7 +118,9 @@ export function withAudit<T = any>(
 /**
  * Detect action type from HTTP method
  */
-function detectActionFromMethod(method: string): "CREATE" | "UPDATE" | "DELETE" | "READ" {
+function detectActionFromMethod(
+  method: string
+): "CREATE" | "UPDATE" | "DELETE" | "READ" {
   switch (method.toUpperCase()) {
     case "POST":
       return "CREATE";
@@ -122,15 +135,26 @@ function detectActionFromMethod(method: string): "CREATE" | "UPDATE" | "DELETE" 
 }
 
 /**
- * Extract resource ID from request URL or body
+ * Extract resource ID from request URL, route context, or body
  */
-async function extractResourceId(request: NextRequest): Promise<string | null> {
+async function extractResourceId(
+  request: NextRequest,
+  routeContext?: any
+): Promise<string | null> {
+  // First, try to get ID from route context params (Next.js App Router dynamic routes)
+  if (routeContext?.params?.id) {
+    return routeContext.params.id;
+  }
+
   // Try to get ID from URL path (e.g., /api/orders/[id])
-  const urlParts = request.nextUrl.pathname.split('/');
+  const urlParts = request.nextUrl.pathname.split("/");
   const possibleId = urlParts[urlParts.length - 1];
 
   // Check if it's a valid CUID or UUID
-  if (possibleId && (possibleId.startsWith('c') || possibleId.match(/^[0-9a-f]{8}-/))) {
+  if (
+    possibleId &&
+    (possibleId.startsWith("c") || possibleId.match(/^[0-9a-f]{8}-/))
+  ) {
     return possibleId;
   }
 
@@ -166,7 +190,10 @@ function extractResourceIdFromResponse(data: any, resource: string): string {
 /**
  * Fetch old values from database before update/delete
  */
-async function fetchOldValues(resource: string, resourceId: string): Promise<any> {
+async function fetchOldValues(
+  resource: string,
+  resourceId: string
+): Promise<any> {
   try {
     // Map resource name to Prisma model
     const modelName = capitalizeFirstLetter(resource);
