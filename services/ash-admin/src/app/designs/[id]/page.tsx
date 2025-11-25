@@ -117,7 +117,9 @@ export default function DesignDetailsPage() {
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch design: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch design: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -314,21 +316,45 @@ export default function DesignDetailsPage() {
   }
 
   // Ensure versions array exists and is valid
-  const versions = design.versions || [];
-  const approvals = design.approvals || [];
-  const checks = design.checks || [];
+  const versions = Array.isArray(design.versions) ? design.versions : [];
+  const approvals = Array.isArray(design.approvals) ? design.approvals : [];
+  const checks = Array.isArray(design.checks) ? design.checks : [];
 
   const currentVersion = versions.find(
     v => v.version === design.current_version
   );
-  const files = currentVersion ? JSON.parse(currentVersion.files) : {};
-  const placements = currentVersion
-    ? JSON.parse(currentVersion.placements)
-    : [];
-  const palette =
-    currentVersion && currentVersion.palette
-      ? JSON.parse(currentVersion.palette)
-      : [];
+
+  // Safely parse JSON fields with proper error handling
+  let files: Record<string, any> = {};
+  let placements: any[] = [];
+  let palette: string[] = [];
+
+  try {
+    if (currentVersion?.files) {
+      const parsedFiles = JSON.parse(currentVersion.files);
+      files = parsedFiles && typeof parsedFiles === "object" ? parsedFiles : {};
+    }
+  } catch {
+    files = {};
+  }
+
+  try {
+    if (currentVersion?.placements) {
+      const parsedPlacements = JSON.parse(currentVersion.placements);
+      placements = Array.isArray(parsedPlacements) ? parsedPlacements : [];
+    }
+  } catch {
+    placements = [];
+  }
+
+  try {
+    if (currentVersion?.palette) {
+      const parsedPalette = JSON.parse(currentVersion.palette);
+      palette = Array.isArray(parsedPalette) ? parsedPalette : [];
+    }
+  } catch {
+    palette = [];
+  }
 
   return (
     <div className="container mx-auto py-6">
@@ -621,7 +647,9 @@ export default function DesignDetailsPage() {
                           <div className="text-sm text-muted-foreground">
                             <p>
                               Created:{" "}
-                              {(version.created_at ? formatDateUtil(version.created_at, "datetime") : "-")}
+                              {version.created_at
+                                ? formatDateUtil(version.created_at, "datetime")
+                                : "-"}
                             </p>
                             <p>
                               Files:{" "}
@@ -667,7 +695,9 @@ export default function DesignDetailsPage() {
                             </span>
                           </div>
                           <span className="text-sm text-muted-foreground">
-                            {(approval.created_at ? formatDateUtil(approval.created_at) : "-")}
+                            {approval.created_at
+                              ? formatDateUtil(approval.created_at)
+                              : "-"}
                           </span>
                         </div>
                         <p className="text-sm">
@@ -748,7 +778,9 @@ export default function DesignDetailsPage() {
                               </span>
                             </div>
                             <span className="text-sm text-muted-foreground">
-                              {(check.created_at ? formatDateUtil(check.created_at, "datetime") : "-")}
+                              {check.created_at
+                                ? formatDateUtil(check.created_at, "datetime")
+                                : "-"}
                             </span>
                           </div>
 
@@ -842,7 +874,6 @@ export default function DesignDetailsPage() {
             <CardContent className="space-y-3">
               {design.status === "DRAFT" && (
                 <>
-
                   <Button
                     onClick={() => handleSendApproval()}
                     className="w-full"
@@ -933,12 +964,12 @@ export default function DesignDetailsPage() {
               <div>
                 <strong>Created:</strong>
                 <br />
-                {(design.created_at ? formatDateUtil(design.created_at) : "-")}
+                {design.created_at ? formatDateUtil(design.created_at) : "-"}
               </div>
               <div>
                 <strong>Last Updated:</strong>
                 <br />
-                {(design.updated_at ? formatDateUtil(design.updated_at) : "-")}
+                {design.updated_at ? formatDateUtil(design.updated_at) : "-"}
               </div>
             </CardContent>
           </Card>
