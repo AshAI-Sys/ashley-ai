@@ -96,7 +96,9 @@ export default function VersionManagementPage() {
       // Fetch versions
       const versionsResponse = await fetch(`/api/designs/${id}/versions`);
       if (!versionsResponse.ok) {
-        throw new Error(`Failed to fetch versions: ${versionsResponse.statusText}`);
+        throw new Error(
+          `Failed to fetch versions: ${versionsResponse.statusText}`
+        );
       }
       const versionsData = await versionsResponse.json();
 
@@ -240,7 +242,8 @@ export default function VersionManagementPage() {
           <div>
             <h1 className="text-3xl font-bold">Version Management</h1>
             <p className="text-muted-foreground">
-              {design.name} â€¢ {design.order.order_number} â€¢ {design.brand.name}
+              {design.name} • {design.order?.order_number || "N/A"} •{" "}
+              {design.brand?.name || "N/A"}
             </p>
           </div>
         </div>
@@ -326,7 +329,10 @@ export default function VersionManagementPage() {
                       </div>
                     </div>
                     <p className="text-muted-foreground">
-                      Created: {(version.created_at ? formatDateUtil(version.created_at, "datetime") : "-")}
+                      Created:{" "}
+                      {version.created_at
+                        ? formatDateUtil(version.created_at, "datetime")
+                        : "-"}
                     </p>
                   </CardHeader>
 

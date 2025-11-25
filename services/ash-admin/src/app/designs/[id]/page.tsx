@@ -370,8 +370,8 @@ export default function DesignDetailsPage() {
           <div>
             <h1 className="text-3xl font-bold">{design.name}</h1>
             <p className="text-muted-foreground">
-              {design.order.order_number} â€¢ {design.brand.name} â€¢ Version{" "}
-              {design.current_version}
+              {design.order?.order_number || "N/A"} •{" "}
+              {design.brand?.name || "N/A"} • Version {design.current_version}
             </p>
           </div>
         </div>
@@ -701,7 +701,8 @@ export default function DesignDetailsPage() {
                           </span>
                         </div>
                         <p className="text-sm">
-                          <strong>Client:</strong> {approval.client.name}
+                          <strong>Client:</strong>{" "}
+                          {approval.client?.name || "N/A"}
                         </p>
                         {approval.approver_name && (
                           <p className="text-sm">
@@ -922,17 +923,17 @@ export default function DesignDetailsPage() {
                 <strong>Order:</strong>
                 <br />
                 <Link
-                  href={`/orders/${design.order.id}`}
+                  href={`/orders/${design.order?.id || ""}`}
                   className="text-blue-600 hover:underline"
                 >
-                  {design.order.order_number}
+                  {design.order?.order_number || "N/A"}
                 </Link>
               </div>
               <Separator />
               <div>
                 <strong>Brand:</strong>
                 <br />
-                {design.brand.name} ({design.brand.code})
+                {design.brand?.name || "N/A"} ({design.brand?.code || "N/A"})
               </div>
               <Separator />
               <div>

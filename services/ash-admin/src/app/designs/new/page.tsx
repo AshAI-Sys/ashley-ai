@@ -170,7 +170,7 @@ export default function NewDesignPage() {
     if (selectedOrder && !formData.name) {
       setFormData(prev => ({
         ...prev,
-        name: `${selectedOrder.brand.name} - ${selectedOrder.order_number}`,
+        name: `${selectedOrder.brand?.name || "Design"} - ${selectedOrder.order_number}`,
       }));
     }
   }, [selectedOrder, formData.name]);

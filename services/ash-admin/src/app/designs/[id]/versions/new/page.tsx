@@ -673,12 +673,12 @@ export default function NewVersionPage() {
               <div>
                 <strong>Order:</strong>
                 <br />
-                {design.order.order_number}
+                {design.order?.order_number || "N/A"}
               </div>
               <div>
                 <strong>Brand:</strong>
                 <br />
-                {design.brand.name} ({design.brand.code})
+                {design.brand?.name || "N/A"} ({design.brand?.code || "N/A"})
               </div>
               <div>
                 <strong>Method:</strong>

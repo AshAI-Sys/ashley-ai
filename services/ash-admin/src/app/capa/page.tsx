@@ -9,9 +9,11 @@ import {
   Plus,
   Eye,
   Edit,
-  TrendingUp, Users,
+  TrendingUp,
+  Users,
   Calendar,
-  Search, Filter,
+  Search,
+  Filter,
   FileText,
   Target,
 } from "lucide-react";
@@ -91,7 +93,9 @@ export default function CAPAPage() {
       const response = await fetch(`/api/quality-control/capa?${params}`);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch CAPA data: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch CAPA data: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -108,10 +112,14 @@ export default function CAPAPage() {
 
   const loadAnalytics = async () => {
     try {
-      const response = await fetch("/api/quality-control/capa/analytics/summary");
+      const response = await fetch(
+        "/api/quality-control/capa/analytics/summary"
+      );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch CAPA analytics: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch CAPA analytics: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -345,7 +353,7 @@ export default function CAPAPage() {
             <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:space-x-4 sm:space-y-0">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500 pointer-events-none" />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
                   <input
                     type="text"
                     placeholder="Search CAPA tasks..."
@@ -400,7 +408,8 @@ export default function CAPAPage() {
           <div className="border-b border-gray-200 px-6 py-4">
             <h3 className="text-lg font-medium text-gray-900">CAPA Tasks</h3>
           </div>
-          <div><table className="min-w-full divide-y divide-gray-200">
+          <div>
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -488,7 +497,7 @@ export default function CAPAPage() {
                       </div>
                       {task.inspection && (
                         <div className="text-sm text-gray-500">
-                          Order: {task.inspection.order.order_number}
+                          Order: {task.inspection.order?.order_number || "N/A"}
                         </div>
                       )}
                       {task.defect && (

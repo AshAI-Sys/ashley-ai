@@ -299,7 +299,7 @@ export default function ShipmentTrackingPage({
                 Shipment Tracking - {shipment.shipment_number}
               </h1>
               <p className="text-sm text-gray-500">
-                Order: {shipment.order.order_number}
+                Order: {shipment.order?.order_number || "N/A"}
               </p>
             </div>
           </div>

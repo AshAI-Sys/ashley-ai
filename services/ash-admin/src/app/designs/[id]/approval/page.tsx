@@ -226,7 +226,9 @@ export default function DesignApprovalPage() {
       const response = await fetch(`/api/designs/${id}/approval-history`);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch approval history: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch approval history: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
@@ -245,12 +247,12 @@ export default function DesignApprovalPage() {
 
     if (template && design) {
       const subject = template.subject
-        .replace("{{design_name}}", design.name)
-        .replace("{{client_name}}", design.order.client.name);
+        .replace("{{design_name}}", design.name || "Design")
+        .replace("{{client_name}}", design.order?.client?.name || "Client");
 
       const content = template.content
-        .replace("{{design_name}}", design.name)
-        .replace("{{client_name}}", design.order.client.name)
+        .replace("{{design_name}}", design.name || "Design")
+        .replace("{{client_name}}", design.order?.client?.name || "Client")
         .replace("{{approval_link}}", "[Link will be generated]");
 
       setEmailSubject(subject);
@@ -386,9 +388,7 @@ export default function DesignApprovalPage() {
   const versions = design.versions || [];
   const approvals = design.approvals || [];
 
-  const currentVersion = versions.find(
-    v => v.version === selectedVersion
-  );
+  const currentVersion = versions.find(v => v.version === selectedVersion);
   const files = currentVersion ? JSON.parse(currentVersion.files) : {};
   const activeApproval = approvals.find(a => a.status === "SENT");
 
@@ -406,7 +406,8 @@ export default function DesignApprovalPage() {
           <div>
             <h1 className="text-3xl font-bold">Client Approval Management</h1>
             <p className="text-muted-foreground">
-              {design.name} â€¢ {design.order.order_number} â€¢ {design.brand.name}
+              {design.name} • {design.order?.order_number || "N/A"} •{" "}
+              {design.brand?.name || "N/A"}
             </p>
           </div>
         </div>
@@ -441,14 +442,16 @@ export default function DesignApprovalPage() {
                 </div>
                 <div className="space-y-1 text-sm">
                   <p>
-                    <strong>Client:</strong> {design.order.client.name}
+                    <strong>Client:</strong>{" "}
+                    {design.order?.client?.name || "N/A"}
                   </p>
                   <p>
                     <strong>Contact:</strong>{" "}
-                    {design.order.client.contact_person}
+                    {design.order?.client?.contact_person || "N/A"}
                   </p>
                   <p>
-                    <strong>Email:</strong> {design.order.client.email}
+                    <strong>Email:</strong>{" "}
+                    {design.order?.client?.email || "N/A"}
                   </p>
                 </div>
               </div>
@@ -677,7 +680,12 @@ export default function DesignApprovalPage() {
                                 </span>
                               </div>
                               <p className="text-sm text-muted-foreground">
-                                {(approval.created_at ? formatDateUtil(approval.created_at, "datetime") : "-")}
+                                {approval.created_at
+                                  ? formatDateUtil(
+                                      approval.created_at,
+                                      "datetime"
+                                    )
+                                  : "-"}
                               </p>
                             </div>
                           </div>
@@ -708,7 +716,8 @@ export default function DesignApprovalPage() {
 
                         <div className="space-y-2 text-sm">
                           <p>
-                            <strong>Client:</strong> {approval.client.name}
+                            <strong>Client:</strong>{" "}
+                            {approval.client?.name || "N/A"}
                           </p>
                           {approval.approver_name && (
                             <p>
@@ -823,7 +832,10 @@ export default function DesignApprovalPage() {
                 </Button>
               </Link>
 
-              <Link href={`/orders/${design.order.id}`} className="block">
+              <Link
+                href={`/orders/${design.order?.id || ""}`}
+                className="block"
+              >
                 <Button className="w-full" variant="outline">
                   <Share className="mr-2 h-4 w-4" />
                   View Order
@@ -859,9 +871,8 @@ export default function DesignApprovalPage() {
                 <span>Changes Requested:</span>
                 <span className="font-medium text-yellow-600">
                   {
-                    approvals.filter(
-                      a => a.status === "CHANGES_REQUESTED"
-                    ).length
+                    approvals.filter(a => a.status === "CHANGES_REQUESTED")
+                      .length
                   }
                 </span>
               </div>
@@ -894,12 +905,12 @@ export default function DesignApprovalPage() {
               <div>
                 <strong>Created:</strong>
                 <br />
-                {(design.created_at ? formatDateUtil(design.created_at) : "-")}
+                {design.created_at ? formatDateUtil(design.created_at) : "-"}
               </div>
               <div>
                 <strong>Last Updated:</strong>
                 <br />
-                {(design.updated_at ? formatDateUtil(design.updated_at) : "-")}
+                {design.updated_at ? formatDateUtil(design.updated_at) : "-"}
               </div>
             </CardContent>
           </Card>
