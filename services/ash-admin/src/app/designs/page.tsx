@@ -342,7 +342,7 @@ export default function DesignsPage() {
                               Latest Approval:
                             </span>
                             <br />
-                            {design?.approvals?.length > 0 ? (
+                            {design?.approvals && design.approvals.length > 0 ? (
                               <>
                                 <Badge
                                   className={getStatusColor(

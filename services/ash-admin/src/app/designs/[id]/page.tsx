@@ -254,8 +254,9 @@ export default function DesignDetailsPage() {
   const runAshleyValidation = async (version?: number) => {
     if (!design) return;
 
+    const designVersions = design.versions || [];
     const targetVersion = version || design.current_version;
-    const versionData = design.versions.find(v => v.version === targetVersion);
+    const versionData = designVersions.find(v => v.version === targetVersion);
 
     if (!versionData) {
       toast.error("Version data not found");
