@@ -14,7 +14,7 @@
   "dependencies": {
     "@ash-ai/database": "workspace:*",
     "@ash-ai/ai": "workspace:*",
-    "zod": "^3.22.4",
+    "zod": "^4.1.12",
     "date-fns": "^3.0.6",
     "nanoid": "^5.0.4",
     "eventemitter3": "^5.0.1"
